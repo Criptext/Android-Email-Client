@@ -1,0 +1,32 @@
+machine:
+  java:
+    version: oraclejdk8
+dependencies:
+  cache_directories:
+    - ~/.android
+  pre:
+    - >
+      if [[ ! -d "$ANDROID_HOME/sources/android-25" ]]; then
+      echo y |
+      android update sdk --all --no-ui
+      --filter android-26 ;
+      fi
+    - >
+      echo y |
+      android update sdk --all --no-ui
+      --filter tools,platform-tools
+    - >
+      if [[ ! -d "$ANDROID_HOME/build-tools/26.0.2" ]]; then
+      echo y |
+      android update sdk --all --no-ui --filter build-tools-26.0.2 ;
+      fi
+    - >
+      if [[ ! -d "$ANDROID_HOME/extras/android/support" ]]; then
+      echo y |
+      android update sdk --all --no-ui
+      --filter extra-android-support ;
+      fi
+    - >
+      echo y |
+      android update sdk --all --no-ui
+      --filter extra-android-m2repository
