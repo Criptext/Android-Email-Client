@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.email">
 
-    <application android:name="com.email.DeckardApplication">
-        <activity android:name="com.email.activity.DeckardActivity" android:screenOrientation="portrait">
+    <application android:name="com.email.DeckardApplication"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.email.activities.mailbox.MailboxActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

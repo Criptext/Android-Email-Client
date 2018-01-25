@@ -22,6 +22,7 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 26
@@ -32,7 +33,7 @@ android {
         targetSdkVersion 26
         versionCode 2
         versionName "1.0.0-SNAPSHOT"
-        applicationId "com.example"
+        applicationId "com.email"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -59,6 +60,7 @@ configurations.all {
     }
 }
 
+
 dependencies {
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -67,8 +69,9 @@ dependencies {
     implementation 'com.android.support:support-v4:26.1.0'
 
     // Room
-    implementation "android.arch.persistence.room:runtime:1.0.0"
-    kapt "android.arch.persistence.room:compiler:1.0.0"
+    compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
+    compile 'android.arch.persistence.room:rxjava2:1.0.0-alpha1'
+    kapt "android.arch.persistence.room:compiler:1.0.0-alpha1"
 
     // Espresso
     androidTestImplementation 'com.android.support:support-annotations:26.0.2'
@@ -77,5 +80,13 @@ dependencies {
     // Robolectric
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.5.1'
+
+    // Support v4
+    implementation 'com.android.support:support-v4:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.0.2'
+    compile 'com.android.support:recyclerview-v7:26.0.2'
+
+    // notification badge
+    compile 'com.nex3z:notification-badge:0.2.0'
 }
 

@@ -13,7 +13,6 @@ import java.util.*
  * Created by hirobreak on 30/03/17.
  */
 
-//class SecureEmail : com.activeandroid.app.Application() {
 class SecureEmail {
     private var singleton: SecureEmail? = null
 
@@ -28,13 +27,6 @@ class SecureEmail {
         val FILES_DIR = "files"
 
         val ACTIVE_ACCOUNT = "activeAcount"
-/*        val GMAIL_SCOPE : ArrayList<String>
-            get(){
-                var scope = ArrayList<String>()
-                scope.add(GmailScopes.MAIL_GOOGLE_COM)
-                return scope
-            }*/
-
         val LABEL_CORREO_NO_DESEADO = "Label_1"
         val LABEL_USER_SENT = "Label_2"
         val LABEL_USER_THRASH = "Label3"
@@ -69,37 +61,6 @@ class SecureEmail {
         val CRIPTEXT_SEARCH = "criptext.search"
 
     }
-
-/*
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        MultiDex.install(this)
-    }
-*/
-
-
-
-/*
-        val downloadDir = File(Environment.getExternalStorageDirectory(),
-                ctx.resources.getString(R.string.app_name))
-        downloadDir.mkdirs()
-        var subdir = File(downloadDir, SecureEmail.FILES_DIR)
-        subdir.mkdir()
-        return downloadDir
-    }
-*/
-
-/*
-    override fun onCreate() {
-        super.onCreate()
-        singleton = this
-        CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/Lato-Regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        )
-    }
-*/
 
     fun getInstance(): SecureEmail? {
         return singleton
