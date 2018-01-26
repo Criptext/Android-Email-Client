@@ -13,8 +13,8 @@ class EmailThread(private val latestMail : Email, private val labelsOfMail :Arra
 
     val headerPreview: String = if(ListUtils.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
             || ListUtils.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-        latestMail.preview as String else latestMail.preview as String // cambiar esto.
+        latestMail.preview as String else latestMail.preview
 
-    val isread: Boolean by lazy { latestMail.unread!!.equals(1) }
+    val isread: Boolean by lazy { latestMail.unread.equals(1) }
 
 }
