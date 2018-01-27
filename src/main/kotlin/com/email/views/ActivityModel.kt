@@ -1,4 +1,4 @@
-package com.email.activities
+package com.email.views
 
 /**
  * Created by gesuwall on 3/27/17.

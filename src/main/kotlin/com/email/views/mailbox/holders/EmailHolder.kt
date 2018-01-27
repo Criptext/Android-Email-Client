@@ -1,4 +1,4 @@
-package com.email.activities.mailbox.holders
+package com.email.views.mailbox.holders
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -6,41 +6,37 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.DB.models.Email
-import com.email.DB.seeders.EmailSeeder.Companion.sdf
 import com.email.R
-import com.email.activities.mailbox.data.EmailThread
+import com.email.views.mailbox.data.EmailThread
 
 /**
  * Created by sebas on 1/24/18.
  */
 
-class MailHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+class EmailHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
     private var email : Email? = null // cambiar esto. EmailThread*
-    protected var headerView : TextView? = null
-    protected var subjectView : TextView? = null
-    protected var previewView : TextView? = null
-    protected var dateView : TextView? = null
-    protected var countView : TextView? = null
-    protected var attachAlert : ImageView? = null
-    protected var multiselectIcon : ImageView? = null
-    protected var timerAlert : ImageView? = null
-    protected var criptextIconsLayout : View? = null
-    protected var regularAttachIcon : View? = null
-    protected var reFwIcon : ImageView? = null
-    protected val context = view.context
+    private var headerView : TextView? = null
+    private var subjectView : TextView? = null
+    private var previewView : TextView? = null
+    private var dateView : TextView? = null
+    private var countView : TextView? = null
+    private var attachAlert : ImageView? = null
+    private var multiselectIcon : ImageView? = null
+    private var timerAlert : ImageView? = null
+    private var criptextIconsLayout : View? = null
+    private var regularAttachIcon : View? = null
+    private var reFwIcon : ImageView? = null
+    private val context = view.context
 
     init {
         view.setOnClickListener(this)
     }
     override fun onClick(p0: View?) {
-        Log.d("RECYCLER VIEW", "click")
     }
 
 
     fun bindMail(emailThread: EmailThread) {
-        // previewView!!.text = email.content
-        //dateView!!.text = sdf!!.format(email.date)
          previewView!!.text = emailThread.headerPreview // ????
     }
 
@@ -49,7 +45,6 @@ class MailHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListen
         subjectView = view.findViewById(R.id.email_subject) as TextView?
         previewView = view.findViewById(R.id.email_preview) as TextView?
         dateView = view.findViewById(R.id.email_date) as TextView?
-        // criptextAlert = view.findViewById(R.id.email_lock_icon) as ImageView?
         attachAlert = view.findViewById(R.id.email_attach_icon) as ImageView?
         timerAlert = view.findViewById(R.id.email_timer_icon) as ImageView?
         countView = view.findViewById(R.id.email_count) as TextView?

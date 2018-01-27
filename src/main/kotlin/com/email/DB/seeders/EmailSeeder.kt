@@ -1,9 +1,9 @@
 package com.email.DB.seeders
 
-import android.util.Log
 import com.email.DB.DAO.EmailDao
 import com.email.DB.models.Email
 import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Created by sebas on 1/24/18.
@@ -16,7 +16,6 @@ public class EmailSeeder {
 
         fun seed(emailDao: EmailDao){
             emails = emailDao.getAll()
-            Log.d("SEEDER - EMAILS", emails.size.toString())
             emailDao.deleteAll(emails)
             emails = mutableListOf<Email>()
             for (a in 1..10){
@@ -153,5 +152,8 @@ public class EmailSeeder {
             }
             return email
         }
+    }
+    init {
+        sdf.timeZone = TimeZone.getDefault()
     }
 }

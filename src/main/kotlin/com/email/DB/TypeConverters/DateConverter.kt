@@ -13,26 +13,23 @@ import java.util.*
  */
 
 class DateConverter {
-        var df : DateFormat? = SimpleDateFormat( "yyyy-MM-dd")
+        var df : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         @TypeConverter
-        fun getDate(value: String?) : Date?  {
+        fun getDate(value: Long) : Date?  {
                 try {
-                    return df?.parse(value)
+                    return Date(value)
                 }catch (e : Exception) {
-                    Log.d("MISSING FIELD: ", "date...")
                     return Date(1992,2,1)
                 }
         }
 
         @TypeConverter
-        fun parseDate(value: Date?): String? {
-            try {
-                return df?.format(value)
-            }catch (e: Exception) {
-                Log.d("CONVERTER PARSE DATE", if(value != null) value.toString() else "EMPTY")
-                e.printStackTrace()
-            }
-            return null
+        fun parseDate(value: Date): Long {
+                return value.time
+        }
+
+        init {
+                df.timeZone = TimeZone.getDefault()
         }
 }

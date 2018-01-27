@@ -1,6 +1,5 @@
 package com.email.DB.seeders
 
-import android.util.Log
 import com.email.DB.DAO.EmailLabelJoinDao
 import com.email.DB.models.EmailLabel
 
@@ -14,7 +13,6 @@ public class EmailLabelSeeder{
 
         fun seed(emailLabelDao: EmailLabelJoinDao){
             emailLabels = emailLabelDao.getAll()
-            Log.d("SEEDER - LABEL - EMAILS", emailLabels.size.toString())
             emailLabelDao.deleteAll(emailLabels)
             emailLabels = mutableListOf<EmailLabel>()
             for (a in 1..10){

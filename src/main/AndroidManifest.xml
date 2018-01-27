@@ -4,7 +4,7 @@
 
     <application android:name="com.email.DeckardApplication"
         android:theme="@style/AppTheme">
-        <activity android:name="com.email.activities.mailbox.MailboxActivity">
+        <activity android:name="com.email.views.mailbox.MailboxView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

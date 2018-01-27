@@ -1,7 +1,7 @@
-package com.email.activities.mailbox
+package com.email.views.mailbox
 
-import com.email.activities.ActivityModel
-import com.email.activities.mailbox.data.EmailThread
+import com.email.views.ActivityModel
+import com.email.views.mailbox.data.EmailThread
 
 /**
  * Created by sebas on 1/25/18.

@@ -1,8 +1,6 @@
-package com.email.activities.mailbox.data
+package com.email.views.mailbox.data
 
-import android.provider.Settings
 import com.email.DB.models.Email
-import com.email.DB.models.EmailLabel
 import com.email.DB.models.Label
 import com.email.SecureEmail
 import com.email.utils.ListUtils
