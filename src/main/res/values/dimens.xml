@@ -15,4 +15,7 @@
     <dimen name="snackbar_height">50dp</dimen>
 
     <dimen name="webview_left_margin">30dp</dimen>
+
+    <dimen name="menu_item_icon_size">20dp</dimen>
+    <dimen name="mailbox_title_size">20dp</dimen>
 </resources>

@@ -45,8 +45,6 @@ class EmailHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListe
         subjectView = view.findViewById(R.id.email_subject) as TextView?
         previewView = view.findViewById(R.id.email_preview) as TextView?
         dateView = view.findViewById(R.id.email_date) as TextView?
-        attachAlert = view.findViewById(R.id.email_attach_icon) as ImageView?
-        timerAlert = view.findViewById(R.id.email_timer_icon) as ImageView?
         countView = view.findViewById(R.id.email_count) as TextView?
         multiselectIcon = view.findViewById(R.id.multi_icon) as ImageView?
         criptextIconsLayout = view.findViewById(R.id.criptext_icons_layout)

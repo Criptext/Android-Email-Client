@@ -2,8 +2,54 @@
 <android.support.design.widget.CoordinatorLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/titulo_mailbox"
+    >
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mailbox_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/softBlack"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/group"
+                android:id="@+id/mailbox_nav_button"
+                android:layout_margin="5dp"
+                />
+            <TextView
+                android:id="@+id/mailbox_toolbar_title"
+                android:layout_toRightOf="@+id/mailbox_nav_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/titulo_mailbox"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="false"
+                android:layout_marginLeft="15dp"
+                />
+            <TextView
+                android:id="@+id/mailbox_number_emails"
+                android:layout_toRightOf="@+id/mailbox_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="(2)"
+                android:alpha="0.3"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/mailbox_title_size"
+                android:layout_alignParentStart="false"
+                />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mailbox_refresher"
         android:layout_width="match_parent"
@@ -18,9 +64,11 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
     <android.support.design.widget.FloatingActionButton
-        android:src="@drawable/audio"
+        android:layout_width="wrap_content"
+        android:src="@drawable/fill_1"
         app:fabSize="normal"
         android:layout_height="wrap_content"
-
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
         />
 </android.support.design.widget.CoordinatorLayout>

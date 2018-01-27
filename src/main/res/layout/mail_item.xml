@@ -67,14 +67,14 @@
                     android:textSize="17sp"
                     android:textColor="#000"
                     android:layout_weight="1"/>
-                <ImageView
+<!--                <ImageView
                     android:id="@+id/email_timer_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/expiration"
                     android:layout_marginLeft="6dp"
                     android:visibility="gone"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY" />-->
                 <TextView
                     android:id="@+id/email_count"
                     android:layout_width="14dp"
@@ -148,7 +148,7 @@
                         android:layout_marginBottom="4dp"
                         android:src="@drawable/lock"
                         android:tint="@color/colorHighlight"/>-->
-                    <ImageView
+<!--                    <ImageView
                         android:layout_marginTop="1dp"
                         android:layout_width="16dp"
                         android:layout_height="18dp"
@@ -157,7 +157,7 @@
                         android:id="@+id/email_attach_icon"
                         android:src="@drawable/secattach"
                         android:visibility="visible"
-                        android:tint="@color/colorHighlight"/>
+                        android:tint="@color/colorHighlight"/>-->
                 </RelativeLayout>
             </LinearLayout>
 

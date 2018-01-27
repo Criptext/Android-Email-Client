@@ -127,5 +127,6 @@
     <string name="please_change_account_prop">Please change account property</string>
     <string name="email_will_expire_in">Email will expire in:</string>
     <string name="no_emails_found">No emails found</string>
+    <string name="titulo_mailbox">INBOX</string>
 
 </resources>

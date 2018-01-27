@@ -20,7 +20,7 @@
     <color name="colorLabels2">#626262</color>
     <color name="colorActivityOpen">#E8F5FD</color>
     <color name="unreadMailItemBg">#F5FAFE</color>
-
+    <color name="softBlack">#373a45</color>
     <color name="modifyTitle">#efeff4</color>
     <color name="modifyTitleText">#6d6d72</color>
     <color name="modifyContent">#fff</color>
