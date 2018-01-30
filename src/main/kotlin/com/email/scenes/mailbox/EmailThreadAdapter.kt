@@ -14,8 +14,7 @@ import com.email.scenes.mailbox.holders.EmailHolder
 
 class EmailThreadAdapter(val mContext : Context, var threadListener : OnThreadEventListener?): RecyclerView.Adapter<EmailHolder>() {
 
-    var threads = ArrayList<EmailThread>()
-    var recyclerView: RecyclerView? = null
+    lateinit var threads : List<EmailThread>
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
         val mail = threads[position]
@@ -26,13 +25,12 @@ class EmailThreadAdapter(val mContext : Context, var threadListener : OnThreadEv
         return threads.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): EmailHolder {
-        val inflatedView = LayoutInflater.from(parent!!.context).inflate(R.layout.mail_item, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmailHolder {
+        val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.mail_item, parent, false)
         return EmailHolder(inflatedView)
     }
 
 
     interface OnThreadEventListener{
-        fun onThreadOpened(id : String)
     }
 }

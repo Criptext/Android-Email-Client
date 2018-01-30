@@ -22,12 +22,10 @@ class MainActivity: AppCompatActivity(), IHostActivity {
 
     private lateinit var manager: SceneManager
 
-    // creating default mailbox scene...
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.main_layout)
-        SceneFactory.SceneInflater(this).createMailboxScene()
         manager = SceneManager(this)
     }
 

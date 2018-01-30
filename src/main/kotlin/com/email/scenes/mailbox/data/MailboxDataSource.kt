@@ -8,7 +8,7 @@ import com.email.DB.MailboxLocalDB
 
 class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
 
-    fun getEmailThreads(): ArrayList<EmailThread> {
+    fun getEmailThreads(): List<EmailThread> {
         return mailboxLocalDB.getEmailThreads()
     }
 

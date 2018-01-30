@@ -17,7 +17,6 @@ import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.MailboxDataSource
 
 /**
  * Created by sebas on 1/23/18.
@@ -25,7 +24,7 @@ import com.email.scenes.mailbox.data.MailboxDataSource
 
 interface MailboxScene : ThreadListView{
 
-    fun setEmailList(threads: ArrayList<EmailThread>)
+    fun setEmailList(threads: List<EmailThread>)
     fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup, private val mailboxView: View,
@@ -56,7 +55,7 @@ interface MailboxScene : ThreadListView{
         }
 
 
-        override fun setEmailList(threads: ArrayList<EmailThread>) {
+        override fun setEmailList(threads: List<EmailThread>) {
             threadRecyclerView.setThreadList(threads)
         }
 
@@ -77,50 +76,3 @@ interface MailboxScene : ThreadListView{
         }
     }
 }
-
-/*class MailboxActivity : AppCompatActivity(), IHostActivity {
-    override val activity: Activity
-        get() = this
-    override val database: MailboxLocalDB
-        get() = MailboxLocalDB.Default(applicationContext)
-
-    private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var recyclerView : RecyclerView
-    private lateinit var recyclerAdapter: EmailThreadAdapter
-    private lateinit var toolbar: Toolbar
-    private lateinit var mailboxLocalDB : MailboxLocalDB
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        mailboxLocalDB = MailboxLocalDB.Default(applicationContext)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mailbox)
-        mailboxLocalDB.seed()
-        recyclerView = findViewById(R.id.mailbox_recycler) as RecyclerView
-        toolbar = findViewById<Toolbar>(R.id.mailbox_toolbar)
-
-        linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
-        recyclerAdapter = EmailThreadAdapter(MailboxDataSource(mailboxLocalDB).getEmailThreads())
-        recyclerView.adapter = recyclerAdapter
-
-        // Adding simple toolbar to mailbox view.
-        addToolbar()
-
-        toolbar.showOverflowMenu()
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.mailbox_menu, menu)
-        Log.d("ACTION BAR", "adding action bar...")
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        Log.d("CLICK", "Item")
-        return true
-    }
-    fun addToolbar() {
-        setSupportActionBar(toolbar)
-    }
-}*/

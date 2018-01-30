@@ -12,5 +12,5 @@ import com.email.scenes.mailbox.data.EmailThread
  */
 
 class MailboxSceneModel : SceneModel {
-    internal val threads : ArrayList<EmailThread> = ArrayList()
+    lateinit var threads : List<EmailThread>
 }

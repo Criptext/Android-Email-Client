@@ -14,11 +14,10 @@ class ThreadRecyclerView(val recyclerView: RecyclerView,
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
-        emailThreadAdapter.recyclerView = recyclerView
         recyclerView.adapter = emailThreadAdapter
     }
 
-    fun setThreadList(threadList: ArrayList<EmailThread>) {
+    fun setThreadList(threadList: List<EmailThread>) {
         emailThreadAdapter.threads = threadList
         notifyThreadSetChanged()
     }
