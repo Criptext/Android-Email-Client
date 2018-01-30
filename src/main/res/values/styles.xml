@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+    </style>
+
+    <style name="Splash.Criptext" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
+    <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+    </style>
+
+    <style name="ProgressBarThread" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/progress_grey_tint</item>
+    </style>
+
+<!--    <style name="Dialog.SnackBar" parent="Dialog.NoTitle">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>-->
+
+</resources>

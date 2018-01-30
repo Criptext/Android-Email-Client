@@ -3,9 +3,12 @@ package com.email.DB
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import com.email.DB.DAO.EmailDao
 import com.email.DB.DAO.EmailLabelJoinDao
+import com.email.DB.DAO.LabelDao
+import com.email.DB.TypeConverters.DateConverter
 import com.email.DB.models.Email
 import com.email.DB.models.EmailLabel
 import com.email.DB.models.Label
@@ -14,10 +17,11 @@ import com.email.DB.models.Label
  * Created by sebas on 1/24/18.
  */
 
-@Database(entities = arrayOf(EmailLabel::class, Email::class, Label::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(Email::class, Label::class, EmailLabel::class), version = 1, exportSchema = false)
+@TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
-    //abstract fun labelDao(): labelDao
+    abstract fun labelDao(): LabelDao
     abstract fun emailLabelDao() : EmailLabelJoinDao
 
     companion object {

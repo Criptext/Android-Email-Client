@@ -3,6 +3,8 @@ package com.email.DB.models
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.ForeignKey.CASCADE
+import android.support.annotation.NonNull
 
 /**
  * Created by sebas on 1/24/18.
@@ -10,15 +12,23 @@ import android.arch.persistence.room.ForeignKey
 
 @Entity(tableName = "email_label",
         primaryKeys = [ "emailId", "labelId" ],
-        foreignKeys = arrayOf( ForeignKey(entity = Email::class, parentColumns = ["id"], childColumns = ["emailId"]),
-                               ForeignKey(entity = Label::class, parentColumns = ["id"], childColumns = ["labelId"])) )
+        foreignKeys = arrayOf( ForeignKey(entity = Email::class,
+                                          parentColumns = ["id"],
+                                          onDelete = CASCADE,
+                                          childColumns = ["emailId"]),
+                               ForeignKey(entity = Label::class,
+                                          parentColumns = ["id"],
+                                          onDelete = CASCADE,
+                                          childColumns = ["labelId"])) )
 class EmailLabel {
 
     @ColumnInfo(name = "emailId")
-    private var emailId : Int? = null
+    @NonNull
+    var emailId : Int
 
     @ColumnInfo(name = "labelId")
-    private var labelId : Int? = null
+    @NonNull
+    var labelId : Int
 
     constructor(emailId : Int, labelId: Int) {
         this.emailId = emailId

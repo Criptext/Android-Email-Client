@@ -1,0 +1,132 @@
+<resources>
+    <string name="app_name">Criptext</string>
+
+    <string name="tour_title1">Welcome to Criptext</string>
+    <string name="tour_content1">This is your safe zone. Everything you say here is private and secure so you can have peace of mind in every word.</string>
+
+    <string name="tour_title2">Welcome to Criptext 2</string>
+    <string name="tour_content2">This is your safe zone 2</string>
+
+    <string name="mk_label_yesterday">Yesterday </string>
+    <string name="mk_label_today">Today </string>
+
+    <string name="need_auth_permission">You must give account permissions to proceed</string>
+    <string name="need_sign_in">You need to sign in to proceed</string>
+    <string name="gg_google_connection">Connection with google is broken. Please try again later</string>
+
+    <string name="subject">Subject : </string>
+    <string name="not_encrypted_warning">Warning: 1 or more attachments are not encrypted. Eliminate them and attach them securely using the button</string>
+
+    <!-- SYNC -->
+    <string name="done_exclamation">Done!</string>
+    <string name="sync_failed">Sync Failed</string>
+
+
+    <!-- TOUR -->
+    <string name="unsend_anytime">Unsend at Anytime</string>
+    <string name="set_timers">Set Expiration\nTimers</string>
+    <string name="trach_open">Track Email &amp;\nAttachment Opens</string>
+    <string name="send_attach">Send Secure\nAttachment</string>
+    <string name="inbox_secure">Your Inbox: Secured!</string>
+    <string name="login_verifying">Criptext is verifying your account</string>
+
+    <string name="unsend_anytime_footer">Take back emails even after\nthey\'re read</string>
+    <string name="set_timers_footer">Set Emails and Attachments to\nSelf-destruct after they\'re opened</string>
+    <string name="trach_open_footer">Know when and where your\nemails and files have been opened</string>
+    <string name="send_attach_footer">Share private documents securely</string>
+    <string name="inbox_secure_footer">Send encrypted emails to anyone\n(they don\'t need to have Criptext!)</string>
+    <string name="send">Send</string>
+    <string name="save">Save</string>
+    <string name="search">Search</string>
+    <string name="edit">Edit</string>
+    <string name="archive">Archive</string>
+    <string name="delete">Delete</string>
+    <string name="forward">Forward</string>
+    <string name="reply_all">Reply All</string>
+
+    <!--SLIDER-->
+    <string name="slider_inbox">Inbox</string>
+    <string name="slider_draft">Drafts</string>
+    <string name="slider_sent">Sent</string>
+    <string name="slider_junk">Spam</string>
+    <string name="slider_trash">Trash</string>
+    <string name="slider_allmail">All Mail</string>
+
+    <string name="slider_settings">Settings</string>
+    <string name="slider_secure">Secure Email</string>
+    <string name="slider_signature">Signature</string>
+    <string name="slider_modify">Modify Header</string>
+    <string name="slider_upgrade">Upgrade to Pro</string>
+    <string name="slider_invite">Invite a Friend</string>
+    <string name="slider_support">Support</string>
+    <string name="slider_logout">Logout</string>
+    <string name="slider_version">Criptext Email v.</string>
+
+    <!-- PERMISSIONS -->
+    <string name="read_contacts_perm">Easily access your contacts\' emails</string>
+    <string name="read_sd_perm">Acces to your external storage</string>
+    <string name="inline_images_rationale">To display inline images, they must be downloaded to your device. Do you wish to grant Criptext read access to your external storage?</string>
+    <string name="dl_attachs_rationale">To open e-mail attachments, they must be downloaded to your device. Do you wish to grant Criptext read access to your external storage?</string>
+    <string name="gallery_attachs_rationale">To access files from your gallery, Criptext needs extra permissions. Do you wish to grant Criptext read access to your external storage?</string>
+    <string name="docs_attachs_rationale">To access documents in your device, Criptext needs extra permissions. Do you wish to grant Criptext read access to your external storage?</string>
+    <string name="camera_attachs_rationale">To access photos taken with your camera, Criptext needs extra permissions. Do you wish to grant Criptext read access to your external storage?</string>
+
+    <string name="invite_friends">I\'m using Criptext for Gmail, it allows me to have control over my emails. Install it now and get 30 DAYS FREE!</string>
+    <string name="link_friends">Criptext - Invitation</string>
+
+    <!-- MODIFY HEADER AND SIGNATURE -->
+    <string name="modify_header_tip">Encrypted emails can\'t be read by mail servers, so to avoid your emails from being sent to spam, each email is sent with a readable header. Customize it to your liking, however it can\'t be empty.</string>
+    <string name="modify_signature_tip">An email signature is text, like your contact information or a favorite quote, that\'s automatically added at the end of Criptext Secure Email messages as a footer</string>
+
+    <string name="days">Days</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="days_short">Days</string>
+    <string name="hours_short">Hrs.</string>
+    <string name="minutes_short">Mins.</string>
+    <string name="expiration_message">Timer begins once the email is:</string>
+    <string name="opened">Opened</string>
+    <string name="sent">Sent</string>
+    <string name="unsent">Unsent</string>
+    <string name="encrypt_this_email">Encrypt this email</string>
+
+
+    <!-- LOGIN ERRORS -->
+
+    <string name="logout1">Unable to reach account. Please try again later</string>
+    <string name="logout2">Unable to create session, please try again later</string>
+    <string name="logout3">Unable to retrieve account activities, please try again later</string>
+    <string name="logout4">Unable to retrieve mails from Gmail. Please try again later</string>
+    <string name="logout5">Unable to retrieve mails from Criptext. Please try again later</string>
+
+    <string name="new_secure_email">New Secure Email</string>
+    <string name="activity_panel">Notifications</string>
+    <string name="activity_option1">Unsend</string>
+    <string name="activando_criptext">Activating Criptext</string>
+    <string name="updated_just_now">Updated Just Now</string>
+    <string name="loading">Loading…</string>
+    <string name="decrypting">Decrypting…</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="set_password">It must be longer than 5 characters and don\'t contain special characters</string>
+    <string name="enter_password">This file is protected. Please enter the password</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="encrypting">Encrypting…</string>
+    <string name="sending">Sending…</string>
+    <string name="documents">Documents</string>
+    <string name="photo_library">Photo Library</string>
+    <string name="camera">Camera</string>
+    <string name="move_to">Move to…</string>
+    <string name="inbox">Inbox</string>
+    <string name="junk">Spam</string>
+    <string name="trash">Trash</string>
+    <string name="unsending">Unsending</string>
+    <string name="unsend_no_content">The content is no longer available</string>
+    <string name="ellipsis">…</string>
+
+    <string name="please_change_account_prop">Please change account property</string>
+    <string name="email_will_expire_in">Email will expire in:</string>
+    <string name="no_emails_found">No emails found</string>
+    <string name="titulo_mailbox">INBOX</string>
+
+</resources>

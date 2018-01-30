@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f9f9f9</color>
+    <color name="colorPrimaryDark">#b1b1b1</color>
+    <color name="colorAccent">#0091ff</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="colorBackground">#ffffff</color>
+    <color name="colorHighlight">#0091ff</color>
+    <color name="colorTour">#0075ab</color>
+    <color name="tour_below">#2d92eb</color>
+    <color name="recycler_divider">#d5d5d5</color>
+    <color name="colorSent">#999999</color>
+    <color name="colorToggleOff">#d4d4d4</color>
+    <color name="colorOpened">#0091ff</color>
+    <color name="colorUnsent">#ef4646</color>
+    <color name="unsend_button_red">#da4931</color>
+    <color name="colorOpen">#0091FF</color>
+    <color name="colorSubject">#5F5F5F</color>
+    <color name="colorLabels">#8A8A8A</color>
+    <color name="colorLabels2">#626262</color>
+    <color name="colorActivityOpen">#E8F5FD</color>
+    <color name="unreadMailItemBg">#F5FAFE</color>
+    <color name="softBlack">#373a45</color>
+    <color name="modifyTitle">#efeff4</color>
+    <color name="modifyTitleText">#6d6d72</color>
+    <color name="modifyContent">#fff</color>
+    <color name="drawer_text">#000</color>
+
+    <color name="progress_grey_tint">#bebebe</color>
+    <color name="lightgray">#ddd</color>
+</resources>

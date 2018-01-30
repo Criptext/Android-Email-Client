@@ -9,13 +9,15 @@ import android.arch.persistence.room.PrimaryKey
  */
 
 @Entity(tableName = "label")
-class Label {
-    @PrimaryKey(autoGenerate = true)
-    private var id:Int? = null
+class Label (
+        @PrimaryKey(autoGenerate = true)
+        var id:Int,
 
-    @ColumnInfo(name = "color")
-    var color: String? = null
+        @ColumnInfo(name = "color")
+        var color: String,
 
-    @ColumnInfo(name = "text")
-    var text: String? = null
+        @ColumnInfo(name = "text")
+        var text: String
+){
+
 }

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal"
+        android:animateLayoutChanges="true">
+
+        <ImageView
+            android:id="@+id/multi_icon"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/icon_blue_check"
+            android:layout_marginLeft="10dp"
+            android:visibility="visible"/>
+
+
+        <LinearLayout
+            android:layout_width="20dp"
+            android:padding="0dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent" >
+            <ImageView
+                android:id="@+id/re_fw_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="invisible"
+                android:src="@drawable/re_fw_icon"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/regular_attach_icon"
+                android:visibility="invisible"
+                android:src="@drawable/ic_attach_file_24dp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:id="@+id/mail_info">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:id="@+id/container_header">
+                <TextView
+                    android:id="@+id/email_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp"
+                    android:textColor="#000"
+                    android:layout_weight="1"/>
+<!--                <ImageView
+                    android:id="@+id/email_timer_icon"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/expiration"
+                    android:layout_marginLeft="6dp"
+                    android:visibility="gone"
+                    android:scaleType="fitXY" />-->
+                <TextView
+                    android:id="@+id/email_count"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:text="100"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="center"
+                    android:textColor="#fff"
+                    android:textSize="10sp"
+                    android:background="@drawable/square_round_corners_gray" />
+                <TextView
+                    android:id="@+id/email_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginLeft="6dp"
+                    android:text="11:55 am"
+                    android:gravity="center_vertical"
+                    android:textSize="13sp"
+                    android:textColor="#ccc"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_below="@id/container_header"
+                android:orientation="horizontal"
+                android:id="@+id/linearLayout">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:id="@+id/container_subheader">
+                    <TextView
+                        android:id="@+id/email_subject"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Subject"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginRight="3dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorSubject"/>
+                    <TextView
+                        android:id="@+id/email_preview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:textSize="15sp"
+                        />
+                </LinearLayout>
+                 <RelativeLayout
+                    android:layout_width="18dp"
+                    android:visibility="visible"
+                    android:id="@+id/criptext_icons_layout"
+                    android:layout_height="match_parent" >
+<!--                    <ImageView
+                        android:id="@+id/email_lock_icon"
+                        android:layout_width="16dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="2dp"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp"
+                        android:paddingLeft="1dp"
+                        android:paddingRight="1dp"
+                        android:layout_marginBottom="4dp"
+                        android:src="@drawable/lock"
+                        android:tint="@color/colorHighlight"/>-->
+<!--                    <ImageView
+                        android:layout_marginTop="1dp"
+                        android:layout_width="16dp"
+                        android:layout_height="18dp"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp"
+                        android:id="@+id/email_attach_icon"
+                        android:src="@drawable/secattach"
+                        android:visibility="visible"
+                        android:tint="@color/colorHighlight"/>-->
+                </RelativeLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
