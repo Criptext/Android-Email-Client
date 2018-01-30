@@ -5,7 +5,7 @@ import com.email.DB.models.Label
 import com.email.DB.seeders.EmailLabelSeeder
 import com.email.DB.seeders.EmailSeeder
 import com.email.DB.seeders.LabelSeeder
-import com.email.views.mailbox.data.EmailThread
+import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Created by sebas on 1/26/18.

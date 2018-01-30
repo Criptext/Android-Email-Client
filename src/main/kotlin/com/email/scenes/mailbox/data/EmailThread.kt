@@ -1,4 +1,4 @@
-package com.email.views.mailbox.data
+package com.email.scenes.mailbox.data
 
 import com.email.DB.models.Email
 import com.email.DB.models.Label

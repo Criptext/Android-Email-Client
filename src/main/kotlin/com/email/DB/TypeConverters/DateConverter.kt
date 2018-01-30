@@ -13,7 +13,7 @@ import java.util.*
  */
 
 class DateConverter {
-        var df : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
+        val df : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         @TypeConverter
         fun getDate(value: Long) : Date?  {
