@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.transition.Scene
+import com.email.DB.AppDatabase
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
 import com.email.scenes.SceneController
@@ -17,9 +18,6 @@ import com.email.scenes.mailbox.data.MailboxDataSource
  */
 
 class MailboxActivity : AppCompatActivity(), IHostActivity {
-    override val activity: Activity by lazy {
-        this
-    }
 
     private lateinit var sceneFactory : SceneFactory
 
@@ -36,9 +34,11 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     }
 
     override fun initController() {
+        val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         mailboxSceneController = MailboxSceneController(
                     scene = sceneFactory.createMailboxScene(),
-                    model = mailboxSceneModel, dataSource = MailboxDataSource(MailboxLocalDB.Default(this.applicationContext)))
+                    model = mailboxSceneModel,
+                    dataSource = MailboxDataSource(DB))
     }
 
     override fun onStart() {
