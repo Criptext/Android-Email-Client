@@ -8,6 +8,6 @@ import com.email.DB.MailboxLocalDB
  */
 interface IHostActivity {
     val activity: Activity
-    val database: MailboxLocalDB
 
+    fun initController()
 }
