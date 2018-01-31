@@ -3,6 +3,7 @@ package com.email.androidui.mailthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import com.email.scenes.mailbox.EmailThreadAdapter
 import com.email.scenes.mailbox.data.EmailThread
 
@@ -42,4 +43,11 @@ class ThreadRecyclerView(val recyclerView: RecyclerView,
         emailThreadAdapter.notifyItemChanged(position)
     }
 
+    fun changeMode(multiSelectON: Boolean, silent: Boolean) {
+        if (emailThreadAdapter.isMultiSelectMode != multiSelectON) {
+            emailThreadAdapter.isMultiSelectMode = multiSelectON
+            if (!silent)
+                notifyThreadSetChanged()
+        }
+    }
 }

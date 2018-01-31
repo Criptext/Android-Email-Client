@@ -6,7 +6,7 @@ import com.email.DB.models.Label
  * Created by sebas on 1/24/18.
  */
 
-class ListUtils {
+class EmailThreadValidator {
 
    companion object {
       fun isLabelInList (labels: ArrayList<Label>, textLabel: String): Boolean{
@@ -17,3 +17,4 @@ class ListUtils {
       }
    }
 }
+

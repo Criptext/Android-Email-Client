@@ -21,10 +21,8 @@ interface MailboxLocalDB {
 
         override fun getEmailThreads(): List<EmailThread> {
             return db!!.emailDao().getAll().map { email ->
-                EmailThread(latestMail = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>,
-                        count = -1,
-                        hasEmailAttachments = false)
+                EmailThread(email = email,
+                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
             }
         }
 

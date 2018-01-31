@@ -125,5 +125,9 @@ interface MailboxScene : ThreadListView{
         override fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int) {
             threadRecyclerView.notifyThreadRangeInserted(positionStart, itemCount)
         }
+
+        override fun changeMode(multiSelectON: Boolean, silent: Boolean) {
+            threadRecyclerView.changeMode(multiSelectON, silent)
+        }
     }
 }
