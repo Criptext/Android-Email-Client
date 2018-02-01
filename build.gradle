@@ -91,5 +91,10 @@ dependencies {
     // notification badge
     compile 'com.nex3z:notification-badge:0.2.0'
 
+    //Circle Image View
+    compile 'de.hdodenhof:circleimageview:1.2.1'
+
+    //Caligraphy
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 }
 

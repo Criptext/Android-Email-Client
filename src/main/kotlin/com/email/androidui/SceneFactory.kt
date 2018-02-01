@@ -23,7 +23,7 @@ interface SceneFactory {
         }
 
         private val act = hostActivity as MailboxActivity
-        private val rootLayout : ViewGroup = act.findViewById(R.id.scene_container) as ViewGroup
+        private val rootLayout : ViewGroup = act.findViewById<ViewGroup>(R.id.scene_container) as ViewGroup
 
     }
 

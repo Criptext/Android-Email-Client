@@ -11,11 +11,12 @@
 
     <dimen name="curve_fill_point">100dp</dimen>
     <dimen name="square_icon">25dp</dimen>
-    <dimen name="drawer_text_item">15sp</dimen>
+    <dimen name="drawer_text_item">16sp</dimen>
     <dimen name="snackbar_height">50dp</dimen>
 
     <dimen name="webview_left_margin">30dp</dimen>
 
-    <dimen name="menu_item_icon_size">20dp</dimen>
-    <dimen name="mailbox_title_size">20dp</dimen>
+    <dimen name="menu_item_icon_size">18sp</dimen>
+    <dimen name="mailbox_title_size">18sp</dimen>
+    <dimen name="menu_item_height">50dp</dimen>
 </resources>

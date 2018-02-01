@@ -45,4 +45,8 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         super.onStart()
         mailboxSceneController.onStart()
     }
+
+    override fun onBackPressed() {
+        mailboxSceneController.onBackPressed(this)
+    }
 }
