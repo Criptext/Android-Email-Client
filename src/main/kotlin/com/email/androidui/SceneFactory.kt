@@ -6,6 +6,7 @@ import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.MailboxScene
+import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Instantiates scenes, the view objects for each controller.
@@ -16,10 +17,13 @@ interface SceneFactory {
 
     fun createMailboxScene(): MailboxScene
 
-    class SceneInflater(val hostActivity: IHostActivity): SceneFactory {
+    class SceneInflater(val hostActivity: IHostActivity,
+                        val getThreadFromIndex: (i: Int) -> EmailThread,
+                        val getEmailThreadsCount: () -> Int)
+        : SceneFactory {
         override fun createMailboxScene(): MailboxScene {
             val view = View.inflate(act, R.layout.activity_mailbox, null)
-            return MailboxScene.MailboxSceneView(rootLayout, view, hostActivity)
+            return MailboxScene.MailboxSceneView(rootLayout, view, hostActivity, getThreadFromIndex, getEmailThreadsCount)
         }
 
         private val act = hostActivity as MailboxActivity

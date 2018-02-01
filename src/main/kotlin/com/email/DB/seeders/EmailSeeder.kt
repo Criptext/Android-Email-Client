@@ -132,9 +132,9 @@ public class EmailSeeder {
                         isDraft = 0,
                         isTrash = 0,
                         key = "key",
-                        preview = "preview 8" ,
+                        preview = "preview 9" ,
                         secure = 1,
-                        subject = "Subject 8",
+                        subject = "Subject 9",
                         threadid = "2",
                         unread = 0)
                 10 -> email = Email(id = 10,

@@ -95,17 +95,6 @@
                         android:layout_marginRight="3dp"
                         android:textSize="16sp"
                         android:textColor="@color/colorSubject"/>
-
-                    <LinearLayout
-                        android:layout_width="230dp"
-                        android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/read_notification"
-                        android:id="@+id/mail_item_checked"
-                        android:layout_margin="5dp"
-                        />
                     <TextView
                         android:id="@+id/email_preview"
                         android:layout_width="wrap_content"
@@ -114,8 +103,9 @@
                         android:ellipsize="end"
                         android:textSize="15sp"
                         android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                        android:drawableLeft="@drawable/read_notification"
+                        android:drawablePadding="10px"
                         />
-                        </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>

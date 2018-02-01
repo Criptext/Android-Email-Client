@@ -15,7 +15,9 @@ import com.email.DB.MailboxLocalDB
 import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.email.IHostActivity
+import com.email.MailboxActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
@@ -34,9 +36,14 @@ interface MailboxScene : ThreadListView{
     fun initNavHeader()
     fun onBackPressed(activity: Activity)
     fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
+    fun refreshToolbarItems()
 
-    class MailboxSceneView(private val sceneContainer: ViewGroup, private val mailboxView: View,
-                           val hostActivity: IHostActivity) : MailboxScene {
+    class MailboxSceneView(private val sceneContainer: ViewGroup,
+                           private val mailboxView: View,
+                           val hostActivity: IHostActivity,
+                           val getThreadFromIndex: (i: Int) -> EmailThread,
+                           val getEmailThreadsCount: () -> Int)
+        : MailboxScene {
 
         private val ctx = mailboxView.context
 
@@ -77,11 +84,12 @@ interface MailboxScene : ThreadListView{
             }
 
         override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener) {
-            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener)
+            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, getThreadFromIndex, getEmailThreadsCount)
             this.threadListener = threadEventListener
 
             sceneContainer.removeAllViews()
             sceneContainer.addView(mailboxView)
+            (hostActivity as MailboxActivity).setSupportActionBar(toolbar)
         }
 
         override fun initDrawerLayout() {
@@ -128,6 +136,10 @@ interface MailboxScene : ThreadListView{
 
         override fun changeMode(multiSelectON: Boolean, silent: Boolean) {
             threadRecyclerView.changeMode(multiSelectON, silent)
+        }
+
+        override fun refreshToolbarItems() {
+            (hostActivity as MailboxActivity).invalidateOptionsMenu()
         }
     }
 }

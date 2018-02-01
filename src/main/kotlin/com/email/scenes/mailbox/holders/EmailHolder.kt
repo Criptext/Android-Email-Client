@@ -21,7 +21,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     private val headerView : TextView
     private val subjectView : TextView
-    private val checkedItemImageView: ImageView
     private val previewView : TextView
     private val dateView : TextView
     private val countView : TextView
@@ -67,7 +66,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         headerView = view.findViewById(R.id.email_header) as TextView
         subjectView = view.findViewById(R.id.email_subject) as TextView
         previewView = view.findViewById(R.id.email_preview) as TextView
-        checkedItemImageView = view.findViewById(R.id.mail_item_checked) as ImageView
         dateView = view.findViewById(R.id.email_date) as TextView
         countView = view.findViewById(R.id.email_count) as TextView
         context = view.context

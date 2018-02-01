@@ -8,19 +8,16 @@ import com.email.scenes.mailbox.EmailThreadAdapter
 import com.email.scenes.mailbox.data.EmailThread
 
 class ThreadRecyclerView(val recyclerView: RecyclerView,
-                         threadEventListener: EmailThreadAdapter.OnThreadEventListener?)  {
+                         threadEventListener: EmailThreadAdapter.OnThreadEventListener?,
+                         getThreadFromIndex : (i: Int) -> EmailThread,
+                         getEmailThreadsCount: () -> Int)  {
 
     val ctx: Context = recyclerView.context
-    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener)
+    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, getThreadFromIndex, getEmailThreadsCount)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = emailThreadAdapter
-    }
-
-    fun setThreadList(threadList: List<EmailThread>) {
-        emailThreadAdapter.threads = threadList
-        notifyThreadSetChanged()
     }
 
     fun setThreadListener(threadEventListener: EmailThreadAdapter.OnThreadEventListener?) {

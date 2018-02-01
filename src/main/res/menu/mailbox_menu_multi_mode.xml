@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mailbox_archive_selected_messages"
+        app:showAsAction="always"
+        android:title="Archive Message"
+        />
+
+    <item
+        android:id="@+id/mailbox_delete_selected_messages"
+        app:showAsAction="always"
+        android:title="Delete Message"/>
+
+    <item
+        android:id="@+id/mailbox_toggle_read_selected_messages"
+        app:showAsAction="always"
+        android:title="Mark as read"/>
+</menu>
+

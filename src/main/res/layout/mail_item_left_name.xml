@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/mail_item_left_name"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/circle"
-            android:gravity="center"
-            android:text="FE"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-    </RelativeLayout>
-
+<RelativeLayout android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:id="@+id/mail_item_left_name"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="FE"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
 </RelativeLayout>

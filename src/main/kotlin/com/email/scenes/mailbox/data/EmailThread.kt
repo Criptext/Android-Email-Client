@@ -10,7 +10,7 @@ import java.util.*
  * Created by sebas on 1/24/18.
  */
 
-class EmailThread(private val email : Email, private val labelsOfMail :ArrayList<Label>) {
+class EmailThread(private val email : Email, val labelsOfMail :ArrayList<Label>) {
 
     val threadId = email.threadid
     val timestamp: Date

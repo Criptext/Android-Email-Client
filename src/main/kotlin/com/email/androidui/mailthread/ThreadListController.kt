@@ -7,7 +7,7 @@ import com.email.scenes.mailbox.data.EmailThread
  * Created by sebas on 1/31/18.
  */
 
-class ThreadListController(private val threads : ArrayList<EmailThread>,
+class ThreadListController(private var threads : ArrayList<EmailThread>,
                            private val listView: ThreadListView?) {
 
     constructor(threads : ArrayList<EmailThread>): this(threads, null)
@@ -17,6 +17,10 @@ class ThreadListController(private val threads : ArrayList<EmailThread>,
         return threads
     }
 
+    fun setThreadList(emails : List<EmailThread>): List<EmailThread> {
+        threads = (emails as ArrayList<EmailThread>)
+        return emails
+    }
     fun removeByThread(id: String) {
         val threadPosition = removeThreadById(threads, id)
         listView?.notifyThreadRemoved(threadPosition)

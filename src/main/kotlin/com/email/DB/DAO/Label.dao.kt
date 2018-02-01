@@ -19,5 +19,8 @@ interface LabelDao {
     fun getAll() : List<Label>
 
     @Delete
-    fun deleteAll(labels: List<Label>)
+    fun deleteMultipleLabels(labels: List<Label>)
+
+    @Delete
+    fun delete(label: Label)
 }

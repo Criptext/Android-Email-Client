@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
-        android:id="@+id/action_item_one"
+        android:id="@+id/mailbox_search"
         android:title="Search"
         android:icon="@drawable/shape"
         android:layout_height="@dimen/menu_item_icon_size"
@@ -11,8 +10,9 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_item_two"
+        android:id="@+id/mailbox_bell_container"
         android:title="Notifications"
         app:actionLayout="@layout/view_alertsbadge"
         app:showAsAction="always" />
+
 </menu>

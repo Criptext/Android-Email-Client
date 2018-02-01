@@ -1,14 +1,12 @@
 package com.email
 
-import android.app.Activity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import android.transition.Scene
-import com.email.DB.AppDatabase
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
-import com.email.scenes.SceneController
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.mailbox.data.MailboxDataSource
@@ -29,7 +27,8 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
         setContentView(R.layout.main_layout)
 
-        sceneFactory = SceneFactory.SceneInflater(this)
+        sceneFactory = SceneFactory.SceneInflater(this, mailboxSceneModel.getThreadFromIndex, mailboxSceneModel.getEmailThreadsCount)
+
         initController()
     }
 
@@ -44,6 +43,50 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     override fun onStart() {
         super.onStart()
         mailboxSceneController.onStart()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.mailbox_search -> {
+                TODO("HANDLE SEARCH CLICK...")
+                return true
+            }
+
+            R.id.mailbox_bell_container -> {
+                TODO("HANDLE BELL CLICK...")
+                return true
+            }
+            R.id.mailbox_archive_selected_messages -> {
+                mailboxSceneController.archiveSelectedEmailThreads()
+                return true
+            }
+            R.id.mailbox_delete_selected_messages -> {
+                TODO("HANDLE DELETE")
+                mailboxSceneController.deleteSelectedEmailThreads()
+                return true
+            }
+
+            R.id.mailbox_toggle_read_selected_messages -> {
+                TODO("HANDLE TOGGLE READ SELECTED MESSAGES")
+                mailboxSceneController.toggleReadSelectedEmailThreads()
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if(!mailboxSceneModel.isInMultiSelect) {
+            menu?.clear()
+            menuInflater.inflate(R.menu.mailbox_menu_normal_mode, menu) // rendering normal mode items...
+        } else {
+            menu?.clear()
+           menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
+        }
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onBackPressed() {

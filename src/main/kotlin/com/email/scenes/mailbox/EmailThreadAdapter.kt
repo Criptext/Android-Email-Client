@@ -14,13 +14,16 @@ import com.email.scenes.mailbox.holders.EmailHolder
  * Created by sebas on 1/23/18.
  */
 
-class EmailThreadAdapter(val mContext : Context, var threadListener : OnThreadEventListener?): RecyclerView.Adapter<EmailHolder>() {
+class EmailThreadAdapter(val mContext : Context,
+                         var threadListener : OnThreadEventListener?,
+                         val getThreadFromIndex: (i: Int) -> EmailThread,
+                         val getEmailThreadsCount: () -> Int)
+    : RecyclerView.Adapter<EmailHolder>() {
 
-    lateinit var threads : List<EmailThread>
     var isMultiSelectMode = false
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
-        val mail = threads[position]
+        val mail = getThreadFromIndex(position)
         holder?.bindMail(mail)
 
         if (isMultiSelectMode) {
@@ -35,9 +38,9 @@ class EmailThreadAdapter(val mContext : Context, var threadListener : OnThreadEv
 
         holder?.itemView?.setOnLongClickListener(
                 {
-                        threadListener?.onToggleThreadSelection(mail, position)
-            true
-        } )
+                    threadListener?.onToggleThreadSelection(mail, position)
+                    true
+                } )
 
         if (isMultiSelectMode) {
             holder?.toggleMultiselect(mail.isSelected)
@@ -47,7 +50,7 @@ class EmailThreadAdapter(val mContext : Context, var threadListener : OnThreadEv
     }
 
     override fun getItemCount(): Int {
-        return threads.size
+        return getEmailThreadsCount()
     }
 
 

@@ -12,7 +12,15 @@ import com.email.scenes.mailbox.data.EmailThread
  */
 
 class MailboxSceneModel : SceneModel {
-    internal var threads : ArrayList<EmailThread> = ArrayList()
-    internal var isInMultiSelect = false
-    internal val selectedThreads = SelectedThreads()
+    var threads : ArrayList<EmailThread> = ArrayList()
+    var isInMultiSelect = false
+    val selectedThreads = SelectedThreads()
+
+    val getThreadFromIndex = {
+        i: Int ->
+        threads[i]
+    }
+    val getEmailThreadsCount = {
+        threads.size
+    }
 }
