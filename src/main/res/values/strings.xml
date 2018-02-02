@@ -47,9 +47,11 @@
     <!--SLIDER-->
     <string name="slider_inbox">Inbox</string>
     <string name="slider_draft">Drafts</string>
+    <string name="slider_starred">Starred</string>
     <string name="slider_sent">Sent</string>
     <string name="slider_junk">Spam</string>
     <string name="slider_trash">Trash</string>
+    <string name="slider_labels">Labels</string>
     <string name="slider_allmail">All Mail</string>
 
     <string name="slider_settings">Settings</string>

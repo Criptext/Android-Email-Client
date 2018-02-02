@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox
 
-import android.util.Log
+import android.app.Activity
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.MailboxDataSource
 
@@ -14,6 +14,9 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onStart() {
+        scene.attachView(threadEventListener)
+        scene.initDrawerLayout()
+        scene.initNavHeader()
         dataSource.seed()
         scene.attachView(threadEventListener)
         model.threads = dataSource.getEmailThreads()
@@ -22,5 +25,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStop() {
 
+    }
+
+    override fun onBackPressed(activity: Activity) {
+        scene.onBackPressed(activity)
     }
 }

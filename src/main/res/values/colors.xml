@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#f9f9f9</color>
-    <color name="colorPrimaryDark">#b1b1b1</color>
+    <color name="colorPrimary">#373a45</color>
+    <color name="colorPrimaryDark">#282a33</color>
     <color name="colorAccent">#0091ff</color>
     <color name="textColorPrimary">#000000</color>
     <color name="colorBackground">#ffffff</color>
@@ -20,12 +20,14 @@
     <color name="colorLabels2">#626262</color>
     <color name="colorActivityOpen">#E8F5FD</color>
     <color name="unreadMailItemBg">#F5FAFE</color>
-    <color name="softBlack">#373a45</color>
     <color name="modifyTitle">#efeff4</color>
     <color name="modifyTitleText">#6d6d72</color>
     <color name="modifyContent">#fff</color>
-    <color name="drawer_text">#000</color>
-
+    <color name="drawer_text">#373a45</color>
     <color name="progress_grey_tint">#bebebe</color>
     <color name="lightgray">#ddd</color>
+    <color name="menu_selected">#f2f8ff</color>
+    <color name="light_blue">#65bdff</color>
+    <color name="drawer_icon_unselected">#d8d8d8</color>
+    <color name="drawer_icon_selected">#30323c</color>
 </resources>

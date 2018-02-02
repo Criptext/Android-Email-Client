@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fcfcfc">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="17dp"
+        android:id="@+id/slider_inbox"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="@color/menu_selected">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/inbox"
+            android:tint="@color/drawer_icon_selected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/slider_inbox"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="#000"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_inbox"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_sent"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/sent"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_sent"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_drafts"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/draft"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_draft"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_drafts"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_starred"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/starred"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_starred"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_starred"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_spam"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/spam"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_junk"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_spam"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_trash"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/trash"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_trash"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/count_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="+99"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_menu"
+            android:layout_marginRight="25dp"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d8d8d8"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="25dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_labels"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/label"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_labels"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d8d8d8"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="25dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_settings"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/settings"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_settings"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/slider_support"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/support"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_support"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+</LinearLayout>
