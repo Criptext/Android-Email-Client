@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
@@ -16,14 +17,13 @@ import com.email.scenes.mailbox.holders.EmailHolder
 
 class EmailThreadAdapter(val mContext : Context,
                          var threadListener : OnThreadEventListener?,
-                         val getThreadFromIndex: (i: Int) -> EmailThread,
-                         val getEmailThreadsCount: () -> Int)
+                         val threadListHandler: MailboxActivity.ThreadListHandler)
     : RecyclerView.Adapter<EmailHolder>() {
 
     var isMultiSelectMode = false
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
-        val mail = getThreadFromIndex(position)
+        val mail = threadListHandler.getThreadFromIndex(position)
         holder?.bindMail(mail)
 
         if (isMultiSelectMode) {
@@ -32,7 +32,7 @@ class EmailThreadAdapter(val mContext : Context,
             })
         } else {
             holder?.itemView?.setOnClickListener({
-                TODO("HANDLE CLICK ON NORMAL MODE")
+                threadListener?.onToggleThreadSelection(mail, position)
             })
         }
 
@@ -50,7 +50,7 @@ class EmailThreadAdapter(val mContext : Context,
     }
 
     override fun getItemCount(): Int {
-        return getEmailThreadsCount()
+        return threadListHandler.getEmailThreadsCount()
     }
 
 

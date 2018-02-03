@@ -31,6 +31,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 interface MailboxScene : ThreadListView{
 
+    fun addToolbar()
     fun setEmailList(threads: List<EmailThread>)
     fun initDrawerLayout()
     fun initNavHeader()
@@ -41,11 +42,8 @@ interface MailboxScene : ThreadListView{
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val getThreadFromIndex: (i: Int) -> EmailThread,
-                           val getEmailThreadsCount: () -> Int)
+                           val threadListHandler: MailboxActivity.ThreadListHandler)
         : MailboxScene {
-
-        private val ctx = mailboxView.context
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
@@ -84,12 +82,11 @@ interface MailboxScene : ThreadListView{
             }
 
         override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener) {
-            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, getThreadFromIndex, getEmailThreadsCount)
+            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadListHandler)
             this.threadListener = threadEventListener
 
             sceneContainer.removeAllViews()
             sceneContainer.addView(mailboxView)
-            (hostActivity as MailboxActivity).setSupportActionBar(toolbar)
         }
 
         override fun initDrawerLayout() {
@@ -140,6 +137,10 @@ interface MailboxScene : ThreadListView{
 
         override fun refreshToolbarItems() {
             (hostActivity as MailboxActivity).invalidateOptionsMenu()
+        }
+
+        override fun addToolbar() {
+            (hostActivity as MailboxActivity).setSupportActionBar(toolbar)
         }
     }
 }

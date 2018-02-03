@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
+import com.email.scenes.LabelChooser.LabelChooserScene
 import com.email.scenes.mailbox.MailboxScene
 import com.email.scenes.mailbox.data.EmailThread
 
@@ -16,14 +17,19 @@ import com.email.scenes.mailbox.data.EmailThread
 interface SceneFactory {
 
     fun createMailboxScene(): MailboxScene
+    fun createChooserDialogScene(): LabelChooserScene
 
     class SceneInflater(val hostActivity: IHostActivity,
-                        val getThreadFromIndex: (i: Int) -> EmailThread,
-                        val getEmailThreadsCount: () -> Int)
+                        val threadListHandler: MailboxActivity.ThreadListHandler,
+                        val labelThreadListHandler: MailboxActivity.LabelThreadListHandler)
         : SceneFactory {
+        override fun createChooserDialogScene(): LabelChooserScene {
+            return LabelChooserScene.LabelChooserView(rootLayout, hostActivity, labelThreadListHandler)
+        }
+
         override fun createMailboxScene(): MailboxScene {
             val view = View.inflate(act, R.layout.activity_mailbox, null)
-            return MailboxScene.MailboxSceneView(rootLayout, view, hostActivity, getThreadFromIndex, getEmailThreadsCount)
+            return MailboxScene.MailboxSceneView(rootLayout, view, hostActivity, threadListHandler)
         }
 
         private val act = hostActivity as MailboxActivity

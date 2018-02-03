@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.DB.MailboxLocalDB
 import com.email.DB.models.Label
+import com.email.scenes.LabelChooser.data.LabelThread
 
 /**
  * Created by sebas on 1/24/18.
@@ -17,6 +18,10 @@ class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }
 
+    fun getAllLabels(): List<LabelThread> {
+        return mailboxLocalDB.getAllLabels()
+    }
+
     fun getArchivedEmailThreads(): List<EmailThread> {
         return mailboxLocalDB.getArchivedEmailThreads()
     }
@@ -26,5 +31,9 @@ class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
     }
     fun seed() {
         mailboxLocalDB.seed()
+    }
+
+    fun deleteEmailThreads(emailThreads: List<EmailThread>) {
+        mailboxLocalDB.deleteEmailThreads(emailThreads)
     }
 }

@@ -42,6 +42,8 @@
     <string name="archive">Archive</string>
     <string name="delete">Delete</string>
     <string name="forward">Forward</string>
+    <string name="mailbox_add_labels">Add labels</string>
+    <string name="mailbox_move_to">Move to</string>
     <string name="reply_all">Reply All</string>
 
     <!--SLIDER-->

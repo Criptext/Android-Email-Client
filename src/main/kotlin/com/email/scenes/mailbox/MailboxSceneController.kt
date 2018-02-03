@@ -1,13 +1,12 @@
 package com.email.scenes.mailbox
 
-import android.provider.ContactsContract
-import com.email.DB.seeders.EmailLabelSeeder
 import com.email.androidui.mailthread.ThreadListController
+import com.email.scenes.LabelChooser.LabelThreadAdapter
 import android.app.Activity
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.mailbox.data.MailboxDataSource
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -37,6 +36,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+
     private fun selectThread(thread: EmailThread, position: Int) {
         model.selectedThreads.add(thread)
         scene.notifyThreadChanged(position)
@@ -62,7 +62,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initNavHeader()
         dataSource.seed()
         scene.attachView(threadEventListener)
+        scene.addToolbar()
         val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
+        val labelThreads : List<LabelThread> = dataSource.getAllLabels()
         threadListController.setThreadList(emailThreads)
         model.threads = emailThreads as ArrayList<EmailThread>
     }
@@ -84,11 +86,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
+        var emailThreads = model.selectedThreads.toList()
+        dataSource.deleteEmailThreads(emailThreads)
 
+        changeMode(multiSelectON = false, silent = false)
+        val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
+        threadListController.setThreadList(fetchEmailThreads)
+        model.threads = fetchEmailThreads as ArrayList<EmailThread>
+        scene.notifyThreadSetChanged()
     }
 
     fun toggleReadSelectedEmailThreads() {
-
     }
 
 

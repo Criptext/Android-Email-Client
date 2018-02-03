@@ -4,17 +4,26 @@
     <item
         android:id="@+id/mailbox_archive_selected_messages"
         app:showAsAction="always"
-        android:title="Archive Message"
+        android:title="Archive"
         />
 
     <item
         android:id="@+id/mailbox_delete_selected_messages"
         app:showAsAction="always"
-        android:title="Delete Message"/>
+        android:title="Delete"/>
 
     <item
         android:id="@+id/mailbox_toggle_read_selected_messages"
         app:showAsAction="always"
-        android:title="Mark as read"/>
+        android:title="Mark"/>
+
+    <item
+        android:id="@+id/mailbox_move_to"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mailbox_move_to"/>
+    <item
+        android:id="@+id/mailbox_add_labels"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mailbox_add_labels"/>
 </menu>
 
