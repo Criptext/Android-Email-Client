@@ -1,5 +1,6 @@
 package com.email.scenes.LabelChooser
 
+import android.app.Activity
 import android.util.Log
 import com.email.scenes.LabelChooser.data.LabelChooserDataSource
 import com.email.scenes.LabelChooser.data.LabelThread
@@ -14,6 +15,9 @@ import com.email.scenes.mailbox.data.EmailThread
 class LabelChooserSceneController(private val scene: LabelChooserScene,
                                   private val model: LabelChooserSceneModel,
                                   private val dataSource: LabelChooserDataSource) : SceneController() {
+    override fun onBackPressed(activity: Activity) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val labelThreadEventListener = object : LabelThreadAdapter.OnLabelThreadEventListener{
         override fun onToggleLabelSelection(label: LabelThread, position: Int) {

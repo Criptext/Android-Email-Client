@@ -121,6 +121,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
     override fun onDialogPositiveClick(dialog: DialogFragment) {
         labelChooserSceneController.assignLabels(mailboxSceneModel.selectedThreads)
         labelChooserSceneController.clearSelectedLabels()
+        mailboxSceneController.changeMode(multiSelectON = false, silent = false)
         dialog.dismiss()
     }
 

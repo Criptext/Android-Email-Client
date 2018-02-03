@@ -32,7 +32,6 @@ import de.hdodenhof.circleimageview.CircleImageView
 interface MailboxScene : ThreadListView{
 
     fun addToolbar()
-    fun setEmailList(threads: List<EmailThread>)
     fun initDrawerLayout()
     fun initNavHeader()
     fun onBackPressed(activity: Activity)
@@ -109,10 +108,6 @@ interface MailboxScene : ThreadListView{
 
         override fun initNavHeader() {
             avatarView.setImageBitmap(Utility.getBitmapFromText("Daniel Tigse Palma", "D", 250, 250))
-        }
-
-        override fun setEmailList(threads: List<EmailThread>) {
-            threadRecyclerView.setThreadList(threads)
         }
 
         override fun notifyThreadSetChanged() {

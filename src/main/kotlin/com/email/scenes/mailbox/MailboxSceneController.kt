@@ -47,7 +47,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadChanged(position)
     }
 
-    private fun changeMode(multiSelectON: Boolean, silent: Boolean){
+    fun changeMode(multiSelectON: Boolean, silent: Boolean){
         if(! multiSelectON){
             model.selectedThreads.clear()
         }
