@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.email.R
@@ -25,7 +26,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val countView : TextView
     private val context : Context
     val avatarView: CircleImageView
-    val iconBack: RelativeLayout
+    val iconBack: ImageView
 
     init {
         view.setOnClickListener(this)
@@ -71,7 +72,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         previewView = view.findViewById(R.id.email_preview) as TextView
         dateView = view.findViewById(R.id.email_date) as TextView
         countView = view.findViewById(R.id.email_count) as TextView
-        iconBack = view.findViewById(R.id.icon_back) as RelativeLayout
+        iconBack = view.findViewById(R.id.icon_back) as ImageView
         context = view.context
     }
 }

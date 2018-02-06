@@ -13,7 +13,7 @@ import com.email.scenes.LabelChooser.data.LabelThread
  */
 
 class MailboxSceneModel : SceneModel {
-    var threads : ArrayList<EmailThread> = ArrayList()
+    val threads : ArrayList<EmailThread> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
 }

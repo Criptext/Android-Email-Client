@@ -29,14 +29,13 @@ class EmailThreadAdapter(val mContext : Context,
         if(holder == null) return
         val mail = threadListHandler.getThreadFromIndex(position)
         holder.bindMail(mail)
-
-        holder.itemView?.findViewById<CircleImageView>(R.id.mail_item_left_name)?.setOnClickListener({
-            threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
+        holder.avatarView.setOnClickListener({
+            threadListener?.onToggleThreadSelection(mContext, mail, position)
         })
 
         if (isMultiSelectMode) {
             holder.itemView?.setOnClickListener({
-                threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
+                threadListener?.onToggleThreadSelection(mContext, mail, position)
             })
         } else {
             holder.itemView?.setOnClickListener({
@@ -46,7 +45,7 @@ class EmailThreadAdapter(val mContext : Context,
 
         holder.itemView?.setOnLongClickListener(
                 {
-                    threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
+                    threadListener?.onToggleThreadSelection(mContext, mail, position)
                     true
                 })
 
@@ -57,11 +56,11 @@ class EmailThreadAdapter(val mContext : Context,
         }
 
         if (mail.isSelected) {
-            holder.avatarView?.visibility = View.GONE
-            holder.iconBack?.visibility = View.VISIBLE
+            holder.avatarView.visibility = View.GONE
+            holder.iconBack.visibility = View.VISIBLE
         } else {
-            holder.avatarView?.visibility = View.VISIBLE
-            holder.iconBack?.visibility = View.GONE
+            holder.avatarView.visibility = View.VISIBLE
+            holder.iconBack.visibility = View.GONE
         }
     }
 
@@ -106,6 +105,6 @@ class EmailThreadAdapter(val mContext : Context,
 
 
     interface OnThreadEventListener{
-        fun onToggleThreadSelection(context: Context, thread: EmailThread, emailHolder: EmailHolder, position: Int)
+        fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int)
     }
 }

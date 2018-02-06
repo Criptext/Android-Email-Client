@@ -1,44 +1,41 @@
 package com.email
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
 import com.email.scenes.LabelChooser.DialogLabelsChooser
-import com.email.scenes.LabelChooser.LabelChooserSceneController
-import com.email.scenes.LabelChooser.LabelChooserSceneModel
-import com.email.scenes.LabelChooser.data.LabelChooserDataSource
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.MailboxSceneModel
+import com.email.scenes.mailbox.SelectedThreads
 import com.email.scenes.mailbox.data.MailboxDataSource
 
 /**
  * Created by sebas on 1/30/18.
  */
 
-class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.DialogLabelsListener {
+class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     private lateinit var sceneFactory : SceneFactory
-
+    private lateinit var dialogLabelsChooser : DialogLabelsChooser
     private lateinit var mailboxSceneController: MailboxSceneController
-    private lateinit var labelChooserSceneController: LabelChooserSceneController
     private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
-    private var labelChooserSceneModel : LabelChooserSceneModel = LabelChooserSceneModel()
     private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
-    private val labelThreadListHandler : LabelThreadListHandler = LabelThreadListHandler(labelChooserSceneModel)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.main_layout)
-        sceneFactory = SceneFactory.SceneInflater(this, threadListHandler, labelThreadListHandler)
-
+        sceneFactory = SceneFactory.SceneInflater(this,
+                threadListHandler)
+        dialogLabelsChooser = DialogLabelsChooser.Builder().build(sceneFactory)
         initController()
     }
 
@@ -50,7 +47,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
                 dataSource = MailboxDataSource(DB))
     }
 
-    fun startLabelChooserDialog() {
+/*    fun startLabelChooserDialog() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         labelChooserSceneController = LabelChooserSceneController(
                 scene = sceneFactory.createChooserDialogScene(),
@@ -58,7 +55,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
                 dataSource = LabelChooserDataSource(DB))
 
         labelChooserSceneController.onStart()
-    }
+    }*/
 
     override fun onStart() {
         super.onStart()
@@ -89,15 +86,35 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
         mailboxSceneController.onBackPressed(this)
     }
 
-    override fun onDialogPositiveClick(dialog: DialogFragment) {
-        labelChooserSceneController.assignLabels(mailboxSceneModel.selectedThreads)
-        labelChooserSceneController.clearSelectedLabels()
-        mailboxSceneController.changeMode(multiSelectON = false, silent = false)
-        dialog.dismiss()
+
+    override fun showMultiModeBar(selectedThreadsQuantity: Int) {
+        this.findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.GONE
+        this.
+                findViewById<TextView>(R.id.mailbox_number_emails)
+                .visibility = View.GONE
+        this.
+                findViewById<TextView>(R.id.mailbox_toolbar_title).
+                text = selectedThreadsQuantity.toString()
     }
 
-    override fun onDialogNegativeClick(dialog: DialogFragment) {
-        dialog.dismiss()
+    override fun hideMultiModeBar() {
+        this.findViewById<ImageView>(R.id.mailbox_nav_button)
+                .visibility = View.VISIBLE
+        this.findViewById<TextView>(R.id.mailbox_number_emails)
+                .visibility = View.VISIBLE
+        this.findViewById<TextView>(R.id.mailbox_toolbar_title).text = "INBOX"
+    }
+
+    override fun updateToolbarTitle(title: String) {
+        this.findViewById<TextView>(R.id.mailbox_toolbar_title).text = title
+    }
+
+    override fun addToolbar(toolbar: Toolbar) {
+        this.setSupportActionBar(toolbar)
+    }
+
+    override fun refreshToolbarItems() {
+        this.invalidateOptionsMenu()
     }
 
     inner class ThreadListHandler(val model: MailboxSceneModel) {
@@ -110,13 +127,15 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
         }
     }
 
-    inner class LabelThreadListHandler(val model: LabelChooserSceneModel) {
-        val getLabelThreadFromIndex = {
-            i: Int ->
-            model.labels[i]
-        }
-        val getLabelThreadsCount = {
-            model.labels.size
-        }
+    override fun showDialogLabelChooser() {
+        dialogLabelsChooser.show(supportFragmentManager, "")
+    }
+
+    override fun getMailboxSceneController() : MailboxSceneController{
+        return this.mailboxSceneController
+    }
+
+    override fun getSelectedThreads() : SelectedThreads{
+        return this.mailboxSceneModel.selectedThreads
     }
 }

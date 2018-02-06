@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.*
 import android.widget.ImageView
-import android.widget.TextView
 import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
@@ -128,34 +127,23 @@ interface MailboxScene : ThreadListView{
         }
 
         override fun refreshToolbarItems() {
-            (hostActivity as MailboxActivity).invalidateOptionsMenu()
+            hostActivity.refreshToolbarItems()
         }
 
         override fun addToolbar() {
-            (hostActivity as MailboxActivity).setSupportActionBar(toolbar)
+            hostActivity.addToolbar(toolbar)
         }
 
         override fun showMultiModeBar(selectedThreadsQuantity : Int) {
-            (hostActivity as MailboxActivity).findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.GONE
-             (hostActivity as MailboxActivity).
-                     findViewById<TextView>(R.id.mailbox_number_emails)
-                     .visibility = View.GONE
-            (hostActivity as MailboxActivity).
-                    findViewById<TextView>(R.id.mailbox_toolbar_title).
-                    text = selectedThreadsQuantity.toString()
+            hostActivity.showMultiModeBar(selectedThreadsQuantity)
         }
 
         override fun hideMultiModeBar() {
-            (hostActivity as MailboxActivity).findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.VISIBLE
-            toolbar.title = "INBOX"
-            (hostActivity as MailboxActivity).
-                    findViewById<TextView>(R.id.mailbox_number_emails)
-                    .visibility = View.VISIBLE
-            (hostActivity as MailboxActivity).findViewById<TextView>(R.id.mailbox_toolbar_title).text = "INBOX"
+            hostActivity.hideMultiModeBar()
         }
 
         override fun updateToolbarTitle(title: String) {
-            (hostActivity as MailboxActivity).findViewById<TextView>(R.id.mailbox_toolbar_title).text = title
+            hostActivity.updateToolbarTitle(title)
         }
     }
 }

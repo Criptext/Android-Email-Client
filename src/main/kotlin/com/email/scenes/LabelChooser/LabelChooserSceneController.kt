@@ -1,7 +1,6 @@
 package com.email.scenes.LabelChooser
 
 import android.app.Activity
-import android.util.Log
 import com.email.scenes.LabelChooser.data.LabelChooserDataSource
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
@@ -45,7 +44,6 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
                 try {
                     assignLabelToEmailThread(emailThread, it)
                 } catch (e: android.database.sqlite.SQLiteConstraintException) {
-                    Log.d("error", e.toString())
                     e.printStackTrace()
                 }
             }
@@ -59,8 +57,9 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         dataSource.createLabelEmailRelation(labelId = labelId, emailId = emailThread.id)
     }
     override fun onStart() {
-        val labelThreads : List<LabelThread> = dataSource.getAllLabels()
-        model.labels = labelThreads as ArrayList<LabelThread>
+        val labelThreads = dataSource.getAllLabels()
+        model.labels.clear()
+        model.labels.addAll(labelThreads)
         scene.attachView(labelThreadEventListener)
     }
 

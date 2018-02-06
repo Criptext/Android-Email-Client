@@ -1,13 +1,11 @@
 package com.email.scenes.LabelChooser
 
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.support.v7.widget.RecyclerView
 import com.email.androidui.labelthread.LabelThreadListView
 import com.email.androidui.labelthread.LabelThreadRecyclerView
-import android.view.ViewGroup
 import com.email.IHostActivity
-import com.email.MailboxActivity
+import com.email.R
+import android.view.View
 
 
 /**
@@ -17,15 +15,23 @@ import com.email.MailboxActivity
 interface LabelChooserScene: LabelThreadListView {
     fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener)
 
-    class LabelChooserView(private val sceneContainer: ViewGroup,
-                           val hostActivity: IHostActivity,
-                           val threadListHandler: MailboxActivity.LabelThreadListHandler)
+    class LabelChooserView(val hostActivity: IHostActivity,
+                           val labelChooserView: View,
+                           val threadListHandler: DialogLabelsChooser.LabelThreadListHandler)
         : LabelChooserScene {
 
-        var labelChooserDialog : DialogLabelsChooser = DialogLabelsChooser()
-        lateinit var recyclerView: RecyclerView
+
+        private val recyclerView: RecyclerView by lazy {
+            labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
+        }
 
         private lateinit var labelThreadRecyclerView: LabelThreadRecyclerView
+
+        var labelThreadListener: LabelThreadAdapter.OnLabelThreadEventListener? = null
+            set(value) {
+                labelThreadRecyclerView.setThreadListener(value)
+                field = value
+            }
 
         override fun notifyLabelThreadSetChanged() {
             labelThreadRecyclerView.notifyLabelThreadSetChanged()
@@ -40,23 +46,13 @@ interface LabelChooserScene: LabelThreadListView {
         }
 
         override fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
-            bindLabelChooserDialog(labelThreadEventListener)
-            labelChooserDialog.show((hostActivity as AppCompatActivity).supportFragmentManager, "")
+            labelThreadRecyclerView = LabelThreadRecyclerView(recyclerView, labelThreadEventListener, threadListHandler)
+            this.labelThreadListener= labelThreadEventListener
         }
 
         override fun notifyLabelThreadChanged(position: Int) {
             labelThreadRecyclerView.notifyLabelThreadChanged(position)
         }
 
-        fun bindLabelChooserDialog(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
-            labelChooserDialog.labelChooserView = this
-            labelChooserDialog.labelThreadEventListener = labelThreadEventListener
-            labelChooserDialog.dialogLabelsListener = (hostActivity as MailboxActivity)
-        }
-
-        fun initRecyclerView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
-            recyclerView = labelChooserDialog.recyclerView
-            labelThreadRecyclerView = LabelThreadRecyclerView(recyclerView, labelThreadEventListener, threadListHandler)
-        }
     }
 }

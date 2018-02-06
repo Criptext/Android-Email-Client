@@ -1,24 +1,18 @@
 package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
-import com.email.scenes.LabelChooser.LabelThreadAdapter
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.util.Log
 import android.view.MenuItem
-import android.view.View
-import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.scenes.mailbox.holders.EmailHolder
-import com.email.utils.FlipAnimator
 import kotlin.collections.ArrayList
 
 /**
@@ -31,7 +25,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val threadListController = ThreadListController(model.threads, scene)
 
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
-        override fun onToggleThreadSelection(context: Context, thread: EmailThread, emailHolder: EmailHolder, position: Int) {
+        override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
             if (! model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
             }
@@ -50,35 +44,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 updateToolbarTitle(multiSelectOn = false)
             }
 
-            // applyIconAnimation(emailHolder, thread, context)
             updateToolbarTitle(multiSelectOn = true)
         }
     }
 
-    fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
-        if (mail.isSelected) {
-            holder.avatarView.visibility = View.GONE
-            resetIconYAxis(holder.iconBack);
-            holder.iconBack.setVisibility(View.VISIBLE)
-            holder.iconBack.setAlpha(1.toFloat())
-            FlipAnimator.flipView(mContext,
-                    holder.iconBack,
-                    holder.avatarView,
-                    true);
-        } else if(!mail.isSelected){
-            holder.iconBack.setVisibility(View.GONE)
-            resetIconYAxis(holder.avatarView)
-            holder.avatarView.setVisibility(View.VISIBLE);
-            FlipAnimator.flipView(mContext, holder.iconBack, holder.avatarView, false);
-
-        }
-    }
-
-    private fun resetIconYAxis(view : View) {
-        if (view.rotationY != 0.toFloat() ) {
-            view.setRotationY(0.toFloat());
-        }
-    }
     private fun selectThread(thread: EmailThread, position: Int) {
         model.selectedThreads.add(thread)
         scene.notifyThreadChanged(position)
@@ -108,7 +77,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         val labelThreads : List<LabelThread> = dataSource.getAllLabels()
         threadListController.setThreadList(emailThreads as ArrayList<EmailThread>)
-        model.threads = emailThreads as ArrayList<EmailThread>
+        model.threads.addAll(emailThreads)
     }
 
     override fun onStop() {
@@ -124,7 +93,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
-        model.threads = fetchEmailThreads
+        model.threads.clear()
+        model.threads.addAll(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
@@ -134,7 +104,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
-        model.threads = fetchEmailThreads
+        model.threads.clear()
+        model.threads.addAll(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
 
@@ -210,7 +181,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val sceneView : MailboxScene.MailboxSceneView =
                         (scene as MailboxScene.MailboxSceneView)
                 val activity : MailboxActivity = sceneView.hostActivity as MailboxActivity
-                activity.startLabelChooserDialog()
+                scene.hostActivity.
+                showDialogLabelChooser()
+
                 return true
             }
         }

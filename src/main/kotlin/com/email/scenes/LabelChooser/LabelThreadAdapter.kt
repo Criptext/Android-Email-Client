@@ -16,7 +16,7 @@ import com.email.scenes.LabelChooser.holders.LabelHolder
 
 class LabelThreadAdapter(val mContext : Context,
                          var labelThreadListener : OnLabelThreadEventListener?,
-                         val labelThreadListHandler: MailboxActivity.LabelThreadListHandler)
+                         val labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
     : RecyclerView.Adapter<LabelHolder>() {
 
     override fun onBindViewHolder(holder: LabelHolder?, position: Int) {

@@ -7,6 +7,6 @@ import com.email.scenes.LabelChooser.data.LabelThread
  */
 
 class LabelChooserSceneModel {
-    var labels : ArrayList<LabelThread> = ArrayList()
+    val labels : ArrayList<LabelThread> = ArrayList()
     val selectedLabels = SelectedLabels()
 }
