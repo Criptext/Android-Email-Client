@@ -6,22 +6,16 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.email.DB.MailboxLocalDB
 import android.view.*
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.Utility
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -37,6 +31,9 @@ interface MailboxScene : ThreadListView{
     fun onBackPressed(activity: Activity)
     fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
     fun refreshToolbarItems()
+    fun showMultiModeBar(selectedThreadsQuantity : Int)
+    fun hideMultiModeBar()
+    fun updateToolbarTitle(title: String)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
@@ -136,6 +133,29 @@ interface MailboxScene : ThreadListView{
 
         override fun addToolbar() {
             (hostActivity as MailboxActivity).setSupportActionBar(toolbar)
+        }
+
+        override fun showMultiModeBar(selectedThreadsQuantity : Int) {
+            (hostActivity as MailboxActivity).findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.GONE
+             (hostActivity as MailboxActivity).
+                     findViewById<TextView>(R.id.mailbox_number_emails)
+                     .visibility = View.GONE
+            (hostActivity as MailboxActivity).
+                    findViewById<TextView>(R.id.mailbox_toolbar_title).
+                    text = selectedThreadsQuantity.toString()
+        }
+
+        override fun hideMultiModeBar() {
+            (hostActivity as MailboxActivity).findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.VISIBLE
+            toolbar.title = "INBOX"
+            (hostActivity as MailboxActivity).
+                    findViewById<TextView>(R.id.mailbox_number_emails)
+                    .visibility = View.VISIBLE
+            (hostActivity as MailboxActivity).findViewById<TextView>(R.id.mailbox_toolbar_title).text = "INBOX"
+        }
+
+        override fun updateToolbarTitle(title: String) {
+            (hostActivity as MailboxActivity).findViewById<TextView>(R.id.mailbox_toolbar_title).text = title
         }
     }
 }

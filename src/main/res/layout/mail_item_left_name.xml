@@ -2,14 +2,31 @@
 <RelativeLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
-        android:id="@+id/mail_item_left_name"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="0dp"
-        android:background="@drawable/circle"
-        android:gravity="center"
-        android:text="FE"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp" />
+                <RelativeLayout
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    >
+
+            <ImageView
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:src="@drawable/read_notification"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="5dp"
+                android:foregroundGravity="center"
+                />
+        </RelativeLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/mail_item_left_name"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="5dp"
+            android:foregroundGravity="center"
+            android:visibility="visible"
+            />
+
 </RelativeLayout>

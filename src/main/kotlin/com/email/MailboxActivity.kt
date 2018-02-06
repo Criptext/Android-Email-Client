@@ -3,7 +3,6 @@ package com.email
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.email.DB.MailboxLocalDB
@@ -48,7 +47,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
                     dataSource = MailboxDataSource(DB))
     }
 
-    private fun startLabelChooserDialog() {
+    fun startLabelChooserDialog() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
          labelChooserSceneController = LabelChooserSceneController(
                 scene = sceneFactory.createChooserDialogScene(),
@@ -64,43 +63,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            R.id.mailbox_search -> {
-                TODO("HANDLE SEARCH CLICK...")
-                return true
-            }
-
-            R.id.mailbox_bell_container -> {
-                TODO("HANDLE BELL CLICK...")
-                return true
-            }
-            R.id.mailbox_archive_selected_messages -> {
-                mailboxSceneController.archiveSelectedEmailThreads()
-                return true
-            }
-            R.id.mailbox_delete_selected_messages -> {
-                mailboxSceneController.deleteSelectedEmailThreads()
-                return true
-            }
-
-            R.id.mailbox_toggle_read_selected_messages -> {
-                TODO("HANDLE TOGGLE READ SELECTED MESSAGES")
-                mailboxSceneController.toggleReadSelectedEmailThreads()
-                return true
-            }
-            R.id.mailbox_move_to -> {
-                TODO("Handle move to")
-                return true
-            }
-            R.id.mailbox_add_labels ->{
-                startLabelChooserDialog()
-                return true
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-
-        }
+        return mailboxSceneController.onOptionSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -111,6 +74,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
             menu?.clear()
            menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
         }
+        mailboxSceneController.toggleMultiModeBar()
         return super.onCreateOptionsMenu(menu)
     }
 

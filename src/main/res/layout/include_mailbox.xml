@@ -25,7 +25,8 @@
                 android:layout_height="60dp"
                 android:padding="18dp"
                 android:tint="@android:color/white"
-                android:src="@drawable/menu"/>
+                android:src="@drawable/menu"
+                />
 
             <TextView
                 android:id="@+id/mailbox_toolbar_title"

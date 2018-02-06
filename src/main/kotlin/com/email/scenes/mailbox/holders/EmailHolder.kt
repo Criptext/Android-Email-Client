@@ -1,17 +1,16 @@
 package com.email.scenes.mailbox.holders
 
 import android.content.Context
-import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
-import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
-import com.email.DB.models.Email
 import com.email.R
 import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.Utility
+import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by sebas on 1/24/18.
@@ -25,6 +24,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val dateView : TextView
     private val countView : TextView
     private val context : Context
+    val avatarView: CircleImageView
+    val iconBack: RelativeLayout
 
     init {
         view.setOnClickListener(this)
@@ -34,8 +35,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
 
     fun bindMail(emailThread: EmailThread) {
-         previewView.text = emailThread.headerPreview
+        previewView.text = emailThread.headerPreview
         headerView.text = emailThread.headerPreview
+        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
     }
 
     override fun fillIcons() {
@@ -64,10 +66,12 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     init {
         headerView = view.findViewById(R.id.email_header) as TextView
+        avatarView = view.findViewById(R.id.mail_item_left_name) as CircleImageView
         subjectView = view.findViewById(R.id.email_subject) as TextView
         previewView = view.findViewById(R.id.email_preview) as TextView
         dateView = view.findViewById(R.id.email_date) as TextView
         countView = view.findViewById(R.id.email_count) as TextView
+        iconBack = view.findViewById(R.id.icon_back) as RelativeLayout
         context = view.context
     }
 }

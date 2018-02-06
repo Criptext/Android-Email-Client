@@ -25,7 +25,8 @@ interface MailboxLocalDB {
     fun createLabelEmailRelation(labelId: Int, emailId: Int)
 
 
-    class Default(val applicationContext: Context): MailboxLocalDB {
+    class Default(applicationContext: Context): MailboxLocalDB {
+
         override fun createLabelEmailRelation(labelId: Int, emailId: Int) {
             val emailLabel = EmailLabel(labelId = labelId, emailId = emailId)
             return db!!.emailLabelDao().insert(emailLabel)

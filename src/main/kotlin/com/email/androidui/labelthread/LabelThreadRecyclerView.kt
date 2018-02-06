@@ -31,8 +31,7 @@ class LabelThreadRecyclerView(val recyclerView: RecyclerView,
     }
 
     fun notifyLabelThreadChanged(position: Int) {
-        //labelThreadAdapter.notifyItemChanged(position)
-        labelThreadAdapter.notifyDataSetChanged()
+         labelThreadAdapter.notifyDataSetChanged()
     }
 
     fun notifyLabelThreadRemoved(position: Int) {

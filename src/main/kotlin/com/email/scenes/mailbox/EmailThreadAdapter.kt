@@ -6,10 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
+import com.email.utils.FlipAnimator
+import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by sebas on 1/23/18.
@@ -26,29 +29,68 @@ class EmailThreadAdapter(val mContext : Context,
         val mail = threadListHandler.getThreadFromIndex(position)
         holder?.bindMail(mail)
 
+        holder?.itemView?.findViewById<CircleImageView>(R.id.mail_item_left_name)?.setOnClickListener({
+            threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
+        })
+
         if (isMultiSelectMode) {
             holder?.itemView?.setOnClickListener({
-                threadListener?.onToggleThreadSelection(mail, position)
+                threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
             })
         } else {
             holder?.itemView?.setOnClickListener({
-                threadListener?.onToggleThreadSelection(mail, position)
+                TODO("GO TO MAIL")
             })
         }
 
         holder?.itemView?.setOnLongClickListener(
                 {
-                    threadListener?.onToggleThreadSelection(mail, position)
+                    threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
                     true
-                } )
+                })
 
         if (isMultiSelectMode) {
             holder?.toggleMultiselect(mail.isSelected)
         } else {
             holder?.hideMultiselect()
         }
+
+        if (mail.isSelected) {
+            holder?.avatarView?.visibility = View.GONE
+            holder?.iconBack?.visibility = View.VISIBLE
+        } else {
+            holder?.avatarView?.visibility = View.VISIBLE
+            holder?.iconBack?.visibility = View.GONE
+        }
+
+         //applyIconAnimation(holder!!, mail)
+
     }
 
+    fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
+        if (mail.isSelected) {
+            holder.avatarView.visibility = View.GONE
+            resetIconYAxis(holder.iconBack);
+            holder.iconBack.setVisibility(View.VISIBLE)
+            holder.iconBack.setAlpha(1.toFloat())
+            FlipAnimator.flipView(mContext,
+                    holder.iconBack,
+                    holder.avatarView,
+                    true);
+        } else if(!mail.isSelected){
+            holder.iconBack.setVisibility(View.GONE)
+            resetIconYAxis(holder.avatarView)
+            holder.avatarView.setVisibility(View.VISIBLE);
+            FlipAnimator.flipView(mContext, holder.iconBack, holder.avatarView, false);
+
+        }
+    }
+
+    private fun resetIconYAxis(view : View) {
+        if (view.rotationY != 0.toFloat() ) {
+            view.setRotationY(0.toFloat());
+        }
+    }
     override fun getItemCount(): Int {
         return threadListHandler.getEmailThreadsCount()
     }
@@ -66,6 +108,6 @@ class EmailThreadAdapter(val mContext : Context,
 
 
     interface OnThreadEventListener{
-        fun onToggleThreadSelection(thread: EmailThread, position: Int)
+        fun onToggleThreadSelection(context: Context, thread: EmailThread, emailHolder: EmailHolder, position: Int)
     }
 }
