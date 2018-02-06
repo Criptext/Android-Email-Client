@@ -3,30 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    android:paddingTop="8dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="15dp"
+    android:orientation="horizontal"
+    android:animateLayoutChanges="true">
+    >
+    <TextView
+        android:id="@+id/label_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="4dp"
-        android:paddingRight="15dp"
-        android:orientation="horizontal"
-        android:animateLayoutChanges="true">
-                    <TextView
-                        android:id="@+id/label_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:textSize="15sp"
-                        android:text="This text should be changed"
-                        />
-                    <CheckBox
-                        android:id="@+id/label_checkbox"
-                        android:layout_width="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="15sp"
+        android:text="This text should be changed"
+        />
+    <CheckBox
+        android:id="@+id/label_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_height="wrap_content" />
 </LinearLayout>

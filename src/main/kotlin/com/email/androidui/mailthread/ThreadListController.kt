@@ -10,7 +10,7 @@ import com.email.scenes.mailbox.data.EmailThread
 class ThreadListController(private var threads : ArrayList<EmailThread>,
                            private val listView: ThreadListView?) {
 
-    fun setThreadList(emails : List<EmailThread>): List<EmailThread> {
+    fun setThreadList(emails : ArrayList<EmailThread>): ArrayList<EmailThread> {
         threads = (emails as ArrayList<EmailThread>)
         return emails
     }

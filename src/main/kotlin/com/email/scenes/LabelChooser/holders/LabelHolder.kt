@@ -16,7 +16,6 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    private val context : Context
     private val nameView : TextView
     private val checkBoxView : CheckBox
 
@@ -32,6 +31,5 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     init {
         nameView = view.findViewById(R.id.label_name) as TextView
         checkBoxView = view.findViewById(R.id.label_checkbox) as CheckBox
-        context = view.context
     }
 }

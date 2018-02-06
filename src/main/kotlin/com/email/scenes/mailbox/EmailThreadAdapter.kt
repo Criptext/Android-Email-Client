@@ -26,45 +26,43 @@ class EmailThreadAdapter(val mContext : Context,
     var isMultiSelectMode = false
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
+        if(holder == null) return
         val mail = threadListHandler.getThreadFromIndex(position)
-        holder?.bindMail(mail)
+        holder.bindMail(mail)
 
-        holder?.itemView?.findViewById<CircleImageView>(R.id.mail_item_left_name)?.setOnClickListener({
+        holder.itemView?.findViewById<CircleImageView>(R.id.mail_item_left_name)?.setOnClickListener({
             threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
         })
 
         if (isMultiSelectMode) {
-            holder?.itemView?.setOnClickListener({
+            holder.itemView?.setOnClickListener({
                 threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
             })
         } else {
-            holder?.itemView?.setOnClickListener({
+            holder.itemView?.setOnClickListener({
                 TODO("GO TO MAIL")
             })
         }
 
-        holder?.itemView?.setOnLongClickListener(
+        holder.itemView?.setOnLongClickListener(
                 {
                     threadListener?.onToggleThreadSelection(mContext, mail, holder, position)
                     true
                 })
 
         if (isMultiSelectMode) {
-            holder?.toggleMultiselect(mail.isSelected)
+            holder.toggleMultiselect(mail.isSelected)
         } else {
-            holder?.hideMultiselect()
+            holder.hideMultiselect()
         }
 
         if (mail.isSelected) {
-            holder?.avatarView?.visibility = View.GONE
-            holder?.iconBack?.visibility = View.VISIBLE
+            holder.avatarView?.visibility = View.GONE
+            holder.iconBack?.visibility = View.VISIBLE
         } else {
-            holder?.avatarView?.visibility = View.VISIBLE
-            holder?.iconBack?.visibility = View.GONE
+            holder.avatarView?.visibility = View.VISIBLE
+            holder.iconBack?.visibility = View.GONE
         }
-
-         //applyIconAnimation(holder!!, mail)
-
     }
 
     fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {

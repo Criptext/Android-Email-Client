@@ -5,20 +5,17 @@
         android:id="@+id/mailbox_archive_selected_messages"
         android:icon="@drawable/archive"
         android:title="@string/archive"
-        android:iconTint="@color/colorAccent"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/mailbox_delete_selected_messages"
         app:showAsAction="always"
         android:icon="@drawable/trash"
-        android:iconTint="@color/colorAccent"
         android:title="Delete"/>
 
     <item
         android:id="@+id/mailbox_toggle_read_selected_messages"
         android:icon="@drawable/inbox"
-        android:iconTint="@color/colorAccent"
         app:showAsAction="always"
         android:title="Mark"/>
 

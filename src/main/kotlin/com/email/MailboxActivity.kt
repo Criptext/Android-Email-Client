@@ -1,7 +1,10 @@
 package com.email
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -42,14 +45,14 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         mailboxSceneController = MailboxSceneController(
-                    scene = sceneFactory.createMailboxScene(),
-                    model = mailboxSceneModel,
-                    dataSource = MailboxDataSource(DB))
+                scene = sceneFactory.createMailboxScene(),
+                model = mailboxSceneModel,
+                dataSource = MailboxDataSource(DB))
     }
 
     fun startLabelChooserDialog() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
-         labelChooserSceneController = LabelChooserSceneController(
+        labelChooserSceneController = LabelChooserSceneController(
                 scene = sceneFactory.createChooserDialogScene(),
                 model = labelChooserSceneModel,
                 dataSource = LabelChooserDataSource(DB))
@@ -67,12 +70,16 @@ class MailboxActivity : AppCompatActivity(), IHostActivity, DialogLabelsChooser.
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if(menu == null) return false
         if(!mailboxSceneModel.isInMultiSelect) {
-            menu?.clear()
+            menu.clear()
             menuInflater.inflate(R.menu.mailbox_menu_normal_mode, menu) // rendering normal mode items...
         } else {
-            menu?.clear()
-           menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
+            menu.clear()
+            menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
+            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_delete_selected_messages))
+            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_archive_selected_messages))
+            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_toggle_read_selected_messages))
         }
         mailboxSceneController.toggleMultiModeBar()
         return super.onCreateOptionsMenu(menu)

@@ -4,6 +4,9 @@ import com.email.androidui.mailthread.ThreadListController
 import com.email.scenes.LabelChooser.LabelThreadAdapter
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -104,7 +107,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.addToolbar()
         val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         val labelThreads : List<LabelThread> = dataSource.getAllLabels()
-        threadListController.setThreadList(emailThreads)
+        threadListController.setThreadList(emailThreads as ArrayList<EmailThread>)
         model.threads = emailThreads as ArrayList<EmailThread>
     }
 
@@ -120,8 +123,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        model.threads = fetchEmailThreads as ArrayList<EmailThread>
+        threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
+        model.threads = fetchEmailThreads
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
@@ -130,8 +133,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        model.threads = fetchEmailThreads as ArrayList<EmailThread>
+        threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
+        model.threads = fetchEmailThreads
         scene.notifyThreadSetChanged()
     }
 
@@ -165,6 +168,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         } else {
             hideMultiModeBar()
         }
+    }
+
+    fun addTintInMultiMode(context:Context, item: MenuItem) {
+        var drawable : Drawable = item.icon
+        drawable = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.multiModeTint));
+        item.setIcon(drawable)
     }
 
     fun onOptionSelected(item: MenuItem?) : Boolean {

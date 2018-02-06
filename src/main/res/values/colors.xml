@@ -3,6 +3,7 @@
     <color name="colorPrimary">#373a45</color>
     <color name="colorPrimaryDark">#282a33</color>
     <color name="colorAccent">#0091ff</color>
+    <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
     <color name="colorBackground">#ffffff</color>
     <color name="colorHighlight">#0091ff</color>

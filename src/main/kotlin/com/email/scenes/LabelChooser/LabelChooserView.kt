@@ -1,5 +1,7 @@
 package com.email.scenes.LabelChooser
 
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.support.v7.widget.RecyclerView
 import com.email.androidui.labelthread.LabelThreadListView
 import com.email.androidui.labelthread.LabelThreadRecyclerView
@@ -39,7 +41,7 @@ interface LabelChooserScene: LabelThreadListView {
 
         override fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
             bindLabelChooserDialog(labelThreadEventListener)
-            labelChooserDialog.show((hostActivity as MailboxActivity).supportFragmentManager, "")
+            labelChooserDialog.show((hostActivity as AppCompatActivity).supportFragmentManager, "")
         }
 
         override fun notifyLabelThreadChanged(position: Int) {
