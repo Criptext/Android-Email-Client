@@ -23,6 +23,10 @@
         <item name="colorAccent">@color/progress_grey_tint</item>
     </style>
 
+    <style name="editTextSearch" parent="@style/Widget.AppCompat.EditText">
+        <item name="colorAccent">@android:color/white</item>
+    </style>
+
 <!--    <style name="Dialog.SnackBar" parent="Dialog.NoTitle">
         <item name="android:backgroundDimEnabled">false</item>
     </style>-->

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/imageViewTypeSearch"
+        android:layout_width="60dp"
+        android:layout_height="70dp"
+        android:src="@drawable/clock"
+        android:padding="20dp"
+        android:tint="#6a707e"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textViewSubject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textColor="#6a707e"
+            android:textSize="15sp"
+            android:text="RE: Meeting Notes"/>
+
+        <TextView
+            android:id="@+id/textViewRecipients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="#6a707e"
+            android:textSize="15sp"
+            android:text="Denny, Allisson"/>
+
+    </LinearLayout>
+
+</LinearLayout>

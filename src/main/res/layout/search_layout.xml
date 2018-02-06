@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mailbox_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:padding="12dp"
+                android:tint="@android:color/white"
+                android:src="@drawable/back"
+                android:background="@drawable/circle_nav_button"/>
+
+            <EditText
+                android:id="@+id/editTextSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/backButton"
+                android:layout_toStartOf="@+id/clearButton"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:hint="@string/search_email"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#50ffffff"
+                android:theme="@style/editTextSearch"
+                android:focusable="true"
+                android:background="@null">
+                <requestFocus />
+            </EditText>
+
+            <ImageView
+                android:id="@+id/clearButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:padding="12dp"
+                android:layout_alignParentRight="true"
+                android:tint="@android:color/white"
+                android:src="@drawable/x"
+                android:alpha="0.4"
+                android:background="@drawable/circle_nav_button"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

@@ -1,7 +1,5 @@
 package com.email
 
-import android.os.Bundle
-import android.view.Menu
 import android.view.ViewGroup
 import com.email.DB.MailboxLocalDB
 import com.email.scenes.SceneController

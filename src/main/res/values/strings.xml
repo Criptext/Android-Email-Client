@@ -135,4 +135,7 @@
     <string name="cancel">Cancel</string>
     <string name="trash">Trash</string>
 
+    <!-- LOGIN ERRORS -->
+    <string name="search_email">Search email</string>
+
 </resources>
