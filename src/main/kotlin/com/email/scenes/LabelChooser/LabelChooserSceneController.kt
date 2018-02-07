@@ -17,7 +17,9 @@ import com.email.scenes.mailbox.data.EmailThread
 
 class LabelChooserSceneController(private val scene: LabelChooserScene,
                                   private val model: LabelChooserSceneModel,
-                                  private val labelDataSourceHandler: MailboxActivity.LabelDataSourceHandler) : SceneController() {
+                                  private val labelDataSourceHandler:
+                                  MailboxActivity.LabelDataSourceHandler)
+    : SceneController() {
 
     val dialogLabelsListener : DialogLabelsChooser.DialogLabelsListener = object : DialogLabelsChooser.DialogLabelsListener {
         override fun onDialogPositiveClick(dialog: DialogFragment) {

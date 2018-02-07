@@ -18,18 +18,21 @@ class LabelThreadAdapter(val mContext : Context,
                          val labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
     : RecyclerView.Adapter<LabelHolder>() {
 
+    fun onToggleLabelSelection(labelThread: LabelThread, position: Int) {
+        labelThreadListener?.onToggleLabelSelection(labelThread, position)
+    }
     override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
         if(holder?.itemView == null) return
         val labelThread = labelThreadListHandler.getLabelThreadFromIndex(position)
         holder.bindLabel(labelThread)
 
-        (holder.itemView.findViewById(R.id.label_checkbox) as CheckBox).setOnClickListener {
-            labelThreadListener?.onToggleLabelSelection(labelThread, position)
+        holder.checkBoxView.setOnClickListener {
+            onToggleLabelSelection(labelThread, position)
             true
         }
         holder.itemView.setOnClickListener(
                 {
-                    labelThreadListener?.onToggleLabelSelection(labelThread, position)
+                    onToggleLabelSelection(labelThread, position)
                     true
                 })
     }

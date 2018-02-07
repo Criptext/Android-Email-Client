@@ -38,6 +38,10 @@ class EmailThreadAdapter(val mContext : Context,
             toggleThreadSelection(mContext, mail, position)
         }
 
+        holder.iconBack.setOnClickListener{
+            toggleThreadSelection(mContext, mail, position)
+        }
+
         if (isMultiSelectMode) {
             holder.itemView.setOnClickListener {
             }

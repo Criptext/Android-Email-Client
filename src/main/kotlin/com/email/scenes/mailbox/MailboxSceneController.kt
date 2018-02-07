@@ -25,6 +25,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val dataSource: MailboxDataSource) : SceneController() {
 
 
+    val menuResourceId: Int
+        get() = when {
+            ! model.isInMultiSelect -> R.menu.mailbox_menu_normal_mode
+            else -> R.menu.mailbox_menu_multi_mode
+        }
+
     private val threadListController = ThreadListController(model.threads, scene)
 
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
@@ -77,9 +83,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         dataSource.seed()
         scene.attachView(threadEventListener)
         scene.addToolbar()
-        val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
+        val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
-        model.threads.addAll(emailThreads)
     }
 
     override fun onStop() {
@@ -87,8 +92,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     fun archiveSelectedEmailThreads() {
-        var emailThreads = model.selectedThreads.toList()
-        (emailThreads).forEach {
+        val emailThreads = model.selectedThreads.toList()
+        emailThreads.forEach {
             dataSource.removeLabelsRelation(it.labelsOfMail, it.id)
         }
 
@@ -189,7 +194,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 try {
                     assignLabelToEmailThread(it, emailThreadId = emailThread.id)
                 } catch (e: android.database.sqlite.SQLiteConstraintException) {
-                    e.printStackTrace()
                 }
             }
         }
@@ -202,15 +206,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     fun onCreateOptionsMenu(menuInflater: MenuInflater, menu: Menu): Boolean {
-        if(!model.isInMultiSelect) {
-            menu.clear()
-            menuInflater.inflate(R.menu.mailbox_menu_normal_mode, menu) // rendering normal mode items...
-        } else {
-            menu.clear()
-            menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
-        }
-
-
+        menu.clear()
+        menuInflater.inflate(menuResourceId, menu)
         return model.isInMultiSelect
     }
 }
