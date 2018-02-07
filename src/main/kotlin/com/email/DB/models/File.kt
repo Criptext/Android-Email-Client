@@ -1,19 +1,24 @@
 package com.email.DB.models
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Index
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.*
+import android.arch.persistence.room.ForeignKey.CASCADE
 import java.util.*
+import android.support.annotation.NonNull
 
 /**
  * Created by sebas on 2/6/18.
  */
 
-@Entity(tableName = "file", indices = arrayOf(Index(value = "name")) )
+@Entity(tableName = "file",
+        indices = arrayOf(Index(value = "name")),
+        foreignKeys = arrayOf(ForeignKey(entity = Email::class,
+                                          parentColumns = ["id"],
+                                          onDelete = CASCADE,
+                                          childColumns = ["emailId"])))
 public class File(
-        @PrimaryKey(autoGenerate = true)
-        var id:Int,
+
+        @PrimaryKey
+        var token: String,
 
         @ColumnInfo(name = "name")
         var name : String,
@@ -28,13 +33,19 @@ public class File(
         var date : Date,
 
         @ColumnInfo(name = "readOnly")
-        var readOnly : Byte
+        var readOnly : Byte,
+
+        @ColumnInfo(name = "emailId")
+        @NonNull
+        var emailId : Int
+
 ) {
     override fun toString(): String {
         return "File name='$name', " +
                 "size='$size', " +
                 "status='$status', " +
                 "date='$date', " +
-                "readonly: '$readOnly' "
+                "readonly: '$readOnly' " +
+                "emailId: '$emailId' "
     }
 }
