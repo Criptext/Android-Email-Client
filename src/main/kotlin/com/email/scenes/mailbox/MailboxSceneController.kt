@@ -4,6 +4,8 @@ import com.email.androidui.mailthread.ThreadListController
 import android.app.Activity
 import android.content.Context
 import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import com.email.MailboxActivity
 import com.email.R
@@ -12,6 +14,7 @@ import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.utils.Utility
 import kotlin.collections.ArrayList
 
 /**
@@ -42,9 +45,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)
                 updateToolbarTitle(multiSelectOn = false)
+            } else {
+                updateToolbarTitle(multiSelectOn = true)
             }
-
-            updateToolbarTitle(multiSelectOn = true)
         }
     }
 
@@ -75,7 +78,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.attachView(threadEventListener)
         scene.addToolbar()
         val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(emailThreads as ArrayList<EmailThread>)
+        threadListController.setThreadList(emailThreads)
         model.threads.addAll(emailThreads)
     }
 
@@ -91,12 +94,12 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
+        threadListController.setThreadList(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
         var emailThreads = model.selectedThreads.toList()
-        dataSource.deleteEmailThreads(emailThreads as ArrayList<EmailThread>)
+        dataSource.deleteEmailThreads(emailThreads)
 
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
@@ -140,30 +143,24 @@ class MailboxSceneController(private val scene: MailboxScene,
         when(item?.itemId) {
             R.id.mailbox_search -> {
                 TODO("HANDLE SEARCH CLICK...")
-                return true
             }
 
             R.id.mailbox_bell_container -> {
                 TODO("HANDLE BELL CLICK...")
-                return true
             }
             R.id.mailbox_archive_selected_messages -> {
                 archiveSelectedEmailThreads()
-                return true
             }
             R.id.mailbox_delete_selected_messages -> {
                 deleteSelectedEmailThreads()
-                return true
             }
 
             R.id.mailbox_toggle_read_selected_messages -> {
                 TODO("HANDLE TOGGLE READ SELECTED MESSAGES")
                 toggleReadSelectedEmailThreads()
-                return true
             }
             R.id.mailbox_move_to -> {
                 TODO("Handle move to")
-                return true
             }
             R.id.mailbox_add_labels ->{
                 val sceneView : MailboxScene.MailboxSceneView =
@@ -171,11 +168,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val activity : MailboxActivity = sceneView.hostActivity as MailboxActivity
                 scene.hostActivity.
                         showDialogLabelChooser()
-
-                return true
             }
         }
-
         return true
     }
 
@@ -205,5 +199,18 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     fun getToolbar() : Toolbar {
         return (scene as MailboxScene.MailboxSceneView).toolbar
+    }
+
+    fun onCreateOptionsMenu(menuInflater: MenuInflater, menu: Menu): Boolean {
+        if(!model.isInMultiSelect) {
+            menu.clear()
+            menuInflater.inflate(R.menu.mailbox_menu_normal_mode, menu) // rendering normal mode items...
+        } else {
+            menu.clear()
+            menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
+        }
+
+
+        return model.isInMultiSelect
     }
 }

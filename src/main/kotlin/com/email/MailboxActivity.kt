@@ -66,16 +66,13 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if(menu == null) return false
-        if(!mailboxSceneModel.isInMultiSelect) {
-            menu.clear()
-            menuInflater.inflate(R.menu.mailbox_menu_normal_mode, menu) // rendering normal mode items...
-        } else {
-            menu.clear()
-            menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
+        val isInMultiSelect = mailboxSceneController.onCreateOptionsMenu(menuInflater, menu)
+        if(isInMultiSelect){
             Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_delete_selected_messages))
             Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_archive_selected_messages))
             Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_toggle_read_selected_messages))
         }
+
         mailboxSceneController.toggleMultiModeBar()
         return super.onCreateOptionsMenu(menu)
     }

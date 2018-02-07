@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.LabelChooser.holders.LabelHolder
@@ -20,14 +19,15 @@ class LabelThreadAdapter(val mContext : Context,
     : RecyclerView.Adapter<LabelHolder>() {
 
     override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
+        if(holder?.itemView == null) return
         val labelThread = labelThreadListHandler.getLabelThreadFromIndex(position)
-        holder?.bindLabel(labelThread)
+        holder.bindLabel(labelThread)
 
-        (holder?.itemView?.findViewById(R.id.label_checkbox) as CheckBox).setOnClickListener {
+        (holder.itemView.findViewById(R.id.label_checkbox) as CheckBox).setOnClickListener {
             labelThreadListener?.onToggleLabelSelection(labelThread, position)
             true
         }
-        holder?.itemView?.setOnClickListener(
+        holder.itemView.setOnClickListener(
                 {
                     labelThreadListener?.onToggleLabelSelection(labelThread, position)
                     true

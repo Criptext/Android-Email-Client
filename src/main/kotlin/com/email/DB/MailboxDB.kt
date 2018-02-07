@@ -19,9 +19,9 @@ interface MailboxLocalDB {
     fun getArchivedEmailThreads(): ArrayList<EmailThread>
     fun getAllLabels(): ArrayList<LabelThread>
     fun getNotArchivedEmailThreads(): ArrayList<EmailThread>
-    fun removeLabelsRelation(labels: ArrayList<Label>, emailId: Int)
+    fun removeLabelsRelation(labels: List<Label>, emailId: Int)
     fun seed()
-    fun deleteEmailThreads(emailThreads: ArrayList<EmailThread>)
+    fun deleteEmailThreads(emailThreads: List<EmailThread>)
     fun createLabelEmailRelation(labelId: Int, emailId: Int)
 
 
@@ -55,7 +55,7 @@ interface MailboxLocalDB {
             } as ArrayList<EmailThread>
         }
 
-        override fun removeLabelsRelation(labels: ArrayList<Label>, emailId: Int) {
+        override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
             labels.forEach{
                 db.emailLabelDao().deleteByEmailLabelIds(it.id, emailId)
             }
@@ -71,7 +71,7 @@ interface MailboxLocalDB {
             }
         }
 
-        override fun deleteEmailThreads(emailThreads: ArrayList<EmailThread>) {
+        override fun deleteEmailThreads(emailThreads: List<EmailThread>) {
             val emails: List<Email> = emailThreads.map {
                 it.email
             }

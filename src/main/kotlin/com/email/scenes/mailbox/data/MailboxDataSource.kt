@@ -26,14 +26,14 @@ class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
         return mailboxLocalDB.getArchivedEmailThreads()
     }
 
-    fun removeLabelsRelation(labels: ArrayList<Label>, emailId: Int) {
+    fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
         return mailboxLocalDB.removeLabelsRelation(labels, emailId)
     }
     fun seed() {
         mailboxLocalDB.seed()
     }
 
-    fun deleteEmailThreads(emailThreads: ArrayList<EmailThread>) {
+    fun deleteEmailThreads(emailThreads: List<EmailThread>) {
         mailboxLocalDB.deleteEmailThreads(emailThreads)
     }
 

@@ -8,7 +8,6 @@ import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
-import com.email.utils.anim.FlipAnimator
 
 /**
  * Created by sebas on 1/23/18.
@@ -45,45 +44,9 @@ class EmailThreadAdapter(val mContext : Context,
                     true
                 })
 
-        if (isMultiSelectMode) {
-            holder.toggleMultiselect(mail.isSelected)
-        } else {
-            holder.hideMultiselect()
-        }
-
-        if (mail.isSelected) {
-            holder.avatarView.visibility = View.GONE
-            holder.iconBack.visibility = View.VISIBLE
-        } else {
-            holder.avatarView.visibility = View.VISIBLE
-            holder.iconBack.visibility = View.GONE
-        }
+        holder.toggleSelectedStatus(mail.isSelected)
     }
 
-    fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
-        if (mail.isSelected) {
-            holder.avatarView.visibility = View.GONE
-            resetIconYAxis(holder.iconBack);
-            holder.iconBack.setVisibility(View.VISIBLE)
-            holder.iconBack.setAlpha(1.toFloat())
-            FlipAnimator.flipView(mContext,
-                    holder.iconBack,
-                    holder.avatarView,
-                    true);
-        } else if(!mail.isSelected){
-            holder.iconBack.setVisibility(View.GONE)
-            resetIconYAxis(holder.avatarView)
-            holder.avatarView.setVisibility(View.VISIBLE);
-            FlipAnimator.flipView(mContext, holder.iconBack, holder.avatarView, false);
-
-        }
-    }
-
-    private fun resetIconYAxis(view : View) {
-        if (view.rotationY != 0.toFloat() ) {
-            view.setRotationY(0.toFloat());
-        }
-    }
     override fun getItemCount(): Int {
         return threadListHandler.getEmailThreadsCount()
     }

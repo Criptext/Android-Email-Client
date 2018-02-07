@@ -11,6 +11,7 @@ import com.email.R
 import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.Utility
+import com.email.utils.anim.FlipAnimator
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
@@ -54,16 +55,44 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         view.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
     }
 
-    fun toggleMultiselect(selected : Boolean){
+    fun toggleSelectedStatus(selected: Boolean) {
         if(selected) {
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_selected))
+            avatarView.visibility = View.GONE
+            iconBack.visibility = View.VISIBLE
         }else {
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+            avatarView.visibility = View.VISIBLE
+            iconBack.visibility = View.GONE
+        }
+    }
+    fun hideMultiselect() {
+        view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+    }
+
+    fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
+        if (mail.isSelected) {
+            holder.avatarView.visibility = View.GONE
+            resetIconYAxis(holder.iconBack);
+            holder.iconBack.setVisibility(View.VISIBLE)
+            holder.iconBack.setAlpha(1.toFloat())
+            FlipAnimator.flipView(mContext,
+                    holder.iconBack,
+                    holder.avatarView,
+                    true);
+        } else if(!mail.isSelected){
+            holder.iconBack.setVisibility(View.GONE)
+            resetIconYAxis(holder.avatarView)
+            holder.avatarView.setVisibility(View.VISIBLE);
+            FlipAnimator.flipView(mContext, holder.iconBack, holder.avatarView, false);
+
         }
     }
 
-    fun hideMultiselect() {
-        view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+    private fun resetIconYAxis(view : View) {
+        if (view.rotationY != 0.toFloat() ) {
+            view.setRotationY(0.toFloat());
+        }
     }
 
     init {
