@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.holders
 
 import android.content.Context
+import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -24,6 +25,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val dateView : TextView
     private val countView : TextView
     private val context : Context
+    private val attachment : ImageView
     val avatarView: CircleImageView
     val iconBack: ImageView
 
@@ -54,14 +56,14 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     fun toggleMultiselect(selected : Boolean){
         if(selected) {
-            headerView.text  = "selected..."
+            view.setBackgroundColor(view.resources.getColor(R.color.mail_item_selected))
         }else {
-            headerView.text = "not chosen"
+            view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
         }
     }
 
     fun hideMultiselect() {
-        headerView.text = "not chosen"
+        view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
     }
 
     init {
@@ -72,6 +74,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         dateView = view.findViewById(R.id.email_date) as TextView
         countView = view.findViewById(R.id.email_count) as TextView
         iconBack = view.findViewById(R.id.icon_back) as ImageView
+        attachment = view.findViewById(R.id.email_has_attachments) as ImageView
         context = view.context
     }
 }

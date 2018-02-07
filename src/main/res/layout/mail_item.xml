@@ -53,6 +53,18 @@
                 android:textColor="#fff"
                 android:textSize="10sp"
                 android:background="@drawable/square_round_corners_gray" />
+
+            <ImageView
+                android:id="@+id/email_has_attachments"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:text="20"
+                android:layout_marginRight="50dp"
+                android:gravity="center"
+                android:textColor="#fff"
+                android:textSize="10sp"
+                android:src="@drawable/attachment"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/email_date"
                 android:layout_width="wrap_content"
