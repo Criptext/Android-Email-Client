@@ -7,7 +7,7 @@ import com.email.DB.models.EmailLabel
  * Created by sebas on 1/25/18.
  */
 
-public class EmailLabelSeeder{
+class EmailLabelSeeder{
     companion object {
         var emailLabels : List<EmailLabel> = mutableListOf<EmailLabel>()
 

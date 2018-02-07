@@ -28,4 +28,5 @@ interface EmailUserJoinDao {
 
     @Delete
     fun deleteAll(emailUsers: List<EmailUser>)
+
 }

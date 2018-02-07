@@ -5,10 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import com.email.DB.DAO.EmailDao
-import com.email.DB.DAO.EmailLabelJoinDao
-import com.email.DB.DAO.LabelDao
-import com.email.DB.TypeConverters.BooleanConverter
+import com.email.DB.DAO.*
 import com.email.DB.TypeConverters.DateConverter
 import com.email.DB.models.*
 
@@ -30,7 +27,11 @@ import com.email.DB.models.*
 abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao
-    abstract fun emailLabelDao() : EmailLabelJoinDao
+    abstract fun emailLabelDao(): EmailLabelJoinDao
+    abstract fun userDao(): UserDao
+    abstract fun fileDao(): FileDao
+    abstract fun openDao(): OpenDao
+    abstract fun emailUserDao() : EmailUserJoinDao
 
     companion object {
         private var INSTANCE : AppDatabase? = null

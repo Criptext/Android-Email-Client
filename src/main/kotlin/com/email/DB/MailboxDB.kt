@@ -32,23 +32,23 @@ interface MailboxLocalDB {
             return db.emailLabelDao().insert(emailLabel)
         }
 
-        private val db = AppDatabase.getAppDatabase(applicationContext)
+        private val db = AppDatabase.getAppDatabase(applicationContext)!!
 
-        override fun getAllEmailThreads(): ArrayList<EmailThread> {
+        override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
             } as ArrayList<EmailThread>
         }
 
-        override fun getArchivedEmailThreads(): ArrayList<EmailThread> {
+        override fun getArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = ArrayList())
             } as ArrayList<EmailThread>
         }
 
-        override fun getNotArchivedEmailThreads(): ArrayList<EmailThread> {
+        override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
@@ -78,10 +78,14 @@ interface MailboxLocalDB {
             db.emailDao().deleteAll(emails)
         }
 
-        override fun getAllLabels(): ArrayList<LabelThread> {
+        override fun getAllLabels(): List<LabelThread> {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
+        }
+
+        override fun  getEmailAttachments() {
+            
         }
     }
 
