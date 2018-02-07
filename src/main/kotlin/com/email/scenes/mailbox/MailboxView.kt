@@ -13,6 +13,7 @@ import android.widget.ImageView
 import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
+import com.email.androidui.ActivityMenu
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.utils.Utility
@@ -33,12 +34,15 @@ interface MailboxScene : ThreadListView{
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
+    fun tintIconsInMenu(activityMenu: ActivityMenu)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
                            val hostActivity: IHostActivity,
                            val threadListHandler: MailboxActivity.ThreadListHandler)
         : MailboxScene {
+
+        private val context = mailboxView.context
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
@@ -145,5 +149,18 @@ interface MailboxScene : ThreadListView{
         override fun updateToolbarTitle(title: String) {
             hostActivity.updateToolbarTitle(title)
         }
+
+        override fun tintIconsInMenu(activityMenu: ActivityMenu) {
+            val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
+            val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
+            val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = deleteItem)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = archiveItem)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = toggleReadItem)
+        }
     }
+
 }

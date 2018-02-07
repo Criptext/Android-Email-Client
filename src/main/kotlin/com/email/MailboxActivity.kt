@@ -15,7 +15,6 @@ import com.email.scenes.mailbox.SelectedThreads
 import com.email.scenes.mailbox.ToolbarController
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.holders.ToolbarHolder
-import com.email.utils.Utility
 
 /**
  * Created by sebas on 1/30/18.
@@ -66,15 +65,19 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if(menu == null) return false
-        val isInMultiSelect = mailboxSceneController.onCreateOptionsMenu(menuInflater, menu)
-        if(isInMultiSelect){
-            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_delete_selected_messages))
-            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_archive_selected_messages))
-            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_toggle_read_selected_messages))
+        return try {
+            val activeSceneMenu = mailboxSceneController.menuResourceId
+            if (activeSceneMenu != null) {
+                menuInflater.inflate(activeSceneMenu, menu)
+                mailboxSceneController.postMenuDisplay(menu)
+                mailboxSceneController.toggleMultiModeBar()
+                true
+            } else
+                super.onCreateOptionsMenu(menu)
         }
-
-        mailboxSceneController.toggleMultiModeBar()
-        return super.onCreateOptionsMenu(menu)
+        catch (e : UninitializedPropertyAccessException) {
+            super.onCreateOptionsMenu(menu)
+        }
     }
 
     override fun onBackPressed() {

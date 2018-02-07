@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import com.email.MailboxActivity
 import com.email.R
+import com.email.androidui.ActivityMenu
 import com.email.scenes.LabelChooser.SelectedLabels
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
@@ -205,9 +206,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         return (scene as MailboxScene.MailboxSceneView).toolbar
     }
 
-    fun onCreateOptionsMenu(menuInflater: MenuInflater, menu: Menu): Boolean {
-        menu.clear()
-        menuInflater.inflate(menuResourceId, menu)
-        return model.isInMultiSelect
+    fun postMenuDisplay(menu: Menu) {
+        onMenuChanged(ActivityMenu(menu))
     }
+
+    private fun onMenuChanged(activityMenu: ActivityMenu) {
+        if(model.isInMultiSelect) {
+            scene.tintIconsInMenu(activityMenu)
+        }
+    }
+
 }

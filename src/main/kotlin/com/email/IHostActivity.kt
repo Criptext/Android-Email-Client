@@ -1,8 +1,7 @@
 package com.email
 
-import android.app.Activity
 import android.support.v7.widget.Toolbar
-import com.email.DB.MailboxLocalDB
+import android.view.MenuItem
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.SelectedThreads
 
@@ -19,4 +18,8 @@ interface IHostActivity {
     fun addToolbar(toolbar: Toolbar)
     fun refreshToolbarItems()
     fun showDialogLabelChooser()
+
+    interface IActivityMenu {
+        fun findItemById(id: Int): MenuItem?
+    }
 }
