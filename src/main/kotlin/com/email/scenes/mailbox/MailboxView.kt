@@ -6,20 +6,18 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.email.DB.MailboxLocalDB
 import android.view.*
 import android.widget.ImageView
-import android.widget.LinearLayout
 import com.email.IHostActivity
+import com.email.MailboxActivity
 import com.email.R
+import com.email.androidui.ActivityMenu
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
-import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.LabelChooser.LabelChooserDialog
+import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.utils.Utility
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -29,22 +27,34 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 interface MailboxScene : ThreadListView{
 
-    fun setEmailList(threads: List<EmailThread>)
+    fun addToolbar()
     fun initDrawerLayout()
     fun initNavHeader()
     fun onBackPressed(activity: Activity)
     fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
+    fun refreshToolbarItems()
+    fun showMultiModeBar(selectedThreadsQuantity : Int)
+    fun hideMultiModeBar()
+    fun updateToolbarTitle()
+    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
+    fun tintIconsInMenu(activityMenu: ActivityMenu)
+    fun getLabelDataSourceHandler(): LabelDataSourceHandler
 
-    class MailboxSceneView(private val sceneContainer: ViewGroup, private val mailboxView: View,
-                           val hostActivity: IHostActivity) : MailboxScene {
+    class MailboxSceneView(private val sceneContainer: ViewGroup,
+                           private val mailboxView: View,
+                           val hostActivity: IHostActivity,
+                           val threadListHandler: MailboxActivity.ThreadListHandler)
+        : MailboxScene {
 
-        private val ctx = mailboxView.context
+        private val context = mailboxView.context
+
+        private val labelChooserDialog = LabelChooserDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
         }
 
-        private val toolbar: Toolbar by lazy {
+        val toolbar: Toolbar by lazy {
             mailboxView.findViewById<Toolbar>(R.id.mailbox_toolbar)
         }
 
@@ -77,7 +87,7 @@ interface MailboxScene : ThreadListView{
             }
 
         override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener) {
-            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener)
+            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadListHandler)
             this.threadListener = threadEventListener
 
             sceneContainer.removeAllViews()
@@ -106,10 +116,6 @@ interface MailboxScene : ThreadListView{
             avatarView.setImageBitmap(Utility.getBitmapFromText("Daniel Tigse Palma", "D", 250, 250))
         }
 
-        override fun setEmailList(threads: List<EmailThread>) {
-            threadRecyclerView.setThreadList(threads)
-        }
-
         override fun notifyThreadSetChanged() {
             threadRecyclerView.notifyThreadSetChanged()
         }
@@ -125,5 +131,52 @@ interface MailboxScene : ThreadListView{
         override fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int) {
             threadRecyclerView.notifyThreadRangeInserted(positionStart, itemCount)
         }
+
+        override fun changeMode(multiSelectON: Boolean, silent: Boolean) {
+            threadRecyclerView.changeMode(multiSelectON, silent)
+        }
+
+        override fun refreshToolbarItems() {
+            hostActivity.refreshToolbarItems()
+        }
+
+        override fun addToolbar() {
+            hostActivity.addToolbar(toolbar)
+        }
+
+        override fun showMultiModeBar(selectedThreadsQuantity : Int) {
+            hostActivity.showMultiModeBar(selectedThreadsQuantity)
+        }
+
+        override fun hideMultiModeBar() {
+            hostActivity.hideMultiModeBar()
+        }
+
+        override fun updateToolbarTitle() {
+            hostActivity.updateToolbarTitle()
+        }
+
+        override fun tintIconsInMenu(activityMenu: ActivityMenu) {
+            val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
+            val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
+            val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = deleteItem)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = archiveItem)
+            Utility.addTintInMultiMode(context = this.context,
+                    item = toggleReadItem)
+        }
+
+        override fun showDialogLabelsChooser( labelDataSourceHandler:
+                                              LabelDataSourceHandler ) {
+            labelChooserDialog.showdialogLabelsChooser(
+                    labelDataSourceHandler = labelDataSourceHandler)
+        }
+
+        override fun getLabelDataSourceHandler(): LabelDataSourceHandler {
+            return (hostActivity as MailboxActivity).labelDataSourceHandler
+        }
     }
+
 }

@@ -3,18 +3,40 @@ package com.email.scenes.mailbox.data
 import com.email.DB.models.Email
 import com.email.DB.models.Label
 import com.email.SecureEmail
-import com.email.utils.ListUtils
+import com.email.utils.EmailThreadValidator
+import java.util.*
 
 /**
  * Created by sebas on 1/24/18.
  */
 
-class EmailThread(private val latestMail : Email, private val labelsOfMail :ArrayList<Label>, val count:Int, hasEmailAttachments:Boolean ) {
+class EmailThread(val email : Email, val labelsOfMail :ArrayList<Label>) {
 
-    val headerPreview: String = if(ListUtils.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
-            || ListUtils.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-        latestMail.preview as String else latestMail.preview
+    val threadId = email.threadid
+    val timestamp: Date
+        get() = email.date
+    var isSelected = false
+    val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
+            || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
+        email.preview as String else email.preview
+    val id: Int
+        get() = email.id
+    val subject: String
+        get() = email.subject
+    val preview: String
+        get() = email.preview
 
-    val isread: Boolean by lazy { latestMail.unread.equals(1) }
+    val replyType: ReplyTypes
+        get() {
+            val length = subject.length
+            if (length < 4)
+                return ReplyTypes.none
+            val title = subject.substring(0, Math.min(length, 5)).toLowerCase()
+            return if (title.startsWith("re: "))
+                ReplyTypes.reply
+            else if (title.startsWith("fwd: ") || title.startsWith("fw: "))
+                ReplyTypes.forward
+            else ReplyTypes.none
+        }
 
 }

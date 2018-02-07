@@ -27,14 +27,14 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private var INSTANCE : AppDatabase? = null
 
-        fun getAppDatabase(context: Context): AppDatabase? {
+        fun getAppDatabase(context: Context): AppDatabase {
             if(INSTANCE == null){
                 INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, "encripted_mail")
                         .allowMainThreadQueries() // remove this in production... !!!!
                         // .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
                         .build()
             }
-            return INSTANCE
+            return INSTANCE!!
         }
 
         fun destroyInstance() {

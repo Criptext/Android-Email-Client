@@ -18,6 +18,13 @@ import com.email.DB.models.Email
     @Query("SELECT * FROM email")
     fun getAll() : List<Email>
 
+    @Query("SELECT DISTINCT * " +
+            "FROM email as e " +
+            "WHERE id in (SELECT DISTINCT emailId " +
+            "FROM email_label) ")
+
+    fun getNotArchivedEmailThreads() : List<Email>
+
     @Delete
     fun deleteAll(emails: List<Email>)
 }

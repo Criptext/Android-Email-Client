@@ -3,23 +3,19 @@ package com.email.androidui.mailthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.email.MailboxActivity
 import com.email.scenes.mailbox.EmailThreadAdapter
-import com.email.scenes.mailbox.data.EmailThread
 
 class ThreadRecyclerView(val recyclerView: RecyclerView,
-                         threadEventListener: EmailThreadAdapter.OnThreadEventListener?)  {
+                         threadEventListener: EmailThreadAdapter.OnThreadEventListener?,
+                         threadListHandler: MailboxActivity.ThreadListHandler)  {
 
     val ctx: Context = recyclerView.context
-    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener)
+    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadListHandler)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = emailThreadAdapter
-    }
-
-    fun setThreadList(threadList: List<EmailThread>) {
-        emailThreadAdapter.threads = threadList
-        notifyThreadSetChanged()
     }
 
     fun setThreadListener(threadEventListener: EmailThreadAdapter.OnThreadEventListener?) {
@@ -42,4 +38,11 @@ class ThreadRecyclerView(val recyclerView: RecyclerView,
         emailThreadAdapter.notifyItemChanged(position)
     }
 
+    fun changeMode(multiSelectON: Boolean, silent: Boolean) {
+        if (emailThreadAdapter.isMultiSelectMode != multiSelectON) {
+            emailThreadAdapter.isMultiSelectMode = multiSelectON
+            if (!silent)
+                notifyThreadSetChanged()
+        }
+    }
 }

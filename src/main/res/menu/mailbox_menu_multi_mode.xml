@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mailbox_archive_selected_messages"
+        android:icon="@drawable/archive"
+        android:title="@string/archive"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/mailbox_delete_selected_messages"
+        app:showAsAction="always"
+        android:icon="@drawable/trash"
+        android:title="Delete"/>
+
+    <item
+        android:id="@+id/mailbox_toggle_read_selected_messages"
+        android:icon="@drawable/inbox"
+        app:showAsAction="always"
+        android:title="Mark"/>
+
+    <item
+        android:id="@+id/mailbox_move_to"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mailbox_move_to"/>
+    <item
+        android:id="@+id/mailbox_add_labels"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mailbox_add_labels"/>
+</menu>
+

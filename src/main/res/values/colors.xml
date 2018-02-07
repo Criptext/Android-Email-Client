@@ -3,6 +3,7 @@
     <color name="colorPrimary">#373a45</color>
     <color name="colorPrimaryDark">#282a33</color>
     <color name="colorAccent">#0091ff</color>
+    <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
     <color name="colorBackground">#ffffff</color>
     <color name="colorHighlight">#0091ff</color>
@@ -30,4 +31,7 @@
     <color name="light_blue">#65bdff</color>
     <color name="drawer_icon_unselected">#d8d8d8</color>
     <color name="drawer_icon_selected">#30323c</color>
+    <color name="mail_item_selected">#6d6d72</color>
+    <color name="mail_item_not_selected">#ffffff</color>
+
 </resources>

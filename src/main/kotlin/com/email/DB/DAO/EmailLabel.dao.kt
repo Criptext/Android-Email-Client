@@ -29,4 +29,7 @@ interface EmailLabelJoinDao {
 
     @Delete
     fun deleteAll(emailLabels: List<EmailLabel>)
+
+    @Query("DELETE FROM email_label WHERE labelId= :labelId AND emailId=:emailId")
+    fun deleteByEmailLabelIds(labelId: Int, emailId: Int)
 }

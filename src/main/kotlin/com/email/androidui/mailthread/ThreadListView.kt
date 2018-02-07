@@ -13,4 +13,6 @@ interface ThreadListView {
     fun notifyThreadChanged(position: Int)
 
     fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int)
+
+    fun changeMode(multiSelectON: Boolean, silent: Boolean)
 }

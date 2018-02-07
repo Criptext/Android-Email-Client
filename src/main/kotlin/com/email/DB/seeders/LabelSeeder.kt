@@ -13,7 +13,7 @@ public class LabelSeeder {
 
         fun seed(labelDao: LabelDao){
             labels = labelDao.getAll()
-            labelDao.deleteAll(labels)
+            labelDao.deleteMultipleLabels(labels)
             labels = mutableListOf<Label>()
             for (a in 1..10){
                 labels += fillLabel(a)
