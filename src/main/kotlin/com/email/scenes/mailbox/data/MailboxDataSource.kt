@@ -10,30 +10,35 @@ import com.email.scenes.LabelChooser.data.LabelThread
 
 class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
 
-    fun getAllEmailThreads(): List<EmailThread> {
+    fun getAllEmailThreads(): ArrayList<EmailThread> {
         return mailboxLocalDB.getAllEmailThreads()
     }
 
-    fun getNotArchivedEmailThreads(): List<EmailThread> {
+    fun getNotArchivedEmailThreads(): ArrayList<EmailThread> {
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }
 
-    fun getAllLabels(): List<LabelThread> {
+    fun getAllLabels(): ArrayList<LabelThread> {
         return mailboxLocalDB.getAllLabels()
     }
 
-    fun getArchivedEmailThreads(): List<EmailThread> {
+    fun getArchivedEmailThreads(): ArrayList<EmailThread> {
         return mailboxLocalDB.getArchivedEmailThreads()
     }
 
-    fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
+    fun removeLabelsRelation(labels: ArrayList<Label>, emailId: Int) {
         return mailboxLocalDB.removeLabelsRelation(labels, emailId)
     }
     fun seed() {
         mailboxLocalDB.seed()
     }
 
-    fun deleteEmailThreads(emailThreads: List<EmailThread>) {
+    fun deleteEmailThreads(emailThreads: ArrayList<EmailThread>) {
         mailboxLocalDB.deleteEmailThreads(emailThreads)
     }
+
+    fun createLabelEmailRelation(labelId: Int, emailId: Int) {
+        return mailboxLocalDB.createLabelEmailRelation(labelId, emailId)
+    }
+
 }

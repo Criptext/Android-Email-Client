@@ -13,12 +13,16 @@ import android.view.View
  */
 
 interface LabelChooserScene: LabelThreadListView {
+    fun getIHostActivity(): IHostActivity
     fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener)
 
     class LabelChooserView(val hostActivity: IHostActivity,
                            val labelChooserView: View,
                            val threadListHandler: DialogLabelsChooser.LabelThreadListHandler)
         : LabelChooserScene {
+        override fun getIHostActivity(): IHostActivity {
+            return hostActivity
+        }
 
 
         private val recyclerView: RecyclerView by lazy {

@@ -2,17 +2,13 @@ package com.email.scenes.mailbox
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
-import com.email.utils.FlipAnimator
-import de.hdodenhof.circleimageview.CircleImageView
+import com.email.utils.anim.FlipAnimator
 
 /**
  * Created by sebas on 1/23/18.
@@ -26,7 +22,7 @@ class EmailThreadAdapter(val mContext : Context,
     var isMultiSelectMode = false
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
-        if(holder == null) return
+        if(holder?.itemView == null) return
         val mail = threadListHandler.getThreadFromIndex(position)
         holder.bindMail(mail)
         holder.avatarView.setOnClickListener({
@@ -34,16 +30,16 @@ class EmailThreadAdapter(val mContext : Context,
         })
 
         if (isMultiSelectMode) {
-            holder.itemView?.setOnClickListener({
+            holder.itemView.setOnClickListener({
                 threadListener?.onToggleThreadSelection(mContext, mail, position)
             })
         } else {
-            holder.itemView?.setOnClickListener({
+            holder.itemView.setOnClickListener({
                 TODO("GO TO MAIL")
             })
         }
 
-        holder.itemView?.setOnLongClickListener(
+        holder.itemView.setOnLongClickListener(
                 {
                     threadListener?.onToggleThreadSelection(mContext, mail, position)
                     true

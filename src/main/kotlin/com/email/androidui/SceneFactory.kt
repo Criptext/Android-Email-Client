@@ -18,12 +18,16 @@ import com.email.scenes.mailbox.data.EmailThread
 interface SceneFactory {
 
     fun createMailboxScene(): MailboxScene
-    fun createChooserDialogScene( view: View, labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler): LabelChooserScene
+    fun createChooserDialogScene( view: View,
+                                  labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
+            : LabelChooserScene
 
     class SceneInflater(val hostActivity: IHostActivity,
                         val threadListHandler: MailboxActivity.ThreadListHandler)
         : SceneFactory {
-        override fun createChooserDialogScene(view: View, labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler): LabelChooserScene {
+        override fun createChooserDialogScene(view: View,
+                                              labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
+                : LabelChooserScene {
             return LabelChooserScene.LabelChooserView(hostActivity,view ,labelThreadListHandler)
         }
 
@@ -33,7 +37,7 @@ interface SceneFactory {
         }
 
         private val act = hostActivity as MailboxActivity
-        private val rootLayout : ViewGroup = act.findViewById<ViewGroup>(R.id.scene_container) as ViewGroup
+        private val rootLayout : ViewGroup = act.findViewById(R.id.scene_container) as ViewGroup
 
     }
 

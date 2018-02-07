@@ -1,4 +1,4 @@
-package com.email.utils;
+package com.email.utils.anim;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;

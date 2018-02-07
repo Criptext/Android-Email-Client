@@ -3,15 +3,14 @@ package com.email.scenes.mailbox
 import com.email.androidui.mailthread.ThreadListController
 import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.email.MailboxActivity
 import com.email.R
+import com.email.scenes.LabelChooser.SelectedLabels
+import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.mailbox.data.MailboxDataSource
 import kotlin.collections.ArrayList
 
@@ -19,7 +18,8 @@ import kotlin.collections.ArrayList
  * Created by sebas on 1/30/18.
  */
 class MailboxSceneController(private val scene: MailboxScene,
-                             private val model: MailboxSceneModel, private val dataSource: MailboxDataSource) : SceneController() {
+                             private val model: MailboxSceneModel,
+                             private val dataSource: MailboxDataSource) : SceneController() {
 
 
     private val threadListController = ThreadListController(model.threads, scene)
@@ -75,7 +75,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.attachView(threadEventListener)
         scene.addToolbar()
         val emailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        val labelThreads : List<LabelThread> = dataSource.getAllLabels()
         threadListController.setThreadList(emailThreads as ArrayList<EmailThread>)
         model.threads.addAll(emailThreads)
     }
@@ -93,19 +92,15 @@ class MailboxSceneController(private val scene: MailboxScene,
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
-        model.threads.clear()
-        model.threads.addAll(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
         var emailThreads = model.selectedThreads.toList()
-        dataSource.deleteEmailThreads(emailThreads)
+        dataSource.deleteEmailThreads(emailThreads as ArrayList<EmailThread>)
 
         changeMode(multiSelectON = false, silent = false)
-        val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads as ArrayList<EmailThread>)
-        model.threads.clear()
-        model.threads.addAll(fetchEmailThreads)
+        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
+        threadListController.setThreadList(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
 
@@ -139,13 +134,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         } else {
             hideMultiModeBar()
         }
-    }
-
-    fun addTintInMultiMode(context:Context, item: MenuItem) {
-        var drawable : Drawable = item.icon
-        drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.multiModeTint));
-        item.setIcon(drawable)
     }
 
     fun onOptionSelected(item: MenuItem?) : Boolean {
@@ -182,12 +170,40 @@ class MailboxSceneController(private val scene: MailboxScene,
                         (scene as MailboxScene.MailboxSceneView)
                 val activity : MailboxActivity = sceneView.hostActivity as MailboxActivity
                 scene.hostActivity.
-                showDialogLabelChooser()
+                        showDialogLabelChooser()
 
                 return true
             }
         }
 
         return true
+    }
+
+    fun getAllLabels() : ArrayList<LabelThread>{
+        return dataSource.getAllLabels()
+    }
+
+    fun assignLabelToEmailThread(labelId: Int, emailThreadId: Int){
+        dataSource.createLabelEmailRelation(labelId = labelId,
+                emailId = emailThreadId)
+    }
+
+    fun createRelationSelectedEmailLabels(selectedLabels : SelectedLabels): Boolean{
+        model.selectedThreads.toList().forEach {
+            val emailThread : EmailThread = it
+            selectedLabels.toIDs().forEach {
+                try {
+                    assignLabelToEmailThread(it, emailThreadId = emailThread.id)
+                } catch (e: android.database.sqlite.SQLiteConstraintException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        changeMode(multiSelectON = false, silent = false)
+        return false
+    }
+
+    fun getToolbar() : Toolbar {
+        return (scene as MailboxScene.MailboxSceneView).toolbar
     }
 }

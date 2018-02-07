@@ -44,7 +44,7 @@ interface MailboxScene : ThreadListView{
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
         }
 
-        private val toolbar: Toolbar by lazy {
+        val toolbar: Toolbar by lazy {
             mailboxView.findViewById<Toolbar>(R.id.mailbox_toolbar)
         }
 

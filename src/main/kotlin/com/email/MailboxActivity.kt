@@ -1,21 +1,21 @@
 package com.email
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
 import com.email.scenes.LabelChooser.DialogLabelsChooser
+import com.email.scenes.LabelChooser.SelectedLabels
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.mailbox.SelectedThreads
+import com.email.scenes.mailbox.ToolbarController
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.scenes.mailbox.holders.ToolbarHolder
+import com.email.utils.Utility
 
 /**
  * Created by sebas on 1/30/18.
@@ -26,6 +26,8 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     private lateinit var sceneFactory : SceneFactory
     private lateinit var dialogLabelsChooser : DialogLabelsChooser
     private lateinit var mailboxSceneController: MailboxSceneController
+    private lateinit var toolbarController: ToolbarController
+    private lateinit var toolbarHolder: ToolbarHolder
     private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
     private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
 
@@ -35,10 +37,14 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         setContentView(R.layout.main_layout)
         sceneFactory = SceneFactory.SceneInflater(this,
                 threadListHandler)
-        dialogLabelsChooser = DialogLabelsChooser.Builder().build(sceneFactory)
-        initController()
-    }
 
+        initController()
+        val labelDataSourceHandler: LabelDataSourceHandler =
+                LabelDataSourceHandler(mailboxSceneController)
+        dialogLabelsChooser = DialogLabelsChooser
+                .Builder()
+                .build(sceneFactory, labelDataSourceHandler)
+    }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         mailboxSceneController = MailboxSceneController(
@@ -47,19 +53,11 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
                 dataSource = MailboxDataSource(DB))
     }
 
-/*    fun startLabelChooserDialog() {
-        val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
-        labelChooserSceneController = LabelChooserSceneController(
-                scene = sceneFactory.createChooserDialogScene(),
-                model = labelChooserSceneModel,
-                dataSource = LabelChooserDataSource(DB))
-
-        labelChooserSceneController.onStart()
-    }*/
-
     override fun onStart() {
         super.onStart()
         mailboxSceneController.onStart()
+        toolbarHolder = ToolbarHolder(mailboxSceneController.getToolbar())
+        toolbarController = ToolbarController(toolbarHolder)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -74,9 +72,9 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         } else {
             menu.clear()
             menuInflater.inflate(R.menu.mailbox_menu_multi_mode, menu) // rendering multi mode items...
-            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_delete_selected_messages))
-            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_archive_selected_messages))
-            mailboxSceneController.addTintInMultiMode(this, menu.findItem(R.id.mailbox_toggle_read_selected_messages))
+            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_delete_selected_messages))
+            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_archive_selected_messages))
+            Utility.addTintInMultiMode(this, menu.findItem(R.id.mailbox_toggle_read_selected_messages))
         }
         mailboxSceneController.toggleMultiModeBar()
         return super.onCreateOptionsMenu(menu)
@@ -88,25 +86,15 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
 
     override fun showMultiModeBar(selectedThreadsQuantity: Int) {
-        this.findViewById<ImageView>(R.id.mailbox_nav_button).visibility = View.GONE
-        this.
-                findViewById<TextView>(R.id.mailbox_number_emails)
-                .visibility = View.GONE
-        this.
-                findViewById<TextView>(R.id.mailbox_toolbar_title).
-                text = selectedThreadsQuantity.toString()
+        toolbarController.showMultiModeBar(selectedThreadsQuantity)
     }
 
     override fun hideMultiModeBar() {
-        this.findViewById<ImageView>(R.id.mailbox_nav_button)
-                .visibility = View.VISIBLE
-        this.findViewById<TextView>(R.id.mailbox_number_emails)
-                .visibility = View.VISIBLE
-        this.findViewById<TextView>(R.id.mailbox_toolbar_title).text = "INBOX"
+        toolbarController.hideMultiModeBar()
     }
 
     override fun updateToolbarTitle(title: String) {
-        this.findViewById<TextView>(R.id.mailbox_toolbar_title).text = title
+        toolbarController.updateToolbarTitle(title)
     }
 
     override fun addToolbar(toolbar: Toolbar) {
@@ -124,6 +112,22 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         }
         val getEmailThreadsCount = {
             model.threads.size
+        }
+    }
+    inner class LabelDataSourceHandler(mailboxSceneController: MailboxSceneController) {
+        val createRelationEmailLabels = {
+            selectedLabels: SelectedLabels ->
+            mailboxSceneController.createRelationSelectedEmailLabels(selectedLabels)
+        }
+
+        val createLabelEmailRelation = {
+            labelId: Int, emailThreadId: Int ->
+            mailboxSceneController.assignLabelToEmailThread(labelId,
+                    emailThreadId)
+        }
+
+        val getAllLabels = {
+            mailboxSceneController.getAllLabels()
         }
     }
 
