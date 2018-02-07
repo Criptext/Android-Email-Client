@@ -28,8 +28,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val countView : TextView
     private val context : Context
     private val attachment : ImageView
-    val avatarView: CircleImageView
-    val iconBack: ImageView
+    private val avatarView: CircleImageView
+    private val iconBack: ImageView
 
     init {
         view.setOnClickListener(this)
@@ -44,6 +44,18 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
     }
 
+
+    fun setOnIconBackClickedListener(clickOnIcon: () -> Unit){
+        iconBack.setOnClickListener{
+            clickOnIcon()
+        }
+    }
+
+    fun setOnAvatarClickedListener(clickInAvatar: () -> Unit){
+        avatarView.setOnClickListener{
+            clickInAvatar()
+        }
+    }
     override fun fillIcons() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

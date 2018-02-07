@@ -17,9 +17,9 @@ interface IHostActivity {
     fun updateToolbarTitle()
     fun addToolbar(toolbar: Toolbar)
     fun refreshToolbarItems()
-    fun showDialogLabelChooser()
 
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?
     }
+
 }

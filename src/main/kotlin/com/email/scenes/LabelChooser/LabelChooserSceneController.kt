@@ -1,15 +1,10 @@
 package com.email.scenes.LabelChooser
 
 import android.app.Activity
-import android.support.v4.app.DialogFragment
-import android.view.LayoutInflater
-import android.view.View
+import android.support.v7.app.AlertDialog
 import android.widget.Button
-import com.email.MailboxActivity
-import com.email.R
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
-import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Created by sebas on 2/2/18.
@@ -17,19 +12,18 @@ import com.email.scenes.mailbox.data.EmailThread
 
 class LabelChooserSceneController(private val scene: LabelChooserScene,
                                   private val model: LabelChooserSceneModel,
-                                  private val labelDataSourceHandler:
-                                  MailboxActivity.LabelDataSourceHandler)
+                                  private val labelDataSourceHandler: LabelDataSourceHandler)
     : SceneController() {
 
-    val dialogLabelsListener : DialogLabelsChooser.DialogLabelsListener = object : DialogLabelsChooser.DialogLabelsListener {
-        override fun onDialogPositiveClick(dialog: DialogFragment) {
+    val dialogLabelsListener : LabelChooserDialog.DialogLabelsListener = object : LabelChooserDialog.DialogLabelsListener {
+        override fun onDialogPositiveClick(dialog: AlertDialog) {
             labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
             clearSelectedLabels()
             dialog.dismiss()
         }
 
 
-        override fun onDialogNegativeClick(dialog: DialogFragment) {
+        override fun onDialogNegativeClick(dialog: AlertDialog) {
             dialog.dismiss()
         }
 
@@ -72,12 +66,7 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun initUI(dialog: DialogFragment, view:View,  inflater: LayoutInflater?){
-        val btn_add = view.findViewById(R.id.label_add) as Button
-        val btn_cancel = view.findViewById(R.id.label_cancel) as Button
-        assignButtonEvents(dialog, btn_add, btn_cancel)
-    }
-    fun assignButtonEvents(dialog: DialogFragment, btn_add: Button, btn_cancel: Button) {
+    fun assignButtonEvents(dialog: AlertDialog, btn_add: Button, btn_cancel: Button) {
         btn_add.setOnClickListener {
             dialogLabelsListener.onDialogPositiveClick(dialog)
         }

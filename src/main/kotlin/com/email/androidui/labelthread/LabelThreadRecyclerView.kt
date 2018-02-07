@@ -3,12 +3,12 @@ package com.email.androidui.labelthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.email.scenes.LabelChooser.DialogLabelsChooser
+import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelThreadAdapter
 
 class LabelThreadRecyclerView(val recyclerView: RecyclerView,
                               threadEventListener: LabelThreadAdapter.OnLabelThreadEventListener?,
-                              labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)  {
+                              labelThreadListHandler: LabelChooserDialog.LabelThreadListHandler)  {
 
     val ctx: Context = recyclerView.context
     private val labelThreadAdapter = LabelThreadAdapter(ctx, threadEventListener, labelThreadListHandler)

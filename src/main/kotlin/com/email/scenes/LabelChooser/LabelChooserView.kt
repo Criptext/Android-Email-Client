@@ -18,8 +18,9 @@ interface LabelChooserScene: LabelThreadListView {
 
     class LabelChooserView(val hostActivity: IHostActivity,
                            val labelChooserView: View,
-                           val threadListHandler: DialogLabelsChooser.LabelThreadListHandler)
+                           val threadListHandler: LabelChooserDialog.LabelThreadListHandler)
         : LabelChooserScene {
+
         override fun getIHostActivity(): IHostActivity {
             return hostActivity
         }
@@ -50,7 +51,9 @@ interface LabelChooserScene: LabelThreadListView {
         }
 
         override fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
-            labelThreadRecyclerView = LabelThreadRecyclerView(recyclerView, labelThreadEventListener, threadListHandler)
+            labelThreadRecyclerView = LabelThreadRecyclerView(recyclerView,
+                    labelThreadEventListener,
+                    threadListHandler)
             this.labelThreadListener= labelThreadEventListener
         }
 

@@ -16,6 +16,8 @@ import com.email.R
 import com.email.androidui.ActivityMenu
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
+import com.email.scenes.LabelChooser.LabelChooserDialog
+import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.utils.Utility
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -34,7 +36,9 @@ interface MailboxScene : ThreadListView{
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle()
+    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun tintIconsInMenu(activityMenu: ActivityMenu)
+    fun getLabelDataSourceHandler(): LabelDataSourceHandler
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
@@ -43,6 +47,8 @@ interface MailboxScene : ThreadListView{
         : MailboxScene {
 
         private val context = mailboxView.context
+
+        private val labelChooserDialog = LabelChooserDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
@@ -160,6 +166,16 @@ interface MailboxScene : ThreadListView{
                     item = archiveItem)
             Utility.addTintInMultiMode(context = this.context,
                     item = toggleReadItem)
+        }
+
+        override fun showDialogLabelsChooser( labelDataSourceHandler:
+                                              LabelDataSourceHandler ) {
+            labelChooserDialog.showdialogLabelsChooser(
+                    labelDataSourceHandler = labelDataSourceHandler)
+        }
+
+        override fun getLabelDataSourceHandler(): LabelDataSourceHandler {
+            return (hostActivity as MailboxActivity).labelDataSourceHandler
         }
     }
 

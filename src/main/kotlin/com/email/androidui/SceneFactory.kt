@@ -5,10 +5,7 @@ import android.view.ViewGroup
 import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
-import com.email.scenes.LabelChooser.DialogLabelsChooser
-import com.email.scenes.LabelChooser.LabelChooserScene
 import com.email.scenes.mailbox.MailboxScene
-import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Instantiates scenes, the view objects for each controller.
@@ -18,18 +15,10 @@ import com.email.scenes.mailbox.data.EmailThread
 interface SceneFactory {
 
     fun createMailboxScene(): MailboxScene
-    fun createChooserDialogScene( view: View,
-                                  labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
-            : LabelChooserScene
 
     class SceneInflater(val hostActivity: IHostActivity,
                         val threadListHandler: MailboxActivity.ThreadListHandler)
         : SceneFactory {
-        override fun createChooserDialogScene(view: View,
-                                              labelThreadListHandler: DialogLabelsChooser.LabelThreadListHandler)
-                : LabelChooserScene {
-            return LabelChooserScene.LabelChooserView(hostActivity,view ,labelThreadListHandler)
-        }
 
         override fun createMailboxScene(): MailboxScene {
             val view = View.inflate(act, R.layout.activity_mailbox, null)

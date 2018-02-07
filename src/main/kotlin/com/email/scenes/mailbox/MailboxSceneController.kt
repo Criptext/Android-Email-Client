@@ -6,7 +6,6 @@ import android.content.Context
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import com.email.MailboxActivity
 import com.email.R
 import com.email.androidui.ActivityMenu
 import com.email.scenes.LabelChooser.SelectedLabels
@@ -52,9 +51,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)
-                updateToolbarTitle()
             }
-            updateToolbarTitle()
         }
     }
 
@@ -75,6 +72,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.isInMultiSelect = multiSelectON
         scene.changeMode(multiSelectON, silent)
         scene.refreshToolbarItems()
+        scene.updateToolbarTitle()
     }
 
     override fun onStart() {
@@ -121,10 +119,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.showMultiModeBar(selectedThreadsQuantity)
     }
 
-    fun updateToolbarTitle() {
-        scene.updateToolbarTitle()
-    }
-
     fun hideMultiModeBar() {
         scene.hideMultiModeBar()
     }
@@ -164,10 +158,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 TODO("Handle move to")
             }
             R.id.mailbox_add_labels ->{
-                val sceneView : MailboxScene.MailboxSceneView =
-                        (scene as MailboxScene.MailboxSceneView)
-                sceneView.hostActivity.
-                        showDialogLabelChooser()
+                scene.showDialogLabelsChooser(labelDataSourceHandler = scene.getLabelDataSourceHandler())
             }
         }
         return true

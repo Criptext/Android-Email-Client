@@ -10,11 +10,11 @@ import com.email.scenes.mailbox.data.EmailThread
 class ThreadListController(private var threads : ArrayList<EmailThread>,
                            private val listView: ThreadListView?) {
 
-    fun setThreadList(emails : List<EmailThread>): ArrayList<EmailThread> {
+    fun setThreadList(emails : List<EmailThread>) {
         threads.clear()
         threads.addAll(emails)
-        return emails as ArrayList<EmailThread>
     }
+
     fun removeByThread(id: String) {
         val threadPosition = removeThreadById(threads, id)
         listView?.notifyThreadRemoved(threadPosition)

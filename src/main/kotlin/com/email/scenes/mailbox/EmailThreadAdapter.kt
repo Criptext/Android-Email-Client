@@ -30,16 +30,16 @@ class EmailThreadAdapter(val mContext : Context,
         TODO("GO TO MAIL")
     }
 
+
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
         if(holder?.itemView == null) return
         val mail = threadListHandler.getThreadFromIndex(position)
         holder.bindMail(mail)
-        holder.avatarView.setOnClickListener{
+        val itemClickListener = {
             toggleThreadSelection(mContext, mail, position)
         }
-        holder.iconBack.setOnClickListener{
-            toggleThreadSelection(mContext, mail, position)
-        }
+        holder.setOnAvatarClickedListener(itemClickListener)
+        holder.setOnIconBackClickedListener(itemClickListener)
 
         if (isMultiSelectMode) {
             holder.itemView.setOnClickListener {

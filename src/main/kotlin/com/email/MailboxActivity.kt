@@ -7,8 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
-import com.email.scenes.LabelChooser.DialogLabelsChooser
-import com.email.scenes.LabelChooser.SelectedLabels
+import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.mailbox.SelectedThreads
@@ -23,12 +22,12 @@ import com.email.scenes.mailbox.holders.ToolbarHolder
 class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     private lateinit var sceneFactory : SceneFactory
-    private lateinit var dialogLabelsChooser : DialogLabelsChooser
     private lateinit var mailboxSceneController: MailboxSceneController
     private lateinit var toolbarController: ToolbarController
     private lateinit var toolbarHolder: ToolbarHolder
     private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
     private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
+    lateinit var labelDataSourceHandler: LabelDataSourceHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +37,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
                 threadListHandler)
 
         initController()
-        val labelDataSourceHandler: LabelDataSourceHandler =
-                LabelDataSourceHandler(mailboxSceneController)
-        dialogLabelsChooser = DialogLabelsChooser
-                .Builder()
-                .build(sceneFactory, labelDataSourceHandler)
+        labelDataSourceHandler = LabelDataSourceHandler(mailboxSceneController)
     }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
@@ -113,26 +108,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
             model.threads.size
         }
     }
-    inner class LabelDataSourceHandler(mailboxSceneController: MailboxSceneController) {
-        val createRelationEmailLabels = {
-            selectedLabels: SelectedLabels ->
-            mailboxSceneController.createRelationSelectedEmailLabels(selectedLabels)
-        }
 
-        val createLabelEmailRelation = {
-            labelId: Int, emailThreadId: Int ->
-            mailboxSceneController.assignLabelToEmailThread(labelId,
-                    emailThreadId)
-        }
-
-        val getAllLabels = {
-            mailboxSceneController.getAllLabels()
-        }
-    }
-
-    override fun showDialogLabelChooser() {
-        dialogLabelsChooser.show(supportFragmentManager, "")
-    }
 
     override fun getMailboxSceneController() : MailboxSceneController{
         return this.mailboxSceneController
