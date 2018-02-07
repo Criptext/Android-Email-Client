@@ -14,7 +14,7 @@ interface IHostActivity {
     fun getSelectedThreads() : SelectedThreads
     fun showMultiModeBar( selectedThreadsQuantity: Int)
     fun hideMultiModeBar()
-    fun updateToolbarTitle(title: String)
+    fun updateToolbarTitle()
     fun addToolbar(toolbar: Toolbar)
     fun refreshToolbarItems()
     fun showDialogLabelChooser()

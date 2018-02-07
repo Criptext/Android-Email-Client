@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.support.v7.widget.Toolbar
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import com.email.MailboxActivity
 import com.email.R
@@ -15,8 +14,6 @@ import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.utils.Utility
-import kotlin.collections.ArrayList
 
 /**
  * Created by sebas on 1/30/18.
@@ -25,6 +22,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val dataSource: MailboxDataSource) : SceneController() {
 
+
+    val toolbarTitle: String
+        get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
+        else "INBOX"
 
     val menuResourceId: Int
         get() = when {
@@ -51,10 +52,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)
-                updateToolbarTitle(multiSelectOn = false)
-            } else {
-                updateToolbarTitle(multiSelectOn = true)
+                updateToolbarTitle()
             }
+            updateToolbarTitle()
         }
     }
 
@@ -121,15 +121,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.showMultiModeBar(selectedThreadsQuantity)
     }
 
-    fun updateToolbarTitle(multiSelectOn :Boolean) {
-        if(multiSelectOn) {
-            val selectedThreadsQuantity : Int = model.selectedThreads.length()
-            scene.updateToolbarTitle(selectedThreadsQuantity.toString())
-        } else {
-            scene.updateToolbarTitle("INBOX")
-        }
-
+    fun updateToolbarTitle() {
+        scene.updateToolbarTitle()
     }
+
     fun hideMultiModeBar() {
         scene.hideMultiModeBar()
     }
@@ -171,15 +166,14 @@ class MailboxSceneController(private val scene: MailboxScene,
             R.id.mailbox_add_labels ->{
                 val sceneView : MailboxScene.MailboxSceneView =
                         (scene as MailboxScene.MailboxSceneView)
-                val activity : MailboxActivity = sceneView.hostActivity as MailboxActivity
-                scene.hostActivity.
+                sceneView.hostActivity.
                         showDialogLabelChooser()
             }
         }
         return true
     }
 
-    fun getAllLabels() : ArrayList<LabelThread>{
+    fun getAllLabels() : List<LabelThread>{
         return dataSource.getAllLabels()
     }
 
@@ -208,6 +202,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     fun postMenuDisplay(menu: Menu) {
         onMenuChanged(ActivityMenu(menu))
+        toggleMultiModeBar()
     }
 
     private fun onMenuChanged(activityMenu: ActivityMenu) {

@@ -37,7 +37,6 @@ class EmailThreadAdapter(val mContext : Context,
         holder.avatarView.setOnClickListener{
             toggleThreadSelection(mContext, mail, position)
         }
-
         holder.iconBack.setOnClickListener{
             toggleThreadSelection(mContext, mail, position)
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -33,9 +34,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     init {
         view.setOnClickListener(this)
     }
+
     override fun onClick(p0: View?) {
     }
-
 
     fun bindMail(emailThread: EmailThread) {
         previewView.text = emailThread.headerPreview
@@ -106,4 +107,5 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         attachment = view.findViewById(R.id.email_has_attachments) as ImageView
         context = view.context
     }
+
 }

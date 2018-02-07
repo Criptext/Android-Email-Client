@@ -70,7 +70,6 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
             if (activeSceneMenu != null) {
                 menuInflater.inflate(activeSceneMenu, menu)
                 mailboxSceneController.postMenuDisplay(menu)
-                mailboxSceneController.toggleMultiModeBar()
                 true
             } else
                 super.onCreateOptionsMenu(menu)
@@ -93,8 +92,8 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         toolbarController.hideMultiModeBar()
     }
 
-    override fun updateToolbarTitle(title: String) {
-        toolbarController.updateToolbarTitle(title)
+    override fun updateToolbarTitle() {
+        toolbarController.updateToolbarTitle(mailboxSceneController.toolbarTitle)
     }
 
     override fun addToolbar(toolbar: Toolbar) {

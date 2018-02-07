@@ -33,7 +33,7 @@ interface MailboxScene : ThreadListView{
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
-    fun updateToolbarTitle(title: String)
+    fun updateToolbarTitle()
     fun tintIconsInMenu(activityMenu: ActivityMenu)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
@@ -146,8 +146,8 @@ interface MailboxScene : ThreadListView{
             hostActivity.hideMultiModeBar()
         }
 
-        override fun updateToolbarTitle(title: String) {
-            hostActivity.updateToolbarTitle(title)
+        override fun updateToolbarTitle() {
+            hostActivity.updateToolbarTitle()
         }
 
         override fun tintIconsInMenu(activityMenu: ActivityMenu) {
