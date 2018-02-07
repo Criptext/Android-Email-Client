@@ -20,27 +20,36 @@ class EmailThreadAdapter(val mContext : Context,
 
     var isMultiSelectMode = false
 
+    fun toggleThreadSelection(mContext: Context,
+                              mailThread: EmailThread,
+                              position: Int) {
+        threadListener?.onToggleThreadSelection(mContext, mailThread, position)
+    }
+
+    fun goToMail(){
+        TODO("GO TO MAIL")
+    }
+
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
         if(holder?.itemView == null) return
         val mail = threadListHandler.getThreadFromIndex(position)
         holder.bindMail(mail)
-        holder.avatarView.setOnClickListener({
-            threadListener?.onToggleThreadSelection(mContext, mail, position)
-        })
+        holder.avatarView.setOnClickListener{
+            toggleThreadSelection(mContext, mail, position)
+        }
 
         if (isMultiSelectMode) {
-            holder.itemView.setOnClickListener({
-                threadListener?.onToggleThreadSelection(mContext, mail, position)
-            })
+            holder.itemView.setOnClickListener {
+            }
         } else {
-            holder.itemView.setOnClickListener({
-                TODO("GO TO MAIL")
-            })
+            holder.itemView.setOnClickListener{
+                goToMail()
+            }
         }
 
         holder.itemView.setOnLongClickListener(
                 {
-                    threadListener?.onToggleThreadSelection(mContext, mail, position)
+                    toggleThreadSelection(mContext, mail, position)
                     true
                 })
 
