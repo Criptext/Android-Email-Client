@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.holders
 
 import android.content.Context
+import android.graphics.Typeface
 import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
@@ -11,6 +12,7 @@ import android.widget.TextView
 import com.email.R
 import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.anim.FlipAnimator
 import de.hdodenhof.circleimageview.CircleImageView
@@ -42,6 +44,16 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         previewView.text = emailThread.headerPreview
         headerView.text = emailThread.headerPreview
         avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
+        dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
+
+        if(emailThread.unread) {
+            val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
+            headerView.setTypeface(boldTypeface)
+        } else {
+            val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
+            headerView.setTypeface(normalTypeface)
+            dateView.setTypeface(normalTypeface)
+        }
 
     }
 
@@ -71,13 +83,17 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     fun toggleSelectedStatus(selected: Boolean) {
         if(selected) {
+            val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_selected))
             avatarView.visibility = View.GONE
             iconBack.visibility = View.VISIBLE
+            dateView.setTypeface(boldTypeface)
         }else {
+            val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
+            dateView.setTypeface(normalTypeface)
         }
     }
     fun hideMultiselect() {

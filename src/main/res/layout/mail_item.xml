@@ -9,12 +9,12 @@
     android:paddingRight="15dp"
     android:animateLayoutChanges="true">
     <include layout="@layout/mail_item_left_name"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
     <Space
-        android:layout_width="20dp"
+        android:layout_width="5dp"
         android:layout_height="wrap_content"
         />
     <RelativeLayout
@@ -111,7 +111,7 @@
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
                     android:drawableLeft="@drawable/read_notification"
                     android:drawablePadding="10px"
-                    />
+                    android:textColor="#ccc"/>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

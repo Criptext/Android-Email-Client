@@ -1,39 +1,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
     android:layout_height="wrap_content">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/label_refresher"
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/label_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp">
 
             </android.support.v7.widget.RecyclerView>
 
-        </android.support.v4.widget.SwipeRefreshLayout>
-    </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content">
         <Button
+            android:textColor="@color/label_buttons_text"
+            android:textSize="10sp"
             android:id="@+id/label_cancel"
-            android:layout_width="wrap_content"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_left_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:text="Cancel" />
 
         <Button
+            android:textSize="10sp"
+            android:textColor="@color/label_buttons_text"
             android:id="@+id/label_add"
-            android:layout_width="wrap_content"
+            android:background="@drawable/label_button_right_bg"
+            android:stateListAnimator="@null"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="Add" />
+            android:text="Accept" />
     </LinearLayout>
 </LinearLayout>

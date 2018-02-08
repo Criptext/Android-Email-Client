@@ -18,6 +18,7 @@
     <color name="colorOpen">#0091FF</color>
     <color name="colorSubject">#5F5F5F</color>
     <color name="colorLabels">#8A8A8A</color>
+    <color name="label_buttons_text">#30323c</color>
     <color name="colorLabels2">#626262</color>
     <color name="colorActivityOpen">#E8F5FD</color>
     <color name="unreadMailItemBg">#F5FAFE</color>
@@ -31,7 +32,8 @@
     <color name="light_blue">#65bdff</color>
     <color name="drawer_icon_unselected">#d8d8d8</color>
     <color name="drawer_icon_selected">#30323c</color>
-    <color name="mail_item_selected">#6d6d72</color>
+    <color name="mail_item_selected">#FFFBE8</color>
     <color name="mail_item_not_selected">#ffffff</color>
+    <color name="label_buttons">#f2f2f2</color>
 
 </resources>
