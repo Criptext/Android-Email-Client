@@ -6,6 +6,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import com.email.DB.DAO.*
+import com.email.DB.TypeConverters.BooleanConverter
 import com.email.DB.TypeConverters.DateConverter
 import com.email.DB.models.*
 
@@ -38,7 +39,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getAppDatabase(context: Context): AppDatabase {
             if(INSTANCE == null){
-                INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, "encripted_mail")
+                INSTANCE = Room.databaseBuilder(context,
+                        AppDatabase::class.java,
+                        "encriptedMail")
                         .allowMainThreadQueries() // remove this in production... !!!!
                         // .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
                         .build()

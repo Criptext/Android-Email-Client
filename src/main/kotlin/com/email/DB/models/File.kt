@@ -33,7 +33,7 @@ public class File(
         var date : Date,
 
         @ColumnInfo(name = "readOnly")
-        var readOnly : Byte,
+        var readOnly : Boolean,
 
         @ColumnInfo(name = "emailId")
         @NonNull

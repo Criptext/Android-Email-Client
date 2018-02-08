@@ -17,7 +17,10 @@ interface EmailUserJoinDao {
     @Insert
     fun insert(emailUser : EmailUser)
 
-    @Query("SELECT * FROM email INNER JOIN email_user ON email.id=email_user.emailId WHERE email_user.userId=:userId")
+    @Query("SELECT * FROM email " +
+            "INNER JOIN email_user " +
+            "ON email.id=email_user.emailId " +
+            "WHERE email_user.userId=:userId")
     fun getEmailsFromUser(userId: Int) : List<Email>
 
     @Insert
