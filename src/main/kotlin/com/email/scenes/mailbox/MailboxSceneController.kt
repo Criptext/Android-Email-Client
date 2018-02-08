@@ -8,15 +8,18 @@ import com.email.scenes.LabelChooser.SelectedLabels
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.mailbox.data.ActivityFeed
+import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.scenes.mailbox.holders.FeedHolder
 
 /**
  * Created by sebas on 1/30/18.
  */
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
-                             private val dataSource: MailboxDataSource) : SceneController() {
-
+                             private val dataSource: MailboxDataSource,
+                             private val feedDataSource: FeedDataSource) : SceneController() {
 
     private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
@@ -75,14 +78,29 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
+    private val feedClickListener = object : FeedHolder.FeedClickListener{
+
+        override fun onFeedMuted(activityFeed: ActivityFeed) {
+
+        }
+
+        override fun onFeedDeleted(activityFeed: ActivityFeed) {
+
+        }
+
+    }
+
     override fun onStart() {
-        scene.attachView(threadEventListener)
+        scene.attachView(threadEventListener, feedClickListener)
         scene.initDrawerLayout()
-        scene.initNavHeader()
+        scene.initNavHeader("Daniel Tigse Palma")
+
         dataSource.seed()
-        scene.attachView(threadEventListener)
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
+
+        feedDataSource.seed()
+        scene.setFeedList(feedDataSource.getFeeds())
     }
 
     override fun onStop() {

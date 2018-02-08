@@ -20,7 +20,8 @@ import com.email.DB.models.*
         User::class,
         EmailUser::class,
         File::class,
-        Open::class
+        Open::class,
+        Feed::class
         ),
         version = 1,
         exportSchema = false)
@@ -33,7 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun fileDao(): FileDao
     abstract fun openDao(): OpenDao
     abstract fun emailUserDao() : EmailUserJoinDao
-
+    abstract fun feedDao(): FeedDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 

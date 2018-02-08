@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<me.thanel.swipeactionview.SwipeActionView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- LEFT VIEW -->
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- RIGHT VIEW -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/viewMute"
+            android:layout_width="100dp"
+            android:layout_height="66dp"
+            android:gravity="center"
+            android:background="#9b9b9b"
+            android:orientation="vertical"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/mute"
+                android:tint="@android:color/white"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/mute"
+                android:textSize="11sp"
+                android:textColor="@android:color/white"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/viewDelete"
+            android:layout_width="100dp"
+            android:layout_height="66dp"
+            android:gravity="center"
+            android:background="#dc4d48"
+            android:orientation="vertical"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/trash"
+                android:tint="@android:color/white"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/delete"
+                android:textSize="11sp"
+                android:textColor="@android:color/white"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- CONTAINER -->
+    <LinearLayout
+        android:id="@+id/containerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:foreground="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.18"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/imageViewTypeFeed"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="25dp"
+                android:src="@drawable/attachment"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.57"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:text="Daniel Tigse downloaded:"
+                android:textColor="@android:color/black"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/textViewDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="This_is.pdf"
+                android:textColor="#9b9b9b"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageViewMute"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:tint="#d4d4d4"
+                android:src="@drawable/mute"/>
+
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Yesterday"
+                android:textColor="#9b9b9b"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="14dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</me.thanel.swipeactionview.SwipeActionView>

@@ -27,7 +27,9 @@
             android:layout_marginBottom="2dp"
             android:textColor="#6a707e"
             android:textSize="15sp"
-            android:text="RE: Meeting Notes"/>
+            android:text="RE: Meeting Notes"
+            android:maxLines="1"
+            android:ellipsize="end"/>
 
         <TextView
             android:id="@+id/textViewRecipients"
@@ -36,7 +38,9 @@
             android:layout_marginTop="2dp"
             android:textColor="#6a707e"
             android:textSize="15sp"
-            android:text="Denny, Allisson"/>
+            android:text="Denny, Allisson"
+            android:maxLines="1"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 

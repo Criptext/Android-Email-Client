@@ -1,6 +1,5 @@
 package com.email.scenes.mailbox
 
-import android.app.Activity
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -15,11 +14,11 @@ import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
+import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
-import com.email.utils.Utility
+import com.email.scenes.mailbox.holders.FeedHolder
 import com.email.utils.VirtualList
-import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by sebas on 1/23/18.
@@ -27,10 +26,11 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 interface MailboxScene: ThreadListView {
 
+    fun setFeedList(feeds: List<ActivityFeed>)
     fun initDrawerLayout()
-    fun initNavHeader()
+    fun initNavHeader(fullName: String)
     fun onBackPressed()
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
+    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener, feedClickListener: FeedHolder.FeedClickListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -47,6 +47,9 @@ interface MailboxScene: ThreadListView {
 
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
+
+        lateinit var drawerMenuView: DrawerMenuView
+        lateinit var drawerFeedView: DrawerFeedView
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
@@ -73,10 +76,6 @@ interface MailboxScene: ThreadListView {
             mailboxView.findViewById<ImageView>(R.id.mailbox_nav_button)
         }
 
-        private val avatarView: CircleImageView by lazy {
-            mailboxView.findViewById<CircleImageView>(R.id.circleView)
-        }
-
         private lateinit var threadRecyclerView: ThreadRecyclerView
 
         var threadListener: EmailThreadAdapter.OnThreadEventListener? = null
@@ -85,9 +84,13 @@ interface MailboxScene: ThreadListView {
                 field = value
             }
 
-        override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener) {
+        override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+                                feedClickListener: FeedHolder.FeedClickListener) {
             threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadList)
             this.threadListener = threadEventListener
+
+            drawerMenuView = DrawerMenuView(leftNavigationView)
+            drawerFeedView = DrawerFeedView(rightNavigationView, feedClickListener)
         }
 
         override fun initDrawerLayout() {
@@ -105,9 +108,12 @@ interface MailboxScene: ThreadListView {
             }
         }
 
-        override fun initNavHeader() {
-            avatarView.setImageBitmap(Utility.getBitmapFromText("Daniel Tigse Palma",
-                    "D", 250, 250))
+        override fun initNavHeader(fullName: String) {
+            drawerMenuView.initNavHeader(fullName)
+        }
+
+        override fun setFeedList(feeds: List<ActivityFeed>) {
+            drawerFeedView.setFeedList(feeds)
         }
 
         override fun notifyThreadSetChanged() {

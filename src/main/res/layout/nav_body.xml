@@ -83,18 +83,6 @@
             android:textColor="@color/drawer_text"
             android:layout_weight="1"/>
 
-        <TextView
-            android:id="@+id/count_sent"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:text="+99"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
-
     </LinearLayout>
 
     <LinearLayout
@@ -172,18 +160,6 @@
             android:gravity="center_vertical"
             android:textColor="@color/drawer_text"
             android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/count_starred"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:text="+99"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
 
     </LinearLayout>
 
@@ -263,18 +239,6 @@
             android:textColor="@color/drawer_text"
             android:layout_weight="1"/>
 
-        <TextView
-            android:id="@+id/count_trash"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:text="+99"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
-
     </LinearLayout>
 
     <View
@@ -297,7 +261,8 @@
         android:layout_marginTop="5dp"
         android:id="@+id/slider_labels"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="@dimen/square_icon"
@@ -326,7 +291,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginRight="25dp"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"

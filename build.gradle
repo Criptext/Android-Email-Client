@@ -102,6 +102,13 @@ dependencies {
 
     //Gifs
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+<<<<<<< HEAD
 
+||||||| merged common ancestors
+=======
+
+    //Swipe Option
+    compile 'com.github.Tunous:SwipeActionView:1.1.0'
+>>>>>>> swipe options and drawerMenu classes
 }
 

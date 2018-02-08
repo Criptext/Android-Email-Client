@@ -6,4 +6,6 @@ package com.email.scenes.search.data
 
 class SearchResult(var subject: String, var recipients: String) {
 
+    var threadId: String? = null
+
 }
