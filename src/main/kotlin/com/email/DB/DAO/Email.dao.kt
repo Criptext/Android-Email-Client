@@ -32,4 +32,10 @@ import com.email.DB.models.Email
             "SET unread = :unread " +
             "where id=:id")
     fun toggleRead(id: Int, unread: Boolean)
+
+    @Query("UPDATE email " +
+            "SET isTrash = :isTrash " +
+            "where id=:id")
+    fun moveToTrash(id: Int, isTrash: Boolean)
+
 }

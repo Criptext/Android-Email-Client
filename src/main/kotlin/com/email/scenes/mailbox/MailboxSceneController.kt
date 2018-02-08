@@ -170,7 +170,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 toggleReadSelectedEmailThreads(item.title.toString())
             }
             R.id.mailbox_move_to -> {
-                TODO("Handle move to")
+                scene.showDialogMoveTo(moveToDataSourceHandler = scene.getMoveToSourceHandler())
             }
             R.id.mailbox_add_labels ->{
                 scene.showDialogLabelsChooser(labelDataSourceHandler = scene.getLabelDataSourceHandler())
@@ -216,4 +216,19 @@ class MailboxSceneController(private val scene: MailboxScene,
                 model.isInMultiSelect)
     }
 
+    fun moveSelectedEmailsToSpam(){
+        dataSource.moveSelectedEmailThreadsToSpam(model.selectedThreads.toList())
+        changeMode(multiSelectON = false, silent = false)
+
+        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
+        threadListController.setThreadList(fetchEmailThreads)
+        scene.notifyThreadSetChanged()
+    }
+
+    fun moveSelectedEmailsToTrash(){
+        dataSource.moveSelectedEmailThreadsToTrash(model.selectedThreads.toList())
+        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
+        threadListController.setThreadList(fetchEmailThreads)
+        scene.notifyThreadSetChanged()
+    }
 }

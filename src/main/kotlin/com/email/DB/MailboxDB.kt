@@ -23,6 +23,8 @@ interface MailboxLocalDB {
     fun createLabelEmailRelation(labelId: Int, emailId: Int)
     fun changeMessagesToRead(emailThreads: List<EmailThread>)
     fun changeMessagesToUnRead(emailThreads: List<EmailThread>)
+    fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
+    fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
 
 
     class Default(applicationContext: Context): MailboxLocalDB {
@@ -99,6 +101,17 @@ interface MailboxLocalDB {
             emailThreads.forEach {
                 db.emailDao().toggleRead(id = it.email.id,
                         unread = true )
+            }
+        }
+
+        override fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
+            TODO("MOVE EMAILS TO SPAM")
+        }
+
+        override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
+            emailThreads.forEach {
+                db.emailDao().moveToTrash(id = it.email.id,
+                        isTrash = true)
             }
         }
     }

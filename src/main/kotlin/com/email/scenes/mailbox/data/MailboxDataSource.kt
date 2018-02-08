@@ -49,4 +49,11 @@ class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
         return mailboxLocalDB.createLabelEmailRelation(labelId, emailId)
     }
 
+    fun  moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
+        mailboxLocalDB.moveSelectedEmailThreadsToTrash(emailThreads)
+    }
+
+    fun  moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
+        mailboxLocalDB.moveSelectedEmailThreadsToSpam(emailThreads)
+    }
 }

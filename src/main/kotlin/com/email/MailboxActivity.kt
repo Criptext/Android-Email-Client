@@ -8,10 +8,7 @@ import android.view.MenuItem
 import com.email.DB.MailboxLocalDB
 import com.email.androidui.SceneFactory
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.mailbox.MailboxSceneController
-import com.email.scenes.mailbox.MailboxSceneModel
-import com.email.scenes.mailbox.SelectedThreads
-import com.email.scenes.mailbox.ToolbarController
+import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.holders.ToolbarHolder
 
@@ -28,6 +25,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
     private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
     lateinit var labelDataSourceHandler: LabelDataSourceHandler
+    lateinit var moveToDataSourceHandler: MoveToDataSourceHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +36,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
         initController()
         labelDataSourceHandler = LabelDataSourceHandler(mailboxSceneController)
+        moveToDataSourceHandler = MoveToDataSourceHandler(mailboxSceneController)
     }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)

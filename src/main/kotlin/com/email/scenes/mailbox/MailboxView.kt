@@ -40,6 +40,8 @@ interface MailboxScene : ThreadListView{
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean)
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
+    fun getMoveToSourceHandler(): MoveToDataSourceHandler
+    fun showDialogMoveTo(moveToDataSourceHandler: MoveToDataSourceHandler)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
@@ -50,6 +52,7 @@ interface MailboxScene : ThreadListView{
         private val context = mailboxView.context
 
         private val labelChooserDialog = LabelChooserDialog(context)
+        private val moveToDialog = MoveToDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById(R.id.mailbox_recycler) as RecyclerView
@@ -162,13 +165,13 @@ interface MailboxScene : ThreadListView{
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
                 val toggleReadItem = activityMenu.findItemById(R.id.mailbox_message_toggle_read)
-                Utility.addTintToMenuItem(context = this.context,
+                Tint.addTintToMenuItem(context = this.context,
                         item = deleteItem)
                 Tint.addTintToMenuItem(context = this.context,
                         item = archiveItem)
                 Tint.addTintToMenuItem(context = this.context,
                         item = toggleReadItem)
-                Utility.addTintToMenuItem(context = this.context,
+               Tint.addTintToMenuItem(context = this.context,
                         item = toggleReadItem)
 
             } else {
@@ -192,6 +195,14 @@ interface MailboxScene : ThreadListView{
         override fun getLabelDataSourceHandler(): LabelDataSourceHandler {
             return (hostActivity as MailboxActivity).labelDataSourceHandler
         }
-    }
 
+        override fun getMoveToSourceHandler(): MoveToDataSourceHandler{
+            return (hostActivity as MailboxActivity).moveToDataSourceHandler
+        }
+
+        override fun showDialogMoveTo(moveToDataSourceHandler: MoveToDataSourceHandler) {
+            moveToDialog.showMoveToDialog(
+                    moveToDataSourceHandler = moveToDataSourceHandler)
+        }
+    }
 }
