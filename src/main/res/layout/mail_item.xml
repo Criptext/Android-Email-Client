@@ -9,7 +9,6 @@
     android:paddingRight="15dp"
     android:animateLayoutChanges="true">
     <include layout="@layout/mail_item_left_name"
-        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
@@ -36,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:layout_marginRight="50dp"
+                android:layout_marginEnd="10dp"
                 android:gravity="center_vertical"
                 android:textSize="17sp"
                 android:textColor="@color/textColorPrimary"
@@ -48,7 +47,7 @@
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:text="20"
-                android:layout_marginRight="50dp"
+                android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:textColor="#fff"
                 android:textSize="10sp"
@@ -59,23 +58,23 @@
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:text="20"
-                android:layout_marginRight="50dp"
+                android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:textColor="#fff"
                 android:textSize="10sp"
                 android:src="@drawable/attachment"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
             <TextView
                 android:id="@+id/email_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="75dp"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:layout_marginRight="10dp"
                 android:text="11:55 am"
                 android:gravity="center_vertical"
                 android:textSize="13sp"
-                android:textColor="#ccc"/>
+                android:textColor="#6a707e"/>
 
         </LinearLayout>
         <LinearLayout
@@ -98,7 +97,7 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_marginBottom="3dp"
-                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
                     android:textSize="16sp"
                     android:textColor="@color/colorSubject"/>
                 <TextView
@@ -109,8 +108,8 @@
                     android:ellipsize="end"
                     android:textSize="15sp"
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                    android:drawableLeft="@drawable/read_notification"
-                    android:drawablePadding="10px"
+                    android:drawableStart="@drawable/read_notification"
+                    android:drawablePadding="5dp"
                     android:textColor="#ccc"/>
             </LinearLayout>
         </LinearLayout>

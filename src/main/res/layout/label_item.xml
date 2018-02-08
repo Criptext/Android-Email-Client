@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_horizontal"
+    android:padding="10dp"
     >
     <TextView
         android:id="@+id/label_name"
@@ -15,6 +16,7 @@
         android:layout_gravity="start"
         android:textSize="15sp"
         android:text="This text should be changed"
+        android:layout_marginLeft="40dp"
         android:textColor="@color/label_buttons_text"
         />
     <CheckBox
@@ -22,7 +24,7 @@
         android:layout_gravity="end"
         android:layout_width="50dp"
         android:layout_weight="0.5"
-        android:layout_marginLeft="40dp"
-        android:buttonTint="@color/label_buttons_text"
+        android:layout_marginLeft ="100dp"
+        android:buttonTint="@color/colorOpen"
         android:layout_height="wrap_content" />
 </LinearLayout>

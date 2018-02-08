@@ -49,6 +49,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         if(emailThread.unread) {
             val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
             headerView.setTypeface(boldTypeface)
+            dateView.setTypeface(boldTypeface)
         } else {
             val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             headerView.setTypeface(normalTypeface)
@@ -83,17 +84,13 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     fun toggleSelectedStatus(selected: Boolean) {
         if(selected) {
-            val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_selected))
             avatarView.visibility = View.GONE
             iconBack.visibility = View.VISIBLE
-            dateView.setTypeface(boldTypeface)
         }else {
-            val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
-            dateView.setTypeface(normalTypeface)
         }
     }
     fun hideMultiselect() {

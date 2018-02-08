@@ -35,7 +35,7 @@ class LabelChooserDialog(val context: Context) {
         )
         labelChooserDialog = dialogBuilder.create()
         labelChooserDialog?.show()
-        labelChooserDialog?.getWindow()?.setLayout(500, 700)
+        labelChooserDialog?.getWindow()?.setLayout(600, 800)
         startController()
         initButtons(dialogView)
         assignButtonEvents(labelChooserDialog as AlertDialog,

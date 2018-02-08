@@ -4,6 +4,19 @@
     android:background="@drawable/label_chooser_shape"
     android:layout_height="wrap_content">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add labels"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:layout_marginLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="40dp"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="20sp"
+        />
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/label_recycler"
                 android:layout_gravity="center_horizontal"
