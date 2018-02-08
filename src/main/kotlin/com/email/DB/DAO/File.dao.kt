@@ -22,6 +22,11 @@ interface FileDao {
     @Query("SELECT * FROM file")
     fun getAll() : List<File>
 
+
+    @Query("SELECT * FROM file " +
+            "WHERE file.emailId=:emailId")
+    fun getAttachmentsFromEmail(emailId: Int) : List<File>
+
     @Delete
     fun deleteAll(files: List<File>)
 

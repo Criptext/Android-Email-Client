@@ -52,6 +52,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)
             }
+
+            scene.updateToolbarTitle()
         }
     }
 
@@ -198,7 +200,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun onMenuChanged(activityMenu: ActivityMenu) {
         if(model.isInMultiSelect) {
-            scene.tintIconsInMenu(activityMenu)
+            scene.tintIconsInMenuMultiSelectOn(activityMenu)
+        } else  {
+            scene.tintIconsInMenuMultiSelectOff(activityMenu)
         }
     }
 

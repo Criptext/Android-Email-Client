@@ -37,7 +37,8 @@ interface MailboxScene : ThreadListView{
     fun hideMultiModeBar()
     fun updateToolbarTitle()
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
-    fun tintIconsInMenu(activityMenu: ActivityMenu)
+    fun tintIconsInMenuMultiSelectOn(activityMenu: ActivityMenu)
+    fun tintIconsInMenuMultiSelectOff(activityMenu: ActivityMenu)
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
@@ -156,16 +157,26 @@ interface MailboxScene : ThreadListView{
             hostActivity.updateToolbarTitle()
         }
 
-        override fun tintIconsInMenu(activityMenu: ActivityMenu) {
+        override fun tintIconsInMenuMultiSelectOn(activityMenu: ActivityMenu) {
             val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
             val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
             val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
-            Utility.addTintInMultiMode(context = this.context,
+            Utility.addTint(context = this.context,
                     item = deleteItem)
-            Utility.addTintInMultiMode(context = this.context,
+            Utility.addTint(context = this.context,
                     item = archiveItem)
-            Utility.addTintInMultiMode(context = this.context,
+            Utility.addTint(context = this.context,
                     item = toggleReadItem)
+        }
+
+        override fun tintIconsInMenuMultiSelectOff(activityMenu: ActivityMenu) {
+            val search = activityMenu.findItemById(R.id.mailbox_search)
+            val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
+            Utility.addTint(context = this.context,
+                    item = search)
+
+            Utility.addTint(context = this.context,
+                    item = bellContainer)
         }
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:
