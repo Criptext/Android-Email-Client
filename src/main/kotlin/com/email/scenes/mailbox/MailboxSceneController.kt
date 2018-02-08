@@ -29,7 +29,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     val menuResourceId: Int
         get() = when {
             ! model.isInMultiSelect -> R.menu.mailbox_menu_normal_mode
-            else -> R.menu.mailbox_menu_multi_mode
+            model.hasSelectedUnreadMessages -> R.menu.mailbox_menu_multi_mode_unread
+            else -> R.menu.mailbox_menu_multi_mode_read
         }
 
     private val threadListController = ThreadListController(model.threads, scene)
@@ -113,7 +114,19 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    fun toggleReadSelectedEmailThreads() {
+    fun toggleReadSelectedEmailThreads(title: String) {
+        var emailThreads = model.selectedThreads.toList()
+        if(title == "read") {
+            dataSource.changeMessagesToUnRead(emailThreads)
+        } else {
+            dataSource.changeMessagesToRead(emailThreads)
+        }
+        changeMode(multiSelectON = false,
+                silent = false)
+
+        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
+        threadListController.setThreadList(fetchEmailThreads)
+        scene.notifyThreadSetChanged()
     }
 
     fun showMultiModeBar() {
@@ -152,9 +165,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 deleteSelectedEmailThreads()
             }
 
-            R.id.mailbox_toggle_read_selected_messages -> {
-                TODO("HANDLE TOGGLE READ SELECTED MESSAGES")
-                toggleReadSelectedEmailThreads()
+            R.id.mailbox_message_toggle_read -> {
+                toggleReadSelectedEmailThreads(item.title.toString())
             }
             R.id.mailbox_move_to -> {
                 TODO("Handle move to")
@@ -199,7 +211,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun onMenuChanged(activityMenu: ActivityMenu) {
-        scene.tintIconsInMenu(activityMenu, model.isInMultiSelect)
+        scene.tintIconsInMenu(activityMenu,
+                model.isInMultiSelect)
     }
 
 }

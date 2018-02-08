@@ -27,4 +27,9 @@ import com.email.DB.models.Email
 
     @Delete
     fun deleteAll(emails: List<Email>)
+
+    @Query("UPDATE email " +
+            "SET unread = :unread " +
+            "where id=:id")
+    fun toggleRead(id: Int, unread: Boolean)
 }

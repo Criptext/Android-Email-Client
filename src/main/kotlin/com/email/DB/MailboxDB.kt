@@ -21,6 +21,8 @@ interface MailboxLocalDB {
     fun seed()
     fun deleteEmailThreads(emailThreads: List<EmailThread>)
     fun createLabelEmailRelation(labelId: Int, emailId: Int)
+    fun changeMessagesToRead(emailThreads: List<EmailThread>)
+    fun changeMessagesToUnRead(emailThreads: List<EmailThread>)
 
 
     class Default(applicationContext: Context): MailboxLocalDB {
@@ -84,6 +86,20 @@ interface MailboxLocalDB {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
+        }
+
+        override fun changeMessagesToRead(emailThreads: List<EmailThread>) {
+            emailThreads.forEach {
+                db.emailDao().toggleRead(id = it.email.id,
+                        unread = false )
+            }
+        }
+
+        override fun changeMessagesToUnRead(emailThreads: List<EmailThread>) {
+            emailThreads.forEach {
+                db.emailDao().toggleRead(id = it.email.id,
+                        unread = true )
+            }
         }
     }
 

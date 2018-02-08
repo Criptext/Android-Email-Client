@@ -37,6 +37,14 @@ class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
         mailboxLocalDB.deleteEmailThreads(emailThreads)
     }
 
+    fun changeMessagesToRead(emailThreads: List<EmailThread>) {
+        mailboxLocalDB.changeMessagesToRead(emailThreads)
+    }
+
+    fun changeMessagesToUnRead(emailThreads: List<EmailThread>) {
+        mailboxLocalDB.changeMessagesToUnRead(emailThreads)
+    }
+
     fun createLabelEmailRelation(labelId: Int, emailId: Int) {
         return mailboxLocalDB.createLabelEmailRelation(labelId, emailId)
     }

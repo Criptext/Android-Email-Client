@@ -16,4 +16,6 @@ class MailboxSceneModel : SceneModel {
     val threads : ArrayList<EmailThread> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
+    val hasSelectedUnreadMessages: Boolean
+        get() = selectedThreads.hasUnreadThreads
 }

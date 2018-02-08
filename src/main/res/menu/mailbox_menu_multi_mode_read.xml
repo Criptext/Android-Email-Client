@@ -15,16 +15,10 @@
 
 
     <item
-        android:id="@+id/mailbox_message_read"
+        android:id="@+id/mailbox_message_toggle_read"
         android:icon="@drawable/ic_mail_2_copy"
         app:showAsAction="always"
-        android:title="Mark"/>
-    <item
-        android:id="@+id/mailbox_toggle_read_selected_messages"
-        android:icon="@drawable/inbox"
-        app:showAsAction="always"
-        android:visible="false"
-        android:title="Mark"/>
+        android:title="read"/>
 
     <item
         android:id="@+id/mailbox_move_to"

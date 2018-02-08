@@ -52,7 +52,7 @@ interface MailboxScene : ThreadListView{
         private val labelChooserDialog = LabelChooserDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
-            mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
+            mailboxView.findViewById(R.id.mailbox_recycler) as RecyclerView
         }
 
         val toolbar: Toolbar by lazy {
@@ -161,13 +161,16 @@ interface MailboxScene : ThreadListView{
             if(multiSelectON){
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
-                val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
-                Tint.addTintToMenuItem(context = this.context,
+                val toggleReadItem = activityMenu.findItemById(R.id.mailbox_message_toggle_read)
+                Utility.addTintToMenuItem(context = this.context,
                         item = deleteItem)
                 Tint.addTintToMenuItem(context = this.context,
                         item = archiveItem)
                 Tint.addTintToMenuItem(context = this.context,
                         item = toggleReadItem)
+                Utility.addTintToMenuItem(context = this.context,
+                        item = toggleReadItem)
+
             } else {
                 val search = activityMenu.findItemById(R.id.mailbox_search)
                 val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
