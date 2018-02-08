@@ -199,11 +199,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun onMenuChanged(activityMenu: ActivityMenu) {
-        if(model.isInMultiSelect) {
-            scene.tintIconsInMenuMultiSelectOn(activityMenu)
-        } else  {
-            scene.tintIconsInMenuMultiSelectOff(activityMenu)
-        }
+        scene.tintIconsInMenu(activityMenu, model.isInMultiSelect)
     }
 
 }

@@ -1,11 +1,13 @@
 package com.email.scenes.mailbox
 
 import android.app.Activity
+import android.media.Image
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.*
@@ -37,8 +39,7 @@ interface MailboxScene : ThreadListView{
     fun hideMultiModeBar()
     fun updateToolbarTitle()
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
-    fun tintIconsInMenuMultiSelectOn(activityMenu: ActivityMenu)
-    fun tintIconsInMenuMultiSelectOff(activityMenu: ActivityMenu)
+    fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean)
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
@@ -157,26 +158,27 @@ interface MailboxScene : ThreadListView{
             hostActivity.updateToolbarTitle()
         }
 
-        override fun tintIconsInMenuMultiSelectOn(activityMenu: ActivityMenu) {
-            val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
-            val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
-            val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
-            Utility.addTint(context = this.context,
-                    item = deleteItem)
-            Utility.addTint(context = this.context,
-                    item = archiveItem)
-            Utility.addTint(context = this.context,
-                    item = toggleReadItem)
-        }
+        override fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean) {
+            if(multiSelectON){
+                val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
+                val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
+                val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
+                Utility.addTintToMenuItem(context = this.context,
+                        item = deleteItem)
+                Utility.addTintToMenuItem(context = this.context,
+                        item = archiveItem)
+                Utility.addTintToMenuItem(context = this.context,
+                        item = toggleReadItem)
+            } else {
+                val search = activityMenu.findItemById(R.id.mailbox_search)
+                val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
+                val bell = bellContainer.actionView.findViewById(R.id.mailbox_activity_feed) as ImageView
+                Utility.addTintToMenuItem(context = this.context,
+                        item = search)
 
-        override fun tintIconsInMenuMultiSelectOff(activityMenu: ActivityMenu) {
-            val search = activityMenu.findItemById(R.id.mailbox_search)
-            val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
-            Utility.addTint(context = this.context,
-                    item = search)
-
-            Utility.addTint(context = this.context,
-                    item = bellContainer)
+                Utility.addTintToImage(context = this.context,
+                        imageView = bell)
+            }
         }
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:

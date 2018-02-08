@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException
 class Utility {
     companion object {
 
-        fun addTint(context: Context, item: MenuItem) {
+        fun addTintToMenuItem(context: Context, item: MenuItem) {
             var drawable : Drawable? = item.icon
 
             if(drawable == null) {
@@ -36,6 +36,11 @@ class Utility {
             item.setIcon(drawable)
         }
 
+        fun addTintToImage(context: Context, imageView: ImageView) {
+            ImageViewCompat.setImageTintList(imageView,
+                    ColorStateList.valueOf(ContextCompat.getColor
+                    (context, R.color.multiModeTint)))
+        }
         fun getBitmapFromText(fullName: String, firstLetter: String, width: Int, height: Int): Bitmap {
 
             val drawable = TextDrawable.builder().buildRound(firstLetter, colorByName(fullName))
