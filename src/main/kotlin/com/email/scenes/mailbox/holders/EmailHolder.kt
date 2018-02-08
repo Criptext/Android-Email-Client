@@ -42,6 +42,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         previewView.text = emailThread.headerPreview
         headerView.text = emailThread.headerPreview
         avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
+
     }
 
 

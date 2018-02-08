@@ -8,6 +8,7 @@ import android.content.Context
 import com.email.DB.DAO.EmailDao
 import com.email.DB.DAO.EmailLabelJoinDao
 import com.email.DB.DAO.LabelDao
+import com.email.DB.TypeConverters.BooleanConverter
 import com.email.DB.TypeConverters.DateConverter
 import com.email.DB.models.Email
 import com.email.DB.models.EmailLabel
@@ -18,7 +19,7 @@ import com.email.DB.models.Label
  */
 
 @Database(entities = arrayOf(Email::class, Label::class, EmailLabel::class), version = 1, exportSchema = false)
-@TypeConverters(DateConverter::class)
+@TypeConverters(DateConverter::class, BooleanConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao
