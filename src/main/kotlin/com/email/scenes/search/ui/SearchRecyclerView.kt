@@ -13,7 +13,7 @@ import com.email.scenes.search.holders.SearchEmailAdapter
 
 class SearchRecyclerView(val recyclerView: RecyclerView){
 
-    val ctx: Context = recyclerView.context
+    private val ctx: Context = recyclerView.context
     private val searchEmailAdapter = SearchEmailAdapter()
 
     init {

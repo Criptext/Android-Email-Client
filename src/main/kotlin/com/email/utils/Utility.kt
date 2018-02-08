@@ -11,9 +11,6 @@ class Utility {
 
     companion object {
 
-        val FEED_MAIL = 1
-        val FEED_FILE = 2
-        
         fun getBitmapFromText(fullName: String, firstLetter: String, width: Int, height: Int): Bitmap {
 
             val drawable = TextDrawable.builder().buildRound(firstLetter, colorByName(fullName))

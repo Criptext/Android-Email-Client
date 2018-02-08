@@ -1,13 +1,19 @@
 package com.email
 
+import android.content.Context
+import android.os.Bundle
+import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
-import com.email.DB.FeedLocallDB
+import com.email.DB.FeedLocalDB
 import com.email.DB.MailboxLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.utils.VirtualList
 
 /**
@@ -24,7 +30,7 @@ class MailboxActivity : BaseActivity(), IHostActivity {
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(rootView, this,
                 VirtualEmailThreadList(model.threads))
-        val DBF : FeedLocallDB.Default = FeedLocallDB.Default(this.applicationContext)
+        val DBF : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
         return MailboxSceneController(
                 scene = scene,
                 model = model,

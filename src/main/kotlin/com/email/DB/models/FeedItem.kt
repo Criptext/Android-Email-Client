@@ -9,8 +9,8 @@ import java.util.*
  * Created by danieltigse on 2/7/18.
  */
 
-@Entity(tableName = "feed")
-class Feed(
+@Entity(tableName = "feedItem")
+class FeedItem(
         @PrimaryKey(autoGenerate = true)
         var id:Int,
 

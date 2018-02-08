@@ -4,8 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
-import com.email.DB.models.Feed
-import com.email.DB.models.Label
+import com.email.DB.models.FeedItem
 
 /**
  * Created by danieltigse on 2/7/18.
@@ -14,11 +13,11 @@ import com.email.DB.models.Label
 @Dao
 interface FeedDao {
     @Insert
-    fun insertAll(feeds: List<Feed>)
+    fun insertAll(feedItems: List<FeedItem>)
 
-    @Query("SELECT * FROM feed")
-    fun getAll() : List<Feed>
+    @Query("SELECT * FROM feedItem")
+    fun getAll() : List<FeedItem>
 
     @Delete
-    fun deleteAll(feeds: List<Feed>)
+    fun deleteAll(feedItems: List<FeedItem>)
 }

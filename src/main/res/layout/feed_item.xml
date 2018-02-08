@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.thanel.swipeactionview.SwipeActionView
+<com.chauthai.swipereveallayout.SwipeRevealLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipeView"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <!-- LEFT VIEW -->
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    android:layout_height="match_parent"
+    android:id="@+id/swipeView"
+    android:foreground="?attr/selectableItemBackground"
+    app:mode="same_level"
+    app:dragEdge="right">
 
     <!-- RIGHT VIEW -->
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:layout_gravity="end"
         android:orientation="horizontal">
 
@@ -23,16 +22,17 @@
             android:layout_height="66dp"
             android:gravity="center"
             android:background="#9b9b9b"
-            android:orientation="vertical"
-            android:foreground="?attr/selectableItemBackground">
+            android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/imageViewMuteButton"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:src="@drawable/mute"
                 android:tint="@android:color/white"/>
 
             <TextView
+                android:id="@+id/textViewMute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -48,8 +48,7 @@
             android:layout_height="66dp"
             android:gravity="center"
             android:background="#dc4d48"
-            android:orientation="vertical"
-            android:foreground="?attr/selectableItemBackground">
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="12dp"
@@ -73,25 +72,18 @@
     <LinearLayout
         android:id="@+id/containerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:orientation="horizontal"
         android:background="@android:color/white"
         android:foreground="?attr/selectableItemBackground">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/imageViewTypeFeed"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0.18"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/imageViewTypeFeed"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="25dp"
-                android:src="@drawable/attachment"/>
-
-        </LinearLayout>
+            android:padding="12dp"
+            android:src="@drawable/attachment"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -125,6 +117,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/viewDate"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
@@ -158,4 +151,4 @@
 
     </LinearLayout>
 
-</me.thanel.swipeactionview.SwipeActionView>
+</com.chauthai.swipereveallayout.SwipeRevealLayout>

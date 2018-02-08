@@ -6,29 +6,30 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.email.R
 import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.utils.Utility
 import com.squareup.picasso.Picasso
-import me.thanel.swipeactionview.SwipeActionView
-import me.thanel.swipeactionview.SwipeDirection
-import me.thanel.swipeactionview.SwipeGestureListener
 
 /**
  * Created by danieltigse on 2/7/18.
  */
 
-class FeedHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLayout.SwipeListener{
 
-    val swipeView: SwipeActionView
+    val swipeView: SwipeRevealLayout
     val containerView: LinearLayout
     val imageViewTypeFeed: ImageView
     val imageViewMute: ImageView
+    val imageViewMuteButton: ImageView
+    val textViewMute: TextView
     val textViewTitle: TextView
     val textViewDetail: TextView
     val textViewDate: TextView
     val viewMute: View
     val viewDelete: View
+    val viewDate: View
 
     init {
 
@@ -36,24 +37,15 @@ class FeedHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListen
         containerView = view.findViewById(R.id.containerView)
         viewDelete = view.findViewById(R.id.viewDelete)
         viewMute = view.findViewById(R.id.viewMute)
+        viewDate = view.findViewById(R.id.viewDate)
         imageViewTypeFeed = view.findViewById(R.id.imageViewTypeFeed)
         imageViewMute = view.findViewById(R.id.imageViewMute)
         textViewTitle = view.findViewById(R.id.textViewTitle)
+        imageViewMuteButton = view.findViewById(R.id.imageViewMuteButton)
+        textViewMute = view.findViewById(R.id.textViewMute)
         textViewDetail = view.findViewById(R.id.textViewDetail)
         textViewDate = view.findViewById(R.id.textViewDate)
-        view.setOnClickListener(this)
 
-        swipeView.setDirectionEnabled(SwipeDirection.Left, true)
-        swipeView.setDirectionEnabled(SwipeDirection.Right, false)
-        swipeView.swipeGestureListener = object : SwipeGestureListener {
-            override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
-                return false
-            }
-
-            override fun onSwipedRight(swipeActionView: SwipeActionView): Boolean {
-                return false
-            }
-        }
     }
 
     fun bindFeed(activityFeed: ActivityFeed, listener: FeedClickListener) {
@@ -65,33 +57,55 @@ class FeedHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListen
             containerView.setBackgroundColor(Color.WHITE)
         }
 
-        if(activityFeed.feedType == Utility.FEED_MAIL){
+        if(activityFeed.feedType == ActivityFeed.FeedItemTypes.Mail.ordinal){
             Picasso.with(swipeView.context).load(R.drawable.read).into(imageViewTypeFeed)
         }
-        else if(activityFeed.feedType == Utility.FEED_FILE){
+        else if(activityFeed.feedType == ActivityFeed.FeedItemTypes.File.ordinal){
             Picasso.with(swipeView.context).load(R.drawable.attachment).into(imageViewTypeFeed)
         }
 
         if(activityFeed.isMuted) {
             imageViewMute.visibility = View.VISIBLE
+            Picasso.with(imageViewMuteButton.context).load(R.drawable.activity_feed).into(imageViewMuteButton)
+            textViewMute.text = textViewMute.resources.getText(R.string.unmute)
         }
         else{
             imageViewMute.visibility = View.GONE
+            Picasso.with(imageViewMuteButton.context).load(R.drawable.mute).into(imageViewMuteButton)
+            textViewMute.text = textViewMute.resources.getText(R.string.mute)
         }
 
         textViewTitle.text = activityFeed.feedTitle
         textViewDetail.text = activityFeed.feedSubtitle
 
         viewMute.setOnClickListener {
+            activityFeed.isMuted = !activityFeed.isMuted
             listener.onFeedMuted(activityFeed)
+            swipeView.close(true)
         }
 
         viewDelete.setOnClickListener {
             listener.onFeedDeleted(activityFeed)
+            swipeView.close(true)
         }
+
+        viewDate.setOnClickListener({
+            swipeView.close(true)
+        })
+
+        swipeView.setSwipeListener(this)
     }
 
-    override fun onClick(p0: View?) {
+    override fun onOpened(view: SwipeRevealLayout?) {
+        swipeView.setLockDrag(true)
+    }
+
+    override fun onClosed(view: SwipeRevealLayout?) {
+        swipeView.setLockDrag(false)
+    }
+
+    override fun onSlide(view: SwipeRevealLayout?, slideOffset: Float) {
+
     }
 
     interface FeedClickListener{

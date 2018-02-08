@@ -21,7 +21,7 @@ import com.email.DB.models.*
         EmailUser::class,
         File::class,
         Open::class,
-        Feed::class
+        FeedItem::class
         ),
         version = 1,
         exportSchema = false)

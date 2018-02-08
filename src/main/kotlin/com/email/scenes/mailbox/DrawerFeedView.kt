@@ -1,25 +1,23 @@
 package com.email.scenes.mailbox
 
+import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.email.R
 import com.email.scenes.mailbox.data.ActivityFeed
-import com.email.scenes.mailbox.holders.FeedHolder
+import com.email.scenes.mailbox.holders.FeedItemHolder
 import com.email.scenes.mailbox.ui.FeedRecyclerView
-import com.email.utils.Utility
-import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by danieltigse on 2/7/18.
  */
 
-class DrawerFeedView(navigationView: NavigationView, feedClickListener: FeedHolder.FeedClickListener){
+class DrawerFeedView(navigationView: NavigationView, feedClickListener: FeedItemHolder.FeedClickListener){
 
-    val viewNoActivity : LinearLayout
-    val recyclerViewFeed: RecyclerView
+    private val viewNoActivity : LinearLayout
+    private val recyclerViewFeed: RecyclerView
 
     private var feedRecyclerView: FeedRecyclerView
 
@@ -30,9 +28,20 @@ class DrawerFeedView(navigationView: NavigationView, feedClickListener: FeedHold
         feedRecyclerView = FeedRecyclerView(recyclerViewFeed, feedClickListener)
     }
 
-    fun setFeedList(feeds: List<ActivityFeed>){
+    fun setFeedList(feeds: MutableList<ActivityFeed>){
         feedRecyclerView.setFeedList(feeds)
         viewNoActivity.visibility = View.GONE
+    }
+
+    fun notifyItemChanged(activityFeed: ActivityFeed) {
+        feedRecyclerView.notifyItemChanged(activityFeed)
+    }
+
+    fun notifyItemRemoved(activityFeed: ActivityFeed) {
+        feedRecyclerView.notifyItemRemoved(activityFeed)
+        if(feedRecyclerView.isFeedListEmpty()){
+            viewNoActivity.visibility = View.VISIBLE
+        }
     }
 
 }

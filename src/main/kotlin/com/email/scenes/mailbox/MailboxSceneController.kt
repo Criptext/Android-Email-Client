@@ -11,7 +11,7 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.scenes.mailbox.holders.FeedHolder
+import com.email.scenes.mailbox.holders.FeedItemHolder
 
 /**
  * Created by sebas on 1/30/18.
@@ -78,14 +78,16 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    private val feedClickListener = object : FeedHolder.FeedClickListener{
+    private val feedClickListener = object : FeedItemHolder.FeedClickListener{
 
         override fun onFeedMuted(activityFeed: ActivityFeed) {
-
+            feedDataSource.updateFeed(activityFeed)
+            scene.notifyFeedChanged(activityFeed)
         }
 
         override fun onFeedDeleted(activityFeed: ActivityFeed) {
-
+            feedDataSource.deleteFeed(activityFeed)
+            scene.notifyFeedRemoved(activityFeed)
         }
 
     }
@@ -100,7 +102,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         threadListController.setThreadList(emailThreads)
 
         feedDataSource.seed()
-        scene.setFeedList(feedDataSource.getFeeds())
+        scene.setFeedList(feedDataSource.getFeeds() as MutableList<ActivityFeed>)
     }
 
     override fun onStop() {
@@ -165,11 +167,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId) {
             R.id.mailbox_search -> {
-                TODO("HANDLE SEARCH CLICK...")
+                scene.openSearchActivity()
             }
-
             R.id.mailbox_bell_container -> {
-                TODO("HANDLE BELL CLICK...")
+                scene.openFeedActivity()
             }
             R.id.mailbox_archive_selected_messages -> {
                 archiveSelectedEmailThreads()

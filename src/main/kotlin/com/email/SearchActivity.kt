@@ -14,7 +14,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  * Created by danieltigse on 2/2/18.
  */
 
-class SearchActivity : AppCompatActivity(), IHostActivity {
+class SearchActivity : BaseActivity() {
 
     private lateinit var searchSceneController: SearchSceneController
     private var searchSceneModel : SearchSceneModel = SearchSceneModel()
@@ -26,11 +26,7 @@ class SearchActivity : AppCompatActivity(), IHostActivity {
         initController()
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
-    }
-
-    override fun initController() {
+    private fun initController() {
         val DB : SearchLocalDB.Default = SearchLocalDB.Default(this.applicationContext)
         searchSceneController = SearchSceneController(
                 SearchScene.SearchSceneView(this),

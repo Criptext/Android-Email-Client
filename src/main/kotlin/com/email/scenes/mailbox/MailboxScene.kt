@@ -1,5 +1,7 @@
 package com.email.scenes.mailbox
 
+import android.app.Activity
+import android.content.Intent
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -9,15 +11,17 @@ import android.view.View
 import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
+import com.email.MailboxActivity
 import com.email.R
+import com.email.SearchActivity
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.mailbox.holders.FeedItemHolder
 import com.email.scenes.mailbox.holders.ToolbarHolder
-import com.email.scenes.mailbox.holders.FeedHolder
 import com.email.utils.VirtualList
 
 /**
@@ -26,17 +30,21 @@ import com.email.utils.VirtualList
 
 interface MailboxScene: ThreadListView {
 
-    fun setFeedList(feeds: List<ActivityFeed>)
+    fun setFeedList(feeds: MutableList<ActivityFeed>)
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed()
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener, feedClickListener: FeedHolder.FeedClickListener)
+    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener, feedClickListener: FeedItemHolder.FeedClickListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun openSearchActivity()
+    fun openFeedActivity()
+    fun notifyFeedChanged(activityFeed: ActivityFeed)
+    fun notifyFeedRemoved(activityFeed: ActivityFeed)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -85,7 +93,7 @@ interface MailboxScene: ThreadListView {
             }
 
         override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
-                                feedClickListener: FeedHolder.FeedClickListener) {
+                                feedClickListener: FeedItemHolder.FeedClickListener){
             threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadList)
             this.threadListener = threadEventListener
 
@@ -112,7 +120,7 @@ interface MailboxScene: ThreadListView {
             drawerMenuView.initNavHeader(fullName)
         }
 
-        override fun setFeedList(feeds: List<ActivityFeed>) {
+        override fun setFeedList(feeds: MutableList<ActivityFeed>) {
             drawerFeedView.setFeedList(feeds)
         }
 
@@ -155,6 +163,23 @@ interface MailboxScene: ThreadListView {
         override fun showDialogLabelsChooser( labelDataSourceHandler:
                                               LabelDataSourceHandler ) {
             labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
+        }
+
+        override fun openSearchActivity(){
+            (hostActivity as MailboxActivity).startActivity(Intent(hostActivity, SearchActivity::class.java))
+            hostActivity.overridePendingTransition(0,0)
+        }
+
+        override fun openFeedActivity(){
+            drawerLayout.openDrawer(GravityCompat.END)
+        }
+
+        override fun notifyFeedChanged(activityFeed: ActivityFeed){
+            drawerFeedView.notifyItemChanged(activityFeed)
+        }
+
+        override fun notifyFeedRemoved(activityFeed: ActivityFeed){
+            drawerFeedView.notifyItemRemoved(activityFeed)
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
