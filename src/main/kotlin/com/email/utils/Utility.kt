@@ -1,15 +1,6 @@
 package com.email.utils
 
-import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.*
-import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.widget.ImageViewCompat
-import android.view.MenuItem
-import android.widget.ImageView
-import com.email.R
 import com.email.utils.ui.TextDrawable
 import java.security.NoSuchAlgorithmException
 
@@ -17,30 +8,9 @@ import java.security.NoSuchAlgorithmException
  * Created by hirobreak on 06/04/17.
  */
 class Utility {
+
     companion object {
 
-        fun addTintToMenuItem(context: Context, item: MenuItem) {
-            var drawable : Drawable? = item.icon
-
-            if(drawable == null) {
-                val activityFeed = item.actionView
-                        .findViewById(R.id.mailbox_activity_feed) as ImageView
-                ImageViewCompat.setImageTintList(activityFeed,
-                        ColorStateList.valueOf(ContextCompat.getColor
-                (context, R.color.multiModeTint)))
-                return
-            }
-
-            drawable = DrawableCompat.wrap(drawable)
-            DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.multiModeTint));
-            item.setIcon(drawable)
-        }
-
-        fun addTintToImage(context: Context, imageView: ImageView) {
-            ImageViewCompat.setImageTintList(imageView,
-                    ColorStateList.valueOf(ContextCompat.getColor
-                    (context, R.color.multiModeTint)))
-        }
         fun getBitmapFromText(fullName: String, firstLetter: String, width: Int, height: Int): Bitmap {
 
             val drawable = TextDrawable.builder().buildRound(firstLetter, colorByName(fullName))

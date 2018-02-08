@@ -1,13 +1,11 @@
 package com.email.scenes.mailbox
 
 import android.app.Activity
-import android.media.Image
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.*
@@ -21,6 +19,7 @@ import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.utils.Utility
+import com.email.utils.ui.Tint
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
@@ -163,20 +162,20 @@ interface MailboxScene : ThreadListView{
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
                 val toggleReadItem = activityMenu.findItemById(R.id.mailbox_toggle_read_selected_messages)
-                Utility.addTintToMenuItem(context = this.context,
+                Tint.addTintToMenuItem(context = this.context,
                         item = deleteItem)
-                Utility.addTintToMenuItem(context = this.context,
+                Tint.addTintToMenuItem(context = this.context,
                         item = archiveItem)
-                Utility.addTintToMenuItem(context = this.context,
+                Tint.addTintToMenuItem(context = this.context,
                         item = toggleReadItem)
             } else {
                 val search = activityMenu.findItemById(R.id.mailbox_search)
                 val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
                 val bell = bellContainer.actionView.findViewById(R.id.mailbox_activity_feed) as ImageView
-                Utility.addTintToMenuItem(context = this.context,
+                Tint.addTintToMenuItem(context = this.context,
                         item = search)
 
-                Utility.addTintToImage(context = this.context,
+                Tint.addTintToImage(context = this.context,
                         imageView = bell)
             }
         }
