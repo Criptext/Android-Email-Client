@@ -4,7 +4,7 @@
     <item
         android:id="@+id/mailbox_search"
         android:title="Search"
-        android:icon="@drawable/shape"
+        android:icon="@drawable/search"
         android:layout_height="@dimen/menu_item_icon_size"
         android:layout_width="@dimen/menu_item_icon_size"
         app:showAsAction="always" />

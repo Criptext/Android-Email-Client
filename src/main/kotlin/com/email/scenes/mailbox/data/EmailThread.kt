@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox.data
 
+import android.text.BoringLayout
 import com.email.DB.models.Email
 import com.email.DB.models.Label
 import com.email.SecureEmail
@@ -12,6 +13,8 @@ import java.util.*
 
 class EmailThread(val email : Email, val labelsOfMail :ArrayList<Label>) {
 
+    val unread :Boolean
+        get() = email.unread
     val threadId = email.threadid
     val timestamp: Date
         get() = email.date

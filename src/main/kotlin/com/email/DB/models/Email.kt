@@ -4,7 +4,6 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
-import java.time.LocalDate
 import java.util.*
 
 /**
@@ -23,10 +22,10 @@ public class Email(
         var threadid : String,
 
         @ColumnInfo(name = "unread")
-        var unread : Byte,
+        var unread : Boolean,
 
         @ColumnInfo(name = "secure")
-        var secure : Byte,
+        var secure : Boolean,
 
         @ColumnInfo(name = "content")
         var content : String,
@@ -44,10 +43,10 @@ public class Email(
         var date : Date,
 
         @ColumnInfo(name = "isTrash")
-        var isTrash : Byte,
+        var isTrash : Boolean,
 
         @ColumnInfo(name = "isDraft")
-        var isDraft : Byte
+        var isDraft : Boolean
 ) {
 
 

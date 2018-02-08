@@ -8,7 +8,8 @@
 
     <ImageView
         android:layout_gravity="center"
-        android:src="@drawable/alarm_bell"
+        android:id="@+id/mailbox_activity_feed"
+        android:src="@drawable/activity_feed"
         android:layout_height="@dimen/menu_item_icon_size"
         android:layout_width="@dimen/menu_item_icon_size"
         />

@@ -4,9 +4,7 @@ import android.content.Context
 import com.email.DB.models.Email
 import com.email.DB.models.EmailLabel
 import com.email.DB.models.Label
-import com.email.DB.seeders.EmailLabelSeeder
-import com.email.DB.seeders.EmailSeeder
-import com.email.DB.seeders.LabelSeeder
+import com.email.DB.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.LabelChooser.data.LabelThread
 
@@ -15,10 +13,10 @@ import com.email.scenes.LabelChooser.data.LabelThread
  */
 
 interface MailboxLocalDB {
-    fun getAllEmailThreads(): ArrayList<EmailThread>
-    fun getArchivedEmailThreads(): ArrayList<EmailThread>
-    fun getAllLabels(): ArrayList<LabelThread>
-    fun getNotArchivedEmailThreads(): ArrayList<EmailThread>
+    fun getAllEmailThreads(): List<EmailThread>
+    fun getArchivedEmailThreads(): List<EmailThread>
+    fun getAllLabels(): List<LabelThread>
+    fun getNotArchivedEmailThreads(): List<EmailThread>
     fun removeLabelsRelation(labels: List<Label>, emailId: Int)
     fun seed()
     fun deleteEmailThreads(emailThreads: List<EmailThread>)
@@ -32,27 +30,27 @@ interface MailboxLocalDB {
             return db.emailLabelDao().insert(emailLabel)
         }
 
-        private val db = AppDatabase.getAppDatabase(applicationContext)
+        private val db = AppDatabase.getAppDatabase(applicationContext)!!
 
-        override fun getAllEmailThreads(): ArrayList<EmailThread> {
+        override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
             } as ArrayList<EmailThread>
         }
 
-        override fun getArchivedEmailThreads(): ArrayList<EmailThread> {
+        override fun getArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = ArrayList())
             } as ArrayList<EmailThread>
         }
 
-        override fun getNotArchivedEmailThreads(): ArrayList<EmailThread> {
+        override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
                 EmailThread(email = email,
                         labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
-            } as ArrayList<EmailThread>
+            }
         }
 
         override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
@@ -66,6 +64,10 @@ interface MailboxLocalDB {
                 LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
+                UserSeeder.seed(db.userDao())
+                FileSeeder.seed(db.fileDao())
+                OpenSeeder.seed(db.openDao())
+                EmailUserSeeder.seed(db.emailUserDao())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -78,7 +80,7 @@ interface MailboxLocalDB {
             db.emailDao().deleteAll(emails)
         }
 
-        override fun getAllLabels(): ArrayList<LabelThread> {
+        override fun getAllLabels(): List<LabelThread> {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
