@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="32dp"
     android:layout_height="32dp"
+    android:clickable="false"
     android:layout_gravity="center">
 
     <ImageView
@@ -12,6 +13,7 @@
         android:src="@drawable/activity_feed"
         android:layout_height="@dimen/menu_item_icon_size"
         android:layout_width="@dimen/menu_item_icon_size"
+        android:clickable="false"
         />
 
     <FrameLayout
@@ -20,7 +22,7 @@
         android:layout_height="14dp"
         android:layout_gravity="top|end"
         android:background="@drawable/circle_red"
-        android:visibility="visible"
+        android:clickable="false"
         tools:visibility="visible">
 
         <TextView
@@ -28,7 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/colorBackground"
+            android:clickable="false"
             android:textSize="10sp"
             tools:text="3"/>
 
