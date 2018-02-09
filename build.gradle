@@ -97,7 +97,5 @@ dependencies {
     //Caligraphy
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
-    // swipeView
-    compile 'com.github.Tunous:SwipeActionView:1.1.0'
 }
 

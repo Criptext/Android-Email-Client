@@ -109,10 +109,12 @@ interface MailboxLocalDB {
         }
 
         override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
-            emailThreads.forEach {
-                db.emailDao().moveToTrash(id = it.email.id,
-                        isTrash = true)
-            }
+            val emails = emailThreads.map {
+                    it.email.isTrash = true
+                    it.email
+                }
+
+            db.emailDao().update(emails)
         }
     }
 
