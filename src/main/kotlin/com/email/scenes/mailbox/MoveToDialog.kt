@@ -24,7 +24,9 @@ class MoveToDialog(val context: Context) {
 
         labelChooserDialog = dialogBuilder.create()
         labelChooserDialog?.show()
-        labelChooserDialog?.getWindow()?.setLayout(600, 800)
+        labelChooserDialog?.getWindow()?.setLayout(500, 480)
+        val drawableBackground = context.resources.getDrawable(R.drawable.dialog_label_chooser_shape)
+        labelChooserDialog?.window?.setBackgroundDrawable(drawableBackground)
 
         initButtons(dialogView)
         assignButtonEvents(labelChooserDialog!!,

@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox.holders
 
+import android.support.v4.widget.Space
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,11 +16,13 @@ class ToolbarHolder(val view: View) {
     private val numberEmails: TextView
     private val navButton: ImageView
     private val backButton: ImageView
+    private val separator: Space
     init {
         title = view.findViewById(R.id.mailbox_toolbar_title)
         numberEmails = view.findViewById(R.id.mailbox_number_emails)
         navButton = view.findViewById(R.id.mailbox_nav_button)
         backButton = view.findViewById(R.id.mailbox_back_button)
+        separator = view.findViewById(R.id.mailbox_toolbar_multi_mode_separator)
 
         Tint.addTintToImage(view.context, backButton)
     }
@@ -28,11 +31,12 @@ class ToolbarHolder(val view: View) {
         navButton.visibility = View.GONE
         numberEmails.visibility = View.GONE
         backButton.visibility = View.VISIBLE
+        separator.visibility = View.VISIBLE
         title.text = selectedThreadsQuantity.toString()
     }
 
     fun hideMultiModeBar() {
-
+        separator.visibility = View.GONE
         navButton.visibility = View.VISIBLE
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
@@ -41,5 +45,8 @@ class ToolbarHolder(val view: View) {
 
     fun updateToolbarTitle(title: String) {
         this.title.text = title
+    }
+    fun updateNumerOfMails(emailsSize: Int) {
+        numberEmails.text = "($emailsSize)"
     }
 }
