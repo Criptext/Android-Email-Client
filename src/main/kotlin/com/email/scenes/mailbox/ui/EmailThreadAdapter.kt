@@ -56,7 +56,7 @@ class EmailThreadAdapter(private val mContext : Context,
                     true
                 })
 
-        holder.toggleSelectedStatus(mail.isSelected)
+        holder.toggleStatus(mail.isSelected, mail.unread)
     }
 
     override fun getItemCount() = threadList.size

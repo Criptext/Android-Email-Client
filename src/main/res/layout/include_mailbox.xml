@@ -28,28 +28,46 @@
                 android:src="@drawable/menu"
                 />
 
-            <TextView
-                android:id="@+id/mailbox_toolbar_title"
-                android:layout_toRightOf="@+id/mailbox_nav_button"
+            <LinearLayout
+                android:layout_toEndOf="@id/mailbox_nav_button"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/titulo_mailbox"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_alignParentStart="false"
-                android:layout_marginLeft="10dp"/>
+                android:id="@+id/mailbox_title_layout"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/mailbox_back_button"
+                    android:src="@drawable/back"
+                    android:background="@drawable/mailbox_back_button_background"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:layout_height="40dp"
+                    android:layout_width="wrap_content" />
+
+                <TextView
+                    android:id="@+id/mailbox_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/titulo_mailbox"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="10dp"
+                    />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/mailbox_number_emails"
-                android:layout_toRightOf="@+id/mailbox_toolbar_title"
+                android:layout_toEndOf="@+id/mailbox_title_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
                 android:text="(2)"
                 android:alpha="0.3"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/mailbox_title_size"
                 android:layout_alignParentStart="false"/>

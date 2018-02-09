@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
 import com.email.scenes.MailItemHolder
@@ -13,6 +14,7 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.anim.FlipAnimator
+import com.email.utils.ui.Tint
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
@@ -22,6 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener , MailItemHolder {
 
     private val headerView : TextView
+    private val layout : LinearLayout
     private val subjectView : TextView
     private val previewView : TextView
     private val dateView : TextView
@@ -30,6 +33,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val attachment : ImageView
     private val avatarView: CircleImageView
     private val iconBack: ImageView
+    private val iconAttachments: ImageView
 
     init {
         view.setOnClickListener(this)
@@ -53,6 +57,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
             headerView.setTypeface(normalTypeface)
             dateView.setTypeface(normalTypeface)
+            layout.setBackgroundColor(view.resources.getColor(R.color.mailbox_mail_unread))
         }
     }
 
@@ -80,7 +85,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         view.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
     }
 
-    fun toggleSelectedStatus(selected: Boolean) {
+    fun toggleStatus(selected: Boolean, unread: Boolean) {
         if(selected) {
             view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_selected))
             avatarView.visibility = View.GONE
@@ -89,6 +94,11 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
+            if(unread) {
+                view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+            } else {
+                view.setBackgroundColor(view.resources.getColor(R.color.mailbox_mail_unread))
+            }
         }
     }
 
@@ -129,8 +139,10 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         dateView = view.findViewById(R.id.email_date)
         countView = view.findViewById(R.id.email_count)
         iconBack = view.findViewById(R.id.icon_back)
+        layout = view.findViewById(R.id.mail_item_layout)
         attachment = view.findViewById(R.id.email_has_attachments)
         context = view.context
+        iconAttachments = view.findViewById(R.id.email_has_attachments)
     }
 
 }
