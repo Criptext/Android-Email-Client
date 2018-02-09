@@ -30,16 +30,17 @@ class MailboxActivity : BaseActivity(), IHostActivity {
                 dataSource = MailboxDataSource(DB))
     }
 
-    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread> {
+
+    override fun refreshToolbarItems() {
+        this.invalidateOptionsMenu()
+    }
+  
+
+  private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread>  {
         override fun get(i: Int) = threads[i]
 
         override val size: Int
             get() = threads.size
     }
-
-    override fun refreshToolbarItems() {
-        this.invalidateOptionsMenu()
-    }
-
 }

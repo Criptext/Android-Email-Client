@@ -12,4 +12,5 @@ interface IHostActivity {
         fun findItemById(id: Int): MenuItem?
     }
 
+    fun setToolbarNumberOfEmails(emailsSize: Int)
 }

@@ -16,7 +16,7 @@
         android:layout_gravity="start"
         android:textSize="15sp"
         android:text="This text should be changed"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="15dp"
         android:textColor="@color/label_buttons_text"
         />
     <CheckBox
