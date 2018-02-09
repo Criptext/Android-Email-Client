@@ -33,6 +33,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             model.hasSelectedUnreadMessages -> R.menu.mailbox_menu_multi_mode_unread
             else -> R.menu.mailbox_menu_multi_mode_read
         }
+    val emailThreadSize : Int
+        get() = model.threads.size
+
 
     private val threadListController = ThreadListController(model.threads, scene)
 
@@ -77,10 +80,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.changeMode(multiSelectON, silent)
         scene.refreshToolbarItems()
         scene.updateToolbarTitle()
+
     }
 
     override fun onStart() {
-        scene.attachView(threadEventListener)
         scene.initDrawerLayout()
         scene.initNavHeader()
         dataSource.seed()
@@ -103,6 +106,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         changeMode(multiSelectON = false, silent = false)
         val fetchEmailThreads : List<EmailThread> = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(fetchEmailThreads)
+        scene.setToolbarNumberOfEmails(emailThreadSize)
         scene.notifyThreadSetChanged()
     }
     fun deleteSelectedEmailThreads() {
@@ -113,6 +117,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(fetchEmailThreads)
+        scene.setToolbarNumberOfEmails(emailThreadSize)
         scene.notifyThreadSetChanged()
     }
 

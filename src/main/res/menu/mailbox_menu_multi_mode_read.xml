@@ -21,12 +21,21 @@
         android:title="read"/>
 
     <item
-        android:id="@+id/mailbox_move_to"
-        app:showAsAction="collapseActionView"
-        android:title="@string/mailbox_move_to"/>
-    <item
-        android:id="@+id/mailbox_add_labels"
-        app:showAsAction="collapseActionView"
-        android:title="@string/mailbox_add_labels"/>
+        android:actionLayout="@layout/mailbox_more_layout"
+        app:showAsAction="always"
+        android:title="@string/more">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto" >
+            <item
+                android:id="@+id/mailbox_move_to"
+                app:showAsAction="always"
+                android:actionLayout="@layout/mail_item_option_move_to"
+                android:title="@string/mailbox_move_to"/>
+            <item
+                app:showAsAction="always"
+                android:id="@+id/mailbox_add_labels"
+                android:title="@string/mailbox_add_labels"/>
+        </menu>
+    </item>
 </menu>
 

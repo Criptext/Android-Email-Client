@@ -51,6 +51,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         mailboxSceneController.onStart()
         toolbarHolder = ToolbarHolder(mailboxSceneController.getToolbar())
         toolbarController = ToolbarController(toolbarHolder)
+        toolbarController.onStart(mailboxSceneController.emailThreadSize)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -85,6 +86,10 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     override fun updateToolbarTitle() {
         toolbarController.updateToolbarTitle(mailboxSceneController.toolbarTitle)
+    }
+
+    override fun setToolbarNumberOfEmails(emailsSize: Int) {
+        toolbarController.updateNumerOfMails(emailsSize)
     }
 
     override fun addToolbar(toolbar: Toolbar) {

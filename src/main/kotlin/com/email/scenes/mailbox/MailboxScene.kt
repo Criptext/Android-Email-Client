@@ -44,6 +44,7 @@ interface MailboxScene : ThreadListView{
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
     fun getOnMoveThreadsListener(): OnMoveThreadsListener
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun setToolbarNumberOfEmails(emailsSize: Int)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -203,6 +204,10 @@ interface MailboxScene : ThreadListView{
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
                     moveToDataSourceHandler = onMoveThreadsListener)
+        }
+
+        override fun setToolbarNumberOfEmails(emailsSize: Int) {
+            hostActivity.setToolbarNumberOfEmails(emailsSize)
         }
     }
 }
