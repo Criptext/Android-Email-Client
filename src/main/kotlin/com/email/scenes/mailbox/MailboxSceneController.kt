@@ -116,12 +116,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     fun toggleReadSelectedEmailThreads(title: String) {
+        val unreadStatus = (title != "read")
         val emailThreads = model.selectedThreads.toList()
-        if(title == "read") {
-            dataSource.changeMessagesToUnRead(emailThreads)
-        } else {
-            dataSource.changeMessagesToRead(emailThreads)
-        }
+            dataSource.updateUnreadStatus(emailThreads = emailThreads,
+                    updateUnreadStatus = unreadStatus)
         changeMode(multiSelectON = false,
                 silent = false)
 
@@ -170,7 +168,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 toggleReadSelectedEmailThreads(item.title.toString())
             }
             R.id.mailbox_move_to -> {
-                scene.showDialogMoveTo(moveToDataSourceHandler = scene.getMoveToSourceHandler())
+                scene.showDialogMoveTo(onMoveThreadsListener = scene.getOnMoveThreadsListener())
             }
             R.id.mailbox_add_labels ->{
                 scene.showDialogLabelsChooser(labelDataSourceHandler = scene.getLabelDataSourceHandler())

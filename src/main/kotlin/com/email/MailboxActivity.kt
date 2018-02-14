@@ -25,7 +25,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
     private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
     lateinit var labelDataSourceHandler: LabelDataSourceHandler
-    lateinit var moveToDataSourceHandler: MoveToDataSourceHandler
+    lateinit var onMoveThreadsListener: OnMoveThreadsListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
         initController()
         labelDataSourceHandler = LabelDataSourceHandler(mailboxSceneController)
-        moveToDataSourceHandler = MoveToDataSourceHandler(mailboxSceneController)
+        onMoveThreadsListener = OnMoveThreadsListener(mailboxSceneController)
     }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)

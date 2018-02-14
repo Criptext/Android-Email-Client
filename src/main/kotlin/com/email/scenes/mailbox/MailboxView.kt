@@ -40,8 +40,8 @@ interface MailboxScene : ThreadListView{
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean)
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
-    fun getMoveToSourceHandler(): MoveToDataSourceHandler
-    fun showDialogMoveTo(moveToDataSourceHandler: MoveToDataSourceHandler)
+    fun getOnMoveThreadsListener(): OnMoveThreadsListener
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
 
     class MailboxSceneView(private val sceneContainer: ViewGroup,
                            private val mailboxView: View,
@@ -196,13 +196,13 @@ interface MailboxScene : ThreadListView{
             return (hostActivity as MailboxActivity).labelDataSourceHandler
         }
 
-        override fun getMoveToSourceHandler(): MoveToDataSourceHandler{
-            return (hostActivity as MailboxActivity).moveToDataSourceHandler
+        override fun getOnMoveThreadsListener(): OnMoveThreadsListener {
+            return (hostActivity as MailboxActivity).onMoveThreadsListener
         }
 
-        override fun showDialogMoveTo(moveToDataSourceHandler: MoveToDataSourceHandler) {
+        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
-                    moveToDataSourceHandler = moveToDataSourceHandler)
+                    moveToDataSourceHandler = onMoveThreadsListener)
         }
     }
 }

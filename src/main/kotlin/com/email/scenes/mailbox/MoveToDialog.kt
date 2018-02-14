@@ -16,7 +16,7 @@ class MoveToDialog(val context: Context) {
     private lateinit var btn_spam: Button
     private lateinit var btn_trash: Button
 
-    fun showMoveToDialog(moveToDataSourceHandler: MoveToDataSourceHandler) {
+    fun showMoveToDialog(moveToDataSourceHandler: OnMoveThreadsListener) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as MailboxActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_move_to, null)
@@ -38,7 +38,7 @@ class MoveToDialog(val context: Context) {
     }
 
     fun assignButtonEvents(dialog: AlertDialog,
-                           moveToDataSourceHandler: MoveToDataSourceHandler) {
+                           moveToDataSourceHandler: OnMoveThreadsListener) {
         btn_spam.setOnClickListener {
             moveToDataSourceHandler.moveToSpam()
             dialog.dismiss()
