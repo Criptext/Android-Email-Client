@@ -11,7 +11,6 @@ import com.email.scenes.mailbox.SelectedThreads
 interface IHostActivity {
     fun initController()
     fun getMailboxSceneController() : MailboxSceneController
-    fun getSelectedThreads() : SelectedThreads
     fun showMultiModeBar( selectedThreadsQuantity: Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle()

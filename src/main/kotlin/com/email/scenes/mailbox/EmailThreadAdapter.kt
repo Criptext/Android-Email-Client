@@ -4,10 +4,10 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
+import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 1/23/18.
@@ -15,7 +15,7 @@ import com.email.scenes.mailbox.holders.EmailHolder
 
 class EmailThreadAdapter(val mContext : Context,
                          var threadListener : OnThreadEventListener?,
-                         val threadListHandler: MailboxActivity.ThreadListHandler)
+                         val threadList: VirtualList<EmailThread>)
     : RecyclerView.Adapter<EmailHolder>() {
 
     var isMultiSelectMode = false
@@ -33,7 +33,7 @@ class EmailThreadAdapter(val mContext : Context,
 
     override fun onBindViewHolder(holder: EmailHolder?, position: Int) {
         if(holder?.itemView == null) return
-        val mail = threadListHandler.getThreadFromIndex(position)
+        val mail = threadList[position]
         holder.bindMail(mail)
         val itemClickListener = {
             toggleThreadSelection(mContext, mail, position)
@@ -59,9 +59,7 @@ class EmailThreadAdapter(val mContext : Context,
         holder.toggleSelectedStatus(mail.isSelected)
     }
 
-    override fun getItemCount(): Int {
-        return threadListHandler.getEmailThreadsCount()
-    }
+    override fun getItemCount() = threadList.size
 
 
     private fun createMailItemView(): View {

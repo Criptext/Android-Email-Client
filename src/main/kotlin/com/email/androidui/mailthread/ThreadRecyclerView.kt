@@ -5,13 +5,15 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.email.MailboxActivity
 import com.email.scenes.mailbox.EmailThreadAdapter
+import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.VirtualList
 
 class ThreadRecyclerView(val recyclerView: RecyclerView,
                          threadEventListener: EmailThreadAdapter.OnThreadEventListener?,
-                         threadListHandler: MailboxActivity.ThreadListHandler)  {
+                         threadList: VirtualList<EmailThread>)  {
 
     val ctx: Context = recyclerView.context
-    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadListHandler)
+    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadList)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
