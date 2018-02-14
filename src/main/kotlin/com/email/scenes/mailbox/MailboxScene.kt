@@ -3,6 +3,7 @@ package com.email.scenes.mailbox
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -158,12 +159,14 @@ interface MailboxScene: ThreadListView {
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
-                    moveToDataSourceHandler = onMoveThreadsListener)
+                    onMoveThreadsListener = onMoveThreadsListener)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {
-            hostActivity.setToolbarNumberOfEmails(emailsSize)
+            toolbarHolder.updateNumberOfMails(emailsSize)
         }
+
     }
+
 
 }

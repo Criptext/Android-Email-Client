@@ -4,10 +4,14 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.file.removeWithDiscrimination
 import java.util.*
 
-class SelectedThreads() {
+class SelectedThreads {
     private val selectedItems: LinkedList<EmailThread> = LinkedList()
 
     private var selectedUnreadItemCount = 0
+
+    val isInUnreadMode: Boolean
+        get() = if(selectedItems.isEmpty()) false
+        else  selectedItems[0].unread
 
     val hasUnreadThreads: Boolean
         get() = selectedUnreadItemCount > 0
@@ -39,5 +43,5 @@ class SelectedThreads() {
             selectedItems.map { it.threadId }
 
     fun toList() = selectedItems.toList()
-
 }
+

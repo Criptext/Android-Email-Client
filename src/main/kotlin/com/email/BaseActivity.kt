@@ -13,6 +13,8 @@ import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.params.SceneParams
 import com.email.scenes.params.SearchParams
 import com.email.scenes.search.SearchSceneModel
+import com.email.scenes.signin.SignInSceneModel
+import com.email.scenes.signup.SignUpSceneModel
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -33,7 +35,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
      * `findViewById` with this value to get the toolbar and set it as action bar. If no toolbar
      * is found your activity will crash.
      */
-    abstract val toolbarId: Int
+    abstract val toolbarId: Int?
 
     private lateinit var controller: SceneController
 
@@ -56,8 +58,12 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
 
-        val toolbar = findViewById<Toolbar>(toolbarId)
-        setSupportActionBar(toolbar)
+        val toolbarId = this.toolbarId
+        if(toolbarId != null) {
+            val toolbar = findViewById<Toolbar>(toolbarId)
+            setSupportActionBar(toolbar)
+        }
+
 
         val currentModel = getCachedModelOrThrow()
         controller = initController(currentModel)
@@ -123,6 +129,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         init {
             // set initial state
             cachedModels[MailboxActivity::class.java] = MailboxSceneModel()
+            cachedModels[SignInActivity::class.java] = SignInSceneModel()
+            cachedModels[SignUpActivity::class.java] = SignUpSceneModel()
         }
     }
 

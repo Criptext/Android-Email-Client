@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
             if(INSTANCE == null){
                 INSTANCE = Room.databaseBuilder(context,
                         AppDatabase::class.java,
-                        "encriptedMail")
+                        "encriptedMail1")
                         .allowMainThreadQueries() // remove this in production... !!!!
                         // .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
                         .build()

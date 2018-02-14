@@ -20,4 +20,6 @@ class MailboxSceneModel : SceneModel {
     val hasSelectedUnreadMessages: Boolean
         get() = selectedThreads.hasUnreadThreads
     val feedModel = FeedModel()
+    val isInUnreadMode: Boolean
+        get() = selectedThreads.isInUnreadMode
 }
