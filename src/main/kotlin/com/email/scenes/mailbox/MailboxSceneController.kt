@@ -12,6 +12,7 @@ import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.holders.FeedItemHolder
+import com.email.scenes.mailbox.ui.FeedListController
 
 /**
  * Created by sebas on 1/30/18.
@@ -33,6 +34,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
     private val threadListController = ThreadListController(model.threads, scene)
+    private val feedListController = FeedListController(model.feeds)
 
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
@@ -82,12 +84,18 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onFeedMuted(activityFeed: ActivityFeed) {
             feedDataSource.updateFeed(activityFeed)
-            scene.notifyFeedChanged(activityFeed)
+            val feeds = model.feeds
+            val index = feeds.indexOf(activityFeed)
+            feeds[index] = activityFeed
+            scene.notifyFeedChanged(index)
         }
 
         override fun onFeedDeleted(activityFeed: ActivityFeed) {
             feedDataSource.deleteFeed(activityFeed)
-            scene.notifyFeedRemoved(activityFeed)
+            val feeds = model.feeds
+            val index = feeds.indexOf(activityFeed)
+            feeds.removeAt(index)
+            scene.notifyFeedRemoved(index)
         }
 
     }
@@ -102,7 +110,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         threadListController.setThreadList(emailThreads)
 
         feedDataSource.seed()
-        scene.setFeedList(feedDataSource.getFeeds() as MutableList<ActivityFeed>)
+        val feedItems = feedDataSource.getFeeds()
+        feedListController.setFeedList(feedItems)
+        scene.showViewNoFeeds(feedItems.isEmpty())
     }
 
     override fun onStop() {

@@ -7,15 +7,14 @@ import com.email.R
 import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.holders.FeedItemHolder
 import com.chauthai.swipereveallayout.ViewBinderHelper
-import android.os.Bundle
+import com.email.utils.VirtualList
 
 /**
  * Created by danieltigse on 2/7/18.
  */
 
-class FeedItemAdapter(private val listener: FeedItemHolder.FeedClickListener): RecyclerView.Adapter<FeedItemHolder>() {
+class FeedItemAdapter(val feedsList: VirtualList<ActivityFeed>, private val listener: FeedItemHolder.FeedClickListener): RecyclerView.Adapter<FeedItemHolder>() {
 
-    lateinit var feeds : MutableList<ActivityFeed>
     private val viewBinderHelper = ViewBinderHelper()
 
     init {
@@ -24,14 +23,14 @@ class FeedItemAdapter(private val listener: FeedItemHolder.FeedClickListener): R
 
     override fun onBindViewHolder(holder: FeedItemHolder?, position: Int) {
         if(holder != null) {
-            val feed = feeds[position]
+            val feed = feedsList[position]
             holder.bindFeed(feed, listener)
             viewBinderHelper.bind(holder.swipeView, feed.feedId.toString())
         }
     }
 
     override fun getItemCount(): Int {
-        return feeds.size
+        return feedsList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemHolder {

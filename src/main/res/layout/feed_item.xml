@@ -19,7 +19,7 @@
         <LinearLayout
             android:id="@+id/viewMute"
             android:layout_width="100dp"
-            android:layout_height="66dp"
+            android:layout_height="75dp"
             android:gravity="center"
             android:background="#9b9b9b"
             android:orientation="vertical">
@@ -45,7 +45,7 @@
         <LinearLayout
             android:id="@+id/viewDelete"
             android:layout_width="100dp"
-            android:layout_height="66dp"
+            android:layout_height="75dp"
             android:gravity="center"
             android:background="#dc4d48"
             android:orientation="vertical">

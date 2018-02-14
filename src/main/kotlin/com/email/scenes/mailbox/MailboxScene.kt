@@ -30,7 +30,6 @@ import com.email.utils.VirtualList
 
 interface MailboxScene: ThreadListView {
 
-    fun setFeedList(feeds: MutableList<ActivityFeed>)
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed()
@@ -43,12 +42,14 @@ interface MailboxScene: ThreadListView {
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun openSearchActivity()
     fun openFeedActivity()
-    fun notifyFeedChanged(activityFeed: ActivityFeed)
-    fun notifyFeedRemoved(activityFeed: ActivityFeed)
+    fun notifyFeedChanged(index: Int)
+    fun notifyFeedRemoved(index: Int)
+    fun showViewNoFeeds(show: Boolean)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val threadList: VirtualList<EmailThread>)
+                           val threadList: VirtualList<EmailThread>,
+                           val feedList: VirtualList<ActivityFeed>)
         : MailboxScene {
 
         private val context = mailboxView.context
@@ -98,7 +99,7 @@ interface MailboxScene: ThreadListView {
             this.threadListener = threadEventListener
 
             drawerMenuView = DrawerMenuView(leftNavigationView)
-            drawerFeedView = DrawerFeedView(rightNavigationView, feedClickListener)
+            drawerFeedView = DrawerFeedView(feedList, rightNavigationView, feedClickListener)
         }
 
         override fun initDrawerLayout() {
@@ -118,10 +119,6 @@ interface MailboxScene: ThreadListView {
 
         override fun initNavHeader(fullName: String) {
             drawerMenuView.initNavHeader(fullName)
-        }
-
-        override fun setFeedList(feeds: MutableList<ActivityFeed>) {
-            drawerFeedView.setFeedList(feeds)
         }
 
         override fun notifyThreadSetChanged() {
@@ -174,12 +171,16 @@ interface MailboxScene: ThreadListView {
             drawerLayout.openDrawer(GravityCompat.END)
         }
 
-        override fun notifyFeedChanged(activityFeed: ActivityFeed){
-            drawerFeedView.notifyItemChanged(activityFeed)
+        override fun notifyFeedChanged(index: Int){
+            drawerFeedView.notifyItemChanged(index)
         }
 
-        override fun notifyFeedRemoved(activityFeed: ActivityFeed){
-            drawerFeedView.notifyItemRemoved(activityFeed)
+        override fun notifyFeedRemoved(index: Int){
+            drawerFeedView.notifyItemRemoved(index)
+        }
+
+        override fun showViewNoFeeds(show: Boolean){
+            drawerFeedView.showViewNoFeeds(show)
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {

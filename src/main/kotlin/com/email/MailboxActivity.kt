@@ -10,6 +10,7 @@ import com.email.DB.FeedLocalDB
 import com.email.DB.MailboxLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
+import com.email.scenes.mailbox.data.ActivityFeed
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
@@ -29,7 +30,7 @@ class MailboxActivity : BaseActivity(), IHostActivity {
         val model = MailboxSceneModel()
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(rootView, this,
-                VirtualEmailThreadList(model.threads))
+                VirtualEmailThreadList(model.threads), VirtualFeedList(model.feeds))
         val DBF : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
         return MailboxSceneController(
                 scene = scene,
