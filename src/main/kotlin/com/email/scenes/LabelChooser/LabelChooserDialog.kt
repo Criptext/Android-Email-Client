@@ -40,6 +40,8 @@ class LabelChooserDialog(private val context: Context) {
     fun showDialogLabelsChooser(dataSource: LabelDataSourceHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
+        val height = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_height).toInt()
+        val width = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_width).toInt()
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 
