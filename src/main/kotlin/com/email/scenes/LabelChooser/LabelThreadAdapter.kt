@@ -7,23 +7,24 @@ import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.LabelChooser.holders.LabelHolder
+import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 2/2/18.
  */
 
-class LabelThreadAdapter(val mContext : Context,
+class LabelThreadAdapter(private val mContext : Context,
                          var labelThreadListener : OnLabelThreadEventListener?,
-                         val labelThreadListHandler: LabelChooserDialog.LabelThreadListHandler)
+                         private val labelList: VirtualList<LabelThread>)
     : RecyclerView.Adapter<LabelHolder>() {
 
-    fun onToggleLabelSelection(labelThread: LabelThread, position: Int) {
+    private fun onToggleLabelSelection(labelThread: LabelThread, position: Int) {
         labelThreadListener?.onToggleLabelSelection(labelThread, position)
     }
 
     override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
         if(holder?.itemView == null) return
-        val labelThread = labelThreadListHandler.getLabelThreadFromIndex(position)
+        val labelThread = labelList[position]
         holder.bindLabel(labelThread)
 
         val itemClickListener = {
@@ -31,21 +32,17 @@ class LabelThreadAdapter(val mContext : Context,
         }
         holder.setOnCheckboxClickedListener(itemClickListener)
 
-        holder.itemView.setOnClickListener(
-                {
-                    onToggleLabelSelection(labelThread, position)
-                    true
-                })
+        holder.itemView.setOnClickListener({
+            onToggleLabelSelection(labelThread, position)
+        })
     }
 
     override fun getItemCount(): Int {
-        return labelThreadListHandler.getLabelThreadsCount()
+        return labelList.size
     }
 
-
     private fun createMailItemView(): View {
-        val labelItemView = View.inflate(mContext, R.layout.label_item, null )
-        return labelItemView
+        return View.inflate(mContext, R.layout.label_item, null )
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelHolder {
         val itemView : View = createMailItemView()
