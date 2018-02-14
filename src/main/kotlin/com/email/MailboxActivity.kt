@@ -5,12 +5,14 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import com.email.DB.MailboxLocalDB
-import com.email.androidui.SceneFactory
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.*
+import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.holders.ToolbarHolder
+import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 1/30/18.
@@ -18,31 +20,29 @@ import com.email.scenes.mailbox.holders.ToolbarHolder
 
 class MailboxActivity : AppCompatActivity(), IHostActivity {
 
-    private lateinit var sceneFactory : SceneFactory
     private lateinit var mailboxSceneController: MailboxSceneController
     private lateinit var toolbarController: ToolbarController
     private lateinit var toolbarHolder: ToolbarHolder
-    private var mailboxSceneModel : MailboxSceneModel = MailboxSceneModel()
-    private val threadListHandler : ThreadListHandler = ThreadListHandler(mailboxSceneModel)
+
     lateinit var labelDataSourceHandler: LabelDataSourceHandler
     lateinit var onMoveThreadsListener: OnMoveThreadsListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.main_layout)
-        sceneFactory = SceneFactory.SceneInflater(this,
-                threadListHandler)
-
+        setContentView(R.layout.activity_mailbox)
         initController()
         labelDataSourceHandler = LabelDataSourceHandler(mailboxSceneController)
         onMoveThreadsListener = OnMoveThreadsListener(mailboxSceneController)
     }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
+        val model = MailboxSceneModel()
+        val rootView = findViewById<ViewGroup>(R.id.scene_container)
+        val scene = MailboxScene.MailboxSceneView(rootView, this,
+                VirtualEmailThreadList(model.threads))
         mailboxSceneController = MailboxSceneController(
-                scene = sceneFactory.createMailboxScene(),
-                model = mailboxSceneModel,
+                scene = scene,
+                model = model,
                 dataSource = MailboxDataSource(DB))
     }
 
@@ -61,12 +61,9 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         if(menu == null) return false
         return try {
             val activeSceneMenu = mailboxSceneController.menuResourceId
-            if (activeSceneMenu != null) {
-                menuInflater.inflate(activeSceneMenu, menu)
-                mailboxSceneController.postMenuDisplay(menu)
-                true
-            } else
-                super.onCreateOptionsMenu(menu)
+            menuInflater.inflate(activeSceneMenu, menu)
+            mailboxSceneController.postMenuDisplay(menu)
+            true
         }
         catch (e : UninitializedPropertyAccessException) {
             super.onCreateOptionsMenu(menu)
@@ -98,22 +95,15 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         this.invalidateOptionsMenu()
     }
 
-    inner class ThreadListHandler(val model: MailboxSceneModel) {
-        val getThreadFromIndex = {
-            i: Int ->
-            model.threads[i]
-        }
-        val getEmailThreadsCount = {
-            model.threads.size
-        }
-    }
-
-
     override fun getMailboxSceneController() : MailboxSceneController{
         return this.mailboxSceneController
     }
 
-    override fun getSelectedThreads() : SelectedThreads{
-        return this.mailboxSceneModel.selectedThreads
+    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread>  {
+        override fun get(i: Int) = threads[i]
+
+        override val size: Int
+            get() = threads.size
     }
 }

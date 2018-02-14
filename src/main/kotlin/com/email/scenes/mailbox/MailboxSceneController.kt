@@ -13,6 +13,7 @@ import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 1/30/18.

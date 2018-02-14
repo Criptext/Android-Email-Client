@@ -15,19 +15,4 @@ import com.email.scenes.mailbox.MailboxScene
 interface SceneFactory {
 
     fun createMailboxScene(): MailboxScene
-
-    class SceneInflater(val hostActivity: IHostActivity,
-                        val threadListHandler: MailboxActivity.ThreadListHandler)
-        : SceneFactory {
-
-        override fun createMailboxScene(): MailboxScene {
-            val view = View.inflate(act, R.layout.activity_mailbox, null)
-            return MailboxScene.MailboxSceneView(rootLayout, view, hostActivity, threadListHandler)
-        }
-
-        private val act = hostActivity as MailboxActivity
-        private val rootLayout : ViewGroup = act.findViewById(R.id.scene_container) as ViewGroup
-
-    }
-
 }

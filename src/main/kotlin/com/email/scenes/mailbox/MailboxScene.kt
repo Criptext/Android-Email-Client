@@ -18,7 +18,9 @@ import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
+import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.Utility
+import com.email.utils.VirtualList
 import com.email.utils.ui.Tint
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -43,10 +45,9 @@ interface MailboxScene : ThreadListView{
     fun getOnMoveThreadsListener(): OnMoveThreadsListener
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
 
-    class MailboxSceneView(private val sceneContainer: ViewGroup,
-                           private val mailboxView: View,
+    class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val threadListHandler: MailboxActivity.ThreadListHandler)
+                           val threadList: VirtualList<EmailThread>)
         : MailboxScene {
 
         private val context = mailboxView.context
@@ -91,11 +92,8 @@ interface MailboxScene : ThreadListView{
             }
 
         override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener) {
-            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadListHandler)
+            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadList)
             this.threadListener = threadEventListener
-
-            sceneContainer.removeAllViews()
-            sceneContainer.addView(mailboxView)
         }
 
         override fun initDrawerLayout() {
@@ -117,7 +115,8 @@ interface MailboxScene : ThreadListView{
         }
 
         override fun initNavHeader() {
-            avatarView.setImageBitmap(Utility.getBitmapFromText("Daniel Tigse Palma", "D", 250, 250))
+            avatarView.setImageBitmap(Utility.getBitmapFromText("Daniel Tigse Palma",
+                    "D", 250, 250))
         }
 
         override fun notifyThreadSetChanged() {
@@ -164,7 +163,8 @@ interface MailboxScene : ThreadListView{
             if(multiSelectON){
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
-                val toggleReadItem = activityMenu.findItemById(R.id.mailbox_message_toggle_read)
+                val toggleReadItem = activityMenu.findItemById(
+                        R.id.mailbox_toggle_read_selected_messages)
                 Tint.addTintToMenuItem(context = this.context,
                         item = deleteItem)
                 Tint.addTintToMenuItem(context = this.context,
@@ -177,7 +177,7 @@ interface MailboxScene : ThreadListView{
             } else {
                 val search = activityMenu.findItemById(R.id.mailbox_search)
                 val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
-                val bell = bellContainer.actionView.findViewById(R.id.mailbox_activity_feed) as ImageView
+                val bell = bellContainer.actionView.findViewById<ImageView>(R.id.mailbox_activity_feed)
                 Tint.addTintToMenuItem(context = this.context,
                         item = search)
 
