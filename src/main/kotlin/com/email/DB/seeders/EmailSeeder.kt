@@ -29,13 +29,19 @@ public class EmailSeeder {
             lateinit var email: Email
             when (iteration) {
                 1 -> email = Email( id = 1,
-                        content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore",
+                        content = "Lorem ipsum dolor sit amet, " +
+                                "consectetur adipiscing elit, " +
+                                "sed do eiusmod tempor incididunt ut labore " +
+                                "et dolore",
                         date = sdf.parse("1992-05-23 20:12:58"),
                         delivered = 1,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
-                        preview = "preview 1" ,
+                        preview = "Lorem ipsum dolor " +
+                                "sit amet, consectetur adipiscing elit, " +
+                                "sed do eiusmod tempor incididunt ut labore " +
+                                "et dolore" ,
                         secure = true,
                         subject = "Subject",
                         threadid = "10",
@@ -48,7 +54,10 @@ public class EmailSeeder {
                         isDraft = false,
                         isTrash = false,
                         key = "key",
-                        preview = "preview 2" ,
+                        preview = "Lorem ipsum dolor " +
+                                "sit amet, consectetur adipiscing elit, " +
+                                "sed do eiusmod tempor incididunt ut labore " +
+                                "et dolore" ,
                         secure = true,
                         subject = "Subject 2",
                         threadid = "9",
@@ -60,7 +69,10 @@ public class EmailSeeder {
                         isDraft = false,
                         isTrash = false,
                         key = "key",
-                        preview = "preview 3" ,
+                        preview = "Lorem ipsum dolor " +
+                                "sit amet, consectetur adipiscing elit, " +
+                                "sed do eiusmod tempor incididunt ut labore " +
+                                "et dolore" ,
                         secure = false,
                         subject = "Subject",
                         threadid = "8",
@@ -72,7 +84,10 @@ public class EmailSeeder {
                         isDraft = true,
                         isTrash = true,
                         key = "key",
-                        preview = "preview 4" ,
+                        preview = "Lorem ipsum dolor " +
+                                "sit amet, consectetur adipiscing elit, " +
+                                "sed do eiusmod tempor incididunt ut labore " +
+                                "et dolore" ,
                         secure = true,
                         subject = "Subject",
                         threadid = "7",

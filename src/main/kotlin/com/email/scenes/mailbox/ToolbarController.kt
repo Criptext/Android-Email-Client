@@ -8,6 +8,10 @@ import com.email.scenes.mailbox.holders.ToolbarHolder
 
 class ToolbarController(val toolbarHolder: ToolbarHolder) {
 
+    fun onStart(emailSize: Int) {
+        updateNumerOfMails(emailSize)
+    }
+
     fun showMultiModeBar(selectedThreadsQuantity: Int){
         toolbarHolder.showMultiModeBar(selectedThreadsQuantity)
     }
@@ -18,5 +22,9 @@ class ToolbarController(val toolbarHolder: ToolbarHolder) {
 
     fun updateToolbarTitle(title: String){
         toolbarHolder.updateToolbarTitle(title)
+    }
+
+    fun updateNumerOfMails(emailsSize: Int) {
+        toolbarHolder.updateNumerOfMails(emailsSize)
     }
 }

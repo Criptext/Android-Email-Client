@@ -37,7 +37,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = MailboxSceneModel()
-        val rootView = findViewById<ViewGroup>(R.id.scene_container)
+        val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(rootView, this,
                 VirtualEmailThreadList(model.threads))
         mailboxSceneController = MailboxSceneController(
@@ -51,6 +51,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
         mailboxSceneController.onStart()
         toolbarHolder = ToolbarHolder(mailboxSceneController.getToolbar())
         toolbarController = ToolbarController(toolbarHolder)
+        toolbarController.onStart(mailboxSceneController.emailThreadSize)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -85,6 +86,10 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
 
     override fun updateToolbarTitle() {
         toolbarController.updateToolbarTitle(mailboxSceneController.toolbarTitle)
+    }
+
+    override fun setToolbarNumberOfEmails(emailsSize: Int) {
+        toolbarController.updateNumerOfMails(emailsSize)
     }
 
     override fun addToolbar(toolbar: Toolbar) {

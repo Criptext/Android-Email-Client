@@ -44,6 +44,7 @@ interface MailboxScene : ThreadListView{
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
     fun getOnMoveThreadsListener(): OnMoveThreadsListener
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun setToolbarNumberOfEmails(emailsSize: Int)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -164,7 +165,7 @@ interface MailboxScene : ThreadListView{
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
                 val toggleReadItem = activityMenu.findItemById(
-                        R.id.mailbox_toggle_read_selected_messages)
+                        R.id.mailbox_message_toggle_read)
                 Tint.addTintToMenuItem(context = this.context,
                         item = deleteItem)
                 Tint.addTintToMenuItem(context = this.context,
@@ -203,6 +204,10 @@ interface MailboxScene : ThreadListView{
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
                     moveToDataSourceHandler = onMoveThreadsListener)
+        }
+
+        override fun setToolbarNumberOfEmails(emailsSize: Int) {
+            hostActivity.setToolbarNumberOfEmails(emailsSize)
         }
     }
 }

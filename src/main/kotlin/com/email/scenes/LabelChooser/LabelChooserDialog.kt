@@ -35,7 +35,9 @@ class LabelChooserDialog(val context: Context) {
         )
         labelChooserDialog = dialogBuilder.create()
         labelChooserDialog?.show()
-        labelChooserDialog?.getWindow()?.setLayout(600, 800)
+        labelChooserDialog?.getWindow()?.setLayout(500, 700)
+        val drawableBackground = context.resources.getDrawable(R.drawable.dialog_label_chooser_shape)
+        labelChooserDialog?.window?.setBackgroundDrawable(drawableBackground)
         startController()
         initButtons(dialogView)
         assignButtonEvents(labelChooserDialog as AlertDialog,
