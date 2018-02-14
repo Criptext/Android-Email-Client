@@ -10,7 +10,7 @@ import java.util.*
  * Created by sebas on 1/24/18.
  */
 
-@Entity(tableName = "email", indices = arrayOf(Index(value = "subject", name = "subject")))
+@Entity(tableName = "email", indices = [Index(value = "subject", name = "subject")])
 public class Email(
         @PrimaryKey(autoGenerate = true)
         var id:Int,

@@ -10,11 +10,11 @@ import java.util.*
  */
 
 @Entity(tableName = "open",
-        indices = arrayOf(Index(value = "date")),
-        foreignKeys = arrayOf(ForeignKey(entity = File::class,
+        indices = [Index(value = "date")],
+        foreignKeys = [ForeignKey(entity = File::class,
                                           parentColumns = ["token"],
                                           onDelete = CASCADE,
-                                          childColumns = ["fileId"])))
+                                          childColumns = ["fileId"])])
 public class Open(
         @PrimaryKey(autoGenerate = true)
         var id:Int,

@@ -2,7 +2,6 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
-import android.view.Menu
 import com.email.R
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels
@@ -164,10 +163,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 toggleReadSelectedEmailThreads("READ")
             }
             R.id.mailbox_move_to -> {
-                scene.showDialogMoveTo(onMoveThreadsListener = OnMoveThreadsListener(this))
+                scene.showDialogMoveTo(OnMoveThreadsListener(this))
             }
             R.id.mailbox_add_labels ->{
-                scene.showDialogLabelsChooser(labelDataSourceHandler = LabelDataSourceHandler(this))
+                scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
             }
         }
     }
@@ -193,10 +192,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
         changeMode(multiSelectON = false, silent = false)
         return false
-    }
-
-    fun postMenuDisplay(menu: Menu) {
-        toggleMultiModeBar()
     }
 
     fun moveSelectedEmailsToSpam(){

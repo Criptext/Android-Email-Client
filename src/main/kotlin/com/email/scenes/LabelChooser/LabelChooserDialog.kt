@@ -71,7 +71,7 @@ class LabelChooserDialog(private val context: Context) {
         fun onDialogNegativeClick()
     }
 
-    inner class LabelList(val labels: List<LabelThread>): VirtualList<LabelThread> {
+    private class LabelList(val labels: List<LabelThread>): VirtualList<LabelThread> {
         override fun get(i: Int): LabelThread {
             return labels[i]
         }

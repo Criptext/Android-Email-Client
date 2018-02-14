@@ -47,8 +47,8 @@ abstract class BaseActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        controller.onBackPressed()
-        super.onBackPressed()
+        if(controller.onBackPressed())
+            super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

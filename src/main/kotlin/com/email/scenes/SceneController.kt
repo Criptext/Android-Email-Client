@@ -1,7 +1,5 @@
 package com.email.scenes
 
-import android.app.Activity
-
 /**
  * Created by sebas on 1/30/18.
  */
