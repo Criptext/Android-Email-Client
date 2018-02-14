@@ -41,8 +41,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     fun bindMail(emailThread: EmailThread) {
         previewView.text = emailThread.headerPreview
         headerView.text = emailThread.headerPreview
-<<<<<<< HEAD
-        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
+        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString().toUpperCase(), 250, 250))
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {
@@ -54,13 +53,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             headerView.setTypeface(normalTypeface)
             dateView.setTypeface(normalTypeface)
         }
-
-||||||| merged common ancestors
-        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString(), 250, 250))
-
-=======
-        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString().toUpperCase(), 250, 250))
->>>>>>> delete an mute funcions
     }
 
 

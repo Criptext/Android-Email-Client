@@ -70,7 +70,7 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
             textViewMute.text = textViewMute.resources.getText(R.string.unmute)
         }
         else{
-            imageViewMute.visibility = View.GONE
+            imageViewMute.visibility = View.INVISIBLE
             Picasso.with(imageViewMuteButton.context).load(R.drawable.mute).into(imageViewMuteButton)
             textViewMute.text = textViewMute.resources.getText(R.string.mute)
         }
