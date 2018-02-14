@@ -123,7 +123,6 @@
     <string name="move_to">Move to…</string>
     <string name="inbox">Inbox</string>
     <string name="junk">Spam</string>
-    <string name="trash">Trash</string>
     <string name="unsending">Unsending</string>
     <string name="unsend_no_content">The content is no longer available</string>
     <string name="ellipsis">…</string>
@@ -132,5 +131,8 @@
     <string name="email_will_expire_in">Email will expire in:</string>
     <string name="no_emails_found">No emails found</string>
     <string name="titulo_mailbox">INBOX</string>
+    <string name="spam">Spam</string>
+    <string name="cancel">Cancel</string>
+    <string name="trash">Trash</string>
 
 </resources>

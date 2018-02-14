@@ -44,7 +44,7 @@ class LabelThreadAdapter(val mContext : Context,
 
 
     private fun createMailItemView(): View {
-        val labelItemView = View.inflate(mContext, R.layout.label_item, null)
+        val labelItemView = View.inflate(mContext, R.layout.label_item, null )
         return labelItemView
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelHolder {

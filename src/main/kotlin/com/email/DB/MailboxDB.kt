@@ -21,6 +21,10 @@ interface MailboxLocalDB {
     fun seed()
     fun deleteEmailThreads(emailThreads: List<EmailThread>)
     fun createLabelEmailRelation(labelId: Int, emailId: Int)
+    fun updateUnreadStatus(emailThreads: List<EmailThread>,
+                           updateUnreadStatus: Boolean)
+    fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
+    fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
 
 
     class Default(applicationContext: Context): MailboxLocalDB {
@@ -84,6 +88,26 @@ interface MailboxLocalDB {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
+        }
+
+        override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
+            emailThreads.forEach {
+                db.emailDao().toggleRead(id = it.email.id,
+                        unread = updateUnreadStatus)
+            }
+        }
+
+        override fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
+            TODO("MOVE EMAILS TO SPAM")
+        }
+
+        override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
+            val emails = emailThreads.map {
+                    it.email.isTrash = true
+                    it.email
+                }
+
+            db.emailDao().update(emails)
         }
     }
 

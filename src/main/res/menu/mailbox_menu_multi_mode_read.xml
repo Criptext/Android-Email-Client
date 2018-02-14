@@ -13,11 +13,12 @@
         android:icon="@drawable/trash"
         android:title="Delete"/>
 
+
     <item
-        android:id="@+id/mailbox_toggle_read_selected_messages"
-        android:icon="@drawable/inbox"
+        android:id="@+id/mailbox_message_toggle_read"
+        android:icon="@drawable/ic_mail_2_copy"
         app:showAsAction="always"
-        android:title="Mark"/>
+        android:title="read"/>
 
     <item
         android:id="@+id/mailbox_move_to"

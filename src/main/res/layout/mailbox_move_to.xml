@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:background="@drawable/label_chooser_shape"
+android:layout_height="wrap_content">
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Move to"
+    android:textStyle="bold"
+    android:gravity="start"
+    android:layout_marginLeft="15dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:paddingStart="40dp"
+    android:textColor="@color/textColorPrimary"
+    android:textSize="20sp"
+    />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/move_to_spam"
+            android:textColor="@color/label_buttons_text"
+            android:textSize="20sp"
+            android:stateListAnimator="@null"
+            android:background="@drawable/mailbox_buttons_move_to"
+            android:layout_width="match_parent"
+            android:layout_gravity="start"
+            android:gravity="start"
+            android:paddingStart="55dp"
+            android:textAllCaps="false"
+            android:layout_height="wrap_content"
+            android:text="@string/spam" />
+
+        <Button
+            android:id="@+id/move_to_trash"
+            android:textColor="@color/label_buttons_text"
+            android:textSize="20sp"
+            android:stateListAnimator="@null"
+            android:layout_gravity="start"
+            android:gravity="start"
+            android:paddingLeft="55dp"
+            android:background="@drawable/mailbox_buttons_move_to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="@string/trash" />
+
+    </LinearLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_gravity="center"
+    android:backgroundTint="@color/label_buttons"
+    android:layout_height="wrap_content">
+    <Button
+        android:textColor="@color/label_buttons_text"
+        android:textSize="10sp"
+        android:id="@+id/move_to_cancel"
+        android:stateListAnimator="@null"
+        android:background="@drawable/mailbox_button_move_to_cancel"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel" />
+
+</LinearLayout>
+</LinearLayout>

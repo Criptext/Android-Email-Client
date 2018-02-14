@@ -25,12 +25,14 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     private lateinit var toolbarHolder: ToolbarHolder
 
     lateinit var labelDataSourceHandler: LabelDataSourceHandler
+    lateinit var onMoveThreadsListener: OnMoveThreadsListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mailbox)
         initController()
         labelDataSourceHandler = LabelDataSourceHandler(mailboxSceneController)
+        onMoveThreadsListener = OnMoveThreadsListener(mailboxSceneController)
     }
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)

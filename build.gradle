@@ -96,5 +96,6 @@ dependencies {
 
     //Caligraphy
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+
 }
 

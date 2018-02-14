@@ -42,6 +42,8 @@ interface MailboxScene : ThreadListView{
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean)
     fun getLabelDataSourceHandler(): LabelDataSourceHandler
+    fun getOnMoveThreadsListener(): OnMoveThreadsListener
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -51,9 +53,10 @@ interface MailboxScene : ThreadListView{
         private val context = mailboxView.context
 
         private val labelChooserDialog = LabelChooserDialog(context)
+        private val moveToDialog = MoveToDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
-            mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler) as RecyclerView
+            mailboxView.findViewById(R.id.mailbox_recycler) as RecyclerView
         }
 
         val toolbar: Toolbar by lazy {
@@ -168,6 +171,9 @@ interface MailboxScene : ThreadListView{
                         item = archiveItem)
                 Tint.addTintToMenuItem(context = this.context,
                         item = toggleReadItem)
+               Tint.addTintToMenuItem(context = this.context,
+                        item = toggleReadItem)
+
             } else {
                 val search = activityMenu.findItemById(R.id.mailbox_search)
                 val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
@@ -189,6 +195,14 @@ interface MailboxScene : ThreadListView{
         override fun getLabelDataSourceHandler(): LabelDataSourceHandler {
             return (hostActivity as MailboxActivity).labelDataSourceHandler
         }
-    }
 
+        override fun getOnMoveThreadsListener(): OnMoveThreadsListener {
+            return (hostActivity as MailboxActivity).onMoveThreadsListener
+        }
+
+        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
+            moveToDialog.showMoveToDialog(
+                    moveToDataSourceHandler = onMoveThreadsListener)
+        }
+    }
 }
