@@ -9,7 +9,7 @@ import android.arch.persistence.room.ColumnInfo
  * Created by sebas on 2/6/18.
  */
 
-@Entity(tableName = "user", indices = arrayOf(Index(value = "name")) )
+@Entity(tableName = "user", indices = [Index(value = "name")] )
 public class User(
         @PrimaryKey(autoGenerate = true)
         var id:Int,

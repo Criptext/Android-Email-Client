@@ -1,16 +1,17 @@
 package com.email.scenes
 
-import android.app.Activity
-
 /**
  * Created by sebas on 1/30/18.
  */
 abstract class SceneController {
+    abstract val menuResourceId: Int
 
     abstract fun onStart()
 
     abstract fun onStop()
 
-    abstract fun onBackPressed(activity: Activity)
+    abstract fun onBackPressed(): Boolean
+
+    abstract fun onOptionsItemSelected(itemId: Int)
 
 }

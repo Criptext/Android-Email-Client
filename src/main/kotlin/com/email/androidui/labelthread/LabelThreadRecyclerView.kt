@@ -3,15 +3,16 @@ package com.email.androidui.labelthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelThreadAdapter
+import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.utils.VirtualList
 
-class LabelThreadRecyclerView(val recyclerView: RecyclerView,
+class LabelThreadRecyclerView(recyclerView: RecyclerView,
                               threadEventListener: LabelThreadAdapter.OnLabelThreadEventListener?,
-                              labelThreadListHandler: LabelChooserDialog.LabelThreadListHandler)  {
+                              labelsList: VirtualList<LabelThread>)  {
 
-    val ctx: Context = recyclerView.context
-    private val labelThreadAdapter = LabelThreadAdapter(ctx, threadEventListener, labelThreadListHandler)
+    private val ctx: Context = recyclerView.context
+    private val labelThreadAdapter = LabelThreadAdapter(ctx, threadEventListener, labelsList)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -31,7 +32,7 @@ class LabelThreadRecyclerView(val recyclerView: RecyclerView,
     }
 
     fun notifyLabelThreadChanged(position: Int) {
-         labelThreadAdapter.notifyDataSetChanged()
+         labelThreadAdapter.notifyItemChanged(position)
     }
 
     fun notifyLabelThreadRemoved(position: Int) {

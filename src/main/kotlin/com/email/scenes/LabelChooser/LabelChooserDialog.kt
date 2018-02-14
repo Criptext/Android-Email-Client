@@ -2,78 +2,82 @@ package com.email.scenes.LabelChooser
 
 import android.content.Context
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import com.email.R
-import com.email.MailboxActivity
+import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.utils.VirtualList
 
 
 /**
  * Created by sebas on 2/1/18.
  */
 
-class LabelChooserDialog(val context: Context) {
+class LabelChooserDialog(private val context: Context) {
     private var labelChooserDialog : AlertDialog? = null
-    private val labelChooserSceneModel : LabelChooserSceneModel = LabelChooserSceneModel()
-    private lateinit var labelChooserSceneController: LabelChooserSceneController
-    private val labelThreadListHandler : LabelThreadListHandler = LabelThreadListHandler(labelChooserSceneModel)
-    private lateinit var btn_add: Button
-    private lateinit var btn_cancel: Button
+    private lateinit var controller: LabelChooserSceneController
 
-    fun showdialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler) {
+    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
+        val newLabelChooserDialog = dialogBuilder.create()
+        newLabelChooserDialog.show()
+        newLabelChooserDialog.window.setLayout(600, 800)
+        assignButtonEvents(dialogView, newLabelChooserDialog, controller.dialogLabelsListener)
+        return newLabelChooserDialog
+    }
+
+    private fun createController(dialogView: View, dataSource: LabelDataSourceHandler)
+            : LabelChooserSceneController {
+        val model = LabelChooserSceneModel()
+        val scene = LabelChooserScene.LabelChooserView(dialogView ,LabelList(model.labels))
+        return LabelChooserSceneController(
+                scene = scene,
+                model = model,
+                labelDataSourceHandler = dataSource
+        )
+    }
+
+    fun showDialogLabelsChooser(dataSource: LabelDataSourceHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
-        val inflater = (context as MailboxActivity).layoutInflater
+        val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 
-        val labelChooserScene = LabelChooserScene.LabelChooserView(context,dialogView ,labelThreadListHandler)
-        labelChooserSceneController = LabelChooserSceneController(
-                scene = labelChooserScene,
-                model = labelChooserSceneModel,
-                labelDataSourceHandler = labelDataSourceHandler
+        controller = createController(dialogView, dataSource)
+        labelChooserDialog = createDialog(dialogView, dialogBuilder)
 
-        )
-        labelChooserDialog = dialogBuilder.create()
-        labelChooserDialog?.show()
-        labelChooserDialog?.getWindow()?.setLayout(600, 800)
-        startController()
-        initButtons(dialogView)
-        assignButtonEvents(labelChooserDialog as AlertDialog,
-                labelChooserSceneController.dialogLabelsListener)
-    }
-    fun startController() {
-        labelChooserSceneController.onStart()
+        controller.start()
     }
 
-    fun initButtons(view: View){
-        btn_add = view.findViewById(R.id.label_add) as Button
-        btn_cancel = view.findViewById(R.id.label_cancel) as Button
-    }
-    fun assignButtonEvents(dialog: AlertDialog,
+    private fun assignButtonEvents(view: View, dialog: AlertDialog,
                            dialogLabelsListener: DialogLabelsListener
                            ) {
-        btn_add.setOnClickListener {
-            dialogLabelsListener.onDialogPositiveClick(dialog)
+        val btnAdd = view.findViewById<Button>(R.id.label_add)
+        val btnCancel = view.findViewById<Button>(R.id.label_cancel)
+
+        btnAdd.setOnClickListener {
+            dialogLabelsListener.onDialogPositiveClick()
+            dialog.dismiss()
         }
 
-        btn_cancel.setOnClickListener {
-            dialogLabelsListener.onDialogNegativeClick(dialog)
+        btnCancel.setOnClickListener {
+            dialogLabelsListener.onDialogNegativeClick()
+            dialog.dismiss()
         }
 }
 
     interface DialogLabelsListener {
-        fun onDialogPositiveClick(dialog: AlertDialog)
-        fun onDialogNegativeClick(dialog: AlertDialog)
+        fun onDialogPositiveClick()
+        fun onDialogNegativeClick()
     }
 
-    inner class LabelThreadListHandler(val model: LabelChooserSceneModel) {
-        val getLabelThreadFromIndex = {
-            i: Int ->
-            model.labels[i]
+    private class LabelList(val labels: List<LabelThread>): VirtualList<LabelThread> {
+        override fun get(i: Int): LabelThread {
+            return labels[i]
         }
-        val getLabelThreadsCount = {
-            model.labels.size
-        }
+
+        override val size: Int
+            get() = labels.size
     }
 
 }

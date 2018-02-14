@@ -3,9 +3,10 @@ package com.email.scenes.LabelChooser
 import android.support.v7.widget.RecyclerView
 import com.email.androidui.labelthread.LabelThreadListView
 import com.email.androidui.labelthread.LabelThreadRecyclerView
-import com.email.IHostActivity
 import com.email.R
 import android.view.View
+import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.utils.VirtualList
 
 
 /**
@@ -13,22 +14,11 @@ import android.view.View
  */
 
 interface LabelChooserScene: LabelThreadListView {
-    fun getIHostActivity(): IHostActivity
     fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener)
 
-    class LabelChooserView(val hostActivity: IHostActivity,
-                           val labelChooserView: View,
-                           val threadListHandler: LabelChooserDialog.LabelThreadListHandler)
+    class LabelChooserView(private val labelChooserView: View,
+                           private val labelsList: VirtualList<LabelThread>)
         : LabelChooserScene {
-
-        override fun getIHostActivity(): IHostActivity {
-            return hostActivity
-        }
-
-
-        private val recyclerView: RecyclerView by lazy {
-            labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
-        }
 
         private lateinit var labelThreadRecyclerView: LabelThreadRecyclerView
 
@@ -51,9 +41,10 @@ interface LabelChooserScene: LabelThreadListView {
         }
 
         override fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
-            labelThreadRecyclerView = LabelThreadRecyclerView(recyclerView,
+            val recycler = labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
+            labelThreadRecyclerView = LabelThreadRecyclerView(recycler,
                     labelThreadEventListener,
-                    threadListHandler)
+                    labelsList)
             this.labelThreadListener= labelThreadEventListener
         }
 

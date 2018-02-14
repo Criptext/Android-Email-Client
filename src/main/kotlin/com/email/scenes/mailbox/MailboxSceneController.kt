@@ -1,19 +1,14 @@
 package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
-import android.app.Activity
 import android.content.Context
-import android.support.v7.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
 import com.email.R
-import com.email.androidui.ActivityMenu
+import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 1/30/18.
@@ -23,11 +18,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val dataSource: MailboxDataSource) : SceneController() {
 
 
-    val toolbarTitle: String
+    private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
         else "INBOX"
 
-    val menuResourceId: Int
+    override val menuResourceId: Int
         get() = when {
             ! model.isInMultiSelect -> R.menu.mailbox_menu_normal_mode
             model.hasSelectedUnreadMessages -> R.menu.mailbox_menu_multi_mode_unread
@@ -55,7 +50,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 changeMode(multiSelectON = false, silent = false)
             }
 
-            scene.updateToolbarTitle()
+            scene.updateToolbarTitle(toolbarTitle)
         }
     }
 
@@ -70,13 +65,14 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     fun changeMode(multiSelectON: Boolean, silent: Boolean){
+
         if(! multiSelectON){
             model.selectedThreads.clear()
         }
         model.isInMultiSelect = multiSelectON
         scene.changeMode(multiSelectON, silent)
         scene.refreshToolbarItems()
-        scene.updateToolbarTitle()
+        scene.updateToolbarTitle(toolbarTitle)
     }
 
     override fun onStart() {
@@ -85,7 +81,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initNavHeader()
         dataSource.seed()
         scene.attachView(threadEventListener)
-        scene.addToolbar()
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
     }
@@ -137,8 +132,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     fun hideMultiModeBar() {
         scene.hideMultiModeBar()
     }
-    override fun onBackPressed(activity: Activity) {
-        scene.onBackPressed(activity)
+    override fun onBackPressed(): Boolean {
+        return true
     }
 
     fun toggleMultiModeBar() {
@@ -149,8 +144,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
-    fun onOptionSelected(item: MenuItem?) : Boolean {
-        when(item?.itemId) {
+    override fun onOptionsItemSelected(itemId: Int) {
+        when(itemId) {
             R.id.mailbox_search -> {
                 TODO("HANDLE SEARCH CLICK...")
             }
@@ -164,18 +159,16 @@ class MailboxSceneController(private val scene: MailboxScene,
             R.id.mailbox_delete_selected_messages -> {
                 deleteSelectedEmailThreads()
             }
-
             R.id.mailbox_message_toggle_read -> {
-                toggleReadSelectedEmailThreads(item.title.toString())
+                toggleReadSelectedEmailThreads("READ")
             }
             R.id.mailbox_move_to -> {
-                scene.showDialogMoveTo(onMoveThreadsListener = scene.getOnMoveThreadsListener())
+                scene.showDialogMoveTo(OnMoveThreadsListener(this))
             }
             R.id.mailbox_add_labels ->{
-                scene.showDialogLabelsChooser(labelDataSourceHandler = scene.getLabelDataSourceHandler())
+                scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
             }
         }
-        return true
     }
 
     fun getAllLabels() : List<LabelThread>{
@@ -199,20 +192,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
         changeMode(multiSelectON = false, silent = false)
         return false
-    }
-
-    fun getToolbar() : Toolbar {
-        return (scene as MailboxScene.MailboxSceneView).toolbar
-    }
-
-    fun postMenuDisplay(menu: Menu) {
-        onMenuChanged(ActivityMenu(menu))
-        toggleMultiModeBar()
-    }
-
-    private fun onMenuChanged(activityMenu: ActivityMenu) {
-        scene.tintIconsInMenu(activityMenu,
-                model.isInMultiSelect)
     }
 
     fun moveSelectedEmailsToSpam(){

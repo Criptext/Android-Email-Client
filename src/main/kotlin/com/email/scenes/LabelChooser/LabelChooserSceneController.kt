@@ -1,10 +1,7 @@
 package com.email.scenes.LabelChooser
 
-import android.app.Activity
-import android.support.v7.app.AlertDialog
-import android.widget.Button
+import android.util.Log
 import com.email.scenes.LabelChooser.data.LabelThread
-import com.email.scenes.SceneController
 
 /**
  * Created by sebas on 2/2/18.
@@ -12,24 +9,17 @@ import com.email.scenes.SceneController
 
 class LabelChooserSceneController(private val scene: LabelChooserScene,
                                   private val model: LabelChooserSceneModel,
-                                  private val labelDataSourceHandler: LabelDataSourceHandler)
-    : SceneController() {
+                                  private val labelDataSourceHandler: LabelDataSourceHandler) {
 
-    val dialogLabelsListener : LabelChooserDialog.DialogLabelsListener = object : LabelChooserDialog.DialogLabelsListener {
-        override fun onDialogPositiveClick(dialog: AlertDialog) {
+    val dialogLabelsListener : LabelChooserDialog.DialogLabelsListener =
+            object : LabelChooserDialog.DialogLabelsListener {
+        override fun onDialogPositiveClick() {
             labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
             clearSelectedLabels()
-            dialog.dismiss()
         }
 
-
-        override fun onDialogNegativeClick(dialog: AlertDialog) {
-            dialog.dismiss()
+        override fun onDialogNegativeClick() {
         }
-
-    }
-    override fun onBackPressed(activity: Activity) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private val labelThreadEventListener = object : LabelThreadAdapter.OnLabelThreadEventListener{
@@ -55,25 +45,10 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         model.selectedLabels.clear()
     }
 
-    override fun onStart() {
+    fun start() {
         val labelThreads = labelDataSourceHandler.getAllLabels()
         model.labels.clear()
         model.labels.addAll(labelThreads)
         scene.attachView(labelThreadEventListener)
     }
-
-    override fun onStop() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun assignButtonEvents(dialog: AlertDialog, btn_add: Button, btn_cancel: Button) {
-        btn_add.setOnClickListener {
-            dialogLabelsListener.onDialogPositiveClick(dialog)
-        }
-
-        btn_cancel.setOnClickListener {
-            dialogLabelsListener.onDialogNegativeClick(dialog)
-        }
-    }
-
 }

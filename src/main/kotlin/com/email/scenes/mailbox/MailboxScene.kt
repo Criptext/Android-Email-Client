@@ -7,42 +7,35 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
-import android.view.ViewGroup
 import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
-import com.email.MailboxActivity
 import com.email.R
-import com.email.androidui.ActivityMenu
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.utils.Utility
 import com.email.utils.VirtualList
-import com.email.utils.ui.Tint
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by sebas on 1/23/18.
  */
 
-interface MailboxScene : ThreadListView{
+interface MailboxScene: ThreadListView {
 
-    fun addToolbar()
     fun initDrawerLayout()
     fun initNavHeader()
-    fun onBackPressed(activity: Activity)
+    fun onBackPressed()
     fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
-    fun updateToolbarTitle()
+    fun updateToolbarTitle(title: String)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
-    fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean)
-    fun getLabelDataSourceHandler(): LabelDataSourceHandler
-    fun getOnMoveThreadsListener(): OnMoveThreadsListener
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
 
     class MailboxSceneView(private val mailboxView: View,
@@ -56,11 +49,12 @@ interface MailboxScene : ThreadListView{
         private val moveToDialog = MoveToDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
-            mailboxView.findViewById(R.id.mailbox_recycler) as RecyclerView
+            mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
         }
 
-        val toolbar: Toolbar by lazy {
-            mailboxView.findViewById<Toolbar>(R.id.mailbox_toolbar)
+        val toolbarHolder: ToolbarHolder by lazy {
+            val view = mailboxView.findViewById<Toolbar>(R.id.mailbox_toolbar)
+            ToolbarHolder(view)
         }
 
         private val drawerLayout: DrawerLayout by lazy {
@@ -102,15 +96,12 @@ interface MailboxScene : ThreadListView{
             })
         }
 
-        override fun onBackPressed(activity: Activity) {
+        override fun onBackPressed() {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)){
                 drawerLayout.closeDrawer(Gravity.LEFT)
             }
             else if (drawerLayout.isDrawerOpen(GravityCompat.END)){
                 drawerLayout.closeDrawer(Gravity.RIGHT)
-            }
-            else{
-                activity.finish()
             }
         }
 
@@ -143,66 +134,28 @@ interface MailboxScene : ThreadListView{
             hostActivity.refreshToolbarItems()
         }
 
-        override fun addToolbar() {
-            hostActivity.addToolbar(toolbar)
-        }
-
         override fun showMultiModeBar(selectedThreadsQuantity : Int) {
-            hostActivity.showMultiModeBar(selectedThreadsQuantity)
+            toolbarHolder.showMultiModeBar(selectedThreadsQuantity)
         }
 
         override fun hideMultiModeBar() {
-            hostActivity.hideMultiModeBar()
+            toolbarHolder.hideMultiModeBar()
         }
 
-        override fun updateToolbarTitle() {
-            hostActivity.updateToolbarTitle()
-        }
-
-        override fun tintIconsInMenu(activityMenu: ActivityMenu, multiSelectON: Boolean) {
-            if(multiSelectON){
-                val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
-                val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
-                val toggleReadItem = activityMenu.findItemById(
-                        R.id.mailbox_toggle_read_selected_messages)
-                Tint.addTintToMenuItem(context = this.context,
-                        item = deleteItem)
-                Tint.addTintToMenuItem(context = this.context,
-                        item = archiveItem)
-                Tint.addTintToMenuItem(context = this.context,
-                        item = toggleReadItem)
-               Tint.addTintToMenuItem(context = this.context,
-                        item = toggleReadItem)
-
-            } else {
-                val search = activityMenu.findItemById(R.id.mailbox_search)
-                val bellContainer = activityMenu.findItemById(R.id.mailbox_bell_container)
-                val bell = bellContainer.actionView.findViewById<ImageView>(R.id.mailbox_activity_feed)
-                Tint.addTintToMenuItem(context = this.context,
-                        item = search)
-
-                Tint.addTintToImage(context = this.context,
-                        imageView = bell)
-            }
+        override fun updateToolbarTitle(title: String) {
+            toolbarHolder.updateToolbarTitle(title)
         }
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:
                                               LabelDataSourceHandler ) {
-            labelChooserDialog.showdialogLabelsChooser(
-                    labelDataSourceHandler = labelDataSourceHandler)
-        }
-
-        override fun getLabelDataSourceHandler(): LabelDataSourceHandler {
-            return (hostActivity as MailboxActivity).labelDataSourceHandler
-        }
-
-        override fun getOnMoveThreadsListener(): OnMoveThreadsListener {
-            return (hostActivity as MailboxActivity).onMoveThreadsListener
+            labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
                     moveToDataSourceHandler = onMoveThreadsListener)
         }
+
     }
+
 }

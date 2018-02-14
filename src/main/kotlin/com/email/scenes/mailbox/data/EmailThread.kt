@@ -21,7 +21,7 @@ class EmailThread(val email : Email, val labelsOfMail :ArrayList<Label>) {
     var isSelected = false
     val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
             || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-        email.preview as String else email.preview
+        email.preview else email.preview
     val id: Int
         get() = email.id
     val subject: String

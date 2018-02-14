@@ -10,11 +10,11 @@ import android.support.annotation.NonNull
  */
 
 @Entity(tableName = "file",
-        indices = arrayOf(Index(value = "name")),
-        foreignKeys = arrayOf(ForeignKey(entity = Email::class,
+        indices = [Index(value = "name")],
+        foreignKeys = [ForeignKey(entity = Email::class,
                                           parentColumns = ["id"],
                                           onDelete = CASCADE,
-                                          childColumns = ["emailId"])))
+                                          childColumns = ["emailId"])])
 public class File(
 
         @PrimaryKey

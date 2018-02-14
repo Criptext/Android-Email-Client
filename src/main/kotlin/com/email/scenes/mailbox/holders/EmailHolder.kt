@@ -2,10 +2,8 @@ package com.email.scenes.mailbox.holders
 
 import android.content.Context
 import android.graphics.Typeface
-import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -84,17 +82,18 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     fun toggleSelectedStatus(selected: Boolean) {
         if(selected) {
-            view.setBackgroundColor(view.resources.getColor(R.color.mail_item_selected))
+            view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_selected))
             avatarView.visibility = View.GONE
             iconBack.visibility = View.VISIBLE
         }else {
-            view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+            view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
         }
     }
+
     fun hideMultiselect() {
-        view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+        view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
     }
 
     fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
@@ -123,14 +122,14 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     init {
-        headerView = view.findViewById(R.id.email_header) as TextView
-        avatarView = view.findViewById(R.id.mail_item_left_name) as CircleImageView
-        subjectView = view.findViewById(R.id.email_subject) as TextView
-        previewView = view.findViewById(R.id.email_preview) as TextView
-        dateView = view.findViewById(R.id.email_date) as TextView
-        countView = view.findViewById(R.id.email_count) as TextView
-        iconBack = view.findViewById(R.id.icon_back) as ImageView
-        attachment = view.findViewById(R.id.email_has_attachments) as ImageView
+        headerView = view.findViewById(R.id.email_header)
+        avatarView = view.findViewById(R.id.mail_item_left_name)
+        subjectView = view.findViewById(R.id.email_subject)
+        previewView = view.findViewById(R.id.email_preview)
+        dateView = view.findViewById(R.id.email_date)
+        countView = view.findViewById(R.id.email_count)
+        iconBack = view.findViewById(R.id.icon_back)
+        attachment = view.findViewById(R.id.email_has_attachments)
         context = view.context
     }
 

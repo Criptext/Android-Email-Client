@@ -13,23 +13,20 @@ import java.util.*
  */
 
 class DateConverter {
-        val df : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
+    private val df : SimpleDateFormat =
+            SimpleDateFormat( "yyyy-MM-dd HH:mm:dd", Locale.US)
 
-        @TypeConverter
-        fun getDate(value: Long) : Date?  {
-                try {
-                    return Date(value)
-                }catch (e : Exception) {
-                    return Date(1992,2,1)
-                }
-        }
+    @TypeConverter
+    fun getDate(value: Long) : Date  {
+        return Date(value)
+    }
 
-        @TypeConverter
-        fun parseDate(value: Date): Long {
-                return value.time
-        }
+    @TypeConverter
+    fun parseDate(value: Date): Long {
+        return value.time
+    }
 
-        init {
-                df.timeZone = TimeZone.getDefault()
-        }
+    init {
+        df.timeZone = TimeZone.getDefault()
+    }
 }

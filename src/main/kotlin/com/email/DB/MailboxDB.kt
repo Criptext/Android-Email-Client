@@ -34,7 +34,7 @@ interface MailboxLocalDB {
             return db.emailLabelDao().insert(emailLabel)
         }
 
-        private val db = AppDatabase.getAppDatabase(applicationContext)!!
+        private val db = AppDatabase.getAppDatabase(applicationContext)
 
         override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
