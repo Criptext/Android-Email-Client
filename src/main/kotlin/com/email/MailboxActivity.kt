@@ -37,7 +37,7 @@ class MailboxActivity : AppCompatActivity(), IHostActivity {
     override fun initController() {
         val DB : MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = MailboxSceneModel()
-        val rootView = findViewById<ViewGroup>(R.id.scene_container)
+        val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(rootView, this,
                 VirtualEmailThreadList(model.threads))
         mailboxSceneController = MailboxSceneController(

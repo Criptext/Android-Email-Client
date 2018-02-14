@@ -165,7 +165,7 @@ interface MailboxScene : ThreadListView{
                 val deleteItem = activityMenu.findItemById(R.id.mailbox_delete_selected_messages)
                 val archiveItem = activityMenu.findItemById(R.id.mailbox_archive_selected_messages)
                 val toggleReadItem = activityMenu.findItemById(
-                        R.id.mailbox_toggle_read_selected_messages)
+                        R.id.mailbox_message_toggle_read)
                 Tint.addTintToMenuItem(context = this.context,
                         item = deleteItem)
                 Tint.addTintToMenuItem(context = this.context,
