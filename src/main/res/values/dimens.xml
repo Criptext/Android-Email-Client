@@ -19,4 +19,8 @@
     <dimen name="menu_item_icon_size">18sp</dimen>
     <dimen name="mailbox_title_size">18sp</dimen>
     <dimen name="menu_item_height">50dp</dimen>
+    <dimen name="alert_dialog_label_chooser_width">250dp</dimen>
+    <dimen name="alert_dialog_label_chooser_height">350dp</dimen>
+    <dimen name="alert_dialog_moveto_width">250dp</dimen>
+    <dimen name="alert_dialog_moveto_height">240dp</dimen>
 </resources>
