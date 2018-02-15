@@ -19,9 +19,13 @@ class LabelChooserDialog(private val context: Context) {
     private lateinit var controller: LabelChooserSceneController
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
+        val height = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_height).toInt()
+        val width = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_width).toInt()
         val newLabelChooserDialog = dialogBuilder.create()
         newLabelChooserDialog.show()
-        newLabelChooserDialog.window.setLayout(600, 800)
+        newLabelChooserDialog.window.setLayout(width, height)
+        val drawableBackground = context.resources.getDrawable(R.drawable.dialog_label_chooser_shape)
+        newLabelChooserDialog.window.setBackgroundDrawable(drawableBackground)
         assignButtonEvents(dialogView, newLabelChooserDialog, controller.dialogLabelsListener)
         return newLabelChooserDialog
     }
@@ -40,8 +44,6 @@ class LabelChooserDialog(private val context: Context) {
     fun showDialogLabelsChooser(dataSource: LabelDataSourceHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val height = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_height).toInt()
-        val width = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_width).toInt()
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 

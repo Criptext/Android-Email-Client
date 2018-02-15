@@ -9,6 +9,9 @@ class SelectedThreads() {
 
     private var selectedUnreadItemCount = 0
 
+    val isInUnreadMode: Boolean
+        get() = selectedItems[0].unread
+
     val hasUnreadThreads: Boolean
         get() = selectedUnreadItemCount > 0
 

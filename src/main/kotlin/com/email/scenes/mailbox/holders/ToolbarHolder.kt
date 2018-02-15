@@ -46,7 +46,7 @@ class ToolbarHolder(val view: View) {
     fun updateToolbarTitle(title: String) {
         this.title.text = title
     }
-    fun updateNumerOfMails(emailsSize: Int) {
+    fun updateNumberOfMails(emailsSize: Int) {
         numberEmails.text = "($emailsSize)"
     }
 }
