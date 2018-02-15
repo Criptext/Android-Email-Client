@@ -54,7 +54,7 @@ abstract class BaseActivity: AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val activeSceneMenu = controller.menuResourceId
-        menuInflater.inflate(activeSceneMenu, menu)
+        if(activeSceneMenu != null) menuInflater.inflate(activeSceneMenu, menu)
         return true
     }
 

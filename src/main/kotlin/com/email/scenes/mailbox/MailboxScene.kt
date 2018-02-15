@@ -1,6 +1,5 @@
 package com.email.scenes.mailbox
 
-import android.app.Activity
 import android.content.Intent
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -18,10 +17,13 @@ import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.mailbox.data.ActivityFeed
+import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.holders.FeedItemHolder
+import com.email.scenes.mailbox.feed.ui.FeedItemHolder
 import com.email.scenes.mailbox.holders.ToolbarHolder
+import com.email.scenes.mailbox.ui.DrawerFeedView
+import com.email.scenes.mailbox.ui.DrawerMenuView
+import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.utils.VirtualList
 
 /**
@@ -32,8 +34,8 @@ interface MailboxScene: ThreadListView {
 
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
-    fun onBackPressed()
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener, feedClickListener: FeedItemHolder.FeedClickListener)
+    fun onBackPressed(): Boolean
+    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -42,14 +44,10 @@ interface MailboxScene: ThreadListView {
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun openSearchActivity()
     fun openFeedActivity()
-    fun notifyFeedChanged(index: Int)
-    fun notifyFeedRemoved(index: Int)
-    fun showViewNoFeeds(show: Boolean)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val threadList: VirtualList<EmailThread>,
-                           val feedList: VirtualList<ActivityFeed>)
+                           val threadList: VirtualList<EmailThread>)
         : MailboxScene {
 
         private val context = mailboxView.context
@@ -58,7 +56,6 @@ interface MailboxScene: ThreadListView {
         private val moveToDialog = MoveToDialog(context)
 
         lateinit var drawerMenuView: DrawerMenuView
-        lateinit var drawerFeedView: DrawerFeedView
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
@@ -77,10 +74,6 @@ interface MailboxScene: ThreadListView {
             mailboxView.findViewById<NavigationView>(R.id.nav_left_view)
         }
 
-        private val rightNavigationView: NavigationView by lazy {
-            mailboxView.findViewById<NavigationView>(R.id.nav_right_view)
-        }
-
         private val navButton: ImageView by lazy {
             mailboxView.findViewById<ImageView>(R.id.mailbox_nav_button)
         }
@@ -93,13 +86,11 @@ interface MailboxScene: ThreadListView {
                 field = value
             }
 
-        override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
-                                feedClickListener: FeedItemHolder.FeedClickListener){
+        override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener){
             threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadList)
             this.threadListener = threadEventListener
 
             drawerMenuView = DrawerMenuView(leftNavigationView)
-            drawerFeedView = DrawerFeedView(feedList, rightNavigationView, feedClickListener)
         }
 
         override fun initDrawerLayout() {
@@ -108,12 +99,17 @@ interface MailboxScene: ThreadListView {
             })
         }
 
-        override fun onBackPressed() {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)){
-                drawerLayout.closeDrawer(Gravity.LEFT)
-            }
-            else if (drawerLayout.isDrawerOpen(GravityCompat.END)){
-                drawerLayout.closeDrawer(Gravity.RIGHT)
+        override fun onBackPressed(): Boolean {
+            return when {
+                drawerLayout.isDrawerOpen(GravityCompat.START) -> {
+                    drawerLayout.closeDrawer(Gravity.LEFT)
+                    false
+                }
+                drawerLayout.isDrawerOpen(GravityCompat.END) -> {
+                    drawerLayout.closeDrawer(Gravity.RIGHT)
+                    false
+                }
+                else -> true
             }
         }
 
@@ -169,18 +165,6 @@ interface MailboxScene: ThreadListView {
 
         override fun openFeedActivity(){
             drawerLayout.openDrawer(GravityCompat.END)
-        }
-
-        override fun notifyFeedChanged(index: Int){
-            drawerFeedView.notifyItemChanged(index)
-        }
-
-        override fun notifyFeedRemoved(index: Int){
-            drawerFeedView.notifyItemRemoved(index)
-        }
-
-        override fun showViewNoFeeds(show: Boolean){
-            drawerFeedView.showViewNoFeeds(show)
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {

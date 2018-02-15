@@ -8,11 +8,10 @@ import com.email.scenes.LabelChooser.SelectedLabels
 import com.email.scenes.LabelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.ActivityFeed
-import com.email.scenes.mailbox.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.scenes.mailbox.holders.FeedItemHolder
-import com.email.scenes.mailbox.ui.FeedListController
+import com.email.scenes.mailbox.feed.FeedController
+import com.email.scenes.mailbox.ui.EmailThreadAdapter
+import com.email.scenes.mailbox.ui.DrawerFeedView
 
 /**
  * Created by sebas on 1/30/18.
@@ -20,13 +19,14 @@ import com.email.scenes.mailbox.ui.FeedListController
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val dataSource: MailboxDataSource,
-                             private val feedDataSource: FeedDataSource) : SceneController() {
+                             private val feedController : FeedController,
+                             private val feedScene: DrawerFeedView) : SceneController() {
 
     private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
         else "INBOX"
 
-    override val menuResourceId: Int
+    override val menuResourceId: Int?
         get() = when {
             ! model.isInMultiSelect -> R.menu.mailbox_menu_normal_mode
             model.hasSelectedUnreadMessages -> R.menu.mailbox_menu_multi_mode_unread
@@ -34,7 +34,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
     private val threadListController = ThreadListController(model.threads, scene)
-    private val feedListController = FeedListController(model.feeds)
 
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
@@ -80,28 +79,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    private val feedClickListener = object : FeedItemHolder.FeedClickListener{
-
-        override fun onFeedMuted(activityFeed: ActivityFeed) {
-            feedDataSource.updateFeed(activityFeed)
-            val feeds = model.feeds
-            val index = feeds.indexOf(activityFeed)
-            feeds[index] = activityFeed
-            scene.notifyFeedChanged(index)
-        }
-
-        override fun onFeedDeleted(activityFeed: ActivityFeed) {
-            feedDataSource.deleteFeed(activityFeed)
-            val feeds = model.feeds
-            val index = feeds.indexOf(activityFeed)
-            feeds.removeAt(index)
-            scene.notifyFeedRemoved(index)
-        }
-
-    }
-
     override fun onStart() {
-        scene.attachView(threadEventListener, feedClickListener)
+        scene.attachView(threadEventListener)
         scene.initDrawerLayout()
         scene.initNavHeader("Daniel Tigse Palma")
 
@@ -109,10 +88,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
 
-        feedDataSource.seed()
-        val feedItems = feedDataSource.getFeeds()
-        feedListController.setFeedList(feedItems)
-        scene.showViewNoFeeds(feedItems.isEmpty())
+        feedController.onStart(feedScene, feedController.feedClickListener)
     }
 
     override fun onStop() {
@@ -163,7 +139,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.hideMultiModeBar()
     }
     override fun onBackPressed(): Boolean {
-        return true
+        return scene.onBackPressed()
     }
 
     fun toggleMultiModeBar() {

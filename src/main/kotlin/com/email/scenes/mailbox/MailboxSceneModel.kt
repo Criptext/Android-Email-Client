@@ -2,7 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.scenes.SceneModel
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.ActivityFeed
+import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 
 /**
  * Created by sebas on 1/25/18.
@@ -14,7 +14,6 @@ import com.email.scenes.mailbox.data.ActivityFeed
 
 class MailboxSceneModel : SceneModel {
     val threads : ArrayList<EmailThread> = ArrayList()
-    val feeds : ArrayList<ActivityFeed> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
     val hasSelectedUnreadMessages: Boolean

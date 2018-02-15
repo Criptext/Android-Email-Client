@@ -14,21 +14,21 @@ class FeedItem(
         @PrimaryKey(autoGenerate = true)
         var id:Int,
 
-        @ColumnInfo(name = "feedType")
+        @ColumnInfo(name = "type")
         var feedType: Int,
 
-        @ColumnInfo(name = "feedTitle")
+        @ColumnInfo(name = "title")
         var feedTitle: String,
 
-        @ColumnInfo(name = "feedSubtitle")
+        @ColumnInfo(name = "subtitle")
         var feedSubtitle: String,
 
-        @ColumnInfo(name = "feedDate")
+        @ColumnInfo(name = "date")
         var feedDate: Date,
 
         @ColumnInfo(name = "isNew")
         var isNew: Boolean,
 
         @ColumnInfo(name = "isMuted")
-        val isMuted: Boolean
+        var isMuted: Boolean
 )

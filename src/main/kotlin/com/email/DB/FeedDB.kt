@@ -1,8 +1,9 @@
 package com.email.DB
 
 import android.content.Context
+import com.email.DB.models.FeedItem
 import com.email.DB.seeders.FeedSeeder
-import com.email.scenes.mailbox.data.ActivityFeed
+import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 
 /**
  * Created by danieltigse on 2/7/18.
@@ -10,19 +11,17 @@ import com.email.scenes.mailbox.data.ActivityFeed
 
 interface FeedLocalDB {
 
-    fun getFeeds(): List<ActivityFeed>
+    fun getFeedItems(): List<FeedItem>
     fun seed()
-    fun deleteFeed(activityFeed: ActivityFeed)
-    fun updateFeed(activityFeed: ActivityFeed)
+    fun deleteFeedItem(id: Int)
+    fun updateFeedItem(id: Int, isMuted: Boolean)
 
     class Default(applicationContext: Context): FeedLocalDB {
 
         private val db = AppDatabase.getAppDatabase(applicationContext)
 
-        override fun getFeeds(): List<ActivityFeed> {
-            return db.feedDao().getAll().map { feed ->
-                ActivityFeed(feed)
-            }
+        override fun getFeedItems(): List<FeedItem> {
+            return db.feedDao().getAll()
         }
 
         override fun seed() {
@@ -33,12 +32,12 @@ interface FeedLocalDB {
             }
         }
 
-        override fun deleteFeed(activityFeed: ActivityFeed) {
-            db.feedDao().deleteAll(listOf(activityFeed.feedItem))
+        override fun deleteFeedItem(id: Int) {
+            db.feedDao().delete(id)
         }
 
-        override fun updateFeed(activityFeed: ActivityFeed) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun updateFeedItem(id: Int, isMuted: Boolean){
+            db.feedDao().update(id, isMuted)
         }
 
     }

@@ -1,6 +1,5 @@
 package com.email.scenes.search
 
-import android.app.Activity
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,9 +7,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import com.email.R
 import com.email.SearchActivity
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.search.data.SearchResult
 import com.email.scenes.search.ui.SearchRecyclerView
+import com.email.utils.VirtualList
 
 /**
  * Created by danieltigse on 2/2/18.
@@ -18,11 +17,11 @@ import com.email.scenes.search.ui.SearchRecyclerView
 
 interface SearchScene{
 
-    fun setSearchResult(results: List<SearchResult>)
-    fun onBackPressed(activity: Activity)
+    fun onBackPressed(): Boolean
     fun attachView()
 
-    class SearchSceneView(private val searchActivity: SearchActivity): SearchScene{
+    class SearchSceneView(private val searchActivity: SearchActivity,
+                          private val searchResultList: VirtualList<SearchResult>): SearchScene{
 
         private lateinit var searchRecyclerView: SearchRecyclerView
 
@@ -43,7 +42,7 @@ interface SearchScene{
         }
 
         override fun attachView() {
-            searchRecyclerView =  SearchRecyclerView(recyclerView)
+            searchRecyclerView =  SearchRecyclerView(recyclerView, searchResultList)
             backButton.setOnClickListener {
                 searchActivity.finish()
                 searchActivity.overridePendingTransition(0,0)
@@ -65,13 +64,10 @@ interface SearchScene{
             })
         }
 
-        override fun setSearchResult(results: List<SearchResult>) {
-            searchRecyclerView.setSearchResult(results)
-        }
-
-        override fun onBackPressed(activity: Activity) {
+        override fun onBackPressed(): Boolean {
             searchActivity.finish()
             searchActivity.overridePendingTransition(0,0)
+            return false
         }
 
     }

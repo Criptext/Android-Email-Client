@@ -1,4 +1,4 @@
-package com.email.scenes.mailbox
+package com.email.scenes.mailbox.ui
 
 import android.support.design.widget.NavigationView
 import android.widget.LinearLayout
@@ -14,25 +14,25 @@ import de.hdodenhof.circleimageview.CircleImageView
 class DrawerMenuView(navigationView: NavigationView){
 
     //HEADER
-    val avatarView : CircleImageView
-    val textViewNombre: TextView
-    val textViewCorreo: TextView
+    private val avatarView : CircleImageView
+    private val textViewNombre: TextView
+    private val textViewCorreo: TextView
 
     //MENU OPTIONS
-    val sliderInbox : LinearLayout
-    val sliderSent : LinearLayout
-    val sliderDrafts : LinearLayout
-    val sliderStarred : LinearLayout
-    val sliderSpam : LinearLayout
-    val sliderTrash : LinearLayout
-    val sliderLabels : LinearLayout
-    val sliderSettings : LinearLayout
-    val sliderSupport : LinearLayout
+    private val sliderInbox : LinearLayout
+    private val sliderSent : LinearLayout
+    private val sliderDrafts : LinearLayout
+    private val sliderStarred : LinearLayout
+    private val sliderSpam : LinearLayout
+    private val sliderTrash : LinearLayout
+    private val sliderLabels : LinearLayout
+    private val sliderSettings : LinearLayout
+    private val sliderSupport : LinearLayout
 
     //COUNTERS
-    val textViewCounterInbox: TextView
-    val textViewCounterDraft: TextView
-    val textViewCounterSpam: TextView
+    private val textViewCounterInbox: TextView
+    private val textViewCounterDraft: TextView
+    private val textViewCounterSpam: TextView
 
     init {
         avatarView = navigationView.findViewById(R.id.circleView)

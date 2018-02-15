@@ -41,7 +41,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     fun bindMail(emailThread: EmailThread) {
         previewView.text = emailThread.headerPreview
         headerView.text = emailThread.headerPreview
-        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview, emailThread.preview.get(0).toString().toUpperCase(), 250, 250))
+        avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview,
+                emailThread.preview[0].toString().toUpperCase(), 250, 250))
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {

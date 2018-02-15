@@ -8,5 +8,5 @@ import com.email.scenes.search.data.SearchResult
  */
 
 class SearchSceneModel: SceneModel{
-    lateinit var results : List<SearchResult>
+    val results : ArrayList<SearchResult> = ArrayList()
 }

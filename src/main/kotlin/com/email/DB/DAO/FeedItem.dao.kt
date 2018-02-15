@@ -1,9 +1,7 @@
 package com.email.DB.DAO
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
+import com.email.DB.models.Email
 import com.email.DB.models.FeedItem
 
 /**
@@ -20,4 +18,13 @@ interface FeedDao {
 
     @Delete
     fun deleteAll(feedItems: List<FeedItem>)
+
+    @Query("UPDATE feedItem " +
+            "SET isMuted = :isMuted " +
+            "where id=:id")
+    fun update(id: Int, isMuted: Boolean)
+
+    @Query("DELETE FROM feedItem " +
+            "where id=:id")
+    fun delete(id: Int)
 }

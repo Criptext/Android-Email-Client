@@ -19,10 +19,7 @@ interface SearchLocalDB{
         private val prefs : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         override fun saveHistorySearch(value: String) {
-            var list = prefs.getStringSet("searchHistory", null)
-            if(list == null){
-                list = mutableSetOf()
-            }
+            val list = prefs.getStringSet("searchHistory", null) ?: mutableSetOf()
             list.add(value)
             prefs.edit().putStringSet("searchHistory", list).apply()
         }

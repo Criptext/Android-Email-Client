@@ -1,11 +1,10 @@
 package com.email.scenes.search.holders
 
-import android.app.Activity
-import android.os.Bundle
 import com.email.scenes.SceneController
 import com.email.scenes.search.SearchScene
 import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.search.data.SearchDataSource
+import com.email.scenes.search.ui.SearchResultListController
 
 /**
  * Created by danieltigse on 2/2/18.
@@ -14,19 +13,28 @@ import com.email.scenes.search.data.SearchDataSource
 class SearchSceneController(private val scene: SearchScene,
                             private val model: SearchSceneModel, private val dataSource: SearchDataSource): SceneController(){
 
+    private val searchListController = SearchResultListController(model.results)
+
+    override val menuResourceId: Int?
+        get() = null
+
+    override fun onOptionsItemSelected(itemId: Int) {
+
+    }
+
     override fun onStart() {
         scene.attachView()
         dataSource.seed()
-        model.results = dataSource.getHistorySearch()
-        scene.setSearchResult(dataSource.getHistorySearch())
+        val results = dataSource.getHistorySearch()
+        searchListController.setSearchList(results)
     }
 
     override fun onStop() {
 
     }
 
-    override fun onBackPressed(activity: Activity) {
-        scene.onBackPressed(activity)
+    override fun onBackPressed(): Boolean {
+        return scene.onBackPressed()
     }
 
 }

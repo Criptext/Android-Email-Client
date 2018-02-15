@@ -3,8 +3,7 @@ package com.email.androidui.mailthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.email.MailboxActivity
-import com.email.scenes.mailbox.EmailThreadAdapter
+import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.VirtualList
 
