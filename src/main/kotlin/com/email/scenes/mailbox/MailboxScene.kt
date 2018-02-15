@@ -154,7 +154,7 @@ interface MailboxScene: ThreadListView {
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
-                    moveToDataSourceHandler = onMoveThreadsListener)
+                    onMoveThreadsListener = onMoveThreadsListener)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {
