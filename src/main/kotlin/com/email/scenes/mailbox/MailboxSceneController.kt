@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
+import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels
@@ -12,12 +13,14 @@ import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.DrawerFeedView
+import com.email.scenes.params.SearchParams
 
 /**
  * Created by sebas on 1/30/18.
  */
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
+                             private val host: IHostActivity,
                              private val dataSource: MailboxDataSource,
                              private val feedController : FeedController,
                              private val feedScene: DrawerFeedView) : SceneController() {
@@ -95,7 +98,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     }
 
-    fun archiveSelectedEmailThreads() {
+    private fun archiveSelectedEmailThreads() {
         val emailThreads = model.selectedThreads.toList()
         emailThreads.forEach {
             dataSource.removeLabelsRelation(it.labelsOfMail, it.id)
@@ -106,7 +109,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         threadListController.setThreadList(fetchEmailThreads)
         scene.notifyThreadSetChanged()
     }
-    fun deleteSelectedEmailThreads() {
+
+    private fun deleteSelectedEmailThreads() {
         val emailThreads = model.selectedThreads.toList()
         dataSource.deleteEmailThreads(emailThreads)
 
@@ -117,7 +121,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    fun toggleReadSelectedEmailThreads(title: String) {
+    private fun toggleReadSelectedEmailThreads(title: String) {
         val unreadStatus = (title != "read")
         val emailThreads = model.selectedThreads.toList()
             dataSource.updateUnreadStatus(emailThreads = emailThreads,
@@ -130,14 +134,15 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    fun showMultiModeBar() {
+    private fun showMultiModeBar() {
         val selectedThreadsQuantity : Int = model.selectedThreads.length()
         scene.showMultiModeBar(selectedThreadsQuantity)
     }
 
-    fun hideMultiModeBar() {
+    private fun hideMultiModeBar() {
         scene.hideMultiModeBar()
     }
+
     override fun onBackPressed(): Boolean {
         return scene.onBackPressed()
     }
@@ -152,27 +157,15 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId) {
-            R.id.mailbox_search -> {
-                scene.openSearchActivity()
-            }
-            R.id.mailbox_bell_container -> {
-                scene.openFeedActivity()
-            }
-            R.id.mailbox_archive_selected_messages -> {
-                archiveSelectedEmailThreads()
-            }
-            R.id.mailbox_delete_selected_messages -> {
-                deleteSelectedEmailThreads()
-            }
-            R.id.mailbox_message_toggle_read -> {
-                toggleReadSelectedEmailThreads("READ")
-            }
-            R.id.mailbox_move_to -> {
+            R.id.mailbox_search -> host.goToScene(SearchParams())
+            R.id.mailbox_bell_container -> scene.openNotificationFeed()
+            R.id.mailbox_archive_selected_messages -> archiveSelectedEmailThreads()
+            R.id.mailbox_delete_selected_messages -> deleteSelectedEmailThreads()
+            R.id.mailbox_message_toggle_read -> toggleReadSelectedEmailThreads("READ")
+            R.id.mailbox_move_to ->
                 scene.showDialogMoveTo(OnMoveThreadsListener(this))
-            }
-            R.id.mailbox_add_labels ->{
+            R.id.mailbox_add_labels ->
                 scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
-            }
         }
     }
 

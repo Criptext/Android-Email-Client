@@ -1,6 +1,5 @@
 package com.email.scenes.mailbox
 
-import android.content.Intent
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -10,18 +9,13 @@ import android.view.View
 import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
-import com.email.MailboxActivity
 import com.email.R
-import com.email.SearchActivity
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.feed.ui.FeedItemHolder
 import com.email.scenes.mailbox.holders.ToolbarHolder
-import com.email.scenes.mailbox.ui.DrawerFeedView
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.utils.VirtualList
@@ -42,8 +36,7 @@ interface MailboxScene: ThreadListView {
     fun updateToolbarTitle(title: String)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
-    fun openSearchActivity()
-    fun openFeedActivity()
+    fun openNotificationFeed()
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -55,13 +48,13 @@ interface MailboxScene: ThreadListView {
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
 
-        lateinit var drawerMenuView: DrawerMenuView
+        private lateinit var drawerMenuView: DrawerMenuView
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
         }
 
-        val toolbarHolder: ToolbarHolder by lazy {
+        private val toolbarHolder: ToolbarHolder by lazy {
             val view = mailboxView.findViewById<Toolbar>(R.id.mailbox_toolbar)
             ToolbarHolder(view)
         }
@@ -80,7 +73,7 @@ interface MailboxScene: ThreadListView {
 
         private lateinit var threadRecyclerView: ThreadRecyclerView
 
-        var threadListener: EmailThreadAdapter.OnThreadEventListener? = null
+        private var threadListener: EmailThreadAdapter.OnThreadEventListener? = null
             set(value) {
                 threadRecyclerView.setThreadListener(value)
                 field = value
@@ -158,12 +151,7 @@ interface MailboxScene: ThreadListView {
             labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
         }
 
-        override fun openSearchActivity(){
-            (hostActivity as MailboxActivity).startActivity(Intent(hostActivity, SearchActivity::class.java))
-            hostActivity.overridePendingTransition(0,0)
-        }
-
-        override fun openFeedActivity(){
+        override fun openNotificationFeed(){
             drawerLayout.openDrawer(GravityCompat.END)
         }
 
