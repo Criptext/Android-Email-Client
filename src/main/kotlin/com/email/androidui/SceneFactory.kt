@@ -6,6 +6,7 @@ import com.email.IHostActivity
 import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.mailbox.MailboxScene
+import com.email.scenes.search.SearchScene
 
 /**
  * Instantiates scenes, the view objects for each controller.

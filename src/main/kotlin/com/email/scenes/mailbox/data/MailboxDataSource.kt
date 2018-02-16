@@ -10,10 +10,6 @@ import com.email.scenes.LabelChooser.data.LabelThread
 
 class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
 
-    fun getAllEmailThreads(): List<EmailThread> {
-        return mailboxLocalDB.getAllEmailThreads()
-    }
-
     fun getNotArchivedEmailThreads(): List<EmailThread> {
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }

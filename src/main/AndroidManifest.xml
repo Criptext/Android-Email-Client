@@ -7,6 +7,17 @@
     <application android:name="com.email.DeckardApplication"
         android:theme="@style/AppTheme">
         <activity android:name="com.email.MailboxActivity">
+
+        </activity>
+        <activity
+            android:name="com.email.SearchActivity"
+            android:windowSoftInputMode="stateVisible">
+
+        </activity>
+        <activity
+            android:name=".splash.SplashActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Splash.Criptext">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

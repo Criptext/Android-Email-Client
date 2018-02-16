@@ -135,4 +135,13 @@
     <string name="cancel">Cancel</string>
     <string name="trash">Trash</string>
 
+    <!-- LOGIN ERRORS -->
+    <string name="search_email">Search email</string>
+
+    <!-- ACTIVITY FEED -->
+    <string name="noactivity">There\'s nothing new yet</string>
+    <string name="enjoy_your_day">Enjoy your day</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.email.scenes.mailbox
+package com.email.scenes.mailbox.ui
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

@@ -1,14 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/viewHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#f7f7f8">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="20dp"
+            android:src="@drawable/activity_feed"
+            android:tint="#30323c"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="41dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:text="ACTIVITY FEED"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/viewNoActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="78dp"
+            android:layout_height="86dp"
+            android:src="@drawable/campanita"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:gravity="center_horizontal"
+            android:text="@string/noactivity"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#9b9b9b"
+            android:gravity="center_horizontal"
+            android:text="@string/enjoy_your_day"
+            fontPath="fonts/NunitoSans-Italic.ttf"/>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewFeed"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hola soy un Activity Feed"
-        android:gravity="center"
-        android:layout_gravity="center"/>
+        android:layout_below="@+id/viewHeader"/>
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,6 +1,5 @@
 package com.email.scenes.LabelChooser
 
-import android.util.Log
 import com.email.scenes.LabelChooser.data.LabelThread
 
 /**

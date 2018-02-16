@@ -97,5 +97,14 @@ dependencies {
     //Caligraphy
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
+    //Picasso
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    //Gifs
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+
+    //Swipe Option
+    compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
+
 }
 

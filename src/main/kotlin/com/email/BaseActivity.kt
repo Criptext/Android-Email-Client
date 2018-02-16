@@ -1,18 +1,19 @@
 package com.email
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.SceneController
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 /**
  * Created by gabriel on 2/14/18.
  */
 
 abstract class BaseActivity: AppCompatActivity() {
-
 
     abstract val layoutId: Int
     abstract val toolbarId: Int
@@ -53,9 +54,12 @@ abstract class BaseActivity: AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val activeSceneMenu = controller.menuResourceId
-        menuInflater.inflate(activeSceneMenu, menu)
+        if(activeSceneMenu != null) menuInflater.inflate(activeSceneMenu, menu)
         return true
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+    }
 
 }
