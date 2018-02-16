@@ -12,7 +12,6 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
-import com.email.scenes.mailbox.ui.DrawerFeedView
 import com.email.scenes.params.SearchParams
 
 /**
@@ -22,8 +21,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
                              private val dataSource: MailboxDataSource,
-                             private val feedController : FeedController,
-                             private val feedScene: DrawerFeedView) : SceneController() {
+                             private val feedController : FeedController) : SceneController() {
 
     private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
@@ -91,7 +89,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
 
-        feedController.onStart(feedScene, feedController.feedClickListener)
+        feedController.onStart(feedController.feedClickListener)
     }
 
     override fun onStop() {
