@@ -1,9 +1,5 @@
 package com.email
 
-import android.content.Context
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.view.ViewGroup
 import com.email.DB.SearchLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.search.SearchScene
@@ -12,7 +8,6 @@ import com.email.scenes.search.data.SearchDataSource
 import com.email.scenes.search.data.SearchResult
 import com.email.scenes.search.holders.SearchSceneController
 import com.email.utils.VirtualList
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 /**
  * Created by danieltigse on 2/2/18.
@@ -23,9 +18,9 @@ class SearchActivity : BaseActivity() {
     override val layoutId = R.layout.search_layout
     override val toolbarId = R.id.mailbox_toolbar
 
-    override fun initController(): SceneController {
+    override fun initController(receivedModel: Any): SceneController {
         val DB : SearchLocalDB.Default = SearchLocalDB.Default(this.applicationContext)
-        val model = SearchSceneModel()
+        val model = receivedModel as SearchSceneModel
         val scene = SearchScene.SearchSceneView(this, VirtualSearchList(model.results))
         return SearchSceneController(
                 scene,
@@ -40,5 +35,4 @@ class SearchActivity : BaseActivity() {
         override val size: Int
             get() = results.size
     }
-
 }

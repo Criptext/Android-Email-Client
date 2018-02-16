@@ -13,9 +13,9 @@ import com.email.utils.VirtualList
  * Created by sebas on 1/23/18.
  */
 
-class EmailThreadAdapter(val mContext : Context,
+class EmailThreadAdapter(private val mContext : Context,
                          var threadListener : OnThreadEventListener?,
-                         val threadList: VirtualList<EmailThread>)
+                         private val threadList: VirtualList<EmailThread>)
     : RecyclerView.Adapter<EmailHolder>() {
 
     var isMultiSelectMode = false
