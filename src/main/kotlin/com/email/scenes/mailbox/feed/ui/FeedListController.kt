@@ -1,14 +1,13 @@
 package com.email.scenes.mailbox.feed.ui
 
 import com.email.DB.models.FeedItem
-import com.email.scenes.mailbox.ui.DrawerFeedView
 
 /**
  * Created by danieltigse on 02/14/18.
  */
 
 class FeedListController(private val feedItems: ArrayList<FeedItem>,
-                         private val scene: DrawerFeedView) {
+                         private val scene: FeedView) {
 
     fun setFeedList(feedItems: List<FeedItem>) {
         this.feedItems.clear()

@@ -11,7 +11,7 @@ import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.feed.FeedModel
-import com.email.scenes.mailbox.ui.DrawerFeedView
+import com.email.scenes.mailbox.feed.ui.FeedView
 import com.email.utils.VirtualList
 
 /**
@@ -25,7 +25,6 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val DB: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
-        val feedModel = model.feedModel
 
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(
@@ -33,25 +32,23 @@ class MailboxActivity : BaseActivity() {
                 hostActivity = this,
                 threadList = VirtualEmailThreadList(model.threads)
         )
-        val feedScene = DrawerFeedView(
-                feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
-                navigationView = findViewById(R.id.nav_right_view)
-        )
 
         return MailboxSceneController(
                 scene = scene,
                 model = model,
                 host = this,
                 dataSource = MailboxDataSource(DB),
-                feedController = initFeedController(feedModel),
-                feedScene = feedScene
+                feedController = initFeedController(model.feedModel)
         )
     }
 
     private fun initFeedController(feedModel: FeedModel): FeedController{
-
         val DBF : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
-        return FeedController(feedModel, FeedDataSource(DBF))
+        val feedView = FeedView.Default(
+                feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
+                container = findViewById(R.id.nav_right_view)
+        )
+        return FeedController(feedModel, feedView, FeedDataSource(DBF))
     }
 
     private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
