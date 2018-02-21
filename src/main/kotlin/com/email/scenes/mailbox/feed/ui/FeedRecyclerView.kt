@@ -30,6 +30,14 @@ class FeedRecyclerView(feedItemsList: VirtualList<ActivityFeedItem>, recyclerVie
         feedAdapter.notifyItemChanged(index)
     }
 
+    fun notifyItemRemoved(index: Int) {
+        feedAdapter.notifyItemRemoved(index)
+    }
+
+    fun notifyItemInserted(index: Int) {
+        feedAdapter.notifyItemInserted(index)
+    }
+
     fun notifyDataSetChanged(){
         feedAdapter.notifyDataSetChanged()
     }

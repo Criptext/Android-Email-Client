@@ -3,6 +3,7 @@ package com.email
 import android.view.ViewGroup
 import com.email.DB.FeedLocalDB
 import com.email.DB.MailboxLocalDB
+import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
@@ -43,12 +44,13 @@ class MailboxActivity : BaseActivity() {
     }
 
     private fun initFeedController(feedModel: FeedModel): FeedController{
-        val DBF : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
+        val db : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
+        db.seed()
         val feedView = FeedView.Default(
                 feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
                 container = findViewById(R.id.nav_right_view)
         )
-        return FeedController(feedModel, feedView, FeedDataSource(DBF))
+        return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(), db))
     }
 
     private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)

@@ -22,7 +22,7 @@ interface FeedDao {
     @Query("UPDATE feedItem " +
             "SET isMuted = :isMuted " +
             "where id=:id")
-    fun update(id: Int, isMuted: Boolean)
+    fun toggleMute(id: Int, isMuted: Boolean)
 
     @Query("DELETE FROM feedItem " +
             "where id=:id")

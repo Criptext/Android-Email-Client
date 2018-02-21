@@ -97,12 +97,12 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
     private fun setListeners(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedClickListener?){
 
         viewMute.setOnClickListener {
-            listener?.onFeedMuted(activityFeedItem.id, position, !activityFeedItem.isMuted)
+            listener?.onMuteFeedItemClicked(activityFeedItem.id, position, !activityFeedItem.isMuted)
             swipeView.close(true)
         }
 
         viewDelete.setOnClickListener {
-            listener?.onFeedDeleted(activityFeedItem.id, position)
+            listener?.onDeleteFeedItemClicked(activityFeedItem.id, position)
             swipeView.close(true)
         }
 
@@ -130,8 +130,8 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
     }
 
     interface FeedClickListener{
-        fun onFeedMuted(feedId: Int, position: Int, isMuted: Boolean)
-        fun onFeedDeleted(feedId: Int, position: Int)
+        fun onMuteFeedItemClicked(feedId: Int, position: Int, isMuted: Boolean)
+        fun onDeleteFeedItemClicked(feedId: Int, position: Int)
     }
 
 }

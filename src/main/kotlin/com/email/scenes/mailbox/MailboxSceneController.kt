@@ -93,7 +93,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onStop() {
-
+        feedController.onStop()
     }
 
     private fun archiveSelectedEmailThreads() {

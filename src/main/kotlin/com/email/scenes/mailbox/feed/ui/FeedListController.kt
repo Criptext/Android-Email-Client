@@ -1,6 +1,8 @@
 package com.email.scenes.mailbox.feed.ui
 
 import com.email.DB.models.FeedItem
+import com.email.utils.file.addWhere
+import com.email.utils.file.findFromPosition
 
 /**
  * Created by danieltigse on 02/14/18.
@@ -10,17 +12,41 @@ class FeedListController(private val feedItems: ArrayList<FeedItem>,
                          private val scene: FeedView) {
 
     fun setFeedList(feedItems: List<FeedItem>) {
-        this.feedItems.clear()
-        this.feedItems.addAll(feedItems)
+        if (feedItems.isNotEmpty()) {
+            this.feedItems.clear()
+            this.feedItems.addAll(feedItems)
+        }
+        toggleNoFeedItemsView()
     }
 
-    fun muteFeed(position: Int, isMuted: Boolean){
-        feedItems[position].isMuted = isMuted
-        scene.notifyItemChanged(position)
+    fun toggleMutedFeedItem(id: Int, lastPosition: Int, isMuted: Boolean) {
+        val index = feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
+        if (index > -1) {
+            val feedItem = feedItems[index]
+            feedItem.isMuted = isMuted
+            scene.notifyItemChanged(index)
+        }
     }
 
-    fun deleteFeed(position: Int){
-        feedItems.removeAt(position)
-        scene.notifyDataSetChanged()
+    fun insertFeedItem(newItem: FeedItem) {
+        val pos = feedItems.addWhere(newItem, { existingItem ->
+            newItem.feedDate > existingItem.feedDate
+        })
+        scene.notifyItemInserted(pos)
+        toggleNoFeedItemsView()
+    }
+
+    private fun toggleNoFeedItemsView() {
+        scene.toggleNoFeedsView(visible = feedItems.isEmpty())
+    }
+
+    fun deleteFeedItem(id: Int, lastPosition: Int): FeedItem? {
+        val index = feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
+        return if (index > -1) {
+            val deleted = feedItems.removeAt(index)
+            scene.notifyItemRemoved(index)
+            toggleNoFeedItemsView()
+            deleted
+        } else null
     }
 }

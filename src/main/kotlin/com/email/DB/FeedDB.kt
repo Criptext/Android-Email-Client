@@ -3,7 +3,6 @@ package com.email.DB
 import android.content.Context
 import com.email.DB.models.FeedItem
 import com.email.DB.seeders.FeedSeeder
-import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 
 /**
  * Created by danieltigse on 2/7/18.
@@ -14,7 +13,7 @@ interface FeedLocalDB {
     fun getFeedItems(): List<FeedItem>
     fun seed()
     fun deleteFeedItem(id: Int)
-    fun updateFeedItem(id: Int, isMuted: Boolean)
+    fun muteFeedItem(id: Int, isMuted: Boolean)
 
     class Default(applicationContext: Context): FeedLocalDB {
 
@@ -36,8 +35,8 @@ interface FeedLocalDB {
             db.feedDao().delete(id)
         }
 
-        override fun updateFeedItem(id: Int, isMuted: Boolean){
-            db.feedDao().update(id, isMuted)
+        override fun muteFeedItem(id: Int, isMuted: Boolean){
+            db.feedDao().toggleMute(id, isMuted)
         }
 
     }
