@@ -1,6 +1,5 @@
 package com.email.bgworker
 
-import android.util.Log
 
 /**
  * Created by gabriel on 2/20/18.
@@ -28,7 +27,6 @@ abstract class WorkHandler<in I: Any, O: Any> {
 
     fun submitRequest(params: I) {
         val  isAvailable = state[params.javaClass] == null
-        Log.d("submitRequest", "params $params isAvailable $isAvailable")
         if (isAvailable) {
             val worker = createWorkerFromParams(params, { result ->
                 state[params.javaClass] = WorkState.Done(result)

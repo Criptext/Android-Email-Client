@@ -15,9 +15,9 @@ class FeedController(private val model: FeedModel,
                      private val scene: FeedView,
                      private val feedDataSource: FeedDataSource){
 
-    private lateinit var feedListController : FeedListController
+    private val feedListController = FeedListController(model.feedItems, scene)
 
-    val feedClickListener = object : FeedItemHolder.FeedClickListener{
+    private val feedClickListener = object : FeedItemHolder.FeedClickListener{
 
         override fun onMuteFeedItemClicked(feedId: Int, position: Int, isMuted: Boolean) {
             feedListController.toggleMutedFeedItem(id = feedId,
@@ -47,7 +47,7 @@ class FeedController(private val model: FeedModel,
 
     private fun onFeedItemsLoaded(result: FeedResult.LoadFeed) {
         when (result) {
-            is FeedResult.LoadFeed.Success -> feedListController.setFeedList(result.feedItems)
+            is FeedResult.LoadFeed.Success -> feedListController.refreshFeedItems(result.feedItems)
             is FeedResult.LoadFeed.Failure -> scene.showError(result.message)
         }
     }
@@ -74,9 +74,7 @@ class FeedController(private val model: FeedModel,
         }
     }
 
-    fun onStart(feedClickListener: FeedItemHolder.FeedClickListener) {
-        feedListController = FeedListController(model.feedItems, scene)
-
+    fun onStart() {
         val isEmpty = model.feedItems.isEmpty()
         scene.toggleNoFeedsView(visible = isEmpty)
         if (isEmpty)

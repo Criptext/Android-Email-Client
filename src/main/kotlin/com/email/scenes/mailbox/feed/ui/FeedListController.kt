@@ -11,10 +11,11 @@ import com.email.utils.file.findFromPosition
 class FeedListController(private val feedItems: ArrayList<FeedItem>,
                          private val scene: FeedView) {
 
-    fun setFeedList(feedItems: List<FeedItem>) {
+    fun refreshFeedItems(feedItems: List<FeedItem>) {
         if (feedItems.isNotEmpty()) {
             this.feedItems.clear()
             this.feedItems.addAll(feedItems)
+            scene.notifyDataSetChanged()
         }
         toggleNoFeedItemsView()
     }
