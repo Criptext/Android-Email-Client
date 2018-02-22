@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.feed.ui
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.email.R
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.utils.VirtualList
@@ -15,7 +16,10 @@ interface FeedView {
 
     fun toggleNoFeedsView(visible: Boolean)
     fun notifyItemChanged(index: Int)
+    fun notifyItemRemoved(index: Int)
+    fun notifyItemInserted(index: Int)
     fun notifyDataSetChanged()
+    fun showError(errorMessage: String)
     var feedClickListener: FeedItemHolder.FeedClickListener?
 
     class Default(feedItemsList: VirtualList<ActivityFeedItem>,
@@ -42,6 +46,14 @@ interface FeedView {
             feedRecyclerView.notifyItemChanged(index)
         }
 
+        override fun notifyItemRemoved(index: Int) {
+            feedRecyclerView.notifyItemRemoved(index)
+        }
+
+        override fun notifyItemInserted(index: Int) {
+            feedRecyclerView.notifyItemInserted(index)
+        }
+
         override fun notifyDataSetChanged() {
             feedRecyclerView.notifyDataSetChanged()
             if (feedRecyclerView.isFeedListEmpty()) {
@@ -51,6 +63,10 @@ interface FeedView {
 
         override fun toggleNoFeedsView(visible: Boolean) {
             viewNoActivity.visibility = if (visible) View.VISIBLE else View.GONE
+        }
+
+        override fun showError(errorMessage: String) {
+            Toast.makeText(recyclerViewFeed.context, errorMessage, Toast.LENGTH_LONG).show()
         }
     }
 

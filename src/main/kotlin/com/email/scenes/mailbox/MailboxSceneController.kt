@@ -89,11 +89,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
 
-        feedController.onStart(feedController.feedClickListener)
+        feedController.onStart()
     }
 
     override fun onStop() {
-
+        feedController.onStop()
     }
 
     private fun archiveSelectedEmailThreads() {
