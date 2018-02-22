@@ -1,5 +1,6 @@
 package com.email.scenes.signin
 
+import android.view.Menu
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.params.SignUpParams
@@ -37,6 +38,7 @@ class SignInSceneController(
         override fun toggleSignUpPressedState(isPressed: Boolean) {
             scene.toggleSignUpPressed(isPressed)
         }
+
     }
 
     private val progressSignInListener = object : ProgressSignInListener{
@@ -62,7 +64,7 @@ class SignInSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        return false
+        return true
     }
 
     override fun onOptionsItemSelected(itemId: Int) {

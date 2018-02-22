@@ -92,7 +92,7 @@ interface SignInScene {
         @SuppressLint("RestrictedApi")
         private fun setUsernameBackgroundTintList() {
             usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.white))
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
         }
 
         @SuppressLint("RestrictedApi")
@@ -100,7 +100,7 @@ interface SignInScene {
             usernameInputLayout.hint = "Username"
             usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
             usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.white))
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
             signInButton.isEnabled = shouldButtonBeEnabled
             imageError.visibility = View.INVISIBLE
         }

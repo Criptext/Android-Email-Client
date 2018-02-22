@@ -1,5 +1,6 @@
 package com.email.scenes.signin
 
+import android.view.Menu
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -132,6 +133,10 @@ class SignUpSceneController(
                 TODO("GO TO LOGIN")
             }
         }
+
+        override fun onBackPressed() {
+            host.finishScene()
+        }
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
@@ -169,7 +174,7 @@ class SignUpSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        return false
+        return true
     }
 
     override fun onOptionsItemSelected(itemId: Int) {
@@ -191,5 +196,6 @@ class SignUpSceneController(
             fun onTermsAndConditionsClick()
             fun onFullNameTextChangeListener(text: String)
             fun onRecoveryEmailTextChangeListener(text: String)
+            fun onBackPressed()
         }
 }

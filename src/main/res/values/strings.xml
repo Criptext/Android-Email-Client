@@ -94,9 +94,20 @@
     <string name="unsent">Unsent</string>
     <string name="encrypt_this_email">Encrypt this email</string>
 
+    <!-- LOGIN -->
+    <string name="login">Log In</string>
+    <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
+    <string name="didnt_get_prompt">Didn’t get the prompt?</string>
+    <string name="not_approved">Your request to access this account was rejected by a verified device. Multiple rejections could lead your device to be blacklisted from Criptext.</string>
+    <string name="button_resendit">Resend it</string>
+    <string name="cant_access_device">Can’t access to your device?</string>
+    <string name="establishing">Establishing secure connection</string>
+    <string name="device_ready">Device Ready</string>
+    <string name="failed">Failed</string>
+    <string name="login_rejected">Login Rejected</string>
+    <string name="creating_keys">Creating Keys</string>
 
     <!-- LOGIN ERRORS -->
-
     <string name="logout1">Unable to reach account. Please try again later</string>
     <string name="logout2">Unable to create session, please try again later</string>
     <string name="logout3">Unable to retrieve account activities, please try again later</string>

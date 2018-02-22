@@ -16,7 +16,7 @@
 
     <item
         android:id="@+id/mailbox_message_toggle_read"
-        android:icon="@drawable/unread"
+        android:icon="@drawable/mail_opened"
         app:showAsAction="always"
         android:title="unread"/>
 

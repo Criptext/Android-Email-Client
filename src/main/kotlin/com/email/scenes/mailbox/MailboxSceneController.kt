@@ -3,6 +3,7 @@ package com.email.scenes.mailbox
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import com.email.IHostActivity
+import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels
@@ -58,6 +59,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             scene.updateToolbarTitle(toolbarTitle)
         }
+    }
+
+    val menuClickListener = { ->
+        scene.openNotificationFeed()
     }
 
     private fun selectThread(thread: EmailThread, position: Int) {
@@ -160,7 +165,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId) {
             R.id.mailbox_search -> host.goToScene(SearchParams())
-            R.id.mailbox_bell_container -> scene.openNotificationFeed()
             R.id.mailbox_archive_selected_messages -> archiveSelectedEmailThreads()
             R.id.mailbox_delete_selected_messages -> deleteSelectedEmailThreads()
             R.id.mailbox_message_toggle_read -> {

@@ -31,6 +31,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
      * to inflate the activity's views. Your layout must contain a toolbar somewhere.
      */
     abstract val layoutId: Int
+
     /**
      * Resource Id of your activity's toolbar. After the layout is inflated, BaseActivity will call
      * `findViewById` with this value to get the toolbar and set it as action bar. If no toolbar
@@ -64,7 +65,6 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             val toolbar = findViewById<Toolbar>(toolbarId)
             setSupportActionBar(toolbar)
         }
-
 
         val currentModel = getCachedModelOrThrow()
         controller = initController(currentModel)
@@ -123,6 +123,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass)
+    }
+
+    override fun finishScene() {
+        finish()
     }
 
     private companion object {

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewRoot"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.12">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="15dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/back_signup"/>
+
+        <ImageView
+            android:layout_width="110dp"
+            android:layout_height="28dp"
+            android:src="@drawable/logo"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="12dp"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/viewBody"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.50"
+        android:orientation="vertical"
+        android:gravity="bottom|center_horizontal"
+        android:transitionGroup="true">
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="26sp"
+            android:textColor="#ffffff"
+            android:gravity="center_horizontal"
+            android:text="@string/login"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+        <TextView
+            android:id="@+id/textViewBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:gravity="center_horizontal"
+            android:text="@string/login_body"/>
+
+        
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+            
+            <ImageView
+                android:id="@+id/imageViewCircularArrow"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/circular_arrow"
+                android:tint="@android:color/white"/>
+
+            <ImageView
+                android:id="@+id/imageViewWatch"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/sandwatch"
+                android:padding="10dp"
+                android:tint="@android:color/white"/>
+            
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.38">
+
+        <TextView
+            android:id="@+id/textViewPromot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:gravity="center_horizontal"
+            android:text="@string/didnt_get_prompt"
+            android:visibility="visible"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/textViewNotAproved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:gravity="center_horizontal"
+            android:text="@string/not_approved"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"/>
+        
+        <Button
+            android:id="@+id/buttonResend"
+            android:layout_width="270dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/textViewPromot"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/button_resendit"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_signup_background"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:gravity="center_horizontal"
+                android:text="@string/cant_access_device"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ffffff"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

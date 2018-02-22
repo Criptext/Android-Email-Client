@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
-import com.email.MailboxActivity
-import com.email.SecureEmail
+import com.email.*
 import java.lang.ref.WeakReference
 
 /**
@@ -21,20 +20,21 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(hasActiveAccount(this)){
-            welcomeTimeout = WelcomeTimeout(1000L, this)
-            welcomeTimeout!!.start()
-        }
-        else{
-            startActivity(Intent(this, MailboxActivity::class.java))
-            finish()
-        }
+        welcomeTimeout = WelcomeTimeout(2000L, this)
+        welcomeTimeout!!.start()
     }
 
     override fun onTimeout() {
-        val intent = Intent(this, MailboxActivity::class.java)
-        startActivity(intent)
+
         finish()
+        if(hasActiveAccount(this)){
+            startActivity(Intent(this, MailboxActivity::class.java))
+            overridePendingTransition(0, 0)
+        }
+        else{
+            startActivity(Intent(this, MailboxActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
+        }
     }
 
     companion object {
@@ -43,6 +43,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
             return prefs.getString(SecureEmail.ACTIVE_ACCOUNT, "") != ""
         }
     }
+
 }
 
 private class WelcomeTimeout(val timeToWait: Long, listener: Listener) {
