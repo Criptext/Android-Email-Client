@@ -6,7 +6,6 @@ import android.os.AsyncTask
  * Created by sebas on 2/21/18.
  */
 interface ProgressSignInListener {
-    fun onStart()
     fun onFinish()
 }
 
@@ -19,7 +18,7 @@ class ProgressSignInTask(val progressSignInListener:
     }
 
     override fun onPreExecute() {
-        progressSignInListener.onStart()
+        TODO("ADD ON START BEFORE EXECUTING THE ASYNC TASK")
     }
 
     override fun onPostExecute(result: String?) {

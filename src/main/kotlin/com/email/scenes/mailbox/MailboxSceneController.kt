@@ -36,18 +36,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     val emailThreadSize : Int
         get() = model.threads.size
 
-    val moveSelectedEmailsToSpam = {
-        ->
-        this.moveSelectedEmailsToSpam()
-    }
-
-    val moveSelectedEmailsToTrash = {
-        ->
-        this.moveSelectedEmailsToTrash()
-    }
-
     private val threadListController = ThreadListController(model.threads, scene)
-
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
             if (! model.isInMultiSelect) {
@@ -98,7 +87,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initDrawerLayout()
         scene.initNavHeader("Daniel Tigse Palma")
 
-        dataSource.seed()
         val emailThreads = dataSource.getNotArchivedEmailThreads()
         threadListController.setThreadList(emailThreads)
         toggleMultiModeBar()
@@ -180,8 +168,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 toggleReadSelectedEmailThreads(unreadStatus = unreadStatus)
             }
             R.id.mailbox_move_to -> {
-                val moveListener = MailboxSceneController.OnMoveListener.Default()
-                scene.showDialogMoveTo(OnMoveThreadsListener(moveListener = moveListener))
+                scene.showDialogMoveTo(onMoveThreadsListener)
             }
             R.id.mailbox_add_labels -> {
                 scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
@@ -230,17 +217,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    interface OnMoveListener {
-        fun moveSelectedEmailsToSpam()
-        fun moveSelectedEmailsToTrash()
-        class Default : OnMoveListener {
-            override fun moveSelectedEmailsToSpam() {
-                moveSelectedEmailsToSpam()
-            }
-
-            override fun moveSelectedEmailsToTrash() {
-                moveSelectedEmailsToTrash()
-            }
+    val onMoveThreadsListener = object : OnMoveThreadsListener {
+        override fun moveToSpam() {
+            this@MailboxSceneController.moveSelectedEmailsToSpam()
         }
+
+        override fun moveToTrash() {
+            this@MailboxSceneController.moveSelectedEmailsToTrash()
+        }
+
     }
 }

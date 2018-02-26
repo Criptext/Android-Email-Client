@@ -3,8 +3,8 @@ package com.email
 import com.email.DB.SignUpLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.SignUpDataSource
+import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
-import com.email.scenes.signin.SignUpViewHolder
 import com.email.scenes.signup.SignUpSceneModel
 
 /**
@@ -19,11 +19,12 @@ class SignUpActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val db: SignUpLocalDB.Default = SignUpLocalDB.Default(this.applicationContext)
-        val viewHolder = SignUpViewHolder(this)
+        val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))
         val signUpSceneModel = receivedModel as SignUpSceneModel
         return SignUpSceneController(
                 model = signUpSceneModel,
-                holder = viewHolder,
+                scene = signUpSceneView,
+                host = this,
                 dataSource = SignUpDataSource(db))
     }
 }

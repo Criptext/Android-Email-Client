@@ -1,77 +1,64 @@
 package com.email.scenes.signin
 
-import android.content.Intent
-import com.email.SignUpActivity
+import com.email.IHostActivity
 import com.email.scenes.SceneController
+import com.email.scenes.params.SignUpParams
 
 /**
  * Created by sebas on 2/15/18.
  */
 
 class SignInSceneController(
-        val model: SignInSceneModel,
-        val holder: SignInViewHolder,
-        val dataSource: SignInDataSource): SceneController() {
+        private val model: SignInSceneModel,
+        private val scene: SignInScene,
+        private val host: IHostActivity,
+        private val dataSource: SignInDataSource): SceneController() {
 
     override val menuResourceId: Int
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
-    private var loginButtonListener = object : SignInSceneController.SignInListener.LoginButtonListener {
+    private val signInListener = object : SignInListener {
         override fun onLoginClick() {
             validateUsername(model.username)
         }
-    }
 
-    private var usernameInputListener = object : SignInSceneController.SignInListener.UsernameInputListener{
-        override fun toggleFocusState(isFocused: Boolean) {
+        override fun toggleUsernameFocusState(isFocused: Boolean) {
             if(isFocused) {
             } else {
             }
         }
 
-        override fun onTextChanged(text: String) {
-            holder.drawNormalSignInOptions()
+        override fun onUsernameTextChanged(text: String) {
+            scene.drawNormalSignInOptions()
             model.username = text
         }
 
-    }
-
-    private var signupListener = object : SignInSceneController.SignInListener.SignUpTextViewListener{
         override fun goToSignUp() {
-            val intent = Intent(holder.mActivity, SignUpActivity::class.java)
-            holder.mActivity.startActivity(intent)
+            host.goToScene(SignUpParams())
         }
 
-        override fun togglePressedState(isPressed: Boolean) {
-            holder.toggleSignUpPressed(isPressed)
+        override fun toggleSignUpPressedState(isPressed: Boolean) {
+            scene.toggleSignUpPressed(isPressed)
         }
     }
 
-    private val signInListener = SignInListener.Default(
-            signUpTextViewListener = signupListener,
-            usernameInputListener = usernameInputListener,
-            loginButtonListener = loginButtonListener)
-    private var progressSignInListener = object : ProgressSignInListener{
-        override fun onStart() {
-            holder.toggleLoginProgressBar(isLoginIn = true)
-        }
-
+    private val progressSignInListener = object : ProgressSignInListener{
         override fun onFinish() {
-            holder.toggleLoginProgressBar(isLoginIn = false)
+            scene.toggleLoginProgressBar(isLoggingIn = false)
         }
 
     }
 
     fun validateUsername(username: String) {
         if(username == "sebas") {
-            holder.drawError()
+            scene.drawError()
         } else {
             TODO("SIGN IN, START PROGRESS DIALOG.")
         }
     }
 
     override fun onStart() {
-        holder.initListeners(signInListener = signInListener)
+        scene.initListeners(signInListener = signInListener)
     }
 
     override fun onStop() {
@@ -85,22 +72,10 @@ class SignInSceneController(
     }
 
     interface SignInListener {
-        interface LoginButtonListener {
-            fun onLoginClick()
-        }
-
-        interface UsernameInputListener {
-            fun toggleFocusState(isFocused: Boolean)
-            fun onTextChanged(text: String)
-        }
-
-        interface SignUpTextViewListener {
-            fun togglePressedState(isPressed: Boolean)
-            fun goToSignUp()
-        }
-
-        class Default(val signUpTextViewListener: SignUpTextViewListener,
-                    val usernameInputListener: UsernameInputListener,
-                      val loginButtonListener: LoginButtonListener): SignInListener
+        fun onLoginClick()
+        fun toggleUsernameFocusState(isFocused: Boolean)
+        fun onUsernameTextChanged(text: String)
+        fun toggleSignUpPressedState(isPressed: Boolean)
+        fun goToSignUp()
     }
 }

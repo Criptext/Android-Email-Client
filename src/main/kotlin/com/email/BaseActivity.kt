@@ -12,6 +12,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.params.SceneParams
 import com.email.scenes.params.SearchParams
+import com.email.scenes.params.SignUpParams
 import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpSceneModel
@@ -108,6 +109,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     private fun createNewSceneFromParams(params: SceneParams): Any {
         return when(params) {
             is SearchParams -> SearchSceneModel()
+            is SignUpParams -> SignUpSceneModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
