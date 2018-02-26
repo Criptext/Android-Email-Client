@@ -1,6 +1,7 @@
 package com.email.scenes.signin
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -37,7 +38,8 @@ class RecoveryEmailWarningDialog(val context: Context) {
         newRecoveryEmailWarningDialog.show()
         newRecoveryEmailWarningDialog.window.setLayout(width, height)
 
-        val drawableBackground = res.getDrawable(R.drawable.dialog_label_chooser_shape)
+        val drawableBackground = ContextCompat.getDrawable(
+                dialogView.context, R.drawable.dialog_label_chooser_shape)
         newRecoveryEmailWarningDialog.window.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView,

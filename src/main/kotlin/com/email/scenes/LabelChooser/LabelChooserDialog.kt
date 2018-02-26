@@ -1,6 +1,7 @@
 package com.email.scenes.LabelChooser
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -24,7 +25,7 @@ class LabelChooserDialog(private val context: Context) {
         val newLabelChooserDialog = dialogBuilder.create()
         newLabelChooserDialog.show()
         newLabelChooserDialog.window.setLayout(width, height)
-        val drawableBackground = context.resources.getDrawable(R.drawable.dialog_label_chooser_shape)
+        val drawableBackground = ContextCompat.getDrawable(context, R.drawable.dialog_label_chooser_shape)
         newLabelChooserDialog.window.setBackgroundDrawable(drawableBackground)
         assignButtonEvents(dialogView, newLabelChooserDialog, controller.dialogLabelsListener)
         return newLabelChooserDialog

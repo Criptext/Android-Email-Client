@@ -14,7 +14,6 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.anim.FlipAnimator
-import com.email.utils.ui.Tint
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
@@ -51,13 +50,13 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
         if(emailThread.unread) {
             val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
-            headerView.setTypeface(boldTypeface)
-            dateView.setTypeface(boldTypeface)
+            headerView.typeface = boldTypeface
+            dateView.typeface = boldTypeface
         } else {
             val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
-            headerView.setTypeface(normalTypeface)
-            dateView.setTypeface(normalTypeface)
-            layout.setBackgroundColor(view.resources.getColor(R.color.mailbox_mail_unread))
+            headerView.typeface = normalTypeface
+            dateView.typeface = normalTypeface
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
     }
 
@@ -95,9 +94,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
             if(unread) {
-                view.setBackgroundColor(view.resources.getColor(R.color.mail_item_not_selected))
+                view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
             } else {
-                view.setBackgroundColor(view.resources.getColor(R.color.mailbox_mail_unread))
+                view.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
             }
         }
     }

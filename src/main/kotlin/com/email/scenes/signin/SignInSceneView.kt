@@ -3,6 +3,7 @@ package com.email.scenes.signin
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.support.design.widget.TextInputLayout
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
@@ -45,7 +46,7 @@ interface SignInScene {
         }
 
         fun assignUsernameInputListener(){
-            usernameInputLayout.setOnFocusChangeListener { view, isFocused ->
+            usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
                 signInListener.toggleUsernameFocusState(isFocused)
             }
 
@@ -69,32 +70,37 @@ interface SignInScene {
             }
         }
 
-        override fun toggleSignUpPressed(isFocused: Boolean){
-            if(isFocused) {
-                signUpTextView.setTextColor(res.getColor(R.color.black))
+        override fun toggleSignUpPressed(isPressed: Boolean){
+            if(isPressed) {
+                signUpTextView.setTextColor(
+                        ContextCompat.getColor(view.context, R.color.black))
             } else {
-                signUpTextView.setTextColor(res.getColor(R.color.white))
+                signUpTextView.setTextColor(
+                        ContextCompat.getColor(view.context, R.color.white))
             }
         }
         @SuppressLint("RestrictedApi")
         override fun drawError() {
             usernameInputLayout.hint = "Username does not exist"
             usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login_error)
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.black))
+            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.black))
             imageError.visibility = View.VISIBLE
             signInButton.isEnabled  = false
         }
 
         @SuppressLint("RestrictedApi")
         private fun setUsernameBackgroundTintList() {
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.white))
+            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.white))
         }
 
         @SuppressLint("RestrictedApi")
         override fun drawNormalSignInOptions(){
             usernameInputLayout.hint = "Username"
             usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.white))
+            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.white))
             signInButton.isEnabled = shouldButtonBeEnabled
             imageError.visibility = View.INVISIBLE
         }

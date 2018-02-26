@@ -23,9 +23,6 @@ class SignInSceneController(
         }
 
         override fun toggleUsernameFocusState(isFocused: Boolean) {
-            if(isFocused) {
-            } else {
-            }
         }
 
         override fun onUsernameTextChanged(text: String) {

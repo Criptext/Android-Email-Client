@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Button
@@ -36,7 +37,7 @@ class MoveToDialog(val context: Context) {
         newMovetoDialog.show()
         newMovetoDialog.window.setLayout(width, height)
 
-        val drawableBackground = res.getDrawable(R.drawable.dialog_label_chooser_shape)
+        val drawableBackground = ContextCompat.getDrawable(dialogView.context, R.drawable.dialog_label_chooser_shape)
         newMovetoDialog.window.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView,

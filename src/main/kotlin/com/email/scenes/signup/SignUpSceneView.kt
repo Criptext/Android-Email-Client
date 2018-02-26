@@ -3,6 +3,7 @@ package com.email.scenes.signin
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.support.design.widget.TextInputLayout
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,8 +29,8 @@ interface SignUpScene {
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
 
-    class SignUpSceneView(mView: View): SignUpScene {
-        private val res = mView.context.resources
+    class SignUpSceneView(private val view: View): SignUpScene {
+        private val res = view.context.resources
         private val username: AppCompatEditText
         private val usernameInput: TextInputLayout
         private val usernameSuccessImage: ImageView
@@ -56,7 +57,7 @@ interface SignUpScene {
         private val txtTermsAndConditions: TextView
         private val createAccount: Button
 
-        private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(mView.context)
+        private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
         private lateinit var signUpListener: SignUpSceneController.SignUpListener
 
         override fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
@@ -94,12 +95,14 @@ interface SignUpScene {
             confirmPasswordErrorImage.visibility = View.GONE
 
             passwordInput.setHintTextAppearance(R.style.textinputlayout_login)
-            password.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.white))
+            password.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.white))
 
             confirmPasswordInput.error = ""
 
             confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login)
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.white))
+            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.white))
         }
 
         @SuppressLint("RestrictedApi")
@@ -109,8 +112,10 @@ interface SignUpScene {
 
             confirmPasswordInput.error = "Passwords do not match"
             passwordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
-            password.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.black))
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.black))
+            password.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.black))
+            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.black))
         }
 
         @SuppressLint("RestrictedApi")
@@ -234,31 +239,31 @@ interface SignUpScene {
             }
         }
         init {
-            username = mView.findViewById(R.id.username)
-            usernameInput = mView.findViewById(R.id.input_username)
-            usernameSuccessImage = mView.findViewById(R.id.success_username)
-            usernameErrorImage = mView.findViewById(R.id.error_username)
+            username = view.findViewById(R.id.username)
+            usernameInput = view.findViewById(R.id.input_username)
+            usernameSuccessImage = view.findViewById(R.id.success_username)
+            usernameErrorImage = view.findViewById(R.id.error_username)
 
-            fullName = mView.findViewById(R.id.full_name)
-            fullNameInput = mView.findViewById(R.id.full_name_input)
+            fullName = view.findViewById(R.id.full_name)
+            fullNameInput = view.findViewById(R.id.full_name_input)
 
-            password = mView.findViewById(R.id.password)
-            passwordInput = mView.findViewById(R.id.password_input)
-            passwordSuccessImage = mView.findViewById(R.id.success_password)
-            passwordErrorImage = mView.findViewById(R.id.error_password)
+            password = view.findViewById(R.id.password)
+            passwordInput = view.findViewById(R.id.password_input)
+            passwordSuccessImage = view.findViewById(R.id.success_password)
+            passwordErrorImage = view.findViewById(R.id.error_password)
 
-            confirmPassword = mView.findViewById(R.id.password_repeat)
-            confirmPasswordInput = mView.findViewById(R.id.password_repeat_input)
-            confirmPasswordSuccessImage = mView.findViewById(R.id.success_password_repeat)
-            confirmPasswordErrorImage = mView.findViewById(R.id.error_password_repeat)
+            confirmPassword = view.findViewById(R.id.password_repeat)
+            confirmPasswordInput = view.findViewById(R.id.password_repeat_input)
+            confirmPasswordSuccessImage = view.findViewById(R.id.success_password_repeat)
+            confirmPasswordErrorImage = view.findViewById(R.id.error_password_repeat)
 
 
-            recoveryEmail = mView.findViewById(R.id.recovery_email)
-            recoveryEmailInput = mView.findViewById(R.id.recovery_email_input)
+            recoveryEmail = view.findViewById(R.id.recovery_email)
+            recoveryEmailInput = view.findViewById(R.id.recovery_email_input)
 
-            checkboxTerms = mView.findViewById(R.id.chkTermsAndConditions)
-            txtTermsAndConditions = mView.findViewById(R.id.txt_terms_and_conditions)
-            createAccount = mView.findViewById(R.id.create_account)
+            checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
+            txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
+            createAccount = view.findViewById(R.id.create_account)
 
             drawNormalTint()
         }
@@ -278,11 +283,16 @@ interface SignUpScene {
 
         @SuppressLint("RestrictedApi")
         fun setBackgroundTintLists() {
-            username.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.signup_hint_color))
-            fullName.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.signup_hint_color))
-            password.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.signup_hint_color))
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.signup_hint_color))
-            recoveryEmail.supportBackgroundTintList = ColorStateList.valueOf(res.getColor(R.color.signup_hint_color))
+            username.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
+            fullName.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
+            password.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
+            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
+            recoveryEmail.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
         }
 
         private fun setHintAppearences(){
@@ -310,6 +320,5 @@ interface SignUpScene {
             assignCreateAccountClickListener()
             assignRecoveryEmailTextChangeListener()
         }
-
     }
 }
