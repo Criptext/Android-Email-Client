@@ -13,5 +13,4 @@ interface IHostActivity {
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?
     }
-
 }

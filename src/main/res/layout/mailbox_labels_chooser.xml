@@ -10,16 +10,18 @@
         android:text="Add labels"
         android:textStyle="bold"
         android:gravity="start"
-        android:layout_marginLeft="15dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:paddingStart="40dp"
+        android:layout_marginLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        android:paddingStart="20dp"
         android:textColor="@color/textColorPrimary"
         android:textSize="20sp"
         />
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/label_recycler"
                 android:layout_gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="200dp">
 
@@ -33,17 +35,19 @@
         android:layout_height="wrap_content">
         <Button
             android:textColor="@color/label_buttons_text"
-            android:textSize="10sp"
+            android:textSize="15sp"
             android:id="@+id/label_cancel"
             android:stateListAnimator="@null"
             android:background="@drawable/label_button_left_bg"
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
+            android:textAllCaps="false"
             android:text="Cancel" />
 
         <Button
-            android:textSize="10sp"
+            android:textSize="15sp"
+            android:textAllCaps="false"
             android:textColor="@color/label_buttons_text"
             android:id="@+id/label_add"
             android:background="@drawable/label_button_right_bg"

@@ -24,9 +24,11 @@ class MailboxActivity : BaseActivity() {
     override val toolbarId = R.id.mailbox_toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val DB: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
+        val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
+        val mailboxDataSource = MailboxDataSource(db)
 
+        mailboxDataSource.seed()
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
         val scene = MailboxScene.MailboxSceneView(
                 mailboxView = rootView,
@@ -38,7 +40,7 @@ class MailboxActivity : BaseActivity() {
                 scene = scene,
                 model = model,
                 host = this,
-                dataSource = MailboxDataSource(DB),
+                dataSource = mailboxDataSource,
                 feedController = initFeedController(model.feedModel)
         )
     }
@@ -53,16 +55,17 @@ class MailboxActivity : BaseActivity() {
         return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(), db))
     }
 
-    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread> {
-        override fun get(i: Int) = threads[i]
-
-        override val size: Int
-            get() = threads.size
-    }
 
     override fun refreshToolbarItems() {
         this.invalidateOptionsMenu()
     }
 
+
+  private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread>  {
+        override fun get(i: Int) = threads[i]
+
+        override val size: Int
+            get() = threads.size
+    }
 }

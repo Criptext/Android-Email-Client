@@ -134,6 +134,16 @@
     <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
     <string name="trash">Trash</string>
+    <string name="more">more</string>
+    <string name="criptext_com">\@criptext.com</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="not_registered">Not registered?</string>
+    <string name="recover_email_warning_content_start">Without a recovery email address\nyou will not be able to\nregain access to your account if\n you forget your password.</string>
+    <string name="recover_email_warning_content_end">Would you like to set a recovery\nemail?</string>
+    <string name="sign_up_terms_and_conditions_start">I have read and agreed with the</string>
+    <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
+    <string name="btn_create_account">Create account</string>
+    <string name="txt_create_criptext_account">Create your Criptext account</string>
 
     <!-- LOGIN ERRORS -->
     <string name="search_email">Search email</string>

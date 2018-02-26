@@ -17,7 +17,7 @@
     <color name="colorUnsent">#ef4646</color>
     <color name="unsend_button_red">#da4931</color>
     <color name="colorOpen">#0091FF</color>
-    <color name="colorSubject">#5F5F5F</color>
+    <color name="colorSubject">#000000</color>
     <color name="colorLabels">#8A8A8A</color>
     <color name="label_buttons_text">#30323c</color>
     <color name="colorLabels2">#626262</color>
@@ -36,5 +36,11 @@
     <color name="mail_item_selected">#FFFBE8</color>
     <color name="mail_item_not_selected">#ffffff</color>
     <color name="label_buttons">#f2f2f2</color>
+    <color name="mailbox_mail_unread">#f4f4f4</color>
+    <color name="mail_item_date">#6a707e</color>
     <color name="nav_button">#4f515b</color>
+    <color name="login_background">#0091ff</color>
+    <color name="black">#000000</color>
+    <color name="gray">#626262</color>
+    <color name="signup_hint_color">#ffff</color>
 </resources>
