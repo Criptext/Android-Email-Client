@@ -22,9 +22,9 @@ class FeedControllerTest {
     private lateinit var model: FeedModel
     private lateinit var scene: MockedFeedView
     private lateinit var db: MockedFeedLocalDB
-    lateinit var runner: MockedWorkRunner
-    lateinit var dataSource: FeedDataSource
-    lateinit var controller: FeedController
+    private lateinit var runner: MockedWorkRunner
+    private lateinit var dataSource: FeedDataSource
+    private lateinit var controller: FeedController
 
     @Before
     fun setUp() {
@@ -36,7 +36,7 @@ class FeedControllerTest {
         controller = FeedController(model, scene, dataSource)
     }
 
-    fun createFeedItems(size: Int): List<FeedItem> {
+    private fun createFeedItems(size: Int): List<FeedItem> {
         return (1..size).map {
             Thread.sleep(5) // delay between dates
             FeedItem(id = it, feedType = 0, feedTitle = "notification #$it",
@@ -76,7 +76,7 @@ class FeedControllerTest {
         scene.notifiedDataSetChanged `should be` true
     }
 
-    fun muteItemAt(position: Int, exception: Exception?) {
+    private fun muteItemAt(position: Int, exception: Exception?) {
         // init
         controller.onStart()
         runner._work()
@@ -131,12 +131,12 @@ class FeedControllerTest {
         controller.onStart()
         runner._work()
 
-        val mutedItem = model.feedItems[position]
+        val deletedItem = model.feedItems[position]
         scene.lastNotifiedChangedPosition = -1
         val expectedCountAfterDeletion = model.feedItems.size - 1
 
         // fire click event
-        scene.feedClickListener!!.onDeleteFeedItemClicked(feedId = mutedItem.id, position = position)
+        scene.feedClickListener!!.onDeleteFeedItemClicked(feedId = deletedItem.id, position = position)
 
         model.feedItems.size `should be` expectedCountAfterDeletion
 
@@ -149,6 +149,7 @@ class FeedControllerTest {
         runner.assertPendingWork(listOf(DeleteFeedItemWorker::class.java))
         runner._work()
     }
+
     @Test
     fun `when the delete button is clicked, on abscene of errors, should delete the row, and update the db`() {
         db.nextLoadedFeedItems = createFeedItems(5)
