@@ -6,6 +6,8 @@ import com.email.db.models.User
  * Created by sebas on 2/27/18.
  */
 
+
+//TODO: THIS CLASS IS NOT BEING USED YET.
 object SignUpData {
 
     sealed class RegisterUser {

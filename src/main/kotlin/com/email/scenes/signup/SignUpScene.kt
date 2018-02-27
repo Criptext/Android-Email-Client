@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.*
 import com.email.R
@@ -30,8 +29,10 @@ interface SignUpScene {
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
     fun showError(message : String)
+    fun showSuccess(message: String)
 
     class SignUpSceneView(private val view: View): SignUpScene {
+
         private val res = view.context.resources
         private val username: AppCompatEditText
         private val usernameInput: TextInputLayout
@@ -336,7 +337,15 @@ interface SignUpScene {
         }
 
         override fun showError(message: String) {
-            Log.d("mensaje", message)
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    view.context,
+                    message,
+                    duration)
+            toast.show()
+        }
+
+        override fun showSuccess(message: String) {
             val duration = Toast.LENGTH_LONG
             val toast = Toast.makeText(
                     view.context,

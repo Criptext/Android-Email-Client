@@ -134,15 +134,15 @@ class SignUpSceneController(
                 )
             } else {
                 val user = User(
-                        name = "sebas",
-                        email = "asdsad" ,
-                        nickname = "sebas2",
+                        name = model.fullName,
+                        email = "",
+                        nickname = model.username,
                         id = null
                 )
                 val req = SignUpRequest.RegisterUser(
                         user = user,
-                        password = "testing",
-                        recoveryEmail = ""
+                        password = model.password,
+                        recoveryEmail = model.recoveryEmail
                         )
                 dataSource.submitRequest(req)
             }
@@ -161,7 +161,7 @@ class SignUpSceneController(
 
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
-            is SignUpResult.RegisterUser.Success -> TODO("NEW USER IN DATABASE")
+            is SignUpResult.RegisterUser.Success -> scene.showSuccess(result.message)
             is SignUpResult.RegisterUser.Failure -> scene.showError(result.message)
         }
     }
@@ -195,19 +195,7 @@ class SignUpSceneController(
         scene.initListeners(
                 signUpListener = signUpListener
         )
-        val user = User(
-                name = "sebas",
-                email = "asdsad" ,
-                nickname = "sebas2",
-                id = null
-        )
-        val req = SignUpRequest.RegisterUser(
-                user = user,
-                password = "sebas",
-                recoveryEmail = "asdas"
-        )
         dataSource.listener = dataSourceListener
-        dataSource.submitRequest(req)
     }
 
     override fun onStop() {
