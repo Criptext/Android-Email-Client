@@ -1,6 +1,6 @@
 package com.email.scenes.LabelChooser.data
 
-import com.email.DB.models.Label
+import com.email.db.models.Label
 
 /**
  * Created by sebas on 2/2/18.

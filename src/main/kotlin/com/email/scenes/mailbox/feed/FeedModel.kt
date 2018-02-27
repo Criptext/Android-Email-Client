@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.feed
 
-import com.email.DB.models.FeedItem
+import com.email.db.models.FeedItem
 
 /**
  * Created by danieltigse on 2/15/18.

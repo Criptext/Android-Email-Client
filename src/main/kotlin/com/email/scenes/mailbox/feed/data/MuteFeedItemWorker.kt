@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.feed.data
 
-import com.email.DB.FeedLocalDB
+import com.email.db.FeedLocalDB
 import com.email.bgworker.BackgroundWorker
 
 /**

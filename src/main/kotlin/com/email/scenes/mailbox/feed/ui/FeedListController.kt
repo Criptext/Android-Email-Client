@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.feed.ui
 
-import com.email.DB.models.FeedItem
+import com.email.db.models.FeedItem
 import com.email.utils.file.addWhere
 import com.email.utils.file.findFromPosition
 

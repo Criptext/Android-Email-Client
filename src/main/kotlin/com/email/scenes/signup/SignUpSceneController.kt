@@ -2,9 +2,11 @@ package com.email.scenes.signin
 
 import android.view.Menu
 import com.email.IHostActivity
+import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
+import com.email.scenes.signup.data.SignUpRequest
 
 /**
  * Created by sebas on 2/15/18.
@@ -130,7 +132,14 @@ class SignUpSceneController(
                         onRecoveryEmailWarningListener
                 )
             } else {
-                TODO("GO TO LOGIN")
+                val user = User(
+                        name = "sebas",
+                        email = "asdsad" ,
+                        nickname = "sebas2",
+                        id = null
+                )
+                val req = SignUpRequest.RegisterUser(user = user)
+                dataSource.submitRequest(req)
             }
         }
 
@@ -168,6 +177,14 @@ class SignUpSceneController(
         scene.initListeners(
                 signUpListener = signUpListener
         )
+        val user = User(
+                name = "sebas",
+                email = "asdsad" ,
+                nickname = "sebas2",
+                id = null
+        )
+        val req = SignUpRequest.RegisterUser(user = user)
+        dataSource.submitRequest(req)
     }
 
     override fun onStop() {

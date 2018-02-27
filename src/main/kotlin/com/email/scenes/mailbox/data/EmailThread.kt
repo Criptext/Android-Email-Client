@@ -1,8 +1,7 @@
 package com.email.scenes.mailbox.data
 
-import android.text.BoringLayout
-import com.email.DB.models.Email
-import com.email.DB.models.Label
+import com.email.db.models.Email
+import com.email.db.models.Label
 import com.email.SecureEmail
 import com.email.utils.EmailThreadValidator
 import java.util.*

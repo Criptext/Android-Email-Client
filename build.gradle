@@ -112,5 +112,7 @@ dependencies {
     //Swipe Option
     implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
 
+    //Okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
 }
 

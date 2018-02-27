@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox.data
 
-import com.email.DB.MailboxLocalDB
-import com.email.DB.models.Label
+import com.email.db.MailboxLocalDB
+import com.email.db.models.Label
 import com.email.scenes.LabelChooser.data.LabelThread
 
 /**

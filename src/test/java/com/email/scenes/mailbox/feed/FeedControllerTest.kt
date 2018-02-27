@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.feed
 
-import com.email.DB.models.FeedItem
+import com.email.db.models.FeedItem
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.mailbox.feed.data.DeleteFeedItemWorker
 import com.email.scenes.mailbox.feed.data.FeedDataSource
