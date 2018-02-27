@@ -7,6 +7,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpRequest
+import com.email.scenes.signup.data.SignUpResult
 
 /**
  * Created by sebas on 2/15/18.
@@ -138,13 +139,30 @@ class SignUpSceneController(
                         nickname = "sebas2",
                         id = null
                 )
-                val req = SignUpRequest.RegisterUser(user = user)
+                val req = SignUpRequest.RegisterUser(
+                        user = user,
+                        password = "testing",
+                        recoveryEmail = ""
+                        )
                 dataSource.submitRequest(req)
             }
         }
 
         override fun onBackPressed() {
             host.finishScene()
+        }
+    }
+
+    private val dataSourceListener = { result: SignUpResult ->
+        when (result) {
+            is SignUpResult.RegisterUser -> onUserRegistered(result)
+        }
+    }
+
+    private fun onUserRegistered(result: SignUpResult.RegisterUser) {
+        when (result) {
+            is SignUpResult.RegisterUser.Success -> TODO("NEW USER IN DATABASE")
+            is SignUpResult.RegisterUser.Failure -> scene.showError(result.message)
         }
     }
 
@@ -183,7 +201,12 @@ class SignUpSceneController(
                 nickname = "sebas2",
                 id = null
         )
-        val req = SignUpRequest.RegisterUser(user = user)
+        val req = SignUpRequest.RegisterUser(
+                user = user,
+                password = "sebas",
+                recoveryEmail = "asdas"
+        )
+        dataSource.listener = dataSourceListener
         dataSource.submitRequest(req)
     }
 
@@ -201,7 +224,8 @@ class SignUpSceneController(
         return model.username.isEmpty() ||
                 model.fullName.isEmpty() ||
                 model.password.isEmpty() ||
-                model.confirmPassword.isEmpty()
+                model.confirmPassword.isEmpty() ||
+                !model.checkTermsAndConditions
     }
 
     interface SignUpListener {

@@ -22,10 +22,12 @@ class SignUpDataSource(override val runner: WorkRunner,
                                         flushResults: (SignUpResult) -> Unit):
             BackgroundWorker<*> {
         return when (params) {
-            is SignUpRequest.RegisterUser -> RegisterUserWorker(UserDB(),
+            is SignUpRequest.RegisterUser -> RegisterUserWorker(signUpLocalDB,
                     signUpAPIClient,
-                    params.user,
-                    { result ->
+                    user = params.user,
+                    password = params.password,
+                    recoveryEmail = params.recoveryEmail,
+                    publishFn = { result ->
                 flushResults(result)
             })
         }
