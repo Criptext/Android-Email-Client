@@ -48,7 +48,7 @@ class SignUpSceneController(
                 && !fieldsAreEmpty
     }
 
-    private val signUpListener = object : SignUpListener {
+    var signUpListener : SignUpListener? = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
             model.username = text
             val isUserAvailable = isUserAvailable()
@@ -201,12 +201,14 @@ class SignUpSceneController(
         scene.disableCreateAccountButton()
 
         scene.initListeners(
-                signUpListener = signUpListener
+                signUpListener = signUpListener!!
         )
         dataSource.listener = dataSourceListener
     }
 
     override fun onStop() {
+        dataSource.listener = null
+        this.signUpListener = null
     }
 
     override fun onBackPressed(): Boolean {
