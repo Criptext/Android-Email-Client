@@ -16,7 +16,7 @@
 
     <item
         android:id="@+id/mailbox_message_toggle_read"
-        android:icon="@drawable/ic_mail_2_copy"
+        android:icon="@drawable/mail_close"
         app:showAsAction="always"
         android:title="read"/>
 

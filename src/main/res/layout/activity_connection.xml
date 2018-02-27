@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/logo_splash"
+        android:tint="@color/colorAccent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp">
+
+        <LinearLayout
+            android:id="@+id/viewAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/imageViewDevice1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/device_m"
+                android:tint="#dcdddf"/>
+
+            <View
+                android:id="@+id/viewCircle1"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle2"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle3"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle4"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle5"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle6"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"/>
+
+            <View
+                android:id="@+id/viewCircle7"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <View
+                android:id="@+id/viewCircle8"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <View
+                android:id="@+id/viewCircle9"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <View
+                android:id="@+id/viewCircle10"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <View
+                android:id="@+id/viewCircle11"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <View
+                android:id="@+id/viewCircle12"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circle"
+                android:alpha="0.1"/>
+
+            <ImageView
+                android:id="@+id/imageViewDevice2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/device_m"
+                android:tint="#dcdddf"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageViewSucceed"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/check"
+            android:padding="8dp"
+            android:tint="@color/colorAccent"
+            android:background="@drawable/circle_succesed"
+            android:alpha="0.0"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textViewStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:textColor="#373a45"
+        android:gravity="center_horizontal"
+        android:text="@string/establishing"/>
+
+    <TextView
+        android:id="@+id/textViewEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textSize="12sp"
+        android:textColor="#373a45"
+        android:alpha="0.4"
+        android:gravity="center_horizontal"
+        android:text="david.grindstaff@criptext.com"/>
+
+</LinearLayout>

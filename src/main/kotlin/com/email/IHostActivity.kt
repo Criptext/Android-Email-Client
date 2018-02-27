@@ -9,7 +9,7 @@ import com.email.scenes.params.SceneParams
 interface IHostActivity {
     fun refreshToolbarItems()
     fun goToScene(params: SceneParams)
-
+    fun finishScene()
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?
     }

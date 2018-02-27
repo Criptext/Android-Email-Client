@@ -45,7 +45,6 @@ interface SearchScene{
             searchRecyclerView =  SearchRecyclerView(recyclerView, searchResultList)
             backButton.setOnClickListener {
                 searchActivity.finish()
-                searchActivity.overridePendingTransition(0,0)
             }
             clearButton.setOnClickListener {
                 editTextSearch.setText("")
@@ -66,7 +65,6 @@ interface SearchScene{
 
         override fun onBackPressed(): Boolean {
             searchActivity.finish()
-            searchActivity.overridePendingTransition(0,0)
             return false
         }
 

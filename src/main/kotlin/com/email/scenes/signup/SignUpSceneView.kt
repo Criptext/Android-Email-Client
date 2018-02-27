@@ -57,6 +57,8 @@ interface SignUpScene {
         private val txtTermsAndConditions: TextView
         private val createAccount: Button
 
+        private val imageBack: ImageView
+
         private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
         private lateinit var signUpListener: SignUpSceneController.SignUpListener
 
@@ -96,13 +98,13 @@ interface SignUpScene {
 
             passwordInput.setHintTextAppearance(R.style.textinputlayout_login)
             password.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.white))
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
 
             confirmPasswordInput.error = ""
 
             confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login)
             confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.white))
+                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
         }
 
         @SuppressLint("RestrictedApi")
@@ -112,6 +114,7 @@ interface SignUpScene {
 
             confirmPasswordInput.error = "Passwords do not match"
             passwordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
+            confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
             password.supportBackgroundTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(view.context, R.color.black))
             confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
@@ -121,7 +124,7 @@ interface SignUpScene {
         @SuppressLint("RestrictedApi")
         fun showUsernameErrors() {
             usernameErrorImage.visibility = View.VISIBLE
-            usernameInput.error = "Username is not available"
+            usernameInput.error = "Username not available"
             usernameInput.hint = ""
         }
 
@@ -229,6 +232,12 @@ interface SignUpScene {
             })
         }
 
+        private fun assignBackButtonListener() {
+            imageBack.setOnClickListener {
+                signUpListener.onBackPressed()
+            }
+        }
+
         override fun toggleUsernameError(userAvailable: Boolean){
             if(userAvailable) {
                 showUsernameSucess()
@@ -264,6 +273,8 @@ interface SignUpScene {
             checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
             txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
             createAccount = view.findViewById(R.id.create_account)
+
+            imageBack = view.findViewById(R.id.icon_back)
 
             drawNormalTint()
         }
@@ -319,6 +330,7 @@ interface SignUpScene {
             assignfullNameTextChangeListener()
             assignCreateAccountClickListener()
             assignRecoveryEmailTextChangeListener()
+            assignBackButtonListener()
         }
     }
 }

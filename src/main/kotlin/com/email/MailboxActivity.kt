@@ -1,5 +1,6 @@
 package com.email
 
+import android.view.Menu
 import android.view.ViewGroup
 import com.email.DB.FeedLocalDB
 import com.email.DB.MailboxLocalDB
@@ -23,6 +24,8 @@ class MailboxActivity : BaseActivity() {
     override val layoutId = R.layout.activity_mailbox
     override val toolbarId = R.id.mailbox_toolbar
 
+    private lateinit var notificationMenuClickListener: () -> Unit
+
     override fun initController(receivedModel: Any): SceneController {
         val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
@@ -36,13 +39,24 @@ class MailboxActivity : BaseActivity() {
                 threadList = VirtualEmailThreadList(model.threads)
         )
 
-        return MailboxSceneController(
+        val controller = MailboxSceneController(
                 scene = scene,
                 model = model,
                 host = this,
                 dataSource = mailboxDataSource,
                 feedController = initFeedController(model.feedModel)
         )
+
+        notificationMenuClickListener = controller.menuClickListener
+        return controller
+    }
+    
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menu.findItem(R.id.mailbox_bell_container).actionView.setOnClickListener {
+            notificationMenuClickListener()
+        }
+        return true
     }
 
     private fun initFeedController(feedModel: FeedModel): FeedController{

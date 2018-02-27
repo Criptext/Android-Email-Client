@@ -3,6 +3,7 @@
     <color name="colorPrimary">#373a45</color>
     <color name="colorPrimaryDark">#282a33</color>
     <color name="colorAccent">#0091ff</color>
+    <color name="colorSplashStart">#00c4ff</color>
     <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
     <color name="colorBackground">#ffffff</color>
@@ -42,5 +43,5 @@
     <color name="login_background">#0091ff</color>
     <color name="black">#000000</color>
     <color name="gray">#626262</color>
-    <color name="signup_hint_color">#ffff</color>
+    <color name="signup_hint_color">#90ffffff</color>
 </resources>
