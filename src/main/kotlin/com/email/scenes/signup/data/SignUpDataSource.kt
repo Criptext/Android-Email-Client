@@ -4,7 +4,6 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.SignUpLocalDB
-import com.email.db.UserDB
 import com.email.scenes.signup.data.RegisterUserWorker
 import com.email.scenes.signup.data.SignUpAPIClient
 import com.email.scenes.signup.data.SignUpRequest

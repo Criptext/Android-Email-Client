@@ -4,7 +4,6 @@ import android.accounts.NetworkErrorException
 import com.email.api.SignUpAPILoader
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
-import com.email.db.UserDB
 import com.email.db.models.User
 import com.github.kittinunf.result.Result
 import org.json.JSONException
@@ -34,25 +33,19 @@ class RegisterUserWorker(
     }
 
     override fun work(): SignUpResult.RegisterUser? {
-        return loader.registerUser(
+        val operationResult =  loader.registerUser(
                 user = user,
                 password = password,
                 recoveryEmail = recoveryEmail
         )
-/*        val operationResult =  apiClient.createUser(user = user,
-                password = password,
-                recoveryEmail = recoveryEmail
-                )
-        return when(operationResult){
-            is SignUpResult.RegisterUser.Success -> {
-                SignUpResult.RegisterUser.Success(operationResult.message)
+        return when(operationResult) {
+            is Result.Success -> {
+                SignUpResult.RegisterUser.Success(operationResult.value)
             }
-
-            is  SignUpResult.RegisterUser.Failure -> {
-                SignUpResult.RegisterUser.Failure(
-                        operationResult.message)
+            is Result.Failure -> {
+                SignUpResult.RegisterUser.Failure(createErrorMessage(operationResult.error))
             }
-        }*/
+        }
     }
 
     override fun cancel() {

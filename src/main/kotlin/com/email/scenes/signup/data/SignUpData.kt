@@ -6,22 +6,18 @@ import com.email.db.models.User
  * Created by sebas on 2/27/18.
  */
 
-sealed class RegisterUser {
-    class Success(
-            val user: User,
-            val password: String,
-            val message: String,
-            val recoveryEmail: String?
-            ): RegisterUser()
+object SignUpData {
 
-    class Failure(
-            val user: User,
-            val message: String): RegisterUser()
+    sealed class RegisterUser {
 
-    data class RegisterUserData(
-            val user: User,
-            val password: String,
-            val message: String,
-            val recoveryEmail: String?
-    )
+        class Success(
+                val user: User,
+                val password: String,
+                val recoveryEmail: String?
+                ): RegisterUser()
+
+        class Failure(
+                val message: String
+        ): RegisterUser()
+    }
 }
