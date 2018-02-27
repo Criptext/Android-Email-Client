@@ -1,7 +1,7 @@
 package com.email
 
-import android.view.MenuItem
 import com.email.scenes.params.SceneParams
+import com.email.utils.UIMessage
 
 /**
  * Created by sebas on 1/29/18.
@@ -10,7 +10,5 @@ interface IHostActivity {
     fun refreshToolbarItems()
     fun goToScene(params: SceneParams)
     fun finishScene()
-    interface IActivityMenu {
-        fun findItemById(id: Int): MenuItem?
-    }
+    fun getLocalizedString(message: UIMessage): String
 }
