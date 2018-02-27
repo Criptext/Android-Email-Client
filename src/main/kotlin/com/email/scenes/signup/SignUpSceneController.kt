@@ -26,10 +26,12 @@ class SignUpSceneController(
         get() = model.password.equals(model.confirmPassword)
 
     val isPasswordErrorShown: Boolean
-        get() = scene.isPasswordErrorShown()
+        get() = model.errors["password"] == true
+        //get() = scene.isPasswordErrorShown()
 
     val isUsernameErrorShown: Boolean
-        get() = scene.isUsernameErrorShown()
+        get() = model.errors["username"] == true
+        //get() = scene.isUsernameErrorShown()
 
     val isCheckedTermsAndConditions: Boolean
         get() = model.checkTermsAndConditions
@@ -92,6 +94,7 @@ class SignUpSceneController(
             if (arePasswordsMatching && model.confirmPassword.length > 0) {
                 scene.hidePasswordErrors()
                 scene.showPasswordSucess()
+                model.errors["password"] = false
                 if (shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
@@ -99,10 +102,12 @@ class SignUpSceneController(
                     model.confirmPassword.length == 0) {
                 scene.hidePasswordSucess()
                 scene.hidePasswordErrors()
+                model.errors["password"] = false
                 scene.disableCreateAccountButton()
             } else {
                 scene.showPasswordErrors()
                 scene.hidePasswordSucess()
+                model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
         }
@@ -112,17 +117,20 @@ class SignUpSceneController(
             if(arePasswordsMatching && model.password.length > 0) {
                 scene.hidePasswordErrors()
                 scene.showPasswordSucess()
+                model.errors["password"] = false
                 if(shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
             } else if(arePasswordsMatching && model.password.length == 0){
                 scene.hidePasswordSucess()
                 scene.hidePasswordErrors()
+                model.errors["password"] = false
                 scene.disableCreateAccountButton()
             }
             else {
                 scene.showPasswordErrors()
                 scene.hidePasswordSucess()
+                model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
         }
