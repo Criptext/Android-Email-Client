@@ -25,18 +25,16 @@ class SignUpSceneController(
     val arePasswordsMatching: Boolean
         get() = model.password.equals(model.confirmPassword)
 
-    val isPasswordErrorShown: Boolean
+    private val isPasswordErrorShown: Boolean
         get() = model.errors["password"] == true
-        //get() = scene.isPasswordErrorShown()
 
-    val isUsernameErrorShown: Boolean
+    private val isUsernameErrorShown: Boolean
         get() = model.errors["username"] == true
-        //get() = scene.isUsernameErrorShown()
 
-    val isCheckedTermsAndConditions: Boolean
+    private val isCheckedTermsAndConditions: Boolean
         get() = model.checkTermsAndConditions
 
-    val fieldsAreEmpty: Boolean
+    private val fieldsAreEmpty: Boolean
         get() = areFieldsEmpty()
 
     val isSetRecoveryEmail: Boolean
@@ -55,7 +53,9 @@ class SignUpSceneController(
             model.username = text
             val isUserAvailable = isUserAvailable()
             scene.toggleUsernameError(userAvailable = isUserAvailable)
-            if(isUserAvailable && shouldCreateButtonBeEnabled()) {
+            model.errors["username"] = !isUserAvailable
+
+            if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
             } else {
                 scene.disableCreateAccountButton()

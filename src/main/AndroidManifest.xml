@@ -19,10 +19,6 @@
             android:name=".splash.SplashActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Splash.Criptext">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name="com.email.SignInActivity"
@@ -31,6 +27,10 @@
         <activity
             android:name="com.email.SignUpActivity"
             android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".LoginValidationActivity"/>
