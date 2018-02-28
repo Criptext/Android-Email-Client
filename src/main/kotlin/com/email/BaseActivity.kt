@@ -16,6 +16,7 @@ import com.email.scenes.params.SignUpParams
 import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpSceneModel
+import com.email.utils.UIMessage
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -118,6 +119,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         this.invalidateOptionsMenu()
     }
 
+    override fun getLocalizedString(message: UIMessage): String {
+        return getString(message.resId, *message.args)
+    }
 
     override fun goToScene(params: SceneParams) {
         val newSceneModel = createNewSceneFromParams(params)

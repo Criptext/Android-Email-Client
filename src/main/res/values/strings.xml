@@ -165,4 +165,8 @@
     <string name="mute">Mute</string>
     <string name="unmute">Unmute</string>
 
+    <!-- COMPOSER -->
+    <string name="invalid_address_error">"%1$s" is not a valid address. Please check input field "%2$s".</string>
+    <string name="no_recipients_error">You need at least one recipient.</string>
+
 </resources>
