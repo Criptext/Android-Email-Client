@@ -23,7 +23,7 @@ interface KeyServerClient {
     class Default: KeyServerClient {
         companion object {
             private val JSON = MediaType.parse("application/json; charset=utf-8");
-            private val keyServerUrl = "http://172.30.1.20:8000"
+            private val keyServerUrl = "http://172.30.1.151:8000"
         }
 
         private val client = OkHttpClient()
