@@ -7,7 +7,7 @@ package com.email.scenes.signup.data
 sealed class SignUpResult {
 
     sealed class RegisterUser: SignUpResult() {
-        data class Success(val message: String): RegisterUser()
+        class Success: RegisterUser()
         data class Failure(val message: String): RegisterUser()
     }
 }

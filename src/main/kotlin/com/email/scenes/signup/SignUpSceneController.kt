@@ -169,7 +169,7 @@ class SignUpSceneController(
 
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
-            is SignUpResult.RegisterUser.Success -> scene.showSuccess(result.message)
+            is SignUpResult.RegisterUser.Success -> scene.showSuccess("")
             is SignUpResult.RegisterUser.Failure -> scene.showError(result.message)
         }
     }

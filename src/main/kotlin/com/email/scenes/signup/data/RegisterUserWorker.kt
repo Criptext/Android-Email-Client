@@ -40,7 +40,7 @@ class RegisterUserWorker(
         )
         return when(operationResult) {
             is Result.Success -> {
-                SignUpResult.RegisterUser.Success(operationResult.value)
+                SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
                 SignUpResult.RegisterUser.Failure(createErrorMessage(operationResult.error))
