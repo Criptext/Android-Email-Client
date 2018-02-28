@@ -1,6 +1,6 @@
 package com.email.utils
 
-import com.email.DB.models.Label
+import com.email.db.models.Label
 
 /**
  * Created by sebas on 1/24/18.

@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox.feed.mocks
 
-import com.email.DB.FeedLocalDB
-import com.email.DB.models.FeedItem
+import com.email.db.FeedLocalDB
+import com.email.db.models.FeedItem
 
 /**
  * Created by gabriel on 2/21/18.

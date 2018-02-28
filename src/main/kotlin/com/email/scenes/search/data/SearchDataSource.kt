@@ -1,6 +1,6 @@
 package com.email.scenes.search.data
 
-import com.email.DB.SearchLocalDB
+import com.email.db.SearchLocalDB
 
 /**
  * Created by danieltigse on 2/5/18.

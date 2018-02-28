@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.feed.data
 
-import com.email.DB.FeedLocalDB
+import com.email.db.FeedLocalDB
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
@@ -17,7 +17,8 @@ class FeedDataSource(override val runner: WorkRunner, private val feedLocalDB: F
             is FeedRequest.LoadFeed -> LoadFeedsWorker(feedLocalDB, { result ->
                 flushResults(result)
             })
-            is FeedRequest.DeleteFeedItem -> DeleteFeedItemWorker(feedLocalDB, params.item, { result ->
+            is FeedRequest.DeleteFeedItem -> DeleteFeedItemWorker(feedLocalDB,
+                    params.item, { result ->
                 flushResults(result)
             })
             is FeedRequest.MuteFeedItem -> MuteFeedItemWorker(

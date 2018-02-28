@@ -1,8 +1,9 @@
 package com.email
 
-import com.email.DB.SignInLocalDB
+import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.*
+import com.email.scenes.signin.data.SignInDataSource
 
 /**
  * Created by sebas on 2/15/18.

@@ -1,11 +1,13 @@
 package com.email
 
-import com.email.DB.SignUpLocalDB
+import com.email.bgworker.AsyncTaskWorkRunner
+import com.email.db.SignUpLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.SignUpSceneModel
+import com.email.scenes.signup.data.SignUpAPIClient
 
 /**
  * Created by sebas on 2/16/18.
@@ -25,6 +27,8 @@ class SignUpActivity: BaseActivity() {
                 model = signUpSceneModel,
                 scene = signUpSceneView,
                 host = this,
-                dataSource = SignUpDataSource(db))
+                dataSource = SignUpDataSource(runner = AsyncTaskWorkRunner(),
+                        signUpAPIClient = SignUpAPIClient.Default(),
+                        signUpLocalDB = db))
     }
 }

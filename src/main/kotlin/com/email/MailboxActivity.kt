@@ -2,8 +2,8 @@ package com.email
 
 import android.view.Menu
 import android.view.ViewGroup
-import com.email.DB.FeedLocalDB
-import com.email.DB.MailboxLocalDB
+import com.email.db.FeedLocalDB
+import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*

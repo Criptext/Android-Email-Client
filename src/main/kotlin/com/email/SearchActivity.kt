@@ -1,6 +1,6 @@
 package com.email
 
-import com.email.DB.SearchLocalDB
+import com.email.db.SearchLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.search.SearchScene
 import com.email.scenes.search.SearchSceneModel

@@ -13,4 +13,5 @@ class SignUpSceneModel : SceneModel {
     var confirmPassword : String = ""
     var recoveryEmail : String = ""
     var checkTermsAndConditions : Boolean = false
+    var errors = HashMap<String, Boolean>()
 }
