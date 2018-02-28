@@ -1,6 +1,7 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
+import com.email.api.DuplicateUsernameException
 import com.email.api.SignUpAPILoader
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
@@ -29,7 +30,7 @@ class RegisterUserWorker(
 
     override fun catchException(ex: Exception): SignUpResult.RegisterUser {
         val message = "Unexpected error: " + ex.message
-        return SignUpResult.RegisterUser.Failure(message)
+        return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
     override fun work(): SignUpResult.RegisterUser? {
@@ -43,7 +44,9 @@ class RegisterUserWorker(
                 SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
-                SignUpResult.RegisterUser.Failure(createErrorMessage(operationResult.error))
+                SignUpResult.RegisterUser.Failure(
+                        message = createErrorMessage(operationResult.error),
+                        exception = operationResult.error)
             }
         }
     }
@@ -56,7 +59,10 @@ class RegisterUserWorker(
         when (ex) {
             is NetworkErrorException -> "Failed to register user. " +
                     "Please check your internet connection."
-            is JSONException -> "Failed to register user. Invalid server response."
+            is JSONException -> "Failed to register user. " +
+                    "Invalid server response."
+            is DuplicateUsernameException -> "Failed to register user. " +
+                    "Username already exists"
             else -> "Failed to register user. Please try again later."
         }
     }

@@ -115,7 +115,7 @@ class MockedSignUpView: SignUpScene {
         errorSignUp = true
     }
 
-    override fun showSuccess(message: String) {
+    override fun showSuccess() {
         errorSignUp = false
     }
 

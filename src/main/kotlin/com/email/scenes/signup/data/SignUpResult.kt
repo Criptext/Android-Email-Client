@@ -8,7 +8,9 @@ sealed class SignUpResult {
 
     sealed class RegisterUser: SignUpResult() {
         class Success: RegisterUser()
-        data class Failure(val message: String): RegisterUser()
+        data class Failure(
+                val message: String,
+                val exception: Exception): RegisterUser()
     }
 }
 

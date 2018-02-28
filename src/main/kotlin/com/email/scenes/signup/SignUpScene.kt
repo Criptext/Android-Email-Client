@@ -29,7 +29,7 @@ interface SignUpScene {
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
     fun showError(message : String)
-    fun showSuccess(message: String)
+    fun showSuccess()
 
     class SignUpSceneView(private val view: View): SignUpScene {
 
@@ -345,11 +345,11 @@ interface SignUpScene {
             toast.show()
         }
 
-        override fun showSuccess(message: String) {
+        override fun showSuccess() {
             val duration = Toast.LENGTH_LONG
             val toast = Toast.makeText(
                     view.context,
-                    message,
+                    "",
                     duration)
             toast.show()
         }

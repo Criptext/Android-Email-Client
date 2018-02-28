@@ -118,6 +118,9 @@ dependencies {
     // autocomplete
     compile "com.splitwise:tokenautocomplete:2.0.8@aar"
 
+
+    //org.json
+    testCompile 'org.json:json:20180130'
 }
 
 

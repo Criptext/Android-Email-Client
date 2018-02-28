@@ -81,6 +81,7 @@ class FeedControllerTest {
         controller.onStart()
         runner._work()
 
+
         val mutedItem = model.feedItems[position]
         mutedItem.isMuted `should be` false
 
