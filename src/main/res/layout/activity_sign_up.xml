@@ -8,6 +8,12 @@
     android:layout_height="match_parent"
     android:id="@+id/signup_layout_container"
     android:focusableInTouchMode="true" >
+    <include
+        android:id="@+id/view_key_generation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        layout="@layout/view_key_generation"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -102,7 +108,7 @@
                     android:gravity="center_horizontal"
                     android:layout_centerHorizontal="true">
 
-                   <android.support.design.widget.TextInputLayout
+                    <android.support.design.widget.TextInputLayout
                         android:id="@+id/input_username"
                         android:layout_width="155dp"
                         android:layout_height="match_parent"

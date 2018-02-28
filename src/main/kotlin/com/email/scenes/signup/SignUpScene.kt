@@ -2,6 +2,7 @@ package com.email.scenes.signin
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.opengl.Visibility
 import android.support.design.widget.TextInputLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
@@ -10,6 +11,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import com.email.R
+import com.email.scenes.keygeneration.KeyGenerationScene
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
@@ -28,10 +30,14 @@ interface SignUpScene {
     fun showPasswordSucess()
     fun hidePasswordSucess()
     fun showPasswordErrors()
+    fun hideUsernameErrors()
+    fun showUsernameErrors()
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
     fun showError(message : UIMessage)
     fun showSuccess()
+    fun getKeyGenerationScene(): KeyGenerationScene
+    fun showKeyGeneration()
 
     var signUpListener: SignUpSceneController.SignUpListener?
 
@@ -65,6 +71,7 @@ interface SignUpScene {
         private val createAccount: Button
 
         private val imageBack: ImageView
+        private val keyGenerationLayout : LinearLayout
 
         private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
         override var signUpListener : SignUpSceneController.SignUpListener? = null
@@ -93,7 +100,7 @@ interface SignUpScene {
         }
 
         @SuppressLint("RestrictedApi")
-        private fun hideUsernameErrors() {
+        override fun hideUsernameErrors() {
             usernameErrorImage.visibility = View.INVISIBLE
             usernameInput.error = ""
         }
@@ -129,7 +136,7 @@ interface SignUpScene {
         }
 
         @SuppressLint("RestrictedApi")
-        fun showUsernameErrors() {
+        override fun showUsernameErrors() {
             usernameErrorImage.visibility = View.VISIBLE
             usernameInput.error = "Username not available"
             usernameInput.hint = ""
@@ -282,7 +289,7 @@ interface SignUpScene {
             createAccount = view.findViewById(R.id.create_account)
 
             imageBack = view.findViewById(R.id.icon_back)
-
+            keyGenerationLayout = view.findViewById<LinearLayout>(R.id.view_key_generation)
             drawNormalTint()
         }
 
@@ -349,14 +356,13 @@ interface SignUpScene {
             toast.show()
         }
 
-        override fun showSuccess() {
-            val duration = Toast.LENGTH_LONG
-            val toast = Toast.makeText(
-                    view.context,
-                    "",
-                    duration)
-            toast.show()
+        override fun getKeyGenerationScene(): KeyGenerationScene {
+            return KeyGenerationScene.KeyGenerationSceneView(
+                    keyGenerationLayout)
         }
 
+        override fun showKeyGeneration() {
+            keyGenerationLayout.visibility = View.VISIBLE
+        }
     }
 }

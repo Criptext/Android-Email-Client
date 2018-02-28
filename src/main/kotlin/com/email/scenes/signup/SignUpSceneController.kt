@@ -4,6 +4,8 @@ import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
+import com.email.scenes.keygeneration.KeyGenerationSceneController
+import com.email.scenes.keygeneration.data.KeyGenerationSceneModel
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpRequest
@@ -169,7 +171,9 @@ class SignUpSceneController(
 
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
-            is SignUpResult.RegisterUser.Success -> scene.showSuccess()
+            is SignUpResult.RegisterUser.Success -> {
+                launchKeyGenerationScene()
+            }
             is SignUpResult.RegisterUser.Failure -> {
                        if(result.exception is ServerErrorException &&
                                result.exception.errorCode == 400) {
@@ -180,6 +184,17 @@ class SignUpSceneController(
                 scene.showError(result.message)
             }
         }
+    }
+
+    private fun launchKeyGenerationScene() {
+        val keyGenerationSceneController = KeyGenerationSceneController(
+                model = KeyGenerationSceneModel(),
+                scene = scene.getKeyGenerationScene(),
+                host = host,
+                dataSource = dataSource)
+        scene.showKeyGeneration()
+
+        keyGenerationSceneController.onStart()
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
@@ -235,14 +250,14 @@ class SignUpSceneController(
     }
 
     interface SignUpListener {
-            fun onCreateAccountClick()
-            fun onPasswordChangedListener(text: String)
-            fun onConfirmPasswordChangedListener(text: String)
-            fun onUsernameChangedListener(text: String)
-            fun onCheckedOptionChanged(state: Boolean)
-            fun onTermsAndConditionsClick()
-            fun onFullNameTextChangeListener(text: String)
-            fun onRecoveryEmailTextChangeListener(text: String)
-            fun onBackPressed()
-        }
+        fun onCreateAccountClick()
+        fun onPasswordChangedListener(text: String)
+        fun onConfirmPasswordChangedListener(text: String)
+        fun onUsernameChangedListener(text: String)
+        fun onCheckedOptionChanged(state: Boolean)
+        fun onTermsAndConditionsClick()
+        fun onFullNameTextChangeListener(text: String)
+        fun onRecoveryEmailTextChangeListener(text: String)
+        fun onBackPressed()
+    }
 }
