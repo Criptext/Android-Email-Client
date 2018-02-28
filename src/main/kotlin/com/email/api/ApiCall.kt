@@ -46,5 +46,16 @@ import org.json.JSONObject
             val body = RequestBody.create(JSON, jsonObject.toString())
             return Request.Builder().url("$baseUrl/user/auth").post(body).build()
         }
+
+        fun postKeyBundle(
+                integerIdSchema : Int,
+                base64StringSchema: Int
+        ): Request {
+            val jsonObject = JSONObject()
+            jsonObject.put("integerIdSchema", integerIdSchema)
+            jsonObject.put("integerIdSchema", integerIdSchema)
+            val body = RequestBody.create(JSON, jsonObject.toString())
+            return Request.Builder().url("$baseUrl/user/auth").post(body).build()
+        }
     }
 }
