@@ -33,5 +33,18 @@ import org.json.JSONObject
                     post(body).
                     build()
         }
+
+        fun authenticateUser(
+                username: String,
+                password: String,
+                deviceId: Int
+        ): Request {
+            val jsonObject = JSONObject()
+            jsonObject.put("username", username)
+            jsonObject.put("password", password)
+            jsonObject.put("deviceId", deviceId)
+            val body = RequestBody.create(JSON, jsonObject.toString())
+            return Request.Builder().url("$baseUrl/user/auth").post(body).build()
+        }
     }
 }

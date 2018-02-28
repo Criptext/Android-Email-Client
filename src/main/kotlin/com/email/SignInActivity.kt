@@ -1,8 +1,10 @@
 package com.email
 
+import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.*
+import com.email.scenes.signin.data.SignInAPIClient
 import com.email.scenes.signin.data.SignInDataSource
 
 /**
@@ -22,7 +24,10 @@ class SignInActivity : BaseActivity() {
                 model = signInSceneModel,
                 scene = signInSceneView,
                 host = this,
-                dataSource = SignInDataSource(db)
-                )
+                dataSource = SignInDataSource(
+                        runner = AsyncTaskWorkRunner(),
+                        signInAPIClient = SignInAPIClient.Default(),
+                        signInLocalDB = db)
+        )
     }
 }
