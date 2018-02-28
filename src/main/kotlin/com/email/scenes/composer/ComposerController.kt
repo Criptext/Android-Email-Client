@@ -1,5 +1,7 @@
 package com.email.scenes.composer
 
+import com.email.DB.models.Contact
+import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
@@ -14,12 +16,18 @@ import com.email.utils.UIMessage
 
 class ComposerController(private val model: ComposerModel,
                          private val scene: ComposerScene,
+                         private val host: IHostActivity,
                          private val dataSource: ComposerDataSource) : SceneController() {
 
     private val observer = object: ComposerUIObserver {
+        override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
+            scene.toggleExtraFieldsVisibility(visible = userIsEditingRecipients)
+        }
+
         override fun onRecipientListChanged() {
             val data = scene.getDataInputByUser()
             updateModelWithInputData(data)
+            host.refreshToolbarItems()
         }
 
         override fun onAttachmentButtonClicked() {
@@ -52,11 +60,17 @@ class ComposerController(private val model: ComposerModel,
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
 
-    override val menuResourceId = null
+    override val menuResourceId = if (isReadyForSending()) R.menu.composer_menu_enabled
+                                  else R.menu.composer_menu_disabled
 
     override fun onStart() {
-        scene.bindWithModel(UIData.fromModel(model))
+        scene.bindWithModel(firstTime = model.firstTime, uiData = UIData.fromModel(model),
+                defaultRecipients = model.defaultRecipients)
+        scene.setContactSuggestionList(arrayOf(
+                Contact("gianni@criptext.com", "Gianni Carlo"),
+                Contact("mayer@criptext.com", "Mayer Mizrachi")))
         scene.observer = observer
+        model.firstTime = false
     }
 
     override fun onStop() {

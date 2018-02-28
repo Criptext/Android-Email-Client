@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layoutDirection="rtl"
+        android:gravity="right">
+
+        <RelativeLayout
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginRight="15dp">
+
+            <ImageView
+                android:id="@+id/auto_circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.6"
+                android:scaleY="0.6"
+                android:src="@drawable/circle"
+                android:layout_centerInParent="true"
+                />
+
+            <TextView
+                android:id="@+id/auto_initial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S"
+                android:textSize="30sp"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                android:paddingBottom="1dp"/>
+
+        </RelativeLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/auto_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="3dp"
+                android:text="AUTOCOMPLETE NOMBRE"
+                android:textSize="15sp"
+                android:layout_gravity="center"
+                android:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/auto_mail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="este es un mail super largo para @ representar"
+                android:textSize="15sp"
+                android:maxLines="1"
+                android:padding="3dp"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/gray"
+        android:layout_alignParentBottom="true"
+        android:translationX="23dp"/>
+
+</RelativeLayout>

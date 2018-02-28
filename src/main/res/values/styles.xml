@@ -28,7 +28,7 @@
         <item name="colorAccent">@android:color/white</item>
     </style>
 
-    <style name="textinputlayout_login"  parent="TextAppearance.AppCompat">
+    <style name="textinputlayout_login" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/signup_hint_color</item>
         <item name="android:textColor">@android:color/white</item>
@@ -48,7 +48,7 @@
         <item name="colorControlActivated">@android:color/white</item>
     </style>
 
-    <style name="textinputlayout_login_error"  parent="TextAppearance.AppCompat">
+    <style name="textinputlayout_login_error" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textColorHint">@android:color/black</item>
         <item name="android:textSize">12sp</item>
@@ -65,6 +65,7 @@
         <item name="colorControlActivated">@android:color/black</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
+
     <style name="NormalTextAppearenceUsernameInput">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@color/signup_hint_color</item>
@@ -73,5 +74,9 @@
         <item name="colorControlActivated">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

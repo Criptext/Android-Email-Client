@@ -7,4 +7,5 @@ package com.email.scenes.composer.ui
 interface ComposerUIObserver {
     fun onAttachmentButtonClicked()
     fun onRecipientListChanged()
+    fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean)
 }

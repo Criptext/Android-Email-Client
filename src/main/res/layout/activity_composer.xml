@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.email.scenes.composer.ComposerActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.email.scenes.composer.ui.ContactCompletionView
+        android:id="@+id/input_to"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="12dp"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:maxLines="2"
+        android:textColor="#000"
+        android:layout_height="wrap_content" />
+
+    <com.email.scenes.composer.ui.ContactCompletionView
+        android:id="@+id/input_cc"
+        android:visibility="gone"
+        android:background="@android:color/transparent"
+        android:paddingLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:maxLines="2"
+        android:textColor="#000"
+        android:layout_height="wrap_content"/>
+
+    <com.email.scenes.composer.ui.ContactCompletionView
+        android:id="@+id/input_bcc"
+        android:visibility="gone"
+        android:background="@android:color/transparent"
+        android:paddingLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:maxLines="2"
+        android:textColor="#000"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/subject_input"
+        android:layout_width="match_parent"
+        android:hint="@string/subject"
+        android:maxLines="1"
+        android:layout_height="60dp" />
+
+    <EditText
+        android:id="@+id/body_input"
+        android:layout_width="match_parent"
+        android:gravity="top"
+        android:hint="@string/message"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>

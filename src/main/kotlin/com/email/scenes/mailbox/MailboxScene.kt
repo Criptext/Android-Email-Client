@@ -11,14 +11,17 @@ import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
 import com.email.R
+import com.email.R.id.fab
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
+import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
+import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.utils.VirtualList
 
 /**
@@ -27,6 +30,7 @@ import com.email.utils.VirtualList
 
 interface MailboxScene: ThreadListView {
 
+    var observer: MailboxUIObserver?
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
@@ -46,6 +50,8 @@ interface MailboxScene: ThreadListView {
         : MailboxScene {
 
         private val context = mailboxView.context
+
+        override var observer: MailboxUIObserver? = null
 
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
@@ -73,6 +79,10 @@ interface MailboxScene: ThreadListView {
             mailboxView.findViewById<ImageView>(R.id.mailbox_nav_button)
         }
 
+        private val openComposerButton: View by lazy {
+            mailboxView.findViewById<View>(R.id.fab)
+        }
+
         private lateinit var threadRecyclerView: ThreadRecyclerView
 
         private var threadListener: EmailThreadAdapter.OnThreadEventListener? = null
@@ -86,6 +96,9 @@ interface MailboxScene: ThreadListView {
             this.threadListener = threadEventListener
 
             drawerMenuView = DrawerMenuView(leftNavigationView)
+            openComposerButton.setOnClickListener {
+                observer?.onOpenComposerButtonClicked()
+            }
         }
 
         override fun initDrawerLayout() {

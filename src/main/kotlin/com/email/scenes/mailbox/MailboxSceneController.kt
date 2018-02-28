@@ -13,6 +13,8 @@ import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
+import com.email.scenes.mailbox.ui.MailboxUIObserver
+import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.SearchParams
 
 /**
@@ -34,10 +36,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             model.hasSelectedUnreadMessages -> R.menu.mailbox_menu_multi_mode_unread
             else -> R.menu.mailbox_menu_multi_mode_read
         }
-    val emailThreadSize : Int
+    private val emailThreadSize : Int
         get() = model.threads.size
 
     private val threadListController = ThreadListController(model.threads, scene)
+
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
             if (! model.isInMultiSelect) {
@@ -58,6 +61,12 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
 
             scene.updateToolbarTitle(toolbarTitle)
+        }
+    }
+
+    private val observer = object: MailboxUIObserver {
+        override fun onOpenComposerButtonClicked() {
+            host.goToScene(ComposerParams())
         }
     }
 
@@ -89,6 +98,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart() {
         scene.attachView(threadEventListener)
+        scene.observer = observer
         scene.initDrawerLayout()
         scene.initNavHeader("Daniel Tigse Palma")
 
@@ -129,7 +139,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    fun toggleReadSelectedEmailThreads(unreadStatus: Boolean) {
+    private fun toggleReadSelectedEmailThreads(unreadStatus: Boolean) {
         val emailThreads = model.selectedThreads.toList()
         dataSource.updateUnreadStatus(emailThreads = emailThreads,
                 updateUnreadStatus = !unreadStatus)
@@ -154,7 +164,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         return scene.onBackPressed()
     }
 
-    fun toggleMultiModeBar() {
+    private fun toggleMultiModeBar() {
         if(model.isInMultiSelect) {
             showMultiModeBar()
         } else {
@@ -221,13 +231,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.notifyThreadSetChanged()
     }
 
-    val onMoveThreadsListener = object : OnMoveThreadsListener {
+    private val onMoveThreadsListener = object : OnMoveThreadsListener {
         override fun moveToSpam() {
-            this@MailboxSceneController.moveSelectedEmailsToSpam()
+            moveSelectedEmailsToSpam()
         }
 
         override fun moveToTrash() {
-            this@MailboxSceneController.moveSelectedEmailsToTrash()
+            moveSelectedEmailsToTrash()
         }
 
     }
