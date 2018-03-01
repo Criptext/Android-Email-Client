@@ -6,6 +6,8 @@ import com.email.api.UnprocessableEntityException
 import com.email.db.models.User
 import com.github.kittinunf.result.Result
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
 /**
@@ -18,7 +20,7 @@ interface SignUpAPIClient {
             user: User,
             password: String,
             recoveryEmail: String?)
-            : Result<String, Exception>
+            : Response
 
     class Default : SignUpAPIClient {
         private val client = OkHttpClient().
@@ -31,8 +33,7 @@ interface SignUpAPIClient {
                 user: User,
                 password: String,
                 recoveryEmail: String?
-        ): Result<String, Exception> {
-            return Result.of {
+        ): Response {
                 val request = ApiCall.createUser(
                         username = user.nickname,
                         name = user.name,
@@ -40,14 +41,7 @@ interface SignUpAPIClient {
                         recoveryEmail = recoveryEmail
                         )
                 val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.message()
-                } else if(response.code() == 422){
-                    throw UnprocessableEntityException(response.code())
-                } else {
-                    throw DuplicateUsernameException(response.code())
-                }
-            }
+                return response
         }
     }
 }

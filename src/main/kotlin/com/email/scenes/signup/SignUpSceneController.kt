@@ -1,9 +1,7 @@
 package com.email.scenes.signin
 
-import android.util.Log
 import com.email.IHostActivity
 import com.email.api.DuplicateUsernameException
-import com.email.api.UnprocessableEntityException
 import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -50,7 +48,7 @@ class SignUpSceneController(
                 && !fieldsAreEmpty
     }
 
-    var signUpListener : SignUpListener? = object : SignUpListener {
+    private val signUpListener : SignUpListener? = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
             model.username = text
 /*            val isUserAvailable = isUserAvailable()
@@ -180,7 +178,6 @@ class SignUpSceneController(
                        scene.toggleUsernameError(userAvailable = false)
                        model.errors["username"] = true
                    }
-                    // is UnprocessableEntityException ->
                 }
                 scene.disableCreateAccountButton()
                 scene.showError(result.message)
@@ -222,7 +219,7 @@ class SignUpSceneController(
 
     override fun onStop() {
         dataSource.listener = null
-        this.signUpListener = null
+        scene.signUpListener = null
     }
 
     override fun onBackPressed(): Boolean {

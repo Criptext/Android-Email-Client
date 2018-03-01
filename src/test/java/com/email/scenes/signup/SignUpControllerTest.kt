@@ -1,7 +1,7 @@
 package com.email.scenes.signup
 
+import com.email.api.ApiCall
 import com.email.mocks.MockedWorkRunner
-import com.email.mocks.api.MockSignUpAPIClient
 import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.data.RegisterUserWorker
@@ -9,6 +9,8 @@ import com.email.scenes.signup.data.SignUpAPIClient
 import com.email.scenes.signup.mocks.MockedIHostActivity
 import com.email.scenes.signup.mocks.MockedSignUpLocalDB
 import com.email.scenes.signup.mocks.MockedSignUpView
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be`
 import org.junit.Before
@@ -34,7 +36,7 @@ class SignUpControllerTest {
         scene = MockedSignUpView()
         runner = MockedWorkRunner()
         db = MockedSignUpLocalDB()
-        signUpAPIClient = MockSignUpAPIClient(listOf("andres", "sebas"))
+        signUpAPIClient = SignUpAPIClient.Default()
         dataSource = SignUpDataSource(
                 runner = runner,
                 signUpAPIClient = signUpAPIClient,
@@ -53,22 +55,30 @@ class SignUpControllerTest {
         controller.onStart()
 
         dataSource.listener `should not be` null
-        controller.signUpListener `should not be` null
+        scene.signUpListener `should not be` null
 
         controller.onStop()
 
         dataSource.listener `should be` null
-        controller.signUpListener `should be` null
+        scene.signUpListener `should be` null
     }
 
     @Test
     fun `when the create user button is clicked, on abscense of error, should update the db and show success of operation`() {
+        val server = MockWebServer()
+
+        // Schedule some responses.
+        server.enqueue(MockResponse()
+                .setBody("Ok")
+                .setResponseCode(200))
+        ApiCall.baseUrl = server.url("v1/mock").toString()
+
         controller.onStart()
-        val signUpListener = controller.signUpListener!!
+        val signUpListener = scene.signUpListener
         fillFields(signUpListener)
         fillNewUser(signUpListener)
         scene.errorSignUp = true
-        signUpListener.onCreateAccountClick()
+        signUpListener?.onCreateAccountClick()
         runner.assertPendingWork(listOf(RegisterUserWorker::class.java))
         runner._work()
 
@@ -77,11 +87,19 @@ class SignUpControllerTest {
 
     @Test
     fun `when the create user button is clicked, if there is a duplicated Username, the model should be updated with that error and the scene should show the error`() {
+        val server = MockWebServer()
+
+        // Schedule some responses.
+        server.enqueue(MockResponse()
+                .setBody("Ok")
+                .setResponseCode(400))
+        ApiCall.baseUrl = server.url("v1/mock").toString()
+
         controller.onStart()
-        val signUpListener = controller.signUpListener!!
+        val signUpListener = scene.signUpListener
         fillFields(signUpListener)
         fillExistentUser(signUpListener)
-        signUpListener.onCreateAccountClick()
+        signUpListener?.onCreateAccountClick()
         runner.assertPendingWork(listOf(RegisterUserWorker::class.java))
         runner._work()
 
@@ -89,19 +107,21 @@ class SignUpControllerTest {
         scene.userNameErrors `should be` true
     }
 
-    private fun fillNewUser(signUpListener: SignUpSceneController.SignUpListener){
-        signUpListener.onUsernameChangedListener("sebas1")
+    private fun fillNewUser(signUpListener: SignUpSceneController.SignUpListener?){
+        signUpListener?.onUsernameChangedListener("sebas1")
     }
 
-    private fun fillExistentUser(signUpListener: SignUpSceneController.SignUpListener){
-        signUpListener.onUsernameChangedListener("sebas")
+    private fun fillExistentUser(signUpListener: SignUpSceneController.SignUpListener?){
+        signUpListener?.onUsernameChangedListener("sebas")
     }
 
-    private fun fillFields(signUpListener: SignUpSceneController.SignUpListener) {
-        signUpListener.onCheckedOptionChanged(state = true)
-        signUpListener.onFullNameTextChangeListener(text = "Sebastian")
-        signUpListener.onPasswordChangedListener(text = "Sebastian")
-        signUpListener.onConfirmPasswordChangedListener(text = "Sebastian")
-        signUpListener.onRecoveryEmailTextChangeListener(text = "test@mock.com")
+    private fun fillFields(signUpListener: SignUpSceneController.SignUpListener?) {
+        if(signUpListener != null) {
+            signUpListener.onCheckedOptionChanged(state = true)
+            signUpListener.onFullNameTextChangeListener(text = "Sebastian")
+            signUpListener.onPasswordChangedListener(text = "Sebastian")
+            signUpListener.onConfirmPasswordChangedListener(text = "Sebastian")
+            signUpListener.onRecoveryEmailTextChangeListener(text = "test@mock.com")
+        }
     }
 }

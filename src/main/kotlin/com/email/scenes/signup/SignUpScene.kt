@@ -31,6 +31,8 @@ interface SignUpScene {
     fun showError(message : String)
     fun showSuccess()
 
+    var signUpListener: SignUpSceneController.SignUpListener?
+
     class SignUpSceneView(private val view: View): SignUpScene {
 
         private val res = view.context.resources
@@ -63,7 +65,7 @@ interface SignUpScene {
         private val imageBack: ImageView
 
         private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
-        private lateinit var signUpListener: SignUpSceneController.SignUpListener
+        override var signUpListener : SignUpSceneController.SignUpListener? = null
 
         override fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
             recoveryEmailWarningDialog.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
@@ -151,7 +153,7 @@ interface SignUpScene {
         private fun assignPasswordTextListener() {
             password.addTextChangedListener( object : TextWatcher{
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener.onPasswordChangedListener(text.toString())
+                    signUpListener?.onPasswordChangedListener(text.toString())
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
@@ -164,7 +166,7 @@ interface SignUpScene {
         private fun assignConfirmPasswordTextChangeListener() {
             confirmPassword.addTextChangedListener( object : TextWatcher {
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener.onConfirmPasswordChangedListener(text.toString())
+                    signUpListener?.onConfirmPasswordChangedListener(text.toString())
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
@@ -178,7 +180,7 @@ interface SignUpScene {
             checkboxTerms.setOnCheckedChangeListener(object :
                     CompoundButton.OnCheckedChangeListener {
                 override fun onCheckedChanged(p0: CompoundButton?, state: Boolean) {
-                    signUpListener.onCheckedOptionChanged(state)
+                    signUpListener?.onCheckedOptionChanged(state)
                 }
             })
         }
@@ -187,7 +189,7 @@ interface SignUpScene {
             username.addTextChangedListener( object : TextWatcher {
 
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener.onUsernameChangedListener(text.toString())
+                    signUpListener?.onUsernameChangedListener(text.toString())
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
@@ -207,7 +209,7 @@ interface SignUpScene {
                 }
 
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener.onFullNameTextChangeListener(text.toString())
+                    signUpListener?.onFullNameTextChangeListener(text.toString())
                 }
             })
         }
@@ -222,7 +224,7 @@ interface SignUpScene {
                 }
 
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener.onRecoveryEmailTextChangeListener(text.toString())
+                    signUpListener?.onRecoveryEmailTextChangeListener(text.toString())
                 }
             })
         }
@@ -230,14 +232,14 @@ interface SignUpScene {
         private fun assignTermsAndConditionsClickListener() {
             txtTermsAndConditions.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    signUpListener.onTermsAndConditionsClick()
+                    signUpListener?.onTermsAndConditionsClick()
                 }
             })
         }
 
         private fun assignBackButtonListener() {
             imageBack.setOnClickListener {
-                signUpListener.onBackPressed()
+                signUpListener?.onBackPressed()
             }
         }
 
@@ -290,7 +292,7 @@ interface SignUpScene {
         fun assignCreateAccountClickListener() {
             createAccount.setOnClickListener(object : View.OnClickListener{
                 override fun onClick(p0: View?) {
-                    signUpListener.onCreateAccountClick()
+                    signUpListener?.onCreateAccountClick()
                 }
             })
         }

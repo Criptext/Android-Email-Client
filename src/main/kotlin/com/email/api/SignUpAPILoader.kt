@@ -14,8 +14,8 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
                       private val signUpAPIClient: SignUpAPIClient) {
 
     fun registerUser(user: User,
-                             password: String,
-                             recoveryEmail: String?):
+                     password: String,
+                     recoveryEmail: String?):
             Result<String, Exception>{
         val operationResult = registerUserOperation(
                 user = user,
@@ -30,9 +30,20 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
             password: String,
             recoveryEmail: String?):
             Result<String, Exception> {
-        return signUpAPIClient.createUser(
-                user = user,
-                password = password,
-                recoveryEmail = recoveryEmail)
+        return Result.of {
+            val response = signUpAPIClient.createUser(
+                    user = user,
+                    password = password,
+                    recoveryEmail = recoveryEmail)
+
+            if (response.isSuccessful) {
+                response.message()
+            } else if(response.code() == 422){
+                throw UnprocessableEntityException(response.code())
+            } else {
+                throw DuplicateUsernameException(response.code())
+            }
+        }
     }
+
 }

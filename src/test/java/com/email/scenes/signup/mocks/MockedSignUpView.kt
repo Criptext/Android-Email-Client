@@ -16,8 +16,7 @@ class MockedSignUpView: SignUpScene {
     var btnCreateAccount = false
     var errorSignUp = false
 
-    private lateinit var signUpListener: SignUpSceneController.SignUpListener
-
+    override var signUpListener: SignUpSceneController.SignUpListener? = null
     override fun showRecoveryEmailWarningDialog(
             onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
     }
@@ -109,6 +108,7 @@ class MockedSignUpView: SignUpScene {
     }
 
     override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
+        this.signUpListener = signUpListener
     }
 
     override fun showError(message: String) {
