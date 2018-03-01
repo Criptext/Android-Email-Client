@@ -8,7 +8,13 @@
     android:layout_height="match_parent"
     android:id="@+id/signin_layout_container"
     android:focusableInTouchMode="true" >
-
+    <include
+        android:id="@+id/layout_activity_connection"
+        layout="@layout/activity_connection"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

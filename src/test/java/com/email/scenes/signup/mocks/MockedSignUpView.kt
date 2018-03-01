@@ -1,5 +1,6 @@
 package com.email.scenes.signup.mocks
 
+import com.email.scenes.keygeneration.KeyGenerationScene
 import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -10,6 +11,13 @@ import com.email.utils.UIMessage
  */
 
 class MockedSignUpView: SignUpScene {
+    override fun getKeyGenerationScene(): KeyGenerationScene {
+        return MockedKeyGenerationScene()
+    }
+
+    override fun showKeyGeneration() {
+    }
+
     var userNameSuccess = false
     var userNameErrors = false
     var passwordSuccess = false
@@ -38,7 +46,7 @@ class MockedSignUpView: SignUpScene {
         passwordSuccess = false
     }
 
-    private fun hideUsernameErrors() {
+    override fun hideUsernameErrors() {
         userNameErrors = false
     }
 
@@ -50,7 +58,7 @@ class MockedSignUpView: SignUpScene {
         passwordErrors = true
     }
 
-    fun showUsernameErrors() {
+    override fun showUsernameErrors() {
         userNameErrors = true
     }
 
@@ -89,7 +97,7 @@ class MockedSignUpView: SignUpScene {
         errorSignUp = true
     }
 
-    override fun showSuccess() {
+    private fun showSuccess() {
         errorSignUp = false
     }
 }

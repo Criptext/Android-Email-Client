@@ -8,11 +8,9 @@ import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import com.email.R
+import com.email.scenes.connection.ConnectionScene
 
 /**
  * Created by sebas on 2/15/18.
@@ -25,7 +23,11 @@ interface SignInScene {
     fun drawError()
     fun drawSuccess()
     fun initListeners(signInListener: SignInSceneController.SignInListener)
+    fun getConnectionScene() : ConnectionScene
+    fun showConnection()
+
     class SignInSceneView(val view: View): SignInScene {
+
         private val res = view.context.resources
         private val usernameInput : AppCompatEditText
         private val usernameInputLayout : TextInputLayout
@@ -33,6 +35,7 @@ interface SignInScene {
         private val signUpTextView: TextView
         private val progressBar: ProgressBar
         private val imageError: ImageView
+        private val connectionLayout : LinearLayout
 
         private val shouldButtonBeEnabled : Boolean
             get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
@@ -130,6 +133,7 @@ interface SignInScene {
             signUpTextView = view.findViewById(R.id.signup_textview)
             progressBar = view.findViewById(R.id.signin_progress_login)
             imageError = view.findViewById(R.id.signin_error_image)
+            connectionLayout = view.findViewById<LinearLayout>(R.id.layout_activity_connection)
             signInButton.isEnabled  = false
             showNormalTints()
         }
@@ -141,6 +145,14 @@ interface SignInScene {
             assignLoginButtonListener()
             assignSignUpTextViewListener()
             assignUsernameInputListener()
+        }
+
+        override fun getConnectionScene(): ConnectionScene {
+            return ConnectionScene.ConnectionSceneView(connectionLayout)
+        }
+
+        override fun showConnection() {
+            connectionLayout.visibility = View.VISIBLE
         }
     }
 }

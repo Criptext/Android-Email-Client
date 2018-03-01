@@ -2,7 +2,6 @@ package com.email.scenes.signin
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.opengl.Visibility
 import android.support.design.widget.TextInputLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText

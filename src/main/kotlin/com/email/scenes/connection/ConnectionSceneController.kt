@@ -1,6 +1,7 @@
 package com.email.scenes.connection
 
 import android.os.AsyncTask
+import android.os.Handler
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.signin.data.SignInDataSource
@@ -40,14 +41,15 @@ class ConnectionSceneController(private val model: ConnectionSceneModel,
         }
 
         override fun onProgressUpdate(vararg values: Int?) {
-            this@ConnectionSceneController.scene.updateProgress(
-                    progress=values[0]!!)
-
         }
 
         override fun onPreExecute() {
             super.onPreExecute()
-            this@ConnectionSceneController.scene.updateProgress(progress = 0)
+            this@ConnectionSceneController.scene.startLoadingAnimation()
+
+            Handler().postDelayed({
+                this@ConnectionSceneController.scene.startSucceedAnimation()
+            }, 3000)
         }
 
     }

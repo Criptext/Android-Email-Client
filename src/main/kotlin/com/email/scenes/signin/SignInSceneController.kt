@@ -3,6 +3,8 @@ package com.email.scenes.signin
 import android.view.Menu
 import com.email.IHostActivity
 import com.email.scenes.SceneController
+import com.email.scenes.connection.ConnectionSceneController
+import com.email.scenes.connection.ConnectionSceneModel
 import com.email.scenes.params.SignUpParams
 import com.email.scenes.signin.data.SignInDataSource
 
@@ -16,8 +18,7 @@ class SignInSceneController(
         private val host: IHostActivity,
         private val dataSource: SignInDataSource): SceneController() {
 
-    override val menuResourceId: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val menuResourceId: Int? = null
 
     private val signInListener = object : SignInListener {
         override fun onLoginClick() {
@@ -53,7 +54,7 @@ class SignInSceneController(
         if(username == "sebas") {
             scene.drawError()
         } else {
-            TODO("SIGN IN, START PROGRESS DIALOG.")
+            launchConnectionScene()
         }
     }
 
@@ -69,6 +70,17 @@ class SignInSceneController(
     }
 
     override fun onOptionsItemSelected(itemId: Int) {
+    }
+
+    private fun launchConnectionScene() {
+        val connectionSceneController = ConnectionSceneController(
+                model = ConnectionSceneModel(),
+                scene = scene.getConnectionScene(),
+                host = host,
+                dataSource = dataSource)
+        scene.showConnection()
+
+        connectionSceneController.onStart()
     }
 
     interface SignInListener {
