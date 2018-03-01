@@ -1,5 +1,6 @@
 package com.email.scenes.keygeneration
 
+import android.os.AsyncTask
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.keygeneration.data.KeyGenerationSceneModel
@@ -17,6 +18,7 @@ class KeyGenerationSceneController(private val model: KeyGenerationSceneModel,
     override val menuResourceId: Int? = null
 
     override fun onStart() {
+        KeyGenerationUpdater().execute()
     }
 
     override fun onStop() {
@@ -29,4 +31,25 @@ class KeyGenerationSceneController(private val model: KeyGenerationSceneModel,
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
+    inner class KeyGenerationUpdater() : AsyncTask<String, Int , Unit>() {
+        override fun doInBackground(vararg p0: String?): Unit {
+            for (advance: Int in 1..100) {
+                publishProgress(advance)
+                Thread.sleep(100)
+            }
+            return
+        }
+
+        override fun onProgressUpdate(vararg values: Int?) {
+            this@KeyGenerationSceneController.scene.updateProgress(
+                    progress=values[0]!!)
+
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            this@KeyGenerationSceneController.scene.updateProgress(progress = 0)
+        }
+
+    }
 }
