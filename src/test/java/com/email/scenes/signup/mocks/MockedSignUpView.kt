@@ -3,6 +3,7 @@ package com.email.scenes.signup.mocks
 import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.utils.UIMessage
 
 /**
  * Created by sebas on 2/27/18.
@@ -70,30 +71,6 @@ class MockedSignUpView: SignUpScene {
         return userNameErrors
     }
 
-    private fun assignPasswordTextListener() {
-    }
-
-    private fun assignConfirmPasswordTextChangeListener() {
-    }
-
-    private fun assignCheckTermsAndConditionsListener() {
-    }
-
-    private fun assignUsernameTextChangeListener() {
-    }
-
-    private fun assignfullNameTextChangeListener() {
-    }
-
-    private fun assignRecoveryEmailTextChangeListener() {
-    }
-
-    private fun assignTermsAndConditionsClickListener() {
-    }
-
-    private fun assignBackButtonListener() {
-    }
-
     override fun toggleUsernameError(userAvailable: Boolean){
         if(userAvailable) {
             showUsernameSucess()
@@ -104,19 +81,15 @@ class MockedSignUpView: SignUpScene {
         }
     }
 
-    fun assignCreateAccountClickListener() {
-    }
-
     override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
         this.signUpListener = signUpListener
     }
 
-    override fun showError(message: String) {
+    override fun showError(message: UIMessage) {
         errorSignUp = true
     }
 
     override fun showSuccess() {
         errorSignUp = false
     }
-
 }

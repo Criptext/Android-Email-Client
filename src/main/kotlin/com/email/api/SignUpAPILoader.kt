@@ -31,18 +31,11 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
             recoveryEmail: String?):
             Result<String, Exception> {
         return Result.of {
-            val response = signUpAPIClient.createUser(
+            val message = signUpAPIClient.createUser(
                     user = user,
                     password = password,
                     recoveryEmail = recoveryEmail)
-
-            if (response.isSuccessful) {
-                response.message()
-            } else if(response.code() == 422){
-                throw UnprocessableEntityException(response.code())
-            } else {
-                throw DuplicateUsernameException(response.code())
-            }
+            message
         }
     }
 

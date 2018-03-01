@@ -1,7 +1,7 @@
 package com.email.scenes.signin
 
 import com.email.IHostActivity
-import com.email.api.DuplicateUsernameException
+import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -48,12 +48,9 @@ class SignUpSceneController(
                 && !fieldsAreEmpty
     }
 
-    private val signUpListener : SignUpListener? = object : SignUpListener {
+    private val signUpListener : SignUpListener = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
             model.username = text
-/*            val isUserAvailable = isUserAvailable()
-            scene.toggleUsernameError(userAvailable = isUserAvailable)
-            model.errors["username"] = !isUserAvailable*/
 
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
@@ -173,13 +170,12 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser.Success -> scene.showSuccess()
             is SignUpResult.RegisterUser.Failure -> {
-                when(result.exception) {
-                   is DuplicateUsernameException -> {
-                       scene.toggleUsernameError(userAvailable = false)
-                       model.errors["username"] = true
-                   }
-                }
-                scene.disableCreateAccountButton()
+                       if(result.exception is ServerErrorException &&
+                               result.exception.errorCode == 400) {
+                           scene.toggleUsernameError(userAvailable = false)
+                           model.errors["username"] = true
+                           scene.disableCreateAccountButton()
+                       }
                 scene.showError(result.message)
             }
         }
@@ -212,7 +208,7 @@ class SignUpSceneController(
         scene.disableCreateAccountButton()
 
         scene.initListeners(
-                signUpListener = signUpListener!!
+                signUpListener = signUpListener
         )
         dataSource.listener = dataSourceListener
     }

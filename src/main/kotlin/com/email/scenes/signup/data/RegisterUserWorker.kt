@@ -1,11 +1,14 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
-import com.email.api.DuplicateUsernameException
+import android.support.v4.content.res.ResourcesCompat
+import com.email.R
+import com.email.api.ServerErrorException
 import com.email.api.SignUpAPILoader
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
+import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import org.json.JSONException
 
@@ -29,7 +32,8 @@ class RegisterUserWorker(
     )
 
     override fun catchException(ex: Exception): SignUpResult.RegisterUser {
-        val message = "Unexpected error: " + ex.message
+
+        val message = createErrorMessage(ex)
         return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
@@ -55,15 +59,18 @@ class RegisterUserWorker(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private val createErrorMessage: (ex: Exception) -> String = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
-            is NetworkErrorException -> "Failed to register user. " +
-                    "Please check your internet connection."
-            is JSONException -> "Failed to register user. " +
-                    "Invalid server response."
-            is DuplicateUsernameException -> "Failed to register user. " +
-                    "Username already exists"
-            else -> "Failed to register user. Please try again later."
+            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
+            is JSONException -> UIMessage(resId = R.string.json_error_exception)
+            is ServerErrorException -> {
+                if(ex.errorCode == 400) {
+                    UIMessage(resId = R.string.duplicate_name_error_exception)
+                } else {
+                    UIMessage(resId = R.string.server_error_exception)
+                }
+            }
+            else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
         }
     }
 }

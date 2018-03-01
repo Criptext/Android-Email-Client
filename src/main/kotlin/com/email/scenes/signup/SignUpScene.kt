@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.*
 import com.email.R
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.utils.UIMessage
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 2/15/18.
@@ -28,7 +30,7 @@ interface SignUpScene {
     fun showPasswordErrors()
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
-    fun showError(message : String)
+    fun showError(message : UIMessage)
     fun showSuccess()
 
     var signUpListener: SignUpSceneController.SignUpListener?
@@ -338,11 +340,11 @@ interface SignUpScene {
             assignBackButtonListener()
         }
 
-        override fun showError(message: String) {
+        override fun showError(message: UIMessage) {
             val duration = Toast.LENGTH_LONG
             val toast = Toast.makeText(
                     view.context,
-                    message,
+                    view.context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
         }
