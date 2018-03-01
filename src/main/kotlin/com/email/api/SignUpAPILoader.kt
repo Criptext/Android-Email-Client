@@ -14,8 +14,8 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
                       private val signUpAPIClient: SignUpAPIClient) {
 
     fun registerUser(user: User,
-                             password: String,
-                             recoveryEmail: String?):
+                     password: String,
+                     recoveryEmail: String?):
             Result<String, Exception>{
         val operationResult = registerUserOperation(
                 user = user,
@@ -30,9 +30,13 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
             password: String,
             recoveryEmail: String?):
             Result<String, Exception> {
-        return signUpAPIClient.createUser(
-                user = user,
-                password = password,
-                recoveryEmail = recoveryEmail)
+        return Result.of {
+            val message = signUpAPIClient.createUser(
+                    user = user,
+                    password = password,
+                    recoveryEmail = recoveryEmail)
+            message
+        }
     }
+
 }

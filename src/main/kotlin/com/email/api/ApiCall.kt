@@ -12,15 +12,21 @@ import org.json.JSONObject
     class ApiCall {
 
     companion object {
-        val baseUrl = "http://172.30.1.151:8000"
+        var baseUrl = "http://localhost:8000"
+        private val JSON = MediaType.parse("application/json; charset=utf-8")
 
-        fun createUser(username: String, name: String, password: String): Request {
+        fun createUser(
+                username: String,
+                name: String,
+                password: String,
+                recoveryEmail: String?
+        ): Request {
             val jsonObject = JSONObject()
-            jsonObject.put("username", username);
+            jsonObject.put("username", username)
             jsonObject.put("name", name)
             jsonObject.put("password", password)
-            val JSON = MediaType.parse("application/json; charset=utf-8");
-            val body = RequestBody.create(JSON, jsonObject.toString());
+            if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
+            val body = RequestBody.create(JSON, jsonObject.toString())
             return Request.
                     Builder().
                     url("$baseUrl/user").

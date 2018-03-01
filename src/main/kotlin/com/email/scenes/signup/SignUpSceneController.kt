@@ -1,7 +1,7 @@
 package com.email.scenes.signin
 
-import android.view.Menu
 import com.email.IHostActivity
+import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -48,12 +48,9 @@ class SignUpSceneController(
                 && !fieldsAreEmpty
     }
 
-    private val signUpListener = object : SignUpListener {
+    private val signUpListener : SignUpListener = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
             model.username = text
-            val isUserAvailable = isUserAvailable()
-            scene.toggleUsernameError(userAvailable = isUserAvailable)
-            model.errors["username"] = !isUserAvailable
 
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
@@ -113,7 +110,7 @@ class SignUpSceneController(
         }
 
         override fun onPasswordChangedListener(text: String) {
-            model.password = text.toString()
+            model.password = text
             if(arePasswordsMatching && model.password.length > 0) {
                 scene.hidePasswordErrors()
                 scene.showPasswordSucess()
@@ -136,23 +133,25 @@ class SignUpSceneController(
         }
 
         override fun onCreateAccountClick() {
-            if (!isSetRecoveryEmail) {
-                scene.showRecoveryEmailWarningDialog(
-                        onRecoveryEmailWarningListener
-                )
-            } else {
-                val user = User(
-                        name = model.fullName,
-                        email = "",
-                        nickname = model.username,
-                        id = null
-                )
-                val req = SignUpRequest.RegisterUser(
-                        user = user,
-                        password = model.password,
-                        recoveryEmail = model.recoveryEmail
-                        )
-                dataSource.submitRequest(req)
+            if(shouldCreateButtonBeEnabled()) {
+                if (!isSetRecoveryEmail) {
+                    scene.showRecoveryEmailWarningDialog(
+                            onRecoveryEmailWarningListener
+                    )
+                } else {
+                    val user = User(
+                            name = model.fullName,
+                            email = "",
+                            nickname = model.username,
+                            id = null
+                    )
+                    val req = SignUpRequest.RegisterUser(
+                            user = user,
+                            password = model.password,
+                            recoveryEmail = model.recoveryEmail
+                    )
+                    dataSource.submitRequest(req)
+                }
             }
         }
 
@@ -169,8 +168,16 @@ class SignUpSceneController(
 
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
-            is SignUpResult.RegisterUser.Success -> scene.showSuccess("")
-            is SignUpResult.RegisterUser.Failure -> scene.showError(result.message)
+            is SignUpResult.RegisterUser.Success -> scene.showSuccess()
+            is SignUpResult.RegisterUser.Failure -> {
+                       if(result.exception is ServerErrorException &&
+                               result.exception.errorCode == 400) {
+                           scene.toggleUsernameError(userAvailable = false)
+                           model.errors["username"] = true
+                           scene.disableCreateAccountButton()
+                       }
+                scene.showError(result.message)
+            }
         }
     }
 
@@ -207,6 +214,8 @@ class SignUpSceneController(
     }
 
     override fun onStop() {
+        dataSource.listener = null
+        scene.signUpListener = null
     }
 
     override fun onBackPressed(): Boolean {
