@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.email">
+    package="com.email">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application android:name="com.email.DeckardApplication"
+    <application
+        android:name=".DeckardApplication"
         android:theme="@style/AppTheme">
-        <activity android:name="com.email.MailboxActivity">
-
+        <activity android:name=".MailboxActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
-            android:name="com.email.SearchActivity"
-            android:windowSoftInputMode="stateVisible">
-
-        </activity>
+            android:name=".SearchActivity"
+            android:windowSoftInputMode="stateVisible"></activity>
         <activity
             android:name=".splash.SplashActivity"
             android:configChanges="orientation|screenSize"
@@ -27,14 +29,12 @@
         <activity
             android:name="com.email.SignUpActivity"
             android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
+        <activity android:name=".ConnectionActivity" />
         <activity
-            android:name=".LoginValidationActivity"/>
-        <activity
-            android:name=".ConnectionActivity"/>
+            android:name=".scenes.composer.ComposerActivity"
+            android:label="@string/title_activity_composer"
+            android:theme="@style/AppTheme"></activity>
     </application>
+
 </manifest>

@@ -8,8 +8,10 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.SceneController
+import com.email.scenes.composer.ComposerModel
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.email.scenes.mailbox.MailboxSceneModel
+import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.SceneParams
 import com.email.scenes.params.SearchParams
 import com.email.scenes.params.SignUpParams
@@ -111,6 +113,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         return when(params) {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
+            is ComposerParams -> ComposerModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

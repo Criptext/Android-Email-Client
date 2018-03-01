@@ -25,4 +25,5 @@
     <dimen name="alert_dialog_moveto_height">240dp</dimen>
     <dimen name="recover_email_warning_width">250dp</dimen>
     <dimen name="recover_email_warning_height">350dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

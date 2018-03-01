@@ -2,6 +2,7 @@ package com.email.scenes.composer
 
 import com.email.DB.models.Contact
 import com.email.R
+import com.email.mocks.MockedHostActivity
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.composer.data.ComposerDataSource
 import com.email.scenes.composer.data.SendMailWorker
@@ -22,6 +23,7 @@ class ComposerControllerTest {
     private lateinit var model: ComposerModel
     private lateinit var scene: MockedComposerScene
     private lateinit var runner: MockedWorkRunner
+    private lateinit var host: MockedHostActivity
     private lateinit var dataSource: ComposerDataSource
     private lateinit var controller: ComposerController
 
@@ -31,8 +33,10 @@ class ComposerControllerTest {
         model = ComposerModel()
         scene = MockedComposerScene()
         runner = MockedWorkRunner()
+        host = MockedHostActivity()
         dataSource = ComposerDataSource(runner)
-        controller = ComposerController(model, scene, dataSource)
+        controller = ComposerController(model = model, scene = scene, host = host,
+                dataSource = dataSource)
     }
 
     @Test

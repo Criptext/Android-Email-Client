@@ -112,7 +112,13 @@ dependencies {
     //Swipe Option
     implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
 
-    //Okhttp
+    //Http client
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+
+    // autocomplete
+    compile "com.splitwise:tokenautocomplete:2.0.8@aar"
+
 }
 
+
+apply plugin: 'kotlin-android-extensions'

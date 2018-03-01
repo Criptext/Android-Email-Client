@@ -14,7 +14,7 @@
     <string name="need_sign_in">You need to sign in to proceed</string>
     <string name="gg_google_connection">Connection with google is broken. Please try again later</string>
 
-    <string name="subject">Subject : </string>
+    <string name="subject_colon">Subject : </string>
     <string name="not_encrypted_warning">Warning: 1 or more attachments are not encrypted. Eliminate them and attach them securely using the button</string>
 
     <!-- SYNC -->
@@ -168,5 +168,9 @@
     <!-- COMPOSER -->
     <string name="invalid_address_error">"%1$s" is not a valid address. Please check input field "%2$s".</string>
     <string name="no_recipients_error">You need at least one recipient.</string>
+    <string name="title_activity_composer">New Secure Email</string>
+
+    <string name="message">Message</string>
+    <string name="subject">Subject</string>
 
 </resources>
