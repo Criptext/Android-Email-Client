@@ -8,13 +8,16 @@
     android:layout_height="match_parent"
     android:id="@+id/signin_layout_container"
     android:focusableInTouchMode="true" >
-    <include
-        android:id="@+id/layout_activity_connection"
-        layout="@layout/activity_connection"
-        android:visibility="gone"
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/login_background"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:id="@+id/signin_form_container"
+        android:focusableInTouchMode="true" >
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -163,4 +166,5 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    </LinearLayout>
 </LinearLayout>

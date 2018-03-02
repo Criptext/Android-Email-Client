@@ -363,5 +363,8 @@ interface SignUpScene {
         override fun showKeyGeneration() {
             keyGenerationLayout.visibility = View.VISIBLE
         }
+
+        override fun showSuccess() {
+        }
     }
 }

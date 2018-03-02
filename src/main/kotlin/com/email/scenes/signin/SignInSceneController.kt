@@ -1,10 +1,8 @@
 package com.email.scenes.signin
 
-import android.view.Menu
+import android.os.Handler
 import com.email.IHostActivity
 import com.email.scenes.SceneController
-import com.email.scenes.connection.ConnectionSceneController
-import com.email.scenes.connection.ConnectionSceneModel
 import com.email.scenes.params.SignUpParams
 import com.email.scenes.signin.data.SignInDataSource
 
@@ -73,14 +71,8 @@ class SignInSceneController(
     }
 
     private fun launchConnectionScene() {
-        val connectionSceneController = ConnectionSceneController(
-                model = ConnectionSceneModel(),
-                scene = scene.getConnectionScene(),
-                host = host,
-                dataSource = dataSource)
-        scene.showConnection()
-
-        connectionSceneController.onStart()
+        scene.showConnectionScene()
+        scene.startAnimation()
     }
 
     interface SignInListener {
