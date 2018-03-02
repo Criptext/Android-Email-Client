@@ -7,6 +7,9 @@ import com.email.scenes.keygeneration.KeyGenerationScene
  */
 
 class MockedKeyGenerationScene : KeyGenerationScene {
+    override fun stopTimer() {
+    }
+
     override fun updateProgress(progress: Int) {
     }
 

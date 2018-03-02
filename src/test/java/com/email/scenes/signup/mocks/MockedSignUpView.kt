@@ -1,6 +1,6 @@
 package com.email.scenes.signup.mocks
 
-import com.email.scenes.keygeneration.KeyGenerationScene
+import android.view.View
 import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -11,11 +11,13 @@ import com.email.utils.UIMessage
  */
 
 class MockedSignUpView: SignUpScene {
-    override fun getKeyGenerationScene(): KeyGenerationScene {
-        return MockedKeyGenerationScene()
+    override fun initFormUI(view: View) {
     }
 
-    override fun showKeyGeneration() {
+    override fun showFormScene() {
+    }
+
+    override fun launchKeyGenerationScene() {
     }
 
     var userNameSuccess = false

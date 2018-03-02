@@ -7,9 +7,12 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import com.email.R
+import com.email.androidui.progressdialog.IntervalTimer
 import com.email.scenes.keygeneration.KeyGenerationScene
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.utils.UIMessage
@@ -35,42 +38,47 @@ interface SignUpScene {
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
     fun showError(message : UIMessage)
     fun showSuccess()
-    fun getKeyGenerationScene(): KeyGenerationScene
-    fun showKeyGeneration()
+    fun launchKeyGenerationScene()
+    fun initFormUI(view: View)
+    fun showFormScene()
 
     var signUpListener: SignUpSceneController.SignUpListener?
 
     class SignUpSceneView(private val view: View): SignUpScene {
 
         private val res = view.context.resources
-        private val username: AppCompatEditText
-        private val usernameInput: TextInputLayout
-        private val usernameSuccessImage: ImageView
-        private val usernameErrorImage: ImageView
+        private val viewGroup = view.parent as ViewGroup
+        private lateinit var username: AppCompatEditText
+        private lateinit var usernameInput: TextInputLayout
+        private lateinit var usernameSuccessImage: ImageView
+        private lateinit var usernameErrorImage: ImageView
 
-        private val fullName: AppCompatEditText
-        private val fullNameInput: TextInputLayout
+        private lateinit var fullName: AppCompatEditText
+        private lateinit var fullNameInput: TextInputLayout
 
-        private val password: AppCompatEditText
-        private val passwordInput: TextInputLayout
-        private val passwordSuccessImage: ImageView
-        private val passwordErrorImage: ImageView
+        private lateinit var password: AppCompatEditText
+        private lateinit var passwordInput: TextInputLayout
+        private lateinit var passwordSuccessImage: ImageView
+        private lateinit var passwordErrorImage: ImageView
 
-        private val confirmPassword: AppCompatEditText
-        private val confirmPasswordInput: TextInputLayout
-        private val confirmPasswordSuccessImage: ImageView
-        private val confirmPasswordErrorImage: ImageView
+        private lateinit var confirmPassword: AppCompatEditText
+        private lateinit var confirmPasswordInput: TextInputLayout
+        private lateinit var confirmPasswordSuccessImage: ImageView
+        private lateinit var confirmPasswordErrorImage: ImageView
 
 
-        private val recoveryEmail: AppCompatEditText
-        private val recoveryEmailInput: TextInputLayout
+        private lateinit var recoveryEmail: AppCompatEditText
+        private lateinit var recoveryEmailInput: TextInputLayout
 
-        private val checkboxTerms: CheckBox
-        private val txtTermsAndConditions: TextView
-        private val createAccount: Button
+        private lateinit var checkboxTerms: CheckBox
+        private lateinit var txtTermsAndConditions: TextView
+        private lateinit var createAccount: Button
 
-        private val imageBack: ImageView
-        private val keyGenerationLayout : LinearLayout
+        private lateinit var imageBack: ImageView
+
+        private lateinit var formLayout : View
+        private lateinit var keyGenerationLayout : View
+        private lateinit var keyGenerationScene : KeyGenerationScene.KeyGenerationSceneView
 
         private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
         override var signUpListener : SignUpSceneController.SignUpListener? = null
@@ -261,6 +269,11 @@ interface SignUpScene {
             }
         }
         init {
+            showFormScene()
+            drawNormalTint()
+        }
+
+        override fun initFormUI(view: View) {
             username = view.findViewById(R.id.username)
             usernameInput = view.findViewById(R.id.input_username)
             usernameSuccessImage = view.findViewById(R.id.success_username)
@@ -286,10 +299,15 @@ interface SignUpScene {
             checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
             txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
             createAccount = view.findViewById(R.id.create_account)
-
             imageBack = view.findViewById(R.id.icon_back)
-            keyGenerationLayout = view.findViewById<LinearLayout>(R.id.view_key_generation)
-            drawNormalTint()
+        }
+
+        override fun showFormScene() {
+            removeAllViews()
+            formLayout = View.inflate(
+                    view.context,
+                    R.layout.activity_form_signup, viewGroup)
+            initFormUI(formLayout)
         }
 
         fun drawNormalTint() {
@@ -355,16 +373,29 @@ interface SignUpScene {
             toast.show()
         }
 
-        override fun getKeyGenerationScene(): KeyGenerationScene {
-            return KeyGenerationScene.KeyGenerationSceneView(
-                    keyGenerationLayout)
+        override fun launchKeyGenerationScene() {
+            removeAllViews()
+            keyGenerationLayout = View.inflate(
+                    view.context,
+                    R.layout.view_key_generation, viewGroup)
+            keyGenerationScene = KeyGenerationScene.KeyGenerationSceneView(
+                    keyGenerationLayout, checkProgress, 10)
         }
 
-        override fun showKeyGeneration() {
-            keyGenerationLayout.visibility = View.VISIBLE
+        private val checkProgress = {
+            progress: Int
+            ->
+            if(progress == 100) {
+                keyGenerationScene.stopTimer()
+            }
+            Unit
         }
-
         override fun showSuccess() {
         }
+
+        private fun removeAllViews() {
+            viewGroup.removeAllViews()
+        }
+
     }
 }

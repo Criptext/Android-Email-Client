@@ -4,8 +4,6 @@ import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
-import com.email.scenes.keygeneration.KeyGenerationSceneController
-import com.email.scenes.keygeneration.data.KeyGenerationSceneModel
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpRequest
@@ -172,6 +170,7 @@ class SignUpSceneController(
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
+                scene.showSuccess() // remove this line.
                 launchKeyGenerationScene()
             }
             is SignUpResult.RegisterUser.Failure -> {
@@ -187,14 +186,14 @@ class SignUpSceneController(
     }
 
     private fun launchKeyGenerationScene() {
-        val keyGenerationSceneController = KeyGenerationSceneController(
+/*        val keyGenerationSceneController = KeyGenerationSceneController(
                 model = KeyGenerationSceneModel(),
                 scene = scene.getKeyGenerationScene(),
                 host = host,
-                dataSource = dataSource)
-        scene.showKeyGeneration()
+                dataSource = dataSource)*/
+        scene.launchKeyGenerationScene()
 
-        keyGenerationSceneController.onStart()
+/*        keyGenerationSceneController.onStart()*/
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
@@ -227,6 +226,8 @@ class SignUpSceneController(
                 signUpListener = signUpListener
         )
         dataSource.listener = dataSourceListener
+
+        launchKeyGenerationScene()
     }
 
     override fun onStop() {
