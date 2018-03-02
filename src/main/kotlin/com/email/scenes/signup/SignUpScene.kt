@@ -1,20 +1,13 @@
 package com.email.scenes.signin
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.email.R
-import com.email.androidui.progressdialog.IntervalTimer
 import com.email.scenes.keygeneration.KeyGenerationScene
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.scenes.signup.holders.SignUpFormHolder
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 
@@ -39,7 +32,6 @@ interface SignUpScene {
     fun showError(message : UIMessage)
     fun showSuccess()
     fun launchKeyGenerationScene()
-    fun initFormUI(view: View)
     fun showFormScene()
 
     var signUpListener: SignUpSceneController.SignUpListener?
@@ -48,215 +40,101 @@ interface SignUpScene {
 
         private val res = view.context.resources
         private val viewGroup = view.parent as ViewGroup
-        private lateinit var username: AppCompatEditText
-        private lateinit var usernameInput: TextInputLayout
-        private lateinit var usernameSuccessImage: ImageView
-        private lateinit var usernameErrorImage: ImageView
 
-        private lateinit var fullName: AppCompatEditText
-        private lateinit var fullNameInput: TextInputLayout
-
-        private lateinit var password: AppCompatEditText
-        private lateinit var passwordInput: TextInputLayout
-        private lateinit var passwordSuccessImage: ImageView
-        private lateinit var passwordErrorImage: ImageView
-
-        private lateinit var confirmPassword: AppCompatEditText
-        private lateinit var confirmPasswordInput: TextInputLayout
-        private lateinit var confirmPasswordSuccessImage: ImageView
-        private lateinit var confirmPasswordErrorImage: ImageView
-
-
-        private lateinit var recoveryEmail: AppCompatEditText
-        private lateinit var recoveryEmailInput: TextInputLayout
-
-        private lateinit var checkboxTerms: CheckBox
-        private lateinit var txtTermsAndConditions: TextView
-        private lateinit var createAccount: Button
-
-        private lateinit var imageBack: ImageView
-
+        private var signUpFormHolder: SignUpFormHolder? = null
         private lateinit var formLayout : View
         private lateinit var keyGenerationLayout : View
         private lateinit var keyGenerationScene : KeyGenerationScene.KeyGenerationSceneView
 
-        private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
         override var signUpListener : SignUpSceneController.SignUpListener? = null
 
         override fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
-            recoveryEmailWarningDialog.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
+            signUpFormHolder?.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
         }
 
         private fun showUsernameSucess() {
-            usernameSuccessImage.visibility = View.VISIBLE
-            usernameInput.hint = ""
+            signUpFormHolder?.showUsernameSucess()
         }
 
         private fun hideUsernameSucess() {
-            usernameSuccessImage.visibility = View.INVISIBLE
+            signUpFormHolder?.hideUsernameSucess()
         }
 
         override fun showPasswordSucess() {
-            passwordSuccessImage.visibility = View.VISIBLE
-            confirmPasswordSuccessImage.visibility = View.VISIBLE
+            signUpFormHolder?.showPasswordSucess()
         }
 
         override fun hidePasswordSucess() {
-            passwordSuccessImage.visibility = View.INVISIBLE
-            confirmPasswordSuccessImage.visibility = View.INVISIBLE
+            signUpFormHolder?.hidePasswordSucess()
         }
 
         @SuppressLint("RestrictedApi")
         override fun hideUsernameErrors() {
-            usernameErrorImage.visibility = View.INVISIBLE
-            usernameInput.error = ""
+            signUpFormHolder?.hideUsernameErrors()
         }
 
         @SuppressLint("RestrictedApi")
         override fun hidePasswordErrors() {
-            passwordErrorImage.visibility = View.GONE
-            confirmPasswordErrorImage.visibility = View.GONE
-
-            passwordInput.setHintTextAppearance(R.style.textinputlayout_login)
-            password.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-
-            confirmPasswordInput.error = ""
-
-            confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login)
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
+           signUpFormHolder?.hidePasswordErrors()
         }
 
         @SuppressLint("RestrictedApi")
         override fun showPasswordErrors() {
-            passwordErrorImage.visibility = View.VISIBLE
-            confirmPasswordErrorImage.visibility = View.VISIBLE
-
-            confirmPasswordInput.error = "Passwords do not match"
-            passwordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
-            confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
-            password.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.black))
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.black))
+            signUpFormHolder?.showPasswordErrors()
         }
 
         @SuppressLint("RestrictedApi")
         override fun showUsernameErrors() {
-            usernameErrorImage.visibility = View.VISIBLE
-            usernameInput.error = "Username not available"
-            usernameInput.hint = ""
+            signUpFormHolder?.showUsernameErrors()
         }
 
         override fun disableCreateAccountButton() {
-            createAccount.isEnabled = false
+            signUpFormHolder?.disableCreateAccountButton()
         }
 
         override fun enableCreateAccountButton() {
-            createAccount.isEnabled = true
+            signUpFormHolder?.enableCreateAccountButton()
         }
 
         override fun isPasswordErrorShown(): Boolean {
-            return passwordErrorImage.visibility == View.VISIBLE
+            return signUpFormHolder!!.isPasswordErrorShown()
         }
 
 
         override fun isUsernameErrorShown(): Boolean {
-            return usernameErrorImage.visibility == View.VISIBLE
+            return signUpFormHolder!!.isUsernameErrorShown()
         }
 
         private fun assignPasswordTextListener() {
-            password.addTextChangedListener( object : TextWatcher{
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener?.onPasswordChangedListener(text.toString())
-                }
-
-                override fun afterTextChanged(p0: Editable?) {
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            })
+            signUpFormHolder?.assignPasswordTextListener()
         }
 
         private fun assignConfirmPasswordTextChangeListener() {
-            confirmPassword.addTextChangedListener( object : TextWatcher {
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener?.onConfirmPasswordChangedListener(text.toString())
-                }
-
-                override fun afterTextChanged(p0: Editable?) {
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            })
+            signUpFormHolder?.assignConfirmPasswordTextChangeListener()
         }
 
         private fun assignCheckTermsAndConditionsListener() {
-            checkboxTerms.setOnCheckedChangeListener(object :
-                    CompoundButton.OnCheckedChangeListener {
-                override fun onCheckedChanged(p0: CompoundButton?, state: Boolean) {
-                    signUpListener?.onCheckedOptionChanged(state)
-                }
-            })
+            signUpFormHolder?.assignCheckTermsAndConditionsListener()
         }
 
         private fun assignUsernameTextChangeListener() {
-            username.addTextChangedListener( object : TextWatcher {
-
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener?.onUsernameChangedListener(text.toString())
-                }
-
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            })
+            signUpFormHolder?.assignUsernameTextChangeListener()
         }
 
         private fun assignfullNameTextChangeListener() {
-            fullName.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener?.onFullNameTextChangeListener(text.toString())
-                }
-            })
+            signUpFormHolder?.assignfullNameTextChangeListener()
         }
 
         private fun assignRecoveryEmailTextChangeListener() {
-
-            recoveryEmail.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signUpListener?.onRecoveryEmailTextChangeListener(text.toString())
-                }
-            })
+            signUpFormHolder?.assignRecoveryEmailTextChangeListener()
         }
 
         private fun assignTermsAndConditionsClickListener() {
-            txtTermsAndConditions.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(p0: View?) {
-                    signUpListener?.onTermsAndConditionsClick()
-                }
-            })
+            signUpFormHolder?.assignTermsAndConditionsClickListener()
         }
 
         private fun assignBackButtonListener() {
-            imageBack.setOnClickListener {
-                signUpListener?.onBackPressed()
-            }
+            signUpFormHolder?.assignBackButtonListener()
         }
 
         override fun toggleUsernameError(userAvailable: Boolean){
@@ -269,37 +147,6 @@ interface SignUpScene {
             }
         }
         init {
-            showFormScene()
-            drawNormalTint()
-        }
-
-        override fun initFormUI(view: View) {
-            username = view.findViewById(R.id.username)
-            usernameInput = view.findViewById(R.id.input_username)
-            usernameSuccessImage = view.findViewById(R.id.success_username)
-            usernameErrorImage = view.findViewById(R.id.error_username)
-
-            fullName = view.findViewById(R.id.full_name)
-            fullNameInput = view.findViewById(R.id.full_name_input)
-
-            password = view.findViewById(R.id.password)
-            passwordInput = view.findViewById(R.id.password_input)
-            passwordSuccessImage = view.findViewById(R.id.success_password)
-            passwordErrorImage = view.findViewById(R.id.error_password)
-
-            confirmPassword = view.findViewById(R.id.password_repeat)
-            confirmPasswordInput = view.findViewById(R.id.password_repeat_input)
-            confirmPasswordSuccessImage = view.findViewById(R.id.success_password_repeat)
-            confirmPasswordErrorImage = view.findViewById(R.id.error_password_repeat)
-
-
-            recoveryEmail = view.findViewById(R.id.recovery_email)
-            recoveryEmailInput = view.findViewById(R.id.recovery_email_input)
-
-            checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
-            txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
-            createAccount = view.findViewById(R.id.create_account)
-            imageBack = view.findViewById(R.id.icon_back)
         }
 
         override fun showFormScene() {
@@ -307,47 +154,11 @@ interface SignUpScene {
             formLayout = View.inflate(
                     view.context,
                     R.layout.activity_form_signup, viewGroup)
-            initFormUI(formLayout)
-        }
-
-        fun drawNormalTint() {
-            setHintAppearences()
-            setBackgroundTintLists()
+            signUpFormHolder = SignUpFormHolder(formLayout)
         }
 
         fun assignCreateAccountClickListener() {
-            createAccount.setOnClickListener(object : View.OnClickListener{
-                override fun onClick(p0: View?) {
-                    signUpListener?.onCreateAccountClick()
-                }
-            })
-        }
-
-        @SuppressLint("RestrictedApi")
-        fun setBackgroundTintLists() {
-            username.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-            fullName.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-            password.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-            confirmPassword.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-            recoveryEmail.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-        }
-
-        private fun setHintAppearences(){
-            usernameInput.setHintTextAppearance(
-                    R.style.NormalTextAppearenceUsernameInput)
-            passwordInput.setHintTextAppearance(
-                    R.style.NormalTextAppearenceUsernameInput)
-            confirmPasswordInput.setHintTextAppearance(
-                    R.style.NormalTextAppearenceUsernameInput)
-            recoveryEmailInput.setHintTextAppearance(
-                    R.style.NormalTextAppearenceUsernameInput)
-            fullNameInput.setHintTextAppearance(
-                    R.style.NormalTextAppearenceUsernameInput)
+            signUpFormHolder?.assignCreateAccountClickListener()
         }
 
         override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
@@ -362,6 +173,10 @@ interface SignUpScene {
             assignCreateAccountClickListener()
             assignRecoveryEmailTextChangeListener()
             assignBackButtonListener()
+
+            if(signUpFormHolder != null) {
+                signUpFormHolder!!.signUpListener = signUpListener
+            }
         }
 
         override fun showError(message: UIMessage) {

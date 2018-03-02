@@ -170,7 +170,7 @@ class SignUpSceneController(
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
-                scene.showSuccess() // remove this line.
+                scene.showSuccess() // remove all this
                 launchKeyGenerationScene()
             }
             is SignUpResult.RegisterUser.Failure -> {
@@ -186,14 +186,7 @@ class SignUpSceneController(
     }
 
     private fun launchKeyGenerationScene() {
-/*        val keyGenerationSceneController = KeyGenerationSceneController(
-                model = KeyGenerationSceneModel(),
-                scene = scene.getKeyGenerationScene(),
-                host = host,
-                dataSource = dataSource)*/
         scene.launchKeyGenerationScene()
-
-/*        keyGenerationSceneController.onStart()*/
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
@@ -220,14 +213,12 @@ class SignUpSceneController(
     }
 
     override fun onStart() {
-        scene.disableCreateAccountButton()
-
+        dataSource.listener = dataSourceListener
+        scene.showFormScene()
         scene.initListeners(
                 signUpListener = signUpListener
         )
-        dataSource.listener = dataSourceListener
-
-        launchKeyGenerationScene()
+        scene.disableCreateAccountButton()
     }
 
     override fun onStop() {

@@ -11,9 +11,6 @@ import com.email.utils.UIMessage
  */
 
 class MockedSignUpView: SignUpScene {
-    override fun initFormUI(view: View) {
-    }
-
     override fun showFormScene() {
     }
 
