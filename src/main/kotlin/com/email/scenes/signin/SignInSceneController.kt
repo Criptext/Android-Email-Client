@@ -1,6 +1,5 @@
 package com.email.scenes.signin
 
-import android.os.Handler
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.params.SignUpParams
