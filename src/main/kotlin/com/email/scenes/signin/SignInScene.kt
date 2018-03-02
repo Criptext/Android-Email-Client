@@ -1,5 +1,6 @@
 package com.email.scenes.signin
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -13,6 +14,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.widget.*
 import com.email.R
 import com.email.scenes.connection.ConnectionScene
@@ -35,6 +37,7 @@ interface SignInScene {
     fun startSucceedAnimation()
     fun stopAnimationLoading()
     fun startAnimation()
+    fun initFormUI()
 
     class SignInSceneView(val view: View): SignInScene {
         override fun startAnimation() {
@@ -47,12 +50,12 @@ interface SignInScene {
 
         private val res = view.context.resources
         private val viewGroup = view.parent as ViewGroup
-        private val usernameInput : AppCompatEditText
-        private val usernameInputLayout : TextInputLayout
-        private val signInButton : Button
-        private val signUpTextView: TextView
-        private val progressBar: ProgressBar
-        private val imageError: ImageView
+        private lateinit var usernameInput : AppCompatEditText
+        private lateinit var usernameInputLayout : TextInputLayout
+        private lateinit var signInButton : Button
+        private lateinit var signUpTextView: TextView
+        private lateinit var progressBar: ProgressBar
+        private lateinit var imageError: ImageView
 
         private lateinit var connectionLayout : View
         private lateinit var loadingView: View
@@ -60,7 +63,7 @@ interface SignInScene {
         private lateinit var textViewEmail: TextView
         private lateinit var animLoading: AnimatorSet
 
-        private val formLayout : View
+        private lateinit var formLayout : View
 
         private val shouldButtonBeEnabled : Boolean
             get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
@@ -152,17 +155,20 @@ interface SignInScene {
             setUsernameBackgroundTintList()
         }
         init {
-            usernameInput = view.findViewById(R.id.input_username)
-            signInButton = view.findViewById(R.id.signin_button)
-            usernameInputLayout = view.findViewById(R.id.input_username_layout)
-            signUpTextView = view.findViewById(R.id.signup_textview)
-            progressBar = view.findViewById(R.id.signin_progress_login)
-            imageError = view.findViewById(R.id.signin_error_image)
-            formLayout = view.findViewById(R.id.signin_form_container)
+            showFormScene()
+        }
+
+        override fun initFormUI() {
+            usernameInput = formLayout.findViewById(R.id.input_username)
+            signInButton = formLayout.findViewById(R.id.signin_button)
+            usernameInputLayout = formLayout.findViewById(R.id.input_username_layout)
+            signUpTextView = formLayout.findViewById(R.id.signup_textview)
+            progressBar = formLayout.findViewById(R.id.signin_progress_login)
+            imageError = formLayout.findViewById(R.id.signin_error_image)
+            formLayout = formLayout.findViewById(R.id.signin_form_container)
             signInButton.isEnabled  = false
             showNormalTints()
         }
-
         override fun initListeners(
                 signInListener: SignInSceneController.SignInListener
         ) {
@@ -193,7 +199,10 @@ interface SignInScene {
 
         override fun showFormScene() {
             removeAllViews()
-            viewGroup.addView(formLayout)
+            formLayout = View.inflate(
+                    view.context,
+                    R.layout.activity_form_signin, viewGroup)
+            initFormUI()
         }
 
         private fun initSyncingAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
@@ -274,8 +283,36 @@ interface SignInScene {
                         connectionLayout.findViewById(R.id.viewCircle11), connectionLayout.findViewById(R.id.viewCircle12),
                         connectionLayout.findViewById(R.id.imageViewDevice1), connectionLayout.findViewById(R.id.imageViewDevice2),
                         connectionLayout.findViewById(R.id.imageViewSucceed))
+
+                animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
+                    override fun onAnimationRepeat(p0: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animator?) {
+                        showFormScene()
+                        initListeners(signInListener = signInListener)
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+                    }
+
+                    override fun onAnimationRepeat(p0: Animation?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animation?) {
+                    }
+
+                    override fun onAnimationStart(p0: Animation?) {
+                    }
+
+                })
+
                 animSucceed.start()
             }
+
             textViewEmail.setTextColor(ContextCompat.getColor(view.context, R.color.colorAccent))
             textViewStatus.text = res.getText(R.string.device_ready)
         }
