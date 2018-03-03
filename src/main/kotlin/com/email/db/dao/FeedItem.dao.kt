@@ -1,4 +1,4 @@
-package com.email.db.DAO
+package com.email.db.dao
 
 import android.arch.persistence.room.*
 import com.email.db.models.FeedItem
