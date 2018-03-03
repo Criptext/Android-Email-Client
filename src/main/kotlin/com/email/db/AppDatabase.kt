@@ -22,8 +22,8 @@ import com.email.db.models.signal.CRSignedPreKey
  * Created by sebas on 1/24/18.
  */
 
-@Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailUser::class
-                     , File::class, Open::class, FeedItem::class, CRPreKey::class
+@Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
+                     , File::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
         exportSchema = false)
@@ -32,7 +32,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao
     abstract fun emailLabelDao(): EmailLabelJoinDao
-    abstract fun userDao(): ContactDao
     abstract fun contactDao(): ContactDao
     abstract fun accountDao(): AccountDao
     abstract fun fileDao(): FileDao

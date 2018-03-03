@@ -22,7 +22,7 @@ class EmailThread(val email : Email, val labelsOfMail :ArrayList<Label>) {
             || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
         email.preview else email.preview
     val id: Int
-        get() = email.id
+        get() = email.id!!
     val subject: String
         get() = email.subject
     val preview: String

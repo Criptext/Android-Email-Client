@@ -62,7 +62,7 @@ class ComposerControllerTest {
         displayedData!!.subject `should equal` model.subject
         displayedData.body `should equal` model.body
 
-        // simulate user input new data
+        // simulate account input new data
         val newDisplayedData = UIData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
                 subject = "Updated subject", body ="i wrote some changes")
         scene.displayedData = newDisplayedData
@@ -88,7 +88,7 @@ class ComposerControllerTest {
     fun `if user has set an invalid recipient, should show error after clicking send button`() {
         controller.onStart()
 
-        // simulate user input wrong address
+        // simulate account input wrong address
         scene.displayedData = UIData(
                 to = listOf(Contact.Invalid(email="recipientId", name="gabriel")),
                 cc = emptyList(), bcc = emptyList(),
@@ -105,7 +105,7 @@ class ComposerControllerTest {
     fun `if user has set a valid recipient, should try to send mail`() {
         controller.onStart()
 
-        // simulate user input wrong address
+        // simulate account input wrong address
         scene.displayedData = UIData(
                 to = listOf(Contact(email = "bob@domain.com", name = "gabriel")),
                 cc = emptyList(), bcc = emptyList(),

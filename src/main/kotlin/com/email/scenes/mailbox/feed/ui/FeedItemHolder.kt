@@ -97,12 +97,12 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
     private fun setListeners(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedClickListener?){
 
         viewMute.setOnClickListener {
-            listener?.onMuteFeedItemClicked(activityFeedItem.id, position, !activityFeedItem.isMuted)
+            listener?.onMuteFeedItemClicked(activityFeedItem.id!!, position, !activityFeedItem.isMuted)
             swipeView.close(true)
         }
 
         viewDelete.setOnClickListener {
-            listener?.onDeleteFeedItemClicked(activityFeedItem.id, position)
+            listener?.onDeleteFeedItemClicked(activityFeedItem.id!!, position)
             swipeView.close(true)
         }
 

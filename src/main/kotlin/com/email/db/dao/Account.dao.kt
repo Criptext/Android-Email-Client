@@ -17,6 +17,9 @@ interface AccountDao {
     @Insert
     fun insertAll(accounts : List<Account>)
 
+    @Insert
+    fun insert(account :Account)
+
     @Query("SELECT * FROM account")
     fun getAll() : List<Account>
 

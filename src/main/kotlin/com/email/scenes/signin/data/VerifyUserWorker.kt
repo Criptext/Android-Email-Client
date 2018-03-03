@@ -5,7 +5,6 @@ import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignInLocalDB
 import com.email.utils.UIMessage
-import com.github.kittinunf.result.Result
 import org.json.JSONException
 
 /**
@@ -27,7 +26,7 @@ class VerifyUserWorker(
 
     override fun work(): SignInResult.VerifyUser? {
         Thread.sleep(500)
-        val userExists = db.userExistsLocally(username = username)
+        val userExists = db.accountExistsLocally(username = username)
         if(userExists) return SignInResult.VerifyUser.Success()
 
         val error = Exception()
