@@ -5,13 +5,13 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import com.email.db.DAO.*
 import com.email.db.TypeConverters.BooleanConverter
 import com.email.db.TypeConverters.DateConverter
-import com.email.db.dao.RawIdentityKeyDao
-import com.email.db.dao.RawPreKeyDao
-import com.email.db.dao.RawSessionDao
-import com.email.db.dao.RawSignedPreKeyDao
+import com.email.db.dao.*
+import com.email.db.dao.signal.RawIdentityKeyDao
+import com.email.db.dao.signal.RawPreKeyDao
+import com.email.db.dao.signal.RawSessionDao
+import com.email.db.dao.signal.RawSignedPreKeyDao
 import com.email.db.models.*
 import com.email.db.models.signal.CRIdentityKey
 import com.email.db.models.signal.CRPreKey
@@ -22,7 +22,7 @@ import com.email.db.models.signal.CRSignedPreKey
  * Created by sebas on 1/24/18.
  */
 
-@Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
+@Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailUser::class
                      , File::class, Open::class, FeedItem::class, CRPreKey::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
@@ -32,10 +32,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao
     abstract fun emailLabelDao(): EmailLabelJoinDao
-    abstract fun userDao(): UserDao
+    abstract fun userDao(): ContactDao
+    abstract fun contactDao(): ContactDao
+    abstract fun accountDao(): AccountDao
     abstract fun fileDao(): FileDao
     abstract fun openDao(): OpenDao
-    abstract fun emailUserDao() : EmailUserJoinDao
+    abstract fun emailContactDao() : EmailContactJoinDao
     abstract fun feedDao(): FeedDao
     abstract fun rawSessionDao(): RawSessionDao
     abstract fun rawPreKeyDao(): RawPreKeyDao

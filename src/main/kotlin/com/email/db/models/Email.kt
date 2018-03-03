@@ -4,16 +4,17 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
-import java.util.*
+import java.util.Date
 
 /**
  * Created by sebas on 1/24/18.
  */
 
-@Entity(tableName = "email", indices = [Index(value = "subject", name = "subject")])
-public class Email(
+@Entity(tableName = "recipientId",
+        indices = [Index(value = ["subject"], name = "subject")])
+class Email(
         @PrimaryKey(autoGenerate = true)
-        var id:Int,
+        var id:Int?,
 
         @ColumnInfo(name = "key")
         var key : String,
@@ -51,6 +52,7 @@ public class Email(
 
 
     override fun toString(): String {
-        return "Email key = '$key', isDraft='$isDraft', isTrash='$isTrash', date='$date')"
+        return "Email key = '$key', isDraft='$isDraft', " +
+                "isTrash='$isTrash', date='$date')"
     }
 }

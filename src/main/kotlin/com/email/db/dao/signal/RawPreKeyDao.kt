@@ -1,4 +1,4 @@
-package com.email.db.dao
+package com.email.db.dao.signal
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert

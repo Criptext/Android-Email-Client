@@ -52,7 +52,7 @@ class ComposerControllerTest {
 
     @Test
     fun `should bind the view with the model on start and update the model with input data on stop`() {
-        model.subject = "New email"
+        model.subject = "New recipientId"
         model.body = "some test"
 
         controller.onStart()
@@ -90,7 +90,7 @@ class ComposerControllerTest {
 
         // simulate user input wrong address
         scene.displayedData = UIData(
-                to = listOf(Contact.Invalid(email="email", name="gabriel")),
+                to = listOf(Contact.Invalid(email="recipientId", name="gabriel")),
                 cc = emptyList(), bcc = emptyList(),
                 subject = "", body = "")
         scene.observer!!.onRecipientListChanged()

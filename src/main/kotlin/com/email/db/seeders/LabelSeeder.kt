@@ -1,27 +1,27 @@
 package com.email.db.seeders
 
-import com.email.db.DAO.LabelDao
+import com.email.db.dao.LabelDao
 import com.email.db.models.Label
 
 /**
  * Created by sebas on 1/24/18.
  */
 
-public class LabelSeeder {
+class LabelSeeder {
     companion object {
-        var labels : List<Label> = mutableListOf<Label>()
+        var labels : List<Label> = mutableListOf()
 
         fun seed(labelDao: LabelDao){
             labels = labelDao.getAll()
             labelDao.deleteMultipleLabels(labels)
-            labels = mutableListOf<Label>()
+            labels = mutableListOf()
             for (a in 1..10){
                 labels += fillLabel(a)
             }
             labelDao.insertAll(labels)
         }
 
-        fun fillLabel(iteration: Int): Label {
+        private fun fillLabel(iteration: Int): Label {
             lateinit var label : Label
             when (iteration) {
                 1 -> label = Label(id = 1, color = "red", text = "1")

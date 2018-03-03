@@ -70,7 +70,7 @@ interface MailboxLocalDB {
                 EmailLabelSeeder.seed(db.emailLabelDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
-                EmailUserSeeder.seed(db.emailUserDao())
+                EmailContactSeeder.seed(db.emailContactDao())
             } catch (e: Exception) {
                 e.printStackTrace()
             }

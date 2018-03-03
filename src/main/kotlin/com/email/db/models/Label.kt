@@ -11,7 +11,7 @@ import android.arch.persistence.room.PrimaryKey
 @Entity(tableName = "label")
 class Label (
         @PrimaryKey(autoGenerate = true)
-        var id:Int,
+        var id:Int?,
 
         @ColumnInfo(name = "color")
         var color: String,

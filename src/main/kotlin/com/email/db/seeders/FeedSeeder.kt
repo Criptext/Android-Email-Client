@@ -1,6 +1,6 @@
 package com.email.db.seeders
 
-import com.email.db.DAO.FeedDao
+import com.email.db.dao.FeedDao
 import com.email.db.models.FeedItem
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import java.text.SimpleDateFormat
@@ -10,24 +10,24 @@ import java.util.*
  * Created by danieltigse on 2/7/18.
  */
 
-public class FeedSeeder {
+class FeedSeeder {
 
     companion object {
 
-        var feedItems: List<FeedItem> = mutableListOf<FeedItem>()
+        var feedItems: List<FeedItem> = mutableListOf()
         var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(feedDao: FeedDao){
             feedItems = feedDao.getAll()
             feedDao.deleteAll(feedItems)
-            feedItems = mutableListOf<FeedItem>()
+            feedItems = mutableListOf()
             for (a in 1..5){
                 feedItems += fillFeed(a)
             }
             feedDao.insertAll(feedItems)
         }
 
-        fun fillFeed(iteration: Int): FeedItem {
+        private fun fillFeed(iteration: Int): FeedItem {
             lateinit var feedItem: FeedItem
             when (iteration) {
                 1 -> feedItem = FeedItem(1,

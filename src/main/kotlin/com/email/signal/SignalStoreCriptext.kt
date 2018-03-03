@@ -1,11 +1,11 @@
 package com.email.signal
 
 import com.email.db.AppDatabase
-import com.email.db.DAO.UserDao
-import com.email.db.dao.RawIdentityKeyDao
-import com.email.db.dao.RawPreKeyDao
-import com.email.db.dao.RawSessionDao
-import com.email.db.dao.RawSignedPreKeyDao
+import com.email.db.dao.ContactDao
+import com.email.db.dao.signal.RawIdentityKeyDao
+import com.email.db.dao.signal.RawPreKeyDao
+import com.email.db.dao.signal.RawSessionDao
+import com.email.db.dao.signal.RawSignedPreKeyDao
 import com.email.db.models.User
 import com.email.db.models.signal.CRIdentityKey
 import com.email.db.models.signal.CRPreKey
@@ -22,7 +22,7 @@ import org.whispersystems.libsignal.state.*
  */
 
 class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawIdentityKeyDao,
-                          userDao: UserDao, rawSignedPreKeyDao: RawSignedPreKeyDao,
+                          userDao: ContactDao, rawSignedPreKeyDao: RawSignedPreKeyDao,
                           rawPreKeyDao: RawPreKeyDao): SignalProtocolStore {
 
     constructor(db: AppDatabase): this(rawSessionDao = db.rawSessionDao(),
@@ -125,7 +125,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
     }
 
-    private class IdentityKeyStoreImplementation(private val userDao: UserDao,
+    private class IdentityKeyStoreImplementation(private val userDao: ContactDao,
                                                  private val rawIdentityKeyDao: RawIdentityKeyDao)
         : IdentityKeyStore {
 
