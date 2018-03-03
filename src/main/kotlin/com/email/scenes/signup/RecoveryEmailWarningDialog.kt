@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import com.email.R
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
 
 /**
  * Created by sebas on 2/8/18.
@@ -32,8 +31,8 @@ class RecoveryEmailWarningDialog(val context: Context) {
                              dialogBuilder: AlertDialog.Builder,
                              onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener
     ): AlertDialog {
-        val width = res.getDimension(R.dimen.recover_email_warning_width).toInt()
-        val height = res.getDimension(R.dimen.recover_email_warning_height).toInt()
+        val width = res.getDimension(R.dimen.recovery_email_warning_width).toInt()
+        val height = res.getDimension(R.dimen.recovery_email_warning_height).toInt()
         val newRecoveryEmailWarningDialog = dialogBuilder.create()
         newRecoveryEmailWarningDialog.show()
         newRecoveryEmailWarningDialog.window.setLayout(width, height)

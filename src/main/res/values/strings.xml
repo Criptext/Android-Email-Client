@@ -155,7 +155,7 @@
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
     <string name="btn_create_account">Create account</string>
     <string name="txt_create_criptext_account">Create your Criptext account</string>
-    <string name="password_login_content">You can also login using your\npassword, however you won't have\naccess to any email history that's\nstored on your verified devices.</string>
+    <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
 
     <!-- LOGIN ERRORS -->
     <string name="search_email">Search email</string>
@@ -190,4 +190,5 @@
     <string name="login_failed_body">Login attempt rejected!</string>
     <string name="login_user">estocambia@criptex.com</string>
     <string name="button_confirm">Confirm</string>
+    <string name="forgot_password">Forgot?</string>
 </resources>

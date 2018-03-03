@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import com.email.R
@@ -33,12 +34,13 @@ class PasswordLoginDialog(val context: Context) {
                              dialogBuilder: AlertDialog.Builder,
                              onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
             : AlertDialog {
-        val width = res.getDimension(R.dimen.recover_email_warning_width).toInt()
-        val height = res.getDimension(R.dimen.recover_email_warning_height).toInt()
+        val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
+        val height = res.getDimension(R.dimen.password_login_dialog_height).toInt()
         val newPasswordLoginDialog = dialogBuilder.create()
+        val window = newPasswordLoginDialog.window
         newPasswordLoginDialog.show()
-        newPasswordLoginDialog.window.setLayout(width, height)
-
+        window.setLayout(width, height)
+        window.setGravity(Gravity.BOTTOM)
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
         newPasswordLoginDialog.window.setBackgroundDrawable(drawableBackground)

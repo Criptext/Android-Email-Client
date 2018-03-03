@@ -19,6 +19,7 @@ class PasswordLoginHolder(
 ) {
 
     private val username: TextView
+    private val forgotPassword : TextView
     private val password: TextInputEditText
     private val buttonConfirm: Button
 
@@ -27,10 +28,17 @@ class PasswordLoginHolder(
     init {
         username = view.findViewById(R.id.username)
         password = view.findViewById(R.id.password)
+        forgotPassword = view.findViewById(R.id.forgot_password)
         buttonConfirm = view.findViewById(R.id.buttonConfirm)
 
         username.text  = "$user@criptext.com"
 
+    }
+
+    fun assignForgotPasswordClickListener() {
+        forgotPassword.setOnClickListener {
+            signInListener!!.onForgotPasswordClick()
+        }
     }
 
     fun assignPasswordChangeListener() {

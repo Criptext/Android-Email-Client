@@ -71,6 +71,9 @@ interface SignInScene {
                 passwordLoginHolder?.signInListener = value
                 field = value
             }
+        private fun assignForgotPasswordClickListener() {
+            passwordLoginHolder?.assignForgotPasswordClickListener()
+        }
 
         private fun assignConfirmButtonListener() {
             passwordLoginHolder?.assignConfirmButtonListener()
@@ -141,6 +144,7 @@ interface SignInScene {
             assignCantAccessDeviceListener()
             assignConfirmButtonListener()
             assignPasswordChangeListener()
+            assignForgotPasswordClickListener()
           }
 
 

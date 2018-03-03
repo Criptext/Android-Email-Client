@@ -59,6 +59,10 @@ class SignInSceneController(
         }
     }
     private val signInListener = object : SignInListener {
+        override fun onForgotPasswordClick() {
+            TODO("GO TO FORGOT PASSWORD???")
+        }
+
         override fun onUserAuthenticated() {
             host.goToScene(MailboxParams())
         }
@@ -160,5 +164,6 @@ class SignInSceneController(
         fun onPasswordLoginClick()
         fun onPasswordChangeListener(password: String)
         fun onUserAuthenticated()
+        fun onForgotPasswordClick()
     }
 }
