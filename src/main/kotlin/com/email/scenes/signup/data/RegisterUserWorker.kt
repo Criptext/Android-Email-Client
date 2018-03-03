@@ -9,7 +9,7 @@ import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
-import com.email.db.models.User
+import com.email.db.models.Account
 import com.email.db.models.signal.CRSignedPreKey
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
@@ -53,24 +53,23 @@ class RegisterUserWorker(
             :(String) -> Result<String, Exception> {
         return { jwtoken: String ->
             Result.of {
-                val user = User(
-                        email = "",
+                val user = Account(
                         name = account.name,
-                        nickname = account.username,
-                        jwtoken = jwtoken,
-                        registrationId = keybundle.shareData.registrationId,
-                        rawIdentityKeyPair = keybundle.shareData.identityKeyPair
-
+                        recipientId = account.username,
+                        identityB64 = keybundle.shareData.identityKeyPair,
+                        jwt = jwtoken,
+                        registrationId = keybundle.shareData.registrationId
                 )
 
-                db.saveUser(user)
+                db.saveAccount(user)
                 db.deletePrekeys()
                 db.storePrekeys(keybundle.serializedPreKeys)
                 db.storeRawSignedPrekey(CRSignedPreKey(
                         keybundle.shareData.signedPreKeyId,
                         keybundle.shareData.signedPrekey))
-                user.nickname
+                user.recipientId
             }
+
         }
     }
 

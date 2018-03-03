@@ -28,13 +28,13 @@ interface SignInScene {
     fun showConnectionHolder()
     fun showFormHolder()
     fun startLoadingAnimation()
-    fun startSucceedAnimation(showForm: (
+    fun startSucceedAnimation(launchMailboxScene: (
             signInListener: SignInSceneController.SignInListener) -> Unit)
     fun stopAnimationLoading()
     fun startAnimation()
     fun initFormUI()
     fun showLoginValidationHolder()
-    fun showPasswordLoginHolder(user: String)
+    fun showPasswordLoginHolder(username: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun toggleConfirmButton(activated: Boolean)
@@ -114,6 +114,7 @@ interface SignInScene {
                     duration)
             toast.show()
         }
+
         @SuppressLint("RestrictedApi")
         override fun drawNormalSignInOptions(){
             signInFormHolder?.drawNormalSignInOptions()

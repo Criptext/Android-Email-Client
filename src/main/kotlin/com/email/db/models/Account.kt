@@ -26,7 +26,7 @@ class Account(
         var identityB64 : String,
 
         @ColumnInfo(name = "registrationId")
-        var registrationId : String
+        var registrationId : Int
 ) {
 
     override fun toString(): String {

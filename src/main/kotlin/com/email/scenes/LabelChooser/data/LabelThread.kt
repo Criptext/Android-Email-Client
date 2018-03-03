@@ -12,7 +12,7 @@ class LabelThread(val label: Label) {
      val text : String
           get() = label.text
      val id : Int
-          get() = label.id
+          get() = label.id!!
 
      var isSelected = false
 }

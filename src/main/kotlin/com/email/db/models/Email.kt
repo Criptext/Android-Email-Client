@@ -10,7 +10,7 @@ import java.util.Date
  * Created by sebas on 1/24/18.
  */
 
-@Entity(tableName = "recipientId",
+@Entity(tableName = "email",
         indices = [Index(value = ["subject"], name = "subject")])
 class Email(
         @PrimaryKey(autoGenerate = true)

@@ -1,12 +1,12 @@
 package com.email.signal
 
 import com.email.db.AppDatabase
-import com.email.db.dao.ContactDao
+import com.email.db.dao.AccountDao
 import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawPreKeyDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.dao.signal.RawSignedPreKeyDao
-import com.email.db.models.User
+import com.email.db.models.Account
 import com.email.db.models.signal.CRIdentityKey
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSessionRecord
@@ -22,16 +22,16 @@ import org.whispersystems.libsignal.state.*
  */
 
 class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawIdentityKeyDao,
-                          userDao: ContactDao, rawSignedPreKeyDao: RawSignedPreKeyDao,
+                          accountDao: AccountDao, rawSignedPreKeyDao: RawSignedPreKeyDao,
                           rawPreKeyDao: RawPreKeyDao): SignalProtocolStore {
 
     constructor(db: AppDatabase): this(rawSessionDao = db.rawSessionDao(),
-            rawIdentityKeyDao = db.rawIdentityKeyDao(), userDao = db.userDao(),
+            rawIdentityKeyDao = db.rawIdentityKeyDao(), accountDao = db.accountDao(),
             rawSignedPreKeyDao = db.rawSignedPreKeyDao(),
             rawPreKeyDao = db.rawPreKeyDao())
     
     private val sessionStore = SessionStoreImplementation(rawSessionDao)
-    private val identityKeyStore = IdentityKeyStoreImplementation(userDao = userDao,
+    private val identityKeyStore = IdentityKeyStoreImplementation(accountDao = accountDao,
             rawIdentityKeyDao = rawIdentityKeyDao)
     private val signedPreKeyStore = SignedPreKeyStoreImplementation(rawSignedPreKeyDao)
     private val preKeyStore = PreKeyStoreImplementation(rawPreKeyDao)
@@ -125,12 +125,12 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
     }
 
-    private class IdentityKeyStoreImplementation(private val userDao: ContactDao,
+    private class IdentityKeyStoreImplementation(private val accountDao: AccountDao,
                                                  private val rawIdentityKeyDao: RawIdentityKeyDao)
         : IdentityKeyStore {
 
-        private fun getLoggedInUser(): User {
-            val user = userDao.getLoggedInUser()
+        private fun getLoggedInAccount(): Account {
+            val user = accountDao.getLoggedInAccount()
             return user ?: throw Exception("Please Log In")
         }
 
@@ -142,7 +142,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         }
 
         override fun getIdentityKeyPair(): IdentityKeyPair {
-            val rawIdentityKeyPair = getLoggedInUser().rawIdentityKeyPair
+            val rawIdentityKeyPair = getLoggedInAccount().identityB64
             val bytesIdentityKeyPair = Encoding.stringToByteArray(rawIdentityKeyPair)
             return IdentityKeyPair(bytesIdentityKeyPair)
         }
@@ -157,7 +157,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         }
 
         override fun getLocalRegistrationId(): Int =
-            getLoggedInUser().registrationId
+            getLoggedInAccount().registrationId
 
     }
 
