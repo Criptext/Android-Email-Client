@@ -76,8 +76,7 @@ android:focusableInTouchMode="true" >
                         android:id="@+id/input_username_layout"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:theme="@style/textinputlayout_login">
+                        android:layout_marginTop="5dp">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/input_username"
