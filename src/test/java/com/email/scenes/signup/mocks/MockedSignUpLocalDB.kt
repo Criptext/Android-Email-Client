@@ -19,7 +19,7 @@ class MockedSignUpLocalDB : SignUpLocalDB {
     }
 
     override fun saveAccount(account: Account) {
-        savedUser = user
+        savedUser = account
     }
 
     override fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey) {

@@ -97,7 +97,7 @@ class SignUpControllerTest {
         scene.errorSignUp `should be` false
         // assert db and local storage updated
         storage.getString(KeyValueStorage.StringKey.ActiveAccount, "") `should equal` "sebas1"
-        db.savedUser!!.nickname `should equal` "sebas1"
+        db.savedUser!!.recipientId `should equal` "sebas1"
     }
 
     @Test
