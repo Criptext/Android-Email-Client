@@ -3,6 +3,7 @@ package com.email.utils
 import android.graphics.*
 import com.email.utils.ui.TextDrawable
 import java.security.NoSuchAlgorithmException
+import java.util.regex.Pattern
 
 /**
  * Created by hirobreak on 06/04/17.
@@ -22,6 +23,13 @@ class Utility {
 
             return bitmap;
 
+        }
+
+        fun isEmailValid(email: String): Boolean {
+            val expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$"
+            val pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE)
+            val matcher = pattern.matcher(email)
+            return matcher.matches()
         }
 
         private fun md5(s: String): String {

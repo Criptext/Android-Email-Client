@@ -7,6 +7,7 @@ import com.email.scenes.params.MailboxParams
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 import com.email.scenes.signup.data.SignUpDataSource
+import com.email.utils.Utility
 
 /**
  * Created by sebas on 2/15/18.
@@ -76,6 +77,8 @@ class SignUpSceneController(
             model.fullName = text
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
+            } else {
+                scene.disableCreateAccountButton()
             }
         }
 
@@ -85,6 +88,20 @@ class SignUpSceneController(
 
         override fun onRecoveryEmailTextChangeListener(text: String) {
             model.recoveryEmail = text
+            if(model.recoveryEmail.isNotEmpty()){
+                val isRecoveryEmailValid = Utility.isEmailValid(model.recoveryEmail)
+                if(!isRecoveryEmailValid) {
+                    scene.disableCreateAccountButton()
+                } else {
+                    if (shouldCreateButtonBeEnabled()) {
+                        scene.enableCreateAccountButton()
+                    }
+                }
+            } else {
+                if (shouldCreateButtonBeEnabled()) {
+                    scene.enableCreateAccountButton()
+                }
+            }
         }
 
 
