@@ -33,12 +33,16 @@ interface SignUpScene {
     fun showSuccess()
     fun launchKeyGenerationScene()
     fun showFormScene()
+    fun resetSceneWidgetsFromModel(
+            username: String,
+            fullName: String,
+            password: String,
+            recoveryEmail: String)
 
     var signUpListener: SignUpSceneController.SignUpListener?
 
     class SignUpSceneView(private val view: View): SignUpScene {
 
-        private val res = view.context.resources
         private val viewGroup = view.parent as ViewGroup
 
         private var signUpFormHolder: SignUpFormHolder? = null
@@ -75,7 +79,7 @@ interface SignUpScene {
 
         @SuppressLint("RestrictedApi")
         override fun hidePasswordErrors() {
-           signUpFormHolder?.hidePasswordErrors()
+            signUpFormHolder?.hidePasswordErrors()
         }
 
         @SuppressLint("RestrictedApi")
@@ -164,6 +168,10 @@ interface SignUpScene {
         override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
             this.signUpListener = signUpListener
 
+            if(signUpFormHolder != null) {
+                signUpFormHolder?.signUpListener = signUpListener
+            }
+
             assignPasswordTextListener()
             assignConfirmPasswordTextChangeListener()
             assignUsernameTextChangeListener()
@@ -174,9 +182,6 @@ interface SignUpScene {
             assignRecoveryEmailTextChangeListener()
             assignBackButtonListener()
 
-            if(signUpFormHolder != null) {
-                signUpFormHolder!!.signUpListener = signUpListener
-            }
         }
 
         override fun showError(message: UIMessage) {
@@ -186,6 +191,9 @@ interface SignUpScene {
                     view.context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
+            keyGenerationScene.stopTimer()
+            showFormScene()
+            initListeners(signUpListener!!)
         }
 
         override fun launchKeyGenerationScene() {
@@ -206,11 +214,29 @@ interface SignUpScene {
             Unit
         }
         override fun showSuccess() {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    view.context,
+                    "Success",
+                    duration)
+            toast.show()
         }
 
         private fun removeAllViews() {
             viewGroup.removeAllViews()
         }
 
+        override fun resetSceneWidgetsFromModel(
+                username: String,
+                fullName: String,
+                password: String,
+                recoveryEmail: String) {
+            signUpFormHolder?.fillSceneWidgets(
+                    username = username,
+                    fullName = fullName,
+                    password = password,
+                    recoveryEmail = recoveryEmail)
+        }
     }
+
 }

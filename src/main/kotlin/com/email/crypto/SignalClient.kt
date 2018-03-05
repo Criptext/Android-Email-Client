@@ -1,8 +1,6 @@
 package com.signaltest.crypto
 
-import com.signaltest.api.PreKeyBundleShareData
-import org.whispersystems.curve25519.Curve25519
-import org.whispersystems.curve25519.Curve25519KeyPair
+import com.email.api.PreKeyBundleShareData
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.SessionBuilder
 import org.whispersystems.libsignal.SessionCipher

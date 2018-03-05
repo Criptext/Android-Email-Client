@@ -1,6 +1,5 @@
-package com.signaltest.api
+package com.email.api
 
-import android.util.Log
 import okhttp3.*
 import org.json.JSONObject
 import org.whispersystems.libsignal.SignalProtocolAddress
@@ -47,12 +46,12 @@ interface KeyServerClient {
         override fun postKeyBundle(completeBundle: PreKeyBundleShareData.UploadBundle): Response {
             val json = completeBundle.toJSON()
 
-            return postJSON("$keyServerUrl/keybundle", json)
+            return postJSON("${keyServerUrl}/keybundle", json)
         }
 
         override fun getKeyBundle(recipientId: String, deviceId: Int): Response {
             val request = Request.Builder()
-                        .url("$keyServerUrl/keybundle/$recipientId/$deviceId")
+                        .url("${keyServerUrl}/keybundle/$recipientId/$deviceId")
                         .build()
             return waitForHttpResponse(request)
         }
@@ -73,7 +72,7 @@ interface KeyServerClient {
             json.put("recipient", recipient)
             json.put("message", message)
 
-            return postJSON("$keyServerUrl/message", json)
+            return postJSON("${keyServerUrl}/message", json)
         }
 
         override fun getMessage(senderAddress: SignalProtocolAddress,
@@ -84,7 +83,7 @@ interface KeyServerClient {
             val deviceIdO = senderAddress.deviceId
 
             val request = Request.Builder()
-                    .url("$keyServerUrl/message/$recipientIdF/$deviceIdF/$recipientIdO/$deviceIdO")
+                    .url("${keyServerUrl}/message/$recipientIdF/$deviceIdF/$recipientIdO/$deviceIdO")
                     .build()
             return waitForHttpResponse(request)
         }

@@ -1,4 +1,4 @@
-package com.signaltest.api
+package com.email.api
 
 import org.json.JSONArray
 import org.json.JSONObject

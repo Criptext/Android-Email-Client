@@ -283,4 +283,17 @@ class SignUpFormHolder(val view: View) {
         fullNameInput.setHintTextAppearance(
                 R.style.NormalTextAppearenceUsernameInput)
     }
+
+    fun fillSceneWidgets(
+            username: String,
+            fullName: String,
+            password: String,
+            recoveryEmail: String) {
+        this.username.setText(username, TextView.BufferType.EDITABLE)
+        this.fullName.setText(fullName, TextView.BufferType.EDITABLE)
+        this.password.setText(password, TextView.BufferType.EDITABLE)
+        this.confirmPassword.setText(password, TextView.BufferType.EDITABLE)
+        this.recoveryEmail.setText(recoveryEmail, TextView.BufferType.EDITABLE)
+        this.checkboxTerms.isChecked = true
+    }
 }

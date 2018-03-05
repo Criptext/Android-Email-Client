@@ -50,8 +50,11 @@ class SignUpSceneController(
 
     private val signUpListener : SignUpListener = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
+            if(model.errors["username"] == true) {
+                model.errors["username"] = false
+                scene.hideUsernameErrors()
+            }
             model.username = text
-
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
             } else {
@@ -139,6 +142,7 @@ class SignUpSceneController(
                             onRecoveryEmailWarningListener
                     )
                 } else {
+                    scene.launchKeyGenerationScene()
                     val user = User(
                             name = model.fullName,
                             email = "",
@@ -171,22 +175,26 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
                 scene.showSuccess() // remove all this
-                launchKeyGenerationScene()
             }
             is SignUpResult.RegisterUser.Failure -> {
+                       scene.showError(result.message)
+                       resetWidgetsFromModel()
                        if(result.exception is ServerErrorException &&
                                result.exception.errorCode == 400) {
                            scene.toggleUsernameError(userAvailable = false)
                            model.errors["username"] = true
                            scene.disableCreateAccountButton()
                        }
-                scene.showError(result.message)
             }
         }
     }
-
-    private fun launchKeyGenerationScene() {
-        scene.launchKeyGenerationScene()
+    private fun resetWidgetsFromModel() {
+        scene.resetSceneWidgetsFromModel(
+                username = model.username,
+                recoveryEmail = model.recoveryEmail,
+                password = model.password,
+                fullName = model.fullName
+        )
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {

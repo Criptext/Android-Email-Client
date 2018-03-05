@@ -11,6 +11,9 @@ import com.email.utils.UIMessage
  */
 
 class MockedSignUpView: SignUpScene {
+    override fun resetSceneWidgetsFromModel(username: String, fullName: String, password: String, recoveryEmail: String) {
+    }
+
     override fun showFormScene() {
     }
 
