@@ -17,7 +17,7 @@ import com.email.db.models.signal.RawSession
  */
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
-                     , File::class, Open::class, FeedItem::class, (RawSession::class)],
+                     , File::class, Open::class, FeedItem::class, RawSession::class],
         version = 1,
         exportSchema = false)
 @TypeConverters(DateConverter::class, BooleanConverter::class)
