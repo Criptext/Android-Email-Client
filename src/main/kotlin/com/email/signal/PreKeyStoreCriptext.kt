@@ -25,7 +25,7 @@ class PreKeyStoreCriptext(private val rawPreKeyDao: RawPreKeyDao): PreKeyStore {
         rawPreKeyDao.deleteById(preKeyId)
     }
 
-    override fun loadPreKey(preKeyId: Int): PreKeyRecord?  {
+    override fun loadPreKey(preKeyId: Int): PreKeyRecord  {
         val rawPreKey = rawPreKeyDao.find(preKeyId)
         if (rawPreKey != null) {
             val serializedPreKey = Encoding.stringToByteArray(rawPreKey.preKey)
