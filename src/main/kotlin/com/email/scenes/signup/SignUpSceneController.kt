@@ -154,7 +154,8 @@ class SignUpSceneController(
                     val req = SignUpRequest.RegisterUser(
                             user = user,
                             password = model.password,
-                            recoveryEmail = model.recoveryEmail
+                            recoveryEmail = model.recoveryEmail,
+                            keyBundle =
                     )
                     dataSource.submitRequest(req)
                 }

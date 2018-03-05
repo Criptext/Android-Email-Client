@@ -1,5 +1,6 @@
 package com.email.scenes.signup.data
 
+import com.email.api.PreKeyBundleShareData
 import com.email.db.models.User
 
 /**
@@ -9,6 +10,7 @@ import com.email.db.models.User
 sealed class SignUpRequest{
     class RegisterUser(val user: User,
                         val password: String,
-                       val recoveryEmail: String?
+                       val recoveryEmail: String?,
+                       val keyBundle: PreKeyBundleShareData.UploadBundle
                        ): SignUpRequest()
 }

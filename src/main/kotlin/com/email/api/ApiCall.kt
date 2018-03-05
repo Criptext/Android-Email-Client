@@ -16,15 +16,17 @@ class ApiCall {
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun createUser(
-                username: String,
+                recipientId: String,
                 name: String,
                 password: String,
-                recoveryEmail: String?
+                recoveryEmail: String?,
+                keyBundle: PreKeyBundleShareData.UploadBundle
         ): Request {
             val jsonObject = JSONObject()
-            jsonObject.put("username", username)
+            jsonObject.put("recipientId", recipientId)
             jsonObject.put("name", name)
             jsonObject.put("password", password)
+            jsonObject.put("keybundle", keyBundle)
             if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
             val body = RequestBody.create(JSON, jsonObject.toString())
             return Request.

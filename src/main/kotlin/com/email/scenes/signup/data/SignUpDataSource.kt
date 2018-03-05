@@ -26,6 +26,7 @@ class SignUpDataSource(override val runner: WorkRunner,
                     user = params.user,
                     password = params.password,
                     recoveryEmail = params.recoveryEmail,
+                    keyBundle = params.keyBundle,
                     publishFn = { result ->
                 flushResults(result)
             })

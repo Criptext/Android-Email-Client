@@ -15,12 +15,15 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
 
     fun registerUser(user: User,
                      password: String,
-                     recoveryEmail: String?):
+                     recoveryEmail: String?,
+                     keyBundle: PreKeyBundleShareData.UploadBundle
+                     ):
             Result<String, Exception>{
         val operationResult = registerUserOperation(
                 user = user,
                 password = password,
-                recoveryEmail = recoveryEmail)
+                recoveryEmail = recoveryEmail,
+                keyBundle = keyBundle)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return operationResult
     }
@@ -28,13 +31,15 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
     private fun registerUserOperation(
             user: User,
             password: String,
-            recoveryEmail: String?):
+            recoveryEmail: String?,
+            keyBundle: PreKeyBundleShareData.UploadBundle):
             Result<String, Exception> {
         return Result.of {
             val message = signUpAPIClient.createUser(
                     user = user,
                     password = password,
-                    recoveryEmail = recoveryEmail)
+                    recoveryEmail = recoveryEmail,
+                    keybundle = keyBundle)
             message
         }
     }

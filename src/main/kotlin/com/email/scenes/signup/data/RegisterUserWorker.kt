@@ -3,6 +3,7 @@ package com.email.scenes.signup.data
 import android.accounts.NetworkErrorException
 import android.support.v4.content.res.ResourcesCompat
 import com.email.R
+import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.api.SignUpAPILoader
 import com.email.bgworker.BackgroundWorker
@@ -22,6 +23,7 @@ class RegisterUserWorker(
         private val user: User,
         private val password: String,
         private val recoveryEmail: String?,
+        private val keyBundle: PreKeyBundleShareData.UploadBundle,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
@@ -41,8 +43,9 @@ class RegisterUserWorker(
         val operationResult =  loader.registerUser(
                 user = user,
                 password = password,
-                recoveryEmail = recoveryEmail
-        )
+                recoveryEmail = recoveryEmail,
+                keyBundle = keyBundle)
+
         return when(operationResult) {
             is Result.Success -> {
                 SignUpResult.RegisterUser.Success()
