@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
+import com.email.scenes.params.MailboxParams
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpRequest
@@ -175,6 +176,7 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
                 scene.showSuccess() // remove all this
+                host.goToScene(MailboxParams())
             }
             is SignUpResult.RegisterUser.Failure -> {
                        scene.showError(result.message)

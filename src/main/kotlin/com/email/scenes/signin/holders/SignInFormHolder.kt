@@ -20,6 +20,7 @@ import com.email.scenes.signin.SignInSceneController
  */
 
 class SignInFormHolder(val view: View) {
+
     private val usernameInput : AppCompatEditText
     private val usernameInputLayout : TextInputLayout
     private val signInButton : Button
@@ -27,7 +28,7 @@ class SignInFormHolder(val view: View) {
     private val progressBar: ProgressBar
     private val imageError: ImageView
 
-   lateinit var signInListener: SignInSceneController.SignInListener
+   var signInListener: SignInSceneController.SignInListener? = null
 
     private val shouldButtonBeEnabled : Boolean
         get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
@@ -67,20 +68,20 @@ class SignInFormHolder(val view: View) {
     fun assignLoginButtonListener() {
         signInButton.setOnClickListener {
             // start progress dialog... change UI
-            signInListener.onLoginClick()
+            signInListener!!.onLoginClick()
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun assignSignUpTextViewListener() {
         signUpTextView.setOnClickListener{
-            signInListener.goToSignUp()
+            signInListener!!.goToSignUp()
         }
     }
 
     fun assignUsernameInputListener(){
         usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
-            signInListener.toggleUsernameFocusState(isFocused)
+            signInListener!!.toggleUsernameFocusState(isFocused)
         }
 
 
@@ -91,7 +92,7 @@ class SignInFormHolder(val view: View) {
             }
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signInListener.onUsernameTextChanged(text.toString())
+                signInListener!!.onUsernameTextChanged(text.toString())
             }
 
         })
@@ -127,6 +128,5 @@ class SignInFormHolder(val view: View) {
             progressBar.visibility = View.GONE
         }
     }
-
 
 }

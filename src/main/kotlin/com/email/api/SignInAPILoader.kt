@@ -14,8 +14,8 @@ class SignInAPILoader(private val localDB: SignInLocalDB,
                       private val signInAPIClient: SignInAPIClient) {
 
     fun authenticateUser(user: User,
-                     password: String,
-                     deviceId: Int):
+                         password: String,
+                         deviceId: Int):
             Result<String, Exception> {
         val operationResult = registerUserOperation(
                 user = user,
@@ -30,9 +30,12 @@ class SignInAPILoader(private val localDB: SignInLocalDB,
             password: String,
             deviceId: Int):
             Result<String, Exception> {
-        return signInAPIClient.authenticateUser(
-                user = user,
-                password = password,
-                deviceId = deviceId)
+        return Result.of {
+            val message = signInAPIClient.authenticateUser(
+                    user = user,
+                    password = password,
+                    deviceId = deviceId)
+            message
+        }
     }
 }

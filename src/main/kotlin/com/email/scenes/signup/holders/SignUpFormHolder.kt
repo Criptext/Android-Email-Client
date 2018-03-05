@@ -258,7 +258,7 @@ class SignUpFormHolder(val view: View) {
     }
 
     @SuppressLint("RestrictedApi")
-    fun setBackgroundTintLists() {
+    private fun setBackgroundTintLists() {
         username.supportBackgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(view.context, R.color.signup_hint_color))
         fullName.supportBackgroundTintList = ColorStateList.valueOf(

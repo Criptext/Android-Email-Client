@@ -1,9 +1,7 @@
 package com.email.scenes.signup.data
 
 import com.email.api.ApiCall
-import com.email.api.DuplicateUsernameException
 import com.email.api.ServerErrorException
-import com.email.api.UnprocessableEntityException
 import com.email.db.models.User
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit

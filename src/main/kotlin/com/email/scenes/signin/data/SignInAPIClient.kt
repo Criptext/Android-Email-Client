@@ -1,9 +1,8 @@
 package com.email.scenes.signin.data
 
 import com.email.api.ApiCall
-import com.email.api.UnprocessableEntityException
+import com.email.api.ServerErrorException
 import com.email.db.models.User
-import com.github.kittinunf.result.Result
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -17,17 +16,20 @@ interface SignInAPIClient {
             user: User,
             password: String,
             deviceId: Int)
-            : Result<String, Exception>
+            : String
 
     class Default : SignInAPIClient {
-        private val client = OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build()
+        private val client = OkHttpClient().
+                newBuilder().
+                connectTimeout(5, TimeUnit.SECONDS).
+                readTimeout(5, TimeUnit.SECONDS).
+                build()
 
         override fun authenticateUser(
                 user: User,
                 password: String,
-                deviceId: Int): Result<String, Exception> {
+                deviceId: Int): String {
 
-            return Result.of {
                 val request = ApiCall.authenticateUser(
                         username = user.nickname,
                         password = password,
@@ -35,13 +37,12 @@ interface SignInAPIClient {
                 )
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    response.message()
+                    return response.message()
                 } else if (response.code() == 422) {
-                    throw UnprocessableEntityException(response.code())
+                    throw ServerErrorException(response.code())
                 } else {
                     TODO("thow other exception...")
                 }
-            }
         }
     }
 

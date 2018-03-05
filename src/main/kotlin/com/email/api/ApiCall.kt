@@ -9,10 +9,10 @@ import org.json.JSONObject
  * Created by sebas on 2/26/18.
  */
 
-    class ApiCall {
+class ApiCall {
 
     companion object {
-        var baseUrl = "http://192.168.100.34:8000"
+        var baseUrl = "http://172.30.1.151:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun createUser(
@@ -44,7 +44,26 @@ import org.json.JSONObject
             jsonObject.put("password", password)
             jsonObject.put("deviceId", deviceId)
             val body = RequestBody.create(JSON, jsonObject.toString())
-            return Request.Builder().url("$baseUrl/user/auth").post(body).build()
+            return Request.Builder().
+                    url("$baseUrl/user/auth").
+                    post(body).
+                    build()
+        }
+
+        private fun postJSON(url: String, json: JSONObject): Request {
+            val body = RequestBody.create(JSON, json.toString())
+            val request = Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build()
+
+            return request
+        }
+
+        fun postKeyBundle(completeBundle: PreKeyBundleShareData.UploadBundle):
+                Request {
+            val json = completeBundle.toJSON()
+            return postJSON("${baseUrl}/keybundle", json)
         }
     }
 }

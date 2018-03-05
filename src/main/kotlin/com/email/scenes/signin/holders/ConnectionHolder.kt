@@ -10,7 +10,6 @@ import android.view.animation.Animation
 import android.widget.TextView
 import com.email.R
 import com.email.scenes.signin.SignInSceneController
-import kotlin.math.sign
 
 /**
  * Created by sebas on 3/2/18.
@@ -21,8 +20,8 @@ class ConnectionHolder(val view: View) {
     private val loadingView: View
     private val textViewStatus: TextView
     private val textViewEmail: TextView
-    private lateinit var animLoading: AnimatorSet
-    lateinit var signInListener: SignInSceneController.SignInListener
+    private var animLoading: AnimatorSet? = null
+    var signInListener: SignInSceneController.SignInListener? = null
 
     fun startLoadingAnimation() {
         loadingView.post {
@@ -33,7 +32,7 @@ class ConnectionHolder(val view: View) {
                     view.findViewById(R.id.viewCircle7), view.findViewById(R.id.viewCircle8),
                     view.findViewById(R.id.viewCircle9), view.findViewById(R.id.viewCircle10),
                     view.findViewById(R.id.viewCircle11), view.findViewById(R.id.viewCircle12))
-            animLoading.start()
+            animLoading!!.start()
         }
     }
 
@@ -94,7 +93,7 @@ class ConnectionHolder(val view: View) {
 
     fun startSucceedAnimation(showForm: (
                 signInListener: SignInSceneController.SignInListener) -> Unit) {
-        animLoading.cancel()
+        animLoading!!.cancel()
         loadingView.post {
             val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
                     view.findViewById(R.id.viewCircle2),
@@ -114,7 +113,7 @@ class ConnectionHolder(val view: View) {
                 }
 
                 override fun onAnimationEnd(p0: Animator?) {
-                    showForm(signInListener)
+                    showForm(signInListener!!)
                 }
 
                 override fun onAnimationCancel(p0: Animator?) {
@@ -207,7 +206,7 @@ class ConnectionHolder(val view: View) {
     }
 
     fun stopAnimationLoading() {
-        animLoading.cancel()
+        animLoading!!.cancel()
     }
     init {
         loadingView = view.findViewById(R.id.viewAnimation)
