@@ -1,6 +1,6 @@
 package com.email.scenes.composer.data
 
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 
 /**
  * Created by gabriel on 2/26/18.

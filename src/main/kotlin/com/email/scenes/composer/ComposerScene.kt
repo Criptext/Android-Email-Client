@@ -3,7 +3,7 @@ package com.email.scenes.composer
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import com.email.R
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.ContactCompletionView
@@ -19,7 +19,7 @@ import com.tokenautocomplete.TokenCompleteTextView
 
 interface ComposerScene {
     var observer: ComposerUIObserver?
-    fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,  uiData: UIData)
+    fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: UIData)
     fun getDataInputByUser(): UIData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
@@ -60,7 +60,7 @@ interface ComposerScene {
         }
         override var observer: ComposerUIObserver? = null
 
-        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,  uiData: UIData) {
+        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: UIData) {
             setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
                     toContacts = uiData.to, ccContacts = uiData.cc, bccContacts = uiData.bcc)
 
