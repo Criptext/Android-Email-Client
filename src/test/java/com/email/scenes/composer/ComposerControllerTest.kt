@@ -1,6 +1,6 @@
 package com.email.scenes.composer
 
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import com.email.R
 import com.email.mocks.MockedHostActivity
 import com.email.mocks.MockedWorkRunner
@@ -107,7 +107,7 @@ class ComposerControllerTest {
 
         // simulate user input wrong address
         scene.displayedData = UIData(
-                to = listOf(Contact(email="bob@domain.com", name="gabriel")),
+                to = listOf(Contact(email = "bob@domain.com", name = "gabriel")),
                 cc = emptyList(), bcc = emptyList(),
                 subject = "", body = "")
         scene.observer!!.onRecipientListChanged()

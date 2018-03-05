@@ -1,6 +1,6 @@
 package com.email.scenes.composer.mocks
 
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import com.email.scenes.composer.ComposerScene
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.UIData

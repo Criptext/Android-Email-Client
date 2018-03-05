@@ -1,6 +1,6 @@
 package com.email.scenes.composer
 
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import java.util.*
 
 /**

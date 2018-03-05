@@ -1,6 +1,6 @@
 package com.email.scenes.composer
 
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.SceneController

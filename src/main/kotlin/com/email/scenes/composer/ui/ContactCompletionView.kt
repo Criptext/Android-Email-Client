@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.email.DB.models.Contact
+import com.email.db.models.Contact
 import com.email.R
 import com.tokenautocomplete.TokenCompleteTextView
 
