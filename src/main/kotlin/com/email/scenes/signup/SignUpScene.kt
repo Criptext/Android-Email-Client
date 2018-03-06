@@ -18,21 +18,18 @@ import com.email.utils.getLocalizedUIMessage
 interface SignUpScene {
     fun isPasswordErrorShown() : Boolean
     fun isUsernameErrorShown() : Boolean
-    fun toggleUsernameError(userAvailable : Boolean)
+    fun isUserAvailable(userAvailable : Boolean)
     fun enableCreateAccountButton()
     fun disableCreateAccountButton()
-    fun hidePasswordErrors()
-    fun showPasswordSucess()
-    fun hidePasswordSucess()
-    fun showPasswordErrors()
-    fun hideUsernameErrors()
-    fun showUsernameErrors()
+    fun togglePasswordSuccess(show: Boolean)
+    fun togglePasswordErrors(show: Boolean)
+    fun toggleUsernameErrors(show: Boolean)
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
     fun showError(message : UIMessage)
     fun showSuccess()
-    fun launchKeyGenerationScene()
-    fun showFormScene()
+    fun showKeyGenerationHolder()
+    fun showFormHolder()
     fun resetSceneWidgetsFromModel(
             username: String,
             fullName: String,
@@ -52,6 +49,13 @@ interface SignUpScene {
         private var keyGenerationLayout : View? = null
 
         override var signUpListener : SignUpSceneController.SignUpListener? = null
+            set(value) {
+                if(value == null) {
+                    signUpFormHolder?.signUpListener = null
+                }
+                field = value
+            }
+
 
         override fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
             signUpFormHolder?.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
@@ -65,32 +69,28 @@ interface SignUpScene {
             signUpFormHolder?.hideUsernameSucess()
         }
 
-        override fun showPasswordSucess() {
-            signUpFormHolder?.showPasswordSucess()
+        override fun togglePasswordSuccess(show: Boolean) {
+            if(show) {
+                signUpFormHolder?.showPasswordSucess()
+            } else {
+                signUpFormHolder?.hidePasswordSucess()
+            }
         }
 
-        override fun hidePasswordSucess() {
-            signUpFormHolder?.hidePasswordSucess()
+        override fun toggleUsernameErrors(show: Boolean) {
+            if(show) {
+                signUpFormHolder?.showUsernameErrors()
+            } else {
+                signUpFormHolder?.hideUsernameErrors()
+            }
         }
 
-        @SuppressLint("RestrictedApi")
-        override fun hideUsernameErrors() {
-            signUpFormHolder?.hideUsernameErrors()
-        }
-
-        @SuppressLint("RestrictedApi")
-        override fun hidePasswordErrors() {
-            signUpFormHolder?.hidePasswordErrors()
-        }
-
-        @SuppressLint("RestrictedApi")
-        override fun showPasswordErrors() {
-            signUpFormHolder?.showPasswordErrors()
-        }
-
-        @SuppressLint("RestrictedApi")
-        override fun showUsernameErrors() {
-            signUpFormHolder?.showUsernameErrors()
+        override fun togglePasswordErrors(show: Boolean) {
+            if(show) {
+                signUpFormHolder?.showPasswordErrors()
+            } else {
+                signUpFormHolder?.hidePasswordErrors()
+            }
         }
 
         override fun disableCreateAccountButton() {
@@ -142,19 +142,19 @@ interface SignUpScene {
             signUpFormHolder?.assignBackButtonListener()
         }
 
-        override fun toggleUsernameError(userAvailable: Boolean){
+        override fun isUserAvailable(userAvailable: Boolean){
             if(userAvailable) {
                 showUsernameSucess()
-                hideUsernameErrors()
+                toggleUsernameErrors(show = false)
             } else {
                 hideUsernameSucess()
-                showUsernameErrors()
+                toggleUsernameErrors(show = true)
             }
         }
         init {
         }
 
-        override fun showFormScene() {
+        override fun showFormHolder() {
             removeAllViews()
             formLayout = View.inflate(
                     view.context,
@@ -191,11 +191,11 @@ interface SignUpScene {
                     duration)
             toast.show()
             keyGenerationHolder?.stopTimer()
-            showFormScene()
+            showFormHolder()
             initListeners(signUpListener!!)
         }
 
-        override fun launchKeyGenerationScene() {
+        override fun showKeyGenerationHolder() {
             removeAllViews()
             keyGenerationLayout = View.inflate(
                     view.context,

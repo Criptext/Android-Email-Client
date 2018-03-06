@@ -44,7 +44,7 @@ class SignUpFormHolder(val view: View) {
     private val imageBack: ImageView
     private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
 
-    lateinit var signUpListener : SignUpSceneController.SignUpListener
+    var signUpListener : SignUpSceneController.SignUpListener? = null
 
     init {
         username = view.findViewById(R.id.username)
@@ -159,7 +159,7 @@ class SignUpFormHolder(val view: View) {
     fun assignPasswordTextListener() {
         password.addTextChangedListener( object : TextWatcher {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signUpListener.onPasswordChangedListener(text.toString())
+                signUpListener?.onPasswordChangedListener(text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -172,7 +172,7 @@ class SignUpFormHolder(val view: View) {
     fun assignConfirmPasswordTextChangeListener() {
         confirmPassword.addTextChangedListener( object : TextWatcher {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signUpListener.onConfirmPasswordChangedListener(text.toString())
+                signUpListener?.onConfirmPasswordChangedListener(text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -186,7 +186,7 @@ class SignUpFormHolder(val view: View) {
         checkboxTerms.setOnCheckedChangeListener(object :
                 CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(p0: CompoundButton?, state: Boolean) {
-                signUpListener.onCheckedOptionChanged(state)
+                signUpListener?.onCheckedOptionChanged(state)
             }
         })
     }
@@ -195,7 +195,7 @@ class SignUpFormHolder(val view: View) {
         username.addTextChangedListener( object : TextWatcher {
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signUpListener.onUsernameChangedListener(text.toString())
+                signUpListener?.onUsernameChangedListener(text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -215,7 +215,7 @@ class SignUpFormHolder(val view: View) {
             }
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signUpListener.onFullNameTextChangeListener(text.toString())
+                signUpListener?.onFullNameTextChangeListener(text.toString())
             }
         })
     }
@@ -230,7 +230,7 @@ class SignUpFormHolder(val view: View) {
             }
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signUpListener.onRecoveryEmailTextChangeListener(text.toString())
+                signUpListener?.onRecoveryEmailTextChangeListener(text.toString())
             }
         })
     }
@@ -238,21 +238,21 @@ class SignUpFormHolder(val view: View) {
     fun assignTermsAndConditionsClickListener() {
         txtTermsAndConditions.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                signUpListener.onTermsAndConditionsClick()
+                signUpListener?.onTermsAndConditionsClick()
             }
         })
     }
 
     fun assignBackButtonListener() {
         imageBack.setOnClickListener {
-            signUpListener.onBackPressed()
+            signUpListener?.onBackPressed()
         }
     }
 
     fun assignCreateAccountClickListener() {
         createAccount.setOnClickListener(object : View.OnClickListener{
             override fun onClick(p0: View?) {
-                signUpListener.onCreateAccountClick()
+                signUpListener?.onCreateAccountClick()
             }
         })
     }

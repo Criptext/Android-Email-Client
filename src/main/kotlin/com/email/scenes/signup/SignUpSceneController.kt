@@ -53,7 +53,7 @@ class SignUpSceneController(
         override fun onUsernameChangedListener(text: String) {
             if(model.errors["username"] == true) {
                 model.errors["username"] = false
-                scene.hideUsernameErrors()
+                scene.toggleUsernameErrors(show = false)
             }
             model.username = text
             if(shouldCreateButtonBeEnabled()) {
@@ -93,21 +93,21 @@ class SignUpSceneController(
         override fun onConfirmPasswordChangedListener(text: String) {
             model.confirmPassword = text
             if (arePasswordsMatching && model.confirmPassword.length > 0) {
-                scene.hidePasswordErrors()
-                scene.showPasswordSucess()
+                scene.togglePasswordErrors(show = false)
+                scene.togglePasswordSuccess(show = true)
                 model.errors["password"] = false
                 if (shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
             } else if (arePasswordsMatching &&
-                    model.confirmPassword.length == 0) {
-                scene.hidePasswordSucess()
-                scene.hidePasswordErrors()
+                    model.confirmPassword.isEmpty()) {
+                scene.togglePasswordSuccess(show = false)
+                scene.togglePasswordErrors(show = false)
                 model.errors["password"] = false
                 scene.disableCreateAccountButton()
             } else {
-                scene.showPasswordErrors()
-                scene.hidePasswordSucess()
+                scene.togglePasswordErrors(show = true)
+                scene.togglePasswordSuccess(show = false)
                 model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
@@ -116,21 +116,21 @@ class SignUpSceneController(
         override fun onPasswordChangedListener(text: String) {
             model.password = text
             if(arePasswordsMatching && model.password.length > 0) {
-                scene.hidePasswordErrors()
-                scene.showPasswordSucess()
+                scene.togglePasswordErrors(show = false)
+                scene.togglePasswordSuccess(show = true)
                 model.errors["password"] = false
                 if(shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
             } else if(arePasswordsMatching && model.password.length == 0){
-                scene.hidePasswordSucess()
-                scene.hidePasswordErrors()
+                scene.togglePasswordSuccess(show = false)
+                scene.togglePasswordErrors(show = false)
                 model.errors["password"] = false
                 scene.disableCreateAccountButton()
             }
             else {
-                scene.showPasswordErrors()
-                scene.hidePasswordSucess()
+                scene.togglePasswordErrors(show = true)
+                scene.togglePasswordSuccess(show = false)
                 model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
@@ -143,7 +143,7 @@ class SignUpSceneController(
                             onRecoveryEmailWarningListener
                     )
                 } else {
-                    scene.launchKeyGenerationScene()
+                    scene.showKeyGenerationHolder()
                     val user = User(
                             name = model.fullName,
                             email = "",
@@ -183,7 +183,7 @@ class SignUpSceneController(
                        resetWidgetsFromModel()
                        if(result.exception is ServerErrorException &&
                                result.exception.errorCode == 400) {
-                           scene.toggleUsernameError(userAvailable = false)
+                           scene.isUserAvailable(userAvailable = false)
                            model.errors["username"] = true
                            scene.disableCreateAccountButton()
                        }
@@ -224,7 +224,7 @@ class SignUpSceneController(
 
     override fun onStart() {
         dataSource.listener = dataSourceListener
-        scene.showFormScene()
+        scene.showFormHolder()
         scene.initListeners(
                 signUpListener = signUpListener
         )
