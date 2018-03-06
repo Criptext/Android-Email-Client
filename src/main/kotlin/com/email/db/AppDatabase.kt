@@ -11,10 +11,12 @@ import com.email.db.TypeConverters.DateConverter
 import com.email.db.dao.RawIdentityKeyDao
 import com.email.db.dao.RawPreKeyDao
 import com.email.db.dao.RawSessionDao
+import com.email.db.dao.RawSignedPreKeyDao
 import com.email.db.models.*
 import com.email.db.models.signal.RawIdentityKey
 import com.email.db.models.signal.RawPreKey
 import com.email.db.models.signal.RawSession
+import com.email.db.models.signal.RawSignedPreKey
 
 /**
  * Created by sebas on 1/24/18.
@@ -22,7 +24,7 @@ import com.email.db.models.signal.RawSession
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
                      , File::class, Open::class, FeedItem::class, RawPreKey::class
-                     , RawSession::class, RawIdentityKey::class],
+                     , RawSession::class, RawIdentityKey::class, RawSignedPreKey::class],
         version = 1,
         exportSchema = false)
 @TypeConverters(DateConverter::class, BooleanConverter::class)
@@ -38,6 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rawSessionDao(): RawSessionDao
     abstract fun rawPreKeyDao(): RawPreKeyDao
     abstract fun rawIdentityKeyDao(): RawIdentityKeyDao
+    abstract fun rawSignedPreKeyDao(): RawSignedPreKeyDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
