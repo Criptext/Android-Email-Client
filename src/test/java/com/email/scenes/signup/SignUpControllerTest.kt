@@ -1,6 +1,7 @@
 package com.email.scenes.signup
 
 import com.email.api.ApiCall
+import com.email.mocks.MockedSignalKeyGenerator
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signin.SignUpSceneController
@@ -45,7 +46,8 @@ class SignUpControllerTest {
         dataSource = SignUpDataSource(
                 runner = runner,
                 signUpAPIClient = signUpAPIClient,
-                signUpLocalDB = db
+                signUpLocalDB = db,
+                signalKeyGenerator = MockedSignalKeyGenerator()
         )
         controller = SignUpSceneController(
                 model =  model,

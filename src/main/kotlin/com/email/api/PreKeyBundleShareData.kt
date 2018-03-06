@@ -6,7 +6,6 @@ import org.json.JSONObject
 import org.whispersystems.libsignal.state.PreKeyRecord
 import org.whispersystems.libsignal.util.KeyHelper
 import java.util.*
-import kotlin.math.sign
 
 /**
  * Created by gabriel on 11/10/17.
