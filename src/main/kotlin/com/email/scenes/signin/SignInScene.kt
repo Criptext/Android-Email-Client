@@ -99,13 +99,7 @@ interface SignInScene {
             assignLoginButtonListener()
             assignSignUpTextViewListener()
             assignUsernameInputListener()
-
-            if(signInFormHolder != null) {
-                signInFormHolder!!.signInListener = signInListener
-            } else if(connectionHolder != null) {
-                connectionHolder!!.signInListener = signInListener
-            }
-        }
+          }
 
 
         override fun showConnectionHolder() {
@@ -122,8 +116,7 @@ interface SignInScene {
 
         private fun removeAllViews() {
             viewGroup.removeAllViews()
-            signInFormHolder = null
-            connectionHolder = null
+            signInListener = null
         }
 
         override fun showFormHolder() {
