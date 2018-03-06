@@ -1,7 +1,6 @@
 package com.email.signal
 
 import com.email.db.dao.RawSessionDao
-import com.email.db.models.SessionDB
 import com.email.db.models.signal.RawSession
 import org.whispersystems.libsignal.SignalProtocolAddress
 import org.whispersystems.libsignal.state.SessionRecord

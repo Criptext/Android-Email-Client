@@ -10,6 +10,7 @@ import com.email.db.TypeConverters.BooleanConverter
 import com.email.db.TypeConverters.DateConverter
 import com.email.db.dao.RawSessionDao
 import com.email.db.models.*
+import com.email.db.models.signal.RawPreKey
 import com.email.db.models.signal.RawSession
 
 /**
@@ -17,7 +18,8 @@ import com.email.db.models.signal.RawSession
  */
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
-                     , File::class, Open::class, FeedItem::class, (RawSession::class)],
+                     , File::class, Open::class, FeedItem::class, RawPreKey::class
+                     , RawSession::class],
         version = 1,
         exportSchema = false)
 @TypeConverters(DateConverter::class, BooleanConverter::class)
