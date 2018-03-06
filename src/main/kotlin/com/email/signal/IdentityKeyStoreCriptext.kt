@@ -24,7 +24,7 @@ class IdentityKeyStoreCriptext(private val userDao: UserDao,
     override fun saveIdentity(address: SignalProtocolAddress, identityKey: IdentityKey) {
         val identityKeySerialized = Encoding.byteArrayToString(identityKey.serialize())
         val newIdentityKey = RawIdentityKey(recipientId = address.name, deviceId = address.deviceId,
-                identityKey = identityKeySerialized)
+                byteString = identityKeySerialized)
         rawIdentityKeyDao.insert(newIdentityKey)
     }
 
@@ -37,7 +37,7 @@ class IdentityKeyStoreCriptext(private val userDao: UserDao,
     override fun isTrustedIdentity(address: SignalProtocolAddress, identityKey: IdentityKey): Boolean {
         val foundRawIdentity = rawIdentityKeyDao.find(recipientId = address.name, deviceId =
                                address.deviceId) ?: return true
-        val identityKeyBytes = Encoding.stringToByteArray(foundRawIdentity.identityKey)
+        val identityKeyBytes = Encoding.stringToByteArray(foundRawIdentity.byteString)
         val existingIdentity = IdentityKey(identityKeyBytes, 0)
         return identityKey == existingIdentity
     }

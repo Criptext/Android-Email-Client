@@ -14,6 +14,6 @@ class RawIdentityKey(
         @ColumnInfo(name = "deviceId")
         var deviceId : Int,
 
-        @ColumnInfo(name = "identityKey")
-        var identityKey: String
+        @ColumnInfo(name = "byteString")
+        var byteString: String
 )

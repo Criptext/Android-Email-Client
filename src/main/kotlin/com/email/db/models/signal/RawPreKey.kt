@@ -12,6 +12,6 @@ import android.arch.persistence.room.PrimaryKey
 class RawPreKey(
         @PrimaryKey(autoGenerate = true)
         var id: Int,
-        @ColumnInfo(name = "preKey")
-        var preKey: String
+        @ColumnInfo(name = "byteString")
+        var byteString: String
 )

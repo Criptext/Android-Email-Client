@@ -17,7 +17,7 @@ class PreKeyStoreCriptext(private val rawPreKeyDao: RawPreKeyDao): PreKeyStore {
 
     override fun storePreKey(preKeyId: Int, record: PreKeyRecord) {
         val preKeyString = Encoding.byteArrayToString(record.serialize())
-        val newPreKey = RawPreKey(id = preKeyId, preKey = preKeyString)
+        val newPreKey = RawPreKey(id = preKeyId, byteString = preKeyString)
         rawPreKeyDao.insert(newPreKey)
     }
 
@@ -28,7 +28,7 @@ class PreKeyStoreCriptext(private val rawPreKeyDao: RawPreKeyDao): PreKeyStore {
     override fun loadPreKey(preKeyId: Int): PreKeyRecord  {
         val rawPreKey = rawPreKeyDao.find(preKeyId)
         if (rawPreKey != null) {
-            val serializedPreKey = Encoding.stringToByteArray(rawPreKey.preKey)
+            val serializedPreKey = Encoding.stringToByteArray(rawPreKey.byteString)
             return PreKeyRecord(serializedPreKey)
         }
         throw InvalidKeyIdException("Not found id = $preKeyId")

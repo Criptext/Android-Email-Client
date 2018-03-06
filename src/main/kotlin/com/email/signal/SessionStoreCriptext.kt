@@ -16,7 +16,7 @@ class SessionStoreCriptext(private val db: RawSessionDao): SessionStore {
         db.find(recipientId = address.name, deviceId = address.deviceId)
 
     private fun createSignalSessionRecord(rawSession: RawSession): SessionRecord {
-        val bytes = Encoding.stringToByteArray(rawSession.sessionRecord)
+        val bytes = Encoding.stringToByteArray(rawSession.byteString)
         return SessionRecord(bytes)
     }
 
@@ -46,7 +46,7 @@ class SessionStoreCriptext(private val db: RawSessionDao): SessionStore {
     override fun storeSession(address: SignalProtocolAddress, record: SessionRecord) {
         val sessionRecord = Encoding.byteArrayToString(record.serialize())
         val newRawSession = RawSession(recipientId = address.name, deviceId = address.deviceId,
-                sessionRecord = sessionRecord)
+                byteString = sessionRecord)
         db.insert(newRawSession)
     }
 
