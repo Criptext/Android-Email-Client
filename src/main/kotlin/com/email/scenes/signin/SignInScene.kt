@@ -28,6 +28,8 @@ interface SignInScene {
     fun startAnimation()
     fun initFormUI()
 
+    var signInListener: SignInSceneController.SignInListener?
+
     class SignInSceneView(val view: View): SignInScene {
         override fun startAnimation() {
             startLoadingAnimation()
@@ -42,8 +44,7 @@ interface SignInScene {
         private var signInFormHolder: SignInFormHolder? = null
         private var connectionHolder: ConnectionHolder? = null
 
-
-        private var signInListener: SignInSceneController.SignInListener? = null
+        override var signInListener: SignInSceneController.SignInListener? = null
             set(value) {
                 signInFormHolder?.signInListener = value
                 connectionHolder?.signInListener = value
@@ -109,14 +110,13 @@ interface SignInScene {
                     R.layout.activity_connection, viewGroup)
 
             connectionHolder = ConnectionHolder(connectionLayout)
-            if(connectionHolder != null) {
-                connectionHolder!!.signInListener = signInListener
-            }
+            connectionHolder?.signInListener = signInListener
         }
 
         private fun removeAllViews() {
             viewGroup.removeAllViews()
-            signInListener = null
+            connectionHolder?.signInListener = null
+            signInFormHolder?.signInListener = null
         }
 
         override fun showFormHolder() {

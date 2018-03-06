@@ -217,6 +217,7 @@ interface SignUpScene {
         }
 
         private fun removeAllViews() {
+            signUpFormHolder?.signUpListener = null
             viewGroup.removeAllViews()
         }
 
@@ -232,5 +233,4 @@ interface SignUpScene {
                     recoveryEmail = recoveryEmail)
         }
     }
-
 }

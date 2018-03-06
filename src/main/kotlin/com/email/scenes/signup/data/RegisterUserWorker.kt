@@ -52,14 +52,25 @@ class RegisterUserWorker(
 
         return when(operationResult) {
             is Result.Success -> {
-                db.storePrekeys(keybundle.serializedPreKeys)
-                db.storeRawSignedPrekey(RawSignedPreKey(
-                        keybundle.shareData.signedPreKeyId,
-                        keybundle.shareData.signedPrekey))
-                user.registrationId = keybundle.shareData.registrationId
-                user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
-                db.saveUser(user)
-                SignUpResult.RegisterUser.Success()
+                val operation : Result<Unit, Exception> = Result.of {
+                    db.storePrekeys(keybundle.serializedPreKeys)
+                    db.storeRawSignedPrekey(RawSignedPreKey(
+                            keybundle.shareData.signedPreKeyId,
+                            keybundle.shareData.signedPrekey))
+                    user.registrationId = keybundle.shareData.registrationId
+                    user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+                    db.saveUser(user)
+                }
+                when(operation) {
+                    is Result.Success -> {
+                        SignUpResult.RegisterUser.Success()
+                    }
+                    is Result.Failure -> {
+                        SignUpResult.RegisterUser.Failure(
+                                message = createErrorMessage(operation.error),
+                                exception = operation.error)
+                    }
+                }
             }
             is Result.Failure -> {
                 SignUpResult.RegisterUser.Failure(

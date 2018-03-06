@@ -60,6 +60,7 @@ class SignInSceneController(
     }
 
     override fun onStop() {
+        scene.signInListener = null
     }
 
     override fun onBackPressed(): Boolean {
