@@ -26,16 +26,18 @@ class UserSeeder {
         fun fillUser(iteration: Int): User {
             lateinit var user: User
             when (iteration) {
-                1 -> user = User( id = 1,
-                        name = "Andres" ,
+                1 -> user = User(name = "Andres" ,
                         nickname = "sebas",
-                        email = "ascacere92@gmail.com"
+                        email = "ascacere92@gmail.com",
+                        registrationId = 1256,
+                        rawIdentityKeyPair = "tgYgBA59Sg8gHpL93AxcA"
                         )
 
-                2 -> user = User( id = 2,
-                        name = "Sebas" ,
+                2 -> user = User(name = "Sebas" ,
                         nickname = "xndres",
-                        email = "xdres@gmail.com"
+                        email = "xdres@gmail.com",
+                        registrationId = 1255,
+                        rawIdentityKeyPair = "tgYgBA59Sg8gHpL93AxcA"
                 )
             }
             return user

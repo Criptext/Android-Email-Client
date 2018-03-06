@@ -8,8 +8,11 @@ import android.content.Context
 import com.email.db.DAO.*
 import com.email.db.TypeConverters.BooleanConverter
 import com.email.db.TypeConverters.DateConverter
+import com.email.db.dao.RawIdentityKeyDao
+import com.email.db.dao.RawPreKeyDao
 import com.email.db.dao.RawSessionDao
 import com.email.db.models.*
+import com.email.db.models.signal.RawIdentityKey
 import com.email.db.models.signal.RawPreKey
 import com.email.db.models.signal.RawSession
 
@@ -19,7 +22,7 @@ import com.email.db.models.signal.RawSession
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
                      , File::class, Open::class, FeedItem::class, RawPreKey::class
-                     , RawSession::class],
+                     , RawSession::class, RawIdentityKey::class],
         version = 1,
         exportSchema = false)
 @TypeConverters(DateConverter::class, BooleanConverter::class)
@@ -33,6 +36,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailUserDao() : EmailUserJoinDao
     abstract fun feedDao(): FeedDao
     abstract fun rawSessionDao(): RawSessionDao
+    abstract fun rawPreKeyDao(): RawPreKeyDao
+    abstract fun rawIdentityKeyDao(): RawIdentityKeyDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 

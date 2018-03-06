@@ -10,10 +10,7 @@ import android.arch.persistence.room.ColumnInfo
  */
 
 @Entity(tableName = "user", indices = [Index(value = "name")] )
-public class User(
-        @PrimaryKey(autoGenerate = true)
-        var id:Int?,
-
+class User(
         @ColumnInfo(name = "email")
         var email : String,
 
@@ -21,7 +18,13 @@ public class User(
         var name : String,
 
         @ColumnInfo(name = "nickname")
-        var nickname : String
+        var nickname : String,
+
+        @PrimaryKey
+        var registrationId : Int,
+
+        @ColumnInfo(name = "rawIdentityKeyPair")
+        var rawIdentityKeyPair : String
 ) {
 
 
