@@ -45,10 +45,17 @@ interface SignInScene {
         private var connectionHolder: ConnectionHolder? = null
 
 
-        private lateinit var formLayout : View
-        private lateinit var connectionLayout : View
+        private var formLayout : View? = null
+        private var connectionLayout : View? = null
 
-        private lateinit var signInListener: SignInSceneController.SignInListener
+        private var signInListener: SignInSceneController.SignInListener? = null
+            set(value) {
+                if(value == null) {
+                    signInFormHolder?.signInListener = null
+                    connectionHolder?.signInListener = null
+                }
+                field = value
+            }
 
         fun assignUsernameInputListener(){
             signInFormHolder?.assignUsernameInputListener()
@@ -108,7 +115,7 @@ interface SignInScene {
         }
 
         override fun getConnectionScene(): ConnectionScene {
-            return ConnectionScene.ConnectionSceneView(connectionLayout)
+            return ConnectionScene.ConnectionSceneView(connectionLayout!!)
         }
 
         override fun showConnectionScene() {
@@ -117,7 +124,7 @@ interface SignInScene {
                     view.context,
                     R.layout.activity_connection, viewGroup)
 
-            connectionHolder = ConnectionHolder(connectionLayout)
+            connectionHolder = ConnectionHolder(connectionLayout!!)
             if(connectionHolder != null) {
                 connectionHolder!!.signInListener = signInListener
             }
@@ -131,11 +138,11 @@ interface SignInScene {
 
         override fun showFormScene() {
             removeAllViews()
-            formLayout = View.inflate(
+            val layout = View.inflate(
                     view.context,
                     R.layout.activity_form_signin, viewGroup)
-            formLayout = formLayout.findViewById(R.id.signin_form_container)
-            signInFormHolder = SignInFormHolder(formLayout)
+            formLayout = layout.findViewById(R.id.signin_form_container)
+            signInFormHolder = SignInFormHolder(formLayout!!)
         }
 
 
