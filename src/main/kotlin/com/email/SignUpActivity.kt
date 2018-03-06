@@ -4,8 +4,8 @@ import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.SignUpLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.SignUpDataSource
-import com.email.scenes.signin.SignUpScene
-import com.email.scenes.signin.SignUpSceneController
+import com.email.scenes.signup.SignUpScene
+import com.email.scenes.signup.SignUpSceneController
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpAPIClient
 
