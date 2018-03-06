@@ -162,9 +162,7 @@ interface SignUpScene {
 
         override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
             this.signUpListener = signUpListener
-
-            signUpFormHolder?.signUpListener = signUpListener
-
+            
             assignPasswordTextListener()
             assignConfirmPasswordTextChangeListener()
             assignUsernameTextChangeListener()
