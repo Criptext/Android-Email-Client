@@ -11,10 +11,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.email.scenes.mailbox.MailboxSceneModel
-import com.email.scenes.params.ComposerParams
-import com.email.scenes.params.SceneParams
-import com.email.scenes.params.SearchParams
-import com.email.scenes.params.SignUpParams
+import com.email.scenes.params.*
 import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpSceneModel
@@ -114,6 +111,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
             is ComposerParams -> ComposerModel()
+            is MailboxParams -> MailboxSceneModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

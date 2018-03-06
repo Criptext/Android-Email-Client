@@ -1,18 +1,12 @@
 package com.email.scenes.signin
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
-import android.text.Editable
-import android.text.TextWatcher
+import android.os.Handler
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.view.ViewGroup
 import com.email.R
+import com.email.scenes.signin.holders.ConnectionHolder
+import com.email.scenes.signin.holders.SignInFormHolder
 
 /**
  * Created by sebas on 2/15/18.
@@ -25,84 +19,62 @@ interface SignInScene {
     fun drawError()
     fun drawSuccess()
     fun initListeners(signInListener: SignInSceneController.SignInListener)
+    fun showConnectionHolder()
+    fun showFormHolder()
+    fun startLoadingAnimation()
+    fun startSucceedAnimation(showForm: (
+            signInListener: SignInSceneController.SignInListener) -> Unit)
+    fun stopAnimationLoading()
+    fun startAnimation()
+    fun initFormUI()
+
     class SignInSceneView(val view: View): SignInScene {
-        private val res = view.context.resources
-        private val usernameInput : AppCompatEditText
-        private val usernameInputLayout : TextInputLayout
-        private val signInButton : Button
-        private val signUpTextView: TextView
-        private val progressBar: ProgressBar
-        private val imageError: ImageView
+        override fun startAnimation() {
+            startLoadingAnimation()
 
-        private val shouldButtonBeEnabled : Boolean
-            get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
-
-        private lateinit var signInListener: SignInSceneController.SignInListener
-        fun assignLoginButtonListener() {
-            signInButton.setOnClickListener {
-                // start progress dialog... change UI
-                signInListener.onLoginClick()
-            }
+            Handler().postDelayed({
+                startSucceedAnimation(showForm)
+            }, 3000)
         }
 
-        fun assignUsernameInputListener(){
-            usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
-                signInListener.toggleUsernameFocusState(isFocused)
+        private val res = view.context.resources
+        private val viewGroup = view.parent as ViewGroup
+        private var signInFormHolder: SignInFormHolder? = null
+        private var connectionHolder: ConnectionHolder? = null
+
+
+        private var signInListener: SignInSceneController.SignInListener? = null
+            set(value) {
+                signInFormHolder?.signInListener = value
+                connectionHolder?.signInListener = value
+                field = value
             }
 
-            usernameInput.addTextChangedListener(object: TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    signInListener.onUsernameTextChanged(text.toString())
-                }
-
-            })
+        fun assignUsernameInputListener(){
+            signInFormHolder?.assignUsernameInputListener()
         }
 
         @SuppressLint("ClickableViewAccessibility")
         fun assignSignUpTextViewListener() {
-            signUpTextView.setOnClickListener{
-                signInListener.goToSignUp()
-            }
+            signInFormHolder?.assignSignUpTextViewListener()
+        }
+
+        private fun assignLoginButtonListener() {
+            signInFormHolder?.assignLoginButtonListener()
         }
 
         override fun toggleSignUpPressed(isPressed: Boolean){
-            if(isPressed) {
-                signUpTextView.setTextColor(
-                        ContextCompat.getColor(view.context, R.color.black))
-            } else {
-                signUpTextView.setTextColor(
-                        ContextCompat.getColor(view.context, R.color.white))
-            }
+            signInFormHolder?.toggleSignUpPressed(isPressed)
         }
         @SuppressLint("RestrictedApi")
         override fun drawError() {
-            usernameInputLayout.hint = "Username does not exist"
-            usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login_error)
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.black))
-            imageError.visibility = View.VISIBLE
-            signInButton.isEnabled  = false
+            signInFormHolder?.drawError()
         }
 
-        @SuppressLint("RestrictedApi")
-        private fun setUsernameBackgroundTintList() {
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-        }
 
         @SuppressLint("RestrictedApi")
         override fun drawNormalSignInOptions(){
-            usernameInputLayout.hint = "Username"
-            usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
-            usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(view.context, R.color.signup_hint_color))
-            signInButton.isEnabled = shouldButtonBeEnabled
-            imageError.visibility = View.INVISIBLE
+            signInFormHolder?.drawNormalSignInOptions()
         }
 
         override fun drawSuccess() {
@@ -110,28 +82,14 @@ interface SignInScene {
         }
 
         override fun toggleLoginProgressBar(isLoggingIn : Boolean){
-            if(isLoggingIn) {
-                signInButton.visibility = View.GONE
-                progressBar.visibility = View.VISIBLE
-            } else {
-                signInButton.visibility = View.VISIBLE
-                progressBar.visibility = View.GONE
-            }
+            signInFormHolder?.toggleLoginProgressBar(isLoggingIn)
         }
 
-        private fun showNormalTints(){
-            usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
-            setUsernameBackgroundTintList()
-        }
         init {
-            usernameInput = view.findViewById(R.id.input_username)
-            signInButton = view.findViewById(R.id.signin_button)
-            usernameInputLayout = view.findViewById(R.id.input_username_layout)
-            signUpTextView = view.findViewById(R.id.signup_textview)
-            progressBar = view.findViewById(R.id.signin_progress_login)
-            imageError = view.findViewById(R.id.signin_error_image)
-            signInButton.isEnabled  = false
-            showNormalTints()
+            showFormHolder()
+        }
+
+        override fun initFormUI() {
         }
 
         override fun initListeners(
@@ -141,7 +99,54 @@ interface SignInScene {
             assignLoginButtonListener()
             assignSignUpTextViewListener()
             assignUsernameInputListener()
+          }
+
+
+        override fun showConnectionHolder() {
+            removeAllViews()
+            val connectionLayout = View.inflate(
+                    view.context,
+                    R.layout.activity_connection, viewGroup)
+
+            connectionHolder = ConnectionHolder(connectionLayout)
+            if(connectionHolder != null) {
+                connectionHolder!!.signInListener = signInListener
+            }
+        }
+
+        private fun removeAllViews() {
+            viewGroup.removeAllViews()
+            signInListener = null
+        }
+
+        override fun showFormHolder() {
+            removeAllViews()
+            val layout = View.inflate(
+                    view.context,
+                    R.layout.activity_form_signin, viewGroup)
+            val formLayout = layout.findViewById<View>(R.id.signin_form_container)
+            signInFormHolder = SignInFormHolder(formLayout)
+        }
+
+
+        override fun startLoadingAnimation() {
+            connectionHolder?.startLoadingAnimation()
+        }
+
+        override fun startSucceedAnimation(showForm: (
+                signInListener: SignInSceneController.SignInListener) -> Unit) {
+            connectionHolder?.startSucceedAnimation(showForm)
+        }
+        private val showForm = {
+            signInListener: SignInSceneController.SignInListener ->
+            showFormHolder()
+            initListeners(signInListener)
+        }
+
+        override fun stopAnimationLoading() {
+            connectionHolder?.stopAnimationLoading()
         }
     }
+
 }
 

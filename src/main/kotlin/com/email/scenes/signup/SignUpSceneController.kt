@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
+import com.email.scenes.params.MailboxParams
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpRequest
@@ -50,8 +51,11 @@ class SignUpSceneController(
 
     private val signUpListener : SignUpListener = object : SignUpListener {
         override fun onUsernameChangedListener(text: String) {
+            if(model.errors["username"] == true) {
+                model.errors["username"] = false
+                scene.toggleUsernameErrors(show = false)
+            }
             model.username = text
-
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
             } else {
@@ -89,21 +93,21 @@ class SignUpSceneController(
         override fun onConfirmPasswordChangedListener(text: String) {
             model.confirmPassword = text
             if (arePasswordsMatching && model.confirmPassword.length > 0) {
-                scene.hidePasswordErrors()
-                scene.showPasswordSucess()
+                scene.togglePasswordErrors(show = false)
+                scene.togglePasswordSuccess(show = true)
                 model.errors["password"] = false
                 if (shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
             } else if (arePasswordsMatching &&
-                    model.confirmPassword.length == 0) {
-                scene.hidePasswordSucess()
-                scene.hidePasswordErrors()
+                    model.confirmPassword.isEmpty()) {
+                scene.togglePasswordSuccess(show = false)
+                scene.togglePasswordErrors(show = false)
                 model.errors["password"] = false
                 scene.disableCreateAccountButton()
             } else {
-                scene.showPasswordErrors()
-                scene.hidePasswordSucess()
+                scene.togglePasswordErrors(show = true)
+                scene.togglePasswordSuccess(show = false)
                 model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
@@ -112,21 +116,21 @@ class SignUpSceneController(
         override fun onPasswordChangedListener(text: String) {
             model.password = text
             if(arePasswordsMatching && model.password.length > 0) {
-                scene.hidePasswordErrors()
-                scene.showPasswordSucess()
+                scene.togglePasswordErrors(show = false)
+                scene.togglePasswordSuccess(show = true)
                 model.errors["password"] = false
                 if(shouldCreateButtonBeEnabled()) {
                     scene.enableCreateAccountButton()
                 }
             } else if(arePasswordsMatching && model.password.length == 0){
-                scene.hidePasswordSucess()
-                scene.hidePasswordErrors()
+                scene.togglePasswordSuccess(show = false)
+                scene.togglePasswordErrors(show = false)
                 model.errors["password"] = false
                 scene.disableCreateAccountButton()
             }
             else {
-                scene.showPasswordErrors()
-                scene.hidePasswordSucess()
+                scene.togglePasswordErrors(show = true)
+                scene.togglePasswordSuccess(show = false)
                 model.errors["password"] = true
                 scene.disableCreateAccountButton()
             }
@@ -139,6 +143,7 @@ class SignUpSceneController(
                             onRecoveryEmailWarningListener
                     )
                 } else {
+                    scene.showKeyGenerationHolder()
                     val user = User(
                             name = model.fullName,
                             email = "",
@@ -169,17 +174,29 @@ class SignUpSceneController(
 
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
-            is SignUpResult.RegisterUser.Success -> scene.showSuccess()
+            is SignUpResult.RegisterUser.Success -> {
+                scene.showSuccess() // remove all this
+                host.goToScene(MailboxParams())
+            }
             is SignUpResult.RegisterUser.Failure -> {
+                       scene.showError(result.message)
+                       resetWidgetsFromModel()
                        if(result.exception is ServerErrorException &&
                                result.exception.errorCode == 400) {
-                           scene.toggleUsernameError(userAvailable = false)
+                           scene.isUserAvailable(userAvailable = false)
                            model.errors["username"] = true
                            scene.disableCreateAccountButton()
                        }
-                scene.showError(result.message)
             }
         }
+    }
+    private fun resetWidgetsFromModel() {
+        scene.resetSceneWidgetsFromModel(
+                username = model.username,
+                recoveryEmail = model.recoveryEmail,
+                password = model.password,
+                fullName = model.fullName
+        )
     }
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
@@ -206,12 +223,12 @@ class SignUpSceneController(
     }
 
     override fun onStart() {
-        scene.disableCreateAccountButton()
-
+        dataSource.listener = dataSourceListener
+        scene.showFormHolder()
         scene.initListeners(
                 signUpListener = signUpListener
         )
-        dataSource.listener = dataSourceListener
+        scene.disableCreateAccountButton()
     }
 
     override fun onStop() {
@@ -235,14 +252,14 @@ class SignUpSceneController(
     }
 
     interface SignUpListener {
-            fun onCreateAccountClick()
-            fun onPasswordChangedListener(text: String)
-            fun onConfirmPasswordChangedListener(text: String)
-            fun onUsernameChangedListener(text: String)
-            fun onCheckedOptionChanged(state: Boolean)
-            fun onTermsAndConditionsClick()
-            fun onFullNameTextChangeListener(text: String)
-            fun onRecoveryEmailTextChangeListener(text: String)
-            fun onBackPressed()
-        }
+        fun onCreateAccountClick()
+        fun onPasswordChangedListener(text: String)
+        fun onConfirmPasswordChangedListener(text: String)
+        fun onUsernameChangedListener(text: String)
+        fun onCheckedOptionChanged(state: Boolean)
+        fun onTermsAndConditionsClick()
+        fun onFullNameTextChangeListener(text: String)
+        fun onRecoveryEmailTextChangeListener(text: String)
+        fun onBackPressed()
+    }
 }

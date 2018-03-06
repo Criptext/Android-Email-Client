@@ -14,5 +14,12 @@ sealed class SignUpResult {
                 val message: UIMessage,
                 val exception: Exception): RegisterUser()
     }
+
+    sealed class PostKeyBundle: SignUpResult() {
+        class Success: PostKeyBundle()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): PostKeyBundle()
+    }
 }
 

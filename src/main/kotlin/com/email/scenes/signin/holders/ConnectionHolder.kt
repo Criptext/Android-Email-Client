@@ -1,77 +1,46 @@
-package com.email
+package com.email.scenes.signin.holders
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.os.Bundle
-import android.os.Handler
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.animation.Animation
 import android.widget.TextView
+import com.email.R
+import com.email.scenes.signin.SignInSceneController
 
 /**
- * Created by danieltigse on 2/16/18.
+ * Created by sebas on 3/2/18.
  */
 
-class ConnectionActivity : AppCompatActivity(){
+class ConnectionHolder(val view: View) {
 
-    private val loadingView: View by lazy {
-        findViewById<View>(R.id.viewAnimation)
-    }
+    private val loadingView: View
+    private val textViewStatus: TextView
+    private val textViewEmail: TextView
+    private var animLoading: AnimatorSet? = null
+    var signInListener: SignInSceneController.SignInListener? = null
 
-    private val textViewStatus: TextView by lazy {
-        findViewById<TextView>(R.id.textViewStatus)
-    }
-
-    private val textViewEmail: TextView by lazy {
-        findViewById<TextView>(R.id.textViewEmail)
-    }
-
-    private lateinit var animLoading: AnimatorSet
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_connection)
-        startLoadingAnimation()
-
-        Handler().postDelayed({
-            startSucceedAnimation()
-        }, 3000)
-
-    }
-
-    private fun startSucceedAnimation(){
-
-        animLoading.cancel()
+    fun startLoadingAnimation() {
         loadingView.post {
-            val animSucceed = initSuccessAnimatorSet(findViewById(R.id.viewCircle1), findViewById(R.id.viewCircle2),
-                    findViewById(R.id.viewCircle3), findViewById(R.id.viewCircle4),
-                    findViewById(R.id.viewCircle5), findViewById(R.id.viewCircle6),
-                    findViewById(R.id.viewCircle7), findViewById(R.id.viewCircle8),
-                    findViewById(R.id.viewCircle9), findViewById(R.id.viewCircle10),
-                    findViewById(R.id.viewCircle11), findViewById(R.id.viewCircle12),
-                    findViewById(R.id.imageViewDevice1), findViewById(R.id.imageViewDevice2),
-                    findViewById(R.id.imageViewSucceed))
-            animSucceed.start()
+            animLoading = initSyncingAnimatorSet(view.findViewById(R.id.viewCircle1),
+                    view.findViewById(R.id.viewCircle2),
+                    view.findViewById(R.id.viewCircle3), view.findViewById(R.id.viewCircle4),
+                    view.findViewById(R.id.viewCircle5), view.findViewById(R.id.viewCircle6),
+                    view.findViewById(R.id.viewCircle7), view.findViewById(R.id.viewCircle8),
+                    view.findViewById(R.id.viewCircle9), view.findViewById(R.id.viewCircle10),
+                    view.findViewById(R.id.viewCircle11), view.findViewById(R.id.viewCircle12))
+            animLoading!!.start()
         }
-        textViewEmail.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
-        textViewStatus.text = resources.getText(R.string.device_ready)
     }
 
-    private fun startLoadingAnimation(){
-
-        loadingView.post {
-            animLoading = initSyncingAnimatorSet(findViewById(R.id.viewCircle1), findViewById(R.id.viewCircle2),
-                    findViewById(R.id.viewCircle3), findViewById(R.id.viewCircle4),
-                    findViewById(R.id.viewCircle5), findViewById(R.id.viewCircle6),
-                    findViewById(R.id.viewCircle7), findViewById(R.id.viewCircle8),
-                    findViewById(R.id.viewCircle9), findViewById(R.id.viewCircle10),
-                    findViewById(R.id.viewCircle11), findViewById(R.id.viewCircle12))
-            animLoading.start()
-        }
-
+    private fun initSyncObjectAnim(animObj: ObjectAnimator, delay: Long) {
+        animObj.repeatMode = ValueAnimator.REVERSE
+        animObj.repeatCount = -1
+        if (delay > 0)
+            animObj.startDelay = delay
     }
 
     private fun initSyncingAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
@@ -119,15 +88,55 @@ class ConnectionActivity : AppCompatActivity(){
         animSet.playTogether(*animArray)
         animSet.duration = 500
         return animSet
-
     }
 
-    private fun initSyncObjectAnim(animObj: ObjectAnimator, delay: Long) {
-        animObj.repeatMode = ValueAnimator.REVERSE
-        animObj.repeatCount = -1
-        if (delay > 0)
-            animObj.startDelay = delay
+
+    fun startSucceedAnimation(showForm: (
+                signInListener: SignInSceneController.SignInListener) -> Unit) {
+        animLoading!!.cancel()
+        loadingView.post {
+            val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
+                    view.findViewById(R.id.viewCircle2),
+                    view.findViewById(R.id.viewCircle3), view.findViewById(R.id.viewCircle4),
+                    view.findViewById(R.id.viewCircle5), view.findViewById(R.id.viewCircle6),
+                    view.findViewById(R.id.viewCircle7), view.findViewById(R.id.viewCircle8),
+                    view.findViewById(R.id.viewCircle9), view.findViewById(R.id.viewCircle10),
+                    view.findViewById(R.id.viewCircle11), view.findViewById(R.id.viewCircle12),
+                    view.findViewById(R.id.imageViewDevice1), view.findViewById(R.id.imageViewDevice2),
+                    view.findViewById(R.id.imageViewSucceed))
+
+            animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
+                override fun onAnimationStart(p0: Animator?) {
+                }
+
+                override fun onAnimationRepeat(p0: Animator?) {
+                }
+
+                override fun onAnimationEnd(p0: Animator?) {
+                    showForm(signInListener!!)
+                }
+
+                override fun onAnimationCancel(p0: Animator?) {
+                }
+
+                override fun onAnimationRepeat(p0: Animation?) {
+                }
+
+                override fun onAnimationEnd(p0: Animation?) {
+                }
+
+                override fun onAnimationStart(p0: Animation?) {
+                }
+
+            })
+
+            animSucceed.start()
+        }
+
+        textViewEmail.setTextColor(ContextCompat.getColor(view.context, R.color.colorAccent))
+        textViewStatus.text = view.resources.getText(R.string.device_ready)
     }
+
 
     private fun initSuccessAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
                                        circle5: View, circle6: View, circle7: View, circle8: View,
@@ -189,11 +198,19 @@ class ConnectionActivity : AppCompatActivity(){
         animSet.playTogether(*animArray)
         animSet.duration = 700
         return animSet
-
     }
 
     private fun initSuccessObjectAnim(animObj: ObjectAnimator, delay: Long) {
         if (delay > 0)
             animObj.startDelay = delay
+    }
+
+    fun stopAnimationLoading() {
+        animLoading!!.cancel()
+    }
+    init {
+        loadingView = view.findViewById(R.id.viewAnimation)
+        textViewStatus = view.findViewById(R.id.textViewStatus)
+        textViewEmail = view.findViewById(R.id.textViewEmail)
     }
 }

@@ -1,11 +1,30 @@
 package com.email.scenes.signin.data
 
+import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.WorkHandler
+import com.email.bgworker.WorkRunner
 import com.email.db.SignInLocalDB
 
 /**
  * Created by sebas on 2/15/18.
  */
 
-class SignInDataSource(private val signInDB: SignInLocalDB) {
-
+class SignInDataSource(override val runner: WorkRunner,
+                       private val signInAPIClient: SignInAPIClient,
+                       private val signInLocalDB: SignInLocalDB)
+    : WorkHandler<SignInRequest, SignInResult>() {
+    override fun createWorkerFromParams(params: SignInRequest,
+                                        flushResults: (SignInResult) -> Unit):
+            BackgroundWorker<*> {
+        return when (params) {
+            is SignInRequest.AuthenticateUser -> AuthenticateUserWorker(signInLocalDB,
+                    signInAPIClient,
+                    user = params.user,
+                    password = params.password,
+                    deviceId = params.deviceId,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+        }
+    }
 }

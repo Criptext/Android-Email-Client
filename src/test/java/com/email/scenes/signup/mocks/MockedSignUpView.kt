@@ -1,5 +1,6 @@
 package com.email.scenes.signup.mocks
 
+import android.view.View
 import com.email.scenes.signin.SignUpScene
 import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
@@ -10,6 +11,16 @@ import com.email.utils.UIMessage
  */
 
 class MockedSignUpView: SignUpScene {
+
+    override fun resetSceneWidgetsFromModel(username: String, fullName: String, password: String, recoveryEmail: String) {
+    }
+
+    override fun showFormHolder() {
+    }
+
+    override fun showKeyGenerationHolder() {
+    }
+
     var userNameSuccess = false
     var userNameErrors = false
     var passwordSuccess = false
@@ -30,28 +41,12 @@ class MockedSignUpView: SignUpScene {
         userNameSuccess = true
     }
 
-    override fun showPasswordSucess() {
-        passwordSuccess = true
+    override fun togglePasswordSuccess(show: Boolean) {
+        passwordSuccess = show
     }
 
-    override fun hidePasswordSucess() {
-        passwordSuccess = false
-    }
-
-    private fun hideUsernameErrors() {
-        userNameErrors = false
-    }
-
-    override fun hidePasswordErrors() {
-        passwordErrors = false
-    }
-
-    override fun showPasswordErrors() {
-        passwordErrors = true
-    }
-
-    fun showUsernameErrors() {
-        userNameErrors = true
+    override fun togglePasswordErrors(show: Boolean) {
+        passwordErrors = show
     }
 
     override fun disableCreateAccountButton() {
@@ -71,13 +66,13 @@ class MockedSignUpView: SignUpScene {
         return userNameErrors
     }
 
-    override fun toggleUsernameError(userAvailable: Boolean){
+    override fun isUserAvailable(userAvailable: Boolean){
         if(userAvailable) {
             showUsernameSucess()
-            hideUsernameErrors()
+            toggleUsernameErrors(show = false)
         } else {
             hideUsernameSucess()
-            showUsernameErrors()
+            toggleUsernameErrors(show = true)
         }
     }
 
@@ -91,5 +86,9 @@ class MockedSignUpView: SignUpScene {
 
     override fun showSuccess() {
         errorSignUp = false
+    }
+
+    override fun toggleUsernameErrors(show: Boolean) {
+        userNameErrors = show
     }
 }
