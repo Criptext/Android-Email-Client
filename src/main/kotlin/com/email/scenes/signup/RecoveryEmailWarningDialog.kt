@@ -1,4 +1,4 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import com.email.R
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
 
 /**
  * Created by sebas on 2/8/18.
@@ -53,8 +52,8 @@ class RecoveryEmailWarningDialog(val context: Context) {
                            dialog: AlertDialog,
                            onRecoverEmailWarningListener: OnRecoveryEmailWarningListener) {
 
-        val btn_yes = view.findViewById(R.id.recovery_email_warning_yes) as Button
-        val btn_no = view.findViewById(R.id.recovery_email_warning_no) as Button
+        val btn_yes = view.findViewById<Button>(R.id.recovery_email_warning_yes)
+        val btn_no = view.findViewById<Button>(R.id.recovery_email_warning_no)
 
         btn_yes.setOnClickListener {
             onRecoverEmailWarningListener.willAssignRecoverEmail()

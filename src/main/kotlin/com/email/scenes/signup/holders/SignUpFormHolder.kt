@@ -10,9 +10,9 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import com.email.R
-import com.email.scenes.signin.RecoveryEmailWarningDialog
-import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.scenes.signup.RecoveryEmailWarningDialog
+import com.email.scenes.signup.SignUpSceneController
 
 /**
  * Created by sebas on 3/2/18.
@@ -20,53 +20,33 @@ import com.email.scenes.signup.OnRecoveryEmailWarningListener
 
 class SignUpFormHolder(val view: View) {
 
-    private val username: AppCompatEditText
-    private val usernameInput: TextInputLayout
-    private val usernameSuccessImage: ImageView
-    private val usernameErrorImage: ImageView
+    private val username: AppCompatEditText = view.findViewById(R.id.username)
+    private val usernameInput: TextInputLayout = view.findViewById(R.id.input_username)
+    private val usernameSuccessImage: ImageView = view.findViewById(R.id.success_username)
+    private val usernameErrorImage: ImageView = view.findViewById(R.id.error_username)
 
-    private val fullName: AppCompatEditText
-    private  val fullNameInput: TextInputLayout
+    private val fullName: AppCompatEditText = view.findViewById(R.id.full_name)
+    private val fullNameInput: TextInputLayout = view.findViewById(R.id.full_name_input)
 
-    private val password: AppCompatEditText
-    private val passwordInput: TextInputLayout
-    private val passwordSuccessImage: ImageView
-    private val passwordErrorImage: ImageView
-    private val confirmPassword: AppCompatEditText
-    private val confirmPasswordInput: TextInputLayout
-    private val confirmPasswordSuccessImage: ImageView
-    private val confirmPasswordErrorImage: ImageView
-    private val recoveryEmail: AppCompatEditText
-    private val recoveryEmailInput: TextInputLayout
-    private val checkboxTerms: CheckBox
-    private val txtTermsAndConditions: TextView
-    private val createAccount: Button
-    private val imageBack: ImageView
+    private val password: AppCompatEditText = view.findViewById(R.id.password)
+    private val passwordInput: TextInputLayout = view.findViewById(R.id.password_input)
+    private val passwordSuccessImage: ImageView = view.findViewById(R.id.success_password)
+    private val passwordErrorImage: ImageView = view.findViewById(R.id.error_password)
+    private val confirmPassword: AppCompatEditText = view.findViewById(R.id.password_repeat)
+    private val confirmPasswordInput: TextInputLayout = view.findViewById(R.id.password_repeat_input)
+    private val confirmPasswordSuccessImage: ImageView = view.findViewById(R.id.success_password_repeat)
+    private val confirmPasswordErrorImage: ImageView = view.findViewById(R.id.error_password_repeat)
+    private val recoveryEmail: AppCompatEditText = view.findViewById(R.id.recovery_email)
+    private val recoveryEmailInput: TextInputLayout = view.findViewById(R.id.recovery_email_input)
+    private val checkboxTerms: CheckBox = view.findViewById(R.id.chkTermsAndConditions)
+    private val txtTermsAndConditions: TextView = view.findViewById(R.id.txt_terms_and_conditions)
+    private val createAccount: Button = view.findViewById(R.id.create_account)
+    private val imageBack: ImageView = view.findViewById(R.id.icon_back)
     private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
 
     var signUpListener : SignUpSceneController.SignUpListener? = null
 
     init {
-        username = view.findViewById(R.id.username)
-        usernameInput = view.findViewById(R.id.input_username)
-        usernameSuccessImage = view.findViewById(R.id.success_username)
-        usernameErrorImage = view.findViewById(R.id.error_username)
-        fullName = view.findViewById(R.id.full_name)
-        fullNameInput = view.findViewById(R.id.full_name_input)
-        password = view.findViewById(R.id.password)
-        passwordInput = view.findViewById(R.id.password_input)
-        passwordSuccessImage = view.findViewById(R.id.success_password)
-        passwordErrorImage = view.findViewById(R.id.error_password)
-        confirmPassword = view.findViewById(R.id.password_repeat)
-        confirmPasswordInput = view.findViewById(R.id.password_repeat_input)
-        confirmPasswordSuccessImage = view.findViewById(R.id.success_password_repeat)
-        confirmPasswordErrorImage = view.findViewById(R.id.error_password_repeat)
-        recoveryEmail = view.findViewById(R.id.recovery_email)
-        recoveryEmailInput = view.findViewById(R.id.recovery_email_input)
-        checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
-        txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
-        createAccount = view.findViewById(R.id.create_account)
-        imageBack = view.findViewById(R.id.icon_back)
 
         setHintAppearences()
         setBackgroundTintLists()

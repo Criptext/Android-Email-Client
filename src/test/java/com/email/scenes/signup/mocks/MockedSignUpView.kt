@@ -1,9 +1,8 @@
 package com.email.scenes.signup.mocks
 
-import android.view.View
-import com.email.scenes.signin.SignUpScene
-import com.email.scenes.signin.SignUpSceneController
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.scenes.signup.SignUpScene
+import com.email.scenes.signup.SignUpSceneController
 import com.email.utils.UIMessage
 
 /**
