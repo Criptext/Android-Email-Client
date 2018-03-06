@@ -5,14 +5,21 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.whispersystems.libsignal.util.KeyHelper
 import java.util.*
+import kotlin.math.sign
 
 /**
  * Created by gabriel on 11/10/17.
  */
 
-data class PreKeyBundleShareData(val registrationId: Int, val deviceId: Int,
-                                 val signedPreKeyId: Int, val signedPreKeyPublic: String,
-                                 val signedPreKeySignature: String, val identityPublicKey: String) {
+data class PreKeyBundleShareData(val registrationId: Int,
+                                 val deviceId: Int,
+                                 val signedPreKeyId: Int,
+                                 val signedPreKeyPublic: String,
+                                 val signedPreKeySignature: String,
+                                 val identityPublicKey: String,
+                                 val identityKeyPair: String,
+                                 val signedPrekey: String
+                                 ) {
 
     data class DownloadBundle(val shareData: PreKeyBundleShareData, val preKeyId: Int,
                               val publicPreKey: String) {
@@ -20,6 +27,7 @@ data class PreKeyBundleShareData(val registrationId: Int, val deviceId: Int,
         companion object {
             fun fromJSON(json: JSONObject): DownloadBundle {
                 val preKey = json.getJSONObject("preKey")
+                val signedPrekey = json.getString("signedPreKey")
 
                 val registrationId = json.getInt("registrationId")
                 val deviceId = json.getInt("deviceId")
@@ -28,6 +36,7 @@ data class PreKeyBundleShareData(val registrationId: Int, val deviceId: Int,
                 val signedPreKeyPublic = json.getString("signedPreKeyPublic")
                 val identityPublicKey = json.getString("identityPublicKey")
                 val signedPreKeySignature = json.getString("signedPreKeySignature")
+                val identityKeyPair = json.getString("identityKeyPair")
 
                 val preKeyId = preKey.getInt("id")
                 val publicPreKey = preKey.getString("publicKey")
@@ -37,7 +46,9 @@ data class PreKeyBundleShareData(val registrationId: Int, val deviceId: Int,
                         deviceId = deviceId, signedPreKeyId = signedPreKeyId,
                         signedPreKeyPublic = signedPreKeyPublic,
                         signedPreKeySignature = signedPreKeySignature,
-                        identityPublicKey = identityPublicKey)
+                        identityPublicKey = identityPublicKey,
+                        identityKeyPair = identityKeyPair,
+                        signedPrekey = signedPrekey)
 
                 return DownloadBundle(shareData, preKeyId, publicPreKey)
             }
@@ -79,7 +90,9 @@ data class PreKeyBundleShareData(val registrationId: Int, val deviceId: Int,
                         registrationId = KeyHelper.generateRegistrationId(false) ,
                         identityPublicKey = Encoding.byteArrayToString(identityKeyPair.publicKey.serialize()),
                         signedPreKeyPublic = Encoding.byteArrayToString(signedPrekey.serialize()),
-                        signedPreKeySignature = Encoding.byteArrayToString(signedPrekey.signature)
+                        signedPreKeySignature = Encoding.byteArrayToString(signedPrekey.signature),
+                        identityKeyPair = Encoding.byteArrayToString(identityKeyPair.serialize()),
+                        signedPrekey = Encoding.byteArrayToString(signedPrekey.serialize())
                 )
                 val preKeys = KeyHelper.generatePreKeys(0, 500)
                 val serializedPrekeys = preKeys.map {

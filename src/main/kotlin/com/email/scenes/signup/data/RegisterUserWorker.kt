@@ -1,7 +1,6 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
-import android.support.v4.content.res.ResourcesCompat
 import com.email.R
 import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
@@ -9,6 +8,7 @@ import com.email.api.SignUpAPILoader
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
+import com.email.db.models.signal.RawSignedPreKey
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import org.json.JSONException
@@ -28,7 +28,6 @@ class RegisterUserWorker(
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
     override val canBeParallelized = false
-    private var keyBundle : PreKeyBundleShareData.UploadBundle? = null
     private val loader = SignUpAPILoader(
             localDB = db,
             signUpAPIClient = apiClient
@@ -41,19 +40,25 @@ class RegisterUserWorker(
     }
 
     override fun work(): SignUpResult.RegisterUser? {
-        keyBundle = PreKeyBundleShareData.
+        val keybundle = PreKeyBundleShareData.
                 UploadBundle.
                 createKeyBundle(1)
-        val operationResult =  loader.registerUser(
+        val operationResult = loader.registerUser(
                 user = user,
                 password = password,
                 recoveryEmail = recoveryEmail,
                 recipientId = recipientId,
-                keyBundle = keyBundle!!
-                )
+                keybundle = keybundle)
 
         return when(operationResult) {
             is Result.Success -> {
+                db.storePrekeys(keybundle.serializedPreKeys)
+                db.storeRawSignedPrekey(RawSignedPreKey(
+                        keybundle.shareData.signedPreKeyId,
+                        keybundle.shareData.signedPrekey))
+                user.registrationId = keybundle.shareData.registrationId
+                user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+                db.saveUser(user)
                 SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {

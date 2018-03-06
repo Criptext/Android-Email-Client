@@ -17,7 +17,7 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
                      password: String,
                      recoveryEmail: String?,
                      recipientId: String,
-                     keyBundle: PreKeyBundleShareData.UploadBundle
+                     keybundle: PreKeyBundleShareData.UploadBundle
                      ):
             Result<String, Exception>{
         val operationResult = registerUserOperation(
@@ -25,7 +25,7 @@ class SignUpAPILoader(private val localDB: SignUpLocalDB,
                 password = password,
                 recoveryEmail = recoveryEmail,
                 recipientId = recipientId,
-                keyBundle = keyBundle)
+                keyBundle = keybundle)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return operationResult
     }
