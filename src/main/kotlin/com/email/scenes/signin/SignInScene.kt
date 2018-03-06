@@ -5,7 +5,6 @@ import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
-import com.email.scenes.connection.ConnectionScene
 import com.email.scenes.signin.holders.ConnectionHolder
 import com.email.scenes.signin.holders.SignInFormHolder
 
@@ -20,12 +19,11 @@ interface SignInScene {
     fun drawError()
     fun drawSuccess()
     fun initListeners(signInListener: SignInSceneController.SignInListener)
-    fun getConnectionScene() : ConnectionScene
-    fun showConnectionScene()
-    fun showFormScene()
+    fun showConnectionHolder()
+    fun showFormHolder()
     fun startLoadingAnimation()
     fun startSucceedAnimation(showForm: (
-                signInListener: SignInSceneController.SignInListener) -> Unit)
+            signInListener: SignInSceneController.SignInListener) -> Unit)
     fun stopAnimationLoading()
     fun startAnimation()
     fun initFormUI()
@@ -45,15 +43,10 @@ interface SignInScene {
         private var connectionHolder: ConnectionHolder? = null
 
 
-        private var formLayout : View? = null
-        private var connectionLayout : View? = null
-
         private var signInListener: SignInSceneController.SignInListener? = null
             set(value) {
-                if(value == null) {
-                    signInFormHolder?.signInListener = null
-                    connectionHolder?.signInListener = null
-                }
+                signInFormHolder?.signInListener = value
+                connectionHolder?.signInListener = value
                 field = value
             }
 
@@ -93,7 +86,7 @@ interface SignInScene {
         }
 
         init {
-            showFormScene()
+            showFormHolder()
         }
 
         override fun initFormUI() {
@@ -114,17 +107,14 @@ interface SignInScene {
             }
         }
 
-        override fun getConnectionScene(): ConnectionScene {
-            return ConnectionScene.ConnectionSceneView(connectionLayout!!)
-        }
 
-        override fun showConnectionScene() {
+        override fun showConnectionHolder() {
             removeAllViews()
-            connectionLayout = View.inflate(
+            val connectionLayout = View.inflate(
                     view.context,
                     R.layout.activity_connection, viewGroup)
 
-            connectionHolder = ConnectionHolder(connectionLayout!!)
+            connectionHolder = ConnectionHolder(connectionLayout)
             if(connectionHolder != null) {
                 connectionHolder!!.signInListener = signInListener
             }
@@ -136,13 +126,13 @@ interface SignInScene {
             connectionHolder = null
         }
 
-        override fun showFormScene() {
+        override fun showFormHolder() {
             removeAllViews()
             val layout = View.inflate(
                     view.context,
                     R.layout.activity_form_signin, viewGroup)
-            formLayout = layout.findViewById(R.id.signin_form_container)
-            signInFormHolder = SignInFormHolder(formLayout!!)
+            val formLayout = layout.findViewById<View>(R.id.signin_form_container)
+            signInFormHolder = SignInFormHolder(formLayout)
         }
 
 
@@ -156,13 +146,13 @@ interface SignInScene {
         }
         private val showForm = {
             signInListener: SignInSceneController.SignInListener ->
-            showFormScene()
+            showFormHolder()
             initListeners(signInListener)
         }
 
         override fun stopAnimationLoading() {
             connectionHolder?.stopAnimationLoading()
-       }
+        }
     }
 
 }

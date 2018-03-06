@@ -70,7 +70,7 @@ class SignInSceneController(
     }
 
     private fun launchConnectionScene() {
-        scene.showConnectionScene()
+        scene.showConnectionHolder()
         scene.startAnimation()
     }
 

@@ -1,6 +1,5 @@
 package com.email.scenes.signin
 
-import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -45,14 +44,9 @@ interface SignUpScene {
         private var signUpFormHolder: SignUpFormHolder? = null
         private var keyGenerationHolder : KeyGenerationHolder? = null
 
-        private var formLayout : View? = null
-        private var keyGenerationLayout : View? = null
-
         override var signUpListener : SignUpSceneController.SignUpListener? = null
             set(value) {
-                if(value == null) {
-                    signUpFormHolder?.signUpListener = null
-                }
+                signUpFormHolder?.signUpListener = value
                 field = value
             }
 
@@ -156,10 +150,10 @@ interface SignUpScene {
 
         override fun showFormHolder() {
             removeAllViews()
-            formLayout = View.inflate(
+            val formLayout = View.inflate(
                     view.context,
                     R.layout.activity_form_signup, viewGroup)
-            signUpFormHolder = SignUpFormHolder(formLayout!!)
+            signUpFormHolder = SignUpFormHolder(formLayout)
         }
 
         private fun assignCreateAccountClickListener() {
@@ -197,11 +191,11 @@ interface SignUpScene {
 
         override fun showKeyGenerationHolder() {
             removeAllViews()
-            keyGenerationLayout = View.inflate(
+            val keyGenerationLayout = View.inflate(
                     view.context,
                     R.layout.view_key_generation, viewGroup)
             keyGenerationHolder = KeyGenerationHolder(
-                    keyGenerationLayout!!, checkProgress, 10)
+                    keyGenerationLayout, checkProgress, 10)
         }
 
         private val checkProgress = {
