@@ -14,6 +14,6 @@ import android.arch.persistence.room.Entity
         @ColumnInfo(name = "deviceId")
         var deviceId : Int,
 
-        @ColumnInfo(name = "sessionRecord")
-        var sessionRecord : String
+        @ColumnInfo(name = "byteString")
+        var byteString : String
 )
