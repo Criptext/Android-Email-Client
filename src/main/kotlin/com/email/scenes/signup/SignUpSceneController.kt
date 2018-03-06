@@ -1,6 +1,7 @@
 package com.email.scenes.signin
 
 import com.email.IHostActivity
+import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
@@ -151,16 +152,18 @@ class SignUpSceneController(
                             registrationId = 15225,
                             rawIdentityKeyPair = "dU8KXz2qS57X+fTi/hf"
                     )
+
                     val req = SignUpRequest.RegisterUser(
                             user = user,
                             password = model.password,
                             recoveryEmail = model.recoveryEmail,
-                            keyBundle =
+                            recipientId = user.nickname
                     )
                     dataSource.submitRequest(req)
                 }
             }
         }
+
 
         override fun onBackPressed() {
             host.finishScene()

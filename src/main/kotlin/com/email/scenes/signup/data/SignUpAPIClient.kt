@@ -17,6 +17,7 @@ interface SignUpAPIClient {
             user: User,
             password: String,
             recoveryEmail: String?,
+            recipientId: String,
             keybundle : PreKeyBundleShareData.UploadBundle)
             : String
 
@@ -31,10 +32,11 @@ interface SignUpAPIClient {
                 user: User,
                 password: String,
                 recoveryEmail: String?,
+                recipientId: String,
                 keybundle : PreKeyBundleShareData.UploadBundle
         ): String {
             val request = ApiCall.createUser(
-                    recipientId = user.nickname,
+                    recipientId = recipientId,
                     name = user.name,
                     password = password,
                     recoveryEmail = recoveryEmail,

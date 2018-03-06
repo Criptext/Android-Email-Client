@@ -9,8 +9,8 @@ import com.email.db.models.User
 
 sealed class SignUpRequest{
     class RegisterUser(val user: User,
-                        val password: String,
+                       val password: String,
                        val recoveryEmail: String?,
-                       val keyBundle: PreKeyBundleShareData.UploadBundle
+                       val recipientId: String
                        ): SignUpRequest()
 }

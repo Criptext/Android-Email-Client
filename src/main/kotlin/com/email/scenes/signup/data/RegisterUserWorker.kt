@@ -23,11 +23,12 @@ class RegisterUserWorker(
         private val user: User,
         private val password: String,
         private val recoveryEmail: String?,
-        private val keyBundle: PreKeyBundleShareData.UploadBundle,
+        private val recipientId: String,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
     override val canBeParallelized = false
+    private var keyBundle : PreKeyBundleShareData.UploadBundle? = null
     private val loader = SignUpAPILoader(
             localDB = db,
             signUpAPIClient = apiClient
@@ -40,11 +41,16 @@ class RegisterUserWorker(
     }
 
     override fun work(): SignUpResult.RegisterUser? {
+        keyBundle = PreKeyBundleShareData.
+                UploadBundle.
+                createKeyBundle(1)
         val operationResult =  loader.registerUser(
                 user = user,
                 password = password,
                 recoveryEmail = recoveryEmail,
-                keyBundle = keyBundle)
+                recipientId = recipientId,
+                keyBundle = keyBundle!!
+                )
 
         return when(operationResult) {
             is Result.Success -> {
