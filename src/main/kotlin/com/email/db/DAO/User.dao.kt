@@ -22,6 +22,9 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll() : List<User>
 
+    @Query("SELECT * FROM user LIMIT 1")
+    fun getLoggedInUser() : User?
+
     @Delete
     fun deleteAll(users: List<User>)
 

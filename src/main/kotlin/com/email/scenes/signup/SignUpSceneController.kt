@@ -143,7 +143,8 @@ class SignUpSceneController(
                             name = model.fullName,
                             email = "",
                             nickname = model.username,
-                            id = null
+                            registrationId = 15225,
+                            rawIdentityKeyPair = "dU8KXz2qS57X+fTi/hf"
                     )
                     val req = SignUpRequest.RegisterUser(
                             user = user,

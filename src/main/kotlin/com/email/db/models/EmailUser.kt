@@ -15,7 +15,7 @@ import android.support.annotation.NonNull
                 onDelete = CASCADE,
                 childColumns = ["emailId"]),
                 ForeignKey(entity = User::class,
-                        parentColumns = ["id"],
+                        parentColumns = ["registrationId"],
                         onDelete = CASCADE,
                         childColumns = ["userId"]))
 )
