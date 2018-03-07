@@ -21,9 +21,9 @@ class KeyGenerationHolder(
     private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
     private val percentageAdvanced: TextView
     private val timer = IntervalTimer()
-    @Volatile var progress = 0
+    var progress = 0
 
-    @Synchronized fun updateProgress(progress: Int) {
+    fun updateProgress(progress: Int) {
         this.progress = progress
         percentageAdvanced.text = this.progress.toString()
         progressBar.progress = this.progress
