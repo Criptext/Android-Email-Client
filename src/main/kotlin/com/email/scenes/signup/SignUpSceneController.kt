@@ -1,13 +1,11 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import com.email.IHostActivity
-import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
-import com.email.scenes.signup.SignUpSceneModel
+import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 
@@ -180,7 +178,7 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
                 scene.showSuccess() // remove all this
-                host.goToScene(MailboxParams())
+                // host.goToScene(MailboxParams())
             }
             is SignUpResult.RegisterUser.Failure -> {
                        scene.showError(result.message)

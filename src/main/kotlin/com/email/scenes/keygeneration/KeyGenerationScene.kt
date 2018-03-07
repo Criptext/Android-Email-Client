@@ -17,13 +17,15 @@ class KeyGenerationHolder(
 ) {
 
     private val res = view.context.resources
-    private val progressBar: ProgressBar
+    private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
     private val percentageAdvanced: TextView
     private val timer = IntervalTimer()
+    @Volatile var progress = 0
 
-    fun updateProgress(progress: Int) {
-        percentageAdvanced.text = progress.toString()
-        progressBar.progress = progress
+    @Synchronized fun updateProgress(progress: Int) {
+        this.progress = progress
+        percentageAdvanced.text = this.progress.toString()
+        progressBar.progress = this.progress
     }
 
     fun stopTimer() {
@@ -31,13 +33,11 @@ class KeyGenerationHolder(
     }
 
     init {
-        progressBar = view.findViewById(R.id.progressBar)
         percentageAdvanced = view.findViewById(R.id.percentage_advanced)
-        var counter = 0
         timer.start(intervalDuration, Runnable {
-            updateProgress(counter++)
-            Thread.sleep(100)
-            checkProgress(counter)
+            updateProgress(progress++)
+            Thread.sleep(200)
+            checkProgress(progress)
         })
     }
 }

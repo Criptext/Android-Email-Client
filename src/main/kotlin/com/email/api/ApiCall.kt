@@ -12,7 +12,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://172.30.10.161:8000"
+        var baseUrl = "http://172.30.1.151:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun createUser(
@@ -60,12 +60,6 @@ class ApiCall {
                     .build()
 
             return request
-        }
-
-        fun postKeyBundle(completeBundle: PreKeyBundleShareData.UploadBundle):
-                Request {
-            val json = completeBundle.toJSON()
-            return postJSON("${baseUrl}/keybundle", json)
         }
     }
 }

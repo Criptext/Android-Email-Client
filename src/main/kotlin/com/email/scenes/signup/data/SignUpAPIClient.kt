@@ -24,8 +24,8 @@ interface SignUpAPIClient {
     class Default : SignUpAPIClient {
         private val client = OkHttpClient().
                 newBuilder().
-                connectTimeout(5, TimeUnit.SECONDS).
-                readTimeout(5, TimeUnit.SECONDS).
+                connectTimeout(20, TimeUnit.SECONDS).
+                readTimeout(20, TimeUnit.SECONDS).
                 build()
 
         override fun createUser(

@@ -1,6 +1,5 @@
 package com.email.signal
 
-import android.content.Context
 import com.email.db.AppDatabase
 import com.email.db.DAO.UserDao
 import com.email.db.dao.RawIdentityKeyDao

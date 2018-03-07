@@ -1,11 +1,10 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.email.R
 import com.email.scenes.keygeneration.KeyGenerationHolder
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.holders.SignUpFormHolder
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
@@ -199,7 +198,7 @@ interface SignUpScene {
         private val checkProgress = {
             progress: Int
             ->
-            if(progress == 100) {
+            if(progress >= 99) {
                 keyGenerationHolder?.stopTimer()
             }
             Unit

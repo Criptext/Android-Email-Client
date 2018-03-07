@@ -52,23 +52,25 @@ class RegisterUserWorker(
 
         return when(operationResult) {
             is Result.Success -> {
-                val operation : Result<Unit, Exception> = Result.of {
+                val operationLocalDB : Result<Unit, Exception> = Result.of {
+                    user.registrationId = keybundle.shareData.registrationId
+                    user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+                    db.saveUser(user)
+                    db.deletePrekeys()
                     db.storePrekeys(keybundle.serializedPreKeys)
                     db.storeRawSignedPrekey(RawSignedPreKey(
                             keybundle.shareData.signedPreKeyId,
                             keybundle.shareData.signedPrekey))
-                    user.registrationId = keybundle.shareData.registrationId
-                    user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
-                    db.saveUser(user)
                 }
-                when(operation) {
+                when(operationLocalDB) {
                     is Result.Success -> {
                         SignUpResult.RegisterUser.Success()
                     }
                     is Result.Failure -> {
+                        operationLocalDB.error.printStackTrace()
                         SignUpResult.RegisterUser.Failure(
-                                message = createErrorMessage(operation.error),
-                                exception = operation.error)
+                                message = createErrorMessage(operationLocalDB.error),
+                                exception = operationLocalDB.error)
                     }
                 }
             }
@@ -86,7 +88,6 @@ class RegisterUserWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
-            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
             is ServerErrorException -> {
                 if(ex.errorCode == 400) {
@@ -95,6 +96,7 @@ class RegisterUserWorker(
                     UIMessage(resId = R.string.server_error_exception)
                 }
             }
+            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
         }
     }

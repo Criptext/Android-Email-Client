@@ -9,6 +9,9 @@ import com.email.db.models.signal.RawSignedPreKey
  */
 
 class MockedSignUpLocalDB : SignUpLocalDB {
+    override fun deletePrekeys() {
+    }
+
     override fun storePrekeys(prekeys: Map<Int, String>) {
     }
 

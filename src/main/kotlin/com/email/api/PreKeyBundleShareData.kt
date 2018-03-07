@@ -1,5 +1,6 @@
 package com.email.api
 
+import android.util.Log
 import com.email.signal.Encoding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -37,7 +38,8 @@ data class PreKeyBundleShareData(val registrationId: Int,
             keyBundle.put("signedPreKeyId", shareData.signedPreKeyId)
             keyBundle.put("signedPreKeyPublic", shareData.signedPreKeyPublic)
             keyBundle.put("identityPublicKey", shareData.identityPublicKey)
-            keyBundle.put("signedPreKeySignature", shareData.signedPreKeySignature)
+            keyBundle.put("signedPreKeySignature",
+                    shareData.signedPreKeySignature)
             keyBundle.put("preKeys", preKeyArray)
 
             return keyBundle
@@ -50,7 +52,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
                 val identityKeyPair = KeyHelper.generateIdentityKeyPair()
                 val signedPreKeyId = random.nextInt(99) + 1
                 val signedPrekey = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-                val prekeys = KeyHelper.generatePreKeys(0, 500)
+                val prekeys = KeyHelper.generatePreKeys(0, 255)
                 val shareData = PreKeyBundleShareData(
                         deviceId = deviceId,
                         signedPreKeyId = signedPreKeyId,
@@ -63,6 +65,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
                         prekeys = prekeys)
 
                 val serializedPrekeys = prekeys.map {
+                    Log.d("ID: ", it.id.toString())
                     it.id to Encoding.byteArrayToString(
                             it.keyPair.publicKey.serialize())
                 }.toMap()

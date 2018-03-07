@@ -11,6 +11,7 @@ import com.email.db.models.signal.RawSignedPreKey
 
 interface SignUpLocalDB {
     fun storePrekeys(prekeys: Map<Int, String>)
+    fun deletePrekeys()
     fun saveUser(user: User)
     fun storeRawSignedPrekey(rawSignedPreKey: RawSignedPreKey)
 
@@ -30,6 +31,10 @@ interface SignUpLocalDB {
 
         override fun storeRawSignedPrekey(rawSignedPreKey: RawSignedPreKey) {
             db.rawSignedPreKeyDao().insert(rawSignedPreKey)
+        }
+
+        override fun deletePrekeys() {
+            db.rawPreKeyDao().deleteAll()
         }
     }
 }
