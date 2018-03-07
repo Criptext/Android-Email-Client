@@ -143,22 +143,12 @@ class SignUpSceneController(
                     )
                 } else {
                     scene.showKeyGenerationHolder()
-                    val newAccount: IncompleteAccount
-                    if(isSetRecoveryEmail) {
-                        newAccount =IncompleteAccount(
-                                username = model.username,
-                                name = model.fullName,
-                                password = model.password,
-                                recoveryEmail = model.recoveryEmail
-                                )
-                    } else {
-                        newAccount =IncompleteAccount(
-                                username = model.username,
-                                name = model.fullName,
-                                password = model.password,
-                                recoveryEmail = null
-                        )
-                    }
+                    val newAccount: IncompleteAccount(
+                        username = model.username,
+                        name = model.fullName,
+                        password = model.password,
+                        recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail else null
+                    )
 
                     val req = SignUpRequest.RegisterUser(
                             account = newAccount,
