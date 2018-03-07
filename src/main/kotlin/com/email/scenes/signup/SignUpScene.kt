@@ -192,7 +192,7 @@ interface SignUpScene {
                     view.context,
                     R.layout.view_key_generation, viewGroup)
             keyGenerationHolder = KeyGenerationHolder(
-                    keyGenerationLayout, checkProgress, 10)
+                    keyGenerationLayout, checkProgress, 200)
         }
 
         private val checkProgress = {
@@ -213,6 +213,8 @@ interface SignUpScene {
                     "Success",
                     duration)
             toast.show()
+
+            signUpListener?.onRegisterUserSuccess()
         }
 
         private fun removeAllViews() {

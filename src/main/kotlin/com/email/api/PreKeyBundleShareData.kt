@@ -1,6 +1,5 @@
 package com.email.api
 
-import android.util.Log
 import com.email.signal.Encoding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -65,7 +64,6 @@ data class PreKeyBundleShareData(val registrationId: Int,
                         prekeys = prekeys)
 
                 val serializedPrekeys = prekeys.map {
-                    Log.d("ID: ", it.id.toString())
                     it.id to Encoding.byteArrayToString(
                             it.keyPair.publicKey.serialize())
                 }.toMap()

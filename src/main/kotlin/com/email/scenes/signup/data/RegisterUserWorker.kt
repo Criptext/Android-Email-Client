@@ -2,6 +2,7 @@ package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.api.SignUpAPILoader
 import com.email.api.SignalKeyGenerator
@@ -9,6 +10,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
 import com.email.db.models.signal.RawSignedPreKey
+import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import org.json.JSONException
@@ -20,9 +22,7 @@ import org.json.JSONException
 class RegisterUserWorker(
         private val db: SignUpLocalDB,
         private val apiClient: SignUpAPIClient,
-        private val user: User,
-        private val password: String,
-        private val recoveryEmail: String?,
+        private val account: IncompleteAccount,
         private val recipientId: String,
         private val signalKeyGenerator: SignalKeyGenerator,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
@@ -40,34 +40,44 @@ class RegisterUserWorker(
         return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
+    private fun savePreKeyBundleData(
+            account: IncompleteAccount,
+            keybundle: PreKeyBundleShareData.UploadBundle) : Result<Unit, Exception> {
+        return Result.of {
+            val user = User(
+                    email = "",
+                    name = account.name,
+                    nickname = account.username,
+                    registrationId = keybundle.shareData.registrationId,
+                    rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+            )
+
+            db.saveUser(user)
+            db.deletePrekeys()
+            db.storePrekeys(keybundle.serializedPreKeys)
+            db.storeRawSignedPrekey(RawSignedPreKey(
+                    keybundle.shareData.signedPreKeyId,
+                    keybundle.shareData.signedPrekey))
+        }
+    }
     override fun work(): SignUpResult.RegisterUser? {
         val keybundle = signalKeyGenerator.createKeyBundle(
                 deviceId = 1)
         val operationResult = loader.registerUser(
-                user = user,
-                password = password,
-                recoveryEmail = recoveryEmail,
+                account = account,
                 recipientId = recipientId,
                 keybundle = keybundle)
 
         return when(operationResult) {
             is Result.Success -> {
-                val operationLocalDB : Result<Unit, Exception> = Result.of {
-                    user.registrationId = keybundle.shareData.registrationId
-                    user.rawIdentityKeyPair = keybundle.shareData.identityKeyPair
-                    db.saveUser(user)
-                    db.deletePrekeys()
-                    db.storePrekeys(keybundle.serializedPreKeys)
-                    db.storeRawSignedPrekey(RawSignedPreKey(
-                            keybundle.shareData.signedPreKeyId,
-                            keybundle.shareData.signedPrekey))
-                }
+                val operationLocalDB  = savePreKeyBundleData(
+                        account = account,
+                        keybundle = keybundle)
                 when(operationLocalDB) {
                     is Result.Success -> {
                         SignUpResult.RegisterUser.Success()
                     }
                     is Result.Failure -> {
-                        operationLocalDB.error.printStackTrace()
                         SignUpResult.RegisterUser.Failure(
                                 message = createErrorMessage(operationLocalDB.error),
                                 exception = operationLocalDB.error)

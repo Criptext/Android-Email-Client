@@ -3,7 +3,7 @@ package com.email.scenes.signup.data
 import com.email.api.ApiCall
 import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
-import com.email.db.models.User
+import com.email.scenes.signup.IncompleteAccount
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -14,9 +14,7 @@ import java.util.concurrent.TimeUnit
 interface SignUpAPIClient {
 
     fun createUser(
-            user: User,
-            password: String,
-            recoveryEmail: String?,
+            account: IncompleteAccount,
             recipientId: String,
             keybundle : PreKeyBundleShareData.UploadBundle)
             : String
@@ -29,17 +27,15 @@ interface SignUpAPIClient {
                 build()
 
         override fun createUser(
-                user: User,
-                password: String,
-                recoveryEmail: String?,
+                account: IncompleteAccount,
                 recipientId: String,
                 keybundle : PreKeyBundleShareData.UploadBundle
         ): String {
             val request = ApiCall.createUser(
                     recipientId = recipientId,
-                    name = user.name,
-                    password = password,
-                    recoveryEmail = recoveryEmail,
+                    name = account.name,
+                    password = account.password,
+                    recoveryEmail = account.recoveryEmail,
                     keyBundle = keybundle
             )
             val response = client.newCall(request).execute()

@@ -27,9 +27,7 @@ class SignUpDataSource(override val runner: WorkRunner,
             is SignUpRequest.RegisterUser -> RegisterUserWorker(
                     db = signUpLocalDB,
                     apiClient = signUpAPIClient,
-                    user = params.user,
-                    password = params.password,
-                    recoveryEmail = params.recoveryEmail,
+                    account = params.account,
                     recipientId = params.recipientId,
                     signalKeyGenerator = signalKeyGenerator,
                     publishFn = { result ->

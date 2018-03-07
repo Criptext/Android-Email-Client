@@ -1,5 +1,6 @@
 package com.email.scenes.keygeneration
 
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -35,8 +36,8 @@ class KeyGenerationHolder(
     init {
         percentageAdvanced = view.findViewById(R.id.percentage_advanced)
         timer.start(intervalDuration, Runnable {
-            updateProgress(progress++)
-            Thread.sleep(200)
+            val progress = this.progress + 1
+            updateProgress(progress)
             checkProgress(progress)
         })
     }
