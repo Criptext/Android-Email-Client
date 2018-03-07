@@ -20,9 +20,13 @@ interface SignUpLocalDB {
         private val db = AppDatabase.getAppDatabase(applicationContext)
 
         override fun storePrekeys(prekeys: Map<Int, String>) {
+            val listPrekeys: ArrayList<RawPreKey> = ArrayList()
+
             for ((key, value) in prekeys) {
-                db.rawPreKeyDao().insert(RawPreKey(key, value))
+                listPrekeys.add(RawPreKey(id = key, byteString = value))
             }
+
+            db.rawPreKeyDao().insertAll(listPrekeys)
         }
 
         override fun saveUser(user: User) {
