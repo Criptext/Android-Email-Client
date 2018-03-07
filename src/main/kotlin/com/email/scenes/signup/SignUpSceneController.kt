@@ -143,7 +143,7 @@ class SignUpSceneController(
                     )
                 } else {
                     scene.showKeyGenerationHolder()
-                    val newAccount: IncompleteAccount(
+                    val newAccount = IncompleteAccount(
                         username = model.username,
                         name = model.fullName,
                         password = model.password,
