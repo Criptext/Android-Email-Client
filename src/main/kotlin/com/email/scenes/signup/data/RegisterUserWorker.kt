@@ -1,15 +1,20 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
-import android.support.v4.content.res.ResourcesCompat
+import android.util.Log
 import com.email.R
+import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.api.SignUpAPILoader
+import com.email.api.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
+import com.email.db.models.signal.RawSignedPreKey
+import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import org.json.JSONException
 
 /**
@@ -19,9 +24,9 @@ import org.json.JSONException
 class RegisterUserWorker(
         private val db: SignUpLocalDB,
         private val apiClient: SignUpAPIClient,
-        private val user: User,
-        private val password: String,
-        private val recoveryEmail: String?,
+        private val account: IncompleteAccount,
+        private val recipientId: String,
+        private val signalKeyGenerator: SignalKeyGenerator,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
@@ -37,20 +42,49 @@ class RegisterUserWorker(
         return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
+    private fun savePreKeyBundleData(
+            account: IncompleteAccount,
+            keybundle: PreKeyBundleShareData.UploadBundle) : Result<Unit, Exception> {
+        return Result.of {
+            val user = User(
+                    email = "",
+                    name = account.name,
+                    nickname = account.username,
+                    registrationId = keybundle.shareData.registrationId,
+                    rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+            )
+
+            db.saveUser(user)
+            db.deletePrekeys()
+            db.storePrekeys(keybundle.serializedPreKeys)
+            db.storeRawSignedPrekey(RawSignedPreKey(
+                    keybundle.shareData.signedPreKeyId,
+                    keybundle.shareData.signedPrekey))
+        }
+    }
     override fun work(): SignUpResult.RegisterUser? {
-        val operationResult =  loader.registerUser(
-                user = user,
-                password = password,
-                recoveryEmail = recoveryEmail
-        )
-        return when(operationResult) {
+        val keybundle = signalKeyGenerator.createKeyBundle(
+                deviceId = 1)
+        val operationResult = loader.registerUser(
+                account = account,
+                recipientId = recipientId,
+                keybundle = keybundle)
+
+        val operationLocalDB = operationResult.flatMap {
+            savePreKeyBundleData(
+                        account = account,
+                        keybundle = keybundle)
+        }
+
+        return when(operationLocalDB) {
             is Result.Success -> {
                 SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
+                operationLocalDB.error.printStackTrace()
                 SignUpResult.RegisterUser.Failure(
-                        message = createErrorMessage(operationResult.error),
-                        exception = operationResult.error)
+                        exception = operationLocalDB.error,
+                        message = createErrorMessage(operationLocalDB.error))
             }
         }
     }
@@ -61,7 +95,6 @@ class RegisterUserWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
-            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
             is ServerErrorException -> {
                 if(ex.errorCode == 400) {
@@ -70,6 +103,7 @@ class RegisterUserWorker(
                     UIMessage(resId = R.string.server_error_exception)
                 }
             }
+            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
         }
     }

@@ -16,6 +16,13 @@ interface RawPreKeyDao {
     @Query("DELETE from raw_prekey where id = :id")
     fun deleteById(id: Int)
 
+
+    @Insert
+    fun insertAll(prekeys : List<RawPreKey>)
+
+    @Query("DELETE from raw_prekey")
+    fun deleteAll()
+
     @Query("SELECT * from raw_prekey where id = :id")
     fun find(id: Int): RawPreKey?
 

@@ -1,4 +1,4 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import android.content.Context
 import android.support.v4.content.ContextCompat

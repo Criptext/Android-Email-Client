@@ -1,11 +1,12 @@
 package com.email
 
+import com.email.api.SignalKeyGenerator
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.SignUpLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.SignUpDataSource
-import com.email.scenes.signin.SignUpScene
-import com.email.scenes.signin.SignUpSceneController
+import com.email.scenes.signup.SignUpScene
+import com.email.scenes.signup.SignUpSceneController
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpAPIClient
 
@@ -21,6 +22,7 @@ class SignUpActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val db: SignUpLocalDB.Default = SignUpLocalDB.Default(this.applicationContext)
+        val signalKeyGenerator = SignalKeyGenerator.Default()
         val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))
         val signUpSceneModel = receivedModel as SignUpSceneModel
         return SignUpSceneController(
@@ -29,6 +31,7 @@ class SignUpActivity: BaseActivity() {
                 host = this,
                 dataSource = SignUpDataSource(runner = AsyncTaskWorkRunner(),
                         signUpAPIClient = SignUpAPIClient.Default(),
-                        signUpLocalDB = db))
+                        signUpLocalDB = db,
+                        signalKeyGenerator = signalKeyGenerator))
     }
 }

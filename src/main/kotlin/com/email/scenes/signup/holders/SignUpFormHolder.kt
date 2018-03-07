@@ -10,9 +10,9 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import com.email.R
-import com.email.scenes.signin.RecoveryEmailWarningDialog
-import com.email.scenes.signin.SignUpSceneController
+import com.email.scenes.signup.RecoveryEmailWarningDialog
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
+import com.email.scenes.signup.SignUpSceneController
 
 /**
  * Created by sebas on 3/2/18.

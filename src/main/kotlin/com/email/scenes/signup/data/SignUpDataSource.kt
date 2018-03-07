@@ -1,5 +1,6 @@
 package com.email.scenes.signin
 
+import com.email.api.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
@@ -15,17 +16,20 @@ import com.email.scenes.signup.data.SignUpResult
 
 class SignUpDataSource(override val runner: WorkRunner,
                        private val signUpAPIClient: SignUpAPIClient,
-                       private val signUpLocalDB: SignUpLocalDB)
+                       private val signUpLocalDB: SignUpLocalDB,
+                       private val signalKeyGenerator: SignalKeyGenerator
+    )
     : WorkHandler<SignUpRequest, SignUpResult>() {
     override fun createWorkerFromParams(params: SignUpRequest,
                                         flushResults: (SignUpResult) -> Unit):
             BackgroundWorker<*> {
         return when (params) {
-            is SignUpRequest.RegisterUser -> RegisterUserWorker(signUpLocalDB,
-                    signUpAPIClient,
-                    user = params.user,
-                    password = params.password,
-                    recoveryEmail = params.recoveryEmail,
+            is SignUpRequest.RegisterUser -> RegisterUserWorker(
+                    db = signUpLocalDB,
+                    apiClient = signUpAPIClient,
+                    account = params.account,
+                    recipientId = params.recipientId,
+                    signalKeyGenerator = signalKeyGenerator,
                     publishFn = { result ->
                 flushResults(result)
             })

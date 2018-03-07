@@ -10,7 +10,7 @@ import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "raw_prekey")
 class RawPreKey(
-        @PrimaryKey(autoGenerate = true)
+        @PrimaryKey
         var id: Int,
         @ColumnInfo(name = "byteString")
         var byteString: String

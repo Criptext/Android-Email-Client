@@ -1,12 +1,11 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
-import com.email.scenes.signup.SignUpSceneModel
+import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 
@@ -144,21 +143,24 @@ class SignUpSceneController(
                     )
                 } else {
                     scene.showKeyGenerationHolder()
-                    val user = User(
-                            name = model.fullName,
-                            email = "",
-                            nickname = model.username,
-                            registrationId = 15225,
-                            rawIdentityKeyPair = "dU8KXz2qS57X+fTi/hf"
+                    val newAccount = IncompleteAccount(
+                        username = model.username,
+                        name = model.fullName,
+                        password = model.password,
+                        recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail else null
                     )
+
                     val req = SignUpRequest.RegisterUser(
-                            user = user,
-                            password = model.password,
-                            recoveryEmail = model.recoveryEmail
+                            account = newAccount,
+                            recipientId = model.username
                     )
                     dataSource.submitRequest(req)
                 }
             }
+        }
+
+        override fun onRegisterUserSuccess(){
+            host.goToScene(MailboxParams())
         }
 
         override fun onBackPressed() {
@@ -175,8 +177,7 @@ class SignUpSceneController(
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
-                scene.showSuccess() // remove all this
-                host.goToScene(MailboxParams())
+                scene.showSuccess()
             }
             is SignUpResult.RegisterUser.Failure -> {
                        scene.showError(result.message)
@@ -261,5 +262,6 @@ class SignUpSceneController(
         fun onFullNameTextChangeListener(text: String)
         fun onRecoveryEmailTextChangeListener(text: String)
         fun onBackPressed()
+        fun onRegisterUserSuccess()
     }
 }

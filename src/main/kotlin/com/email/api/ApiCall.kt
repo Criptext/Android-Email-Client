@@ -16,15 +16,17 @@ class ApiCall {
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun createUser(
-                username: String,
                 name: String,
                 password: String,
-                recoveryEmail: String?
+                recoveryEmail: String?,
+                recipientId: String,
+                keyBundle: PreKeyBundleShareData.UploadBundle
         ): Request {
             val jsonObject = JSONObject()
-            jsonObject.put("username", username)
             jsonObject.put("name", name)
             jsonObject.put("password", password)
+            jsonObject.put("recipientId", recipientId)
+            jsonObject.put("keybundle", keyBundle.toJSON())
             if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
             val body = RequestBody.create(JSON, jsonObject.toString())
             return Request.
@@ -58,12 +60,6 @@ class ApiCall {
                     .build()
 
             return request
-        }
-
-        fun postKeyBundle(completeBundle: PreKeyBundleShareData.UploadBundle):
-                Request {
-            val json = completeBundle.toJSON()
-            return postJSON("${baseUrl}/keybundle", json)
         }
     }
 }

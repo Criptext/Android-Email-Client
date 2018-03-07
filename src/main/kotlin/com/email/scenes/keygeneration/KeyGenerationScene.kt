@@ -1,5 +1,6 @@
 package com.email.scenes.keygeneration
 
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -17,13 +18,15 @@ class KeyGenerationHolder(
 ) {
 
     private val res = view.context.resources
-    private val progressBar: ProgressBar
+    private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
     private val percentageAdvanced: TextView
     private val timer = IntervalTimer()
+    var progress = 0
 
     fun updateProgress(progress: Int) {
-        percentageAdvanced.text = progress.toString()
-        progressBar.progress = progress
+        this.progress = progress
+        percentageAdvanced.text = this.progress.toString()
+        progressBar.progress = this.progress
     }
 
     fun stopTimer() {
@@ -31,13 +34,11 @@ class KeyGenerationHolder(
     }
 
     init {
-        progressBar = view.findViewById(R.id.progressBar)
         percentageAdvanced = view.findViewById(R.id.percentage_advanced)
-        var counter = 0
         timer.start(intervalDuration, Runnable {
-            updateProgress(counter++)
-            Thread.sleep(100)
-            checkProgress(counter)
+            val progress = this.progress + 1
+            updateProgress(progress)
+            checkProgress(progress)
         })
     }
 }

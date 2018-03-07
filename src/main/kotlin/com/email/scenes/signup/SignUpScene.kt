@@ -1,11 +1,10 @@
-package com.email.scenes.signin
+package com.email.scenes.signup
 
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.email.R
 import com.email.scenes.keygeneration.KeyGenerationHolder
-import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.holders.SignUpFormHolder
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
@@ -193,13 +192,13 @@ interface SignUpScene {
                     view.context,
                     R.layout.view_key_generation, viewGroup)
             keyGenerationHolder = KeyGenerationHolder(
-                    keyGenerationLayout, checkProgress, 10)
+                    keyGenerationLayout, checkProgress, 200)
         }
 
         private val checkProgress = {
             progress: Int
             ->
-            if(progress == 100) {
+            if(progress >= 99) {
                 keyGenerationHolder?.stopTimer()
             }
             Unit
@@ -214,9 +213,12 @@ interface SignUpScene {
                     "Success",
                     duration)
             toast.show()
+
+            signUpListener?.onRegisterUserSuccess()
         }
 
         private fun removeAllViews() {
+            signUpFormHolder?.signUpListener = null
             viewGroup.removeAllViews()
         }
 
@@ -232,5 +234,4 @@ interface SignUpScene {
                     recoveryEmail = recoveryEmail)
         }
     }
-
 }
