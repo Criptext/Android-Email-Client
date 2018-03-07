@@ -1,6 +1,7 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
+import android.util.Log
 import com.email.R
 import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
@@ -13,6 +14,7 @@ import com.email.db.models.signal.RawSignedPreKey
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import org.json.JSONException
 
 /**
@@ -68,26 +70,21 @@ class RegisterUserWorker(
                 recipientId = recipientId,
                 keybundle = keybundle)
 
-        return when(operationResult) {
-            is Result.Success -> {
-                val operationLocalDB  = savePreKeyBundleData(
+        val operationLocalDB = operationResult.flatMap {
+            savePreKeyBundleData(
                         account = account,
                         keybundle = keybundle)
-                when(operationLocalDB) {
-                    is Result.Success -> {
-                        SignUpResult.RegisterUser.Success()
-                    }
-                    is Result.Failure -> {
-                        SignUpResult.RegisterUser.Failure(
-                                message = createErrorMessage(operationLocalDB.error),
-                                exception = operationLocalDB.error)
-                    }
-                }
+        }
+
+        return when(operationLocalDB) {
+            is Result.Success -> {
+                SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
+                operationLocalDB.error.printStackTrace()
                 SignUpResult.RegisterUser.Failure(
-                        message = createErrorMessage(operationResult.error),
-                        exception = operationResult.error)
+                        exception = operationLocalDB.error,
+                        message = createErrorMessage(operationLocalDB.error))
             }
         }
     }
