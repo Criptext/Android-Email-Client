@@ -18,14 +18,13 @@ class ToolbarHolder(val view: View) {
     private val navButton: ImageView
     private val backButton: ImageView
     private val separator: Space
+
     init {
         title = view.findViewById(R.id.mailbox_toolbar_title)
         numberEmails = view.findViewById(R.id.mailbox_number_emails)
         navButton = view.findViewById(R.id.mailbox_nav_button)
         backButton = view.findViewById(R.id.mailbox_back_button)
         separator = view.findViewById(R.id.mailbox_toolbar_multi_mode_separator)
-
-        Tint.addTintToImage(view.context, backButton)
     }
 
     fun showMultiModeBar(selectedThreadsQuantity: Int){

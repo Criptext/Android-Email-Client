@@ -37,19 +37,17 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:layout_marginStart="13dp"
                     android:id="@+id/mailbox_back_button"
                     android:src="@drawable/back"
-                    android:background="@drawable/mailbox_back_button_background"
                     android:gravity="center"
                     android:layout_gravity="center_vertical"
                     android:padding="10dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content" />
+                    android:layout_marginEnd="50dp"
+                    android:layout_height="70dp"
+                    android:layout_width="70dp" />
                 <android.support.v4.widget.Space
                     android:id="@+id/mailbox_toolbar_multi_mode_separator"
                     android:layout_width="10dp"
