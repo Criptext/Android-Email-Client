@@ -2,16 +2,16 @@
 <RelativeLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingLeft="10dp"
-    android:paddingTop="8dp"
-    android:paddingRight="10dp"
+    android:paddingTop="16dp"
+    android:paddingRight="9dp"
     android:layout_gravity="top"
     xmlns:android="http://schemas.android.com/apk/res/android">
             <ImageView
                 android:visibility="visible"
                 android:tint="@color/colorBackground"
                 android:id="@+id/icon_back"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:src="@drawable/check"
                 android:background="@drawable/mailbox_selected_mail_bg"
                 android:foregroundGravity="center"
@@ -19,8 +19,8 @@
                 />
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/mail_item_left_name"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:foregroundGravity="center"
             android:visibility="visible"
             />

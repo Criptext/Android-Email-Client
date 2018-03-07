@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox.holders
 
+import android.graphics.Typeface
 import android.support.v4.widget.Space
 import android.view.View
 import android.widget.ImageView
@@ -41,6 +42,7 @@ class ToolbarHolder(val view: View) {
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
         title.text = "INBOX"
+        title.typeface = Typeface.DEFAULT_BOLD
     }
 
     fun updateToolbarTitle(title: String) {

@@ -44,4 +44,6 @@
     <color name="black">#000000</color>
     <color name="gray">#626262</color>
     <color name="signup_hint_color">#90ffffff</color>
+    <color name="bell">#FF3366</color>
+    <color name="attachmentGray">#cecece</color>
 </resources>
