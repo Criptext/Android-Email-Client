@@ -2,10 +2,12 @@ package com.email.scenes.signin
 
 import android.annotation.SuppressLint
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.signin.holders.ConnectionHolder
+import com.email.scenes.signin.holders.LoginValidationHolder
 import com.email.scenes.signin.holders.SignInFormHolder
 
 /**
@@ -27,15 +29,24 @@ interface SignInScene {
     fun stopAnimationLoading()
     fun startAnimation()
     fun initFormUI()
+    fun showLoginValidationHolder()
+    fun showPasswordLoginHolder()
+    fun showPasswordLoginDialog(
+            onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
 
     var signInListener: SignInSceneController.SignInListener?
 
     class SignInSceneView(val view: View): SignInScene {
+        override fun showPasswordLoginDialog(
+                onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+            loginValidationHolder?.showPasswordLoginDialog(onPasswordLoginDialogListener)
+        }
+
         override fun startAnimation() {
             startLoadingAnimation()
 
             Handler().postDelayed({
-                startSucceedAnimation(launchMailboxScene)
+                startSucceedAnimation(showMailboxScene)
             }, 3000)
         }
 
@@ -43,14 +54,19 @@ interface SignInScene {
         private val viewGroup = view.parent as ViewGroup
         private var signInFormHolder: SignInFormHolder? = null
         private var connectionHolder: ConnectionHolder? = null
+        private var loginValidationHolder: LoginValidationHolder? = null
 
         override var signInListener: SignInSceneController.SignInListener? = null
             set(value) {
                 signInFormHolder?.signInListener = value
                 connectionHolder?.signInListener = value
+                loginValidationHolder?.signInListener = value
                 field = value
             }
 
+        fun assignCantAccessDeviceListener() {
+            loginValidationHolder?.assignCantAccessDeviceListener()
+        }
         fun assignUsernameInputListener(){
             signInFormHolder?.assignUsernameInputListener()
         }
@@ -100,6 +116,7 @@ interface SignInScene {
             assignLoginButtonListener()
             assignSignUpTextViewListener()
             assignUsernameInputListener()
+            assignCantAccessDeviceListener()
           }
 
 
@@ -117,6 +134,7 @@ interface SignInScene {
             viewGroup.removeAllViews()
             connectionHolder?.signInListener = null
             signInFormHolder?.signInListener = null
+            loginValidationHolder?.signInListener = null
         }
 
         override fun showFormHolder() {
@@ -137,7 +155,7 @@ interface SignInScene {
                 signInListener: SignInSceneController.SignInListener) -> Unit) {
             connectionHolder?.startSucceedAnimation(launchMailboxScene)
         }
-        private val launchMailboxScene = {
+        private val showMailboxScene = {
             signInListener: SignInSceneController.SignInListener ->
             signInListener.userLoginReady()
         }
@@ -145,7 +163,26 @@ interface SignInScene {
         override fun stopAnimationLoading() {
             connectionHolder?.stopAnimationLoading()
         }
-    }
 
+        override fun showLoginValidationHolder() {
+            removeAllViews()
+            val layout = View.inflate(
+                    view.context,
+                    R.layout.activity_login_validation, viewGroup)
+            loginValidationHolder = LoginValidationHolder(layout)
+            initListeners(signInListener!!)
+        }
+
+        override fun showPasswordLoginHolder() {
+/*            removeAllViews()
+            val layout = View.inflate(
+                    view.context,
+                    R.layout.activity_password_login, viewGroup)
+            passwordLoginHolder = PasswordLoginHolder(layout)
+            initListeners(signInListener!!)*/
+            TODO("SHOW NEW HOLDER")
+        }
+
+    }
 }
 

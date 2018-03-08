@@ -1,59 +1,53 @@
-package com.email
+package com.email.scenes.signin.holders
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.TargetApi
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.RequiresApi
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.TextView
+import com.email.R
+import com.email.scenes.signin.OnPasswordLoginDialogListener
+import com.email.scenes.signin.PasswordLoginDialog
+import com.email.scenes.signin.SignInSceneController
 
 /**
- * Created by danieltigse on 2/16/18.
+ * Created by sebas on 3/8/18.
  */
 
-class LoginValidationActivity: AppCompatActivity() {
+class LoginValidationHolder(val view: View) {
 
-    private lateinit var animLoading: AnimatorSet
+    private val cantAccessDevice: TextView
+    private var animLoading: AnimatorSet? = null
+    private val rootLayout: View
 
-    private val rootLayout: View by lazy {
-        this.findViewById<View>(R.id.viewRoot)
-    }
+    private val textViewTitle: TextView
+    private val textViewBody: TextView
+    private val textViewPrompt: TextView
+    private val textViewNotApproved: TextView
 
-    private val textViewTitle: TextView by lazy {
-        findViewById<TextView>(R.id.textViewTitle)
-    }
+    private val buttonResend: Button
 
-    private val textViewBody: TextView by lazy {
-        findViewById<TextView>(R.id.textViewBody)
-    }
+    private val passwordLoginDialog = PasswordLoginDialog(view.context)
+    var signInListener: SignInSceneController.SignInListener? = null
 
-    private val textViewPromot: TextView by lazy {
-        findViewById<TextView>(R.id.textViewPromot)
-    }
+    init {
+        cantAccessDevice = view.findViewById(R.id.cant_access_device)
+        rootLayout = view.findViewById<View>(R.id.viewRoot)
+        textViewTitle = view.findViewById(R.id.textViewTitle)
+        textViewBody = view.findViewById(R.id.textViewBody)
+        buttonResend = view.findViewById(R.id.buttonResend)
+        textViewNotApproved = view.findViewById<TextView>(R.id.textViewNotAproved)
+        textViewPrompt = view.findViewById(R.id.textViewPrompt)
 
-    private val textViewNotAproved: TextView by lazy {
-        findViewById<TextView>(R.id.textViewNotAproved)
-    }
-
-    private val buttonResend: Button by lazy {
-        findViewById<Button>(R.id.buttonResend)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_login_validation)
-
-        if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootLayout.visibility = View.INVISIBLE
             addGlobalLayout()
         } else {
@@ -71,9 +65,10 @@ class LoginValidationActivity: AppCompatActivity() {
         val viewTreeObserver = rootLayout.viewTreeObserver
         if (viewTreeObserver.isAlive) {
             viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                 override fun onGlobalLayout() {
-                    revealActivity(resources.displayMetrics.widthPixels / 2,
-                            resources.displayMetrics.heightPixels / 2)
+                    revealActivity(view.resources.displayMetrics.widthPixels / 2,
+                            view.resources.displayMetrics.heightPixels / 2)
                     rootLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             })
@@ -97,9 +92,9 @@ class LoginValidationActivity: AppCompatActivity() {
     private fun startLoadingAnimation(){
 
         rootLayout.post {
-            animLoading = initLoadingAnimatorSet(findViewById(R.id.imageViewCircularArrow),
-                    findViewById(R.id.imageViewWatch))
-            animLoading.start()
+            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
+                    view.findViewById(R.id.imageViewWatch))
+            animLoading!!.start()
         }
 
     }
@@ -157,16 +152,28 @@ class LoginValidationActivity: AppCompatActivity() {
 
     private fun showFailedLogin(){
 
-        textViewTitle.text = resources.getText(R.string.failed)
-        textViewBody.text = resources.getText(R.string.login_rejected)
-        textViewNotAproved.visibility = View.VISIBLE
+        textViewTitle.text = view.resources.getText(R.string.failed)
+        textViewBody.text = view.resources.getText(R.string.login_rejected)
+        textViewNotApproved.visibility = View.VISIBLE
         buttonResend.visibility = View.GONE
-        textViewPromot.visibility = View.GONE
-        animLoading.cancel()
+        textViewPrompt.visibility = View.GONE
+        animLoading?.cancel()
         rootLayout.post {
-            val animLoading = initFailedAnimatorSet(findViewById(R.id.imageViewCircularArrow),
-                    findViewById(R.id.imageViewWatch))
+            val animLoading = initFailedAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
+                    view.findViewById(R.id.imageViewWatch))
             animLoading.start()
         }
+    }
+
+    fun assignCantAccessDeviceListener() {
+        cantAccessDevice.setOnClickListener {
+            signInListener!!.onCantAccessDeviceClick()
+        }
+    }
+
+    fun showPasswordLoginDialog(
+            onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+
+        passwordLoginDialog.showPasswordLoginDialog(onPasswordLoginDialogListener)
     }
 }
