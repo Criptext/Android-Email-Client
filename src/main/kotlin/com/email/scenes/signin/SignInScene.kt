@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.email.R
 import com.email.scenes.signin.holders.ConnectionHolder
 import com.email.scenes.signin.holders.LoginValidationHolder
 import com.email.scenes.signin.holders.PasswordLoginHolder
 import com.email.scenes.signin.holders.SignInFormHolder
+import com.email.utils.UIMessage
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 2/15/18.
@@ -19,6 +22,7 @@ interface SignInScene {
     fun toggleSignUpPressed(isPressed: Boolean)
     fun toggleLoginProgressBar(isLoggingIn : Boolean)
     fun drawError()
+    fun showError(message: UIMessage)
     fun drawSuccess()
     fun initListeners(signInListener: SignInSceneController.SignInListener)
     fun showConnectionHolder()
@@ -99,7 +103,14 @@ interface SignInScene {
             passwordLoginHolder?.drawError()
         }
 
-
+        override fun showError(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    view.context,
+                    view.context.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
+        }
         @SuppressLint("RestrictedApi")
         override fun drawNormalSignInOptions(){
             signInFormHolder?.drawNormalSignInOptions()
