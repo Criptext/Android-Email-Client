@@ -1,5 +1,6 @@
 package com.email.scenes.signin
 
+import android.util.Log
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
@@ -26,11 +27,20 @@ class SignInSceneController(
         }
     }
 
+
+    val onPasswordLoginDialogListener = object : OnPasswordLoginDialogListener {
+        override fun acceptPasswordLogin() {
+            scene.showPasswordLoginHolder()
+        }
+
+        override fun cancelPasswordLogin() {
+        }
+    }
     private fun onVerifyUser(result: SignInResult.VerifyUser) {
         scene.toggleLoginProgressBar(isLoggingIn = false)
         when (result) {
             is SignInResult.VerifyUser.Success -> {
-                launchConnectionScene()
+                showLoginValidationHolder()
             }
             is SignInResult.VerifyUser.Failure -> {
                 scene.drawError()
@@ -38,6 +48,9 @@ class SignInSceneController(
         }
     }
     private val signInListener = object : SignInListener {
+        override fun onCantAccessDeviceClick(){
+            scene.showPasswordLoginDialog(onPasswordLoginDialogListener)
+        }
         override fun userLoginReady() {
             host.goToScene(MailboxParams())
         }
@@ -94,9 +107,13 @@ class SignInSceneController(
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
-    private fun launchConnectionScene() {
+    private fun showConnectionHolder() {
         scene.showConnectionHolder()
         scene.startAnimation()
+    }
+
+    private fun showLoginValidationHolder() {
+        scene.showLoginValidationHolder()
     }
 
     interface SignInListener {
@@ -106,5 +123,6 @@ class SignInSceneController(
         fun toggleSignUpPressedState(isPressed: Boolean)
         fun goToSignUp()
         fun userLoginReady()
+        fun onCantAccessDeviceClick()
     }
 }
