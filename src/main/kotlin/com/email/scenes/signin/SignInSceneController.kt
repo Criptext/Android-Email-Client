@@ -33,7 +33,7 @@ class SignInSceneController(
                 signInListener.onUserAuthenticated()
             }
             is SignInResult.AuthenticateUser.Failure -> {
-                scene.drawError()
+                scene.showError(result.message)
             }
         }
     }
@@ -66,7 +66,7 @@ class SignInSceneController(
         override fun onPasswordLoginClick() {
             val req = SignInRequest.AuthenticateUser(
                     username = model.username,
-                    password = model.username,
+                    password = model.password,
                     deviceId = 1 // (?) wtf
             )
             dataSource.submitRequest(req)
