@@ -35,7 +35,7 @@ interface SignInScene {
             startLoadingAnimation()
 
             Handler().postDelayed({
-                startSucceedAnimation(showForm)
+                startSucceedAnimation(launchMailboxScene)
             }, 3000)
         }
 
@@ -133,14 +133,13 @@ interface SignInScene {
             connectionHolder?.startLoadingAnimation()
         }
 
-        override fun startSucceedAnimation(showForm: (
+        override fun startSucceedAnimation(launchMailboxScene: (
                 signInListener: SignInSceneController.SignInListener) -> Unit) {
-            connectionHolder?.startSucceedAnimation(showForm)
+            connectionHolder?.startSucceedAnimation(launchMailboxScene)
         }
-        private val showForm = {
+        private val launchMailboxScene = {
             signInListener: SignInSceneController.SignInListener ->
-            showFormHolder()
-            initListeners(signInListener)
+            signInListener.userLoginReady()
         }
 
         override fun stopAnimationLoading() {
