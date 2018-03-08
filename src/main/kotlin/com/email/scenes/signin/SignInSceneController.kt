@@ -2,6 +2,7 @@ package com.email.scenes.signin
 
 import com.email.IHostActivity
 import com.email.scenes.SceneController
+import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SignUpParams
 import com.email.scenes.signin.data.SignInDataSource
 import com.email.scenes.signin.data.SignInRequest
@@ -37,6 +38,10 @@ class SignInSceneController(
         }
     }
     private val signInListener = object : SignInListener {
+        override fun userLoginReady() {
+            host.goToScene(MailboxParams())
+        }
+
         override fun onLoginClick() {
             validateUsername(model.username)
         }
@@ -100,5 +105,6 @@ class SignInSceneController(
         fun onUsernameTextChanged(text: String)
         fun toggleSignUpPressedState(isPressed: Boolean)
         fun goToSignUp()
+        fun userLoginReady()
     }
 }
