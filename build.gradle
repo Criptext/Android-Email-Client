@@ -123,17 +123,10 @@ dependencies {
     //org.json
     testImplementation 'org.json:json:20180130'
 
-    testImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
-
-    // signal
-    implementation 'org.whispersystems:signal-protocol-android:2.3.0'
-
     // Stetho core
     implementation 'com.facebook.stetho:stetho:1.5.0'
-
     //network helper
     implementation 'com.facebook.stetho:stetho-okhttp:1.5.0'
-
 }
 
 

@@ -9,7 +9,7 @@ import android.arch.persistence.room.PrimaryKey
  */
 
 @Entity(tableName = "raw_signedprekey")
-class RawSignedPreKey(
+class CRSignedPreKey(
         @PrimaryKey
         var id: Int,
         @ColumnInfo(name = "byteString")

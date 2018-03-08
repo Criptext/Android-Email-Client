@@ -4,7 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
-import com.email.db.models.signal.RawSession
+import com.email.db.models.signal.CRSessionRecord
 
 /**
  * Created by gabriel on 3/5/18.
@@ -14,14 +14,14 @@ import com.email.db.models.signal.RawSession
 interface RawSessionDao {
 
     @Insert
-    fun insert(rawSession: RawSession)
+    fun insert(crSessionRecord: CRSessionRecord)
 
     @Delete
-    fun delete(rawSession: RawSession)
+    fun delete(crSessionRecord: CRSessionRecord)
 
     @Query("""SELECT * FROM raw_session
               WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
-    fun find(recipientId: String, deviceId: Int): RawSession?
+    fun find(recipientId: String, deviceId: Int): CRSessionRecord?
 
     @Query("""DELETE FROM raw_session
               WHERE recipientId = :recipientId""")

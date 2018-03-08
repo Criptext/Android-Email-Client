@@ -4,10 +4,10 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 
 /**
- * Created by gabriel on 3/5/18.
+ * Created by gabriel on 3/6/18.
  */
-@Entity(tableName = "raw_session", primaryKeys = [ "recipientId", "deviceId" ])
- class RawSession(
+@Entity(tableName = "raw_identitykey", primaryKeys = [ "recipientId", "deviceId" ])
+class CRIdentityKey(
         @ColumnInfo(name = "recipientId")
         var recipientId : String,
 
@@ -15,5 +15,5 @@ import android.arch.persistence.room.Entity
         var deviceId : Int,
 
         @ColumnInfo(name = "byteString")
-        var byteString : String
+        var byteString: String
 )

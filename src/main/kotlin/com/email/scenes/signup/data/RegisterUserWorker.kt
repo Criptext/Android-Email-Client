@@ -1,7 +1,6 @@
 package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
-import android.util.Log
 import com.email.R
 import com.email.api.PreKeyBundleShareData
 import com.email.api.ServerErrorException
@@ -10,7 +9,7 @@ import com.email.api.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
-import com.email.db.models.signal.RawSignedPreKey
+import com.email.db.models.signal.CRSignedPreKey
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -56,7 +55,7 @@ class RegisterUserWorker(
             db.saveUser(user)
             db.deletePrekeys()
             db.storePrekeys(keybundle.serializedPreKeys)
-            db.storeRawSignedPrekey(RawSignedPreKey(
+            db.storeRawSignedPrekey(CRSignedPreKey(
                     keybundle.shareData.signedPreKeyId,
                     keybundle.shareData.signedPrekey))
         }

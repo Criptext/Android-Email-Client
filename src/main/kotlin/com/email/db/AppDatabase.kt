@@ -13,18 +13,18 @@ import com.email.db.dao.RawPreKeyDao
 import com.email.db.dao.RawSessionDao
 import com.email.db.dao.RawSignedPreKeyDao
 import com.email.db.models.*
-import com.email.db.models.signal.RawIdentityKey
-import com.email.db.models.signal.RawPreKey
-import com.email.db.models.signal.RawSession
-import com.email.db.models.signal.RawSignedPreKey
+import com.email.db.models.signal.CRIdentityKey
+import com.email.db.models.signal.CRPreKey
+import com.email.db.models.signal.CRSessionRecord
+import com.email.db.models.signal.CRSignedPreKey
 
 /**
  * Created by sebas on 1/24/18.
  */
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, User::class, EmailUser::class
-                     , File::class, Open::class, FeedItem::class, RawPreKey::class
-                     , RawSession::class, RawIdentityKey::class, RawSignedPreKey::class],
+                     , File::class, Open::class, FeedItem::class, CRPreKey::class
+                     , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
         exportSchema = false)
 @TypeConverters(DateConverter::class, BooleanConverter::class)
