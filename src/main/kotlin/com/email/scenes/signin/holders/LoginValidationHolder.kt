@@ -173,7 +173,6 @@ class LoginValidationHolder(val view: View) {
 
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-
         passwordLoginDialog.showPasswordLoginDialog(onPasswordLoginDialogListener)
     }
 }
