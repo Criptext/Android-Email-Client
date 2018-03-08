@@ -2,11 +2,12 @@ package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.api.HttpErrorHandlingHelper
 import com.email.signal.PreKeyBundleShareData
 import com.email.api.ServerErrorException
-import com.email.api.SignUpAPILoader
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
+import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
 import com.email.db.models.signal.CRSignedPreKey
@@ -14,6 +15,8 @@ import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.map
+import com.github.kittinunf.result.mapError
 import org.json.JSONException
 
 /**
@@ -23,17 +26,17 @@ import org.json.JSONException
 class RegisterUserWorker(
         private val db: SignUpLocalDB,
         private val apiClient: SignUpAPIClient,
-        private val account: IncompleteAccount,
-        private val recipientId: String,
         private val signalKeyGenerator: SignalKeyGenerator,
+        private val keyValueStorage: KeyValueStorage,
+        private val account: IncompleteAccount,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
     override val canBeParallelized = false
-    private val loader = SignUpAPILoader(
-            localDB = db,
-            signUpAPIClient = apiClient
-    )
+
+    private val setNewUserAsActiveAccount: (String) -> Unit = { username ->
+        keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount, username)
+    }
 
     override fun catchException(ex: Exception): SignUpResult.RegisterUser {
 
@@ -41,47 +44,51 @@ class RegisterUserWorker(
         return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
-    private fun savePreKeyBundleData(
-            account: IncompleteAccount,
-            keybundle: PreKeyBundleShareData.UploadBundle) : Result<Unit, Exception> {
-        return Result.of {
-            val user = User(
-                    email = "",
-                    name = account.name,
-                    nickname = account.username,
-                    registrationId = keybundle.shareData.registrationId,
-                    rawIdentityKeyPair = keybundle.shareData.identityKeyPair
-            )
-            db.saveUser(user)
-            db.deletePrekeys()
-            db.storePrekeys(keybundle.serializedPreKeys)
-            db.storeRawSignedPrekey(CRSignedPreKey(
-                    keybundle.shareData.signedPreKeyId,
-                    keybundle.shareData.signedPrekey))
+    private fun postNewUserToServer(keybundle: PreKeyBundleShareData.UploadBundle)
+            : Result<String, Exception> =
+            Result.of { apiClient.createUser(account, keybundle) }
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+
+    private fun persistNewUserData(keybundle: PreKeyBundleShareData.UploadBundle)
+            :(String) -> Result<String, Exception> {
+        return { jwtoken: String ->
+            Result.of {
+                val user = User(
+                        email = "",
+                        name = account.name,
+                        nickname = account.username,
+                        jwtoken = jwtoken,
+                        registrationId = keybundle.shareData.registrationId,
+                        rawIdentityKeyPair = keybundle.shareData.identityKeyPair
+
+                )
+
+                db.saveUser(user)
+                db.deletePrekeys()
+                db.storePrekeys(keybundle.serializedPreKeys)
+                db.storeRawSignedPrekey(CRSignedPreKey(
+                        keybundle.shareData.signedPreKeyId,
+                        keybundle.shareData.signedPrekey))
+                user.nickname
+            }
         }
     }
+
     override fun work(): SignUpResult.RegisterUser? {
         val keybundle = signalKeyGenerator.createKeyBundle(
                 deviceId = 1)
-        val operationResult = loader.registerUser(
-                account = account,
-                recipientId = recipientId,
-                keybundle = keybundle)
+        val operation = postNewUserToServer(keybundle)
+                          .flatMap(persistNewUserData(keybundle = keybundle))
+                          .map(setNewUserAsActiveAccount)
 
-        val operationLocalDB = operationResult.flatMap {
-            savePreKeyBundleData(
-                        account = account,
-                        keybundle = keybundle)
-        }
-
-        return when(operationLocalDB) {
+        return when(operation) {
             is Result.Success -> {
                 SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
                 SignUpResult.RegisterUser.Failure(
-                        exception = operationLocalDB.error,
-                        message = createErrorMessage(operationLocalDB.error))
+                        exception = operation.error,
+                        message = createErrorMessage(operation.error))
             }
         }
     }

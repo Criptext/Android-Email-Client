@@ -2,6 +2,7 @@ package com.email.api
 
 import com.email.signal.PreKeyBundleShareData
 import okhttp3.MediaType
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -15,6 +16,11 @@ class ApiCall {
     companion object {
         var baseUrl = "http://10.0.3.2:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
+        fun executeRequest(client: OkHttpClient, req: Request): String {
+            val response = client.newCall(req).execute()
+            if(!response.isSuccessful) throw(ServerErrorException(response.code()))
+            return response.body()!!.string()
+        }
 
         fun createUser(
                 name: String,
@@ -29,12 +35,7 @@ class ApiCall {
             jsonObject.put("recipientId", recipientId)
             jsonObject.put("keybundle", keyBundle.toJSON())
             if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
-            val body = RequestBody.create(JSON, jsonObject.toString())
-            return Request.
-                    Builder().
-                    url("$baseUrl/user").
-                    post(body).
-                    build()
+            return postJSON(url = "$baseUrl/user", json = jsonObject)
         }
 
         fun authenticateUser(
@@ -46,11 +47,7 @@ class ApiCall {
             jsonObject.put("username", username)
             jsonObject.put("password", password)
             jsonObject.put("deviceId", deviceId)
-            val body = RequestBody.create(JSON, jsonObject.toString())
-            return Request.Builder().
-                    url("$baseUrl/user/auth").
-                    post(body).
-                    build()
+            return postJSON(url = "$baseUrl/user/auth", json = jsonObject)
         }
 
         private fun postJSON(url: String, json: JSONObject): Request {
@@ -63,4 +60,5 @@ class ApiCall {
             return request
         }
     }
+
 }

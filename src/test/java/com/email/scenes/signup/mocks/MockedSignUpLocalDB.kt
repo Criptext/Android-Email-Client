@@ -9,6 +9,9 @@ import com.email.db.models.signal.CRSignedPreKey
  */
 
 class MockedSignUpLocalDB : SignUpLocalDB {
+    var savedUser: User? = null
+    private set
+
     override fun deletePrekeys() {
     }
 
@@ -16,6 +19,7 @@ class MockedSignUpLocalDB : SignUpLocalDB {
     }
 
     override fun saveUser(user: User) {
+        savedUser = user
     }
 
     override fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey) {
