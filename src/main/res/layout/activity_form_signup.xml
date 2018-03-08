@@ -108,7 +108,7 @@
                         android:textColorHint="@color/signup_hint_color"
                         app:errorTextAppearance="@style/ErrorTextAppearanceUsernameInput">
 
-                        <android.support.v7.widget.AppCompatEditText
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/username"
                             android:textSize="15sp"
                             android:textColor="@color/white"
@@ -145,7 +145,7 @@
                     android:layout_gravity="top|center_horizontal"
                     android:theme="@style/textinputlayout_login">
 
-                    <android.support.v7.widget.AppCompatEditText
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/full_name"
                         android:textSize="15sp"
                         android:textColor="@color/white"
@@ -205,7 +205,7 @@
                     app:hintTextAppearance="@style/NormalTextAppearence"
                     app:errorTextAppearance="@style/textinputlayout_login_error">
 
-                    <android.support.v7.widget.AppCompatEditText
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/password"
                         android:textSize="15sp"
                         android:textColor="@color/white"
@@ -266,7 +266,7 @@
                     app:passwordToggleTint="#5cc3fe"
                     app:errorEnabled="true">
 
-                    <android.support.v7.widget.AppCompatEditText
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/password_repeat"
                         android:textSize="15sp"
                         android:textColor="@color/white"
@@ -288,7 +288,7 @@
                 android:layout_gravity="top|center_horizontal"
                 android:theme="@style/textinputlayout_login">
 
-                <android.support.v7.widget.AppCompatEditText
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/recovery_email"
                     android:textSize="15sp"
                     android:textColor="@color/white"

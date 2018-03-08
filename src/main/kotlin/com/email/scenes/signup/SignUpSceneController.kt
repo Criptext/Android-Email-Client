@@ -2,7 +2,6 @@ package com.email.scenes.signup
 
 import com.email.IHostActivity
 import com.email.api.ServerErrorException
-import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.signin.SignUpDataSource

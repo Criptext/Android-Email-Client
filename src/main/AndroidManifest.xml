@@ -9,10 +9,6 @@
         android:name=".DeckardApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".MailboxActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".SearchActivity"
@@ -25,6 +21,10 @@
         <activity
             android:name="com.email.SignInActivity"
             android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.email.SignUpActivity"
