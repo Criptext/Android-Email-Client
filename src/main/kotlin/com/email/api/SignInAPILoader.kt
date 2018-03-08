@@ -1,7 +1,6 @@
 package com.email.api
 
 import com.email.db.SignInLocalDB
-import com.email.db.models.User
 import com.email.scenes.signin.data.SignInAPIClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -13,26 +12,26 @@ import com.github.kittinunf.result.mapError
 class SignInAPILoader(private val localDB: SignInLocalDB,
                       private val signInAPIClient: SignInAPIClient) {
 
-    fun authenticateUser(user: User,
+    fun authenticateUser(username: String,
                          password: String,
                          deviceId: Int):
             Result<String, Exception> {
-        val operationResult = registerUserOperation(
-                user = user,
+        val operationResult = authenticateUserOperation(
+                username = username,
                 password = password,
                 deviceId = deviceId)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return operationResult
     }
 
-    private fun registerUserOperation(
-            user: User,
+    private fun authenticateUserOperation(
+            username: String,
             password: String,
             deviceId: Int):
             Result<String, Exception> {
         return Result.of {
             val message = signInAPIClient.authenticateUser(
-                    user = user,
+                    username = username,
                     password = password,
                     deviceId = deviceId)
             message

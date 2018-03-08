@@ -33,10 +33,12 @@ interface SignInScene {
     fun showPasswordLoginHolder(user: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
+    fun toggleConfirmButton(activated: Boolean)
 
     var signInListener: SignInSceneController.SignInListener?
 
     class SignInSceneView(val view: View): SignInScene {
+
         override fun showPasswordLoginDialog(
                 onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
             loginValidationHolder?.showPasswordLoginDialog(onPasswordLoginDialogListener)
@@ -62,6 +64,7 @@ interface SignInScene {
                 signInFormHolder?.signInListener = value
                 connectionHolder?.signInListener = value
                 loginValidationHolder?.signInListener = value
+                passwordLoginHolder?.signInListener = value
                 field = value
             }
 
@@ -93,6 +96,7 @@ interface SignInScene {
         @SuppressLint("RestrictedApi")
         override fun drawError() {
             signInFormHolder?.drawError()
+            passwordLoginHolder?.drawError()
         }
 
 
@@ -194,6 +198,9 @@ interface SignInScene {
             initListeners(signInListener!!)
         }
 
+        override fun toggleConfirmButton(activated: Boolean) {
+            passwordLoginHolder?.toggleConfirmButton(activated = activated)
+        }
     }
 }
 

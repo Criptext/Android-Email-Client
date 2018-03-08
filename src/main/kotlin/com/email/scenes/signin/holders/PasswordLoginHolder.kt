@@ -53,4 +53,11 @@ class PasswordLoginHolder(
         }
     }
 
+    fun toggleConfirmButton(activated: Boolean) {
+        buttonConfirm.isEnabled = activated
+    }
+
+    fun drawError() {
+    }
+
 }

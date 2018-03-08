@@ -1,6 +1,5 @@
 package com.email.scenes.signin
 
-import android.util.Log
 import com.email.IHostActivity
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
@@ -24,6 +23,18 @@ class SignInSceneController(
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
             is SignInResult.VerifyUser -> onVerifyUser(result)
+            is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
+        }
+    }
+
+    private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
+        when (result) {
+            is SignInResult.AuthenticateUser.Success -> {
+                signInListener.onUserAuthenticated()
+            }
+            is SignInResult.AuthenticateUser.Failure -> {
+                scene.drawError()
+            }
         }
     }
 
@@ -48,18 +59,26 @@ class SignInSceneController(
         }
     }
     private val signInListener = object : SignInListener {
-        override fun onPasswordLoginClick() {
-            /*
-             *TODO(START LOGIN WITH PASSWORD USING REMOTE SERVER) --> datasource
-             * IF SUCCESS GO TO MAILBOX ELSE stay there and let the user try again(?)
-             * */
-
+        override fun onUserAuthenticated() {
             host.goToScene(MailboxParams())
+        }
 
+        override fun onPasswordLoginClick() {
+            val req = SignInRequest.AuthenticateUser(
+                    username = model.username,
+                    password = model.username,
+                    deviceId = 1 // (?) wtf
+            )
+            dataSource.submitRequest(req)
         }
 
         override fun onPasswordChangeListener(password: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            model.password = password
+            if(model.password.isNotEmpty()) {
+                scene.toggleConfirmButton(activated = true)
+            } else {
+                scene.toggleConfirmButton(activated = false)
+            }
         }
 
         override fun onCantAccessDeviceClick(){
@@ -140,5 +159,6 @@ class SignInSceneController(
         fun onCantAccessDeviceClick()
         fun onPasswordLoginClick()
         fun onPasswordChangeListener(password: String)
+        fun onUserAuthenticated()
     }
 }
