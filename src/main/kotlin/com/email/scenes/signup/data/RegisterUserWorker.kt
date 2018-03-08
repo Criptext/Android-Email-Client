@@ -53,7 +53,6 @@ class RegisterUserWorker(
                     registrationId = keybundle.shareData.registrationId,
                     rawIdentityKeyPair = keybundle.shareData.identityKeyPair
             )
-
             db.saveUser(user)
             db.deletePrekeys()
             db.storePrekeys(keybundle.serializedPreKeys)

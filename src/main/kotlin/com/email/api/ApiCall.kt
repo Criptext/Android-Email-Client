@@ -12,7 +12,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://192.168.100.34:8000"
+        var baseUrl = "http://10.0.3.2:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun createUser(

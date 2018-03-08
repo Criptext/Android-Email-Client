@@ -128,6 +128,11 @@ dependencies {
     // signal
     implementation 'org.whispersystems:signal-protocol-android:2.3.0'
 
+    // Stetho core
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    //network helper
+    compile 'com.facebook.stetho:stetho-okhttp:1.5.0'
+
 }
 
 
