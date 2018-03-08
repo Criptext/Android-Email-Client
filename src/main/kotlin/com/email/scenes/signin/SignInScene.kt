@@ -2,12 +2,12 @@ package com.email.scenes.signin
 
 import android.annotation.SuppressLint
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.signin.holders.ConnectionHolder
 import com.email.scenes.signin.holders.LoginValidationHolder
+import com.email.scenes.signin.holders.PasswordLoginHolder
 import com.email.scenes.signin.holders.SignInFormHolder
 
 /**
@@ -30,7 +30,7 @@ interface SignInScene {
     fun startAnimation()
     fun initFormUI()
     fun showLoginValidationHolder()
-    fun showPasswordLoginHolder()
+    fun showPasswordLoginHolder(user: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
 
@@ -55,6 +55,7 @@ interface SignInScene {
         private var signInFormHolder: SignInFormHolder? = null
         private var connectionHolder: ConnectionHolder? = null
         private var loginValidationHolder: LoginValidationHolder? = null
+        private var passwordLoginHolder: PasswordLoginHolder? = null
 
         override var signInListener: SignInSceneController.SignInListener? = null
             set(value) {
@@ -64,15 +65,21 @@ interface SignInScene {
                 field = value
             }
 
-        fun assignCantAccessDeviceListener() {
+        private fun assignConfirmButtonListener() {
+            passwordLoginHolder?.assignConfirmButtonListener()
+        }
+        private fun assignPasswordChangeListener() {
+            passwordLoginHolder?.assignPasswordChangeListener()
+        }
+        private fun assignCantAccessDeviceListener() {
             loginValidationHolder?.assignCantAccessDeviceListener()
         }
-        fun assignUsernameInputListener(){
+        private fun assignUsernameInputListener(){
             signInFormHolder?.assignUsernameInputListener()
         }
 
         @SuppressLint("ClickableViewAccessibility")
-        fun assignSignUpTextViewListener() {
+        private fun assignSignUpTextViewListener() {
             signInFormHolder?.assignSignUpTextViewListener()
         }
 
@@ -117,6 +124,8 @@ interface SignInScene {
             assignSignUpTextViewListener()
             assignUsernameInputListener()
             assignCantAccessDeviceListener()
+            assignConfirmButtonListener()
+            assignPasswordChangeListener()
           }
 
 
@@ -135,6 +144,7 @@ interface SignInScene {
             connectionHolder?.signInListener = null
             signInFormHolder?.signInListener = null
             loginValidationHolder?.signInListener = null
+            passwordLoginHolder?.signInListener = null
         }
 
         override fun showFormHolder() {
@@ -173,14 +183,15 @@ interface SignInScene {
             initListeners(signInListener!!)
         }
 
-        override fun showPasswordLoginHolder() {
-/*            removeAllViews()
+        override fun showPasswordLoginHolder(username: String) {
+            removeAllViews()
             val layout = View.inflate(
                     view.context,
                     R.layout.activity_password_login, viewGroup)
-            passwordLoginHolder = PasswordLoginHolder(layout)
-            initListeners(signInListener!!)*/
-            TODO("SHOW NEW HOLDER")
+            passwordLoginHolder = PasswordLoginHolder(
+                    layout,
+                    user = username)
+            initListeners(signInListener!!)
         }
 
     }
