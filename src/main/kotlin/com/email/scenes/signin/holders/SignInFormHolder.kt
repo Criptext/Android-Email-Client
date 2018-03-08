@@ -22,7 +22,7 @@ import com.email.scenes.signin.SignInSceneController
 class SignInFormHolder(val view: View) {
 
     private val usernameInput : AppCompatEditText
-    private val usernameInputLayout : TextInputLayout
+    //private val usernameInputLayout : TextInputLayout
     private val signInButton : Button
     private val signUpTextView: TextView
     private val progressBar: ProgressBar
@@ -31,12 +31,12 @@ class SignInFormHolder(val view: View) {
    var signInListener: SignInSceneController.SignInListener? = null
 
     private val shouldButtonBeEnabled : Boolean
-        get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
+        get() = true
 
     init {
         usernameInput = view.findViewById(R.id.input_username)
         signInButton = view.findViewById(R.id.signin_button)
-        usernameInputLayout = view.findViewById(R.id.input_username_layout)
+        //usernameInputLayout = view.findViewById(R.id.input_username_layout)
         signUpTextView = view.findViewById(R.id.signup_textview)
         progressBar = view.findViewById(R.id.signin_progress_login)
         imageError = view.findViewById(R.id.signin_error_image)
@@ -45,7 +45,7 @@ class SignInFormHolder(val view: View) {
     }
 
     fun showNormalTints(){
-        usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
+        //usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
         setUsernameBackgroundTintList()
     }
 
@@ -57,8 +57,8 @@ class SignInFormHolder(val view: View) {
 
     @SuppressLint("RestrictedApi")
     fun drawNormalSignInOptions() {
-        usernameInputLayout.hint = "Username"
-        usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
+/*        usernameInputLayout.hint = "Username"
+        usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login)*/
         usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(view.context, R.color.signup_hint_color))
         signInButton.isEnabled = shouldButtonBeEnabled
@@ -80,9 +80,9 @@ class SignInFormHolder(val view: View) {
     }
 
     fun assignUsernameInputListener(){
-        usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
-            signInListener!!.toggleUsernameFocusState(isFocused)
-        }
+        //usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
+         //   signInListener!!.toggleUsernameFocusState(isFocused)
+        //}
 
 
         usernameInput.addTextChangedListener(object: TextWatcher {
@@ -111,12 +111,12 @@ class SignInFormHolder(val view: View) {
 
     @SuppressLint("RestrictedApi")
     fun drawError() {
-        usernameInputLayout.hint = "Username does not exist"
+/*        usernameInputLayout.hint = "Username does not exist"
         usernameInputLayout.setHintTextAppearance(R.style.textinputlayout_login_error)
         usernameInput.supportBackgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(view.context, R.color.black))
         imageError.visibility = View.VISIBLE
-        signInButton.isEnabled  = false
+        signInButton.isEnabled  = false*/
     }
 
     fun toggleLoginProgressBar(isLoggingIn : Boolean){

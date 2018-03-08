@@ -72,24 +72,14 @@ android:focusableInTouchMode="true" >
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/input_username_layout"
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:theme="@style/textinputlayout_login">
-
-                        <android.support.design.widget.TextInputEditText
+                        <EditText
                             android:id="@+id/input_username"
-                            app:backgroundTint="@color/white"
                             android:textSize="16sp"
                             android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:hint="Username" />
-
-                    </android.support.design.widget.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
