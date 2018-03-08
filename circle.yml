@@ -16,9 +16,9 @@ dependencies:
       android update sdk --all --no-ui
       --filter tools,platform-tools
     - >
-      if [[ ! -d "$ANDROID_HOME/build-tools/26.0.2" ]]; then
+      if [[ ! -d "$ANDROID_HOME/build-tools/27.0.3" ]]; then
       echo y |
-      android update sdk --all --no-ui --filter build-tools-26.0.2 ;
+      android update sdk --all --no-ui --filter build-tools-27.0.3 ;
       fi
     - >
       if [[ ! -d "$ANDROID_HOME/extras/android/support" ]]; then

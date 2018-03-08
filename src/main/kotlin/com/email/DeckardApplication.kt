@@ -14,5 +14,10 @@ class DeckardApplication : Application(){
                 .build()
         )
         Stetho.initializeWithDefaults(this)
+        Thread.setDefaultUncaughtExceptionHandler(object: Thread.UncaughtExceptionHandler {
+            override fun uncaughtException(thread: Thread?, throwable: Throwable?) {
+                throwable?.printStackTrace()
+            }
+        })
     }
 }
