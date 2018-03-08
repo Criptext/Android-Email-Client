@@ -30,7 +30,7 @@ class SignInSceneController(
 
     val onPasswordLoginDialogListener = object : OnPasswordLoginDialogListener {
         override fun acceptPasswordLogin() {
-            scene.showPasswordLoginHolder()
+            scene.showPasswordLoginHolder(model.username)
         }
 
         override fun cancelPasswordLogin() {

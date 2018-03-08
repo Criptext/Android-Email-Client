@@ -15,7 +15,7 @@ import com.email.scenes.signin.SignInSceneController
 
 class PasswordLoginHolder(
         val view: View,
-        val starterUsername : String
+        val user : String
 ) {
 
     private val username: TextView
@@ -29,7 +29,7 @@ class PasswordLoginHolder(
         password = view.findViewById(R.id.password)
         buttonConfirm = view.findViewById(R.id.buttonConfirm)
 
-        username.text  = "$starterUsername@criptext.com"
+        username.text  = "$user@criptext.com"
 
     }
 
@@ -47,7 +47,7 @@ class PasswordLoginHolder(
             }
         })
     }
-    fun assignConfirmListener() {
+    fun assignConfirmButtonListener() {
         buttonConfirm.setOnClickListener {
             signInListener!!.onPasswordLoginClick()
         }
