@@ -11,4 +11,7 @@ sealed class SignInRequest{
                            val password: String,
                            val deviceId: Int
     ): SignInRequest()
+
+    class VerifyUser(val username: String
+    ): SignInRequest()
 }

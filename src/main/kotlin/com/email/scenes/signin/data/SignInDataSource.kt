@@ -25,6 +25,12 @@ class SignInDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     })
+
+            is SignInRequest.VerifyUser -> VerifyUserWorker(signInLocalDB,
+                    username = params.username,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 }

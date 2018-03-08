@@ -178,6 +178,7 @@ class SignUpSceneController(
             }
         }
     }
+
     private fun submitCreateUser() {
         scene.showKeyGenerationHolder()
         val newAccount = IncompleteAccount(
