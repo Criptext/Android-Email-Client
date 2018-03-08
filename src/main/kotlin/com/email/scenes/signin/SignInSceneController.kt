@@ -48,6 +48,20 @@ class SignInSceneController(
         }
     }
     private val signInListener = object : SignInListener {
+        override fun onPasswordLoginClick() {
+            /*
+             *TODO(START LOGIN WITH PASSWORD USING REMOTE SERVER) --> datasource
+             * IF SUCCESS GO TO MAILBOX ELSE stay there and let the user try again(?)
+             * */
+
+            host.goToScene(MailboxParams())
+
+        }
+
+        override fun onPasswordChangeListener(password: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onCantAccessDeviceClick(){
             scene.showPasswordLoginDialog(onPasswordLoginDialogListener)
         }
@@ -124,5 +138,7 @@ class SignInSceneController(
         fun goToSignUp()
         fun userLoginReady()
         fun onCantAccessDeviceClick()
+        fun onPasswordLoginClick()
+        fun onPasswordChangeListener(password: String)
     }
 }

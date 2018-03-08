@@ -55,18 +55,18 @@ interface SignUpScene {
         }
 
         private fun showUsernameSucess() {
-            signUpFormHolder?.showUsernameSucess()
+            signUpFormHolder?.showUsernameSuccess()
         }
 
         private fun hideUsernameSucess() {
-            signUpFormHolder?.hideUsernameSucess()
+            signUpFormHolder?.hideUsernameSuccess()
         }
 
         override fun togglePasswordSuccess(show: Boolean) {
             if(show) {
-                signUpFormHolder?.showPasswordSucess()
+                signUpFormHolder?.showPasswordSuccess()
             } else {
-                signUpFormHolder?.hidePasswordSucess()
+                signUpFormHolder?.hidePasswordSuccess()
             }
         }
 
