@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 interface SignInAPIClient {
 
     fun authenticateUser(
-            user: User,
+            username: String,
             password: String,
             deviceId: Int)
             : String
@@ -26,12 +26,12 @@ interface SignInAPIClient {
                 build()
 
         override fun authenticateUser(
-                user: User,
+                username: String,
                 password: String,
                 deviceId: Int): String {
 
                 val request = ApiCall.authenticateUser(
-                        username = user.nickname,
+                        username = username,
                         password = password,
                         deviceId = deviceId
                 )
