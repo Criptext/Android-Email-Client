@@ -1,6 +1,6 @@
 package com.email.scenes.signin
 
-import com.email.api.SignalKeyGenerator
+import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner

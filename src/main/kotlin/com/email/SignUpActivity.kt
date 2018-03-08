@@ -1,6 +1,6 @@
 package com.email
 
-import com.email.api.SignalKeyGenerator
+import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.SignUpLocalDB
 import com.email.scenes.SceneController

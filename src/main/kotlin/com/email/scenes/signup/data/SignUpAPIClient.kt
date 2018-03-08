@@ -1,7 +1,7 @@
 package com.email.scenes.signup.data
 
 import com.email.api.ApiCall
-import com.email.api.PreKeyBundleShareData
+import com.email.signal.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.scenes.signup.IncompleteAccount
 import okhttp3.OkHttpClient

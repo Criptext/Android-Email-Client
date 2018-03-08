@@ -1,4 +1,4 @@
-package com.email.api
+package com.email.signal
 
 /**
  * Created by sebas on 3/6/18.

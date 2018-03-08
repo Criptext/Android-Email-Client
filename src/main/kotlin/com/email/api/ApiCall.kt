@@ -1,5 +1,6 @@
 package com.email.api
 
+import com.email.signal.PreKeyBundleShareData
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody

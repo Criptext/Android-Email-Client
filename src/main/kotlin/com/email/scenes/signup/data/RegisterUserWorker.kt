@@ -2,10 +2,10 @@ package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
-import com.email.api.PreKeyBundleShareData
+import com.email.signal.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.api.SignUpAPILoader
-import com.email.api.SignalKeyGenerator
+import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignUpLocalDB
 import com.email.db.models.User
@@ -79,7 +79,6 @@ class RegisterUserWorker(
                 SignUpResult.RegisterUser.Success()
             }
             is Result.Failure -> {
-                operationLocalDB.error.printStackTrace()
                 SignUpResult.RegisterUser.Failure(
                         exception = operationLocalDB.error,
                         message = createErrorMessage(operationLocalDB.error))
