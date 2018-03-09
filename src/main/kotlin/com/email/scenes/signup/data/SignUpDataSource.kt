@@ -1,14 +1,11 @@
-package com.email.scenes.signin
+package com.email.scenes.signup.data
 
-import com.email.api.SignalKeyGenerator
+import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
+import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
-import com.email.scenes.signup.data.RegisterUserWorker
-import com.email.scenes.signup.data.SignUpAPIClient
-import com.email.scenes.signup.data.SignUpRequest
-import com.email.scenes.signup.data.SignUpResult
 
 /**
  * Created by sebas on 2/15/18.
@@ -17,7 +14,8 @@ import com.email.scenes.signup.data.SignUpResult
 class SignUpDataSource(override val runner: WorkRunner,
                        private val signUpAPIClient: SignUpAPIClient,
                        private val signUpLocalDB: SignUpLocalDB,
-                       private val signalKeyGenerator: SignalKeyGenerator
+                       private val signalKeyGenerator: SignalKeyGenerator,
+                       private val keyValueStorage: KeyValueStorage
     )
     : WorkHandler<SignUpRequest, SignUpResult>() {
     override fun createWorkerFromParams(params: SignUpRequest,
@@ -28,8 +26,8 @@ class SignUpDataSource(override val runner: WorkRunner,
                     db = signUpLocalDB,
                     apiClient = signUpAPIClient,
                     account = params.account,
-                    recipientId = params.recipientId,
                     signalKeyGenerator = signalKeyGenerator,
+                    keyValueStorage = keyValueStorage,
                     publishFn = { result ->
                 flushResults(result)
             })

@@ -1,7 +1,7 @@
 package com.email.mocks
 
-import com.email.api.PreKeyBundleShareData
-import com.email.api.SignalKeyGenerator
+import com.email.signal.PreKeyBundleShareData
+import com.email.signal.SignalKeyGenerator
 import org.whispersystems.libsignal.state.PreKeyRecord
 
 /**

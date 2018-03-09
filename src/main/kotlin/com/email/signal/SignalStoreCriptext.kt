@@ -7,10 +7,10 @@ import com.email.db.dao.RawPreKeyDao
 import com.email.db.dao.RawSessionDao
 import com.email.db.dao.RawSignedPreKeyDao
 import com.email.db.models.User
-import com.email.db.models.signal.RawIdentityKey
-import com.email.db.models.signal.RawPreKey
-import com.email.db.models.signal.RawSession
-import com.email.db.models.signal.RawSignedPreKey
+import com.email.db.models.signal.CRIdentityKey
+import com.email.db.models.signal.CRPreKey
+import com.email.db.models.signal.CRSessionRecord
+import com.email.db.models.signal.CRSignedPreKey
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.InvalidKeyIdException
@@ -88,8 +88,8 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         private fun loadSessionFromDB(address: SignalProtocolAddress) =
             db.find(recipientId = address.name, deviceId = address.deviceId)
 
-        private fun createSignalSessionRecord(rawSession: RawSession): SessionRecord {
-            val bytes = Encoding.stringToByteArray(rawSession.byteString)
+        private fun createSignalSessionRecord(crSessionRecord: CRSessionRecord): SessionRecord {
+            val bytes = Encoding.stringToByteArray(crSessionRecord.byteString)
             return SessionRecord(bytes)
         }
 
@@ -118,7 +118,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
         override fun storeSession(address: SignalProtocolAddress, record: SessionRecord) {
             val sessionRecord = Encoding.byteArrayToString(record.serialize())
-            val newRawSession = RawSession(recipientId = address.name, deviceId = address.deviceId,
+            val newRawSession = CRSessionRecord(recipientId = address.name, deviceId = address.deviceId,
                     byteString = sessionRecord)
             db.insert(newRawSession)
         }
@@ -136,7 +136,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
         override fun saveIdentity(address: SignalProtocolAddress, identityKey: IdentityKey) {
             val identityKeySerialized = Encoding.byteArrayToString(identityKey.serialize())
-            val newIdentityKey = RawIdentityKey(recipientId = address.name,
+            val newIdentityKey = CRIdentityKey(recipientId = address.name,
                     deviceId = address.deviceId, byteString = identityKeySerialized)
             rawIdentityKeyDao.insert(newIdentityKey)
         }
@@ -167,14 +167,14 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         override fun containsSignedPreKey(signedPreKeyId: Int): Boolean =
             rawSignedPreKeyDao.find(signedPreKeyId) != null
 
-        private val createSignedPreKeyRecord: (RawSignedPreKey) -> SignedPreKeyRecord = { rawSignedPreKey ->
+        private val createSignedPreKeyRecord: (CRSignedPreKey) -> SignedPreKeyRecord = { rawSignedPreKey ->
             val bytes = Encoding.stringToByteArray(rawSignedPreKey.byteString)
             SignedPreKeyRecord(bytes)
         }
 
         override fun storeSignedPreKey(signedPreKeyId: Int, record: SignedPreKeyRecord) {
             val byteString = Encoding.byteArrayToString(record.serialize())
-            val newRawSignedPreKey = RawSignedPreKey(id = signedPreKeyId, byteString = byteString)
+            val newRawSignedPreKey = CRSignedPreKey(id = signedPreKeyId, byteString = byteString)
             rawSignedPreKeyDao.insert(newRawSignedPreKey)
         }
 
@@ -201,7 +201,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
         override fun storePreKey(preKeyId: Int, record: PreKeyRecord) {
             val preKeyString = Encoding.byteArrayToString(record.serialize())
-            val newPreKey = RawPreKey(id = preKeyId, byteString = preKeyString)
+            val newPreKey = CRPreKey(id = preKeyId, byteString = preKeyString)
             rawPreKeyDao.insert(newPreKey)
         }
 

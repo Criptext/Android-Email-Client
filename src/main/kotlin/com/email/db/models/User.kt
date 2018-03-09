@@ -20,6 +20,9 @@ class User(
         @ColumnInfo(name = "nickname")
         var nickname : String,
 
+        @ColumnInfo(name = "jwtoken")
+        var jwtoken : String,
+
         @PrimaryKey
         var registrationId : Int,
 

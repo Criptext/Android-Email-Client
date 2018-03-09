@@ -4,9 +4,9 @@ import com.email.IHostActivity
 import com.email.api.ServerErrorException
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
-import com.email.scenes.signin.SignUpDataSource
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
+import com.email.scenes.signup.data.SignUpDataSource
 
 /**
  * Created by sebas on 2/15/18.
@@ -22,7 +22,7 @@ class SignUpSceneController(
         get() = null
 
     val arePasswordsMatching: Boolean
-        get() = model.password.equals(model.confirmPassword)
+        get() = model.password == model.confirmPassword
 
     private val isPasswordErrorShown: Boolean
         get() = model.errors["password"] == true

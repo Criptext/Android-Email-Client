@@ -1,9 +1,11 @@
 package com.email.scenes.signup
 
 import com.email.api.ApiCall
+import com.email.db.KeyValueStorage
+import com.email.mocks.MockedKeyValueStorage
 import com.email.mocks.MockedSignalKeyGenerator
 import com.email.mocks.MockedWorkRunner
-import com.email.scenes.signin.SignUpDataSource
+import com.email.scenes.signup.data.SignUpDataSource
 import com.email.scenes.signup.data.RegisterUserWorker
 import com.email.scenes.signup.data.SignUpAPIClient
 import com.email.scenes.signup.mocks.MockedIHostActivity
@@ -12,6 +14,7 @@ import com.email.scenes.signup.mocks.MockedSignUpView
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
+import org.amshove.kluent.`should equal`
 import org.amshove.kluent.`should not be`
 import org.junit.Before
 import org.junit.Test
@@ -25,6 +28,7 @@ class SignUpControllerTest {
     private lateinit var model: SignUpSceneModel
     private lateinit var scene: MockedSignUpView
     private lateinit var db: MockedSignUpLocalDB
+    private lateinit var storage: KeyValueStorage
     private lateinit var signUpAPIClient: SignUpAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: SignUpDataSource
@@ -37,11 +41,13 @@ class SignUpControllerTest {
         runner = MockedWorkRunner()
         db = MockedSignUpLocalDB()
         signUpAPIClient = SignUpAPIClient.Default()
+        storage = MockedKeyValueStorage()
         dataSource = SignUpDataSource(
                 runner = runner,
                 signUpAPIClient = signUpAPIClient,
                 signUpLocalDB = db,
-                signalKeyGenerator = MockedSignalKeyGenerator()
+                signalKeyGenerator = MockedSignalKeyGenerator(),
+                keyValueStorage = storage
         )
         controller = SignUpSceneController(
                 model =  model,
@@ -65,7 +71,7 @@ class SignUpControllerTest {
     }
 
     @Test
-    fun `when the create user button is clicked, on abscense of error, should update the db and show success of operation`() {
+    fun `when the create user button is clicked, on absence of error, should update the db and local storage and show success in UI`() {
         val server = MockWebServer()
 
         // Schedule some responses.
@@ -75,15 +81,23 @@ class SignUpControllerTest {
         ApiCall.baseUrl = server.url("v1/mock").toString()
 
         controller.onStart()
+
+        // simulate user input
         val signUpListener = scene.signUpListener
         fillFields(signUpListener)
         fillNewUser(signUpListener)
         scene.errorSignUp = true
         signUpListener?.onCreateAccountClick()
+
+        // trigger work complete
         runner.assertPendingWork(listOf(RegisterUserWorker::class.java))
         runner._work()
 
+        // assert UI has no errors
         scene.errorSignUp `should be` false
+        // assert db and local storage updated
+        storage.getString(KeyValueStorage.StringKey.ActiveAccount, "") `should equal` "sebas1"
+        db.savedUser!!.nickname `should equal` "sebas1"
     }
 
     @Test
@@ -104,8 +118,12 @@ class SignUpControllerTest {
         runner.assertPendingWork(listOf(RegisterUserWorker::class.java))
         runner._work()
 
+        // assert UI has errors
         scene.errorSignUp `should be` true
         scene.userNameErrors `should be` true
+        // assert db and local storage did not updated
+        storage.getString(KeyValueStorage.StringKey.ActiveAccount, "") `should equal` ""
+        db.savedUser `should be` null
     }
 
     private fun fillNewUser(signUpListener: SignUpSceneController.SignUpListener?){

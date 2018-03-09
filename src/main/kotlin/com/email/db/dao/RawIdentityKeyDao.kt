@@ -3,7 +3,7 @@ package com.email.db.dao
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
-import com.email.db.models.signal.RawIdentityKey
+import com.email.db.models.signal.CRIdentityKey
 
 /**
  * Created by gabriel on 3/6/18.
@@ -13,10 +13,10 @@ import com.email.db.models.signal.RawIdentityKey
 interface RawIdentityKeyDao {
 
     @Insert
-    fun insert(rawIdentityKey: RawIdentityKey)
+    fun insert(crIdentityKey: CRIdentityKey)
 
     @Query("""SELECT * FROM raw_identitykey
               WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
-    fun find(recipientId: String, deviceId: Int): RawIdentityKey?
+    fun find(recipientId: String, deviceId: Int): CRIdentityKey?
 
 }

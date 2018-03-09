@@ -68,7 +68,6 @@ interface MailboxLocalDB {
                 LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
-                UserSeeder.seed(db.userDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
                 EmailUserSeeder.seed(db.emailUserDao())

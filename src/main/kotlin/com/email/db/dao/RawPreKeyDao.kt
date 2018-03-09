@@ -1,10 +1,9 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
-import com.email.db.models.signal.RawPreKey
+import com.email.db.models.signal.CRPreKey
 
 /**
  * Created by gabriel on 3/5/18.
@@ -18,14 +17,14 @@ interface RawPreKeyDao {
 
 
     @Insert
-    fun insertAll(prekeys : List<RawPreKey>)
+    fun insertAll(prekeys : List<CRPreKey>)
 
     @Query("DELETE from raw_prekey")
     fun deleteAll()
 
     @Query("SELECT * from raw_prekey where id = :id")
-    fun find(id: Int): RawPreKey?
+    fun find(id: Int): CRPreKey?
 
     @Insert
-    fun insert(rawPreKey: RawPreKey)
+    fun insert(crPreKey: CRPreKey)
 }

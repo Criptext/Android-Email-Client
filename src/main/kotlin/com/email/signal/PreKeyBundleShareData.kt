@@ -1,6 +1,5 @@
-package com.email.api
+package com.email.signal
 
-import com.email.signal.Encoding
 import org.json.JSONArray
 import org.json.JSONObject
 import org.whispersystems.libsignal.state.PreKeyRecord
@@ -19,7 +18,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
                                  val identityPublicKey: String,
                                  val identityKeyPair: String,
                                  val signedPrekey: String,
-                                 val prekeys: MutableList<PreKeyRecord>) {
+                                 val prekeys: List<PreKeyRecord>) {
 
     data class UploadBundle(val shareData: PreKeyBundleShareData,
                             val serializedPreKeys: Map<Int, String>
@@ -46,7 +45,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
 
         companion object {
             fun createKeyBundle(deviceId: Int):
-                    PreKeyBundleShareData.UploadBundle {
+                    UploadBundle {
                 val random = Random()
                 val identityKeyPair = KeyHelper.generateIdentityKeyPair()
                 val signedPreKeyId = random.nextInt(99) + 1
@@ -55,7 +54,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
                 val shareData = PreKeyBundleShareData(
                         deviceId = deviceId,
                         signedPreKeyId = signedPreKeyId,
-                        registrationId = KeyHelper.generateRegistrationId(false) ,
+                        registrationId = KeyHelper.generateRegistrationId(false),
                         identityPublicKey = Encoding.byteArrayToString(identityKeyPair.publicKey.serialize()),
                         signedPreKeyPublic = Encoding.byteArrayToString(signedPrekey.serialize()),
                         signedPreKeySignature = Encoding.byteArrayToString(signedPrekey.signature),
@@ -67,8 +66,7 @@ data class PreKeyBundleShareData(val registrationId: Int,
                     it.id to Encoding.byteArrayToString(
                             it.keyPair.publicKey.serialize())
                 }.toMap()
-                return PreKeyBundleShareData.UploadBundle(shareData,
-                        serializedPrekeys)
+                return UploadBundle(shareData, serializedPrekeys)
             }
         }
     }
