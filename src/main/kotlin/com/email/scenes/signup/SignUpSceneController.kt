@@ -2,7 +2,6 @@ package com.email.scenes.signup
 
 import com.email.IHostActivity
 import com.email.api.ServerErrorException
-import com.email.db.models.User
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.signin.SignUpDataSource
@@ -142,19 +141,7 @@ class SignUpSceneController(
                             onRecoveryEmailWarningListener
                     )
                 } else {
-                    scene.showKeyGenerationHolder()
-                    val newAccount = IncompleteAccount(
-                        username = model.username,
-                        name = model.fullName,
-                        password = model.password,
-                        recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail else null
-                    )
-
-                    val req = SignUpRequest.RegisterUser(
-                            account = newAccount,
-                            recipientId = model.username
-                    )
-                    dataSource.submitRequest(req)
+                    this@SignUpSceneController.submitCreateUser()
                 }
             }
         }
@@ -191,6 +178,21 @@ class SignUpSceneController(
             }
         }
     }
+    private fun submitCreateUser() {
+        scene.showKeyGenerationHolder()
+        val newAccount = IncompleteAccount(
+                username = model.username,
+                name = model.fullName,
+                password = model.password,
+                recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail else null
+        )
+
+        val req = SignUpRequest.RegisterUser(
+                account = newAccount,
+                recipientId = model.username
+        )
+        dataSource.submitRequest(req)
+    }
     private fun resetWidgetsFromModel() {
         scene.resetSceneWidgetsFromModel(
                 username = model.username,
@@ -202,22 +204,12 @@ class SignUpSceneController(
 
     val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
         override fun willAssignRecoverEmail() {
-            this@SignUpSceneController.willAssignRecoverEmail()
         }
 
         override fun denyWillAssignRecoverEmail() {
-            this@SignUpSceneController.denyWillAssignRecoverEmail()
+            this@SignUpSceneController.submitCreateUser()
         }
     }
-
-    fun willAssignRecoverEmail() {
-        TODO("WILL ASSIGN RECOVER EMAIL")
-    }
-
-    fun denyWillAssignRecoverEmail() {
-        TODO("DENY WILL ASSIGN RECOVER EMAIL")
-    }
-
 
     fun isUserAvailable(): Boolean {
         return model.username == "sebas"

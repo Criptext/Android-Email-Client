@@ -20,10 +20,11 @@
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:layout_gravity="top|end"
-        android:layout_margin="6dp"
         android:background="@drawable/circle_red"
         android:clickable="false"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:layout_marginEnd="6dp"
+        >
 
         <TextView
             android:id="@+id/view_alert_count_textview"
@@ -33,7 +34,8 @@
             android:textColor="@color/colorBackground"
             android:clickable="false"
             android:textSize="10sp"
-            android:text="3"/>
+            android:text="3"
+            />
 
     </FrameLayout>
 

@@ -142,6 +142,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         attachment = view.findViewById(R.id.email_has_attachments)
         context = view.context
         iconAttachments = view.findViewById(R.id.email_has_attachments)
+
+        countView.typeface = Typeface.DEFAULT_BOLD
     }
 
 }

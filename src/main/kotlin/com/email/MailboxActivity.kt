@@ -53,7 +53,7 @@ class MailboxActivity : BaseActivity() {
     
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
-        menu.findItem(R.id.mailbox_bell_container).actionView.setOnClickListener {
+        menu.findItem(R.id.mailbox_bell_container)?.actionView?.setOnClickListener {
             notificationMenuClickListener()
         }
         return true

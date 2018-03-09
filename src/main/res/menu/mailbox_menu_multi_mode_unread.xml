@@ -21,7 +21,7 @@
         android:title="unread"/>
 
     <item
-        android:actionLayout="@layout/mailbox_more_layout"
+        android:icon="@drawable/more"
         app:showAsAction="always"
         android:title="@string/more">
         <menu xmlns:android="http://schemas.android.com/apk/res/android"

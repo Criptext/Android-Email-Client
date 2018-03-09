@@ -1,6 +1,7 @@
 package com.email
 
 import android.app.Application
+import com.facebook.stetho.Stetho
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 class DeckardApplication : Application(){
@@ -12,5 +13,6 @@ class DeckardApplication : Application(){
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         )
+        Stetho.initializeWithDefaults(this)
     }
 }

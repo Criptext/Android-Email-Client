@@ -51,18 +51,18 @@
                 android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:textColor="#fff"
+                android:textStyle="bold"
                 android:textSize="10sp"
                 android:background="@drawable/square_round_corners_gray" />
 
             <ImageView
                 android:id="@+id/email_has_attachments"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:text="20"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginEnd="5dp"
                 android:gravity="end"
-                android:textSize="10sp"
                 android:src="@drawable/attachment"
+                android:tint="@color/attachmentGray"
                 android:rotation="90"
                 android:visibility="visible"/>
             <TextView

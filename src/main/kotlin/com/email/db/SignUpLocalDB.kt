@@ -33,6 +33,7 @@ interface SignUpLocalDB {
             db.userDao().insert(user)
         }
 
+
         override fun storeRawSignedPrekey(rawSignedPreKey: RawSignedPreKey) {
             db.rawSignedPreKeyDao().insert(rawSignedPreKey)
         }
