@@ -37,7 +37,7 @@ class PasswordLoginHolder(
 
     fun assignForgotPasswordClickListener() {
         forgotPassword.setOnClickListener {
-            signInListener!!.onForgotPasswordClick()
+            signInListener?.onForgotPasswordClick()
         }
     }
 
@@ -57,7 +57,7 @@ class PasswordLoginHolder(
     }
     fun assignConfirmButtonListener() {
         buttonConfirm.setOnClickListener {
-            signInListener!!.onPasswordLoginClick()
+            signInListener?.onPasswordLoginClick()
         }
     }
 
