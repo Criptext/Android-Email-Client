@@ -7,6 +7,7 @@ import com.email.scenes.params.MailboxParams
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 import com.email.scenes.signup.data.SignUpDataSource
+import com.email.utils.Utility
 
 /**
  * Created by sebas on 2/15/18.
@@ -39,12 +40,23 @@ class SignUpSceneController(
     val isSetRecoveryEmail: Boolean
         get() = model.recoveryEmail.isNotEmpty()
 
+    private val isValidRecoveryEmail: Boolean
+        get() {
+            return if(isSetRecoveryEmail){
+                val isRecoveryEmailValid = Utility.isEmailValid(model.recoveryEmail)
+                isRecoveryEmailValid
+            } else {
+                true
+            }
+        }
+
 
     private fun shouldCreateButtonBeEnabled(): Boolean {
         return !isUsernameErrorShown
                 && !isPasswordErrorShown
                 && isCheckedTermsAndConditions
                 && !fieldsAreEmpty
+                && isValidRecoveryEmail
     }
 
     private val signUpListener : SignUpListener = object : SignUpListener {
@@ -76,6 +88,8 @@ class SignUpSceneController(
             model.fullName = text
             if(shouldCreateButtonBeEnabled()) {
                 scene.enableCreateAccountButton()
+            } else {
+                scene.disableCreateAccountButton()
             }
         }
 
@@ -85,6 +99,11 @@ class SignUpSceneController(
 
         override fun onRecoveryEmailTextChangeListener(text: String) {
             model.recoveryEmail = text
+            if(shouldCreateButtonBeEnabled()) {
+                scene.enableCreateAccountButton()
+            } else {
+                scene.disableCreateAccountButton()
+            }
         }
 
 
@@ -178,6 +197,7 @@ class SignUpSceneController(
             }
         }
     }
+
     private fun submitCreateUser() {
         scene.showKeyGenerationHolder()
         val newAccount = IncompleteAccount(

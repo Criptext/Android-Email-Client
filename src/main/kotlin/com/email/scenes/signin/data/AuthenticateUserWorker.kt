@@ -5,7 +5,6 @@ import com.email.R
 import com.email.api.SignInAPILoader
 import com.email.bgworker.BackgroundWorker
 import com.email.db.SignInLocalDB
-import com.email.db.models.User
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import org.json.JSONException
@@ -16,7 +15,7 @@ import org.json.JSONException
 class AuthenticateUserWorker(
         private val db: SignInLocalDB,
         private val apiClient: SignInAPIClient,
-        private val user: User,
+        private val username: String,
         private val password: String,
         private val deviceId: Int,
         override val publishFn: (SignInResult.AuthenticateUser) -> Unit)
@@ -35,7 +34,7 @@ class AuthenticateUserWorker(
 
     override fun work(): SignInResult.AuthenticateUser? {
         val operationResult =  loader.authenticateUser(
-                user = user,
+                username = username,
                 password = password,
                 deviceId = deviceId
         )

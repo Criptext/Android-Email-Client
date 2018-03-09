@@ -19,9 +19,15 @@ class SignInDataSource(override val runner: WorkRunner,
         return when (params) {
             is SignInRequest.AuthenticateUser -> AuthenticateUserWorker(signInLocalDB,
                     signInAPIClient,
-                    user = params.user,
+                    username = params.username,
                     password = params.password,
                     deviceId = params.deviceId,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
+            is SignInRequest.VerifyUser -> VerifyUserWorker(signInLocalDB,
+                    username = params.username,
                     publishFn = { result ->
                         flushResults(result)
                     })

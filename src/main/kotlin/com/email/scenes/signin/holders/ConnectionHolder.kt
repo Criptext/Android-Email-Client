@@ -91,7 +91,7 @@ class ConnectionHolder(val view: View) {
     }
 
 
-    fun startSucceedAnimation(showForm: (
+    fun startSucceedAnimation(launchMailboxScene: (
                 signInListener: SignInSceneController.SignInListener) -> Unit) {
         animLoading!!.cancel()
         loadingView.post {
@@ -113,7 +113,7 @@ class ConnectionHolder(val view: View) {
                 }
 
                 override fun onAnimationEnd(p0: Animator?) {
-                    showForm(signInListener!!)
+                    launchMailboxScene(signInListener!!)
                 }
 
                 override fun onAnimationCancel(p0: Animator?) {

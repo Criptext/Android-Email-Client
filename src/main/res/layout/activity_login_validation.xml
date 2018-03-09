@@ -94,7 +94,7 @@
         android:layout_weight="0.38">
 
         <TextView
-            android:id="@+id/textViewPromot"
+            android:id="@+id/textViewPrompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -123,7 +123,6 @@
             android:id="@+id/buttonResend"
             android:layout_width="270dp"
             android:layout_height="40dp"
-            android:layout_below="@+id/textViewPromot"
             android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
             android:text="@string/button_resendit"
@@ -140,6 +139,8 @@
             android:layout_marginBottom="20dp">
 
             <TextView
+                android:clickable="true"
+                android:id="@+id/cant_access_device"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -153,7 +154,5 @@
                 android:background="#ffffff"/>
 
         </LinearLayout>
-
     </RelativeLayout>
-
 </LinearLayout>

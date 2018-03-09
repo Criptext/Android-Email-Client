@@ -2,7 +2,6 @@ package com.email.scenes.signin.data
 
 import com.email.api.ApiCall
 import com.email.api.ServerErrorException
-import com.email.db.models.User
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit
 interface SignInAPIClient {
 
     fun authenticateUser(
-            user: User,
+            username: String,
             password: String,
             deviceId: Int)
             : String
@@ -26,23 +25,20 @@ interface SignInAPIClient {
                 build()
 
         override fun authenticateUser(
-                user: User,
+                username: String,
                 password: String,
                 deviceId: Int): String {
 
                 val request = ApiCall.authenticateUser(
-                        username = user.nickname,
+                        username = username,
                         password = password,
                         deviceId = deviceId
                 )
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
                     return response.message()
-                } else if (response.code() == 422) {
+                } else
                     throw ServerErrorException(response.code())
-                } else {
-                    TODO("thow other exception...")
-                }
         }
     }
 

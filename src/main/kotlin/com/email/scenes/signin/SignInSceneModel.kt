@@ -7,4 +7,5 @@ import com.email.scenes.SceneModel
  */
 class SignInSceneModel : SceneModel {
     var username: String = ""
+    var password: String = ""
 }

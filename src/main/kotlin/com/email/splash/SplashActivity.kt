@@ -36,7 +36,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
             overridePendingTransition(0, 0)
         }
         else{
-            startActivity(Intent(this, SignUpActivity::class.java))
+            startActivity(Intent(this, SignInActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
         }
     }

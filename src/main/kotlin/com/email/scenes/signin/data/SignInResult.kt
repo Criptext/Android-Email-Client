@@ -14,4 +14,11 @@ sealed class SignInResult {
                 val message: UIMessage,
                 val exception: Exception): AuthenticateUser()
     }
+
+    sealed class VerifyUser: SignInResult() {
+        class Success: VerifyUser()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): VerifyUser()
+    }
 }

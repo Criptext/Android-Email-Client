@@ -77,21 +77,21 @@ class SignUpFormHolder(val view: View) {
         recoveryEmailWarningDialog.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
     }
 
-    fun showUsernameSucess() {
+    fun showUsernameSuccess() {
         usernameSuccessImage.visibility = View.VISIBLE
         usernameInput.hint = ""
     }
 
-    fun hideUsernameSucess() {
+    fun hideUsernameSuccess() {
         usernameSuccessImage.visibility = View.INVISIBLE
     }
 
-    fun showPasswordSucess() {
+    fun showPasswordSuccess() {
         passwordSuccessImage.visibility = View.VISIBLE
         confirmPasswordSuccessImage.visibility = View.VISIBLE
     }
 
-    fun hidePasswordSucess() {
+    fun hidePasswordSuccess() {
         passwordSuccessImage.visibility = View.INVISIBLE
         confirmPasswordSuccessImage.visibility = View.INVISIBLE
     }
@@ -221,7 +221,6 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun assignRecoveryEmailTextChangeListener() {
-
         recoveryEmail.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
             }
