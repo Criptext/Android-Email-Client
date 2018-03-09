@@ -1,6 +1,7 @@
 package com.email.db
 
 import android.content.Context
+import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.EmailLabel
 import com.email.db.models.Label
@@ -39,7 +40,7 @@ interface MailboxLocalDB {
         override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
                 EmailThread(email = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
+                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>)
             } as ArrayList<EmailThread>
         }
 
@@ -53,13 +54,13 @@ interface MailboxLocalDB {
         override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
                 EmailThread(email = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
+                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>)
             }
         }
 
         override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
             labels.forEach{
-                db.emailLabelDao().deleteByEmailLabelIds(it.id, emailId)
+                db.emailLabelDao().deleteByEmailLabelIds(it.id!!, emailId)
             }
         }
 
@@ -68,9 +69,10 @@ interface MailboxLocalDB {
                 LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
+                ContactSeeder.seed(db.contactDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
-                EmailUserSeeder.seed(db.emailUserDao())
+                EmailContactSeeder.seed(db.emailContactDao())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -91,7 +93,7 @@ interface MailboxLocalDB {
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
             emailThreads.forEach {
-                db.emailDao().toggleRead(id = it.email.id,
+                db.emailDao().toggleRead(id = it.email.id!!,
                         unread = updateUnreadStatus)
             }
         }

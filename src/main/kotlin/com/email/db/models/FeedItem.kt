@@ -12,7 +12,7 @@ import java.util.*
 @Entity(tableName = "feedItem")
 class FeedItem(
         @PrimaryKey(autoGenerate = true)
-        var id:Int,
+        var id:Int?,
 
         @ColumnInfo(name = "type")
         var feedType: Int,

@@ -1,4 +1,4 @@
-package com.email.db.DAO
+package com.email.db.dao
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete

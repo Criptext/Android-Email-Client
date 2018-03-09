@@ -17,7 +17,7 @@ import java.util.*
                                           childColumns = ["fileId"])])
 public class Open(
         @PrimaryKey(autoGenerate = true)
-        var id:Int,
+        var id:Int?,
 
         @ColumnInfo(name = "type")
         var type : Int,

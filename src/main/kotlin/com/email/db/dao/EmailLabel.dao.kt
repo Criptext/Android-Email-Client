@@ -1,4 +1,4 @@
-package com.email.db.DAO
+package com.email.db.dao
 
 import android.arch.persistence.room.*
 import com.email.db.models.Email
@@ -15,10 +15,12 @@ interface EmailLabelJoinDao {
     @Insert
     fun insert(emailLabel : EmailLabel)
 
-    @Query("SELECT email.* FROM email INNER JOIN email_label ON email.id=email_label.emailId WHERE email_label.labelId=:labelId")
+    @Query("SELECT email.* FROM email INNER JOIN email_label " +
+            "ON email.id=email_label.emailId WHERE email_label.labelId=:labelId")
     fun getEmailsFromLabel(labelId: Int) : List<Email>
 
-    @Query("SELECT label.* FROM label INNER JOIN email_label ON label.id=email_label.labelId WHERE email_label.emailId=:emailId")
+    @Query("SELECT label.* FROM label INNER JOIN email_label " +
+            "ON label.id=email_label.labelId WHERE email_label.emailId=:emailId")
     fun getLabelsFromEmail(emailId: Int) : List<Label>
 
     @Insert

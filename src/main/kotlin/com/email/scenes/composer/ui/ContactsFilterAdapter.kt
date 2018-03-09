@@ -44,7 +44,7 @@ class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
             nameTextView.visibility = View.GONE
         }
         initialTextView.text = item.name.get(0).toString().toUpperCase()
-        // this should use utility function for user avatars, make sure to replace it
+        // this should use utility function for account avatars, make sure to replace it
         circleView.setColorFilter(MATERIAL_COLORS[item.hashCode() % 17].toInt())
 
         return view

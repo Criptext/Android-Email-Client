@@ -27,7 +27,7 @@ abstract class SceneController {
      * Called during the host activity's `onBackPressed`. If this function returns true, host
      * activity with call `super.onBackPressed()`, potentially closing the activity.
      *
-     * If you don't want your host activity to be closed after the user presses back, make this
+     * If you don't want your host activity to be closed after the account presses back, make this
      * function return false.
      */
     abstract fun onBackPressed(): Boolean

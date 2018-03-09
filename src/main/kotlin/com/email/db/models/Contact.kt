@@ -3,16 +3,19 @@ package com.email.db.models
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
+import android.arch.persistence.room.PrimaryKey
 import java.text.Normalizer
 import java.util.regex.Pattern
 
 /**
  * Created by gabriel on 2/26/18.
  */
-@Entity(tableName = "contact", indices = [Index(value = "email"), Index(value = "name")] )
+@Entity(tableName = "contact",
+        indices = [Index(value = ["recipientId"]), Index(value = ["name"])] )
 open class Contact(
 
-        @ColumnInfo(name = "email")
+        @PrimaryKey
+        @ColumnInfo(name = "recipientId")
         var email : String,
 
         @ColumnInfo(name = "name")
