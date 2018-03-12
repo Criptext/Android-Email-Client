@@ -132,7 +132,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     private fun resetIconYAxis(view : View) {
         if (view.rotationY != 0.toFloat() ) {
-            view.setRotationY(0.toFloat());
+            view.setRotationY(0.toFloat())
         }
     }
 

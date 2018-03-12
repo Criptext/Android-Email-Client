@@ -17,9 +17,9 @@ interface EmailContactJoinDao {
     @Insert
     fun insert(emailContact : EmailContact)
 
-    @Query("SELECT email.* FROM email " +
+    @Query("SELECT latestEmail.* FROM latestEmail " +
             "INNER JOIN email_contact " +
-            "ON email.id=email_contact.emailId " +
+            "ON latestEmail.id=email_contact.emailId " +
             "WHERE email_contact.contactId=:contactId")
     fun getEmailsFromContact(contactId: String) : List<Email>
 

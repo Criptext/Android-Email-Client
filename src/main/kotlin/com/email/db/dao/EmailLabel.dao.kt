@@ -15,8 +15,8 @@ interface EmailLabelJoinDao {
     @Insert
     fun insert(emailLabel : EmailLabel)
 
-    @Query("SELECT email.* FROM email INNER JOIN email_label " +
-            "ON email.id=email_label.emailId WHERE email_label.labelId=:labelId")
+    @Query("SELECT latestEmail.* FROM latestEmail INNER JOIN email_label " +
+            "ON latestEmail.id=email_label.emailId WHERE email_label.labelId=:labelId")
     fun getEmailsFromLabel(labelId: Int) : List<Email>
 
     @Query("SELECT label.* FROM label INNER JOIN email_label " +
