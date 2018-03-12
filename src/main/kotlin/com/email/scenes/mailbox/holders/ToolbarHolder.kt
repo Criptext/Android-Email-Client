@@ -29,12 +29,12 @@ class ToolbarHolder(val view: View) {
         navButton.visibility = View.GONE
         numberEmails.visibility = View.GONE
         backButton.visibility = View.VISIBLE
-        separator.visibility = View.VISIBLE
+        separator.visibility = View.GONE
         title.text = selectedThreadsQuantity.toString()
     }
 
     fun hideMultiModeBar() {
-        separator.visibility = View.GONE
+        separator.visibility = View.VISIBLE
         navButton.visibility = View.VISIBLE
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
