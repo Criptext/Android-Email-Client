@@ -1,7 +1,6 @@
 package com.email.scenes.mailbox.holders
 
 import android.content.Context
-import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View

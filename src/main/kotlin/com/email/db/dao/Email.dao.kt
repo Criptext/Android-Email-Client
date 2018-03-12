@@ -12,14 +12,15 @@ import com.email.db.models.Email
     @Insert
     fun insertAll(emails : List<Email>)
 
-    @Query("SELECT * FROM email")
+    @Query("SELECT * FROM email e " +
+            "WHERE date=(SELECT MAX(date) FROM email " +
+            "WHERE id = e.id)")
     fun getAll() : List<Email>
 
-    @Query("SELECT DISTINCT * " +
-            "FROM email as e " +
-            "WHERE id in (SELECT DISTINCT emailId " +
-            "FROM email_label) ")
-
+    @Query("SELECT * FROM email e " +
+            "WHERE date=(SELECT MAX(date) FROM email " +
+            "WHERE id = e.id) AND id in (SELECT DISTINCT emailId " +
+            "FROM email_label)")
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Delete

@@ -1,12 +1,10 @@
 package com.email.scenes.mailbox.holders
 
-import android.graphics.Typeface
 import android.support.v4.widget.Space
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
-import com.email.utils.ui.Tint
 
 /**
  * Created by sebas on 2/6/18.
