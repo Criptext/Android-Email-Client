@@ -62,8 +62,8 @@
                     android:gravity="center"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold"
                     android:layout_marginStart="10dp"
+                    fontPath="fonts/NunitoSans-Bold.ttf"
                     />
             </LinearLayout>
 

@@ -15,6 +15,7 @@ import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.anim.FlipAnimator
 import de.hdodenhof.circleimageview.CircleImageView
+import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
 /**
  * Created by sebas on 1/24/18.
@@ -49,13 +50,19 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {
-            val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
-            headerView.typeface = boldTypeface
-            dateView.typeface = boldTypeface
+            dateView.typeface = TypefaceUtils.load(
+                    view.resources.assets,
+                    "fonts/NunitoSans-Bold.ttf")
+            headerView.typeface = TypefaceUtils.load(
+                    view.resources.assets,
+                   "fonts/NunitoSans-Bold.ttf")
         } else {
-            val normalTypeface = Typeface.defaultFromStyle(Typeface.NORMAL)
-            headerView.typeface = normalTypeface
-            dateView.typeface = normalTypeface
+            headerView.typeface = TypefaceUtils.load(
+                    view.resources.assets,
+                    "fonts/NunitoSans-Regular.ttf")
+            dateView.typeface = TypefaceUtils.load(
+                    view.resources.assets,
+                    "fonts/NunitoSans-Regular.ttf")
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
     }
@@ -142,8 +149,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         attachment = view.findViewById(R.id.email_has_attachments)
         context = view.context
         iconAttachments = view.findViewById(R.id.email_has_attachments)
-
-        countView.typeface = Typeface.DEFAULT_BOLD
     }
 
 }

@@ -41,7 +41,6 @@ class ToolbarHolder(val view: View) {
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
         title.text = "INBOX"
-        title.typeface = Typeface.DEFAULT_BOLD
     }
 
     fun updateToolbarTitle(title: String) {

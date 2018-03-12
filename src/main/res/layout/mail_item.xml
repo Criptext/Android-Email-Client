@@ -38,7 +38,7 @@
                 android:ellipsize="end"
                 android:layout_marginEnd="10dp"
                 android:gravity="center_vertical"
-                android:textSize="17sp"
+                android:textSize="14sp"
                 android:textColor="@color/textColorPrimary"
                 android:layout_weight="1"
                 android:text="Lorem Ipsum"
@@ -100,21 +100,32 @@
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:layout_marginBottom="3dp"
+                    android:layout_marginBottom="0dp"
                     android:layout_marginEnd="3dp"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:textColor="@color/colorSubject"/>
-                <TextView
-                    android:id="@+id/email_preview"
+                <LinearLayout
                     android:layout_width="205dp"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:textSize="15sp"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                    android:drawableStart="@drawable/read_notification"
-                    android:drawablePadding="5dp"
-                    android:textColor="#6a707e"/>
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:scaleX="1.5"
+                        android:scaleY="1.5"
+                        android:layout_gravity="top"
+                        android:src="@drawable/mail_item_check"
+                        />
+                    <TextView
+                        android:id="@+id/email_preview"
+                        android:layout_width="185dp"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="14sp"
+                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                        android:textColor="#6a707e"/>
+
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

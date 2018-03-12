@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/read_notification"
+    android:insetTop="6dp"
+    android:insetLeft="6dp"
+    android:insetRight="6dp"
+    android:insetBottom="6dp"
+    />
