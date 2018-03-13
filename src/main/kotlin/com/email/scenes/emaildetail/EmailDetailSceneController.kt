@@ -36,10 +36,13 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
 
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
+                model.fullEmailList = fullEmailsList
+
                 scene.attachView(
                         fullEmailList = fullEmailsList,
                         fullEmailEventListener = fullEmailsEventListener)
             }
+
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
             }
         }

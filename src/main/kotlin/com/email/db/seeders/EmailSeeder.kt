@@ -51,7 +51,7 @@ class EmailSeeder {
                         content = "Contenido 2",
                         date = sdf.parse("1993-03-02 18:12:29"),
                         delivered = 1,
-                        isDraft = false,
+                        isDraft = true,
                         isTrash = false,
                         key = "key",
                         preview = "Lorem ipsum dolor " +
