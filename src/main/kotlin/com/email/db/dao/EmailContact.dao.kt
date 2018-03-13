@@ -26,28 +26,28 @@ interface EmailContactJoinDao {
 
     @Query("SELECT contact.* FROM contact " +
             "INNER JOIN email_contact " +
-            "ON contact.id=email_contact.contactId " +
+            "ON contact.email=email_contact.contactId " +
             "WHERE email_contact.emailId=:emailId " +
             "AND email_contact.type='CC'")
     fun getContactsFromEmailCC(emailId: Int) : List<Contact>
 
     @Query("SELECT contact.* FROM contact " +
             "INNER JOIN email_contact " +
-            "ON contact.id=email_contact.contactId " +
+            "ON contact.email=email_contact.contactId " +
             "WHERE email_contact.emailId=:emailId " +
             "AND email_contact.type='BCC'")
     fun getContactsFromEmailBCC(emailId: Int) : List<Contact>
 
     @Query("SELECT contact.* FROM contact " +
             "INNER JOIN email_contact " +
-            "ON contact.id=email_contact.contactId " +
+            "ON contact.email=email_contact.contactId " +
             "WHERE email_contact.emailId=:emailId " +
             "AND email_contact.type='FROM'")
     fun getContactsFromEmailFROM(emailId: Int) : List<Contact>
 
     @Query("SELECT contact.* FROM contact " +
             "INNER JOIN email_contact " +
-            "ON contact.id=email_contact.contactId " +
+            "ON contact.email=email_contact.contactId " +
             "WHERE email_contact.emailId=:emailId " +
             "AND email_contact.type='TP'")
     fun getContactsFromEmailTO(emailId: Int) : List<Contact>

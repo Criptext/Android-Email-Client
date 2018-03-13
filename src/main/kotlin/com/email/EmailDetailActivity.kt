@@ -22,7 +22,7 @@ class  EmailDetailActivity: BaseActivity() {
         val emailDetailModel = receivedModel as EmailDetailSceneModel
 
         val emailDetailSceneView = EmailDetailScene.EmailDetailSceneView(
-                findViewById(layoutId), this)
+                findViewById(R.id.include_emails_detail), this)
         return EmailDetailSceneController(
                 model = emailDetailModel,
                 scene = emailDetailSceneView,

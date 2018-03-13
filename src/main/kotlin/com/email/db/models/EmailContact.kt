@@ -14,7 +14,7 @@ import android.support.annotation.NonNull
                 parentColumns = ["id"],
                 onDelete = CASCADE,
                 childColumns = ["emailId"])), (ForeignKey(entity = Contact::class,
-                parentColumns = ["recipientId"],
+                parentColumns = ["email"],
                 onDelete = CASCADE,
                 childColumns = ["contactId"]))]
 )

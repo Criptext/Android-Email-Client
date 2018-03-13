@@ -26,6 +26,6 @@ interface ContactDao {
     fun getLoggedInUser() : Contact?
 
     @Delete
-    fun deleteAll(users: List<Contact>)
+    fun deleteAll(contacts: List<Contact>)
 
 }

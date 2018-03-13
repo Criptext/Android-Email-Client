@@ -11,11 +11,11 @@ import java.util.regex.Pattern
  * Created by gabriel on 2/26/18.
  */
 @Entity(tableName = "contact",
-        indices = [Index(value = ["recipientId"]), Index(value = ["name"])] )
+        indices = [Index(value = ["email"]), Index(value = ["name"])] )
 open class Contact(
 
         @PrimaryKey
-        @ColumnInfo(name = "recipientId")
+        @ColumnInfo(name = "email")
         var email : String,
 
         @ColumnInfo(name = "name")
