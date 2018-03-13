@@ -16,7 +16,7 @@ class EmailContactSeeder {
             emailContacts = emailContactJoinDao.getAll()
             emailContactJoinDao.deleteAll(emailContacts)
             emailContacts = mutableListOf()
-            for (a in 1..3){
+            for (a in 1..4){
                 emailContacts += fillEmailContacts(a)
             }
             emailContactJoinDao.insertAll(emailContacts)
@@ -29,14 +29,19 @@ class EmailContactSeeder {
                 1 -> emailContact = EmailContact(
                         emailId = 1,
                         contactId = "ascacere92@gmail.com",
-                        type = "ENTREGA")
+                        type = "TO")
                 2 -> emailContact = EmailContact( emailId = 2,
-                        contactId = "xndres@gmail.com",
-                        type = "ENTREGA")
+                        contactId = "gabriel@criptext.com",
+                        type = "BCC")
 
                 3 -> emailContact = EmailContact( emailId = 1,
                         contactId = "ascacere92@gmail.com",
-                        type = "ENVIO")
+                        type = "CC")
+
+                4 -> emailContact = EmailContact(
+                        emailId = 1,
+                        contactId = "ascacere92@gmail.com",
+                        type = "FROM")
             }
             return emailContact
         }

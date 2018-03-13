@@ -60,7 +60,7 @@ class EmailSeeder {
                                 "et dolore" ,
                         secure = true,
                         subject = "Subject 2",
-                        threadid = "9",
+                        threadid = "10",
                         unread = true)
                 3 -> email = Email( id = 3,
                         content = "Contenido 3",
@@ -75,7 +75,7 @@ class EmailSeeder {
                                 "et dolore" ,
                         secure = false,
                         subject = "Subject",
-                        threadid = "8",
+                        threadid = "10",
                         unread = true)
                 4 -> email = Email(id = 4,
                         content = "Contenido 4",

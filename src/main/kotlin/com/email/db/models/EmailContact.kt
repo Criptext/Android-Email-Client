@@ -9,7 +9,6 @@ import android.support.annotation.NonNull
  */
 
 @Entity(tableName = "email_contact",
-        primaryKeys = ["emailId", "contactId"],
         foreignKeys = [(ForeignKey(entity = Email::class,
                 parentColumns = ["id"],
                 onDelete = CASCADE,
@@ -19,6 +18,10 @@ import android.support.annotation.NonNull
                 childColumns = ["contactId"]))]
 )
 class EmailContact {
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    var id: Int? = null
 
     @ColumnInfo(name = "emailId")
     @NonNull
