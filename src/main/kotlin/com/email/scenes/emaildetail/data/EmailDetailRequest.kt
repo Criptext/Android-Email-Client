@@ -6,4 +6,6 @@ package com.email.scenes.emaildetail.data
 
 sealed class EmailDetailRequest{
 
+    class LoadFullEmailsFromThreadId(
+            val threadId: String): EmailDetailRequest()
 }

@@ -31,6 +31,10 @@
             android:windowSoftInputMode="stateHidden">
         </activity>
         <activity
+            android:name="com.email.EmailDetailActivity"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
+        <activity
             android:name=".scenes.composer.ComposerActivity"
             android:label="@string/title_activity_composer"
             android:theme="@style/AppTheme"></activity>

@@ -55,7 +55,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 selectThread(thread, position)
             }
 
-
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)
             }

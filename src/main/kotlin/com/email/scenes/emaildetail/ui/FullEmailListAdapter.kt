@@ -14,9 +14,9 @@ import com.email.utils.VirtualList
  */
 
 
-class FullEmailAdapter(private val mContext : Context,
-                       var fullEmailListener : OnFullEmailEventListener?,
-                       private val fullEmails: VirtualList<FullEmail>)
+class FullEmailListAdapter(private val mContext : Context,
+                           var fullEmailListener : OnFullEmailEventListener?,
+                           private val fullEmails: VirtualList<FullEmail>)
     : RecyclerView.Adapter<FullEmailHolder>() {
 
     fun toggleFullEmailSelection(mContext: Context,
@@ -26,8 +26,8 @@ class FullEmailAdapter(private val mContext : Context,
     }
 
     override fun getItemViewType(position : Int) : Int{
-        val email = fullEmails[position]
-/*        if(email.viewOpen){
+/*        val email = fullEmails[position]
+        if(email.viewOpen){
             if(email.label.contains(SecureEmail.LABEL_DRAFT)){
                 return EmailViewTypes.draft.ordinal
             }
@@ -75,10 +75,7 @@ class FullEmailAdapter(private val mContext : Context,
 
 
     interface OnFullEmailEventListener{
-        fun onToggleFullEmailSelection(
-                context: Context,
-                fullEmail: FullEmail,
-                position: Int)
+        fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int)
     }
 
     private enum class EmailViewTypes {

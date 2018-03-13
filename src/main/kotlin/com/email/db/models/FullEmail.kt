@@ -6,8 +6,9 @@ package com.email.db.models
 
 data class FullEmail(
         val email: Email,
-        val labels: ArrayList<Label>,
-        val cc: ArrayList<Contact>,
-        val to: ArrayList<Contact>,
-        val bcc: ArrayList<Contact>,
-        val files: ArrayList<File>)
+        val labels: List<Label>,
+        val cc: List<Contact>,
+        val to: List<Contact>,
+        val bcc: List<Contact>,
+        val from: List<Contact>,
+        val files: List<File>)

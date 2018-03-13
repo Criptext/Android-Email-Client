@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
+import com.email.scenes.emaildetail.EmailDetailSceneModel
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.params.*
@@ -112,6 +113,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignUpParams -> SignUpSceneModel()
             is ComposerParams -> ComposerModel()
             is MailboxParams -> MailboxSceneModel()
+            is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
