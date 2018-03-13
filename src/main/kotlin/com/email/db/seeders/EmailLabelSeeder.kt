@@ -29,13 +29,13 @@ class EmailLabelSeeder{
                         labelId = 1)
 
                 2 -> emailLabel = EmailLabel(emailId = 2,
-                        labelId = 2)
+                        labelId = 1)
 
                 3 -> emailLabel = EmailLabel(emailId = 3,
                         labelId = 3)
 
                 4 -> emailLabel = EmailLabel(emailId = 4,
-                        labelId = 4)
+                        labelId = 1)
 
                 5 -> emailLabel = EmailLabel(emailId = 5,
                         labelId = 5)
@@ -47,7 +47,7 @@ class EmailLabelSeeder{
                         labelId = 6)
 
                 8 -> emailLabel = EmailLabel(emailId = 6,
-                        labelId = 8)
+                        labelId = 1)
 
                 9 -> emailLabel = EmailLabel(emailId = 6,
                         labelId = 10)

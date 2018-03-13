@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail
 
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.email.IHostActivity
@@ -24,7 +25,9 @@ interface EmailDetailScene {
             val hostActivity: IHostActivity)
         : EmailDetailScene {
 
+        private var popupMenu : PopupMenu? = null
         private val context = emailDetailView.context
+
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
 

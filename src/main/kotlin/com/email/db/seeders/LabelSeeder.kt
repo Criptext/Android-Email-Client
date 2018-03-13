@@ -24,9 +24,9 @@ class LabelSeeder {
         private fun fillLabel(iteration: Int): Label {
             lateinit var label : Label
             when (iteration) {
-                1 -> label = Label(id = 1, color = "red", text = "1")
-                2 -> label = Label(id = 2, color = "green", text = "2")
-                3 -> label = Label(id = 3, color = "blue", text = "3")
+                1 -> label = Label(id = 1, color = "red", text = "DRAFT")
+                2 -> label = Label(id = 2, color = "green", text = "INBOX")
+                3 -> label = Label(id = 3, color = "blue", text = "NO SE QUE VA ACA")
                 4 -> label = Label(id = 4, color = "blue", text = "4")
                 5 -> label = Label(id = 5, color = "blue", text = "5")
                 6 -> label = Label(id = 6, color = "green", text = "6")

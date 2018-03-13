@@ -26,7 +26,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private val fullEmailsEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+    private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int) {
         }
     }
@@ -40,7 +52,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
                 scene.attachView(
                         fullEmailList = fullEmailsList,
-                        fullEmailEventListener = fullEmailsEventListener)
+                        fullEmailEventListener = emailHolderEventListener)
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {

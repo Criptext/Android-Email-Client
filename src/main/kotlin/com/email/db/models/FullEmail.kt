@@ -11,4 +11,16 @@ data class FullEmail(
         val to: List<Contact>,
         val bcc: List<Contact>,
         val from: List<Contact>,
-        val files: List<File>)
+        val files: List<File>) {
+
+    fun hasDraftLabel(): Boolean {
+        val labelsString = labels.map {
+            it.text
+        }
+        if(labelsString.contains("DRAFT")){
+            return true
+        }
+
+        return false
+    }
+}

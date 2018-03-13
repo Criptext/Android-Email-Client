@@ -3,7 +3,6 @@ package com.email.scenes.mailbox
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import com.email.IHostActivity
-import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels

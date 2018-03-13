@@ -26,25 +26,24 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     override fun getItemViewType(position : Int) : Int{
-/*        val email = fullEmails[position]
-        if(email.viewOpen){
-            if(email.label.contains(SecureEmail.LABEL_DRAFT)){
-                return EmailViewTypes.draft.ordinal
-            }
+        val email = fullEmails[position]
+        if(email.hasDraftLabel()){
+            return EmailViewTypes.draft.ordinal
+        }
 
-            if (email.hasCriptext == GmailEmail.CriptextStatus.sent
-                    || email.hasCriptext == GmailEmail.CriptextStatus.opened)
-                return EmailViewTypes.fullSentCriptextEmail.ordinal
-
-            return EmailViewTypes.fullEmail.ordinal
-        }*/
         return EmailViewTypes.fullEmail.ordinal
     }
 
     override fun onBindViewHolder(
             holder: FullEmailHolder?,
             position: Int) {
+        val fullEmail = fullEmails[position]
 
+        holder?.setListeners(
+                fullEmail = fullEmail,
+                adapter = this,
+                emailListener = fullEmailListener,
+                position = position)
     }
 
     override fun getItemCount() = fullEmails.size
@@ -75,7 +74,17 @@ class FullEmailListAdapter(private val mContext : Context,
 
 
     interface OnFullEmailEventListener{
-        fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int)
+        fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int) // va esto(?)
+        fun onReplyOptionSelected(
+                fullEmail: FullEmail,
+                position: Int,
+                all: Boolean)
+        fun onToggleReadOption(fullEmail: FullEmail,
+                               position: Int,
+                               markAsRead: Boolean)
+        fun onDeleteOptionSelected(fullEmail: FullEmail,
+                                    position: Int)
+
     }
 
     private enum class EmailViewTypes {
