@@ -27,6 +27,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onShowContactsToView(fullEmail: FullEmail) {
+            scene.showContactsToView(fullEmail = fullEmail)
+        }
+
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }

@@ -36,6 +36,8 @@ class FullEmailHolder(val view: View) : RecyclerView.ViewHolder(view),
         })
 
         toView.setOnClickListener({
+            emailListener!!.onShowContactsToView(
+                    fullEmail = fullEmail)
         })
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")

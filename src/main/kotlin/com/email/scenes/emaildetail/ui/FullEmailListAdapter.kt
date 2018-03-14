@@ -85,6 +85,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onDeleteOptionSelected(fullEmail: FullEmail,
                                     position: Int)
 
+        fun onShowContactsToView(fullEmail: FullEmail)
     }
 
     private enum class EmailViewTypes {

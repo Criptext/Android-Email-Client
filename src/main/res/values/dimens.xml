@@ -21,6 +21,10 @@
     <dimen name="menu_item_height">50dp</dimen>
     <dimen name="alert_dialog_label_chooser_width">250dp</dimen>
     <dimen name="alert_dialog_label_chooser_height">350dp</dimen>
+
+    <dimen name="popup_window_contactinfo_width">350dp</dimen>
+    <dimen name="popup_window_contactinfo_height">350dp</dimen>
+
     <dimen name="alert_dialog_moveto_width">250dp</dimen>
     <dimen name="alert_dialog_moveto_height">240dp</dimen>
     <dimen name="recovery_email_warning_width">250dp</dimen>
