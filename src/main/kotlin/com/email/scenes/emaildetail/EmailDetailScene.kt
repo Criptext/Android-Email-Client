@@ -5,9 +5,11 @@ import android.view.View
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.db.models.Label
 import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
+import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.utils.VirtualList
 
 /**
@@ -27,26 +29,32 @@ interface EmailDetailScene {
             val hostActivity: IHostActivity)
         : EmailDetailScene {
 
-/*        private var popupMenu : PopupMenu? = null
-        private var infoContactsEmail : PopupMenu? = null*/
-
         private val context = emailDetailView.context
         private val emailContactInfoPopup = EmailContactInfoPopup(context)
 
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
+        private lateinit var labelsRecyclerView: LabelsRecyclerView
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
         }
 
+        private val recyclerLabelsView: RecyclerView by lazy {
+            emailDetailView.findViewById<RecyclerView>(R.id.labels_recycler)
+        }
+
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail> ){
+
+            labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, getLabelsFromEmails(fullEmailList))
+
             fullEmailsRecyclerView = FullEmailRecyclerView(
                     recyclerView,
                     fullEmailEventListener,
                     fullEmailList)
+
         }
 
         override fun showContactsToView(fullEmail: FullEmail) {
@@ -54,6 +62,16 @@ interface EmailDetailScene {
                     fullEmail = fullEmail,
                     emailContactInfoListener = null,
                     positionY = 100 ) // change this
+        }
+
+        private fun getLabelsFromEmails(
+                emails: VirtualList<FullEmail>) : VirtualList<Label>{
+            val labelSet = HashSet<Label>()
+            for (i in 0 until emails.size) {
+                labelSet.addAll(emails[i].labels)
+            }
+            val labelsList = ArrayList(labelSet)
+            return VirtualList.Map(labelsList, { t->t })
         }
     }
 

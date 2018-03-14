@@ -16,14 +16,12 @@ import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.EmailContactInfoListener
 import com.email.utils.DateUtils
 import com.email.utils.VirtualList
-import org.w3c.dom.Text
 
 /**
  * Created by sebas on 3/13/18.
  */
 
 class EmailContactInfoPopup(private val context: Context) {
-    private var popupWindow : PopupWindow? = null
     private val res = context.resources
     private lateinit var layout: View
     private val recyclerView: RecyclerView
@@ -71,13 +69,13 @@ class EmailContactInfoPopup(private val context: Context) {
     ) {
 
         val ctx: Context = recyclerView.context
-        private val fullEmailListAdapter = ContactsToListAdapter(
+        private val contactsListAdapter = ContactsToListAdapter(
                 mContext = ctx,
                 contacts = contactsToList)
 
         init {
             recyclerView.layoutManager = LinearLayoutManager(ctx)
-            recyclerView.adapter = fullEmailListAdapter
+            recyclerView.adapter = contactsListAdapter
         }
     }
 
