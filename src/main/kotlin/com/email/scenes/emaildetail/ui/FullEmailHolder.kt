@@ -35,6 +35,8 @@ class FullEmailHolder(val view: View) : RecyclerView.ViewHolder(view),
             displayPopMenu(emailListener, fullEmail, adapter, position)
         })
 
+        toView.setOnClickListener({
+        })
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")
         }

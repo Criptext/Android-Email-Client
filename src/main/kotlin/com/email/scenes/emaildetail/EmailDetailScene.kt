@@ -25,7 +25,8 @@ interface EmailDetailScene {
             val hostActivity: IHostActivity)
         : EmailDetailScene {
 
-        private var popupMenu : PopupMenu? = null
+/*        private var popupMenu : PopupMenu? = null
+        private var infoContactsEmail : PopupMenu? = null*/
         private val context = emailDetailView.context
 
 
