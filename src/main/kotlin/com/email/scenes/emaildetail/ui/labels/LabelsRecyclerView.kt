@@ -27,5 +27,4 @@ class LabelsRecyclerView(
                 false)
         recyclerView.adapter = labelsListAdapter
     }
-
 }

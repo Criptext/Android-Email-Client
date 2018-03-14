@@ -1,7 +1,6 @@
-package com.email.scenes.emaildetail.ui
+package com.email.scenes.emaildetail.ui.holders
 
 import android.support.v7.widget.PopupMenu
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -9,28 +8,25 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 
 /**
  * Created by sebas on 3/12/18.
  */
 
-class FullEmailHolder(val view: View) : RecyclerView.ViewHolder(view),
-        View.OnClickListener {
+class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private val context = view.context
     private val layout : FrameLayout
-    private val contactView : TextView
     private val toView: TextView
-    private val dateView: TextView
-    private val bodyView: TextView
     private val moreView: ImageView
     private val layoutAttachment : RelativeLayout
 
     private var popupMenu: PopupMenu? = null
 
-    fun setListeners(fullEmail: FullEmail,
-                    emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
-                    adapter: FullEmailListAdapter, position: Int) {
+    override fun setListeners(fullEmail: FullEmail,
+                     emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
+                     adapter: FullEmailListAdapter, position: Int) {
         moreView.setOnClickListener({
             displayPopMenu(emailListener, fullEmail, adapter, position)
         })
@@ -80,9 +76,6 @@ class FullEmailHolder(val view: View) : RecyclerView.ViewHolder(view),
         this.popupMenu = null
     }
 
-    override fun onClick(p0: View?) {
-    }
-
     private fun createPopupMenu(fullEmail: FullEmail): PopupMenu {
         val popupMenu = PopupMenu(context , moreView)
 
@@ -98,10 +91,7 @@ class FullEmailHolder(val view: View) : RecyclerView.ViewHolder(view),
 
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)
-        contactView = view.findViewById(R.id.contact)
         toView = view.findViewById(R.id.to)
-        dateView = view.findViewById(R.id.date)
-        bodyView = view.findViewById(R.id.body)
         moreView = view.findViewById(R.id.more)
         layoutAttachment = view.findViewById(R.id.open_full_mail_attachment_container)
     }

@@ -17,7 +17,7 @@ interface EmailDetailLocalDB {
 
         override fun getFullEmailsFromThreadId(threadId: String): List<FullEmail> {
             val emails = db.emailDao().getEmailsFromThreadId(threadId)
-            return emails.map {
+            val fullEmails =  emails.map {
                 val id = it.id!!
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
                 val contactsCC = db.emailContactDao().getContactsFromEmailCC(id)
@@ -35,6 +35,8 @@ interface EmailDetailLocalDB {
                         labels = labels,
                         to = contactsTO )
             }
+            fullEmails.last().viewOpen = true
+            return fullEmails
         }
     }
 

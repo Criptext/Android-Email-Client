@@ -9,7 +9,7 @@
         android:layout_height="50dp" >
 
         <TextView
-            android:id="@+id/contact"
+            android:id="@+id/email_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gianni Carlo"
@@ -48,7 +48,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/date"
+        android:id="@+id/email_date"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_marginTop="75dp"
@@ -56,7 +56,7 @@
         android:textColor="@color/full_mail_date" />
 
     <TextView
-        android:id="@+id/body"
+        android:id="@+id/email_preview"
         android:layout_width="match_parent"
         android:layout_height="125dp"
         android:layout_marginTop="100dp"

@@ -42,8 +42,8 @@ interface EmailContactJoinDao {
             "INNER JOIN email_contact " +
             "ON contact.email=email_contact.contactId " +
             "WHERE email_contact.emailId=:emailId " +
-            "AND email_contact.type='FROM'")
-    fun getContactsFromEmailFROM(emailId: Int) : List<Contact>
+            "AND email_contact.type='FROM' limit 1")
+    fun getContactsFromEmailFROM(emailId: Int) : Contact?
 
     @Query("SELECT contact.* FROM contact " +
             "INNER JOIN email_contact " +

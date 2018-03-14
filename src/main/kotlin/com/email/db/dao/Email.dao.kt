@@ -35,6 +35,7 @@ import com.email.db.models.Email
     fun update(emails: List<Email>)
 
     @Query("SELECT * FROM email " +
-            "WHERE threadid=:threadId")
+            "WHERE threadid=:threadId " +
+            "ORDER BY date ASC")
     fun getEmailsFromThreadId(threadId: String): List<Email>
 }

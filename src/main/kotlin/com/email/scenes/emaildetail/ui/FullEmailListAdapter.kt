@@ -7,6 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.scenes.emaildetail.data.EmailDetailResult
+import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
+import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
+import com.email.scenes.emaildetail.ui.holders.PartialEmailHolder
 import com.email.utils.VirtualList
 
 /**
@@ -17,25 +21,26 @@ import com.email.utils.VirtualList
 class FullEmailListAdapter(private val mContext : Context,
                            var fullEmailListener : OnFullEmailEventListener?,
                            private val fullEmails: VirtualList<FullEmail>)
-    : RecyclerView.Adapter<FullEmailHolder>() {
-
-    fun toggleFullEmailSelection(mContext: Context,
-                                 fullEmail: FullEmail,
-                                 position: Int) {
-        fullEmailListener?.onToggleFullEmailSelection(mContext, fullEmail, position)
-    }
+    : RecyclerView.Adapter<ParentEmailHolder>() {
 
     override fun getItemViewType(position : Int) : Int{
         val email = fullEmails[position]
-        if(email.hasDraftLabel()){
-            return EmailViewTypes.draft.ordinal
+
+        if(email.viewOpen) {
+/* TODO(use this later)
+            if(email.hasDraftLabel()){
+                return EmailViewTypes.draft.ordinal
+            }
+*/
+
+            return EmailViewTypes.fullEmail.ordinal
         }
 
-        return EmailViewTypes.fullEmail.ordinal
+        return EmailViewTypes.partialEmail.ordinal
     }
 
     override fun onBindViewHolder(
-            holder: FullEmailHolder?,
+            holder: ParentEmailHolder?,
             position: Int) {
         val fullEmail = fullEmails[position]
 
@@ -48,27 +53,24 @@ class FullEmailListAdapter(private val mContext : Context,
 
     override fun getItemCount() = fullEmails.size
 
-
-    private fun createFullEmailItemView(): View {
-        val mailItemView = View.inflate(mContext, R.layout.open_full_mail_item, null)
-        return mailItemView
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FullEmailHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentEmailHolder {
         val mView: View
-        val fullEmailHolder : FullEmailHolder
 
-        when(EmailViewTypes.values()[viewType]) {
+        return when(EmailViewTypes.values()[viewType]) {
 
             EmailViewTypes.fullEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
-                fullEmailHolder = FullEmailHolder(mView)
-            } else -> { // change this when all the cases appear
-            mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
-            fullEmailHolder = FullEmailHolder(mView)
+                FullEmailHolder(mView)
+            }
+            EmailViewTypes.partialEmail -> {
+                mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, null)
+                PartialEmailHolder(mView)
+            }
+            else -> {
+                mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
+                FullEmailHolder(mView)
             }
         }
-        return fullEmailHolder
     }
 
 

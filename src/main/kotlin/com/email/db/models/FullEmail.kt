@@ -10,8 +10,10 @@ data class FullEmail(
         val cc: List<Contact>,
         val to: List<Contact>,
         val bcc: List<Contact>,
-        val from: List<Contact>,
+        val from: Contact?,
         val files: List<File>) {
+
+    var viewOpen = false
 
     fun hasDraftLabel(): Boolean {
         val labelsString = labels.map {
