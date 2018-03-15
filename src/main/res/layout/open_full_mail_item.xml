@@ -41,7 +41,7 @@
         android:layout_height="25dp">
         <TextView
             android:id="@+id/to"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/to_me_4_others"
             android:textColor="@color/full_mail_cc" />

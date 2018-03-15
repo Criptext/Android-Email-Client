@@ -3,6 +3,7 @@ package com.email.db.models
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import com.email.db.ColorTypes
 
 /**
  * Created by sebas on 1/24/18.
@@ -14,7 +15,7 @@ class Label (
         var id:Int?,
 
         @ColumnInfo(name = "color")
-        var color: String,
+        var color: ColorTypes,
 
         @ColumnInfo(name = "text")
         var text: String

@@ -1,5 +1,6 @@
 package com.email.scenes.LabelChooser.data
 
+import com.email.db.ColorTypes
 import com.email.db.models.Label
 
 /**
@@ -7,7 +8,7 @@ import com.email.db.models.Label
  */
 
 class LabelThread(val label: Label) {
-     val color : String
+     val color : ColorTypes
           get() = label.color
      val text : String
           get() = label.text

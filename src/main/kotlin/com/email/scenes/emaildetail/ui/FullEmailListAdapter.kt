@@ -44,6 +44,7 @@ class FullEmailListAdapter(private val mContext : Context,
             position: Int) {
         val fullEmail = fullEmails[position]
 
+        holder?.bindFullMail(fullEmail)
         holder?.setListeners(
                 fullEmail = fullEmail,
                 adapter = this,

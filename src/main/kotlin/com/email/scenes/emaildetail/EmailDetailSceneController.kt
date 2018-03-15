@@ -84,7 +84,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     override fun onBackPressed(): Boolean {
-        return false
+        return true
     }
 
     override fun onOptionsItemSelected(itemId: Int) {

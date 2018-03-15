@@ -24,6 +24,7 @@ abstract class ParentEmailHolder(val view: View) : RecyclerView.ViewHolder(view)
         bodyView = view.findViewById(R.id.email_preview)
     }
 
+    abstract fun bindFullMail(fullEmail: FullEmail)
     abstract fun setListeners(fullEmail: FullEmail,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                               adapter: FullEmailListAdapter, position: Int)

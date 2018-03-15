@@ -22,6 +22,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val moreView: ImageView
     private val layoutAttachment : RelativeLayout
 
+
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
@@ -83,6 +84,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         popupMenu.inflate(popuplayout)
         return popupMenu
+    }
+
+    override fun bindFullMail(fullEmail: FullEmail) {
     }
 
     init {
