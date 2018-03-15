@@ -26,10 +26,6 @@ class FullEmailRecyclerView(
         recyclerView.adapter = fullEmailListAdapter
     }
 
-/*    fun setThreadListener(threadEventListener: EmailThreadAdapter.OnThreadEventListener?) {
-        fullEmailListAdapter.threadListener = threadEventListener
-    }*/
-
     fun notifyThreadSetChanged() {
         fullEmailListAdapter.notifyDataSetChanged()
     }

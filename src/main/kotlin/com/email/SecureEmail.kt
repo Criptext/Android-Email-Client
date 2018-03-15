@@ -47,7 +47,7 @@ class SecureEmail {
         val LABEL_UNREAD = "UNREAD"
 
         val PARAM_LABEL = "service.label"
-        val PARAM_EMAIL = "service.latestEmail"
+        val PARAM_EMAIL = "service.email"
         val ACTION_UPDATE_TOKEN = "action.update.token"
         val ACTION_TOKEN = "action.token"
         val INBOX_UPDATE = "preferences.updated"

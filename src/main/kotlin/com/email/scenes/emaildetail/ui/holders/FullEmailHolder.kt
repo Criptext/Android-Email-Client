@@ -22,8 +22,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val moreView: ImageView
     private val layoutAttachment : RelativeLayout
 
-    private var popupMenu: PopupMenu? = null
-
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
@@ -39,9 +37,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             TODO("HANDLE CLICK TO ATTACHMENT")
         }
 
-        layoutAttachment.setOnClickListener{
-            TODO("HANDLE CLICK TO ATTACHMENT")
-        }
     }
 
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
@@ -70,10 +65,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         popupMenu.show()
 
-    }
-
-    fun removePopupMenu() {
-        this.popupMenu = null
     }
 
     private fun createPopupMenu(fullEmail: FullEmail): PopupMenu {

@@ -29,7 +29,6 @@ class  EmailDetailActivity: BaseActivity() {
                 host = this,
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
-                        // TODO(emailDetailAPIClient = EmailDetailAPIClient.Default(),)
                 emailDetailLocalDB = db )
         )
 
