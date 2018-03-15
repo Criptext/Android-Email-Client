@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail.ui
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -32,19 +33,28 @@ class EmailContactInfoPopup(private val parentView: View) {
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
         val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
-        val popupWindow = PopupWindow(
-                layout,
-                width,
-                height,
-                true)
+        val popupWindow = PopupWindow()
+
+        popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.popup_drawable))
+
+        popupWindow.height = height
+        popupWindow.width = width
+        popupWindow.contentView = layout
+
         bindFullEmail(fullEmail = fullEmail,
                 view = layout)
 
         val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
         ContactsToRecyclerView(recyclerView, contactsTo)
+
         popupWindow.showAsDropDown(parentView)
 
-        val container = popupWindow.contentView.parent as View
+        val container = if (android.os.Build.VERSION.SDK_INT > 22) {
+            popupWindow.contentView.parent.parent as View
+        } else {
+            popupWindow.contentView.parent as View
+        }
+
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val p = container.layoutParams as WindowManager.LayoutParams
         p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
@@ -56,6 +66,7 @@ class EmailContactInfoPopup(private val parentView: View) {
     private fun bindFullEmail(
             fullEmail: FullEmail,
             view: View) {
+
         val viewFromName = view.findViewById<TextView>(R.id.from_name)
         val viewFromEmail = view.findViewById<TextView>(R.id.from_mail)
         val viewReplyName = view.findViewById<TextView>(R.id.reply_name)
