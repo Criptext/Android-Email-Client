@@ -37,7 +37,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         })
 
         toView.setOnClickListener({
-            emailListener!!.onShowContactsToView(
+            emailListener?.onShowContactsToView(
                     fullEmail = fullEmail)
         })
         layoutAttachment.setOnClickListener{

@@ -23,9 +23,6 @@ import com.email.utils.VirtualList
 
 class EmailContactInfoPopup(private val context: Context) {
     private val res = context.resources
-    private lateinit var layout: View
-    private val recyclerView: RecyclerView
-        get() = layout.findViewById(R.id.contacts_to_recycler)
 
     fun createPopup(
             fullEmail: FullEmail,
@@ -36,8 +33,8 @@ class EmailContactInfoPopup(private val context: Context) {
         val width = context.resources.getDimension(R.dimen.popup_window_contactinfo_width).toInt()
 
         val inflater = (context as AppCompatActivity).layoutInflater
-        layout = inflater.inflate( R.layout.email_contact_info_popup, null)
-
+        val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
+        val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
         val popupWindow = PopupWindow(
                 layout,
                 width,
