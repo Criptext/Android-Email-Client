@@ -8,6 +8,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 
 /**
@@ -21,12 +22,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val toView: TextView
     private val moreView: ImageView
     private val layoutAttachment : RelativeLayout
-
+    private val contactInfoPopUp: EmailContactInfoPopup
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
         view.setOnClickListener {
+
             emailListener?.ontoggleViewOpen(
                     fullEmail = fullEmail,
                     position = position,
@@ -37,8 +39,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         })
 
         toView.setOnClickListener({
-            emailListener?.onShowContactsToView(
-                    fullEmail = fullEmail)
+            contactInfoPopUp.createPopup(fullEmail, null)
         })
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")
@@ -94,6 +95,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         toView = view.findViewById(R.id.to)
         moreView = view.findViewById(R.id.more)
         layoutAttachment = view.findViewById(R.id.open_full_mail_attachment_container)
+
+        contactInfoPopUp = EmailContactInfoPopup(toView)
     }
 
 }

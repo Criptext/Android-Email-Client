@@ -18,18 +18,18 @@ import com.email.utils.VirtualList
  * Created by sebas on 3/13/18.
  */
 
-class EmailContactInfoPopup(private val context: Context) {
-    private val res = context.resources
+class EmailContactInfoPopup(private val parentView: View) {
+    private val context = parentView.context
 
     fun createPopup(
             fullEmail: FullEmail,
-            emailContactInfoListener: EmailContactInfoListener?,
-            positionY: Int
+            emailContactInfoListener: EmailContactInfoListener?
     ): PopupWindow {
         val height = context.resources.getDimension(R.dimen.popup_window_contactinfo_height).toInt()
         val width = context.resources.getDimension(R.dimen.popup_window_contactinfo_width).toInt()
 
-        val inflater = (context as AppCompatActivity).layoutInflater
+        val inflater = context.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
         val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
         val popupWindow = PopupWindow(
@@ -42,7 +42,8 @@ class EmailContactInfoPopup(private val context: Context) {
 
         val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
         ContactsToRecyclerView(recyclerView, contactsTo)
-        popupWindow.showAtLocation(layout, Gravity.CENTER, 0, positionY)
+        popupWindow.showAsDropDown(parentView)
+
         val container = popupWindow.contentView.parent as View
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val p = container.layoutParams as WindowManager.LayoutParams

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.db.models.FullEmail
-import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
 import com.email.scenes.emaildetail.ui.holders.PartialEmailHolder
@@ -88,7 +87,6 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onDeleteOptionSelected(fullEmail: FullEmail,
                                     position: Int)
 
-        fun onShowContactsToView(fullEmail: FullEmail)
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
     }
 
