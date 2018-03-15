@@ -38,28 +38,30 @@ interface MailboxLocalDB {
 
         override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
-                EmailThread(email = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
+                EmailThread(
+                        latestEmail = email,
+                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>
+                )
             } as ArrayList<EmailThread>
         }
 
         override fun getArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
-                EmailThread(email = email,
+                EmailThread(latestEmail = email,
                         labelsOfMail = ArrayList())
             } as ArrayList<EmailThread>
         }
 
         override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
-                EmailThread(email = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>)
+                EmailThread(latestEmail = email,
+                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>)
             }
         }
 
         override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
             labels.forEach{
-                db.emailLabelDao().deleteByEmailLabelIds(it.id, emailId)
+                db.emailLabelDao().deleteByEmailLabelIds(it.id!!, emailId)
             }
         }
 
@@ -68,9 +70,10 @@ interface MailboxLocalDB {
                 LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
+                ContactSeeder.seed(db.contactDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
-                EmailUserSeeder.seed(db.emailUserDao())
+                EmailContactSeeder.seed(db.emailContactDao())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -78,7 +81,7 @@ interface MailboxLocalDB {
 
         override fun deleteEmailThreads(emailThreads: List<EmailThread>) {
             val emails: List<Email> = emailThreads.map {
-                it.email
+                it.latestEmail
             }
             db.emailDao().deleteAll(emails)
         }
@@ -91,7 +94,7 @@ interface MailboxLocalDB {
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
             emailThreads.forEach {
-                db.emailDao().toggleRead(id = it.email.id,
+                db.emailDao().toggleRead(id = it.latestEmail.id!!,
                         unread = updateUnreadStatus)
             }
         }
@@ -102,8 +105,8 @@ interface MailboxLocalDB {
 
         override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
             val emails = emailThreads.map {
-                    it.email.isTrash = true
-                    it.email
+                    it.latestEmail.isTrash = true
+                    it.latestEmail
                 }
 
             db.emailDao().update(emails)

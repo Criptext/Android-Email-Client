@@ -30,7 +30,7 @@ class FeedItemAdapter(val feedItemsList: VirtualList<ActivityFeedItem>,
         }
     }
 
-    override fun getItemId(position: Int) = feedItemsList[position].id.toLong()
+    override fun getItemId(position: Int) = feedItemsList[position].id!!.toLong()
 
     override fun getItemCount(): Int {
         return feedItemsList.size

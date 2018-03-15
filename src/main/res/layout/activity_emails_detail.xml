@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.email.utils.ui.MyDrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/include_emails_detail"/>
+
+    <!-- Lef Menu -->
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_left_view"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:background="#fcfcfc">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include layout="@layout/nav_header" />
+                <include layout="@layout/nav_body" />
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.design.widget.NavigationView>
+
+    <!-- Right Menu -->
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_right_view"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/nav_feed" />
+
+        </LinearLayout>
+
+    </android.support.design.widget.NavigationView>
+
+</com.email.utils.ui.MyDrawerLayout>

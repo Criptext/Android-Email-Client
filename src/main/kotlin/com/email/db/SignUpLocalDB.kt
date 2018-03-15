@@ -1,7 +1,7 @@
 package com.email.db
 
 import android.content.Context
-import com.email.db.models.User
+import com.email.db.models.Account
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSignedPreKey
 
@@ -12,8 +12,8 @@ import com.email.db.models.signal.CRSignedPreKey
 interface SignUpLocalDB {
     fun storePrekeys(prekeys: Map<Int, String>)
     fun deletePrekeys()
-    fun saveUser(user: User)
     fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey)
+    fun saveAccount(account: Account)
 
     class Default(applicationContext: Context): SignUpLocalDB {
 
@@ -29,8 +29,8 @@ interface SignUpLocalDB {
             db.rawPreKeyDao().insertAll(listPrekeys)
         }
 
-        override fun saveUser(user: User) {
-            db.userDao().insert(user)
+        override fun saveAccount(account: Account) {
+            db.accountDao().insert(account)
         }
 
         override fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey) {

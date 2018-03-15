@@ -10,23 +10,24 @@ import java.util.*
  * Created by sebas on 1/24/18.
  */
 
-class EmailThread(val email : Email, val labelsOfMail :ArrayList<Label>) {
+class EmailThread(val latestEmail : Email,
+                  val labelsOfMail :ArrayList<Label>) {
 
     val unread :Boolean
-        get() = email.unread
-    val threadId = email.threadid
+        get() = latestEmail.unread
+    val threadId = latestEmail.threadid
     val timestamp: Date
-        get() = email.date
+        get() = latestEmail.date
     var isSelected = false
     val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
             || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-        email.preview else email.preview
+        latestEmail.preview else latestEmail.preview
     val id: Int
-        get() = email.id
+        get() = latestEmail.id!!
     val subject: String
-        get() = email.subject
+        get() = latestEmail.subject
     val preview: String
-        get() = email.preview
+        get() = latestEmail.preview
 
     val replyType: ReplyTypes
         get() {

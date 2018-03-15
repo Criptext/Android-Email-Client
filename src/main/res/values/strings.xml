@@ -191,4 +191,13 @@
     <string name="login_user">estocambia@criptex.com</string>
     <string name="button_confirm">Confirm</string>
     <string name="forgot_password">Forgot?</string>
+
+    <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+    <string name="to_me_4_others"><![CDATA[To me & N others]]></string>
+    <string name="reply">Reply</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_as_spam">Mark as Spam</string>
+    <string name="print">Print</string>
+    <string name="mark_as_unread">Mark as Unread</string>
+    <string name="criptextdotcom">gcarlo\@criptext.com</string>
 </resources>

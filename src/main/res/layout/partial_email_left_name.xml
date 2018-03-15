@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingTop="16dp"
+    android:paddingRight="9dp"
+    android:layout_gravity="top"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/mail_item_left_name"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:foregroundGravity="center"
+        android:visibility="visible" />
+
+</RelativeLayout>

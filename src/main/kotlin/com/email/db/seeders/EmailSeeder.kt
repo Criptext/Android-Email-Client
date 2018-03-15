@@ -1,6 +1,6 @@
 package com.email.db.seeders
 
-import com.email.db.DAO.EmailDao
+import com.email.db.dao.EmailDao
 import com.email.db.models.Email
 import java.text.SimpleDateFormat
 import java.util.*
@@ -9,9 +9,9 @@ import java.util.*
  * Created by sebas on 1/24/18.
  */
 
-public class EmailSeeder {
+class EmailSeeder {
     companion object {
-        var emails : List<Email> = mutableListOf<Email>()
+        var emails : List<Email> = mutableListOf()
         var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(emailDao: EmailDao){
@@ -51,7 +51,7 @@ public class EmailSeeder {
                         content = "Contenido 2",
                         date = sdf.parse("1993-03-02 18:12:29"),
                         delivered = 1,
-                        isDraft = false,
+                        isDraft = true,
                         isTrash = false,
                         key = "key",
                         preview = "Lorem ipsum dolor " +
@@ -60,7 +60,7 @@ public class EmailSeeder {
                                 "et dolore" ,
                         secure = true,
                         subject = "Subject 2",
-                        threadid = "9",
+                        threadid = "10",
                         unread = true)
                 3 -> email = Email( id = 3,
                         content = "Contenido 3",
@@ -75,7 +75,7 @@ public class EmailSeeder {
                                 "et dolore" ,
                         secure = false,
                         subject = "Subject",
-                        threadid = "8",
+                        threadid = "10",
                         unread = true)
                 4 -> email = Email(id = 4,
                         content = "Contenido 4",

@@ -1,6 +1,6 @@
 package com.email.db.seeders
 
-import com.email.db.DAO.EmailLabelJoinDao
+import com.email.db.dao.EmailLabelJoinDao
 import com.email.db.models.EmailLabel
 
 /**
@@ -9,12 +9,12 @@ import com.email.db.models.EmailLabel
 
 class EmailLabelSeeder{
     companion object {
-        var emailLabels : List<EmailLabel> = mutableListOf<EmailLabel>()
+        var emailLabels : List<EmailLabel> = mutableListOf()
 
         fun seed(emailLabelDao: EmailLabelJoinDao){
             emailLabels = emailLabelDao.getAll()
             emailLabelDao.deleteAll(emailLabels)
-            emailLabels = mutableListOf<EmailLabel>()
+            emailLabels = mutableListOf()
             for (a in 1..10){
                 emailLabels += fillEmailLabel(a)
             }
@@ -22,20 +22,20 @@ class EmailLabelSeeder{
         }
 
 
-        fun fillEmailLabel(iteration: Int): EmailLabel {
+        private fun fillEmailLabel(iteration: Int): EmailLabel {
             lateinit var emailLabel : EmailLabel
             when (iteration) {
                 1 -> emailLabel = EmailLabel(emailId = 1,
                         labelId = 1)
 
                 2 -> emailLabel = EmailLabel(emailId = 2,
-                        labelId = 2)
+                        labelId = 1)
 
                 3 -> emailLabel = EmailLabel(emailId = 3,
                         labelId = 3)
 
                 4 -> emailLabel = EmailLabel(emailId = 4,
-                        labelId = 4)
+                        labelId = 1)
 
                 5 -> emailLabel = EmailLabel(emailId = 5,
                         labelId = 5)
@@ -47,7 +47,7 @@ class EmailLabelSeeder{
                         labelId = 6)
 
                 8 -> emailLabel = EmailLabel(emailId = 6,
-                        labelId = 8)
+                        labelId = 1)
 
                 9 -> emailLabel = EmailLabel(emailId = 6,
                         labelId = 10)

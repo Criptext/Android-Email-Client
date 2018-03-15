@@ -3,7 +3,6 @@ package com.email.scenes.mailbox
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import com.email.IHostActivity
-import com.email.MailboxActivity
 import com.email.R
 import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.LabelChooser.SelectedLabels
@@ -15,6 +14,7 @@ import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.scenes.params.ComposerParams
+import com.email.scenes.params.EmailDetailParams
 import com.email.scenes.params.SearchParams
 
 /**
@@ -42,6 +42,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val threadListController = ThreadListController(model.threads, scene)
 
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener{
+        override fun onGoToMail(emailThread: EmailThread) {
+            host.goToScene(EmailDetailParams(emailThread.threadId))
+        }
+
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
             if (! model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
@@ -54,7 +58,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             } else {
                 selectThread(thread, position)
             }
-
 
             if (selectedThreads.isEmpty()) {
                 changeMode(multiSelectON = false, silent = false)

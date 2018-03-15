@@ -26,8 +26,8 @@ class EmailThreadAdapter(private val mContext : Context,
         threadListener?.onToggleThreadSelection(mContext, mailThread, position)
     }
 
-    fun goToMail(){
-        TODO("GO TO MAIL")
+    fun goToMail(emailThread: EmailThread){
+        threadListener?.onGoToMail(emailThread = emailThread)
     }
 
 
@@ -46,7 +46,7 @@ class EmailThreadAdapter(private val mContext : Context,
             }
         } else {
             holder.itemView.setOnClickListener{
-                goToMail()
+                goToMail(emailThread = mail)
             }
         }
 
@@ -75,5 +75,6 @@ class EmailThreadAdapter(private val mContext : Context,
 
     interface OnThreadEventListener{
         fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int)
+        fun onGoToMail(emailThread: EmailThread)
     }
 }

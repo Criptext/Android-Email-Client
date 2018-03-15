@@ -1,12 +1,10 @@
 package com.email.scenes.mailbox.holders
 
-import android.graphics.Typeface
 import android.support.v4.widget.Space
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
-import com.email.utils.ui.Tint
 
 /**
  * Created by sebas on 2/6/18.
@@ -31,17 +29,16 @@ class ToolbarHolder(val view: View) {
         navButton.visibility = View.GONE
         numberEmails.visibility = View.GONE
         backButton.visibility = View.VISIBLE
-        separator.visibility = View.VISIBLE
+        separator.visibility = View.GONE
         title.text = selectedThreadsQuantity.toString()
     }
 
     fun hideMultiModeBar() {
-        separator.visibility = View.GONE
+        separator.visibility = View.VISIBLE
         navButton.visibility = View.VISIBLE
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
         title.text = "INBOX"
-        title.typeface = Typeface.DEFAULT_BOLD
     }
 
     fun updateToolbarTitle(title: String) {

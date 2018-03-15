@@ -1,6 +1,6 @@
 package com.email.db.seeders
 
-import com.email.db.DAO.FileDao
+import com.email.db.dao.FileDao
 import com.email.db.models.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -12,21 +12,20 @@ import java.util.*
 class FileSeeder {
 
     companion object {
-        var files : List<File> = mutableListOf<File>()
+        var files : List<File> = mutableListOf()
         var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(fileDao: FileDao){
             files = fileDao.getAll()
             fileDao.deleteAll(files)
-            files = mutableListOf<File>()
+            files = mutableListOf()
             for (a in 1..2){
                 files += fillFile(a)
             }
             fileDao.insertAll(files)
         }
 
-
-        fun fillFile(iteration: Int): File {
+        private fun fillFile(iteration: Int): File {
             lateinit var file: File
             when (iteration) {
                 1 -> file = File( token = "XXXXXXXXXX2312XXXXX1",

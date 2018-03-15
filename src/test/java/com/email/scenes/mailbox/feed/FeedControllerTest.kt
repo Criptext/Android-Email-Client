@@ -88,7 +88,7 @@ class FeedControllerTest {
         scene.lastNotifiedChangedPosition = -1
 
         // fire click event
-        scene.feedClickListener!!.onMuteFeedItemClicked(feedId = mutedItem.id, position = position,
+        scene.feedClickListener!!.onMuteFeedItemClicked(feedId = mutedItem.id!!, position = position,
                 isMuted = true)
 
         mutedItem.isMuted `should be` true
@@ -137,7 +137,7 @@ class FeedControllerTest {
         val expectedCountAfterDeletion = model.feedItems.size - 1
 
         // fire click event
-        scene.feedClickListener!!.onDeleteFeedItemClicked(feedId = deletedItem.id, position = position)
+        scene.feedClickListener!!.onDeleteFeedItemClicked(feedId = deletedItem.id!!, position = position)
 
         model.feedItems.size `should be` expectedCountAfterDeletion
 

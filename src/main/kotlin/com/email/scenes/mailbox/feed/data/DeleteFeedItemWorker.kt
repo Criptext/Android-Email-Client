@@ -21,7 +21,7 @@ class DeleteFeedItemWorker(private val db: FeedLocalDB,
     }
 
     override fun work(): FeedResult.DeleteFeedItem? {
-        db.deleteFeedItem(feedItem.id)
+        db.deleteFeedItem(feedItem.id!!)
         return FeedResult.DeleteFeedItem.Success()
     }
 

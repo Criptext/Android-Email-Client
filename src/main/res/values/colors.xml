@@ -46,4 +46,9 @@
     <color name="signup_hint_color">#90ffffff</color>
     <color name="bell">#FF3366</color>
     <color name="attachmentGray">#cecece</color>
+    <color name="full_mail_cc">#0091ff</color>
+    <color name="full_mail_date">#9b9b9b</color>
+    <color name="azure">#0091ff</color>
+    <color name="green">#a0d06e</color>
+    <color name="yellow">#ffbb63</color>
 </resources>

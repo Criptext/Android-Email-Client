@@ -1,7 +1,7 @@
 package com.email.scenes.signup.mocks
 
 import com.email.db.SignUpLocalDB
-import com.email.db.models.User
+import com.email.db.models.Account
 import com.email.db.models.signal.CRSignedPreKey
 
 /**
@@ -9,7 +9,7 @@ import com.email.db.models.signal.CRSignedPreKey
  */
 
 class MockedSignUpLocalDB : SignUpLocalDB {
-    var savedUser: User? = null
+    var savedUser: Account? = null
     private set
 
     override fun deletePrekeys() {
@@ -18,8 +18,8 @@ class MockedSignUpLocalDB : SignUpLocalDB {
     override fun storePrekeys(prekeys: Map<Int, String>) {
     }
 
-    override fun saveUser(user: User) {
-        savedUser = user
+    override fun saveAccount(account: Account) {
+        savedUser = account
     }
 
     override fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey) {

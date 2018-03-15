@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/reply"
+        app:showAsAction="collapseActionView"
+        android:title="@string/reply"/>
+    <item
+        android:id="@+id/replay_all"
+        app:showAsAction="collapseActionView"
+        android:title="@string/reply_all"/>
+    <item
+        android:id="@+id/forward"
+        app:showAsAction="collapseActionView"
+        android:title="@string/forward"/>
+    <item
+        android:id="@+id/delete"
+        app:showAsAction="collapseActionView"
+        android:title="@string/delete"/>
+    <item
+        android:id="@+id/mark_unread"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mark_as_unread"/>
+    <item
+        android:id="@+id/mark_spam"
+        app:showAsAction="collapseActionView"
+        android:title="@string/mark_as_spam"/>
+    <item
+        android:id="@+id/print"
+        app:showAsAction="collapseActionView"
+        android:title="@string/print"/>
+</menu>
+

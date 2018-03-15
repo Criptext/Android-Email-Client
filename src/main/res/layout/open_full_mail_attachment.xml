@@ -1,0 +1,45 @@
+<RelativeLayout
+    android:id="@+id/open_full_mail_attachment_container"
+    android:layout_width="match_parent"
+    android:layout_marginEnd="20dp"
+    android:layout_marginStart="20dp"
+    android:orientation="horizontal"
+    android:layout_gravity="bottom"
+    android:layout_height="50dp"
+    android:background="@drawable/full_mail_item_attachment_background"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<ImageView
+    android:id="@+id/attachment_container"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:src="@drawable/read" />
+
+<TextView
+    android:layout_toEndOf="@id/attachment_container"
+    android:id="@+id/attachment_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:textSize="15sp"
+    android:text="This is my sheep.pdf"/>
+
+<TextView
+    android:layout_toEndOf="@id/attachment_name"
+    android:id="@+id/attachment_size"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:textSize="15sp"
+    android:layout_marginStart="10dp"
+    android:textColor="#9b9b9b"
+    android:text="25mb"/>
+<ImageView
+    android:layout_toEndOf="@id/attachment_size"
+    android:layout_centerVertical="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="50dp"
+    android:layout_alignParentEnd="true"
+    android:src="@drawable/download"
+    android:layout_gravity="end|center_vertical" />
+</RelativeLayout>
