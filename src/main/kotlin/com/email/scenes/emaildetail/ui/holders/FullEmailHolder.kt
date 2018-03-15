@@ -25,6 +25,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
+        view.setOnClickListener {
+            emailListener?.ontoggleViewOpen(
+                    fullEmail = fullEmail,
+                    position = position,
+                    viewOpen = false)
+        }
         moreView.setOnClickListener({
             displayPopMenu(emailListener, fullEmail, adapter, position)
         })
@@ -36,7 +42,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")
         }
-
     }
 
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,

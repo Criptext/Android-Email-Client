@@ -27,6 +27,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+
+        override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
+                fullEmail.viewOpen = viewOpen
+
+                scene.notifyFullEmailChanged(position)
+                scene.notifyFullEmailListChanged()
+        }
+
         override fun onShowContactsToView(fullEmail: FullEmail) {
             scene.showContactsToView(fullEmail = fullEmail)
         }

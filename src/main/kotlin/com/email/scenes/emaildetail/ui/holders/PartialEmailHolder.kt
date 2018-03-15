@@ -18,7 +18,12 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     private val leftImageView: CircleImageView
 
     override fun setListeners(fullEmail: FullEmail, emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {
-
+        view.setOnClickListener {
+            emailListener?.ontoggleViewOpen(
+                    fullEmail = fullEmail,
+                    position = position,
+                    viewOpen = true)
+        }
     }
 
     init {

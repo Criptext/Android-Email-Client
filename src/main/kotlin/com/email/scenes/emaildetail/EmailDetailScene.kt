@@ -23,6 +23,8 @@ interface EmailDetailScene {
             fullEmailList : VirtualList<FullEmail>)
 
     fun showContactsToView(fullEmail: FullEmail)
+    fun notifyFullEmailListChanged()
+    fun notifyFullEmailChanged(position: Int)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -73,6 +75,16 @@ interface EmailDetailScene {
             val labelsList = ArrayList(labelSet)
             return VirtualList.Map(labelsList, { t->t })
         }
+
+        override fun notifyFullEmailListChanged() {
+            fullEmailsRecyclerView.notifyFullEmailListChanged()
+        }
+
+        override fun notifyFullEmailChanged(position: Int) {
+            fullEmailsRecyclerView.notifyFullEmailChanged(position = position)
+        }
     }
+
+
 
 }

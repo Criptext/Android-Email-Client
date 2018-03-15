@@ -26,19 +26,16 @@ class FullEmailRecyclerView(
         recyclerView.adapter = fullEmailListAdapter
     }
 
-    fun notifyThreadSetChanged() {
+    fun notifyFullEmailListChanged() {
         fullEmailListAdapter.notifyDataSetChanged()
     }
 
-    fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int) {
-        fullEmailListAdapter.notifyItemRangeInserted(positionStart, itemCount)
-    }
 
-    fun notifyThreadRemoved(position: Int) {
+    fun notifyFullEmailRemoved(position: Int) {
         fullEmailListAdapter.notifyItemRemoved(position)
     }
 
-    fun notifyThreadChanged(position: Int) {
+    fun notifyFullEmailChanged(position: Int) {
         fullEmailListAdapter.notifyItemChanged(position)
     }
 }

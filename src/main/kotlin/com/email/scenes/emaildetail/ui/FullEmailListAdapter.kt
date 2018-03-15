@@ -88,6 +88,7 @@ class FullEmailListAdapter(private val mContext : Context,
                                     position: Int)
 
         fun onShowContactsToView(fullEmail: FullEmail)
+        fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
     }
 
     private enum class EmailViewTypes {
