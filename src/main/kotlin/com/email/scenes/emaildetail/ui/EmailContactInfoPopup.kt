@@ -4,10 +4,7 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
@@ -46,6 +43,12 @@ class EmailContactInfoPopup(private val context: Context) {
         val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
         ContactsToRecyclerView(recyclerView, contactsTo)
         popupWindow.showAtLocation(layout, Gravity.CENTER, 0, positionY)
+        val container = popupWindow.contentView.parent as View
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val p = container.layoutParams as WindowManager.LayoutParams
+        p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
+        p.dimAmount = 0.3f
+        wm.updateViewLayout(container, p)
         return popupWindow
     }
 
