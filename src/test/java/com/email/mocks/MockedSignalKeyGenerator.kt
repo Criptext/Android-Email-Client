@@ -9,19 +9,20 @@ import org.whispersystems.libsignal.state.PreKeyRecord
  */
 
 class MockedSignalKeyGenerator: SignalKeyGenerator {
-    override fun createKeyBundle(deviceId: Int): PreKeyBundleShareData.UploadBundle {
-        val mutableList : MutableList<PreKeyRecord> = arrayListOf()
+    override fun register(recipientId: String, deviceId: Int): SignalKeyGenerator.RegistrationBundles {
         val shareData = PreKeyBundleShareData(
                 deviceId = deviceId,
-                signedPrekey = "",
-                identityKeyPair = "",
+                recipientId = recipientId,
                 signedPreKeySignature = "",
                 signedPreKeyPublic = "",
                 identityPublicKey = "",
                 signedPreKeyId = 1,
-                registrationId = 1,
-                prekeys = mutableList)
-        return PreKeyBundleShareData.UploadBundle(shareData, emptyMap())
-    }
+                registrationId = 1)
 
+        val uploadBundle = PreKeyBundleShareData.UploadBundle(shareData, emptyMap())
+        val privateBundle = SignalKeyGenerator.PrivateBundle(identityKeyPair = "",
+                signedPreKeyId = 1, signedPreKey = "", registrationId = 5, preKeys = emptyMap())
+
+        return SignalKeyGenerator.RegistrationBundles(privateBundle, uploadBundle)
+    }
 }

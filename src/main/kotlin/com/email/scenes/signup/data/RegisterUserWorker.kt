@@ -49,24 +49,24 @@ class RegisterUserWorker(
             Result.of { apiClient.createUser(account, keybundle) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
-    private fun persistNewUserData(keybundle: PreKeyBundleShareData.UploadBundle)
+    private fun persistNewUserData(keybundle: SignalKeyGenerator.PrivateBundle)
             :(String) -> Result<String, Exception> {
         return { jwtoken: String ->
             Result.of {
                 val user = Account(
                         name = account.name,
                         recipientId = account.username,
-                        identityB64 = keybundle.shareData.identityKeyPair,
                         jwt = jwtoken,
-                        registrationId = keybundle.shareData.registrationId
+                        registrationId = keybundle.registrationId,
+                        identityB64 = keybundle.identityKeyPair
                 )
 
                 db.saveAccount(user)
                 db.deletePrekeys()
-                db.storePrekeys(keybundle.serializedPreKeys)
+                db.storePrekeys(keybundle.preKeys)
                 db.storeRawSignedPrekey(CRSignedPreKey(
-                        keybundle.shareData.signedPreKeyId,
-                        keybundle.shareData.signedPrekey))
+                        keybundle.signedPreKeyId,
+                        keybundle.signedPreKey))
                 user.recipientId
             }
 
@@ -74,10 +74,10 @@ class RegisterUserWorker(
     }
 
     override fun work(): SignUpResult.RegisterUser? {
-        val keybundle = signalKeyGenerator.createKeyBundle(
+        val registrationBundle = signalKeyGenerator.register(recipientId = account.username,
                 deviceId = 1)
-        val operation = postNewUserToServer(keybundle)
-                          .flatMap(persistNewUserData(keybundle = keybundle))
+        val operation = postNewUserToServer(registrationBundle.uploadBundle)
+                          .flatMap(persistNewUserData(registrationBundle.privateBundle))
                           .map(setNewUserAsActiveAccount)
 
         return when(operation) {
