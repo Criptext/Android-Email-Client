@@ -105,6 +105,17 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
+        bodyView.text = fullEmail.email.content
+        val numberContacts = fullEmail.to.size
+        if(fullEmail.from != null) {
+            headerView.text = fullEmail.from.name
+            toView.text = "To me and ${numberContacts  - 1} contacts"
+        }
+        else {
+            headerView.text = "Me"
+            replyView.visibility = View.GONE
+            toView.text = "To ${numberContacts} contacts"
+        }
     }
 
     init {
