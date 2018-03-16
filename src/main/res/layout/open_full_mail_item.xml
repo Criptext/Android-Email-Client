@@ -35,13 +35,13 @@
 
                 <ImageView
                     android:id="@+id/reply"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/reply_remove_this_icon" />
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/reply_eliminar_esto" />
                 <ImageView
                     android:id="@+id/more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
                     android:src="@drawable/more" />
 
             </LinearLayout>

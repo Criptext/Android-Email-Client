@@ -73,6 +73,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 name = "Sebastian Caceres",
                 date = sdf.parse("2018-02-11"),
                 file = "Look at ma sheep.pdf",
+                action = "DOWNLOAD",
                 fileType = "PDF"
                 ))
 
@@ -80,6 +81,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 name = "Gianni Carlo",
                 date = sdf.parse("2018-03-16"),
                 file = "Sheep relevance.pdf",
+                action = "OPEN",
                 fileType = "DOCX"
         ))
         return array
@@ -140,6 +142,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     data class MockedAttachmentContact(val name: String,
                                        val date: Date,
                                        val file: String,
+                                       val action: String,
                                        val fileType: String)
 }
 

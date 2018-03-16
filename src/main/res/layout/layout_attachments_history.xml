@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageView
-                android:src="@drawable/read_notification"
+                android:src="@drawable/attachment"
+                android:tint="@color/azure"
                 android:padding="15dp"
                 android:layout_width="0dip"
                 android:layout_weight="0.20"
@@ -28,8 +29,9 @@
                 android:layout_width="0dip"
                 android:layout_weight="0.80"
                 android:layout_height="fill_parent"
-                android:text="Read history"
+                android:text="Attachment History"
                 android:gravity="center_vertical"
+                fontPath="fonts/NunitoSans-Bold.ttf"
                 android:textSize="17sp" />
         </LinearLayout>
 
@@ -42,12 +44,12 @@
 
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/contacts_read_history_refresher"
+                android:id="@+id/attachments_history_refresher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/contacts_read_history_recycler"
+                    android:id="@+id/attachments_history_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
