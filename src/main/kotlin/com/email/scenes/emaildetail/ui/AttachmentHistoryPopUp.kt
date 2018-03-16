@@ -1,13 +1,11 @@
 package com.email.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
-import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.FullEmail
@@ -123,13 +121,14 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
             date.text = DateUtils.getFormattedDate(contact.date.time)
             action.text = when(contact.action) {
                 "DOWNLOAD", "download" -> {
-                    "downloaded"
+                    "${AttachmentHistoryPopUp.DOWNLOADED}: "
                 }
 
                 "OPEN", "open" -> {
-                    "opened"
+                    "${AttachmentHistoryPopUp.OPENED}: "
+
                 } else -> {
-                    "not registered"
+                    "${AttachmentHistoryPopUp.NOT_REGISTERED}: "
                 }
             }
             if(contact.fileType in listOf("pdf", "PDF", "Pdf")) {
@@ -151,6 +150,11 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         }
     }
 
+    companion object {
+        val NOT_REGISTERED="not_registered"
+        val OPENED="opened"
+        val DOWNLOADED="downloaded"
+    }
     data class MockedAttachmentContact(val name: String,
                                        val date: Date,
                                        val file: String,

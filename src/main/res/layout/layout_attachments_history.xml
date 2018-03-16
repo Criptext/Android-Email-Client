@@ -11,33 +11,31 @@
         android:background="@color/white"
         android:id="@+id/contact_read_history_popup" >
         <LinearLayout
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageView
                 android:src="@drawable/attachment"
                 android:tint="@color/azure"
-                android:padding="15dp"
+                android:padding="10dp"
                 android:layout_width="0dip"
-                android:layout_weight="0.20"
+                android:layout_weight="0.10"
                 android:layout_height="fill_parent"
-                android:gravity="center_vertical" />
+                android:gravity="center_vertical|start" />
 
             <TextView
                 android:layout_width="0dip"
-                android:layout_weight="0.80"
+                android:layout_weight="0.90"
                 android:layout_height="fill_parent"
                 android:text="Attachment History"
-                android:gravity="center_vertical"
+                android:gravity="center_vertical|start"
+                android:layout_marginEnd="10dp"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -46,7 +44,7 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/attachments_history_refresher"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" >
+                android:layout_height="130dp" >
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/attachments_history_recycler"

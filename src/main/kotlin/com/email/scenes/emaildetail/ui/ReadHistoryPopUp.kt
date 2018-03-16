@@ -47,7 +47,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
     }
 
     private fun bindFullEmail(fullEmail: FullEmail, view: View) {
-        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.contacts_read_history_recycler)
+        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.contacts_read_history_refresher)
     }
 
     private fun getMockedContacts(): List<MockedContact> {
