@@ -34,10 +34,10 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/read"
+                    android:id="@+id/reply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/read" />
+                    android:src="@drawable/reply_remove_this_icon" />
                 <ImageView
                     android:id="@+id/more"
                     android:layout_width="wrap_content"
@@ -57,6 +57,32 @@
                 android:layout_height="match_parent"
                 android:text="@string/to_me_4_others"
                 android:textColor="@color/full_mail_cc" />
+
+            <LinearLayout
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/attachment"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/attachment" />
+                <ImageView
+
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/read"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/read_notification" />
+                <ImageView
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/unsend"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/un_sent" />
+            </LinearLayout>
         </FrameLayout>
 
         <TextView
