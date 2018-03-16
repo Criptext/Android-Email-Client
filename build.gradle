@@ -91,6 +91,9 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:cardview-v7:26.1.0'
 
+    //easy dialog
+    implementation 'com.github.michaelye.easydialog:easydialog:1.4'
+
     // Result
     implementation 'com.github.kittinunf.result:result:1.0.5'
 
@@ -127,6 +130,7 @@ dependencies {
 
     // Stetho core
     implementation 'com.facebook.stetho:stetho:1.5.0'
+
     //network helper
     implementation 'com.facebook.stetho:stetho-okhttp:1.5.0'
 }

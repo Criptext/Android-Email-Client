@@ -2,67 +2,48 @@ package com.email.scenes.emaildetail.ui
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.EmailContactInfoListener
 import com.email.utils.DateUtils
+import com.email.utils.Utility
 import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 3/13/18.
  */
 
-class EmailContactInfoPopup(private val parentView: View) {
-    private val context = parentView.context
+class EmailContactInfoPopup(private val anchorView: View) {
+    private val context = anchorView.context
 
     fun createPopup(
             fullEmail: FullEmail,
             emailContactInfoListener: EmailContactInfoListener?
-    ): PopupWindow {
-        val height = context.resources.getDimension(R.dimen.popup_window_contactinfo_height).toInt()
-        val width = context.resources.getDimension(R.dimen.popup_window_contactinfo_width).toInt()
+    ) {
 
         val inflater = context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
         val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
-        val popupWindow = PopupWindow()
-
-        popupWindow.isClippingEnabled = false
-        popupWindow.setBackgroundDrawable(
-                ContextCompat.getDrawable(context, R.drawable.popup_drawable))
-
-        //popupWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        popupWindow.height = height
-        popupWindow.width = width
-        popupWindow.contentView = layout
-
-        bindFullEmail(fullEmail = fullEmail,
-                view = layout)
 
         val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
         ContactsToRecyclerView(recyclerView, contactsTo)
 
-        popupWindow.showAsDropDown(parentView, 0, 0)
+        Utility.createPopUpWindow(
+                context = context,
+                anchorView = anchorView,
+                contentView = layout)
 
-        val container = if (android.os.Build.VERSION.SDK_INT > 22) {
-            popupWindow.contentView.parent.parent as View
-        } else {
-            popupWindow.contentView.parent as View
-        }
+        bindFullEmail(fullEmail = fullEmail,
+                view = layout)
 
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val p = container.layoutParams as WindowManager.LayoutParams
-        p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
-        p.dimAmount = 0.3f
-        wm.updateViewLayout(container, p)
-        return popupWindow
+
     }
 
     private fun bindFullEmail(
@@ -73,8 +54,11 @@ class EmailContactInfoPopup(private val parentView: View) {
         val viewFromEmail = view.findViewById<TextView>(R.id.from_mail)
         val viewReplyName = view.findViewById<TextView>(R.id.reply_name)
         val viewReplyEmail = view.findViewById<TextView>(R.id.reply_mail)
+        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.contacts_to_refresher)
         val date = view.findViewById<TextView>(R.id.date)
-
+        if(fullEmail.to.isEmpty()) {
+            refresher.visibility = View.GONE
+        }
         date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
     }
 

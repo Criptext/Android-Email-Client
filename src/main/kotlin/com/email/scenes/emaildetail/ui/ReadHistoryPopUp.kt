@@ -2,18 +2,17 @@ package com.email.scenes.emaildetail.ui
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ReadHistoryListener
 import com.email.utils.DateUtils
+import com.email.utils.Utility
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,41 +27,27 @@ class ReadHistoryPopUp(private val anchorView: View) {
     fun createPopup(
             fullEmail: FullEmail,
             readHistoryListener: ReadHistoryListener?
-    ): PopupWindow {
-        val height = context.resources.getDimension(R.dimen.popup_window_contactinfo_height).toInt()
-        val width = context.resources.getDimension(R.dimen.popup_window_contactinfo_width).toInt()
+    ) {
 
         val inflater = context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
         val layout = inflater.inflate( R.layout.layout_read_history_contacts, null)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_read_history_recycler)
-        val popupWindow = PopupWindow()
-
-        popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.popup_drawable))
-
-        popupWindow.height = height
-        popupWindow.width = width
-        popupWindow.contentView = layout
-
 
         val mockedContacts = getMockedContacts()
 
         ContactsReadRecyclerView(recyclerView, mockedContacts)
 
-        popupWindow.showAsDropDown(anchorView)
+        Utility.createPopUpWindow(
+                context = context,
+                contentView = layout,
+                anchorView = anchorView)
 
-        val container = if (android.os.Build.VERSION.SDK_INT > 22) {
-            popupWindow.contentView.parent.parent as View
-        } else {
-            popupWindow.contentView.parent as View
-        }
+        bindFullEmail(fullEmail, layout)
+    }
 
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val p = container.layoutParams as WindowManager.LayoutParams
-        p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
-        p.dimAmount = 0.3f
-        wm.updateViewLayout(container, p)
-        return popupWindow
+    private fun bindFullEmail(fullEmail: FullEmail, view: View) {
+        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.contacts_read_history_recycler)
     }
 
     private fun getMockedContacts(): List<MockedContact> {
