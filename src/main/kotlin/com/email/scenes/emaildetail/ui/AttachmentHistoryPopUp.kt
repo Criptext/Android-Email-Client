@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
@@ -34,8 +35,8 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         val inflater = context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
-        val layout = inflater.inflate( R.layout.layout_read_history_contacts, null)
-        val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_read_history_recycler)
+        val layout = inflater.inflate( R.layout.layout_attachments_history, null)
+        val recyclerView = layout.findViewById<RecyclerView>(R.id.attachments_history_recycler)
         val popupWindow = PopupWindow()
 
         popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.popup_drawable))
@@ -45,9 +46,9 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         popupWindow.contentView = layout
 
 
-        val mockedContacts = getMockedContacts()
+        val mockedAttachmentContacts = getMockedAttachmentContacts()
 
-        ContactsReadRecyclerView(recyclerView, mockedContacts)
+        AttachmentContactsRecyclerView(recyclerView, mockedAttachmentContacts)
 
         popupWindow.showAsDropDown(anchorView)
 
@@ -65,7 +66,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         return popupWindow
     }
 
-    private fun getMockedContacts(): List<MockedAttachmentContact> {
+    private fun getMockedAttachmentContacts(): List<MockedAttachmentContact> {
         val sdf = SimpleDateFormat("yyyy-MM-dd")
 
         val array = ArrayList<MockedAttachmentContact>()
@@ -88,14 +89,14 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     }
 
 
-    inner class ContactsReadRecyclerView(val recyclerView: RecyclerView,
-                                         contactsToList: List<MockedAttachmentContact>
+    inner class AttachmentContactsRecyclerView(val recyclerView: RecyclerView,
+                                               mockedAttachmentList: List<MockedAttachmentContact>
     ) {
 
         val ctx: Context = recyclerView.context
-        private val contactsListAdapter = ContactsToListAdapter(
+        private val contactsListAdapter = AttachmentContactsAdapter(
                 mContext = ctx,
-                contacts = contactsToList)
+                contacts = mockedAttachmentList)
 
         init {
             recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -103,38 +104,63 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    inner class ContactsToListAdapter(private val mContext: Context,
-                                      private val contacts: List<MockedAttachmentContact>
-    ) : RecyclerView.Adapter<ContactHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder {
+    inner class AttachmentContactsAdapter(private val mContext: Context,
+                                          private val contacts: List<MockedAttachmentContact>
+    ) : RecyclerView.Adapter<AttachmentContactHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AttachmentContactHolder {
             val mView = LayoutInflater.from(mContext).
-                    inflate(R.layout.contact_read_history_item, null)
-            return ContactHolder(mView)
+                    inflate(R.layout.attachment_history_item, null)
+            return AttachmentContactHolder(mView)
         }
 
         override fun getItemCount(): Int {
             return contacts.size
         }
 
-        override fun onBindViewHolder(holder: ContactHolder?, position: Int) {
+        override fun onBindViewHolder(holder: AttachmentContactHolder?, position: Int) {
             val contact = contacts[position]
-            holder?.bindContact(contact)
+            holder?.bindAttachmentContact(contact)
         }
     }
 
-    inner class ContactHolder(val view: View): RecyclerView.ViewHolder(view) {
+    inner class AttachmentContactHolder(val view: View): RecyclerView.ViewHolder(view) {
         private val context = view.context
 
         private val name: TextView
+        private val action: TextView
+        private val fileType: ImageView
+        private val fileName: TextView
         private val date: TextView
 
-        fun bindContact(contact: MockedAttachmentContact){
+        fun bindAttachmentContact(contact: MockedAttachmentContact){
             name.text = contact.name
             date.text = DateUtils.getFormattedDate(contact.date.time)
+            action.text = when(contact.action) {
+                "DOWNLOAD", "download" -> {
+                    "downloaded"
+                }
+
+                "OPEN", "open" -> {
+                    "opened"
+                } else -> {
+                    "not registered"
+                }
+            }
+            if(contact.fileType in listOf("pdf", "PDF", "Pdf")) {
+                fileType.setImageResource(R.drawable.pdf_eliminar_esto)
+            } else {
+                fileType.setImageResource(R.drawable.word_eliminar_esto)
+            }
+
+            fileName.text = contact.file
+
         }
 
         init {
             name = view.findViewById(R.id.name)
+            action = view.findViewById(R.id.action)
+            fileType = view.findViewById(R.id.file_type)
+            fileName = view.findViewById(R.id.file_name)
             date = view.findViewById(R.id.date)
         }
     }

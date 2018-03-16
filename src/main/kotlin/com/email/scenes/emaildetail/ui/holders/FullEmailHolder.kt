@@ -53,6 +53,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         toView.setOnClickListener({
             contactInfoPopUp.createPopup(fullEmail, null)
         })
+
+        attachmentView.setOnClickListener {
+            attachmentHistoryPopUp.createPopup(fullEmail, null)
+        }
+
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")
         }

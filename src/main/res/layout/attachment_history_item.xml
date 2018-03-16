@@ -20,9 +20,9 @@
             android:textSize="17sp" />
 
         <TextView
+            android:id="@+id/action"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:layout_marginStart="10dp"
-            android:id="@+id/action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="opened"
@@ -51,7 +51,7 @@
 
         <TextView
             android:layout_marginStart="50dp"
-            android:id="@+id/file_date"
+            android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="20:00 PM"
