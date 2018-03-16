@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/include_emails_detail"
     android:background="#f7f7f8"
-    android:title="@string/titulo_mailbox">
+    android:title="@string/titulo_mailbox"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/email_detail_toolbar"
@@ -46,22 +47,22 @@
 
     </android.support.v7.widget.Toolbar>
     <LinearLayout
+        android:id="@+id/container_recyclers"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize" >
+        android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginHorizontal="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lorem ipsum dolor sit amet consec adipising elit"
-        android:textSize="20sp"
-        fontPath="fonts/NunitoSans-Bold.ttf" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lorem ipsum dolor sit amet consec adipising elit"
+                android:textSize="20sp"
+                fontPath="fonts/NunitoSans-Bold.ttf" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/labels_recycler"
@@ -70,21 +71,40 @@
 
             </android.support.v7.widget.RecyclerView>
 
-    </LinearLayout>
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/emails_detail_refresher"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/emails_detail_recycler"
+        </LinearLayout>
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/emails_detail_refresher"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" >
 
-        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/emails_detail_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:text="Reply"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:text="Reply All"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:text="Forward"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
     </LinearLayout>
-
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

@@ -18,12 +18,12 @@ interface FeedDao {
     @Delete
     fun deleteAll(feedItems: List<FeedItem>)
 
-    @Query("UPDATE feedItem " +
-            "SET isMuted = :isMuted " +
-            "where id=:id")
+    @Query("""UPDATE feedItem
+            SET isMuted = :isMuted
+            WHERE id=:id""")
     fun toggleMute(id: Int, isMuted: Boolean)
 
-    @Query("DELETE FROM feedItem " +
-            "where id=:id")
+    @Query("""DELETE FROM feedItem
+           WHERE id=:id""")
     fun delete(id: Int)
 }

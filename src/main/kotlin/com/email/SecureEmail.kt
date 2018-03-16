@@ -1,14 +1,5 @@
 package com.email
 
-import android.app.Application
-import android.content.Context
-import android.os.Environment
-/*import android.support.multidex.MultiDex
-import com.google.api.services.gmail.GmailScopes
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig*/
-import java.io.File
-import java.util.*
-
 /**
  * Created by hirobreak on 30/03/17.
  */

@@ -15,31 +15,31 @@ import com.email.db.models.Email
     @Query("SELECT * FROM email")
     fun getAll() : List<Email>
 
-    @Query("SELECT * from email e " +
-            "WHERE date=(SELECT MAX(date) FROM email d " +
-            "WHERE d.threadid=e.threadid)")
+    @Query("""SELECT * from email e
+            WHERE date=(SELECT MAX(date) FROM email d
+            WHERE d.threadid=e.threadid)""")
     fun getLatestEmails() : List<Email>
 
-    @Query("SELECT * FROM email e " +
-            "WHERE date=(SELECT MAX(date) FROM email d " +
-            "WHERE d.threadid=e.threadid) AND id " +
-            "IN (SELECT DISTINCT emailId " +
-            "FROM email_label)")
+    @Query("""SELECT * FROM email e
+            WHERE date=(SELECT MAX(date) FROM email d
+            WHERE d.threadid=e.threadid) AND id
+            IN (SELECT DISTINCT emailId
+            FROM email_label)""")
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Delete
     fun deleteAll(emails: List<Email>)
 
-    @Query("UPDATE email " +
-            "SET unread=:unread " +
-            "where id=:id")
+    @Query("""UPDATE email
+            SET unread=:unread
+            where id=:id""")
     fun toggleRead(id: Int, unread: Boolean)
 
     @Update
     fun update(emails: List<Email>)
 
-    @Query("SELECT * FROM email " +
-            "WHERE threadid=:threadId " +
-            "ORDER BY date ASC")
+    @Query("""SELECT * FROM email
+            WHERE threadid=:threadId
+            ORDER BY date ASC""")
     fun getEmailsFromThreadId(threadId: String): List<Email>
 }

@@ -35,10 +35,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.notifyFullEmailListChanged()
         }
 
-        override fun onShowContactsToView(fullEmail: FullEmail) {
-            scene.showContactsToView(fullEmail = fullEmail)
-        }
-
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }

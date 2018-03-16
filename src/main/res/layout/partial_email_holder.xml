@@ -1,106 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mail_item_layout"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="10dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="15dp"
-    android:animateLayoutChanges="true">
-    <include layout="@layout/partial_email_left_name"
-        android:layout_width="wrap_content"
+    android:padding="10dp"
+    card_view:cardCornerRadius="2dp"
+    card_view:contentPadding= "5dp"
+    card_view:cardUseCompatPadding="true"  >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mail_item_layout"
+        android:background="@color/white"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
-    <Space
-        android:layout_width="5dp"
-        android:layout_height="wrap_content"
-        />
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:id="@+id/mail_info">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="15dp"
+        android:animateLayoutChanges="true">
+        <include layout="@layout/partial_email_left_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:id="@+id/container_header">
-            <TextView
-                android:id="@+id/email_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_marginEnd="10dp"
-                android:gravity="center_vertical"
-                android:textSize="14sp"
-                android:textColor="@color/textColorPrimary"
-                android:layout_weight="1"
-                android:text="Lorem Ipsum"
-                />
-
-            <ImageView
-                android:id="@+id/check"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="top"
-                android:scaleX="1.5"
-                android:scaleY="1.5"
-                android:src="@drawable/mail_item_check" />
-
-            <ImageView
-                android:id="@+id/email_has_attachments"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginEnd="5dp"
-                android:gravity="end"
-                android:src="@drawable/attachment"
-                android:tint="@color/attachmentGray"
-                android:rotation="90"
-                android:visibility="visible"/>
-            <TextView
-                android:id="@+id/email_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="75dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_gravity="end"
-                android:layout_marginStart="10dp"
-                android:text="11:55 am"
-                android:gravity="end"
-                android:textSize="13sp"
-                android:textColor="@color/mail_item_date"
-                />
-
-        </LinearLayout>
-        <LinearLayout
+            />
+        <Space
+            android:layout_width="5dp"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_below="@id/container_header"
-            android:orientation="horizontal"
-            android:id="@+id/linearLayout">
+            />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:id="@+id/mail_info">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:id="@+id/container_header">
                 <TextView
-                    android:id="@+id/email_preview"
+                    android:id="@+id/email_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="2"
+                    android:maxLines="1"
                     android:ellipsize="end"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center_vertical"
                     android:textSize="14sp"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                    android:textColor="#6a707e"/>
+                    android:textColor="@color/textColorPrimary"
+                    android:layout_weight="1"
+                    android:text="Lorem Ipsum"
+                    />
+
+                <ImageView
+                    android:id="@+id/check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    android:src="@drawable/mail_item_check" />
+
+                <ImageView
+                    android:id="@+id/email_has_attachments"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="end"
+                    android:src="@drawable/attachment"
+                    android:tint="@color/attachmentGray"
+                    android:rotation="90"
+                    android:visibility="visible"/>
+                <TextView
+                    android:id="@+id/email_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="75dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_gravity="end"
+                    android:layout_marginStart="10dp"
+                    android:text="11:55 am"
+                    android:gravity="end"
+                    android:textSize="13sp"
+                    android:textColor="@color/mail_item_date"
+                    />
 
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_below="@id/container_header"
+                android:orientation="horizontal"
+                android:id="@+id/linearLayout">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-</LinearLayout>
+                    <TextView
+                        android:id="@+id/email_preview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:textSize="14sp"
+                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                        android:textColor="#6a707e"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

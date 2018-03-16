@@ -6,7 +6,6 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
-import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
@@ -22,7 +21,6 @@ interface EmailDetailScene {
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
             fullEmailList : VirtualList<FullEmail>)
 
-    fun showContactsToView(fullEmail: FullEmail)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
 
@@ -32,7 +30,6 @@ interface EmailDetailScene {
         : EmailDetailScene {
 
         private val context = emailDetailView.context
-        private val emailContactInfoPopup = EmailContactInfoPopup(context)
 
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
@@ -57,13 +54,6 @@ interface EmailDetailScene {
                     fullEmailEventListener,
                     fullEmailList)
 
-        }
-
-        override fun showContactsToView(fullEmail: FullEmail) {
-            emailContactInfoPopup.createPopup(
-                    fullEmail = fullEmail,
-                    emailContactInfoListener = null,
-                    positionY = 100 ) // change this
         }
 
         private fun getLabelsFromEmails(
