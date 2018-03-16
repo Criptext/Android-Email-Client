@@ -4,52 +4,52 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
-import com.email.db.models.Contact
 import com.email.db.models.FullEmail
-import com.email.scenes.emaildetail.EmailContactInfoListener
+import com.email.scenes.emaildetail.ReadHistoryListener
 import com.email.utils.DateUtils
-import com.email.utils.VirtualList
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
- * Created by sebas on 3/13/18.
+ * Created by sebas on 3/15/18.
  */
 
-class EmailContactInfoPopup(private val parentView: View) {
-    private val context = parentView.context
+class ReadHistoryPopUp(private val anchorView: View) {
+    private val context = anchorView.context
 
     fun createPopup(
             fullEmail: FullEmail,
-            emailContactInfoListener: EmailContactInfoListener?
+            readHistoryListener: ReadHistoryListener?
     ): PopupWindow {
         val height = context.resources.getDimension(R.dimen.popup_window_contactinfo_height).toInt()
         val width = context.resources.getDimension(R.dimen.popup_window_contactinfo_width).toInt()
 
         val inflater = context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
-        val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
-        val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
+        val layout = inflater.inflate( R.layout.layout_read_history_contacts, null)
+        val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_read_history_recycler)
         val popupWindow = PopupWindow()
 
-        popupWindow.isClippingEnabled = false
-        popupWindow.setBackgroundDrawable(
-                ContextCompat.getDrawable(context, R.drawable.popup_drawable))
+        popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.popup_drawable))
 
-        //popupWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
         popupWindow.height = height
         popupWindow.width = width
         popupWindow.contentView = layout
 
-        bindFullEmail(fullEmail = fullEmail,
-                view = layout)
 
-        val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
-        ContactsToRecyclerView(recyclerView, contactsTo)
+        val mockedContacts = getMockedContacts()
 
-        popupWindow.showAsDropDown(parentView, 0, 0)
+        ContactsReadRecyclerView(recyclerView, mockedContacts)
+
+        popupWindow.showAsDropDown(anchorView)
 
         val container = if (android.os.Build.VERSION.SDK_INT > 22) {
             popupWindow.contentView.parent.parent as View
@@ -65,21 +65,22 @@ class EmailContactInfoPopup(private val parentView: View) {
         return popupWindow
     }
 
-    private fun bindFullEmail(
-            fullEmail: FullEmail,
-            view: View) {
+    private fun getMockedContacts(): List<MockedContact> {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
 
-        val viewFromName = view.findViewById<TextView>(R.id.from_name)
-        val viewFromEmail = view.findViewById<TextView>(R.id.from_mail)
-        val viewReplyName = view.findViewById<TextView>(R.id.reply_name)
-        val viewReplyEmail = view.findViewById<TextView>(R.id.reply_mail)
-        val date = view.findViewById<TextView>(R.id.date)
-
-        date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
+        val array = ArrayList<MockedContact>()
+        array.add(MockedContact("Sebastian Caceres", sdf.parse("2018-02-11")))
+        array.add(MockedContact("Gianni Carlo", sdf.parse("2018-20-01")))
+        array.add(MockedContact("Gabriel Aumala", sdf.parse("2017-20-12")))
+        array.add(MockedContact("someemail@email.com", sdf.parse("2017-21-12")))
+        array.add(MockedContact("Erika Perugachi", sdf.parse("2018-13-03")))
+        array.add(MockedContact("Erika Perugachi", sdf.parse("2018-16-03")))
+        return array
     }
 
-    inner class ContactsToRecyclerView(val recyclerView: RecyclerView,
-                                       contactsToList: VirtualList<Contact>
+
+    inner class ContactsReadRecyclerView(val recyclerView: RecyclerView,
+                                       contactsToList: List<MockedContact>
     ) {
 
         val ctx: Context = recyclerView.context
@@ -94,10 +95,11 @@ class EmailContactInfoPopup(private val parentView: View) {
     }
 
     inner class ContactsToListAdapter(private val mContext: Context,
-                                      private val contacts: VirtualList<Contact>
+                                      private val contacts: List<MockedContact>
     ) : RecyclerView.Adapter<ContactHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder{
-            val mView = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null)
+            val mView = LayoutInflater.from(mContext).
+                    inflate(R.layout.contact_read_history_item, null)
             return ContactHolder(mView)
         }
 
@@ -115,16 +117,18 @@ class EmailContactInfoPopup(private val parentView: View) {
         private val context = view.context
 
         private val name: TextView
-        private val email: TextView
+        private val date: TextView
 
-        fun bindContact(contact: Contact){
+        fun bindContact(contact: MockedContact){
             name.text = contact.name
-            email.text = contact.email
+            date.text = DateUtils.getFormattedDate(contact.date.time)
         }
 
         init {
             name = view.findViewById(R.id.name)
-            email = view.findViewById(R.id.email)
+            date = view.findViewById(R.id.date)
         }
     }
+
+    data class MockedContact(val name: String, val date: Date)
 }

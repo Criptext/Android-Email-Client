@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dip"
+        android:layout_weight="0.375"
+        android:layout_height="fill_parent"
+        android:text="Gianni Carlo"
+        android:gravity="center_vertical"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="0dip"
+        android:layout_weight="0.625"
+        android:layout_height="fill_parent"
+        android:text="@string/criptextdotcom"
+        android:gravity="center_vertical"
+        android:textSize="17sp" />
+</LinearLayout>

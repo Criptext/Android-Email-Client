@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail.ui.holders
 
+import android.media.Image
 import android.support.v7.widget.PopupMenu
 import android.view.View
 import android.widget.FrameLayout
@@ -10,6 +11,7 @@ import com.email.R
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
+import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
 
 /**
  * Created by sebas on 3/12/18.
@@ -20,9 +22,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val context = view.context
     private val layout : FrameLayout
     private val toView: TextView
+    private val readView: ImageView
     private val moreView: ImageView
     private val layoutAttachment : RelativeLayout
     private val contactInfoPopUp: EmailContactInfoPopup
+    private val readHistoryPopUp: ReadHistoryPopUp
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -36,6 +40,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
         moreView.setOnClickListener({
             displayPopMenu(emailListener, fullEmail, adapter, position)
+        })
+
+        readView.setOnClickListener({
+            readHistoryPopUp.createPopup(fullEmail, null)
         })
 
         toView.setOnClickListener({
@@ -93,10 +101,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)
         toView = view.findViewById(R.id.to)
+        readView = view.findViewById(R.id.read)
         moreView = view.findViewById(R.id.more)
         layoutAttachment = view.findViewById(R.id.open_full_mail_attachment_container)
 
         contactInfoPopUp = EmailContactInfoPopup(toView)
+        readHistoryPopUp = ReadHistoryPopUp(readView)
     }
 
 }
