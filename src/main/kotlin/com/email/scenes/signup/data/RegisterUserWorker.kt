@@ -10,7 +10,6 @@ import com.email.bgworker.BackgroundWorker
 import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
 import com.email.db.models.Account
-import com.email.db.models.signal.CRSignedPreKey
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -44,12 +43,12 @@ class RegisterUserWorker(
         return SignUpResult.RegisterUser.Failure(message, ex)
     }
 
-    private fun postNewUserToServer(keybundle: PreKeyBundleShareData.UploadBundle)
+    private fun postNewUserToServer(keyBundle: PreKeyBundleShareData.UploadBundle)
             : Result<String, Exception> =
-            Result.of { apiClient.createUser(account, keybundle) }
+            Result.of { apiClient.createUser(account, keyBundle) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
-    private fun persistNewUserData(keybundle: SignalKeyGenerator.PrivateBundle)
+    private fun persistNewUserData(keyBundle: SignalKeyGenerator.PrivateBundle)
             :(String) -> Result<String, Exception> {
         return { jwtoken: String ->
             Result.of {
@@ -57,16 +56,10 @@ class RegisterUserWorker(
                         name = account.name,
                         recipientId = account.username,
                         jwt = jwtoken,
-                        registrationId = keybundle.registrationId,
-                        identityB64 = keybundle.identityKeyPair
+                        registrationId = keyBundle.registrationId,
+                        identityB64 = keyBundle.identityKeyPair
                 )
-
-                db.saveAccount(user)
-                db.deletePrekeys()
-                db.storePrekeys(keybundle.preKeys)
-                db.storeRawSignedPrekey(CRSignedPreKey(
-                        keybundle.signedPreKeyId,
-                        keybundle.signedPreKey))
+                db.saveNewUserData(user, keyBundle)
                 user.recipientId
             }
 

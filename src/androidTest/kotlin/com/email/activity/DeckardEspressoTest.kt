@@ -12,6 +12,7 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.runner.AndroidJUnit4
+import com.email.splash.SplashActivity
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -19,7 +20,7 @@ class DeckardEspressoTest {
 
 
     @get:Rule
-    val mActivityRule = ActivityTestRule(DeckardActivity::class.java)
+    val mActivityRule = ActivityTestRule(SplashActivity::class.java)
 
     @Test
     @Throws(InterruptedException::class)

@@ -15,11 +15,25 @@ interface SignalKeyGenerator {
 
     class Default : SignalKeyGenerator {
 
+        private fun serializePreKeyPairs(preKeys: List<PreKeyRecord>): Map<Int, String> {
+            return preKeys.map { preKey ->
+                val pairBytes = preKey.serialize()
+                preKey.id to Encoding.byteArrayToString(pairBytes)
+            }.toMap()
+        }
+
+        private fun serializePreKeyPublicKeys(preKeys: List<PreKeyRecord>): Map<Int, String> {
+            return preKeys.map { preKey ->
+                val publicKeyBytes = preKey.keyPair.publicKey.serialize()
+                preKey.id to Encoding.byteArrayToString(publicKeyBytes)
+            }.toMap()
+        }
+
         private fun createPrivateBundle(registrationData: RegistrationData) = PrivateBundle(
             identityKeyPair = Encoding.byteArrayToString(registrationData.identityKeyPair.serialize()),
             signedPreKeyId = registrationData.signedPreKeyId,
             signedPreKey = Encoding.byteArrayToString(registrationData.signedPreKey.serialize()),
-            preKeys = registrationData.serializedPreKeys,
+            preKeys = serializePreKeyPairs(registrationData.preKeys),
             registrationId = registrationData.registrationId
             )
 
@@ -34,13 +48,14 @@ interface SignalKeyGenerator {
                         identityPublicKey = Encoding.byteArrayToString(
                                 registrationData.identityKeyPair.publicKey.serialize()),
                         signedPreKeyPublic = Encoding.byteArrayToString(
-                                registrationData.signedPreKey.serialize()),
+                                registrationData.signedPreKey.keyPair.publicKey.serialize()),
                         signedPreKeySignature = Encoding.byteArrayToString(
                                 registrationData.signedPreKey.signature)
                         )
 
 
-            return PreKeyBundleShareData.UploadBundle(shareData, registrationData.serializedPreKeys)
+            return PreKeyBundleShareData.UploadBundle(shareData = shareData,
+                    preKeys = serializePreKeyPublicKeys(registrationData.preKeys))
 
         }
 
@@ -59,10 +74,6 @@ interface SignalKeyGenerator {
         val signedPreKeyId: Int = Random().nextInt(99) + 1
         val signedPreKey: SignedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
         val preKeys: List<PreKeyRecord> = KeyHelper.generatePreKeys(0, 255)
-        val serializedPreKeys: Map<Int, String> = preKeys.map {
-            it.id to Encoding.byteArrayToString(
-                    it.keyPair.publicKey.serialize())
-        }.toMap()
     }
 
     class PrivateBundle(val identityKeyPair: String, val signedPreKeyId: Int,
