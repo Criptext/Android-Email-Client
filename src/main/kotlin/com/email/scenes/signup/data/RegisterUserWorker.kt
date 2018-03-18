@@ -9,7 +9,6 @@ import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
-import com.email.db.models.Account
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -27,7 +26,7 @@ class RegisterUserWorker(
         private val apiClient: SignUpAPIClient,
         private val signalKeyGenerator: SignalKeyGenerator,
         private val keyValueStorage: KeyValueStorage,
-        private val account: IncompleteAccount,
+        private val incompleteAccount: IncompleteAccount,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
@@ -45,20 +44,14 @@ class RegisterUserWorker(
 
     private fun postNewUserToServer(keyBundle: PreKeyBundleShareData.UploadBundle)
             : Result<String, Exception> =
-            Result.of { apiClient.createUser(account, keyBundle) }
+            Result.of { apiClient.createUser(incompleteAccount, keyBundle) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun persistNewUserData(keyBundle: SignalKeyGenerator.PrivateBundle)
             :(String) -> Result<String, Exception> {
         return { jwtoken: String ->
             Result.of {
-                val user = Account(
-                        name = account.name,
-                        recipientId = account.username,
-                        jwt = jwtoken,
-                        registrationId = keyBundle.registrationId,
-                        identityB64 = keyBundle.identityKeyPair
-                )
+                val user = incompleteAccount.complete(keyBundle, jwtoken)
                 db.saveNewUserData(user, keyBundle)
                 user.recipientId
             }
@@ -67,7 +60,7 @@ class RegisterUserWorker(
     }
 
     override fun work(): SignUpResult.RegisterUser? {
-        val registrationBundle = signalKeyGenerator.register(recipientId = account.username,
+        val registrationBundle = signalKeyGenerator.register(recipientId = incompleteAccount.username,
                 deviceId = 1)
         val operation = postNewUserToServer(registrationBundle.uploadBundle)
                           .flatMap(persistNewUserData(registrationBundle.privateBundle))
