@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import com.email.R
+import com.email.db.AttachmentTypes
 import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.utils.ui.TextDrawable
 import com.michael.easydialog.EasyDialog
@@ -70,20 +71,20 @@ class Utility {
         }
 
 
-        fun getDrawableAttachmentFromType(type: AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes) = when (type) {
-            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.EXCEL ->
+        fun getDrawableAttachmentFromType(type: AttachmentTypes) = when (type) {
+            AttachmentTypes.EXCEL ->
                 R.drawable.attachment_excel_eliminar
 
-            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.WORD ->
+            AttachmentTypes.WORD ->
                 R.drawable.attachment_word_eliminar
 
-            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.PDF ->
+            AttachmentTypes.PDF ->
                 R.drawable.attachment_pdf_eliminar
 
-            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.PPT ->
+            AttachmentTypes.PPT ->
                 R.drawable.attachment_ppt_eliminar
 
-            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.IMAGE ->
+            AttachmentTypes.IMAGE ->
                 R.drawable.attachment_image_eliminar
         }
     }

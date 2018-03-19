@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
+import com.email.db.AttachmentTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.AttachmentHistoryListener
 import com.email.utils.DateUtils
@@ -61,7 +62,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 date = sdf.parse("2018-02-11"),
                 file = "Look at ma sheep.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.DOWNLOAD,
-                fileType = MockedAttachmentContact.AttachmentTypes.PDF
+                fileType = AttachmentTypes.PDF
         ))
 
         array.add(MockedAttachmentContact(
@@ -69,7 +70,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 date = sdf.parse("2018-03-16"),
                 file = "Sheep relevance.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.OPEN,
-                fileType = MockedAttachmentContact.AttachmentTypes.WORD
+                fileType = AttachmentTypes.WORD
         ))
         return array
     }
@@ -158,9 +159,6 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                                        val action: ContactActionTypes,
                                        val fileType: AttachmentTypes) {
 
-        enum class AttachmentTypes {
-            EXCEL, WORD, PDF, PPT, IMAGE
-        }
 
         enum class ContactActionTypes {
             NOT_REGISTER, OPEN, DOWNLOAD
