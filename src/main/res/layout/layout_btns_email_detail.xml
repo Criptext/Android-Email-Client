@@ -1,7 +1,8 @@
 <LinearLayout
+    android:layout_marginTop="20dp"
     android:layout_gravity="center_horizontal"
     android:orientation="horizontal"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -28,11 +29,11 @@
         android:layout_height="match_parent" />
 
     <Button
+        android:padding="5dp"
         android:textAllCaps="false"
         android:textSize="12sp"
         android:id="@+id/forward"
         android:background="@drawable/email_detail_forward_btn_shape"
-        android:drawablePadding="10dp"
         android:drawableStart="@drawable/forward"
         android:drawableTint="#87888f"
         android:text="Forward"
