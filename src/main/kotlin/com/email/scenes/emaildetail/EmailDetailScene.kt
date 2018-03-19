@@ -6,9 +6,11 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.scenes.LabelChooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
+import com.email.scenes.mailbox.MoveToDialog
 import com.email.utils.VirtualList
 
 /**
@@ -34,6 +36,9 @@ interface EmailDetailScene {
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
         private lateinit var labelsRecyclerView: LabelsRecyclerView
+
+        private val labelChooserDialog = LabelChooserDialog(context)
+        private val moveToDialog = MoveToDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)

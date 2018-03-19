@@ -55,6 +55,9 @@ class FullEmailListAdapter(private val mContext : Context,
                         emailListener = fullEmailListener,
                         position = position)
             }
+            is FooterViewHolder -> {
+                holder.setListeners(emailListener = fullEmailListener)
+            }
         }
     }
 
@@ -103,6 +106,9 @@ class FullEmailListAdapter(private val mContext : Context,
                                    position: Int)
 
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
+        fun onForwardBtnClicked()
+        fun onReplyBtnClicked()
+        fun onReplyAllBtnClicked()
     }
 
     private enum class EmailViewTypes {

@@ -68,7 +68,7 @@ interface MailboxScene: ThreadListView {
         }
 
         private val drawerLayout: DrawerLayout by lazy {
-            mailboxView.findViewById<DrawerLayout>(R.id.drawer_layout) as DrawerLayout
+            mailboxView.findViewById(R.id.drawer_layout) as DrawerLayout
         }
 
         private val leftNavigationView: NavigationView by lazy {
