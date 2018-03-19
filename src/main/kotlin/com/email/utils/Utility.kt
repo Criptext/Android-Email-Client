@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import com.email.R
+import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.utils.ui.TextDrawable
 import com.michael.easydialog.EasyDialog
 import java.security.NoSuchAlgorithmException
@@ -59,48 +60,6 @@ class Utility {
             return ""
         }
 
-        private fun shouldPopUpRenderBottom(context: Context, dialog: EasyDialog, anchorView: View) : Boolean {
-            val location = IntArray(2)
-            anchorView.getLocationOnScreen(location)
-            val anchorLocationY = location[1]
-            val displayMetrics = DisplayMetrics()
-            val wm = context.getSystemService(Context.WINDOW_SERVICE)
-                    as WindowManager
-            wm.defaultDisplay.getMetrics(displayMetrics)
-            val screenHeight = displayMetrics.heightPixels
-
-            return anchorLocationY> screenHeight / 2
-        }
-
-        fun createPopUpWindow(
-                context: Context,
-                anchorView: View,
-                contentView: View) {
-            val popup = EasyDialog(context)
-                    .setLayout(contentView)
-                    .setBackgroundColor(
-                            ContextCompat.getColor(
-                                    context, R.color.white))
-                    .setLocationByAttachedView(anchorView)
-                    .setAnimationAlphaShow(200, 0.3f, 1.0f)
-                    .setAnimationAlphaDismiss(200, 1.0f, 0.0f)
-                    .setOutsideColor(R.color.azure)
-                    .setTouchOutsideDismiss(true)
-                    .setMatchParent(false)
-                    .setMarginLeftAndRight(24, 24)
-
-            val shouldPopUpRenderBottom = shouldPopUpRenderBottom(
-                    context, popup, anchorView)
-
-            if(shouldPopUpRenderBottom)  {
-                popup.setGravity(EasyDialog.GRAVITY_TOP)
-            } else {
-                popup.setGravity(EasyDialog.GRAVITY_BOTTOM)
-            }
-
-            popup.show()
-        }
-
         private fun colorByName(name: String) : Int {
             var color = "0091ff"
             val md5 = md5(name)
@@ -110,5 +69,22 @@ class Utility {
             return Color.parseColor("#"+color)
         }
 
+
+        fun getDrawableAttachmentFromType(type: AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes) = when (type) {
+            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.EXCEL ->
+                R.drawable.attachment_excel_eliminar
+
+            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.WORD ->
+                R.drawable.attachment_word_eliminar
+
+            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.PDF ->
+                R.drawable.attachment_pdf_eliminar
+
+            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.PPT ->
+                R.drawable.attachment_ppt_eliminar
+
+            AttachmentHistoryPopUp.MockedAttachmentContact.AttachmentTypes.IMAGE ->
+                R.drawable.attachment_image_eliminar
+        }
     }
 }

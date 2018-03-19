@@ -1,18 +1,16 @@
 package com.email.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.PopupWindow
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ReadHistoryListener
 import com.email.utils.DateUtils
-import com.email.utils.Utility
+import com.email.utils.ui.PopupUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -38,7 +36,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
 
         ContactsReadRecyclerView(recyclerView, mockedContacts)
 
-        Utility.createPopUpWindow(
+        PopupUtils.createPopUpWindow(
                 context = context,
                 contentView = layout,
                 anchorView = anchorView)

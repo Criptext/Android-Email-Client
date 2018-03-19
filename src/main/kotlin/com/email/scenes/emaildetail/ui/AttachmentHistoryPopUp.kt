@@ -12,6 +12,8 @@ import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.AttachmentHistoryListener
 import com.email.utils.DateUtils
 import com.email.utils.Utility
+import com.email.utils.ui.PopupUtils
+import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,7 +38,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         val mockedAttachmentContacts = getMockedAttachmentContacts()
         AttachmentContactsRecyclerView(recyclerView, mockedAttachmentContacts)
 
-        Utility.createPopUpWindow(
+        PopupUtils.createPopUpWindow(
                 context = context,
                 contentView = layout,
                 anchorView = anchorView)
@@ -58,16 +60,16 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 name = "Sebastian Caceres",
                 date = sdf.parse("2018-02-11"),
                 file = "Look at ma sheep.pdf",
-                action = "DOWNLOAD",
-                fileType = "PDF"
-                ))
+                action = MockedAttachmentContact.ContactActionTypes.DOWNLOAD,
+                fileType = MockedAttachmentContact.AttachmentTypes.PDF
+        ))
 
         array.add(MockedAttachmentContact(
                 name = "Gianni Carlo",
                 date = sdf.parse("2018-03-16"),
                 file = "Sheep relevance.pdf",
-                action = "OPEN",
-                fileType = "DOCX"
+                action = MockedAttachmentContact.ContactActionTypes.OPEN,
+                fileType = MockedAttachmentContact.AttachmentTypes.WORD
         ))
         return array
     }
@@ -120,22 +122,22 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
             name.text = contact.name
             date.text = DateUtils.getFormattedDate(contact.date.time)
             action.text = when(contact.action) {
-                "DOWNLOAD", "download" -> {
-                    "${AttachmentHistoryPopUp.DOWNLOADED}: "
+                MockedAttachmentContact.ContactActionTypes.DOWNLOAD -> {
+                    "Downloaded: "
                 }
 
-                "OPEN", "open" -> {
-                    "${AttachmentHistoryPopUp.OPENED}: "
+                MockedAttachmentContact.ContactActionTypes.OPEN -> {
+                    "Opened: "
+                }
 
-                } else -> {
-                    "${AttachmentHistoryPopUp.NOT_REGISTERED}: "
+                MockedAttachmentContact.ContactActionTypes.NOT_REGISTER -> {
+                    "Not registered: "
                 }
             }
-            if(contact.fileType in listOf("pdf", "PDF", "Pdf")) {
-                fileType.setImageResource(R.drawable.pdf_eliminar_esto)
-            } else {
-                fileType.setImageResource(R.drawable.word_eliminar_esto)
-            }
+
+            Picasso.with(context)
+                    .load(Utility.getDrawableAttachmentFromType(contact.fileType))
+                    .into(fileType)
 
             fileName.text = contact.file
 
@@ -150,15 +152,19 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    companion object {
-        val NOT_REGISTERED="not_registered"
-        val OPENED="opened"
-        val DOWNLOADED="downloaded"
-    }
     data class MockedAttachmentContact(val name: String,
                                        val date: Date,
                                        val file: String,
-                                       val action: String,
-                                       val fileType: String)
+                                       val action: ContactActionTypes,
+                                       val fileType: AttachmentTypes) {
+
+        enum class AttachmentTypes {
+            EXCEL, WORD, PDF, PPT, IMAGE
+        }
+
+        enum class ContactActionTypes {
+            NOT_REGISTER, OPEN, DOWNLOAD
+        }
+    }
 }
 
