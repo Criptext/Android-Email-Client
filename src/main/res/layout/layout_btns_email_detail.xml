@@ -1,0 +1,41 @@
+<LinearLayout
+    android:layout_gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <Button
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:id="@+id/reply"
+        android:drawableTint="#87888f"
+        android:drawableLeft="@drawable/reply_eliminar_esto"
+        android:background="@drawable/email_detail_reply_btn_shape"
+        android:text="Reply"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:id="@+id/reply_all"
+        android:background="@drawable/email_detail_reply_all_btn_shape"
+        android:drawableTint="#87888f"
+        android:drawableLeft="@drawable/reply_all_eliminar_esto"
+        android:text="Reply All"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:id="@+id/forward"
+        android:background="@drawable/email_detail_forward_btn_shape"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/forward"
+        android:drawableTint="#87888f"
+        android:text="Forward"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+</LinearLayout>
