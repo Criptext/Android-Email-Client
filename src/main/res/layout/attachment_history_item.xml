@@ -34,39 +34,37 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="8dip"
         android:layout_marginBottom="5dip"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="30dp">
 
         <ImageView
+            android:layout_alignParentStart="true"
+            android:layout_width="20dp"
+            android:gravity="center_vertical|start"
             android:id="@+id/file_type"
             android:src="@drawable/pdf_eliminar_esto"
             android:layout_marginStart="10dp"
-            android:layout_width="0dip"
-            android:layout_weight="0.1"
-            android:layout_height="match_parent" />
+            android:layout_height="20dp" />
         <TextView
-            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="20dp"
             android:id="@+id/file_name"
-            android:layout_width="0dip"
-            android:layout_weight="0.6"
-            android:layout_height="wrap_content"
-            android:text="asda.pdf"
+            android:text="sasda.pdf"
             android:gravity="center_horizontal"
             android:textSize="15sp" />
 
         <TextView
-            android:layout_marginStart="40dp"
             android:id="@+id/date"
-            android:layout_width="0dip"
-            android:layout_weight="0.3"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="20:00 PM"
-            android:gravity="center_vertical|end"
+            android:layout_alignParentRight="true"
             android:layout_marginEnd="10dp"
             android:textSize="15sp" />
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
