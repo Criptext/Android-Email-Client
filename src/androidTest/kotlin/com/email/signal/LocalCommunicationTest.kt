@@ -16,12 +16,13 @@ class LocalCommunicationTest {
 
     @get:Rule
     val mActivityRule = ActivityTestRule(SplashActivity::class.java)
+    private val generator = SignalKeyGenerator.Default()
 
     @Test
     @Throws(InterruptedException::class)
     fun should_be_able_to_exchange_e2e_messages_in_memory_with_signal() {
-        val alice = InMemoryUser("alice", 1)
-        val bob = InMemoryUser("bob", 1)
+        val alice = InMemoryUser(generator, "alice", 1).setup()
+        val bob = InMemoryUser(generator, "bob", 1).setup()
 
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
         alice.buildSession(keyBundleFromBob)

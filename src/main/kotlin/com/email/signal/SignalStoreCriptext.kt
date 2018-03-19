@@ -118,9 +118,9 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
         override fun storeSession(address: SignalProtocolAddress, record: SessionRecord) {
             val sessionRecord = Encoding.byteArrayToString(record.serialize())
-            val newRawSession = CRSessionRecord(recipientId = address.name, deviceId = address.deviceId,
+            val newRawSessionValue = CRSessionRecord(recipientId = address.name, deviceId = address.deviceId,
                     byteString = sessionRecord)
-            db.insert(newRawSession)
+            db.store(newRawSessionValue)
         }
 
     }

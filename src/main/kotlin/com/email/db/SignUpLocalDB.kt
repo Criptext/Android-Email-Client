@@ -14,8 +14,9 @@ import com.email.signal.SignalKeyGenerator
 interface SignUpLocalDB {
     fun saveNewUserData(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle)
 
-    class Default(applicationContext: Context): SignUpLocalDB {
-        private val db = AppDatabase.getAppDatabase(applicationContext)
+    class Default(private val db: AppDatabase): SignUpLocalDB {
+
+        constructor(ctx: Context): this (AppDatabase.getAppDatabase(ctx))
 
         private fun storePreKeys(preKeys: Map<Int, String>) {
             val listPreKeys: ArrayList<CRPreKey> = ArrayList()

@@ -1,9 +1,6 @@
 package com.email.db.dao.signal
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import com.email.db.models.signal.CRSessionRecord
 
 /**
@@ -18,6 +15,16 @@ interface RawSessionDao {
 
     @Delete
     fun delete(crSessionRecord: CRSessionRecord)
+
+    /**
+     * Each time signal calls storeSession it should replace any existing value, which isn't
+     * exactly supported by SQL so let's delete first and then insert in a single transaction.
+     */
+    @Transaction
+    fun store(crSessionRecord: CRSessionRecord) {
+        delete(crSessionRecord)
+        insert(crSessionRecord)
+    }
 
     @Query("""SELECT * FROM raw_session
               WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
