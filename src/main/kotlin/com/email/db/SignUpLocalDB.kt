@@ -1,44 +1,52 @@
 package com.email.db
 
 import android.content.Context
+import android.util.Log
 import com.email.db.models.Account
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSignedPreKey
+import com.email.signal.SignalKeyGenerator
 
 /**
  * Created by sebas on 2/16/18.
  */
 
 interface SignUpLocalDB {
-    fun storePrekeys(prekeys: Map<Int, String>)
-    fun deletePrekeys()
-    fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey)
-    fun saveAccount(account: Account)
+    fun saveNewUserData(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle)
 
     class Default(applicationContext: Context): SignUpLocalDB {
-
         private val db = AppDatabase.getAppDatabase(applicationContext)
 
-        override fun storePrekeys(prekeys: Map<Int, String>) {
-            val listPrekeys: ArrayList<CRPreKey> = ArrayList()
+        private fun storePreKeys(preKeys: Map<Int, String>) {
+            val listPreKeys: ArrayList<CRPreKey> = ArrayList()
 
-            for ((key, value) in prekeys) {
-                listPrekeys.add(CRPreKey(id = key, byteString = value))
+            for ((key, value) in preKeys) {
+                listPreKeys.add(CRPreKey(id = key, byteString = value))
             }
 
-            db.rawPreKeyDao().insertAll(listPrekeys)
+            db.rawPreKeyDao().insertAll(listPreKeys)
         }
 
-        override fun saveAccount(account: Account) {
+        private fun saveAccount(account: Account) {
             db.accountDao().insert(account)
         }
 
-        override fun storeRawSignedPrekey(crSignedPreKey: CRSignedPreKey) {
+        private fun storeRawSignedPreKey(crSignedPreKey: CRSignedPreKey) {
             db.rawSignedPreKeyDao().insert(crSignedPreKey)
         }
 
-        override fun deletePrekeys() {
+        private fun deletePreKeys() {
             db.rawPreKeyDao().deleteAll()
         }
+
+        override fun saveNewUserData(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle) {
+            saveAccount(account)
+            deletePreKeys()
+            storePreKeys(keyBundle.preKeys)
+            storeRawSignedPreKey(CRSignedPreKey(
+                    keyBundle.signedPreKeyId,
+                    keyBundle.signedPreKey))
+        }
+
     }
 }

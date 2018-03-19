@@ -2,13 +2,12 @@ package com.email.mocks
 
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalKeyGenerator
-import org.whispersystems.libsignal.state.PreKeyRecord
 
 /**
  * Created by sebas on 3/6/18.
  */
 
-class MockedSignalKeyGenerator: SignalKeyGenerator {
+class MockedSignalKeyGenerator : SignalKeyGenerator {
     override fun register(recipientId: String, deviceId: Int): SignalKeyGenerator.RegistrationBundles {
         val shareData = PreKeyBundleShareData(
                 deviceId = deviceId,
