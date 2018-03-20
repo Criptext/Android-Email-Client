@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
@@ -10,6 +11,7 @@ import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
+import com.email.scenes.labelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.utils.VirtualList
 
@@ -25,6 +27,8 @@ interface EmailDetailScene {
 
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
+    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
+    fun showToastDELETETHIS()
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -78,8 +82,15 @@ interface EmailDetailScene {
         override fun notifyFullEmailChanged(position: Int) {
             fullEmailsRecyclerView.notifyFullEmailChanged(position = position)
         }
+
+        override fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler) {
+            labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
+        }
+
+        override fun showToastDELETETHIS() {
+            Toast.makeText(context, "Here we show the dialog...", Toast.LENGTH_SHORT)
+        }
+
     }
-
-
 
 }

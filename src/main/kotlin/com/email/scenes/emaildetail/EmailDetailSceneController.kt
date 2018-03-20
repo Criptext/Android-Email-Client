@@ -9,6 +9,8 @@ import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
+import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.SelectedLabels
 import com.email.utils.VirtualList
 
 /**
@@ -114,12 +116,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 //scene.showDialogMoveTo(onMoveThreadsListener)
             }
             R.id.mailbox_add_labels -> {
-                TODO("add labels")
-                //scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
+                scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
             }
         }
     }
 
+    fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels) {
+        //TODO("INITIALIZE DATASOURCE AND SHOW MESSAGE...)
+        scene.showToastDELETETHIS()
+
+    }
     override val menuResourceId: Int?
         get() = R.menu.mailbox_menu_multi_mode_read
 }

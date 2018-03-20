@@ -16,6 +16,7 @@ interface MailboxLocalDB {
     fun getAllEmailThreads(): List<EmailThread>
     fun getArchivedEmailThreads(): List<EmailThread>
     fun getAllLabels(): List<LabelThread>
+    fun getLabels(): List<Label>
     fun getNotArchivedEmailThreads(): List<EmailThread>
     fun removeLabelsRelation(labels: List<Label>, emailId: Int)
     fun seed()
@@ -25,9 +26,28 @@ interface MailboxLocalDB {
                            updateUnreadStatus: Boolean)
     fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
+    fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
 
 
     class Default(applicationContext: Context): MailboxLocalDB {
+
+        override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
+            val labelSet = HashSet<Label>()
+
+            threadIds.forEach {
+                val emails = db.emailDao().getEmailsFromThreadId(it)
+
+                emails.forEach {
+                    val labels = db.emailLabelDao().getLabelsFromEmail(it.id!!)
+                    labelSet.addAll(labels)
+                }
+            }
+
+            val labelsList = ArrayList(labelSet)
+            labelsList.addAll(labelSet)
+
+            return labelsList
+        }
 
         override fun createLabelEmailRelation(labelId: Int, emailId: Int) {
             val emailLabel = EmailLabel(labelId = labelId, emailId = emailId)
@@ -90,6 +110,10 @@ interface MailboxLocalDB {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
+        }
+
+        override fun getLabels(): List<Label> {
+            return db.labelDao().getAll()
         }
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {

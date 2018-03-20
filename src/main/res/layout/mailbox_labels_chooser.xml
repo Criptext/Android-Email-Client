@@ -17,7 +17,15 @@
         android:textColor="@color/textColorPrimary"
         android:textSize="20sp"
         />
+    <ProgressBar
+        android:padding="50dp"
+        android:id="@+id/label_chooser_progress_loading"
+        android:layout_width="330dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/progress_bar_circle"/>
             <android.support.v7.widget.RecyclerView
+                android:visibility="gone"
                 android:id="@+id/label_recycler"
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="10dp"

@@ -9,6 +9,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.mailbox.data.MailboxAPIClient
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
@@ -30,7 +31,9 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
-        val mailboxDataSource = MailboxDataSource(db)
+        val mailboxDataSource = MailboxDataSource( runner = AsyncTaskWorkRunner(),
+                mailboxAPIClient = MailboxAPIClient.Default(),
+                mailboxLocalDB = db)
 
         mailboxDataSource.seed()
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)

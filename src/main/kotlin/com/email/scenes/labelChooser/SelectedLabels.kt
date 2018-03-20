@@ -10,6 +10,14 @@ import java.util.*
 class SelectedLabels() {
     private val selectedItems: LinkedList<LabelThread> = LinkedList()
 
+    fun addMultipleSelected(items: List<LabelThread>) {
+        selectedItems.addAll(items)
+        items.forEach {
+            if(!it.isSelected)
+                it.isSelected  = true
+        }
+    }
+
     fun add(item: LabelThread) {
         selectedItems.add(item)
         if(!item.isSelected)

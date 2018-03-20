@@ -12,6 +12,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
+import com.email.db.models.Label
 import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.labelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.data.EmailThread
@@ -40,6 +41,7 @@ interface MailboxScene: ThreadListView {
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
+    fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -176,7 +178,10 @@ interface MailboxScene: ThreadListView {
             toolbarHolder.updateNumberOfMails(emailsSize)
         }
 
+        override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+            labelChooserDialog.onFetchedLabels(
+                    defaultSelectedLabels = defaultSelectedLabels,
+                    labels = labels)
+        }
     }
-
-
 }

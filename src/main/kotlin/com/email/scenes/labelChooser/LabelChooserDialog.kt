@@ -4,9 +4,11 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.email.R
+import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelThread
 import com.email.utils.VirtualList
 
@@ -34,7 +36,9 @@ class LabelChooserDialog(private val context: Context) {
     private fun createController(dialogView: View, dataSource: LabelDataSourceHandler)
             : LabelChooserSceneController {
         val model = LabelChooserSceneModel()
-        val scene = LabelChooserScene.LabelChooserView(dialogView ,LabelList(model.labels))
+        val scene = LabelChooserScene.LabelChooserView(
+                dialogView ,LabelList(model.labels))
+
         return LabelChooserSceneController(
                 scene = scene,
                 model = model,
@@ -85,4 +89,10 @@ class LabelChooserDialog(private val context: Context) {
             get() = labels.size
     }
 
+    fun onFetchedLabels(
+            defaultSelectedLabels: List<Label>,
+            labels: List<Label> ) {
+        controller.onFetchedLabels(
+                defaultSelectedLabels, labels)
+    }
 }

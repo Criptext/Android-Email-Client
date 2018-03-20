@@ -1,5 +1,6 @@
 package com.email.scenes.labelChooser
 
+import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelThread
 
 /**
@@ -15,7 +16,6 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         override fun onDialogPositiveClick() {
             labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
             clearSelectedLabels()
-
         }
 
         override fun onDialogNegativeClick() {
@@ -46,13 +46,24 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
     }
 
     fun start() {
-        val labelThreads = labelDataSourceHandler.getAllLabels()
-        model.labels.clear()
+        scene.attachView(labelThreadEventListener)
+    }
 
-        if(labelThreads != null) {
-            model.labels.addAll(labelThreads)
+    fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+        val labelThreads = labels.map {
+            LabelThread(it)
+        }
+        model.labels.clear()
+        model.labels.addAll(labelThreads)
+
+        model.selectedLabels.clear()
+
+        val defaultSelectedLabelThreads = defaultSelectedLabels.map {
+            LabelThread(it)
         }
 
-        scene.attachView(labelThreadEventListener)
+        model.selectedLabels.addMultipleSelected(defaultSelectedLabelThreads)
+
+        scene.onFetchedLabels()
     }
 }

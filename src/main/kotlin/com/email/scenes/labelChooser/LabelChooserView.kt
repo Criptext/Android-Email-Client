@@ -5,6 +5,7 @@ import com.email.androidui.labelthread.LabelThreadListView
 import com.email.androidui.labelthread.LabelThreadRecyclerView
 import com.email.R
 import android.view.View
+import android.widget.ProgressBar
 import com.email.scenes.labelChooser.data.LabelThread
 import com.email.utils.VirtualList
 
@@ -15,6 +16,7 @@ import com.email.utils.VirtualList
 
 interface LabelChooserScene: LabelThreadListView {
     fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener)
+    fun onFetchedLabels()
 
     class LabelChooserView(private val labelChooserView: View,
                            private val labelsList: VirtualList<LabelThread>)
@@ -52,5 +54,14 @@ interface LabelChooserScene: LabelThreadListView {
             labelThreadRecyclerView.notifyLabelThreadChanged(position)
         }
 
+        override fun onFetchedLabels() {
+            notifyLabelThreadSetChanged()
+            val progressBar = labelChooserView.findViewById<ProgressBar>(R.id.label_chooser_progress_loading)
+            progressBar.visibility = View.GONE
+
+            val recycler = labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
+            recycler.visibility = View.VISIBLE
+        }
     }
+
 }

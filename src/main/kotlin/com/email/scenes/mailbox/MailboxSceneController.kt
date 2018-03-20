@@ -10,6 +10,8 @@ import com.email.scenes.labelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.scenes.mailbox.data.MailboxRequest
+import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
@@ -26,6 +28,23 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val dataSource: MailboxDataSource,
                              private val feedController : FeedController) : SceneController() {
 
+    private val dataSourceListener = { result: MailboxResult ->
+        when (result) {
+            is MailboxResult.GetLabels -> onLabelsLoaded(result)
+        }
+    }
+    private fun onLabelsLoaded(result: MailboxResult.GetLabels) {
+        when(result) {
+            is MailboxResult.GetLabels.Success -> {
+                scene.onFetchedLabels(result.defaultSelectedLabels,
+                result.labels)
+            }
+
+            is MailboxResult.GetLabels.Failure -> {
+
+            }
+        }
+    }
     private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
         else "INBOX"
@@ -100,6 +119,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onStart() {
+        dataSource.listener = dataSourceListener
         scene.attachView(threadEventListener)
         scene.observer = observer
         scene.initDrawerLayout()
@@ -188,9 +208,20 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showDialogMoveTo(onMoveThreadsListener)
             }
             R.id.mailbox_add_labels -> {
-                scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
+                showDialogLabelChooser()
             }
         }
+    }
+    private fun showDialogLabelChooser() {
+        val threadIds = model.selectedThreads.toList().map {
+            it.threadId
+        }
+        val req = MailboxRequest.GetLabels(
+                threadIds = threadIds
+        )
+
+        dataSource.submitRequest(req)
+        scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
     }
 
     fun getAllLabels() : List<LabelThread>{

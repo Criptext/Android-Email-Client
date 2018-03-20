@@ -1,6 +1,7 @@
 package com.email.scenes.labelChooser
 
 import com.email.scenes.SceneController
+import com.email.scenes.emaildetail.EmailDetailSceneController
 import com.email.scenes.mailbox.MailboxSceneController
 
 /**
@@ -13,31 +14,13 @@ class LabelDataSourceHandler(sceneController: SceneController) {
             is MailboxSceneController -> {
                 sceneController.createRelationSelectedEmailLabels(selectedLabels)
             }
+            is EmailDetailSceneController -> {
+                sceneController.createRelationSelectedEmailLabels(selectedLabels)
+            }
             else -> {
 
             }
         }
     }
 
-    val createLabelEmailRelation = {
-        labelId: Int, emailThreadId: Int ->
-        when(sceneController) {
-            is MailboxSceneController -> {
-                sceneController.assignLabelToEmailThread(labelId,
-                        emailThreadId)
-            } else -> {
-
-        }
-        }
-    }
-
-    val getAllLabels = {
-        when(sceneController) {
-            is MailboxSceneController -> {
-                sceneController.getAllLabels()
-            } else -> {
-                null
-            }
-        }
-    }
 }
