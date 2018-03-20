@@ -4,7 +4,6 @@ import android.content.Context
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
-import com.email.scenes.LabelChooser.LabelDataSourceHandler
 import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest

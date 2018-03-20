@@ -3,8 +3,8 @@ package com.email.androidui.labelthread
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.email.scenes.LabelChooser.LabelThreadAdapter
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.LabelThreadAdapter
+import com.email.scenes.labelChooser.data.LabelThread
 import com.email.utils.VirtualList
 
 class LabelThreadRecyclerView(recyclerView: RecyclerView,

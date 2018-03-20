@@ -1,4 +1,4 @@
-package com.email.scenes.LabelChooser.data
+package com.email.scenes.labelChooser.data
 
 import com.email.db.ColorTypes
 import com.email.db.models.Label

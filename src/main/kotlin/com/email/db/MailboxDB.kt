@@ -6,7 +6,7 @@ import com.email.db.models.EmailLabel
 import com.email.db.models.Label
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelThread
 
 /**
  * Created by sebas on 1/26/18.

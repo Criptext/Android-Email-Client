@@ -3,7 +3,6 @@ package com.email.scenes.mailbox
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -11,12 +10,10 @@ import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
 import com.email.R
-import com.email.R.id.fab
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
-import com.email.scenes.LabelChooser.LabelChooserDialog
-import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.composer.ui.ComposerUIObserver
+import com.email.scenes.labelChooser.LabelChooserDialog
+import com.email.scenes.labelChooser.LabelDataSourceHandler
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView

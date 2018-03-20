@@ -6,7 +6,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
-import com.email.scenes.LabelChooser.LabelChooserDialog
+import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView

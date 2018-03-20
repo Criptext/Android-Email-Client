@@ -1,6 +1,6 @@
-package com.email.scenes.LabelChooser
+package com.email.scenes.labelChooser
 
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelThread
 
 /**
  * Created by sebas on 2/2/18.

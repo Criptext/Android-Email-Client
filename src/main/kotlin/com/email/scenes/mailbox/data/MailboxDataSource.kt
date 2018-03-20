@@ -2,7 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelThread
 
 /**
  * Created by sebas on 1/24/18.

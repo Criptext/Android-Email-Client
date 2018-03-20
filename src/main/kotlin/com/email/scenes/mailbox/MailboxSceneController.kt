@@ -4,9 +4,9 @@ import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import com.email.IHostActivity
 import com.email.R
-import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.LabelChooser.SelectedLabels
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.labelChooser.data.LabelThread
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
