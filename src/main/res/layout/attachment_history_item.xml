@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:divider="?android:dividerHorizontal"
+    android:layout_marginTop="@dimen/activity_horizontal_margin"
+    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+    android:showDividers="end"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_marginStart="10dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gianni Carlo"
+            android:gravity="center_vertical"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/action"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="opened:"
+            android:gravity="center_vertical"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="8dip"
+        android:layout_marginBottom="5dip"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp">
+
+        <ImageView
+            android:layout_alignParentStart="true"
+            android:layout_width="20dp"
+            android:gravity="center_vertical|start"
+            android:id="@+id/file_type"
+            android:src="@drawable/pdf_eliminar_esto"
+            android:layout_marginStart="10dp"
+            android:layout_height="20dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="20dp"
+            android:id="@+id/file_name"
+            android:text="sasda.pdf"
+            android:gravity="center_horizontal"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20:00 PM"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="10dp"
+            android:textSize="15sp" />
+    </RelativeLayout>
+</LinearLayout>

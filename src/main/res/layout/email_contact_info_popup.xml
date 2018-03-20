@@ -9,7 +9,6 @@
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:id="@+id/email_contact_info_popup" >
 
         <LinearLayout
@@ -104,7 +103,7 @@
                 android:id="@+id/contacts_to_refresher"
                 android:layout_width="0dip"
                 android:layout_weight="0.80"
-                android:layout_height="match_parent" >
+                android:layout_height="200dp" >
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/contacts_to_recycler"

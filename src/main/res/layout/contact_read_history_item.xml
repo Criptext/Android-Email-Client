@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:divider="?android:dividerHorizontal"
+    android:layout_marginTop="@dimen/activity_horizontal_margin"
+    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+    android:showDividers="end"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dip"
-        android:layout_weight="0.375"
-        android:layout_height="fill_parent"
-        android:text="Gianni Carlo"
-        android:gravity="center_vertical"
-        android:textSize="17sp" />
+        <TextView
+            android:layout_marginStart="10dip"
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Gianni Carlo"
+            android:gravity="center_vertical|start"
+            android:layout_toLeftOf="@+id/date"
+            android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="0dip"
-        android:layout_weight="0.625"
-        android:layout_height="fill_parent"
-        android:text="@string/criptextdotcom"
-        android:gravity="center_vertical"
-        android:textSize="17sp" />
+        <TextView
+            android:layout_marginEnd="10dip"
+            android:id="@+id/date"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="THIS IS A DATE"
+            android:gravity="center_vertical|end"
+            android:textSize="15sp" />
+
+
+    </RelativeLayout>
 </LinearLayout>

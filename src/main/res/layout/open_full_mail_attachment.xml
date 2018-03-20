@@ -10,9 +10,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 <ImageView
     android:id="@+id/attachment_container"
-    android:layout_width="wrap_content"
+    android:layout_width="40dp"
     android:layout_height="match_parent"
-    android:src="@drawable/read" />
+    android:padding="2dp"
+    android:src="@drawable/pdf_eliminar_esto" />
 
 <TextView
     android:layout_toEndOf="@id/attachment_container"
@@ -21,7 +22,8 @@
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
     android:textSize="15sp"
-    android:text="This is my sheep.pdf"/>
+    android:text="This is my sheep.pdf"
+    fontPath="fonts/NunitoSans-Bold.ttf" />
 
 <TextView
     android:layout_toEndOf="@id/attachment_name"
@@ -37,9 +39,11 @@
     android:layout_toEndOf="@id/attachment_size"
     android:layout_centerVertical="true"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="50dp"
+    android:padding="10dp"
+    android:layout_marginStart="20dp"
+    android:layout_height="match_parent"
     android:layout_alignParentEnd="true"
     android:src="@drawable/download"
+    android:tint="@color/gray"
     android:layout_gravity="end|center_vertical" />
 </RelativeLayout>

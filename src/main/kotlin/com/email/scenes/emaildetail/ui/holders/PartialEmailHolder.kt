@@ -31,6 +31,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
+
         bodyView.text = fullEmail.email.preview
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
 
@@ -46,17 +47,14 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         }
         if(fullEmail.from == null) {
             headerView.text = "Me"
-        } else {
-            headerView.text = fullEmail.from.name
-        }
-        if(fullEmail.from != null) {
-            leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                    fullEmail.from.name,
-                    fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
-        } else {
             leftImageView.setImageBitmap(Utility.getBitmapFromText(
                     "Sebastian Caceres",
                     "S", 250, 250))
+        } else {
+            headerView.text = fullEmail.from.name
+            leftImageView.setImageBitmap(Utility.getBitmapFromText(
+                    fullEmail.from.name,
+                    fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
         }
     }
 

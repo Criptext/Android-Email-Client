@@ -1,7 +1,16 @@
 package com.email.utils
 
+import android.content.Context
 import android.graphics.*
+import android.support.v4.content.ContextCompat
+import android.util.DisplayMetrics
+import android.view.View
+import android.view.WindowManager
+import com.email.R
+import com.email.db.AttachmentTypes
+import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.utils.ui.TextDrawable
+import com.michael.easydialog.EasyDialog
 import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
 
@@ -59,6 +68,24 @@ class Utility {
                 color = md5.substring(1,7)
             }
             return Color.parseColor("#"+color)
+        }
+
+
+        fun getDrawableAttachmentFromType(type: AttachmentTypes) = when (type) {
+            AttachmentTypes.EXCEL ->
+                R.drawable.attachment_excel_eliminar
+
+            AttachmentTypes.WORD ->
+                R.drawable.attachment_word_eliminar
+
+            AttachmentTypes.PDF ->
+                R.drawable.attachment_pdf_eliminar
+
+            AttachmentTypes.PPT ->
+                R.drawable.attachment_ppt_eliminar
+
+            AttachmentTypes.IMAGE ->
+                R.drawable.attachment_image_eliminar
         }
     }
 }
