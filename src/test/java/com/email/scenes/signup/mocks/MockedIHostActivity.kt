@@ -9,6 +9,12 @@ import com.email.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity {
+    override fun showDialog(message: UIMessage) {
+    }
+
+    override fun dismissDialog() {
+    }
+
     override fun getLocalizedString(message: UIMessage): String {
         return ""
     }
