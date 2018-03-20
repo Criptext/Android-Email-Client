@@ -43,10 +43,7 @@ interface MailboxLocalDB {
                 }
             }
 
-            val labelsList = ArrayList(labelSet)
-            labelsList.addAll(labelSet)
-
-            return labelsList
+            return ArrayList(labelSet)
         }
 
         override fun createLabelEmailRelation(labelId: Int, emailId: Int) {

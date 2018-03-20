@@ -24,7 +24,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
     fun bindLabel(labelThread: LabelThread) {
         nameView.text = labelThread.text
-        checkBoxView.setChecked(labelThread.isSelected)
+        checkBoxView.isChecked = labelThread.isSelected
     }
 
     init {

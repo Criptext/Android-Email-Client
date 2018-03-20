@@ -16,4 +16,18 @@ class LabelThread(val label: Label) {
           get() = label.id!!
 
      var isSelected = false
+
+     override fun equals(other: Any?): Boolean {
+
+          other as Label
+          if (id != other.id) return false
+          if (color != other.color) return false
+          if (text != other.text) return false
+
+          return true
+     }
+
+     override fun hashCode(): Int {
+          return id
+     }
 }

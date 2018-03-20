@@ -13,14 +13,14 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
 
     val dialogLabelsListener : LabelChooserDialog.DialogLabelsListener =
             object : LabelChooserDialog.DialogLabelsListener {
-        override fun onDialogPositiveClick() {
-            labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
-            clearSelectedLabels()
-        }
+                override fun onDialogPositiveClick() {
+                    labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
+                    clearSelectedLabels()
+                }
 
-        override fun onDialogNegativeClick() {
-        }
-    }
+                override fun onDialogNegativeClick() {
+                }
+            }
 
     private val labelThreadEventListener = object : LabelThreadAdapter.OnLabelThreadEventListener{
         override fun onToggleLabelSelection(label: LabelThread, position: Int) {
@@ -49,20 +49,32 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         scene.attachView(labelThreadEventListener)
     }
 
-    fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+    fun onFetchedLabels(
+            defaultSelectedLabels: List<Label>,
+            labels: List<Label>) {
+
+        model.selectedLabels.clear()
+        model.labels.clear()
+
         val labelThreads = labels.map {
             LabelThread(it)
         }
-        model.labels.clear()
-        model.labels.addAll(labelThreads)
 
-        model.selectedLabels.clear()
+        val selectedLabelThreads = ArrayList<LabelThread>()
+        val setSelectedLabelThreads = HashSet<LabelThread>()
 
-        val defaultSelectedLabelThreads = defaultSelectedLabels.map {
-            LabelThread(it)
+        labelThreads.forEach { labelThread ->
+            defaultSelectedLabels.forEach { defaultSelectedLabel ->
+                if(labelThread.id == defaultSelectedLabel.id) {
+                    setSelectedLabelThreads.add(labelThread)
+                    return@forEach
+                }
+            }
         }
 
-        model.selectedLabels.addMultipleSelected(defaultSelectedLabelThreads)
+        selectedLabelThreads.addAll(setSelectedLabelThreads)
+        model.labels.addAll(labelThreads)
+        model.selectedLabels.addMultipleSelected(selectedLabelThreads)
 
         scene.onFetchedLabels()
     }
