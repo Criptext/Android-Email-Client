@@ -66,7 +66,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
     }
 
-    inner class ContactsToRecyclerView(val recyclerView: RecyclerView,
+    class ContactsToRecyclerView(val recyclerView: RecyclerView,
                                        contactsToList: VirtualList<Contact>
     ) {
 
@@ -81,7 +81,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         }
     }
 
-    inner class ContactsToListAdapter(private val mContext: Context,
+    class ContactsToListAdapter(private val mContext: Context,
                                       private val contacts: VirtualList<Contact>
     ) : RecyclerView.Adapter<ContactHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder{
@@ -99,7 +99,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         }
     }
 
-    inner class ContactHolder(val view: View): RecyclerView.ViewHolder(view) {
+    class ContactHolder(val view: View): RecyclerView.ViewHolder(view) {
         private val context = view.context
 
         private val name: TextView

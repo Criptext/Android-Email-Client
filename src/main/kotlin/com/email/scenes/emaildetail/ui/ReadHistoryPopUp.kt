@@ -62,7 +62,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
     }
 
 
-    inner class ContactsReadRecyclerView(val recyclerView: RecyclerView,
+    class ContactsReadRecyclerView(val recyclerView: RecyclerView,
                                        contactsToList: List<MockedContact>
     ) {
 
@@ -77,7 +77,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    inner class ContactsToListAdapter(private val mContext: Context,
+    class ContactsToListAdapter(private val mContext: Context,
                                       private val contacts: List<MockedContact>
     ) : RecyclerView.Adapter<ContactHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder{
@@ -96,7 +96,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    inner class ContactHolder(val view: View): RecyclerView.ViewHolder(view) {
+    class ContactHolder(val view: View): RecyclerView.ViewHolder(view) {
         private val context = view.context
 
         private val name: TextView

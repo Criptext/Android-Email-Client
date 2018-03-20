@@ -76,7 +76,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     }
 
 
-    inner class AttachmentContactsRecyclerView(val recyclerView: RecyclerView,
+    class AttachmentContactsRecyclerView(val recyclerView: RecyclerView,
                                                mockedAttachmentList: List<MockedAttachmentContact>
     ) {
 
@@ -91,7 +91,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    inner class AttachmentContactsAdapter(private val mContext: Context,
+    class AttachmentContactsAdapter(private val mContext: Context,
                                           private val contacts: List<MockedAttachmentContact>
     ) : RecyclerView.Adapter<AttachmentContactHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AttachmentContactHolder {
@@ -110,7 +110,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         }
     }
 
-    inner class AttachmentContactHolder(val view: View): RecyclerView.ViewHolder(view) {
+    class AttachmentContactHolder(val view: View): RecyclerView.ViewHolder(view) {
         private val context = view.context
 
         private val name: TextView
