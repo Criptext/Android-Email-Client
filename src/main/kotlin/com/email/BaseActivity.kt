@@ -17,6 +17,7 @@ import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.utils.UIMessage
+import com.email.utils.dialog.SingletonProgressDialog
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -32,6 +33,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
      * to inflate the activity's views. Your layout must contain a toolbar somewhere.
      */
     abstract val layoutId: Int
+
+    private val progressDialog: SingletonProgressDialog by lazy { SingletonProgressDialog(this) }
 
     /**
      * Resource Id of your activity's toolbar. After the layout is inflated, BaseActivity will call
@@ -134,6 +137,14 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun finishScene() {
         finish()
+    }
+
+    override fun showDialog(message: UIMessage) {
+        progressDialog.show(getLocalizedString(message))
+    }
+
+    override fun dismissDialog() {
+        progressDialog.dismiss()
     }
 
     private companion object {

@@ -21,6 +21,7 @@ import com.email.utils.VirtualList
  */
 
 class MailboxActivity : BaseActivity() {
+
     override val layoutId = R.layout.activity_mailbox
     override val toolbarId = R.id.mailbox_toolbar
 
@@ -50,7 +51,7 @@ class MailboxActivity : BaseActivity() {
         notificationMenuClickListener = controller.menuClickListener
         return controller
     }
-    
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menu.findItem(R.id.mailbox_bell_container)?.actionView?.setOnClickListener {
@@ -75,11 +76,12 @@ class MailboxActivity : BaseActivity() {
     }
 
 
-  private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread>  {
+    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread> {
         override fun get(i: Int) = threads[i]
 
         override val size: Int
             get() = threads.size
     }
+
 }

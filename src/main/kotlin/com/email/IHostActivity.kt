@@ -11,4 +11,6 @@ interface IHostActivity {
     fun goToScene(params: SceneParams)
     fun finishScene()
     fun getLocalizedString(message: UIMessage): String
+    fun showDialog(message: UIMessage)
+    fun dismissDialog()
 }

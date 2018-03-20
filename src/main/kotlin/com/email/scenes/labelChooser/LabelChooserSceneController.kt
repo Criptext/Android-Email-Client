@@ -15,6 +15,7 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         override fun onDialogPositiveClick() {
             labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
             clearSelectedLabels()
+
         }
 
         override fun onDialogNegativeClick() {
@@ -47,7 +48,11 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
     fun start() {
         val labelThreads = labelDataSourceHandler.getAllLabels()
         model.labels.clear()
-        model.labels.addAll(labelThreads)
+
+        if(labelThreads != null) {
+            model.labels.addAll(labelThreads)
+        }
+
         scene.attachView(labelThreadEventListener)
     }
 }

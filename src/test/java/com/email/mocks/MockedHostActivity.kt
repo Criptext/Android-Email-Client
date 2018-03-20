@@ -9,6 +9,12 @@ import com.email.utils.UIMessage
  */
 
 class MockedHostActivity: IHostActivity{
+    override fun showDialog(message: UIMessage) {
+    }
+
+    override fun dismissDialog() {
+    }
+
     override fun refreshToolbarItems() {
     }
 

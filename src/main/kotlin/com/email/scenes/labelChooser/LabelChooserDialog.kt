@@ -62,12 +62,12 @@ class LabelChooserDialog(private val context: Context) {
 
         btnAdd.setOnClickListener {
             dialogLabelsListener.onDialogPositiveClick()
-            dialog.dismiss()
+            labelChooserDialog?.dismiss()
         }
 
         btnCancel.setOnClickListener {
             dialogLabelsListener.onDialogNegativeClick()
-            dialog.dismiss()
+            labelChooserDialog?.dismiss()
         }
 }
 
