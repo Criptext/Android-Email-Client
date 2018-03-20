@@ -15,8 +15,8 @@ import com.email.scenes.labelChooser.data.LabelThread
 interface MailboxLocalDB {
     fun getAllEmailThreads(): List<EmailThread>
     fun getArchivedEmailThreads(): List<EmailThread>
-    fun getAllLabels(): List<LabelThread>
-    fun getLabels(): List<Label>
+    fun getAllLabelThreads(): List<LabelThread>
+    fun getAllLabels(): List<Label>
     fun getNotArchivedEmailThreads(): List<EmailThread>
     fun removeLabelsRelation(labels: List<Label>, emailId: Int)
     fun seed()
@@ -101,13 +101,13 @@ interface MailboxLocalDB {
             db.emailDao().deleteAll(emails)
         }
 
-        override fun getAllLabels(): List<LabelThread> {
+        override fun getAllLabelThreads(): List<LabelThread> {
             return db.labelDao().getAll().map{ label ->
                 LabelThread(label)
             } as ArrayList<LabelThread>
         }
 
-        override fun getLabels(): List<Label> {
+        override fun getAllLabels(): List<Label> {
             return db.labelDao().getAll()
         }
 

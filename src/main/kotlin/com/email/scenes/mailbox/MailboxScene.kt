@@ -162,7 +162,7 @@ interface MailboxScene: ThreadListView {
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:
                                               LabelDataSourceHandler ) {
-            labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
+            labelChooserDialog.showDialogLabelsChooser(dataSourceHandler = labelDataSourceHandler)
         }
 
         override fun openNotificationFeed(){
@@ -181,7 +181,7 @@ interface MailboxScene: ThreadListView {
         override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
             labelChooserDialog.onFetchedLabels(
                     defaultSelectedLabels = defaultSelectedLabels,
-                    labels = labels)
+                    allLabels = labels)
         }
     }
 }

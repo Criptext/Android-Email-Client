@@ -2,7 +2,6 @@ package com.email.scenes.emaildetail
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
@@ -83,7 +82,7 @@ interface EmailDetailScene {
         }
 
         override fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler) {
-            labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
+            labelChooserDialog.showDialogLabelsChooser(dataSourceHandler = labelDataSourceHandler)
         }
 
     }

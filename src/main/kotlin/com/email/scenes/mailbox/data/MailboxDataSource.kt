@@ -38,7 +38,7 @@ class MailboxDataSource(
     }
 
     fun getAllLabels(): List<LabelThread> {
-        return mailboxLocalDB.getAllLabels()
+        return mailboxLocalDB.getAllLabelThreads()
     }
 
     fun getArchivedEmailThreads(): List<EmailThread> {

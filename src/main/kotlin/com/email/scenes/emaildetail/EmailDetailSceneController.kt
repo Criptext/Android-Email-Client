@@ -113,7 +113,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             R.id.mailbox_move_to -> {
                 TODO("mailbox_move to")
-                //scene.showDialogMoveTo(onMoveThreadsListener)
             }
             R.id.mailbox_add_labels -> {
                 scene.showDialogLabelsChooser(LabelDataSourceHandler(this))

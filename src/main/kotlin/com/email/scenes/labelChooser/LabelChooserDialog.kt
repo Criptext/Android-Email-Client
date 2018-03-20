@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.email.R
@@ -46,13 +45,13 @@ class LabelChooserDialog(private val context: Context) {
         )
     }
 
-    fun showDialogLabelsChooser(dataSource: LabelDataSourceHandler) {
+    fun showDialogLabelsChooser(dataSourceHandler: LabelDataSourceHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 
-        controller = createController(dialogView, dataSource)
+        controller = createController(dialogView, dataSourceHandler)
         labelChooserDialog = createDialog(dialogView, dialogBuilder)
 
         controller.start()
@@ -91,8 +90,8 @@ class LabelChooserDialog(private val context: Context) {
 
     fun onFetchedLabels(
             defaultSelectedLabels: List<Label>,
-            labels: List<Label> ) {
+            allLabels: List<Label> ) {
         controller.onFetchedLabels(
-                defaultSelectedLabels, labels)
+                defaultSelectedLabels, allLabels)
     }
 }
