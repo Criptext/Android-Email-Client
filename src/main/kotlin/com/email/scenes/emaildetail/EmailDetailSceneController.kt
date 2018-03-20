@@ -122,8 +122,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels) {
-        //TODO("INITIALIZE DATASOURCE AND SHOW MESSAGE...)
-        scene.showToastDELETETHIS()
+        TODO("""START WORKER, SHOW GENERIC DIALOG,
+            ON FINISH WORKER, HIDE GENERIC DIALOG. """)
 
     }
     override val menuResourceId: Int?

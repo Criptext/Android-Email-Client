@@ -35,15 +35,13 @@ interface MailboxLocalDB {
             val labelSet = HashSet<Label>()
 
             threadIds.forEach {
-                val emails = db.emailDao().getEmailsFromThreadId(it)
-
-                emails.forEach {
-                    val labels = db.emailLabelDao().getLabelsFromEmail(it.id!!)
+                    val labels = db.
+                            emailLabelDao().
+                            getLabelsFromEmailThreadId(it)
                     labelSet.addAll(labels)
-                }
             }
 
-            return ArrayList(labelSet)
+            return labelSet.toList()
         }
 
         override fun createLabelEmailRelation(labelId: Int, emailId: Int) {

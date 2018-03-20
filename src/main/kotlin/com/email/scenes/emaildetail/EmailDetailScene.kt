@@ -28,7 +28,6 @@ interface EmailDetailScene {
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
-    fun showToastDELETETHIS()
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -85,10 +84,6 @@ interface EmailDetailScene {
 
         override fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler) {
             labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
-        }
-
-        override fun showToastDELETETHIS() {
-            Toast.makeText(context, "Here we show the dialog...", Toast.LENGTH_SHORT)
         }
 
     }
