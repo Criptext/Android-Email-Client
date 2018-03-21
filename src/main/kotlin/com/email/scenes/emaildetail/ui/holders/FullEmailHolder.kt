@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail.ui.holders
 
 import android.support.v7.widget.PopupMenu
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -92,7 +93,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     private fun createPopupMenu(fullEmail: FullEmail): PopupMenu {
-        val popupMenu = PopupMenu(context , moreView)
+        val wrapper = ContextThemeWrapper(context, R.style.email_detail_popup_menu)
+        val popupMenu = PopupMenu(wrapper , moreView)
 
     val popuplayout =
             if (fullEmail.email.unread)

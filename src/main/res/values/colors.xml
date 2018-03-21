@@ -41,6 +41,7 @@
     <color name="mail_item_date">#6a707e</color>
     <color name="nav_button">#4f515b</color>
     <color name="login_background">#0091ff</color>
+    <color name="customBlack">#4a4a4a</color>
     <color name="black">#000000</color>
     <color name="gray">#626262</color>
     <color name="signup_hint_color">#90ffffff</color>

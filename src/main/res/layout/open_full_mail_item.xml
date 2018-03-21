@@ -121,6 +121,7 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
             android:layout_height="wrap_content">
 
             <TextView
