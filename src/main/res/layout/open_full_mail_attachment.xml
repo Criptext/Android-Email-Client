@@ -25,6 +25,7 @@
     android:layout_centerVertical="true"
     android:textSize="15sp"
     android:text="This is my sheep.pdf"
+    android:textColor="@color/black"
     fontPath="fonts/NunitoSans-Bold.ttf" />
 
 <TextView
@@ -36,7 +37,7 @@
     android:textSize="15sp"
     android:layout_marginStart="10dp"
     android:textColor="#9b9b9b"
-    android:text="25mb"/>
+    android:text="25 MB"/>
 <ImageView
     android:layout_width="wrap_content"
     android:padding="10dp"

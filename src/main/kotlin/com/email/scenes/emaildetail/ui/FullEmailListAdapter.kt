@@ -72,20 +72,20 @@ class FullEmailListAdapter(private val mContext : Context,
         return when(EmailViewTypes.values()[viewType]) {
 
             EmailViewTypes.FOOTER -> {
-                mView = LayoutInflater.from(mContext).inflate(R.layout.layout_btns_email_detail, null)
+                mView = LayoutInflater.from(mContext).inflate(R.layout.layout_btns_email_detail, parent, false)
                 FooterViewHolder(mView)
             }
 
             EmailViewTypes.fullEmail -> {
-                mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
+                mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
                 FullEmailHolder(mView)
             }
             EmailViewTypes.partialEmail -> {
-                mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, null)
+                mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, parent, false)
                 PartialEmailHolder(mView)
             }
             else -> {
-                mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
+                mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
                 FullEmailHolder(mView)
             }
         }
