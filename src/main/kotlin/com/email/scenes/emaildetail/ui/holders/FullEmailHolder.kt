@@ -3,6 +3,7 @@ package com.email.scenes.emaildetail.ui.holders
 import android.annotation.TargetApi
 import android.content.Context
 import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.PopupMenu
 import android.util.DisplayMetrics
 import android.view.ContextThemeWrapper
@@ -46,6 +47,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val zoomLayout: ZoomLayout
     private val horizontalScrollView: HorizontalScrollView
     private val progressBarUnsend: SpinKitView
+    private val bodyContainer : LinearLayout
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -78,6 +80,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
 
         unsendView.setOnClickListener {
+            deactivateElementsWhileUnsending()
             emailListener?.onUnsendEmail(
                     fullEmail = fullEmail,
                     position = position)
@@ -127,6 +130,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
+        setDefaultBackgroundColors()
         //bodyView.text = fullEmail.email.content
         bodyWebView.loadDataWithBaseURL("", Utility.
                 changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
@@ -179,6 +183,15 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
     }
 
+    private fun deactivateElementsWhileUnsending() {
+        bodyContainer.alpha = 0.5.toFloat()
+        bodyContainer.isEnabled = false
+    }
+
+    private fun setDefaultBackgroundColors() {
+        bodyContainer.alpha = 1.toFloat()
+        bodyContainer.isEnabled = true
+    }
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)
         toView = view.findViewById(R.id.to)
@@ -198,6 +211,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         zoomLayout = view.findViewById(R.id.full_mail_zoom)
         horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
         progressBarUnsend = view.findViewById(R.id.spin_kit_unsend)
+        bodyContainer = view.findViewById(R.id.body_container)
 
         setupWebview()
 
