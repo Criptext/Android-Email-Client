@@ -15,4 +15,12 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception): LoadFullEmailsFromThreadId()
     }
+
+    sealed class UnsendFullEmailFromEmailId: EmailDetailResult() {
+        data class Success(val position: Int): UnsendFullEmailFromEmailId()
+        data class Failure(
+                val position: Int,
+                val message: UIMessage,
+                val exception: Exception): UnsendFullEmailFromEmailId()
+    }
 }

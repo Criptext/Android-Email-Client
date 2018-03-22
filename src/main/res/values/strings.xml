@@ -207,4 +207,6 @@
     <string name="mark_as_unread">Mark as Unread</string>
     <string name="criptextdotcom">gcarlo\@criptext.com</string>
     <string name="failed_getting_labels">Failed to get labels.</string>
+
+    <string name="fail_unsend_email">Failed to unsend the email. Please try again later.</string>
 </resources>
