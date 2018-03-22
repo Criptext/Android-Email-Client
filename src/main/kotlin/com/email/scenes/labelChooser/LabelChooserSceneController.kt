@@ -1,7 +1,7 @@
 package com.email.scenes.labelChooser
 
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 2/2/18.
@@ -9,12 +9,12 @@ import com.email.scenes.labelChooser.data.LabelThread
 
 class LabelChooserSceneController(private val scene: LabelChooserScene,
                                   private val model: LabelChooserSceneModel,
-                                  private val labelDataSourceHandler: LabelDataSourceHandler) {
+                                  private val labelDataHandler: LabelDataHandler) {
 
     val dialogLabelsListener : LabelChooserDialog.DialogLabelsListener =
             object : LabelChooserDialog.DialogLabelsListener {
                 override fun onDialogPositiveClick() {
-                    labelDataSourceHandler.createRelationEmailLabels(model.selectedLabels)
+                    labelDataHandler.createRelationEmailLabels(model.selectedLabels)
                     clearSelectedLabels()
                 }
 
@@ -22,23 +22,23 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
                 }
             }
 
-    private val labelThreadEventListener = object : LabelThreadAdapter.OnLabelThreadEventListener{
-        override fun onToggleLabelSelection(label: LabelThread, position: Int) {
-            if(!label.isSelected) selectLabelThread(label, position)
-            else unselectLabelThread(label, position)
+    private val labelWrapperEventListener = object : LabelWrapperAdapter.OnLabelWrapperEventListener{
+        override fun onToggleLabelSelection(label: LabelWrapper, position: Int) {
+            if(!label.isSelected) selectLabelWrapper(label, position)
+            else unselectLabelWrapper(label, position)
         }
     }
 
-    private fun selectLabelThread(labelThread: LabelThread, position: Int) {
-        model.selectedLabels.add(labelThread)
-        labelThread.isSelected = true
-        scene.notifyLabelThreadChanged(position)
+    private fun selectLabelWrapper(labelWrapper: LabelWrapper, position: Int) {
+        model.selectedLabels.add(labelWrapper)
+        labelWrapper.isSelected = true
+        scene.notifyLabelWrapperChanged(position)
     }
 
-    private fun unselectLabelThread(labelThread: LabelThread, position: Int) {
-        labelThread.isSelected = false
-        model.selectedLabels.remove(labelThread)
-        scene.notifyLabelThreadChanged(position)
+    private fun unselectLabelWrapper(labelWrapper: LabelWrapper, position: Int) {
+        labelWrapper.isSelected = false
+        model.selectedLabels.remove(labelWrapper)
+        scene.notifyLabelWrapperChanged(position)
     }
 
     fun clearSelectedLabels() {
@@ -46,7 +46,7 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
     }
 
     fun start() {
-        scene.attachView(labelThreadEventListener)
+        scene.attachView(labelWrapperEventListener)
     }
 
     fun onFetchedLabels(
@@ -56,25 +56,25 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         model.selectedLabels.clear()
         model.labels.clear()
 
-        val labelThreads = labels.map {
-            LabelThread(it)
+        val labelWrappers = labels.map {
+            LabelWrapper(it)
         }
 
-        val selectedLabelThreads = ArrayList<LabelThread>()
-        val setSelectedLabelThreads = HashSet<LabelThread>()
+        val selectedLabelWrappers = ArrayList<LabelWrapper>()
+        val setSelectedLabelWrappers= HashSet<LabelWrapper>()
 
-        labelThreads.forEach { labelThread ->
+        labelWrappers.forEach { labelWrapper ->
             defaultSelectedLabels.forEach { defaultSelectedLabel ->
-                if(labelThread.id == defaultSelectedLabel.id) {
-                    setSelectedLabelThreads.add(labelThread)
+                if(labelWrapper.id == defaultSelectedLabel.id) {
+                    setSelectedLabelWrappers.add(labelWrapper)
                     return@forEach
                 }
             }
         }
 
-        selectedLabelThreads.addAll(setSelectedLabelThreads)
-        model.labels.addAll(labelThreads)
-        model.selectedLabels.addMultipleSelected(selectedLabelThreads)
+        selectedLabelWrappers.addAll(setSelectedLabelWrappers)
+        model.labels.addAll(labelWrappers)
+        model.selectedLabels.addMultipleSelected(selectedLabelWrappers)
 
         scene.onFetchedLabels()
     }

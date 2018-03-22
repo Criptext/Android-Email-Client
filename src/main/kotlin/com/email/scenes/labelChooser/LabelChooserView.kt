@@ -1,12 +1,12 @@
 package com.email.scenes.labelChooser
 
 import android.support.v7.widget.RecyclerView
-import com.email.androidui.labelthread.LabelThreadListView
-import com.email.androidui.labelthread.LabelThreadRecyclerView
+import com.email.androidui.labelwrapper.LabelWrapperListView
+import com.email.androidui.labelwrapper.LabelWrapperRecyclerView
 import com.email.R
 import android.view.View
 import android.widget.ProgressBar
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.utils.VirtualList
 
 
@@ -14,48 +14,48 @@ import com.email.utils.VirtualList
  * Created by sebas on 2/2/18.
  */
 
-interface LabelChooserScene: LabelThreadListView {
-    fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener)
+interface LabelChooserScene: LabelWrapperListView {
+    fun attachView(labelThreadEventListener: LabelWrapperAdapter.OnLabelWrapperEventListener)
     fun onFetchedLabels()
 
     class LabelChooserView(private val labelChooserView: View,
-                           private val labelsList: VirtualList<LabelThread>)
+                           private val labelsList: VirtualList<LabelWrapper>)
         : LabelChooserScene {
 
-        private lateinit var labelThreadRecyclerView: LabelThreadRecyclerView
+        private lateinit var labelWrapperRecyclerView: LabelWrapperRecyclerView
 
-        var labelThreadListener: LabelThreadAdapter.OnLabelThreadEventListener? = null
+        var labelWrapperListener: LabelWrapperAdapter.OnLabelWrapperEventListener? = null
             set(value) {
-                labelThreadRecyclerView.setThreadListener(value)
+                labelWrapperRecyclerView.setLabelWrapperListener(value)
                 field = value
             }
 
-        override fun notifyLabelThreadSetChanged() {
-            labelThreadRecyclerView.notifyLabelThreadSetChanged()
+        override fun notifyLabelWrapperSetChanged() {
+            labelWrapperRecyclerView.notifyLabelWrapperSetChanged()
         }
 
-        override fun notifyLabelThreadRemoved(position: Int) {
-            labelThreadRecyclerView.notifyLabelThreadRemoved(position)
+        override fun notifyLabelWrapperRemoved(position: Int) {
+            labelWrapperRecyclerView.notifyLabelWrapperRemoved(position)
         }
 
-        override fun notifyLabelThreadRangeInserted(positionStart: Int, itemCount: Int) {
-            labelThreadRecyclerView.notifyLabelThreadRangeInserted(positionStart, itemCount)
+        override fun notifyLabelWrapperRangeInserted(positionStart: Int, itemCount: Int) {
+            labelWrapperRecyclerView.notifyLabelWrapperRangeInserted(positionStart, itemCount)
         }
 
-        override fun attachView(labelThreadEventListener: LabelThreadAdapter.OnLabelThreadEventListener) {
+        override fun attachView(labelThreadEventListener: LabelWrapperAdapter.OnLabelWrapperEventListener) {
             val recycler = labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
-            labelThreadRecyclerView = LabelThreadRecyclerView(recycler,
+            labelWrapperRecyclerView = LabelWrapperRecyclerView(recycler,
                     labelThreadEventListener,
                     labelsList)
-            this.labelThreadListener= labelThreadEventListener
+            this.labelWrapperListener= labelThreadEventListener
         }
 
-        override fun notifyLabelThreadChanged(position: Int) {
-            labelThreadRecyclerView.notifyLabelThreadChanged(position)
+        override fun notifyLabelWrapperChanged(position: Int) {
+            labelWrapperRecyclerView.notifyLabelWrapperChanged(position)
         }
 
         override fun onFetchedLabels() {
-            notifyLabelThreadSetChanged()
+            notifyLabelWrapperSetChanged()
             val progressBar = labelChooserView.findViewById<ProgressBar>(R.id.label_chooser_progress_loading)
             progressBar.visibility = View.GONE
 

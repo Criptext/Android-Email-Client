@@ -4,9 +4,9 @@ import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import com.email.IHostActivity
 import com.email.R
-import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxDataSource
@@ -221,10 +221,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         )
 
         dataSource.submitRequest(req)
-        scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
+        scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
 
-    fun getAllLabels() : List<LabelThread>{
+    fun getAllLabels() : List<LabelWrapper>{
         return dataSource.getAllLabels()
     }
 

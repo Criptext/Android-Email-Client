@@ -10,7 +10,7 @@ import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
-import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.utils.VirtualList
 
@@ -26,7 +26,7 @@ interface EmailDetailScene {
 
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
-    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
+    fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -81,8 +81,8 @@ interface EmailDetailScene {
             fullEmailsRecyclerView.notifyFullEmailChanged(position = position)
         }
 
-        override fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler) {
-            labelChooserDialog.showDialogLabelsChooser(dataSourceHandler = labelDataSourceHandler)
+        override fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler) {
+            labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataHandler)
         }
 
     }

@@ -7,7 +7,7 @@ import com.email.scenes.mailbox.MailboxSceneController
 /**
  * Created by sebas on 2/7/18.
  */
-class LabelDataSourceHandler(sceneController: SceneController) {
+class LabelDataHandler(sceneController: SceneController) {
     val createRelationEmailLabels = {
         selectedLabels: SelectedLabels ->
         when(sceneController) {

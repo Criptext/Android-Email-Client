@@ -7,7 +7,7 @@ import com.email.db.models.Label
  * Created by sebas on 2/2/18.
  */
 
-class LabelThread(val label: Label) {
+data class LabelWrapper(val label: Label) {
      val color : ColorTypes
           get() = label.color
      val text : String

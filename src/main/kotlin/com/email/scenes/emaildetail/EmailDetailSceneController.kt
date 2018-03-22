@@ -9,7 +9,7 @@ import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
-import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.utils.VirtualList
 
@@ -115,7 +115,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 TODO("mailbox_move to")
             }
             R.id.mailbox_add_labels -> {
-                scene.showDialogLabelsChooser(LabelDataSourceHandler(this))
+                scene.showDialogLabelsChooser(LabelDataHandler(this))
             }
         }
     }

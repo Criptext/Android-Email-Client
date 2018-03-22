@@ -5,7 +5,7 @@ import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 1/24/18.
@@ -37,8 +37,8 @@ class MailboxDataSource(
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }
 
-    fun getAllLabels(): List<LabelThread> {
-        return mailboxLocalDB.getAllLabelThreads()
+    fun getAllLabels(): List<LabelWrapper> {
+        return mailboxLocalDB.getAllLabelWrappers()
     }
 
     fun getArchivedEmailThreads(): List<EmailThread> {

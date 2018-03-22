@@ -6,7 +6,7 @@ import com.email.db.models.EmailLabel
 import com.email.db.models.Label
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 1/26/18.
@@ -15,7 +15,7 @@ import com.email.scenes.labelChooser.data.LabelThread
 interface MailboxLocalDB {
     fun getAllEmailThreads(): List<EmailThread>
     fun getArchivedEmailThreads(): List<EmailThread>
-    fun getAllLabelThreads(): List<LabelThread>
+    fun getAllLabelWrappers(): List<LabelWrapper>
     fun getAllLabels(): List<Label>
     fun getNotArchivedEmailThreads(): List<EmailThread>
     fun removeLabelsRelation(labels: List<Label>, emailId: Int)
@@ -101,10 +101,10 @@ interface MailboxLocalDB {
             db.emailDao().deleteAll(emails)
         }
 
-        override fun getAllLabelThreads(): List<LabelThread> {
+        override fun getAllLabelWrappers(): List<LabelWrapper> {
             return db.labelDao().getAll().map{ label ->
-                LabelThread(label)
-            } as ArrayList<LabelThread>
+                LabelWrapper(label)
+            } as ArrayList<LabelWrapper>
         }
 
         override fun getAllLabels(): List<Label> {

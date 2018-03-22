@@ -14,7 +14,7 @@ import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.LabelChooserDialog
-import com.email.scenes.labelChooser.LabelDataSourceHandler
+import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
@@ -37,7 +37,7 @@ interface MailboxScene: ThreadListView {
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
-    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
+    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
@@ -161,8 +161,8 @@ interface MailboxScene: ThreadListView {
         }
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:
-                                              LabelDataSourceHandler ) {
-            labelChooserDialog.showDialogLabelsChooser(dataSourceHandler = labelDataSourceHandler)
+                                              LabelDataHandler ) {
+            labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataSourceHandler)
         }
 
         override fun openNotificationFeed(){

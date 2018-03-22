@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Button
 import com.email.R
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.utils.VirtualList
 
 
@@ -32,7 +32,7 @@ class LabelChooserDialog(private val context: Context) {
         return newLabelChooserDialog
     }
 
-    private fun createController(dialogView: View, dataSource: LabelDataSourceHandler)
+    private fun createController(dialogView: View, dataSource: LabelDataHandler)
             : LabelChooserSceneController {
         val model = LabelChooserSceneModel()
         val scene = LabelChooserScene.LabelChooserView(
@@ -41,17 +41,17 @@ class LabelChooserDialog(private val context: Context) {
         return LabelChooserSceneController(
                 scene = scene,
                 model = model,
-                labelDataSourceHandler = dataSource
+                labelDataHandler = dataSource
         )
     }
 
-    fun showDialogLabelsChooser(dataSourceHandler: LabelDataSourceHandler) {
+    fun showDialogLabelsChooser(dataHandler: LabelDataHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 
-        controller = createController(dialogView, dataSourceHandler)
+        controller = createController(dialogView, dataHandler)
         labelChooserDialog = createDialog(dialogView, dialogBuilder)
 
         controller.start()
@@ -79,8 +79,8 @@ class LabelChooserDialog(private val context: Context) {
         fun onDialogNegativeClick()
     }
 
-    private class LabelList(val labels: List<LabelThread>): VirtualList<LabelThread> {
-        override fun get(i: Int): LabelThread {
+    private class LabelList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper> {
+        override fun get(i: Int): LabelWrapper {
             return labels[i]
         }
 
