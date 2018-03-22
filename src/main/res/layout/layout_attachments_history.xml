@@ -18,7 +18,7 @@
             <ImageView
                 android:src="@drawable/attachment"
                 android:tint="@color/azure"
-                android:padding="10dp"
+                android:padding="5dp"
                 android:layout_width="0dip"
                 android:layout_weight="0.10"
                 android:layout_height="fill_parent"

@@ -12,6 +12,7 @@
         android:id="@+id/email_contact_info_popup" >
 
         <RelativeLayout
+            android:layout_marginTop="10dp"
             android:id="@+id/from_container"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="15dp"
@@ -131,6 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView
+                android:layout_marginTop="10dp"
                 android:textColor="@color/black"
                 android:id="@+id/title_date"
                 android:layout_width="wrap_content"
@@ -141,6 +143,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:layout_marginTop="10dp"
                 android:layout_marginStart="38dp"
                 android:layout_toEndOf="@id/title_date"
                 android:id="@+id/date"
