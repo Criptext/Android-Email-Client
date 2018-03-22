@@ -9,6 +9,8 @@ import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
+import com.email.db.models.Account
+import com.email.db.models.ActiveAccount
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -32,8 +34,10 @@ class RegisterUserWorker(
 
     override val canBeParallelized = false
 
-    private val setNewUserAsActiveAccount: (String) -> Unit = { username ->
-        keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount, username)
+    private val setNewUserAsActiveAccount: (Account) -> Unit = { user ->
+        val activeAccount = ActiveAccount(recipientId = user.recipientId, jwt = user.jwt)
+        keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount,
+                activeAccount.toJSON().toString())
     }
 
     override fun catchException(ex: Exception): SignUpResult.RegisterUser {
@@ -48,12 +52,12 @@ class RegisterUserWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun persistNewUserData(keyBundle: SignalKeyGenerator.PrivateBundle)
-            :(String) -> Result<String, Exception> {
+            :(String) -> Result<Account, Exception> {
         return { jwtoken: String ->
             Result.of {
                 val user = incompleteAccount.complete(keyBundle, jwtoken)
                 db.saveNewUserData(user, keyBundle)
-                user.recipientId
+                user
             }
 
         }
