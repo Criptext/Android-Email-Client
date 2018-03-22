@@ -26,6 +26,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    dexOptions {
+        javaMaxHeapSize = "4g"
+    }
     compileSdkVersion 26
     buildToolsVersion '27.0.3'
 
