@@ -9,10 +9,6 @@
         android:name=".DeckardApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".MailboxActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".SearchActivity"
@@ -21,6 +17,10 @@
             android:name=".splash.SplashActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Splash.Criptext">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.email.SignInActivity"
@@ -33,6 +33,9 @@
         <activity
             android:name="com.email.EmailDetailActivity"
             android:windowSoftInputMode="stateHidden">
+        </activity>
+        <activity
+            android:name="com.email.utils.TestActivity">
         </activity>
         <activity
             android:name=".scenes.composer.ComposerActivity"

@@ -30,7 +30,7 @@ interface ComposerScene {
         private val ctx = view.context
 
         private val toInput: ContactCompletionView by lazy({
-            view.findViewById<ContactCompletionView>(R.id.input_to)
+            view.findViewById<ContactCompletionView>(INPUT_TO_ID)
         })
         private val ccInput: ContactCompletionView by lazy({
             view.findViewById<ContactCompletionView>(R.id.input_cc)
@@ -39,10 +39,10 @@ interface ComposerScene {
             view.findViewById<ContactCompletionView>(R.id.input_bcc)
         })
         private val subjectEditText: EditText by lazy({
-            view.findViewById<EditText>(R.id.subject_input)
+            view.findViewById<EditText>(INPUT_SUBJECT_ID)
         })
         private val bodyEditText: EditText by lazy({
-            view.findViewById<EditText>(R.id.body_input)
+            view.findViewById<EditText>(INPUT_BODY_ID)
         })
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
@@ -70,8 +70,8 @@ interface ComposerScene {
         }
 
         override fun getDataInputByUser(): UIData {
-            return UIData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
-                    subject = "", body = "")
+            return UIData(to = toInput.objects, cc = ccInput.objects, bcc = bccInput.objects,
+                    subject = subjectEditText.text.toString(), body = bodyEditText.text.toString())
         }
 
         override fun showError(message: UIMessage) {
@@ -127,4 +127,9 @@ interface ComposerScene {
         }
     }
 
+    companion object {
+        val INPUT_TO_ID = R.id.input_to
+        val INPUT_SUBJECT_ID = R.id.subject_input
+        val INPUT_BODY_ID = R.id.body_input
+    }
 }

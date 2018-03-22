@@ -1,6 +1,7 @@
 package com.email.db.dao.signal
 
 import android.arch.persistence.room.*
+import com.email.db.models.KnownAddress
 import com.email.db.models.signal.CRSessionRecord
 
 /**
@@ -30,6 +31,9 @@ interface RawSessionDao {
               WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
     fun find(recipientId: String, deviceId: Int): CRSessionRecord?
 
+    @Query("""SELECT recipientId, deviceId FROM raw_session
+              WHERE recipientId in (:recipients)""")
+    fun getKnownAddresses(recipients: List<String>): List<KnownAddress>
     @Query("""DELETE FROM raw_session
               WHERE recipientId = :recipientId""")
     fun deleteByRecipientId(recipientId: String)

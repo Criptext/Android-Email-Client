@@ -1,6 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.db.models.Contact
+import com.email.utils.UIMessage
 
 /**
  * Created by gabriel on 2/26/18.
@@ -8,11 +9,11 @@ import com.email.db.models.Contact
 sealed class ComposerResult {
     sealed class SendMail: ComposerResult() {
         class Success: SendMail()
-        class Failure(val message: String): SendMail()
+        data class Failure(val message: UIMessage): SendMail()
     }
 
     sealed class SuggestContacts: ComposerResult() {
-        class Success(val suggestions: List<Contact>): SuggestContacts()
-        class Failure(val message: String): SuggestContacts()
+        data class Success(val suggestions: List<Contact>): SuggestContacts()
+        data class Failure(val message: String): SuggestContacts()
     }
 }
