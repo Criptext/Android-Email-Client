@@ -5,6 +5,7 @@ import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.EmailDetailLocalDB
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
+import com.email.scenes.emaildetail.workers.UnsendFullEmailWorker
 
 /**
  * Created by sebas on 3/12/18.
@@ -22,6 +23,14 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.LoadFullEmailsFromThreadId -> LoadFullEmailsFromThreadWorker(
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
+            is EmailDetailRequest.UnsendFullEmailFromEmailId -> UnsendFullEmailWorker(
+                    db = emailDetailLocalDB,
+                    emailId = params.emailId,
+                    position = params.position,
                     publishFn = { result ->
                         flushResults(result)
                     })

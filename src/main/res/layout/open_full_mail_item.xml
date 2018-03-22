@@ -122,6 +122,7 @@
                         android:background="@drawable/red_filled_circle"
                         style="@style/SpinKitView.Small.Circle"
                         android:padding="3dp"
+                        android:layout_marginEnd="10dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center"

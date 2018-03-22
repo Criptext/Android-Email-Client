@@ -80,13 +80,22 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
 
         unsendView.setOnClickListener {
+            toggleUnsendProgress(isShown = true)
             deactivateElementsWhileUnsending()
             emailListener?.onUnsendEmail(
                     fullEmail = fullEmail,
                     position = position)
         }
     }
-
+    private fun toggleUnsendProgress(isShown: Boolean) {
+        if(isShown)  {
+            progressBarUnsend.visibility = View.VISIBLE
+            unsendView.visibility = View.GONE
+        } else {
+            progressBarUnsend.visibility = View.GONE
+            unsendView.visibility = View.VISIBLE
+        }
+    }
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
                                adapter: FullEmailListAdapter, position: Int){
         val popupMenu = createPopupMenu(fullEmail)
@@ -130,6 +139,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
+        toggleUnsendProgress(isShown = false)
         setDefaultBackgroundColors()
         //bodyView.text = fullEmail.email.content
         bodyWebView.loadDataWithBaseURL("", Utility.

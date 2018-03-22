@@ -25,14 +25,29 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
+            is EmailDetailResult.UnsendFullEmailFromEmailId -> onUnsendEmail(result)
         }
+    }
+
+    private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
+        when (result) {
+            is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
+                scene.notifyFullEmailChanged(result.position)
+            }
+
+            is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
+            }
+        }
+
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
-            TODO(
-           """UNSEND SELECTED EMAIL -> START THE WORKER, UNSEND THE EMAIL... REFRESH CONTENT."""
-            )
+            val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
+                    position = position,
+                    emailId = fullEmail.email.id!!)
+
+            dataSource.submitRequest(req)
         }
 
         override fun onForwardBtnClicked() {
