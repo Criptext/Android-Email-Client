@@ -1,4 +1,4 @@
-package com.email.scenes.LabelChooser
+package com.email.scenes.labelChooser
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -7,7 +7,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import com.email.R
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.db.models.Label
+import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.utils.VirtualList
 
 
@@ -31,24 +32,26 @@ class LabelChooserDialog(private val context: Context) {
         return newLabelChooserDialog
     }
 
-    private fun createController(dialogView: View, dataSource: LabelDataSourceHandler)
+    private fun createController(dialogView: View, dataSource: LabelDataHandler)
             : LabelChooserSceneController {
         val model = LabelChooserSceneModel()
-        val scene = LabelChooserScene.LabelChooserView(dialogView ,LabelList(model.labels))
+        val scene = LabelChooserScene.LabelChooserView(
+                dialogView ,LabelList(model.labels))
+
         return LabelChooserSceneController(
                 scene = scene,
                 model = model,
-                labelDataSourceHandler = dataSource
+                labelDataHandler = dataSource
         )
     }
 
-    fun showDialogLabelsChooser(dataSource: LabelDataSourceHandler) {
+    fun showDialogLabelsChooser(dataHandler: LabelDataHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
         dialogBuilder.setView(dialogView)
 
-        controller = createController(dialogView, dataSource)
+        controller = createController(dialogView, dataHandler)
         labelChooserDialog = createDialog(dialogView, dialogBuilder)
 
         controller.start()
@@ -62,12 +65,12 @@ class LabelChooserDialog(private val context: Context) {
 
         btnAdd.setOnClickListener {
             dialogLabelsListener.onDialogPositiveClick()
-            dialog.dismiss()
+            labelChooserDialog?.dismiss()
         }
 
         btnCancel.setOnClickListener {
             dialogLabelsListener.onDialogNegativeClick()
-            dialog.dismiss()
+            labelChooserDialog?.dismiss()
         }
 }
 
@@ -76,8 +79,8 @@ class LabelChooserDialog(private val context: Context) {
         fun onDialogNegativeClick()
     }
 
-    private class LabelList(val labels: List<LabelThread>): VirtualList<LabelThread> {
-        override fun get(i: Int): LabelThread {
+    private class LabelList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper> {
+        override fun get(i: Int): LabelWrapper {
             return labels[i]
         }
 
@@ -85,4 +88,10 @@ class LabelChooserDialog(private val context: Context) {
             get() = labels.size
     }
 
+    fun onFetchedLabels(
+            defaultSelectedLabels: List<Label>,
+            allLabels: List<Label> ) {
+        controller.onFetchedLabels(
+                defaultSelectedLabels, allLabels)
+    }
 }

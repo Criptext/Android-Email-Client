@@ -1,12 +1,11 @@
-package com.email.scenes.LabelChooser.holders
+package com.email.scenes.labelChooser.holders
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
 import com.email.R
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 2/2/18.
@@ -23,9 +22,9 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         view.setOnClickListener(this)
     }
 
-    fun bindLabel(labelThread: LabelThread) {
+    fun bindLabel(labelThread: LabelWrapper) {
         nameView.text = labelThread.text
-        checkBoxView.setChecked(labelThread.isSelected)
+        checkBoxView.isChecked = labelThread.isSelected
     }
 
     init {

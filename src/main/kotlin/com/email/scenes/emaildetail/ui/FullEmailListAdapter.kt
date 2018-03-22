@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.scenes.emaildetail.ui.holders.FooterViewHolder
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
 import com.email.scenes.emaildetail.ui.holders.PartialEmailHolder
@@ -20,18 +21,20 @@ import com.email.utils.VirtualList
 class FullEmailListAdapter(private val mContext : Context,
                            var fullEmailListener : OnFullEmailEventListener?,
                            private val fullEmails: VirtualList<FullEmail>)
-    : RecyclerView.Adapter<ParentEmailHolder>() {
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private fun isPositionFooter(position: Int): Boolean {
+        return position == fullEmails.size
+    }
 
     override fun getItemViewType(position : Int) : Int{
+        if(isPositionFooter(position)) {
+            return EmailViewTypes.FOOTER.ordinal
+        }
+
         val email = fullEmails[position]
 
         if(email.viewOpen) {
-/* TODO(use this later)
-            if(email.hasDraftLabel()){
-                return EmailViewTypes.draft.ordinal
-            }
-*/
-
             return EmailViewTypes.fullEmail.ordinal
         }
 
@@ -39,24 +42,39 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     override fun onBindViewHolder(
-            holder: ParentEmailHolder?,
+            holder: RecyclerView.ViewHolder?,
             position: Int) {
-        val fullEmail = fullEmails[position]
+        when(holder){
+            is ParentEmailHolder -> {
+                val fullEmail = fullEmails[position]
 
-        holder?.bindFullMail(fullEmail)
-        holder?.setListeners(
-                fullEmail = fullEmail,
-                adapter = this,
-                emailListener = fullEmailListener,
-                position = position)
+                holder.bindFullMail(fullEmail)
+                holder.setListeners(
+                        fullEmail = fullEmail,
+                        adapter = this,
+                        emailListener = fullEmailListener,
+                        position = position)
+            }
+            is FooterViewHolder -> {
+                holder.setListeners(emailListener = fullEmailListener)
+            }
+        }
     }
 
-    override fun getItemCount() = fullEmails.size
+    override fun getItemCount(): Int {
+        return fullEmails.size + 1
+    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentEmailHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val mView: View
 
         return when(EmailViewTypes.values()[viewType]) {
+
+            EmailViewTypes.FOOTER -> {
+                mView = LayoutInflater.from(mContext).inflate(R.layout.layout_btns_email_detail, null)
+                FooterViewHolder(mView)
+            }
 
             EmailViewTypes.fullEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, null)
@@ -85,12 +103,15 @@ class FullEmailListAdapter(private val mContext : Context,
                                position: Int,
                                markAsRead: Boolean)
         fun onDeleteOptionSelected(fullEmail: FullEmail,
-                                    position: Int)
+                                   position: Int)
 
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
+        fun onForwardBtnClicked()
+        fun onReplyBtnClicked()
+        fun onReplyAllBtnClicked()
     }
 
     private enum class EmailViewTypes {
-        draft, fullEmail, fullSentEmail, partialEmail;
+        draft, fullEmail, fullSentEmail, partialEmail, FOOTER
     }
 }

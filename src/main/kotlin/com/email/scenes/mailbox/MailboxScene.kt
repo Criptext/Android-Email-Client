@@ -3,7 +3,6 @@ package com.email.scenes.mailbox
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -11,12 +10,11 @@ import android.view.*
 import android.widget.ImageView
 import com.email.IHostActivity
 import com.email.R
-import com.email.R.id.fab
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
-import com.email.scenes.LabelChooser.LabelChooserDialog
-import com.email.scenes.LabelChooser.LabelDataSourceHandler
-import com.email.scenes.composer.ui.ComposerUIObserver
+import com.email.db.models.Label
+import com.email.scenes.labelChooser.LabelChooserDialog
+import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
@@ -39,10 +37,11 @@ interface MailboxScene: ThreadListView {
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
-    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataSourceHandler)
+    fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
+    fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -68,7 +67,7 @@ interface MailboxScene: ThreadListView {
         }
 
         private val drawerLayout: DrawerLayout by lazy {
-            mailboxView.findViewById<DrawerLayout>(R.id.drawer_layout) as DrawerLayout
+            mailboxView.findViewById(R.id.drawer_layout) as DrawerLayout
         }
 
         private val leftNavigationView: NavigationView by lazy {
@@ -162,8 +161,8 @@ interface MailboxScene: ThreadListView {
         }
 
         override fun showDialogLabelsChooser( labelDataSourceHandler:
-                                              LabelDataSourceHandler ) {
-            labelChooserDialog.showDialogLabelsChooser(dataSource = labelDataSourceHandler)
+                                              LabelDataHandler ) {
+            labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataSourceHandler)
         }
 
         override fun openNotificationFeed(){
@@ -179,7 +178,10 @@ interface MailboxScene: ThreadListView {
             toolbarHolder.updateNumberOfMails(emailsSize)
         }
 
+        override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+            labelChooserDialog.onFetchedLabels(
+                    defaultSelectedLabels = defaultSelectedLabels,
+                    allLabels = labels)
+        }
     }
-
-
 }

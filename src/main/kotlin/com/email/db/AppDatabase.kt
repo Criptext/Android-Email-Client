@@ -32,7 +32,7 @@ import com.email.db.models.signal.CRSignedPreKey
 abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao
-    abstract fun emailLabelDao(): EmailLabelJoinDao
+    abstract fun emailLabelDao(): EmailLabelDao
     abstract fun contactDao(): ContactDao
     abstract fun accountDao(): AccountDao
     abstract fun fileDao(): FileDao

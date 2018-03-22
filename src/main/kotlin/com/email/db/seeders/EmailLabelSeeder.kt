@@ -1,6 +1,6 @@
 package com.email.db.seeders
 
-import com.email.db.dao.EmailLabelJoinDao
+import com.email.db.dao.EmailLabelDao
 import com.email.db.models.EmailLabel
 
 /**
@@ -11,7 +11,7 @@ class EmailLabelSeeder{
     companion object {
         var emailLabels : List<EmailLabel> = mutableListOf()
 
-        fun seed(emailLabelDao: EmailLabelJoinDao){
+        fun seed(emailLabelDao: EmailLabelDao){
             emailLabels = emailLabelDao.getAll()
             emailLabelDao.deleteAll(emailLabels)
             emailLabels = mutableListOf()

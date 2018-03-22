@@ -1,21 +1,44 @@
 package com.email.scenes.mailbox.data
 
+import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.WorkHandler
+import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 1/24/18.
  */
 
-class MailboxDataSource(private val mailboxLocalDB: MailboxLocalDB) {
+class MailboxDataSource(
+        override val runner: WorkRunner,
+        private val mailboxAPIClient: MailboxAPIClient?,
+        private val mailboxLocalDB: MailboxLocalDB )
+    : WorkHandler<MailboxRequest, MailboxResult>() {
+    override fun createWorkerFromParams(
+            params: MailboxRequest,
+            flushResults: (MailboxResult) -> Unit)
+            : BackgroundWorker<*> {
+
+        return when (params) {
+            is MailboxRequest.
+            GetLabels -> GetLabelsWorker(
+                    db = mailboxLocalDB,
+                    apiClient = mailboxAPIClient,
+                    threadIds = params.threadIds,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+        }
+    }
 
     fun getNotArchivedEmailThreads(): List<EmailThread> {
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }
 
-    fun getAllLabels(): List<LabelThread> {
-        return mailboxLocalDB.getAllLabels()
+    fun getAllLabels(): List<LabelWrapper> {
+        return mailboxLocalDB.getAllLabelWrappers()
     }
 
     fun getArchivedEmailThreads(): List<EmailThread> {

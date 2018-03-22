@@ -9,6 +9,8 @@ import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
+import com.email.scenes.labelChooser.LabelDataHandler
+import com.email.scenes.labelChooser.SelectedLabels
 import com.email.utils.VirtualList
 
 /**
@@ -27,6 +29,17 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onForwardBtnClicked() {
+            TODO("on forward btn clicked") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onReplyBtnClicked() {
+            TODO("on reply btn clicked") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onReplyAllBtnClicked() {
+            TODO("on replyAll btn clicked") //To change body of created functions use File | Settings | File Templates.
+        }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
                 fullEmail.viewOpen = viewOpen
@@ -83,9 +96,35 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         return true
     }
 
+    private fun archiveSelectedThread() {
+        val threadId = model.threadId
+        TODO("ARCHIVE SELECTED THREAD")
+    }
+    private fun deleteSelectedThread() {
+        val threadId = model.threadId
+        TODO("DELETE SELECTED THREAD")
+    }
     override fun onOptionsItemSelected(itemId: Int) {
+        when(itemId) {
+            R.id.mailbox_archive_selected_messages -> archiveSelectedThread()
+            R.id.mailbox_delete_selected_messages -> deleteSelectedThread()
+            R.id.mailbox_message_toggle_read -> {
+                TODO("MESSAGE TOGGLE READ")
+            }
+            R.id.mailbox_move_to -> {
+                TODO("mailbox_move to")
+            }
+            R.id.mailbox_add_labels -> {
+                scene.showDialogLabelsChooser(LabelDataHandler(this))
+            }
+        }
     }
 
+    fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels) {
+        TODO("""START WORKER, SHOW GENERIC DIALOG,
+            ON FINISH WORKER, HIDE GENERIC DIALOG. """)
+
+    }
     override val menuResourceId: Int?
         get() = R.menu.mailbox_menu_multi_mode_read
 }

@@ -1,25 +1,25 @@
-package com.email.scenes.LabelChooser
+package com.email.scenes.labelChooser
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
-import com.email.scenes.LabelChooser.data.LabelThread
-import com.email.scenes.LabelChooser.holders.LabelHolder
+import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.labelChooser.holders.LabelHolder
 import com.email.utils.VirtualList
 
 /**
  * Created by sebas on 2/2/18.
  */
 
-class LabelThreadAdapter(private val mContext : Context,
-                         var labelThreadListener : OnLabelThreadEventListener?,
-                         private val labelList: VirtualList<LabelThread>)
+class LabelWrapperAdapter(private val mContext : Context,
+                          var labelWrapperListener : OnLabelWrapperEventListener?,
+                          private val labelList: VirtualList<LabelWrapper>)
     : RecyclerView.Adapter<LabelHolder>() {
 
-    private fun onToggleLabelSelection(labelThread: LabelThread, position: Int) {
-        labelThreadListener?.onToggleLabelSelection(labelThread, position)
+    private fun onToggleLabelSelection(labelWrapper: LabelWrapper, position: Int) {
+        labelWrapperListener?.onToggleLabelSelection(labelWrapper, position)
     }
 
     override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
@@ -49,7 +49,7 @@ class LabelThreadAdapter(private val mContext : Context,
         return LabelHolder(itemView)
     }
 
-    interface OnLabelThreadEventListener{
-        fun onToggleLabelSelection(label: LabelThread, position: Int)
+    interface OnLabelWrapperEventListener{
+        fun onToggleLabelSelection(label: LabelWrapper, position: Int)
     }
 }

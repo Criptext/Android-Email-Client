@@ -15,8 +15,7 @@ class SignUpDataSource(override val runner: WorkRunner,
                        private val signUpAPIClient: SignUpAPIClient,
                        private val signUpLocalDB: SignUpLocalDB,
                        private val signalKeyGenerator: SignalKeyGenerator,
-                       private val keyValueStorage: KeyValueStorage
-    )
+                       private val keyValueStorage: KeyValueStorage )
     : WorkHandler<SignUpRequest, SignUpResult>() {
     override fun createWorkerFromParams(params: SignUpRequest,
                                         flushResults: (SignUpResult) -> Unit):

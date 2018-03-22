@@ -6,9 +6,12 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
+import com.email.scenes.labelChooser.LabelDataHandler
+import com.email.scenes.mailbox.MoveToDialog
 import com.email.utils.VirtualList
 
 /**
@@ -23,6 +26,7 @@ interface EmailDetailScene {
 
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
+    fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -34,6 +38,9 @@ interface EmailDetailScene {
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
         private lateinit var labelsRecyclerView: LabelsRecyclerView
+
+        private val labelChooserDialog = LabelChooserDialog(context)
+        private val moveToDialog = MoveToDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -73,8 +80,11 @@ interface EmailDetailScene {
         override fun notifyFullEmailChanged(position: Int) {
             fullEmailsRecyclerView.notifyFullEmailChanged(position = position)
         }
+
+        override fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler) {
+            labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataHandler)
+        }
+
     }
-
-
 
 }

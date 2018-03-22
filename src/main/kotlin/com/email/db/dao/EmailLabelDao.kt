@@ -10,7 +10,7 @@ import com.email.db.models.Label
  */
 
 @Dao
-interface EmailLabelJoinDao {
+interface EmailLabelDao {
 
     @Insert
     fun insert(emailLabel : EmailLabel)
@@ -22,6 +22,11 @@ interface EmailLabelJoinDao {
     @Query("""SELECT label.* FROM label INNER JOIN email_label
             ON label.id=email_label.labelId WHERE email_label.emailId=:emailId""")
     fun getLabelsFromEmail(emailId: Int) : List<Label>
+
+    @Query("""SELECT DISTINCT label.* FROM label INNER JOIN
+        email_label ON label.id=email_label.labelId WHERE
+        email_label.emailId IN (select id FROM email WHERE threadid=:threadId) """)
+    fun getLabelsFromEmailThreadId(threadId: String) : List<Label>
 
     @Insert
     fun insertAll(emailLabels : List<EmailLabel>)
@@ -35,4 +40,5 @@ interface EmailLabelJoinDao {
     @Query("""DELETE FROM email_label
         WHERE labelId= :labelId AND emailId=:emailId""")
     fun deleteByEmailLabelIds(labelId: Int, emailId: Int)
+
 }

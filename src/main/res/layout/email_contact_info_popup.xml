@@ -8,84 +8,89 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/email_contact_info_popup" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/from_container"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="15dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView
-                android:layout_width="0dip"
-                android:layout_weight="0.20"
-                android:layout_height="fill_parent"
+                android:layout_alignParentStart="true"
+                android:id="@+id/title_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="From:"
                 android:gravity="center_vertical"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/title_from"
                 android:id="@+id/from_name"
-                android:layout_width="0dip"
-                android:layout_weight="0.30"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Gianni Carlo"
-                android:gravity="center_vertical"
-                android:textSize="17sp" />
+                android:gravity="center_horizontal"
+                android:textSize="15sp" />
 
             <TextView
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/from_name"
                 android:id="@+id/from_mail"
-                android:layout_width="0dip"
-                android:layout_weight="0.50"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/criptextdotcom"
                 android:textColor="@color/azure"
                 android:gravity="center_vertical"
-                android:textSize="17sp" />
-        </LinearLayout>
+                android:textSize="15sp" />
+        </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/reply_to_container"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="15dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView
-                android:layout_width="0dip"
-                android:layout_weight="0.20"
-                android:layout_height="fill_parent"
+                android:id="@+id/title_reply_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Reply to:"
                 android:gravity="center_vertical"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@+id/title_reply_to"
                 android:id="@+id/reply_name"
-                android:layout_width="0dip"
-                android:layout_weight="0.30"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Gianni Carlo"
                 android:gravity="center_vertical"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/reply_name"
                 android:id="@+id/reply_mail"
-                android:layout_width="0dip"
-                android:layout_weight="0.50"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/criptextdotcom"
                 android:textColor="@color/azure"
                 android:gravity="center_vertical"
-                android:textSize="17sp" />
-        </LinearLayout>
+                android:textSize="15sp" />
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/to_container"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="15dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -96,7 +101,7 @@
                 android:text="To:"
                 android:gravity="center_vertical"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -115,32 +120,33 @@
             </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/date_container"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="15dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView
-                android:layout_width="0dip"
-                android:layout_weight="0.20"
-                android:layout_height="fill_parent"
+                android:id="@+id/title_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Date:"
                 android:gravity="center_vertical"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
+                android:layout_marginStart="38dp"
+                android:layout_toEndOf="@id/title_date"
                 android:id="@+id/date"
-                android:layout_width="0dip"
-                android:layout_weight="0.30"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="10:30 AM"
                 android:gravity="center_vertical"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>

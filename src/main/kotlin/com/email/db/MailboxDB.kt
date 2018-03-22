@@ -6,7 +6,7 @@ import com.email.db.models.EmailLabel
 import com.email.db.models.Label
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.LabelChooser.data.LabelThread
+import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
  * Created by sebas on 1/26/18.
@@ -15,7 +15,8 @@ import com.email.scenes.LabelChooser.data.LabelThread
 interface MailboxLocalDB {
     fun getAllEmailThreads(): List<EmailThread>
     fun getArchivedEmailThreads(): List<EmailThread>
-    fun getAllLabels(): List<LabelThread>
+    fun getAllLabelWrappers(): List<LabelWrapper>
+    fun getAllLabels(): List<Label>
     fun getNotArchivedEmailThreads(): List<EmailThread>
     fun removeLabelsRelation(labels: List<Label>, emailId: Int)
     fun seed()
@@ -25,9 +26,23 @@ interface MailboxLocalDB {
                            updateUnreadStatus: Boolean)
     fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
+    fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
 
 
     class Default(applicationContext: Context): MailboxLocalDB {
+
+        override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
+            val labelSet = HashSet<Label>()
+
+            threadIds.forEach {
+                    val labels = db.
+                            emailLabelDao().
+                            getLabelsFromEmailThreadId(it)
+                    labelSet.addAll(labels)
+            }
+
+            return labelSet.toList()
+        }
 
         override fun createLabelEmailRelation(labelId: Int, emailId: Int) {
             val emailLabel = EmailLabel(labelId = labelId, emailId = emailId)
@@ -86,10 +101,14 @@ interface MailboxLocalDB {
             db.emailDao().deleteAll(emails)
         }
 
-        override fun getAllLabels(): List<LabelThread> {
+        override fun getAllLabelWrappers(): List<LabelWrapper> {
             return db.labelDao().getAll().map{ label ->
-                LabelThread(label)
-            } as ArrayList<LabelThread>
+                LabelWrapper(label)
+            } as ArrayList<LabelWrapper>
+        }
+
+        override fun getAllLabels(): List<Label> {
+            return db.labelDao().getAll()
         }
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {

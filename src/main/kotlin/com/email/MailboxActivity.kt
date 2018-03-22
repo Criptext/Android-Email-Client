@@ -9,6 +9,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.scenes.mailbox.data.MailboxAPIClient
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
@@ -21,6 +22,7 @@ import com.email.utils.VirtualList
  */
 
 class MailboxActivity : BaseActivity() {
+
     override val layoutId = R.layout.activity_mailbox
     override val toolbarId = R.id.mailbox_toolbar
 
@@ -29,7 +31,9 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
-        val mailboxDataSource = MailboxDataSource(db)
+        val mailboxDataSource = MailboxDataSource( runner = AsyncTaskWorkRunner(),
+                mailboxAPIClient = MailboxAPIClient.Default(),
+                mailboxLocalDB = db)
 
         mailboxDataSource.seed()
         val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
@@ -50,7 +54,7 @@ class MailboxActivity : BaseActivity() {
         notificationMenuClickListener = controller.menuClickListener
         return controller
     }
-    
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menu.findItem(R.id.mailbox_bell_container)?.actionView?.setOnClickListener {
@@ -75,11 +79,12 @@ class MailboxActivity : BaseActivity() {
     }
 
 
-  private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread>  {
+    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread> {
         override fun get(i: Int) = threads[i]
 
         override val size: Int
             get() = threads.size
     }
+
 }
