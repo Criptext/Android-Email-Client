@@ -87,6 +87,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val observer = object: MailboxUIObserver {
+        override fun onRefreshMails() {
+            scene.refreshMails()
+        }
+
         override fun onOpenComposerButtonClicked() {
             host.goToScene(ComposerParams())
         }

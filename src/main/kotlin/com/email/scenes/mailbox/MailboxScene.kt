@@ -1,10 +1,13 @@
 package com.email.scenes.mailbox
 
+import android.os.Handler
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import android.view.*
 import android.widget.ImageView
@@ -42,6 +45,7 @@ interface MailboxScene: ThreadListView {
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
+    fun refreshMails()
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -59,6 +63,10 @@ interface MailboxScene: ThreadListView {
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
+        }
+
+        private val refreshLayout: SwipeRefreshLayout by lazy {
+            mailboxView.findViewById<SwipeRefreshLayout>(R.id.mailbox_refresher)
         }
 
         private val toolbarHolder: ToolbarHolder by lazy {
@@ -97,6 +105,10 @@ interface MailboxScene: ThreadListView {
             drawerMenuView = DrawerMenuView(leftNavigationView)
             openComposerButton.setOnClickListener {
                 observer?.onOpenComposerButtonClicked()
+            }
+
+            refreshLayout.setOnRefreshListener {
+                observer?.onRefreshMails()
             }
         }
 
@@ -183,5 +195,15 @@ interface MailboxScene: ThreadListView {
                     defaultSelectedLabels = defaultSelectedLabels,
                     allLabels = labels)
         }
+
+        override fun refreshMails() {
+            if(refreshLayout.isRefreshing) {
+                Log.d("changethis", "refreshing view...")
+                Handler().postDelayed({
+                    refreshLayout.isRefreshing = false
+                }, 1000)
+            }
+        }
     }
+
 }

@@ -124,7 +124,34 @@
             android:layout_marginTop="15dp"
             android:layout_height="wrap_content">
 
+            <HorizontalScrollView
+                android:layout_marginTop="100dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/full_mail_scroll">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <com.email.utils.ZoomLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/full_mail_zoom">
+
+                        <WebView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/email_body"
+                            android:scrollbars="none"/>
+
+                    </com.email.utils.ZoomLayout>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
             <TextView
+                android:visibility="gone"
                 android:id="@+id/email_preview"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"

@@ -137,6 +137,9 @@ dependencies {
 
     // missMe -> ProgressDialog alternative
     implementation 'com.lmntrx.android.library.livin.missme:missme:0.1.5'
+
+    // easy permissions
+    compile 'pub.devrel:easypermissions:0.3.1'
 }
 
 
