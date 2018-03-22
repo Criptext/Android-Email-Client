@@ -141,7 +141,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     override fun bindFullMail(fullEmail: FullEmail) {
         toggleUnsendProgress(isShown = false)
         setDefaultBackgroundColors()
-        //bodyView.text = fullEmail.email.content
+
         bodyWebView.loadDataWithBaseURL("", Utility.
                 changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
         val numberContacts = fullEmail.to.size
