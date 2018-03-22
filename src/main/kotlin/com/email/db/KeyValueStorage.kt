@@ -2,6 +2,7 @@ package com.email.db
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Parcelable
 import android.preference.PreferenceManager
 
 /**
@@ -32,5 +33,6 @@ interface KeyValueStorage {
         override fun putString(key: StringKey, value: String) {
             withApply { editor -> editor.putString(key.stringKey, value) }
         }
+
     }
 }
