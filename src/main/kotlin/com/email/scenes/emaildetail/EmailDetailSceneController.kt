@@ -29,6 +29,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
+            TODO(
+           """UNSEND SELECTED EMAIL -> START THE WORKER, UNSEND THE EMAIL... REFRESH CONTENT."""
+            )
+        }
+
         override fun onForwardBtnClicked() {
             TODO("on forward btn clicked") //To change body of created functions use File | Settings | File Templates.
         }
@@ -45,7 +51,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 fullEmail.viewOpen = viewOpen
 
                 scene.notifyFullEmailChanged(position)
-                scene.notifyFullEmailListChanged()
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {

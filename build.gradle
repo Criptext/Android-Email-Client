@@ -139,7 +139,10 @@ dependencies {
     implementation 'com.lmntrx.android.library.livin.missme:missme:0.1.5'
 
     // easy permissions
-    compile 'pub.devrel:easypermissions:0.3.1'
+    implementation 'pub.devrel:easypermissions:0.3.1'
+
+    // spinkit -> custom animations in progressBar
+    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
 }
 
 

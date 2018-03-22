@@ -109,6 +109,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onForwardBtnClicked()
         fun onReplyBtnClicked()
         fun onReplyAllBtnClicked()
+        fun onUnsendEmail(fullEmail: FullEmail, position: Int)
     }
 
     private enum class EmailViewTypes {

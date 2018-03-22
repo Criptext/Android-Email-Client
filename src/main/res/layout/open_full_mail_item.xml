@@ -114,6 +114,18 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/un_sent" />
+
+                    <com.github.ybq.android.spinkit.SpinKitView
+                        android:visibility="gone"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/spin_kit_unsend"
+                        android:background="@drawable/red_filled_circle"
+                        style="@style/SpinKitView.Small.Circle"
+                        android:padding="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        app:SpinKit_Color="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

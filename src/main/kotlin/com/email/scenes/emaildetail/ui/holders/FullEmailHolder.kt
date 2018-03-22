@@ -22,6 +22,7 @@ import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
 import com.email.utils.Utility
 import com.email.utils.ZoomLayout
+import com.github.ybq.android.spinkit.SpinKitView
 
 /**
  * Created by sebas on 3/12/18.
@@ -44,6 +45,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val bodyWebView: WebView
     private val zoomLayout: ZoomLayout
     private val horizontalScrollView: HorizontalScrollView
+    private val progressBarUnsend: SpinKitView
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -73,6 +75,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         layoutAttachment.setOnClickListener{
             TODO("HANDLE CLICK TO ATTACHMENT")
+        }
+
+        unsendView.setOnClickListener {
+            emailListener?.onUnsendEmail(
+                    fullEmail = fullEmail,
+                    position = position)
         }
     }
 
@@ -189,6 +197,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.webChromeClient = WebChromeClient()
         zoomLayout = view.findViewById(R.id.full_mail_zoom)
         horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
+        progressBarUnsend = view.findViewById(R.id.spin_kit_unsend)
 
         setupWebview()
 
