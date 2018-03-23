@@ -1,6 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.api.ApiCall
+import com.email.utils.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 

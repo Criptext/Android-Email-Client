@@ -33,7 +33,7 @@ open class Contact(
     companion object {
         val supportContact = Contact("support@criptext.com", "Support")
 
-        val toName: (Contact) -> String = { contact -> contact.name }
+        val toAddress: (Contact) -> String = { contact -> contact.email }
 
         fun deAccent(str: String): String {
             val nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD)

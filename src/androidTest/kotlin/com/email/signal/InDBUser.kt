@@ -27,7 +27,7 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpLoca
         val privateBundle = registrationBundles.privateBundle
         val incompleteAccount = IncompleteAccount(username = recipientId, name = recipientId,
                 password = "12345", recoveryEmail ="support@criptext.com")
-        val persistedUser = incompleteAccount.complete(privateBundle, "jwt")
+        val persistedUser = incompleteAccount.complete(privateBundle, "__MOCKED_JWT__")
         signUpLocalDB.saveNewUserData(persistedUser, privateBundle)
 
         val activeAccount = ActiveAccount(recipientId = persistedUser.recipientId, jwt = persistedUser.jwt)
