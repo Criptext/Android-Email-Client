@@ -46,6 +46,7 @@ interface MailboxScene: ThreadListView {
     fun openNotificationFeed()
     fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
     fun refreshMails()
+    fun clearRefreshing()
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -204,6 +205,9 @@ interface MailboxScene: ThreadListView {
                 }, 1000)
             }
         }
-    }
 
+        override fun clearRefreshing() {
+            TODO("clearRefreshing") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
 }

@@ -7,4 +7,7 @@ package com.email.scenes.mailbox.data
 sealed class MailboxRequest{
     class GetLabels(
             val threadIds: List<String>): MailboxRequest()
+
+    class UpdateMailbox(
+            val label: String): MailboxRequest()
 }

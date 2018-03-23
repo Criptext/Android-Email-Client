@@ -14,6 +14,7 @@ import com.email.scenes.mailbox.feed.data.ActivityFeedItem
  */
 
 class MailboxSceneModel : SceneModel {
+    var label: String = ""
     val threads : ArrayList<EmailThread> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
@@ -22,4 +23,5 @@ class MailboxSceneModel : SceneModel {
     val feedModel = FeedModel()
     val isInUnreadMode: Boolean
         get() = selectedThreads.isInUnreadMode
+    var shouldShowPartialUpdateInUI = false
 }

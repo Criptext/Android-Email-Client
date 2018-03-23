@@ -30,4 +30,8 @@ class ThreadListController(private var threads : ArrayList<EmailThread>,
             return threadPosition
         }
     }
+
+    fun populateThreads(mailboxThreads: List<EmailThread>) {
+        TODO("POPULATE THREADS")
+    }
 }

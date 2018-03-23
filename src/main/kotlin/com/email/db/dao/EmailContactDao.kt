@@ -49,7 +49,7 @@ interface EmailContactJoinDao {
             INNER JOIN email_contact
             ON contact.email=email_contact.contactId
             WHERE email_contact.emailId=:emailId
-            AND email_contact.type='TP'""")
+            AND email_contact.type='TO'""")
     fun getContactsFromEmailTO(emailId: Int) : List<Contact>
 
     @Insert

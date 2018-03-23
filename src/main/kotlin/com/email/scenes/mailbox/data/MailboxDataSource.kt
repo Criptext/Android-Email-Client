@@ -16,17 +16,25 @@ class MailboxDataSource(
         private val mailboxAPIClient: MailboxAPIClient?,
         private val mailboxLocalDB: MailboxLocalDB )
     : WorkHandler<MailboxRequest, MailboxResult>() {
+
     override fun createWorkerFromParams(
             params: MailboxRequest,
             flushResults: (MailboxResult) -> Unit)
             : BackgroundWorker<*> {
 
         return when (params) {
-            is MailboxRequest.
-            GetLabels -> GetLabelsWorker(
+            is MailboxRequest.GetLabels -> GetLabelsWorker(
                     db = mailboxLocalDB,
                     apiClient = mailboxAPIClient,
                     threadIds = params.threadIds,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
+            is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
+                    db = mailboxLocalDB,
+                    apiClient = mailboxAPIClient,
+                    label = params.label,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -73,5 +81,9 @@ class MailboxDataSource(
 
     fun  moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
         mailboxLocalDB.moveSelectedEmailThreadsToSpam(emailThreads)
+    }
+
+    interface Listener {
+        fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox)
     }
 }
