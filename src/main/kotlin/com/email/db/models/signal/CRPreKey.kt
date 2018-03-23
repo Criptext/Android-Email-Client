@@ -14,4 +14,13 @@ class CRPreKey(
         var id: Int,
         @ColumnInfo(name = "byteString")
         var byteString: String
-)
+) {
+        override fun equals(other: Any?): Boolean {
+            return if (other is CRPreKey) id == other.id && byteString == other.byteString
+            else false
+        }
+
+    override fun hashCode(): Int {
+        return id
+    }
+}

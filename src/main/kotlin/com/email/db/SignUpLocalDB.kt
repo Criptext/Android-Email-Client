@@ -1,7 +1,6 @@
 package com.email.db
 
 import android.content.Context
-import android.util.Log
 import com.email.db.models.Account
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSignedPreKey

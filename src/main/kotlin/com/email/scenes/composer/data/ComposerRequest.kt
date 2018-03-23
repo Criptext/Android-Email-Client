@@ -7,6 +7,6 @@ import com.email.scenes.composer.ui.UIData
  */
 
 sealed class ComposerRequest {
-    class SendMail(data: UIData): ComposerRequest()
+    class SendMail(val data: UIData): ComposerRequest()
     class SuggestContacts(text: String): ComposerRequest()
 }

@@ -20,6 +20,27 @@ data class PreKeyBundleShareData(val recipientId: String,
     data class DownloadBundle(val shareData: PreKeyBundleShareData,
                               val preKey: CRPreKey?) {
 
+        fun toJSON(): JSONObject {
+            val json = JSONObject()
+            json.put("registrationId", shareData.registrationId)
+            json.put("deviceId", shareData.deviceId)
+            json.put("recipientId", shareData.recipientId)
+            json.put("signedPreKeyId", shareData.signedPreKeyId)
+            json.put("signedPreKeyPublic", shareData.signedPreKeyPublic)
+            json.put("identityPublicKey", shareData.identityPublicKey)
+            json.put("signedPreKeySignature", shareData.signedPreKeySignature)
+
+            if (preKey != null) {
+                val preKeyJson = JSONObject()
+                preKeyJson.put("id", preKey.id)
+                preKeyJson.put("publicKey", preKey.byteString)
+
+                json.put("preKey", preKeyJson)
+            }
+
+            return json
+        }
+
         companion object {
             fun fromJSON(json: JSONObject): DownloadBundle {
                 val registrationId = json.getInt("registrationId")

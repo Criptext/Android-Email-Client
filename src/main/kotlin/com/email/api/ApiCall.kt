@@ -1,10 +1,12 @@
 package com.email.api
 
+import com.email.scenes.composer.data.PostEmailBody
 import com.email.signal.PreKeyBundleShareData
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -14,7 +16,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://172.30.1.151:8000"
+        var baseUrl = "http://172.30.10.51:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
@@ -48,6 +50,29 @@ class ApiCall {
             jsonObject.put("password", password)
             jsonObject.put("deviceId", deviceId)
             return postJSON(url = "$baseUrl/user/auth", json = jsonObject)
+        }
+
+        fun findKeyBundles(token: String, recipients: List<String>, knownAddresses: Map<String, List<Int>>): Request {
+            val jsonObject = JSONObject()
+            jsonObject.put("recipients", JSONArray(recipients))
+            jsonObject.put("knownAddresses", JSONObject(knownAddresses))
+            return postJSONWithToken(token = token, url = "$baseUrl/keybundle", json = jsonObject)
+        }
+
+        fun postEmail(token: String, postEmailBody: PostEmailBody): Request {
+            return postJSONWithToken(token = token, url = "$baseUrl/email",
+                    json = postEmailBody.toJSON())
+        }
+
+        private fun postJSONWithToken(token: String, url: String, json: JSONObject): Request {
+            val body = RequestBody.create(JSON, json.toString())
+            val request = Request.Builder()
+                    .url(url)
+                    .addHeader("Bearer", token)
+                    .post(body)
+                    .build()
+
+            return request
         }
 
         private fun postJSON(url: String, json: JSONObject): Request {
