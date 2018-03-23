@@ -75,8 +75,9 @@ class ComposerController(private val model: ComposerModel,
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
 
-    override val menuResourceId = if (isReadyForSending()) R.menu.composer_menu_enabled
-                                  else R.menu.composer_menu_disabled
+    override val menuResourceId
+        get() = if (isReadyForSending()) R.menu.composer_menu_enabled
+                              else R.menu.composer_menu_disabled
 
     override fun onStart() {
         scene.bindWithModel(firstTime = model.firstTime, uiData = UIData.fromModel(model),
