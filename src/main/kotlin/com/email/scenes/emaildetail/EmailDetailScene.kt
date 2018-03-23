@@ -27,6 +27,9 @@ interface EmailDetailScene {
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
+    fun onFetchedLabels(
+            defaultSelectedLabels: List<Label>,
+            labels: List<Label>)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -85,6 +88,13 @@ interface EmailDetailScene {
             labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataHandler)
         }
 
+        override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+            labelChooserDialog.onFetchedLabels(
+                    defaultSelectedLabels = defaultSelectedLabels,
+                    allLabels = labels)
+        }
+
     }
+
 
 }

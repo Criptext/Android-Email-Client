@@ -11,6 +11,9 @@ import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.mailbox.data.MailboxDataSource
+import com.email.scenes.mailbox.data.MailboxRequest
+import com.email.scenes.mailbox.data.MailboxResult
 import com.email.utils.VirtualList
 
 /**
@@ -20,12 +23,32 @@ import com.email.utils.VirtualList
 class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
+                                 private val mailboxDataSource: MailboxDataSource,
                                  private val dataSource: EmailDetailDataSource) : SceneController() {
 
+    private val mailboxDataSourceListener = {result: MailboxResult ->
+        when (result) {
+            is MailboxResult.GetLabels -> onLabelsLoaded(result)
+        }
+
+    }
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
             is EmailDetailResult.UnsendFullEmailFromEmailId -> onUnsendEmail(result)
+        }
+    }
+
+    private fun onLabelsLoaded(result: MailboxResult.GetLabels) {
+        when (result) {
+            is MailboxResult.GetLabels.Success -> {
+                scene.onFetchedLabels(result.defaultSelectedLabels,
+                        result.labels)
+            }
+
+            is MailboxResult.GetLabels.Failure -> {
+
+            }
         }
     }
 
@@ -63,9 +86,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
-                fullEmail.viewOpen = viewOpen
+            fullEmail.viewOpen = viewOpen
 
-                scene.notifyFullEmailChanged(position)
+            scene.notifyFullEmailChanged(position)
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
@@ -102,6 +125,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
     override fun onStart() {
         dataSource.listener = dataSourceListener
+        mailboxDataSource.listener = mailboxDataSourceListener
 
         val req = EmailDetailRequest.LoadFullEmailsFromThreadId(
                 threadId = model.threadId)
@@ -135,11 +159,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 TODO("mailbox_move to")
             }
             R.id.mailbox_add_labels -> {
-                scene.showDialogLabelsChooser(LabelDataHandler(this))
+                showLabelsDialog()
             }
         }
     }
 
+    private fun showLabelsDialog() {
+        val req = MailboxRequest.GetLabels(
+                threadIds = listOf(model.threadId)
+        )
+
+        mailboxDataSource.submitRequest(req)
+        scene.showDialogLabelsChooser(LabelDataHandler(this))
+    }
     fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels) {
         TODO("""START WORKER, SHOW GENERIC DIALOG,
             ON FINISH WORKER, HIDE GENERIC DIALOG. """)

@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail.data
 
 import com.email.db.models.FullEmail
+import com.email.db.models.Label
 import com.email.utils.UIMessage
 
 /**

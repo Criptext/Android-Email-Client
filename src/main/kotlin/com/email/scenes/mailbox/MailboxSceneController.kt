@@ -2,7 +2,6 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
-import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.labelChooser.LabelDataHandler
