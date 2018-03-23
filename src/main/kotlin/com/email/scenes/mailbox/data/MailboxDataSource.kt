@@ -4,6 +4,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
+import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
 
@@ -13,10 +14,9 @@ import com.email.scenes.labelChooser.data.LabelWrapper
 
 class MailboxDataSource(
         override val runner: WorkRunner,
-        private val mailboxAPIClient: MailboxAPIClient?,
+        private val activeAccount: ActiveAccount,
         private val mailboxLocalDB: MailboxLocalDB )
     : WorkHandler<MailboxRequest, MailboxResult>() {
-
     override fun createWorkerFromParams(
             params: MailboxRequest,
             flushResults: (MailboxResult) -> Unit)
@@ -25,7 +25,7 @@ class MailboxDataSource(
         return when (params) {
             is MailboxRequest.GetLabels -> GetLabelsWorker(
                     db = mailboxLocalDB,
-                    apiClient = mailboxAPIClient,
+                    activeAccount = activeAccount,
                     threadIds = params.threadIds,
                     publishFn = { result ->
                         flushResults(result)
@@ -33,7 +33,7 @@ class MailboxDataSource(
 
             is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
                     db = mailboxLocalDB,
-                    apiClient = mailboxAPIClient,
+                    activeAccount = activeAccount,
                     label = params.label,
                     publishFn = { result ->
                         flushResults(result)

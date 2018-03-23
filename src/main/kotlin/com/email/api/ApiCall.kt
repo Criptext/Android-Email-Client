@@ -59,6 +59,21 @@ class ApiCall {
             return postJSONWithToken(token = token, url = "$baseUrl/keybundle", json = jsonObject)
         }
 
+
+        fun getPendingEvents(token: String): Request {
+            return getEventsWithToken(token = token, url = "$baseUrl/event")
+        }
+
+        private fun getEventsWithToken(token: String, url: String): Request {
+            val request = Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .get()
+                    .build()
+
+            return request
+        }
+
         fun postEmail(token: String, postEmailBody: PostEmailBody): Request {
             return postJSONWithToken(token = token, url = "$baseUrl/email",
                     json = postEmailBody.toJSON())

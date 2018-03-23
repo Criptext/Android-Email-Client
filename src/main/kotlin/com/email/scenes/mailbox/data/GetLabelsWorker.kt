@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.db.MailboxLocalDB
+import com.email.db.models.ActiveAccount
 import com.email.utils.UIMessage
 
 /**
@@ -12,12 +13,13 @@ import com.email.utils.UIMessage
 
 class GetLabelsWorker(
         private val db: MailboxLocalDB,
-        private val apiClient: MailboxAPIClient?,
+        private val activeAccount: ActiveAccount,
         private val threadIds: List<String>,
         override val publishFn: (
                 MailboxResult.GetLabels) -> Unit)
     : BackgroundWorker<MailboxResult.GetLabels> {
 
+    private val apiClient = MailboxAPIClient(activeAccount.jwt)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.GetLabels {

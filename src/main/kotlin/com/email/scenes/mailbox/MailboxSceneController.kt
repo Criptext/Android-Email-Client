@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
+import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -28,6 +29,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val dataSourceListener = { result: MailboxResult ->
         when (result) {
             is MailboxResult.GetLabels -> onLabelsLoaded(result)
+            is MailboxResult.UpdateMailbox -> dataSourceController.onMailboxUpdated(result)
         }
     }
 
@@ -123,7 +125,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onStart() {
-        dataSource.listener = dataSourceListener
+        dataSourceController.setDataSourceListener()
         scene.attachView(threadEventListener)
         scene.observer = observer
         scene.initDrawerLayout()
@@ -295,6 +297,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 mailboxLabel: String,
                 isManual: Boolean): Boolean {
             if(MailboxData.updateMailboxWorkData== null) {
+                scene.showSyncingDialog()
                 MailboxData.updateMailboxWorkData =
                         MailboxData.UpdateMailboxWorkData()
 
@@ -310,20 +313,28 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
             threadListController.populateThreads(resultData.mailboxThreads)
-            if (resultData.isManual)
-            // scene.showSnackBarNotification("Updated Just Now.")
-                TODO("RESULT DATA IS ALREADY HERE.")
+            scene.hideSyncingDialog()
+/*            if (resultData.isManual)
+                TODO("WHAT TO DO IF IT WAS MANUAL(?)")
             else
-            //scene.hideSyncingDialog(true)
-                TODO("HIDE SYNCING DIALOG")
+                TODO("HIDE SYNCING DIALOG")*/
+
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
-            TODO("handleFailedMailboxUpdate")
+            scene.hideSyncingDialog()
+            scene.showError(resultData.message)
         }
 
-        private fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
-            if (resultData.getDestinationMailbox() == model.label) {
+        fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
+            MailboxData.updateMailboxWorkData = null
+            when (resultData) {
+                is MailboxResult.UpdateMailbox.Success ->
+                    handleSuccessfulMailboxUpdate(resultData)
+                is MailboxResult.UpdateMailbox.Failure ->
+                    handleFailedMailboxUpdate(resultData)
+            }
+/*            if (resultData.getDestinationMailbox() == model.label) {
                 model.shouldShowPartialUpdateInUI = false
                 scene.clearRefreshing()
                 when (resultData) {
@@ -332,7 +343,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     is MailboxResult.UpdateMailbox.Failure ->
                         handleFailedMailboxUpdate(resultData)
                 }
-            }
+            }*/
         }
 
     }

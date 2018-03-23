@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.View
 import android.view.*
 import android.widget.ImageView
+import android.widget.Toast
+import com.email.BaseActivity
 import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
@@ -23,7 +25,9 @@ import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
+import com.email.utils.UIMessage
 import com.email.utils.VirtualList
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 1/23/18.
@@ -32,6 +36,8 @@ import com.email.utils.VirtualList
 interface MailboxScene: ThreadListView {
 
     var observer: MailboxUIObserver?
+    fun showSyncingDialog()
+    fun hideSyncingDialog()
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
@@ -47,11 +53,20 @@ interface MailboxScene: ThreadListView {
     fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
     fun refreshMails()
     fun clearRefreshing()
+    fun showError(message : UIMessage)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
                            val threadList: VirtualList<EmailThread>)
         : MailboxScene {
+
+        override fun showSyncingDialog() {
+            (hostActivity as BaseActivity).showDialog(UIMessage(R.string.updating_mailbox))
+        }
+
+        override fun hideSyncingDialog() {
+            (hostActivity as BaseActivity).dismissDialog()
+        }
 
         private val context = mailboxView.context
 
@@ -199,7 +214,6 @@ interface MailboxScene: ThreadListView {
 
         override fun refreshMails() {
             if(refreshLayout.isRefreshing) {
-                Log.d("changethis", "refreshing view...")
                 Handler().postDelayed({
                     refreshLayout.isRefreshing = false
                 }, 1000)
@@ -207,7 +221,16 @@ interface MailboxScene: ThreadListView {
         }
 
         override fun clearRefreshing() {
-            TODO("clearRefreshing") //To change body of created functions use File | Settings | File Templates.
+            refreshLayout.isRefreshing = false
+        }
+
+        override fun showError(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    context,
+                    context.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
         }
     }
 }
