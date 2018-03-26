@@ -7,7 +7,6 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
-import com.email.db.KeyValueStorage
 import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource

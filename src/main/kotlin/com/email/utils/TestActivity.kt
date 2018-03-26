@@ -3,7 +3,6 @@ package com.email.utils
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import com.email.IHostActivity
-import com.email.R
 import com.email.scenes.SceneController
 import com.email.scenes.params.SceneParams
 

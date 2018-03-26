@@ -12,6 +12,8 @@ import com.email.db.models.KnownAddress
 import com.email.scenes.composer.ui.UIData
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
+import com.email.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
+import com.email.utils.EmailAddressUtils.isFromCriptextDomain
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -33,9 +35,9 @@ class SendMailWorker(private val signalClient: SignalClient,
     private val apiClient = ComposerAPIClient(activeAccount.jwt)
 
     private fun getMailRecipients(): MailRecipients {
-        val toAddresses = uiData.to.map(Contact.toName)
-        val ccAddresses = uiData.cc.map(Contact.toName)
-        val bccAddresses = uiData.bcc.map(Contact.toName)
+        val toAddresses = uiData.to.map(Contact.toAddress)
+        val ccAddresses = uiData.cc.map(Contact.toAddress)
+        val bccAddresses = uiData.bcc.map(Contact.toAddress)
 
         val toCriptext = toAddresses.filter(isFromCriptextDomain)
                                     .map(extractRecipientIdFromCriptextAddress)
@@ -155,13 +157,6 @@ class SendMailWorker(private val signalClient: SignalClient,
 
 
 
-    private companion object {
-        val CRIPTEXT_DOMAIN_SUFFIX = "@jigl.com"
-        private val isFromCriptextDomain:(String) -> Boolean =
-                { address -> address.endsWith(CRIPTEXT_DOMAIN_SUFFIX) }
-        private val extractRecipientIdFromCriptextAddress: (String) -> String =
-                { address -> address.substring(0, address.length - CRIPTEXT_DOMAIN_SUFFIX.length) }
-    }
 
 
 

@@ -3,8 +3,6 @@ package com.email.scenes.composer
 import android.support.test.espresso.Espresso.onIdle
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.typeText
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.RootMatchers.withDecorView
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import com.email.R
@@ -15,12 +13,14 @@ import com.email.signal.InDBUser
 import com.email.signal.InMemoryUser
 import com.email.signal.SignalKeyGenerator
 import com.email.signal.TestUser
+import com.email.utils.ExpectedRequest
 import com.email.utils.TestActivity
+import com.email.utils.assertSentRequests
 import com.email.utils.enqueueSuccessfulResponses
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
-import org.hamcrest.CoreMatchers.not
+import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -89,6 +89,25 @@ class ComposerSceneTest {
 
         // should be finishing if all went ok
         mActivityRule.activity.isFinishing `shouldBe` true
+
+        server.assertSentRequests(listOf(
+            ExpectedRequest(needsJwt = true, method = "POST",  path = "/keybundle",
+            assertBodyFn = { json ->
+                val recipients = json.getJSONArray("recipients")
+                recipients.length() shouldEqual 1
+                recipients[0] shouldEqual "mayer"
+
+                val knownAddresses = json.getJSONObject("knownAddresses")
+                knownAddresses.length() shouldEqual 0
+            }),
+            ExpectedRequest(needsJwt = true, method = "POST",  path = "/email",
+            assertBodyFn = { json ->
+                val subject = json.getString("subject")
+                subject shouldEqual "test email"
+                val recipients = json.getJSONArray("criptextEmails")
+                recipients.length() shouldEqual 1
+            })
+        ))
     }
 
     @Test
@@ -116,5 +135,18 @@ class ComposerSceneTest {
         onIdle()
 
         mActivityRule.activity.isFinishing `shouldBe` false
+
+
+        server.assertSentRequests(listOf(
+            ExpectedRequest(needsJwt = true, method = "POST",  path = "/keybundle",
+            assertBodyFn = { json ->
+                val recipients = json.getJSONArray("recipients")
+                recipients.length() shouldEqual 1
+                recipients[0] shouldEqual "mayer"
+
+                val knownAddresses = json.getJSONObject("knownAddresses")
+                knownAddresses.length() shouldEqual 0
+            })
+        ))
     }
 }

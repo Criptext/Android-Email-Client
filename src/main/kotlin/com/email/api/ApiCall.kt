@@ -16,7 +16,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://172.30.10.51:8000"
+        var baseUrl = "http://172.30.1.157:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
@@ -68,7 +68,7 @@ class ApiCall {
             val body = RequestBody.create(JSON, json.toString())
             val request = Request.Builder()
                     .url(url)
-                    .addHeader("Bearer", token)
+                    .addHeader("Authorization", "Bearer $token")
                     .post(body)
                     .build()
 
