@@ -11,6 +11,7 @@ import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
@@ -60,6 +61,17 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
             }
+        }
+
+    }
+
+    private val onMoveThreadsListener = object : OnMoveThreadsListener {
+        override fun moveToSpam() {
+            TODO("MOVE TO SPAM")
+        }
+
+        override fun moveToTrash() {
+            TODO("MOVE TO TRASH")
         }
 
     }
@@ -156,7 +168,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 TODO("MESSAGE TOGGLE READ")
             }
             R.id.mailbox_move_to -> {
-                TODO("mailbox_move to")
+                scene.showDialogMoveTo(onMoveThreadsListener)
             }
             R.id.mailbox_add_labels -> {
                 showLabelsDialog()

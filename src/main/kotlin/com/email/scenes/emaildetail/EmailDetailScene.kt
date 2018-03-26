@@ -12,6 +12,7 @@ import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
+import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.VirtualList
 
 /**
@@ -27,6 +28,7 @@ interface EmailDetailScene {
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun onFetchedLabels(
             defaultSelectedLabels: List<Label>,
             labels: List<Label>)
@@ -35,7 +37,6 @@ interface EmailDetailScene {
             private val emailDetailView: View,
             val hostActivity: IHostActivity)
         : EmailDetailScene {
-
         private val context = emailDetailView.context
 
 
@@ -94,6 +95,10 @@ interface EmailDetailScene {
                     allLabels = labels)
         }
 
+        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
+            moveToDialog.showMoveToDialog(
+                    onMoveThreadsListener = onMoveThreadsListener)
+        }
     }
 
 

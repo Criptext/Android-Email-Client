@@ -27,9 +27,15 @@ interface MailboxLocalDB {
     fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
-
+    fun addEmail(email: Email)
 
     class Default(applicationContext: Context): MailboxLocalDB {
+        override fun addEmail(email: Email) {
+            db.emailDao().insert(email)
+            db.emailLabelDao().insert(EmailLabel(
+                    emailId = db.emailDao().getLastInsertedId(),
+                    labelId = 2 ))
+        }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
             val labelSet = HashSet<Label>()
@@ -131,5 +137,6 @@ interface MailboxLocalDB {
             db.emailDao().update(emails)
         }
     }
+
 
 }

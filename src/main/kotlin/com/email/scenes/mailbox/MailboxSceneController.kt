@@ -327,6 +327,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
             MailboxData.updateMailboxWorkData = null
+            scene.clearRefreshing()
             when (resultData) {
                 is MailboxResult.UpdateMailbox.Success ->
                     handleSuccessfulMailboxUpdate(resultData)

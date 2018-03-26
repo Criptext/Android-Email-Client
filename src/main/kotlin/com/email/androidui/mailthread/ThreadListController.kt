@@ -32,6 +32,7 @@ class ThreadListController(private var threads : ArrayList<EmailThread>,
     }
 
     fun populateThreads(mailboxThreads: List<EmailThread>) {
-        TODO("POPULATE THREADS")
+        setThreadList(mailboxThreads)
+        listView?.notifyThreadSetChanged()
     }
 }
