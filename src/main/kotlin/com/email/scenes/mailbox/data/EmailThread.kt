@@ -1,8 +1,8 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.models.Email
 import com.email.db.models.Label
 import com.email.SecureEmail
+import com.email.db.models.FullEmail
 import com.email.utils.EmailThreadValidator
 import java.util.*
 
@@ -10,24 +10,24 @@ import java.util.*
  * Created by sebas on 1/24/18.
  */
 
-class EmailThread(val latestEmail : Email,
+class EmailThread(val latestEmail: FullEmail,
                   val labelsOfMail :ArrayList<Label>) {
 
     val unread :Boolean
-        get() = latestEmail.unread
-    val threadId = latestEmail.threadid
+        get() = latestEmail.email.unread
+    val threadId = latestEmail.email.threadid
     val timestamp: Date
-        get() = latestEmail.date
+        get() = latestEmail.email.date
     var isSelected = false
     val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
             || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-        latestEmail.preview else latestEmail.preview
+        latestEmail.email.preview else latestEmail.email.preview
     val id: Int
-        get() = latestEmail.id!!
+        get() = latestEmail.email.id!!
     val subject: String
-        get() = latestEmail.subject
+        get() = latestEmail.email.subject
     val preview: String
-        get() = latestEmail.preview
+        get() = latestEmail.email.preview
 
     val replyType: ReplyTypes
         get() {
@@ -41,5 +41,4 @@ class EmailThread(val latestEmail : Email,
                 ReplyTypes.forward
             else ReplyTypes.none
         }
-
 }
