@@ -6,6 +6,12 @@ package com.email.scenes.emaildetail.data
 
 sealed class EmailDetailRequest{
 
+    class DecryptMail(
+            val recipientId: String,
+            val deviceId: Int,
+            val emailId: Int,
+            val encryptedText: String): EmailDetailRequest()
+
     class LoadFullEmailsFromThreadId(
             val threadId: String): EmailDetailRequest()
 

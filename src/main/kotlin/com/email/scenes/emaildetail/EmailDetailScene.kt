@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import com.email.IHostActivity
 import com.email.R
@@ -32,11 +33,13 @@ interface EmailDetailScene {
     fun onFetchedLabels(
             defaultSelectedLabels: List<Label>,
             labels: List<Label>)
+    fun onDecryptedBody(decryptedText: String)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
             val hostActivity: IHostActivity)
         : EmailDetailScene {
+
         private val context = emailDetailView.context
 
 
@@ -99,7 +102,10 @@ interface EmailDetailScene {
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener)
         }
-    }
 
+        override fun onDecryptedBody(decryptedText: String) {
+            Log.d("decryptedBody", decryptedText)
+        }
+    }
 
 }

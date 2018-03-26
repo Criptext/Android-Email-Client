@@ -7,12 +7,14 @@ import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.signal.SignalClient
 
 /**
  * Created by sebas on 1/24/18.
  */
 
 class MailboxDataSource(
+        private val signalClient: SignalClient,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
         private val mailboxLocalDB: MailboxLocalDB )
@@ -32,6 +34,7 @@ class MailboxDataSource(
                     })
 
             is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
+                    signalClient = signalClient,
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
                     label = params.label,

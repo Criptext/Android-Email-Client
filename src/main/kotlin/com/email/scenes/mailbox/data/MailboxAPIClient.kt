@@ -22,4 +22,13 @@ class MailboxAPIClient(private val token: String) {
         val request = ApiCall.getPendingEvents(token = token)
         return ApiCall.executeRequest(client, request)
     }
+
+    fun getBodyFromEmail(uuid: String): String {
+        val request = ApiCall.getBodyFromEmail(
+                token = token,
+                uuid= uuid
+                )
+        return ApiCall.executeRequest(client, request)
+    }
+
 }

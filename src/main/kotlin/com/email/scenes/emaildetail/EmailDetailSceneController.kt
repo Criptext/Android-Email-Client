@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail
 
 import android.content.Context
+import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
@@ -37,7 +38,21 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
             is EmailDetailResult.UnsendFullEmailFromEmailId -> onUnsendEmail(result)
+            is EmailDetailResult.DecryptMail -> onDecryptEmail(result)
         }
+    }
+
+    private fun onDecryptEmail(result: EmailDetailResult.DecryptMail) {
+        when (result) {
+            is EmailDetailResult.DecryptMail.Success -> {
+                scene.onDecryptedBody(result.decryptedText)
+            }
+
+            is EmailDetailResult.DecryptMail.Failure -> {
+
+            }
+        }
+
     }
 
     private fun onLabelsLoaded(result: MailboxResult.GetLabels) {
@@ -99,6 +114,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
             fullEmail.viewOpen = viewOpen
+            if(viewOpen) {
+/*                val req = EmailDetailRequest.DecryptMail(
+                        recipientId = fullEmail.from?.name ?: "daniel@jigl.com",
+                        emailId = fullEmail.email.id!!,
+                        deviceId = 1,
+                        encryptedText = fullEmail.email.content
+                )
+
+                dataSource.submitRequest(req)*/
+            }
 
             scene.notifyFullEmailChanged(position)
         }
