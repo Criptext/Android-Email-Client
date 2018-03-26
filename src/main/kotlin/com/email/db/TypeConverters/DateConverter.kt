@@ -11,7 +11,9 @@ import java.util.*
 
 class DateConverter {
     private val df : SimpleDateFormat =
-            SimpleDateFormat( "yyyy-MM-dd HH:mm:dd", Locale.US)
+            SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm:ss",
+                    Locale.US)
 
     @TypeConverter
     fun getDate(value: Long) : Date  {
@@ -24,6 +26,7 @@ class DateConverter {
     }
 
     init {
-        df.timeZone = TimeZone.getDefault()
+        df.timeZone = TimeZone.getTimeZone("UTC")
+        df.isLenient = false
     }
 }

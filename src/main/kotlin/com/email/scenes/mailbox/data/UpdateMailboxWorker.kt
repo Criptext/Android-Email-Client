@@ -1,19 +1,17 @@
 package com.email.scenes.mailbox.data
 
-import android.util.Log
 import com.email.R
 import com.email.api.HttpErrorHandlingHelper
 import com.email.bgworker.BackgroundWorker
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
+import com.email.utils.DateUtils
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Created by sebas on 3/22/18.
@@ -64,16 +62,18 @@ class UpdateMailboxWorker(
     }
 
     fun parseValue(input: String): List<EmailThread> {
-        var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
         val jsonArray = JSONArray(input)
         for(i in 0 until jsonArray.length()) {
             val fullData = JSONObject(jsonArray.get(i).toString())
             val emailData = JSONObject(fullData.getString("params"))
-            Log.d("data", emailData.toString())
+            val from = emailData.getString("from")
+            val to = emailData.getString("to")
             val email = Email(
                     id=null,
                     unread = true,
-                    date = sdf.parse(emailData.getString("date")),
+                    date = DateUtils.getDateFromString(
+                            emailData.getString("date"),
+                            null),
                     threadid = emailData.getString("threadId"),
                     subject = emailData.getString("subject"),
                     isTrash = false,
@@ -84,7 +84,8 @@ class UpdateMailboxWorker(
                     delivered = 0 ,
                     content = ""
                     )
-            db.addEmail(email)
+            val insertedEmailId = db.addEmail(email)
+            db.createContactFrom(from, insertedEmailId)
         }
         return db.getNotArchivedEmailThreads()
     }

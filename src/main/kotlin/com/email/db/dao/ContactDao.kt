@@ -1,9 +1,6 @@
 package com.email.db.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import com.email.db.models.Contact
 
 /**
@@ -13,7 +10,7 @@ import com.email.db.models.Contact
 @Dao
 interface ContactDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(contact : Contact)
 
     @Insert

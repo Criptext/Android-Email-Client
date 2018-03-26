@@ -11,7 +11,6 @@ import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ReadHistoryListener
 import com.email.utils.DateUtils
 import com.email.utils.ui.PopupUtils
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -49,15 +48,20 @@ class ReadHistoryPopUp(private val anchorView: View) {
     }
 
     private fun getMockedContacts(): List<MockedContact> {
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
 
         val array = ArrayList<MockedContact>()
-        array.add(MockedContact("Sebastian Caceres", sdf.parse("2018-02-11")))
-        array.add(MockedContact("Gianni Carlo", sdf.parse("2018-20-01")))
-        array.add(MockedContact("Gabriel Aumala", sdf.parse("2017-20-12")))
-        array.add(MockedContact("someemail@email.com", sdf.parse("2017-21-12")))
-        array.add(MockedContact("Erika Perugachi", sdf.parse("2018-13-03")))
-        array.add(MockedContact("Erika Perugachi", sdf.parse("2018-16-03")))
+        array.add(MockedContact("Sebastian Caceres", DateUtils.getDateFromString(
+                "2018-02-11", null)))
+        array.add(MockedContact("Gianni Carlo", DateUtils.getDateFromString(
+                "2018-20-01", null)))
+        array.add(MockedContact("Gabriel Aumala",
+                DateUtils.getDateFromString("2017-20-12", null)))
+        array.add(MockedContact("someemail@email.com",
+                DateUtils.getDateFromString("2017-21-12", null)))
+        array.add(MockedContact("Erika Perugachi",
+                DateUtils.getDateFromString("2018-13-03", null)))
+        array.add(MockedContact("Erika Perugachi",
+                DateUtils.getDateFromString("2018-16-03", null)))
         return array
     }
 

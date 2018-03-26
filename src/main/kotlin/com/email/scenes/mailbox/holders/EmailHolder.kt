@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.holders
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
@@ -33,6 +34,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val avatarView: CircleImageView
     private val iconBack: ImageView
     private val iconAttachments: ImageView
+    private val check: ImageView
 
     init {
         view.setOnClickListener(this)
@@ -42,15 +44,26 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     fun bindMail(emailThread: EmailThread) {
-        previewView.text = emailThread.headerPreview
-        headerView.text = emailThread.headerPreview
-        try { // remove this.
-            avatarView.setImageBitmap(Utility.getBitmapFromText(emailThread.preview,
-                    emailThread.preview[0].toString().toUpperCase(), 250, 250))
-        } catch (e: Exception) {
-            avatarView.setImageBitmap(Utility.getBitmapFromText("Empty",
-                    "Empty".toString().toUpperCase(), 250, 250))
+        if(emailThread.unread) {
+            DrawableCompat.setTint(
+                    check.drawable,
+                    ContextCompat.getColor(view.context, R.color.attachmentGray))
+
+        } else {
+            DrawableCompat.setTint(
+                    check.drawable,
+                    ContextCompat.getColor(view.context, R.color.azure))
         }
+
+        previewView.text = emailThread.preview
+        headerView.text = emailThread.headerPreview
+        avatarView.setImageBitmap(
+                Utility.getBitmapFromText(
+                        emailThread.latestEmail.from?.name ?:"Empty",
+                        emailThread.latestEmail.from?.name?.get(0)?.toString()?.toUpperCase() ?: "E",
+                        250,
+                        250))
+
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {
@@ -59,7 +72,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                     "fonts/NunitoSans-Bold.ttf")
             headerView.typeface = TypefaceUtils.load(
                     view.resources.assets,
-                   "fonts/NunitoSans-Bold.ttf")
+                    "fonts/NunitoSans-Bold.ttf")
         } else {
             headerView.typeface = TypefaceUtils.load(
                     view.resources.assets,
@@ -142,6 +155,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     init {
+        check = view.findViewById(R.id.check)
         headerView = view.findViewById(R.id.email_header)
         avatarView = view.findViewById(R.id.mail_item_left_name)
         subjectView = view.findViewById(R.id.email_subject)

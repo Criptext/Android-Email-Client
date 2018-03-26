@@ -15,8 +15,6 @@ import com.email.db.models.EmailContact
 @Dao
 interface EmailContactJoinDao {
 
-    @Insert
-    fun insert(emailContact : EmailContact)
 
     @Query("""SELECT email.* FROM email
             INNER JOIN email_contact
@@ -55,8 +53,12 @@ interface EmailContactJoinDao {
     @Insert
     fun insertAll(emailUsers : List<EmailContact>)
 
+
     @Query("SELECT * FROM email_contact")
     fun getAll() : List<EmailContact>
+
+    @Insert
+    fun insert(emailContact : EmailContact)
 
     @Delete
     fun deleteAll(emailUsers: List<EmailContact>)

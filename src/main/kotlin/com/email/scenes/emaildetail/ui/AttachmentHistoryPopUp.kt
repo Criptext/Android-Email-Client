@@ -15,7 +15,6 @@ import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.ui.PopupUtils
 import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -54,12 +53,11 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     }
 
     private fun getMockedAttachmentContacts(): List<MockedAttachmentContact> {
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
 
         val array = ArrayList<MockedAttachmentContact>()
         array.add(MockedAttachmentContact(
                 name = "Sebastian Caceres",
-                date = sdf.parse("2018-02-11"),
+                date = DateUtils.getDateFromString("2018-02-11", null),
                 file = "Look at ma sheep.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.DOWNLOAD,
                 fileType = AttachmentTypes.PDF
@@ -67,7 +65,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         array.add(MockedAttachmentContact(
                 name = "Gianni Carlo",
-                date = sdf.parse("2018-03-16"),
+                date = DateUtils.getDateFromString("2018-03-16", null),
                 file = "Sheep relevance.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.OPEN,
                 fileType = AttachmentTypes.WORD

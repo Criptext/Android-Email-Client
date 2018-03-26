@@ -1,10 +1,7 @@
 package com.email.db
 
 import android.content.Context
-import com.email.db.models.Email
-import com.email.db.models.EmailLabel
-import com.email.db.models.FullEmail
-import com.email.db.models.Label
+import com.email.db.models.*
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.labelChooser.data.LabelWrapper
@@ -28,14 +25,28 @@ interface MailboxLocalDB {
     fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
-    fun addEmail(email: Email)
+    fun addEmail(email: Email) : Int
+    fun createContactFrom(from: String, insertedEmailId: Int)
 
     class Default(applicationContext: Context): MailboxLocalDB {
-        override fun addEmail(email: Email) {
+        override fun createContactFrom(fromEmail: String, insertedEmailId: Int) {
+            val contact = Contact(email = fromEmail, name = fromEmail)
+            val emailContact = EmailContact(
+                    contactId = fromEmail,
+                    emailId = insertedEmailId,
+                    type = "FROM")
+            db.contactDao().insert(contact)
+            db.emailContactDao().insert(emailContact)
+        }
+
+        override fun addEmail(email: Email): Int {
             db.emailDao().insert(email)
+            val insertedEmailId = db.emailDao().getLastInsertedId()
             db.emailLabelDao().insert(EmailLabel(
-                    emailId = db.emailDao().getLastInsertedId(),
+                    emailId = insertedEmailId,
                     labelId = 2 ))
+
+            return insertedEmailId
         }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
@@ -178,6 +189,7 @@ interface MailboxLocalDB {
             db.emailDao().update(emails)
         }
     }
+
 
 
 }
