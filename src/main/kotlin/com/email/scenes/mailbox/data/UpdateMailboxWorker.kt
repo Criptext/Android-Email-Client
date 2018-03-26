@@ -10,6 +10,7 @@ import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONObject
@@ -35,19 +36,28 @@ class UpdateMailboxWorker(
         val message = createErrorMessage(ex)
         return MailboxResult.UpdateMailbox.Failure(label, message)
     }
-
-    override fun work(): MailboxResult.UpdateMailbox? {
-        val result = apiClient.getPendingEvents()
-        val operationResult =  Result.of {
+    private fun fetchPendingEvents():Result<String, Exception> {
+        return Result.of {
             apiClient.getPendingEvents()
+        }
+    }
+    private val parseEmails: (input: String) -> Result<List<EmailThread>, Exception> = {
+        input ->
+        Result.of {
+            parseContent(input = input)
         }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    }
+    override fun work(): MailboxResult.UpdateMailbox? {
+        val operationResult = fetchPendingEvents().
+                flatMap(parseEmails).
+                mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
         return when(operationResult) {
             is Result.Success -> {
                 return MailboxResult.UpdateMailbox.Success(
-                        mailboxLabel = "INBOX", // temporal
-                        isManual = true, // temporal
-                        mailboxThreads = parseValue(operationResult.value)
+                        mailboxLabel = "INBOX",
+                        isManual = true,
+                        mailboxThreads = operationResult.value
                 )
             }
 
@@ -64,7 +74,8 @@ class UpdateMailboxWorker(
         UIMessage(resId = R.string.failed_getting_emails)
     }
 
-    fun parseValue(input: String): List<EmailThread> {
+
+    private fun parseContent(input: String): List<EmailThread> {
         val jsonArray = JSONArray(input)
         for(i in 0 until jsonArray.length()) {
             val fullData = JSONObject(jsonArray.get(i).toString())

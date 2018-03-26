@@ -5,7 +5,6 @@ import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.EmailDetailLocalDB
 import com.email.db.models.ActiveAccount
-import com.email.scenes.emaildetail.workers.DecryptMailWorker
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
 import com.email.scenes.emaildetail.workers.UnsendFullEmailWorker
 import com.email.signal.SignalClient
@@ -40,16 +39,6 @@ class EmailDetailDataSource(private val signalClient: SignalClient,
                         flushResults(result)
                     })
 
-            is EmailDetailRequest.DecryptMail -> DecryptMailWorker(
-                    signalClient = signalClient,
-                    deviceId = params.deviceId,
-                    emailId = params.emailId,
-                    encryptedMessage = params.encryptedText,
-                    activeAccount = activeAccount,
-                    recipientId = params.recipientId,
-                    publishFn = { result ->
-                        flushResults(result)
-                    })
         }
     }
 }

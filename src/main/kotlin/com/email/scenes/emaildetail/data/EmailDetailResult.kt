@@ -10,15 +10,6 @@ import com.email.utils.UIMessage
 
 sealed class EmailDetailResult {
 
-
-    sealed class DecryptMail(): EmailDetailResult() {
-
-        data class Success(val decryptedText: String): DecryptMail()
-        data class Failure(
-                val message: UIMessage,
-                val exception: Exception): DecryptMail()
-    }
-
     sealed class LoadFullEmailsFromThreadId: EmailDetailResult() {
         data class Success(val fullEmailList: List<FullEmail>): LoadFullEmailsFromThreadId()
         data class Failure(
