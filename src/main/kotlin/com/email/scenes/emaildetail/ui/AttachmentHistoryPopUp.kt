@@ -57,7 +57,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         val array = ArrayList<MockedAttachmentContact>()
         array.add(MockedAttachmentContact(
                 name = "Sebastian Caceres",
-                date = DateUtils.getDateFromString("2018-02-11", null),
+                date = DateUtils.getDateFromString("2017-05-23 20:12:58", null),
                 file = "Look at ma sheep.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.DOWNLOAD,
                 fileType = AttachmentTypes.PDF
@@ -65,7 +65,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         array.add(MockedAttachmentContact(
                 name = "Gianni Carlo",
-                date = DateUtils.getDateFromString("2018-03-16", null),
+                date = DateUtils.getDateFromString("2018-03-12 18:12:58", null),
                 file = "Sheep relevance.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.OPEN,
                 fileType = AttachmentTypes.WORD

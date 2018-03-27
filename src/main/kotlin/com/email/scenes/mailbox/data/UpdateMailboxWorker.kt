@@ -10,6 +10,7 @@ import com.email.db.models.Email
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.UIMessage
+import com.email.utils.Utility
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -101,6 +102,11 @@ class UpdateMailboxWorker(
                             recipientId = from,
                             deviceId = 1,
                             encryptedB64 = resultOperationS3.value)
+                    val bodyWithoutHTML = Utility.html2text(bodyContent)
+                    val preview   = if (bodyWithoutHTML.length > 10 )
+                                        bodyWithoutHTML.substring(0,10)
+                                    else bodyWithoutHTML
+
                     val email = Email(
                             id=null,
                             unread = true,
@@ -111,12 +117,12 @@ class UpdateMailboxWorker(
                             subject = emailData.getString("subject"),
                             isTrash = false,
                             secure = true,
-                            preview = emailData.getString("preview"),
-                            key = bodyKey,
+                            preview = preview,
+                                    key = bodyKey,
                             isDraft = false,
                             delivered = DeliveryTypes.RECEIVED,
                             content = bodyContent
-                    )
+                            )
                     val insertedEmailId = db.addEmail(email)
                     db.createContactFrom(from, insertedEmailId)
                 }

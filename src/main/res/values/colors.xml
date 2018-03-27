@@ -17,6 +17,7 @@
     <color name="softBlue">#edf5ff</color>
     <color name="colorUnsent">#ef4646</color>
     <color name="unsend_button_red">#da4931</color>
+    <color name="unsent_content">#e36666</color>
     <color name="colorOpen">#0091FF</color>
     <color name="colorSubject">#000000</color>
     <color name="colorLabels">#8A8A8A</color>
@@ -52,4 +53,5 @@
     <color name="azure">#0091ff</color>
     <color name="green">#a0d06e</color>
     <color name="yellow">#ffbb63</color>
+    <color name="unsendBtn">#dd4040</color>
 </resources>

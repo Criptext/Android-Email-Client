@@ -2,9 +2,11 @@ package com.email.scenes.emaildetail.ui.holders
 
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.ImageView
 import com.email.R
+import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.DateUtils
@@ -17,6 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
 
+    private val cardView: CardView
     private val isSeen: ImageView
     private val hasAttachmentsView: ImageView
     private val leftImageView: CircleImageView
@@ -31,8 +34,20 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
+        if(fullEmail.email.delivered == DeliveryTypes.UNSENT) {
 
-        bodyView.text = fullEmail.email.preview
+            bodyView.alpha = 0.5.toFloat()
+            bodyView.text = "Unsent"
+            bodyView.setTextColor(ContextCompat.getColor(
+                    view.context, R.color.unsent_content))
+            cardView.background = ContextCompat.getDrawable(
+                    view.context, R.drawable.background_cardview_unsend)
+        } else {
+            bodyView.alpha = 1.toFloat()
+            cardView.background = null
+            bodyView.text = fullEmail.email.preview
+        }
+
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
 
         if(fullEmail.files.isEmpty()) {
@@ -62,6 +77,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         isSeen = view.findViewById(R.id.check)
         hasAttachmentsView = view.findViewById(R.id.email_has_attachments)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
+        cardView = view.findViewById(R.id.cardview)
     }
 
 }

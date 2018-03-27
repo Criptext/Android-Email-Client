@@ -9,6 +9,7 @@ import com.email.R
 import com.email.db.AttachmentTypes
 import com.email.scenes.WebViewActivity
 import com.email.utils.ui.TextDrawable
+import org.jsoup.Jsoup
 import pub.devrel.easypermissions.EasyPermissions
 import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
@@ -19,6 +20,10 @@ import java.util.regex.Pattern
 class Utility {
 
     companion object {
+
+        fun html2text(html: String): String {
+            return Jsoup.parse(html).text()
+        }
 
         fun hasSDPermissionsWeb(ctx : Context) : Boolean{
             val readSDPermission = Manifest.permission.READ_EXTERNAL_STORAGE

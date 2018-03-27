@@ -10,10 +10,15 @@ import com.email.db.models.FullEmail
 interface EmailDetailLocalDB {
 
     fun getFullEmailsFromThreadId(threadId: String): List<FullEmail>
+    fun unsendEmail(emailId: Int)
 
     class Default(applicationContext: Context): EmailDetailLocalDB {
 
         private val db = AppDatabase.getAppDatabase(applicationContext)
+
+        override fun unsendEmail(emailId: Int) {
+            db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSENT)
+        }
 
         override fun getFullEmailsFromThreadId(threadId: String): List<FullEmail> {
             val emails = db.emailDao().getEmailsFromThreadId(threadId)
@@ -45,5 +50,6 @@ interface EmailDetailLocalDB {
             return fullEmails
         }
     }
+
 
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.email.IHostActivity
 import com.email.R
+import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerTypes
@@ -59,6 +60,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
+                model.fullEmailList[result.position].email.delivered = DeliveryTypes.UNSENT
                 scene.notifyFullEmailChanged(result.position)
             }
 

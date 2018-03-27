@@ -29,7 +29,8 @@ class UnsendFullEmailWorker(
     }
 
     override fun work(): EmailDetailResult.UnsendFullEmailFromEmailId {
-        Thread.sleep(1000)
+        Thread.sleep(500)
+        db.unsendEmail(emailId)
         return EmailDetailResult.UnsendFullEmailFromEmailId.Success(position)
     }
 

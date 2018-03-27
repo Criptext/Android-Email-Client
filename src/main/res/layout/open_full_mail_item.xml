@@ -4,6 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/cardview"
     card_view:contentPaddingLeft="20dp"
     card_view:cardPreventCornerOverlap="false"
     android:layout_marginHorizontal="-5dp"
@@ -83,6 +84,7 @@
 
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/container_my_email_options"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -105,16 +107,17 @@
                         android:layout_height="30dp"
                         android:padding="5dp"
                         android:src="@drawable/read_notification" />
-                    <ImageView
-                        android:background="@drawable/circle_attachment"
-                        android:padding="5dp"
-                        android:tint="@color/white"
-                        android:backgroundTint="#dd4040"
-                        android:layout_marginEnd="10dp"
+
+                    <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/unsend"
-                        android:layout_width="30dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:src="@drawable/un_sent" />
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/circle_attachment"
+                        android:backgroundTint="#dd4040"
+                        android:padding="5dp"
+                        android:src="@drawable/un_sent"
+                        android:tint="@color/white" />
 
                     <com.github.ybq.android.spinkit.SpinKitView
                         android:visibility="gone"

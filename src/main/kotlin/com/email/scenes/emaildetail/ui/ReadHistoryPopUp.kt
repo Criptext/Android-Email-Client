@@ -51,17 +51,17 @@ class ReadHistoryPopUp(private val anchorView: View) {
 
         val array = ArrayList<MockedContact>()
         array.add(MockedContact("Sebastian Caceres", DateUtils.getDateFromString(
-                "2018-02-11", null)))
+                "1992-05-23 20:12:58", null)))
         array.add(MockedContact("Gianni Carlo", DateUtils.getDateFromString(
-                "2018-20-01", null)))
+                "2016-12-23 20:12:58", null)))
         array.add(MockedContact("Gabriel Aumala",
-                DateUtils.getDateFromString("2017-20-12", null)))
+                DateUtils.getDateFromString("2017-05-23 20:12:58", null)))
         array.add(MockedContact("someemail@email.com",
-                DateUtils.getDateFromString("2017-21-12", null)))
+                DateUtils.getDateFromString("2012-05-23 20:12:58", null)))
         array.add(MockedContact("Erika Perugachi",
-                DateUtils.getDateFromString("2018-13-03", null)))
+                DateUtils.getDateFromString("2010-05-23 20:12:58", null)))
         array.add(MockedContact("Erika Perugachi",
-                DateUtils.getDateFromString("2018-16-03", null)))
+                DateUtils.getDateFromString("2000-05-23 20:12:58", null)))
         return array
     }
 

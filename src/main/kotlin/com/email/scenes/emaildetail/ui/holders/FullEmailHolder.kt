@@ -1,9 +1,14 @@
 package com.email.scenes.emaildetail.ui.holders
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Build
 import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v4.widget.ImageViewCompat
+import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.PopupMenu
 import android.util.DisplayMetrics
 import android.view.ContextThemeWrapper
@@ -15,6 +20,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
 import com.email.R
+import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
 import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
@@ -38,7 +44,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val toView: TextView
     private val attachmentView: ImageView
     private val readView: ImageView
-    private val unsendView: ImageView
+    private val unsendView: AppCompatImageView
     private val layoutAttachment : RelativeLayout
     private val contactInfoPopUp: EmailContactInfoPopup
     private val readHistoryPopUp: ReadHistoryPopUp
@@ -148,21 +154,40 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         return popupMenu
     }
 
+    @SuppressLint("RestrictedApi")
     override fun bindFullMail(fullEmail: FullEmail) {
         toggleUnsendProgress(isShown = false)
         setDefaultBackgroundColors()
+        if(fullEmail.email.delivered != DeliveryTypes.UNSENT) {
+            bodyWebView.loadDataWithBaseURL("", Utility.
+                    changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
+        } else {
+            val attachmentImage = layoutAttachment.findViewById<ImageView>(R.id.attachment_container)
+            attachmentImage.setImageDrawable(
+                    ContextCompat.getDrawable(view.context, R.drawable.eliminar_attachment_lock))
+            bodyWebView.loadDataWithBaseURL("", Utility.
+                    changedHeaderHtml("This content was unsent"), "text/html", "utf-8", "")
 
-        bodyWebView.loadDataWithBaseURL("", Utility.
-                changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
+            //ImageViewCompat.setImageTintList(unsendView,ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.unsend_button_red) ))
+            val unsendDrawable = DrawableCompat.wrap(unsendView.drawable)
+
+            unsendView.supportBackgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.white))
+
+            DrawableCompat.setTintList(unsendDrawable, ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.unsend_button_red)))
+        }
+
         val numberContacts = fullEmail.to.size
         if(fullEmail.from != null) {
+            view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.INVISIBLE
             headerView.text = fullEmail.from.name
-            toView.text = "To me and ${numberContacts  - 1} contacts"
+            toView.text = if(numberContacts > 0)
+                "To me and ${numberContacts  - 1} contacts" else "To me and $numberContacts contacts"
         }
         else {
+            view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.VISIBLE
             headerView.text = "Me"
             replyView.visibility = View.GONE
-            toView.text = "To ${numberContacts} contacts"
+            toView.text = "To $numberContacts contacts"
         }
     }
 

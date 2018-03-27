@@ -1,6 +1,7 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.*
+import com.email.db.DeliveryTypes
 import com.email.db.models.Email
 
 /**
@@ -53,4 +54,9 @@ import com.email.db.models.Email
 
     @Query("""SELECT MAX(id) FROM email""")
     fun getLastInsertedId(): Int
+
+    @Query("""UPDATE email
+            SET delivered=:deliveryType
+            where id=:id""")
+    fun changeDeliveryType(id: Int, deliveryType: DeliveryTypes)
 }

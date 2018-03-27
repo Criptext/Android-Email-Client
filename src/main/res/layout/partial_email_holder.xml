@@ -5,6 +5,7 @@
     android:layout_marginHorizontal="-5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/cardview"
     card_view:cardPreventCornerOverlap="false"
     android:padding="10dp"
     card_view:cardCornerRadius="2dp"
