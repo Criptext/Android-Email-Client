@@ -40,7 +40,7 @@ class EmailContactSeeder {
                         type = ContactTypes.CC)
 
                 4 -> emailContact = EmailContact(
-                        emailId = 1,
+                        emailId = 3,
                         contactId = "ascacere92@gmail.com",
                         type = ContactTypes.FROM)
             }

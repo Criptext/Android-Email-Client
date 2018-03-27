@@ -16,7 +16,7 @@ class ContactSeeder {
             contacts = contactDao.getAll()
             contactDao.deleteAll(contacts)
             contacts = mutableListOf()
-            for (a in 1..2){
+            for (a in 1..3){
                 contacts += fillContact(a)
             }
             contactDao.insertAll(contacts)
