@@ -16,8 +16,7 @@ class PopupUtils {
     companion object {
 
         private fun shouldPopUpRenderBottom(
-                context: Context,
-                dialog: EasyDialog, anchorView: View) : Boolean {
+                context: Context, anchorView: View) : Boolean {
             val location = IntArray(2)
             anchorView.getLocationOnScreen(location)
             val anchorLocationY = location[1]
@@ -48,7 +47,7 @@ class PopupUtils {
                     .setMarginLeftAndRight(24, 24)
 
             val shouldPopUpRenderBottom = shouldPopUpRenderBottom(
-                    context, popup, anchorView)
+                    context, anchorView)
 
             if(shouldPopUpRenderBottom)  {
                 popup.setGravity(EasyDialog.GRAVITY_TOP)

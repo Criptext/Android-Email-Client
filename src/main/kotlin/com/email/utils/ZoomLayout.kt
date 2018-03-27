@@ -68,7 +68,7 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
 
                 when (motionEvent.action and MotionEvent.ACTION_MASK) {
                     MotionEvent.ACTION_DOWN -> {
-                        startMotionEvent(motionEvent, view)
+                        startMotionEvent(motionEvent)
                     }
                     MotionEvent.ACTION_MOVE -> {
                         dx = motionEvent.x - startX
@@ -76,7 +76,7 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
                     }
                     MotionEvent.ACTION_POINTER_DOWN -> {
                         mode = Mode.ZOOM
-                        startMotionEvent(motionEvent, view)
+                        startMotionEvent(motionEvent)
                     }
                     MotionEvent.ACTION_POINTER_UP -> mode = Mode.DRAG
                     MotionEvent.ACTION_UP -> {
@@ -111,10 +111,6 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
         startY = motionEvent.y - getRelativeTop(this)
     }
 
-    fun startMotionEvent(motionEvent: MotionEvent, view: View){
-        startX = motionEvent.x - getRelativeLeft(this)
-        startY = motionEvent.y - getRelativeTop(this)
-    }
 
     fun stopMotionEvent(motionEvent: MotionEvent){
         isPinching = false

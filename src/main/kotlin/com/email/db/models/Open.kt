@@ -10,12 +10,12 @@ import java.util.*
  */
 
 @Entity(tableName = "open",
-        indices = [Index(value = "date")],
+        indices = [Index(value = ["date"]), Index(value = ["fileId"])],
         foreignKeys = [ForeignKey(entity = File::class,
                                           parentColumns = ["token"],
                                           onDelete = CASCADE,
                                           childColumns = ["fileId"])])
-public class Open(
+class Open(
         @PrimaryKey(autoGenerate = true)
         var id:Int?,
 

@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.R
 import com.email.api.HttpErrorHandlingHelper
 import com.email.bgworker.BackgroundWorker
+import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
@@ -106,7 +107,7 @@ class UpdateMailboxWorker(
                             preview = emailData.getString("preview"),
                             key = bodyKey,
                             isDraft = false,
-                            delivered = 0 ,
+                            delivered = DeliveryTypes.RECEIVED,
                             content = bodyContent
                     )
                     val insertedEmailId = db.addEmail(email)

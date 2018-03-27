@@ -1,9 +1,9 @@
 package com.email.db.seeders
 
+import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailDao
 import com.email.db.models.Email
-import java.text.SimpleDateFormat
-import java.util.*
+import com.email.utils.DateUtils
 
 /**
  * Created by sebas on 1/24/18.
@@ -12,12 +12,11 @@ import java.util.*
 class EmailSeeder {
     companion object {
         var emails : List<Email> = mutableListOf()
-        var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(emailDao: EmailDao){
             emails = emailDao.getAll()
             emailDao.deleteAll(emails)
-            emails = mutableListOf<Email>()
+            emails = mutableListOf()
             for (a in 1..10){
                 emails += fillEmail(a)
             }
@@ -25,7 +24,7 @@ class EmailSeeder {
         }
 
 
-        fun fillEmail(iteration: Int): Email {
+        private fun fillEmail(iteration: Int): Email {
             lateinit var email: Email
             when (iteration) {
                 1 -> email = Email( id = 1,
@@ -330,8 +329,8 @@ class EmailSeeder {
         -size: 0px; overflow: hidden; mso-hide: all"/></body>
         </html>
          """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -354,8 +353,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1993-03-02 18:12:29"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1993-03-02 18:12:29", null),
+                        delivered = DeliveryTypes.SENT,
                         isDraft = true,
                         isTrash = false,
                         key = "key",
@@ -377,8 +376,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("2013-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("2013-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -400,8 +399,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("2017-05-21 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("2017-05-21 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = true,
                         isTrash = true,
                         key = "key",
@@ -423,8 +422,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -443,8 +442,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key6",
@@ -755,8 +754,8 @@ class EmailSeeder {
         -size: 0px; overflow: hidden; mso-hide: all"/></body>
         </html>
          """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -775,8 +774,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -795,8 +794,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.RECEIVED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -815,8 +814,8 @@ class EmailSeeder {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = sdf.parse("1992-05-23 20:12:58"),
-                        delivered = 1,
+                        date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
+                        delivered = DeliveryTypes.UNSENT,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -828,8 +827,5 @@ class EmailSeeder {
             }
             return email
         }
-    }
-    init {
-        sdf.timeZone = TimeZone.getDefault()
     }
 }

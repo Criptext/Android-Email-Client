@@ -20,21 +20,27 @@ interface EmailDetailLocalDB {
             val fullEmails =  emails.map {
                 val id = it.id!!
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
-                val contactsCC = db.emailContactDao().getContactsFromEmailCC(id)
-                val contactsBCC = db.emailContactDao().getContactsFromEmailBCC(id)
-                val contactsFROM = db.emailContactDao().getContactsFromEmailFROM(id)
-                val contactsTO = db.emailContactDao().getContactsFromEmailTO(id)
+                val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+                val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+                val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+                val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
                 val files = db.fileDao().getAttachmentsFromEmail(id)
+                val contactFrom = if(contactsFROM.isEmpty()) {
+                    null
+                } else {
+                    contactsFROM[0]
+                }
 
                 FullEmail(
                         email = it,
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = contactsFROM,
+                        from = contactFrom,
                         files = files,
                         labels = labels,
                         to = contactsTO )
             }
+
             fullEmails.last().viewOpen = true
             return fullEmails
         }

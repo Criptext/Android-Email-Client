@@ -1,4 +1,4 @@
-package com.email.db.TypeConverters
+package com.email.db.typeConverters
 
 import android.arch.persistence.room.TypeConverter
 import java.text.SimpleDateFormat

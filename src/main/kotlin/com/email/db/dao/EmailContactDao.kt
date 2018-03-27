@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
+import com.email.db.ContactTypes
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.EmailContact
@@ -26,29 +27,9 @@ interface EmailContactJoinDao {
             INNER JOIN email_contact
             ON contact.email=email_contact.contactId
             WHERE email_contact.emailId=:emailId
-            AND email_contact.type='CC'""")
-    fun getContactsFromEmailCC(emailId: Int) : List<Contact>
+            AND email_contact.type=:contactType""")
+    fun getContactsFromEmail(emailId: Int, contactType: ContactTypes) : List<Contact>
 
-    @Query("""SELECT contact.* FROM contact
-            INNER JOIN email_contact
-            ON contact.email=email_contact.contactId
-            WHERE email_contact.emailId=:emailId
-            AND email_contact.type='BCC'""")
-    fun getContactsFromEmailBCC(emailId: Int) : List<Contact>
-
-    @Query("""SELECT contact.* FROM contact
-            INNER JOIN email_contact
-            ON contact.email=email_contact.contactId
-            WHERE email_contact.emailId=:emailId
-            AND email_contact.type='FROM' limit 1""")
-    fun getContactsFromEmailFROM(emailId: Int) : Contact?
-
-    @Query("""SELECT contact.* FROM contact
-            INNER JOIN email_contact
-            ON contact.email=email_contact.contactId
-            WHERE email_contact.emailId=:emailId
-            AND email_contact.type='TO'""")
-    fun getContactsFromEmailTO(emailId: Int) : List<Contact>
 
     @Insert
     fun insertAll(emailUsers : List<EmailContact>)

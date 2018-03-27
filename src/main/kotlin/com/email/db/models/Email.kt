@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
+import com.email.db.DeliveryTypes
 import java.util.Date
 
 /**
@@ -38,7 +39,7 @@ class Email(
         var subject : String,
 
         @ColumnInfo(name = "delivered")
-        var delivered : Int,
+        var delivered : DeliveryTypes,
 
         @ColumnInfo(name = "date")
         var date : Date,
