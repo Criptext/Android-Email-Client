@@ -211,4 +211,5 @@
     <string name="fail_unsend_email">Failed to unsend the email. Please try again later.</string>
     <string name="failed_getting_emails">Failed to fetch the emails. Please try again later.</string>
     <string name="updating_mailbox">Updating mailbox...</string>
+    <string name="email_already_decrypted">Mailbox is already updated!</string>
 </resources>

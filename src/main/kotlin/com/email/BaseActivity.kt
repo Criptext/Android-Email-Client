@@ -114,7 +114,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         return when(params) {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
-            is ComposerParams -> ComposerModel()
+            is ComposerParams -> ComposerModel(params.fullEmail, params.composerType)
             is MailboxParams -> MailboxSceneModel()
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")

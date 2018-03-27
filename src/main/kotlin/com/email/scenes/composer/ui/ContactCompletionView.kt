@@ -20,7 +20,6 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
     constructor(context: Context, attrs: AttributeSet): super(context, attrs)
 
     override fun getViewForObject(contact: Contact): View {
-
         val l = context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = l.inflate(R.layout.contact_token, parent as ViewGroup, false) as TextView
         view.text = contact.email

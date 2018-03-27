@@ -15,6 +15,7 @@ import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONObject
+import org.whispersystems.libsignal.DuplicateMessageException
 
 /**
  * Created by sebas on 3/22/18.
@@ -72,7 +73,13 @@ class UpdateMailboxWorker(
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
-        UIMessage(resId = R.string.failed_getting_emails)
+        when(ex) {
+            is DuplicateMessageException ->
+                UIMessage(resId = R.string.email_already_decrypted)
+            else -> {
+                UIMessage(resId = R.string.failed_getting_emails)
+            }
+        }
     }
 
 

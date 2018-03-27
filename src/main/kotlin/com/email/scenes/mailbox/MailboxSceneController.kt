@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -245,7 +246,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             selectedLabels.toIDs().forEach {
                 try {
                     assignLabelToEmailThread(it, emailThreadId = emailThread.id)
-                } catch (e: android.database.sqlite.SQLiteConstraintException) {
+                } catch (e: SQLiteConstraintException) {
+
                 }
             }
         }

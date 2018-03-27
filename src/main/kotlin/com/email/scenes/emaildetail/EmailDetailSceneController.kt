@@ -6,6 +6,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.scenes.SceneController
+import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
@@ -16,6 +17,7 @@ import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
+import com.email.scenes.params.ComposerParams
 import com.email.utils.VirtualList
 
 /**
@@ -78,6 +80,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
             val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
                     position = position,
@@ -95,7 +98,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onReplyAllBtnClicked() {
-            TODO("on replyAll btn clicked") //To change body of created functions use File | Settings | File Templates.
+            TODO("on reply All btn clicked") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -107,7 +110,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY))
+        }
+
+        override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY_ALL))
+        }
+
+        override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.FORWARD))
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {

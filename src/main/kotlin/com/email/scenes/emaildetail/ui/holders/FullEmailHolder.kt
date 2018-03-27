@@ -101,8 +101,18 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val popupMenu = createPopupMenu(fullEmail)
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.forward ->
+                R.id.reply_all ->
+                    emailListener?.onReplyAllOptionSelected(
+                            fullEmail = fullEmail,
+                            position = position,
+                            all = false)
+                R.id.reply ->
                     emailListener?.onReplyOptionSelected(
+                            fullEmail = fullEmail,
+                            position = position,
+                            all = false)
+                R.id.forward ->
+                    emailListener?.onForwardOptionSelected(
                             fullEmail = fullEmail,
                             position = position,
                             all = false)
