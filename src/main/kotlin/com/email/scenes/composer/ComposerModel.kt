@@ -9,11 +9,11 @@ import java.util.*
  * Created by gabriel on 2/26/18.
  */
 
-class ComposerModel {
+class ComposerModel() {
     var fullEmail: FullEmail? = null
     var composerType: ComposerTypes? = null
 
-    constructor(fullEmail: FullEmail?, composerType: ComposerTypes?) {
+    constructor(fullEmail: FullEmail?, composerType: ComposerTypes?):this() {
         this.fullEmail = fullEmail
         this.composerType = composerType
     }
