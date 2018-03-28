@@ -53,14 +53,14 @@ class EmailContactInfoPopup(private val anchorView: View) {
         val viewFromEmail = view.findViewById<TextView>(R.id.from_mail)
         val viewReplyName = view.findViewById<TextView>(R.id.reply_name)
         val viewReplyEmail = view.findViewById<TextView>(R.id.reply_mail)
-        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.contacts_to_refresher)
+        val recycler = view.findViewById<RecyclerView>(R.id.contacts_to_recycler)
         val date = view.findViewById<TextView>(R.id.date)
 
         viewFromName.text = fullEmail.from?.name
         viewFromEmail.text = fullEmail.from?.email
 
         if(fullEmail.to.isEmpty()) {
-            refresher.visibility = View.GONE
+            recycler.visibility = View.GONE
         }
 
         date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)

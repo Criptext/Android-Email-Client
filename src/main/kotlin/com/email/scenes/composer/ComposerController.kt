@@ -1,5 +1,6 @@
 package com.email.scenes.composer
 
+import com.email.BaseActivity
 import com.email.db.models.Contact
 import com.email.IHostActivity
 import com.email.R
@@ -83,17 +84,23 @@ class ComposerController(private val model: ComposerModel,
     override fun onStart() {
         if(model.fullEmail != null) {
             val fullEmail = model.fullEmail!!
-            when(model.composerType)  {
+            when(model.composerType) {
                 ComposerTypes.REPLY -> {
+                    (host as BaseActivity).title = "REPLY"
+                    model.body = fullEmail.email.content
                     if(fullEmail.from != null)
                         model.to.add(fullEmail.from)
+                        model.cc.addAll(fullEmail.cc)
                 }
 
                 ComposerTypes.REPLY_ALL -> {
+                    (host as BaseActivity).title = "REPLY ALL"
                     model.to.addAll(fullEmail.cc)
+                    model.cc.addAll(fullEmail.cc)
                 }
 
                 ComposerTypes.FORWARD -> {
+                    (host as BaseActivity).title = "FORWARD"
                     model.body = fullEmail.email.content
                 }
             }

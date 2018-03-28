@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import com.email.IHostActivity
 import com.email.R
+import com.email.db.LabelTextTypes
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.labelChooser.data.LabelWrapper
@@ -98,7 +99,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
-    val menuClickListener = { ->
+    val menuClickListener = {
         scene.openNotificationFeed()
     }
 
@@ -295,7 +296,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         fun updateMailbox(
-                mailboxLabel: String,
+                mailboxLabel: LabelTextTypes,
                 isManual: Boolean): Boolean {
             if(MailboxData.updateMailboxWorkData== null) {
                 scene.showSyncingDialog()

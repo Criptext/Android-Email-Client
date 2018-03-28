@@ -85,6 +85,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             TODO("HANDLE CLICK TO ATTACHMENT")
         }
 
+        replyView.setOnClickListener{
+            emailListener?.onReplyOptionSelected(
+                    fullEmail = fullEmail,
+                    position = position,
+                    all = false)
+        }
+
         unsendView.setOnClickListener {
             toggleUnsendProgress(isShown = true)
             deactivateElementsWhileUnsending()

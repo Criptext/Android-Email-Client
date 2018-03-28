@@ -1,5 +1,7 @@
 package com.email.scenes.mailbox.data
 
+import com.email.db.LabelTextTypes
+
 /**
  * Created by sebas on 3/20/18.
  */
@@ -9,5 +11,5 @@ sealed class MailboxRequest{
             val threadIds: List<String>): MailboxRequest()
 
     class UpdateMailbox(
-            val label: String): MailboxRequest()
+            val label: LabelTextTypes): MailboxRequest()
 }

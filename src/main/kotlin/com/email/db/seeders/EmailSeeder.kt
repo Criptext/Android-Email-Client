@@ -23,7 +23,6 @@ class EmailSeeder {
             emailDao.insertAll(emails)
         }
 
-
         private fun fillEmail(iteration: Int): Email {
             lateinit var email: Email
             when (iteration) {

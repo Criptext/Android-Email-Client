@@ -4,9 +4,11 @@ import com.email.R
 import com.email.api.HttpErrorHandlingHelper
 import com.email.bgworker.BackgroundWorker
 import com.email.db.DeliveryTypes
+import com.email.db.LabelTextTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
+import com.email.db.typeConverters.LabelTextConverter
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.UIMessage
@@ -26,7 +28,7 @@ class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
-        private val label: String,
+        private val label: LabelTextTypes,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
@@ -37,7 +39,7 @@ class UpdateMailboxWorker(
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
 
         val message = createErrorMessage(ex)
-        return MailboxResult.UpdateMailbox.Failure(label, message)
+        return MailboxResult.UpdateMailbox.Failure(LabelTextConverter().parseLabelTextType(label), message)
     }
     private fun fetchPendingEvents():Result<String, Exception> {
         return Result.of {
@@ -48,8 +50,11 @@ class UpdateMailboxWorker(
         input ->
         Result.of {
             parseContent(input = input)
-        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        }.flatMap{Result.of{
+            db.getNotArchivedEmailThreads()
+        }}.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     }
+
     override fun work(): MailboxResult.UpdateMailbox? {
         val operationResult = fetchPendingEvents().
                 flatMap(parseEmails).
@@ -65,7 +70,8 @@ class UpdateMailboxWorker(
             }
 
             is Result.Failure -> MailboxResult.UpdateMailbox.Failure(
-                    label, createErrorMessage(operationResult.error))
+                    LabelTextConverter().parseLabelTextType(label),
+                    createErrorMessage(operationResult.error))
         }
     }
 
@@ -84,7 +90,17 @@ class UpdateMailboxWorker(
     }
 
 
-    private fun parseContent(input: String): List<EmailThread> {
+    private val decryptBody: (input: DecryptData) -> Result<String, Exception> = {
+        input ->
+        Result.of {
+            signalClient.decryptMessage(
+                            recipientId = input.from,
+                            deviceId = input.deviceId,
+                            encryptedB64 = input.encryptedData)
+        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    }
+
+    private fun parseContent(input: String) {
         val jsonArray = JSONArray(input)
         for(i in 0 until jsonArray.length()) {
             val fullData = JSONObject(jsonArray.get(i).toString())
@@ -92,19 +108,20 @@ class UpdateMailboxWorker(
             val from = emailData.getString("from")
             val to = emailData.getString("to")
             val bodyKey =  emailData.getString("bodyKey")
-            val resultOperationS3 = Result.of {
-                apiClient.getBodyFromEmail(bodyKey)
-            }
-            when(resultOperationS3) {
+            val resultOperationDecryptAndInsert = Result.of {
+                val encryptedBody = apiClient.getBodyFromEmail(bodyKey)
+                DecryptData(
+                        from = from,
+                        deviceId = 1,
+                        encryptedData = encryptedBody)
+            }.flatMap(decryptBody)
+            when(resultOperationDecryptAndInsert) {
                 is Result.Success -> {
 
-                    val bodyContent = signalClient.decryptMessage(
-                            recipientId = from,
-                            deviceId = 1,
-                            encryptedB64 = resultOperationS3.value)
+                    val bodyContent = resultOperationDecryptAndInsert.value
                     val bodyWithoutHTML = Utility.html2text(bodyContent)
-                    val preview   = if (bodyWithoutHTML.length > 10 )
-                                        bodyWithoutHTML.substring(0,10)
+                    val preview   = if (bodyWithoutHTML.length > 20 )
+                                        bodyWithoutHTML.substring(0,20)
                                     else bodyWithoutHTML
 
                     val email = Email(
@@ -125,9 +142,19 @@ class UpdateMailboxWorker(
                             )
                     val insertedEmailId = db.addEmail(email)
                     db.createContactFrom(from, insertedEmailId)
+                    db.createContactsTO(to, insertedEmailId)
+                    db.createContactsBCC(to, insertedEmailId)
+                    db.createContactsCC(to, insertedEmailId)
+                    db.createLabelsForEmailInbox(insertedEmailId)
+                } else -> {
+
                 }
             }
         }
-        return db.getNotArchivedEmailThreads()
     }
+
+    private data class DecryptData(
+            val from: String,
+            val deviceId: Int,
+            val encryptedData: String)
 }

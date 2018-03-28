@@ -1,6 +1,7 @@
 package com.email.db
 
 import android.content.Context
+import android.util.Log
 import com.email.db.models.*
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
@@ -27,26 +28,67 @@ interface MailboxLocalDB {
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Int
     fun createContactFrom(from: String, insertedEmailId: Int)
+    fun createContactsTO(to: String, insertedEmailId: Int)
+    fun createContactsBCC(to: String, insertedEmailId: Int)
+    fun createContactsCC(to: String, insertedEmailId: Int)
+    fun createLabelsForEmailInbox(insertedEmailId: Int)
 
     class Default(applicationContext: Context): MailboxLocalDB {
-        override fun createContactFrom(from: String, insertedEmailId: Int) {
-            val contact = Contact(email = from, name = from)
+
+        override fun createLabelsForEmailInbox(insertedEmailId: Int) {
+            val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
+            db.emailLabelDao().insert(EmailLabel(
+                    labelId = labelInbox.id!!,
+                    emailId = insertedEmailId))
+        }
+
+        private fun insertContact(contactEmail: String, emailId: Int, type: ContactTypes) {
+            val contact = Contact(email = contactEmail, name = contactEmail)
             val emailContact = EmailContact(
-                    contactId = from,
-                    emailId = insertedEmailId,
-                    type = ContactTypes.FROM)
+                    contactId = contactEmail,
+                    emailId = emailId,
+                    type = type)
             db.contactDao().insert(contact)
             db.emailContactDao().insert(emailContact)
         }
 
+        override fun createContactsTO(to: String, insertedEmailId: Int) {
+            val contactsList = to.split(",")
+            contactsList.forEach { contactEmail ->
+                insertContact(
+                        contactEmail = contactEmail,
+                        emailId = insertedEmailId,
+                        type = ContactTypes.TO)
+            }
+        }
+
+        override fun createContactsBCC(to: String, insertedEmailId: Int) {
+            val contactsList = to.split(",")
+            contactsList.forEach { contactEmail ->
+                insertContact(
+                        contactEmail = contactEmail,
+                        emailId = insertedEmailId,
+                        type = ContactTypes.BCC)
+            }
+        }
+
+        override fun createContactsCC(to: String, insertedEmailId: Int) {
+            val contactsList = to.split(",")
+            contactsList.forEach { contactEmail ->
+                insertContact(
+                        contactEmail = contactEmail,
+                        emailId = insertedEmailId,
+                        type = ContactTypes.CC)
+            }
+        }
+
+        override fun createContactFrom(from: String, insertedEmailId: Int) {
+            insertContact(contactEmail = from, emailId =  insertedEmailId, type= ContactTypes.FROM)
+        }
+
         override fun addEmail(email: Email): Int {
             db.emailDao().insert(email)
-            val insertedEmailId = db.emailDao().getLastInsertedId()
-            db.emailLabelDao().insert(EmailLabel(
-                    emailId = insertedEmailId,
-                    labelId = 2 ))
-
-            return insertedEmailId
+            return db.emailDao().getLastInsertedId()
         }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
@@ -95,13 +137,13 @@ interface MailboxLocalDB {
 
         override fun seed() {
             try {
-                LabelSeeder.seed(db.labelDao())
+  /*            LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
                 ContactSeeder.seed(db.contactDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
-                EmailContactSeeder.seed(db.emailContactDao())
+                EmailContactSeeder.seed(db.emailContactDao())*/
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -173,4 +215,5 @@ interface MailboxLocalDB {
 
         }
     }
+
 }
