@@ -54,6 +54,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val horizontalScrollView: HorizontalScrollView
     private val progressBarUnsend: SpinKitView
     private val bodyContainer : LinearLayout
+    private val webViewLoader: ProgressBar
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -217,17 +218,23 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 Utility.openUrl(bodyWebView.context!!, url)
+                zoomLayout.visibility = View.GONE
+                webViewLoader.visibility = View.VISIBLE
                 return true
             }
             @TargetApi(Build.VERSION_CODES.N)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 Utility.openUrl(bodyWebView.context!!, request.url.toString())
+                zoomLayout.visibility = View.GONE
+                webViewLoader.visibility = View.VISIBLE
                 return true
             }
 
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                zoomLayout.visibility = View.VISIBLE
+                webViewLoader.visibility = View.GONE
             }
         }
         val javascriptInterface = WebviewJavascriptInterface(
@@ -264,6 +271,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
         progressBarUnsend = view.findViewById(R.id.spin_kit_unsend)
         bodyContainer = view.findViewById(R.id.body_container)
+        webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
 
         setupWebview()
 

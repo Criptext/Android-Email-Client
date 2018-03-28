@@ -299,7 +299,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 mailboxLabel: LabelTextTypes,
                 isManual: Boolean): Boolean {
             if(MailboxData.updateMailboxWorkData== null) {
-                scene.showSyncingDialog()
                 MailboxData.updateMailboxWorkData =
                         MailboxData.UpdateMailboxWorkData()
 
@@ -315,16 +314,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
             threadListController.populateThreads(resultData.mailboxThreads)
-            scene.hideSyncingDialog()
-/*            if (resultData.isManual)
-                TODO("WHAT TO DO IF IT WAS MANUAL(?)")
-            else
-                TODO("HIDE SYNCING DIALOG")*/
-
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
-            scene.hideSyncingDialog()
             scene.showError(resultData.message)
         }
 
@@ -337,17 +329,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
             }
-/*            if (resultData.getDestinationMailbox() == model.label) {
-                model.shouldShowPartialUpdateInUI = false
-                scene.clearRefreshing()
-                when (resultData) {
-                    is MailboxResult.UpdateMailbox.Success ->
-                        handleSuccessfulMailboxUpdate(resultData)
-                    is MailboxResult.UpdateMailbox.Failure ->
-                        handleFailedMailboxUpdate(resultData)
-                }
-            }*/
         }
-
     }
 }

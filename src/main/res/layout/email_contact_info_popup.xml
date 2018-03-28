@@ -106,7 +106,6 @@
                 fontPath="fonts/NunitoSans-Bold.ttf"
                 android:textSize="15sp" />
 
-
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/contacts_to_recycler"
                     android:layout_width="match_parent"
