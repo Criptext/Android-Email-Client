@@ -31,6 +31,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val mailboxDataSource: MailboxDataSource,
                                  private val dataSource: EmailDetailDataSource) : SceneController() {
 
+    val lastIndexElement: Int by lazy {
+        model.fullEmailList.size - 1
+    }
+
     private val mailboxDataSourceListener = {result: MailboxResult ->
         when (result) {
             is MailboxResult.GetLabels -> onLabelsLoaded(result)
@@ -90,17 +94,22 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
             dataSource.submitRequest(req)
         }
-
         override fun onForwardBtnClicked() {
-            TODO("on forward btn clicked") //To change body of created functions use File | Settings | File Templates.
+            host.goToScene(ComposerParams(
+                    fullEmail = model.fullEmailList[lastIndexElement],
+                    composerType = ComposerTypes.FORWARD))
         }
 
         override fun onReplyBtnClicked() {
-            TODO("on reply btn clicked") //To change body of created functions use File | Settings | File Templates.
+            host.goToScene(ComposerParams(
+                    fullEmail = model.fullEmailList[lastIndexElement],
+                    composerType = ComposerTypes.REPLY))
         }
 
         override fun onReplyAllBtnClicked() {
-            TODO("on reply All btn clicked") //To change body of created functions use File | Settings | File Templates.
+            host.goToScene(ComposerParams(
+                    fullEmail = model.fullEmailList[lastIndexElement],
+                    composerType = ComposerTypes.REPLY_ALL))
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
