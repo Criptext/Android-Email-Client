@@ -36,7 +36,4 @@ class MockedEmailDetailView: EmailDetailScene {
     override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
     }
 
-    override fun onDecryptedBody(decryptedText: String) {
-    }
-
 }
