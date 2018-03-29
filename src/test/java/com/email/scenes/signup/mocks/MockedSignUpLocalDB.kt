@@ -9,6 +9,8 @@ import com.email.signal.SignalKeyGenerator
  */
 
 class MockedSignUpLocalDB : SignUpLocalDB {
+    override fun seedLabels() {
+    }
 
     var savedUser: Account? = null
     private set
