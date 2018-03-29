@@ -44,6 +44,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     fun bindMail(emailThread: EmailThread) {
+        subjectView.setText(emailThread.subject, TextView.BufferType.EDITABLE)
         if(emailThread.unread) {
             DrawableCompat.setTint(
                     check.drawable,
