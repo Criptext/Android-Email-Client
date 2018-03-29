@@ -15,6 +15,10 @@ class ThreadListController(private var threads : ArrayList<EmailThread>,
         threads.addAll(emails)
     }
 
+    fun appendThreads(emails : List<EmailThread>) {
+        threads.addAll(emails)
+    }
+
     fun removeByThread(id: String) {
         val threadPosition = removeThreadById(threads, id)
         listView?.notifyThreadRemoved(threadPosition)

@@ -18,6 +18,7 @@ import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
 import com.email.scenes.params.SearchParams
+import com.github.kittinunf.result.Result
 
 /**
  * Created by sebas on 1/30/18.
@@ -32,6 +33,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         when (result) {
             is MailboxResult.GetLabels -> onLabelsLoaded(result)
             is MailboxResult.UpdateMailbox -> dataSourceController.onMailboxUpdated(result)
+            is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
         }
     }
 
@@ -61,6 +63,18 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val emailThreadSize: Int
         get() = model.threads.size
 
+    private val onScrollListener = object: OnScrollListener {
+        override fun onReachEnd() {
+            if(MailboxData.loadThreadsWorkData == null) {
+                MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
+                val req = MailboxRequest.LoadEmailThreads(
+                        label = model.label,
+                        offset = model.offset,
+                        oldestEmailThread = model.oldestEmailThread)
+                dataSource.submitRequest(req)
+            }
+        }
+    }
     private val threadListController = ThreadListController(model.threads, scene)
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener {
         override fun onGoToMail(emailThread: EmailThread) {
@@ -128,16 +142,24 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
-        scene.attachView(threadEventListener)
+        scene.attachView(threadEventListener, onScrollListener)
         scene.observer = observer
         scene.initDrawerLayout()
         scene.initNavHeader("Daniel Tigse Palma")
 
-        val emailThreads = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(emailThreads)
+        if(MailboxData.loadThreadsWorkData != null) {
+            return
+        }
+
+        MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
+        val req = MailboxRequest.LoadEmailThreads(
+                label = model.label,
+                offset = model.offset,
+                oldestEmailThread = model.oldestEmailThread)
+        dataSource.submitRequest(req)
+
         toggleMultiModeBar()
         scene.setToolbarNumberOfEmails(emailThreadSize)
-
         feedController.onStart()
 
         return false
@@ -327,6 +349,19 @@ class MailboxSceneController(private val scene: MailboxScene,
                     handleSuccessfulMailboxUpdate(resultData)
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
+            }
+        }
+
+        fun onLoadedMoreThreads(result: MailboxResult.LoadEmailThreads) {
+            MailboxData.loadThreadsWorkData = null
+            when(result) {
+                is MailboxResult.LoadEmailThreads.Success -> {
+                    if(result.emailThreads.isNotEmpty()) {
+                        threadListController.appendThreads(result.emailThreads)
+                        scene.setToolbarNumberOfEmails(emailThreadSize)
+                        scene.notifyThreadSetChanged()
+                    }
+                }
             }
         }
     }

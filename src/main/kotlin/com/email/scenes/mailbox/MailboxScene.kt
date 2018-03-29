@@ -39,7 +39,8 @@ interface MailboxScene: ThreadListView {
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener)
+    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+                   onScrollListener: OnScrollListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -112,11 +113,20 @@ interface MailboxScene: ThreadListView {
                 field = value
             }
 
-        override fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener){
-            threadRecyclerView = ThreadRecyclerView(recyclerView, threadEventListener, threadList)
+        override fun attachView(
+                threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+                onScrollListener: OnScrollListener){
+
+            threadRecyclerView = ThreadRecyclerView(
+                    recyclerView,
+                    threadEventListener,
+                    onScrollListener,
+                    threadList)
+
             this.threadListener = threadEventListener
 
             drawerMenuView = DrawerMenuView(leftNavigationView)
+
             openComposerButton.setOnClickListener {
                 observer?.onOpenComposerButtonClicked()
             }

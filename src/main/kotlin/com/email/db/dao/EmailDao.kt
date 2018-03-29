@@ -2,7 +2,10 @@ package com.email.db.dao
 
 import android.arch.persistence.room.*
 import com.email.db.DeliveryTypes
+import com.email.db.LabelTextTypes
 import com.email.db.models.Email
+import com.email.db.models.Label
+import java.util.*
 
 /**
  * Created by sebas on 1/24/18.
@@ -23,7 +26,8 @@ import com.email.db.models.Email
             """)
     fun getLatestEmails() : List<Email>
 
-    @Query("""SELECT * FROM email e
+    @Query("""
+            SELECT * FROM email e
             WHERE date=(SELECT MAX(date) FROM email d
             WHERE d.threadid=e.threadid) AND id
             IN (SELECT DISTINCT emailId
@@ -31,6 +35,24 @@ import com.email.db.models.Email
             ORDER BY date DESC
             """)
     fun getNotArchivedEmailThreads() : List<Email>
+
+    @Query("""
+            SELECT * FROM email e
+            WHERE date=(SELECT MAX(date) FROM email d
+            WHERE d.threadid=e.threadid)
+            AND date<:starterDate
+            AND id IN (SELECT DISTINCT emailId
+            FROM email_label WHERE labelId
+            NOT IN (:rejectedLabels)
+            AND labelId=:selectedLabel)
+            GROUP BY threadid
+            ORDER BY date DESC LIMIT :offset
+            """)
+    fun getEmailThreadsFromMailboxLabel(
+            starterDate: Date,
+            rejectedLabels: List<Int>,
+            selectedLabel: Int,
+            offset: Int ): List<Email>
 
     @Delete
     fun deleteAll(emails: List<Email>)
@@ -59,4 +81,20 @@ import com.email.db.models.Email
             SET delivered=:deliveryType
             where id=:id""")
     fun changeDeliveryType(id: Int, deliveryType: DeliveryTypes)
+
+    @Query("""
+            SELECT * FROM email e
+            WHERE date=(SELECT MAX(date) FROM email d
+            WHERE d.threadid=e.threadid)
+            AND id IN (SELECT DISTINCT emailId
+            FROM email_label WHERE labelId
+            NOT IN (:rejectedLabels)
+            AND labelId=:selectedLabel)
+            GROUP BY threadid
+            ORDER BY date DESC LIMIT :offset
+            """)
+    fun getInitialEmailThreadsFromMailboxLabel(
+            rejectedLabels: List<Int>,
+            selectedLabel: Int,
+            offset: Int): List<Email>
 }

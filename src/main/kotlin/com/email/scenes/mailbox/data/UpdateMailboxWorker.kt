@@ -37,7 +37,7 @@ class UpdateMailboxWorker(
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
 
         val message = createErrorMessage(ex)
-        return MailboxResult.UpdateMailbox.Failure(LabelTextConverter().parseLabelTextType(label), message)
+        return MailboxResult.UpdateMailbox.Failure(label, message)
     }
     private fun fetchPendingEvents():Result<String, Exception> {
         return Result.of {
@@ -61,14 +61,14 @@ class UpdateMailboxWorker(
         return when(operationResult) {
             is Result.Success -> {
                 return MailboxResult.UpdateMailbox.Success(
-                        mailboxLabel = "INBOX",
+                        mailboxLabel = LabelTextTypes.INBOX,
                         isManual = true,
                         mailboxThreads = operationResult.value
                 )
             }
 
             is Result.Failure -> MailboxResult.UpdateMailbox.Failure(
-                    LabelTextConverter().parseLabelTextType(label),
+                    label,
                     createErrorMessage(operationResult.error))
         }
     }

@@ -4,12 +4,14 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import com.email.scenes.mailbox.OnScrollListener
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.VirtualList
 
 class ThreadRecyclerView(val recyclerView: RecyclerView,
                          threadEventListener: EmailThreadAdapter.OnThreadEventListener?,
+                         onScrollListener: OnScrollListener,
                          threadList: VirtualList<EmailThread>)  {
 
     val ctx: Context = recyclerView.context
@@ -28,7 +30,7 @@ class ThreadRecyclerView(val recyclerView: RecyclerView,
                 val pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition()
                 if (pastVisibleItems + visibleItemCount >= totalItemCount) {
                     if(dy > 0) {
-                        Log.d("end of List", "scrolling bottom")
+                        onScrollListener.onReachEnd()
                     } else return // Scrolling Up
                 }
             }

@@ -12,4 +12,10 @@ sealed class MailboxRequest{
 
     class UpdateMailbox(
             val label: LabelTextTypes): MailboxRequest()
+
+    class LoadEmailThreads(
+            val label: LabelTextTypes,
+            val offset: Int,
+            val oldestEmailThread: EmailThread?
+            ): MailboxRequest()
 }
