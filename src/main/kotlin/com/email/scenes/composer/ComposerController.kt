@@ -1,5 +1,6 @@
 package com.email.scenes.composer
 
+import com.email.BaseActivity
 import com.email.db.models.Contact
 import com.email.IHostActivity
 import com.email.R
@@ -7,6 +8,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
 import com.email.scenes.composer.data.ComposerRequest
 import com.email.scenes.composer.data.ComposerResult
+import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.UIData
 import com.email.utils.UIMessage
@@ -80,6 +82,30 @@ class ComposerController(private val model: ComposerModel,
                               else R.menu.composer_menu_disabled
 
     override fun onStart() {
+        if(model.fullEmail != null) {
+            val fullEmail = model.fullEmail!!
+            when(model.composerType) {
+                ComposerTypes.REPLY -> {
+                    (host as BaseActivity).title = "REPLY"
+                    model.body = fullEmail.email.content
+                    if(fullEmail.from != null)
+                        model.to.add(fullEmail.from)
+                        model.cc.addAll(fullEmail.cc)
+                }
+
+                ComposerTypes.REPLY_ALL -> {
+                    (host as BaseActivity).title = "REPLY ALL"
+                    model.to.addAll(fullEmail.cc)
+                    model.cc.addAll(fullEmail.cc)
+                }
+
+                ComposerTypes.FORWARD -> {
+                    (host as BaseActivity).title = "FORWARD"
+                    model.body = fullEmail.email.content
+                }
+            }
+        }
+
         scene.bindWithModel(firstTime = model.firstTime, uiData = UIData.fromModel(model),
                 defaultRecipients = model.defaultRecipients)
         scene.setContactSuggestionList(arrayOf(

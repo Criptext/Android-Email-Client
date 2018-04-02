@@ -5,9 +5,6 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import com.email.db.TypeConverters.BooleanConverter
-import com.email.db.TypeConverters.DateConverter
-import com.email.db.TypeConverters.LabelColorConverter
 import com.email.db.dao.*
 import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawPreKeyDao
@@ -18,6 +15,7 @@ import com.email.db.models.signal.CRIdentityKey
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSessionRecord
 import com.email.db.models.signal.CRSignedPreKey
+import com.email.db.typeConverters.*
 
 /**
  * Created by sebas on 1/24/18.
@@ -28,7 +26,13 @@ import com.email.db.models.signal.CRSignedPreKey
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
         exportSchema = false)
-@TypeConverters(DateConverter::class, BooleanConverter::class, LabelColorConverter::class)
+@TypeConverters(
+        DateConverter::class,
+        BooleanConverter::class,
+        LabelColorConverter::class,
+        LabelTextConverter::class,
+        ContactTypeConverter::class,
+        EmailDeliveryConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun labelDao(): LabelDao

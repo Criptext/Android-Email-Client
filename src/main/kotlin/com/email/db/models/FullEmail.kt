@@ -15,14 +15,4 @@ data class FullEmail(
 
     var viewOpen = false
 
-    fun hasDraftLabel(): Boolean {
-        val labelsString = labels.map {
-            it.text
-        }
-        if(labelsString.contains("DRAFT")){
-            return true
-        }
-
-        return false
-    }
 }

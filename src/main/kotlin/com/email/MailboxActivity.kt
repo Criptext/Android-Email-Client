@@ -5,16 +5,19 @@ import android.view.ViewGroup
 import com.email.db.FeedLocalDB
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
+import com.email.db.AppDatabase
+import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.MailboxAPIClient
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.feed.FeedModel
 import com.email.scenes.mailbox.feed.ui.FeedView
+import com.email.signal.SignalClient
+import com.email.signal.SignalStoreCriptext
 import com.email.utils.VirtualList
 
 /**
@@ -31,8 +34,13 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
-        val mailboxDataSource = MailboxDataSource( runner = AsyncTaskWorkRunner(),
-                mailboxAPIClient = MailboxAPIClient.Default(),
+        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val appDB = AppDatabase.getAppDatabase(this)
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+        val mailboxDataSource = MailboxDataSource(
+                signalClient = signalClient,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = activeAccount!!,
                 mailboxLocalDB = db)
 
         mailboxDataSource.seed()

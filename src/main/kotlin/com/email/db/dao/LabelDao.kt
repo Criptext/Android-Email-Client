@@ -1,6 +1,7 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.*
+import com.email.db.LabelTextTypes
 import com.email.db.models.Label
 
 /**
@@ -20,5 +21,11 @@ interface LabelDao {
 
     @Delete
     fun delete(label: Label)
+
+
+    @Query("""SELECT * FROM label
+            WHERE text=:labelTextType
+            LIMIT 1""")
+    fun get(labelTextType: LabelTextTypes): Label
 
 }

@@ -17,4 +17,7 @@ class MockedSignUpLocalDB : SignUpLocalDB {
         savedUser = account
     }
 
+    override fun seedLabels() {
+    }
+
 }

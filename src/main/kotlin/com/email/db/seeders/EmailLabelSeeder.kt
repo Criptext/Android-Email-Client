@@ -50,10 +50,10 @@ class EmailLabelSeeder{
                         labelId = 1)
 
                 9 -> emailLabel = EmailLabel(emailId = 6,
-                        labelId = 10)
+                        labelId = 2)
 
                 10 -> emailLabel = EmailLabel(emailId = 6,
-                        labelId = 9)
+                        labelId = 7)
             }
             return emailLabel
         }

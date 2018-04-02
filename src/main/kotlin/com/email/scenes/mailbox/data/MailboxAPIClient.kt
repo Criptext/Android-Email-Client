@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox.data
 
+import com.email.api.ApiCall
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -8,14 +9,26 @@ import java.util.concurrent.TimeUnit
  */
 
 
-interface MailboxAPIClient {
+class MailboxAPIClient(private val token: String) {
 
-    class Default : MailboxAPIClient {
-        private val client = OkHttpClient().
-                newBuilder().
-                connectTimeout(20, TimeUnit.SECONDS).
-                readTimeout(20, TimeUnit.SECONDS).
-                build()
+    private val client = OkHttpClient().
+            newBuilder().
+            connectTimeout(20, TimeUnit.SECONDS).
+            readTimeout(20, TimeUnit.SECONDS).
+            build()
 
+
+    fun getPendingEvents(): String {
+        val request = ApiCall.getPendingEvents(token = token)
+        return ApiCall.executeRequest(client, request)
     }
+
+    fun getBodyFromEmail(uuid: String): String {
+        val request = ApiCall.getBodyFromEmail(
+                token = token,
+                uuid= uuid
+                )
+        return ApiCall.executeRequest(client, request)
+    }
+
 }

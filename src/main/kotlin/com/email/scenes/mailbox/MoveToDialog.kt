@@ -5,7 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Button
-import com.email.MailboxActivity
+import com.email.BaseActivity
 import com.email.R
 
 /**
@@ -17,7 +17,7 @@ class MoveToDialog(val context: Context) {
 
     fun showMoveToDialog(onMoveThreadsListener: OnMoveThreadsListener) {
         val dialogBuilder = AlertDialog.Builder(context)
-        val inflater = (context as MailboxActivity).layoutInflater
+        val inflater = (context as BaseActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.mailbox_move_to, null)
 
         dialogBuilder.setView(dialogView)

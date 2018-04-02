@@ -1,16 +1,9 @@
 package com.email.utils
 
-import android.content.Context
 import android.graphics.*
-import android.support.v4.content.ContextCompat
-import android.util.DisplayMetrics
-import android.view.View
-import android.view.WindowManager
 import com.email.R
 import com.email.db.AttachmentTypes
-import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.utils.ui.TextDrawable
-import com.michael.easydialog.EasyDialog
 import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
 
@@ -20,6 +13,7 @@ import java.util.regex.Pattern
 class Utility {
 
     companion object {
+
 
         fun getBitmapFromText(fullName: String, firstLetter: String, width: Int, height: Int): Bitmap {
 

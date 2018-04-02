@@ -12,6 +12,17 @@ import java.util.*
 
 class DateUtils {
     companion object {
+        fun getDateFromString(stringDate: String, pattern: String?) : Date{
+            val sdf = if(pattern == null){
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            } else {
+                SimpleDateFormat(pattern)
+            }
+            sdf.isLenient = false
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+
+            return sdf.parse(stringDate)
+        }
         fun getHoraVerdadera(timestamp: Long): String {
             val formattedDate = SimpleDateFormat("h:mm a").format(timestamp).toUpperCase()
             return formattedDate.replace("P.M.".toRegex(), "PM").replace("A.M.".toRegex(), "AM")

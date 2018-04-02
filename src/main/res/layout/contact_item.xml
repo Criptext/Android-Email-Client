@@ -10,7 +10,7 @@
         android:layout_height="fill_parent"
         android:text="Gianni Carlo"
         android:gravity="center_vertical"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/email"
@@ -20,5 +20,5 @@
         android:text="@string/criptextdotcom"
         android:textColor="@color/azure"
         android:gravity="center_vertical"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 </LinearLayout>

@@ -17,6 +17,7 @@
     <color name="softBlue">#edf5ff</color>
     <color name="colorUnsent">#ef4646</color>
     <color name="unsend_button_red">#da4931</color>
+    <color name="unsent_content">#e36666</color>
     <color name="colorOpen">#0091FF</color>
     <color name="colorSubject">#000000</color>
     <color name="colorLabels">#8A8A8A</color>
@@ -41,6 +42,7 @@
     <color name="mail_item_date">#6a707e</color>
     <color name="nav_button">#4f515b</color>
     <color name="login_background">#0091ff</color>
+    <color name="customBlack">#4a4a4a</color>
     <color name="black">#000000</color>
     <color name="gray">#626262</color>
     <color name="signup_hint_color">#90ffffff</color>
@@ -51,4 +53,5 @@
     <color name="azure">#0091ff</color>
     <color name="green">#a0d06e</color>
     <color name="yellow">#ffbb63</color>
+    <color name="unsendBtn">#dd4040</color>
 </resources>

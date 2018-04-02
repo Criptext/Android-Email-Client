@@ -1,13 +1,16 @@
 package com.email.scenes.mailbox
 
+import android.os.Handler
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
 import android.widget.ImageView
+import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
@@ -20,7 +23,9 @@ import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
+import com.email.utils.UIMessage
 import com.email.utils.VirtualList
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 1/23/18.
@@ -29,6 +34,8 @@ import com.email.utils.VirtualList
 interface MailboxScene: ThreadListView {
 
     var observer: MailboxUIObserver?
+    fun showSyncingDialog()
+    fun hideSyncingDialog()
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
@@ -42,11 +49,22 @@ interface MailboxScene: ThreadListView {
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
+    fun refreshMails()
+    fun clearRefreshing()
+    fun showError(message : UIMessage)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
                            val threadList: VirtualList<EmailThread>)
         : MailboxScene {
+
+        override fun showSyncingDialog() {
+            hostActivity.showDialog(UIMessage(R.string.updating_mailbox))
+        }
+
+        override fun hideSyncingDialog() {
+            hostActivity.dismissDialog()
+        }
 
         private val context = mailboxView.context
 
@@ -59,6 +77,10 @@ interface MailboxScene: ThreadListView {
 
         private val recyclerView: RecyclerView by lazy {
             mailboxView.findViewById<RecyclerView>(R.id.mailbox_recycler)
+        }
+
+        private val refreshLayout: SwipeRefreshLayout by lazy {
+            mailboxView.findViewById<SwipeRefreshLayout>(R.id.mailbox_refresher)
         }
 
         private val toolbarHolder: ToolbarHolder by lazy {
@@ -97,6 +119,10 @@ interface MailboxScene: ThreadListView {
             drawerMenuView = DrawerMenuView(leftNavigationView)
             openComposerButton.setOnClickListener {
                 observer?.onOpenComposerButtonClicked()
+            }
+
+            refreshLayout.setOnRefreshListener {
+                observer?.onRefreshMails()
             }
         }
 
@@ -182,6 +208,27 @@ interface MailboxScene: ThreadListView {
             labelChooserDialog.onFetchedLabels(
                     defaultSelectedLabels = defaultSelectedLabels,
                     allLabels = labels)
+        }
+
+        override fun refreshMails() {
+            if(refreshLayout.isRefreshing) {
+                Handler().postDelayed({
+                    refreshLayout.isRefreshing = false
+                }, 1000)
+            }
+        }
+
+        override fun clearRefreshing() {
+            refreshLayout.isRefreshing = false
+        }
+
+        override fun showError(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    context,
+                    context.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
         }
     }
 }

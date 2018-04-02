@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.email.R
 import com.email.db.ColorTypes
 import com.email.db.models.Label
+import com.email.db.typeConverters.LabelTextConverter
 
 /**
  * Created by sebas on 3/14/18.
@@ -21,7 +22,8 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
     private val labelView: TextView
 
     fun bindLabel(label: Label){
-        labelView.text = label.text
+        labelView.text = LabelTextConverter().
+                parseLabelTextType(label.text)
         when(label.color) {
             ColorTypes.RED -> {
                 val drawableBackground = ContextCompat.getDrawable(
@@ -57,7 +59,14 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
                 val color = ContextCompat.getColor(context, R.color.yellow)
                 drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
                 labelView.background = drawableBackground
-            }
+            } else -> {
+            val drawableBackground = ContextCompat.getDrawable(
+                    context,
+                    R.drawable.email_detail_label)
+            val color = ContextCompat.getColor(context, R.color.azure)
+            drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+            labelView.background = drawableBackground
+        }
         }
     }
 

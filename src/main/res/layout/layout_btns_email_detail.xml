@@ -5,18 +5,20 @@
     android:layout_gravity="center_horizontal"
     android:orientation="horizontal"
     android:gravity="center_horizontal"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <Button
+        android:drawablePadding="-5dp"
         android:textAllCaps="false"
         android:textSize="12sp"
         android:id="@+id/reply"
         android:drawableTint="#87888f"
-        android:drawableLeft="@drawable/reply_eliminar_esto"
+        android:drawableStart="@drawable/reply_layer"
         android:background="@drawable/email_detail_reply_btn_shape"
         android:text="Reply"
         android:layout_width="wrap_content"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:layout_height="match_parent" />
 
     <Button
@@ -25,20 +27,24 @@
         android:id="@+id/reply_all"
         android:background="@drawable/email_detail_reply_all_btn_shape"
         android:drawableTint="#87888f"
-        android:drawableLeft="@drawable/reply_all_eliminar_esto"
+        android:drawableLeft="@drawable/reply_all_layer"
+        android:drawablePadding="5dp"
         android:text="Reply All"
         android:layout_width="wrap_content"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:layout_height="match_parent" />
 
     <Button
         android:padding="5dp"
+        android:paddingStart="5dp"
         android:textAllCaps="false"
         android:textSize="12sp"
         android:id="@+id/forward"
         android:background="@drawable/email_detail_forward_btn_shape"
-        android:drawableStart="@drawable/forward"
+        android:drawableStart="@drawable/forward_layer"
         android:drawableTint="#87888f"
         android:text="Forward"
         android:layout_width="wrap_content"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:layout_height="match_parent" />
 </LinearLayout>

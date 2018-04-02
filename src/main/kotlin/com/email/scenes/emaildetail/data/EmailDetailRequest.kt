@@ -8,4 +8,7 @@ sealed class EmailDetailRequest{
 
     class LoadFullEmailsFromThreadId(
             val threadId: String): EmailDetailRequest()
+
+    class UnsendFullEmailFromEmailId(
+            val emailId: Int, val position: Int): EmailDetailRequest()
 }

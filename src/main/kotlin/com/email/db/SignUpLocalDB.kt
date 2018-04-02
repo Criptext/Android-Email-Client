@@ -4,6 +4,7 @@ import android.content.Context
 import com.email.db.models.Account
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSignedPreKey
+import com.email.db.seeders.LabelSeeder
 import com.email.signal.SignalKeyGenerator
 
 /**
@@ -12,6 +13,7 @@ import com.email.signal.SignalKeyGenerator
 
 interface SignUpLocalDB {
     fun saveNewUserData(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle)
+    fun seedLabels()
 
     class Default(private val db: AppDatabase): SignUpLocalDB {
 
@@ -46,6 +48,10 @@ interface SignUpLocalDB {
             storeRawSignedPreKey(CRSignedPreKey(
                     keyBundle.signedPreKeyId,
                     keyBundle.signedPreKey))
+        }
+
+        override fun seedLabels() {
+            LabelSeeder.seed(db.labelDao())
         }
 
     }

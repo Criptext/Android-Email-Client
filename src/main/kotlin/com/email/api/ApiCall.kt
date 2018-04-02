@@ -16,7 +16,8 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://172.30.1.157:8000"
+        //var baseUrl = "http://172.30.1.151:8000"
+        var baseUrl = "http://10.0.3.2:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
@@ -59,6 +60,21 @@ class ApiCall {
             return postJSONWithToken(token = token, url = "$baseUrl/keybundle", json = jsonObject)
         }
 
+
+        fun getPendingEvents(token: String): Request {
+            return getEventsWithToken(token = token, url = "$baseUrl/event")
+        }
+
+        private fun getEventsWithToken(token: String, url: String): Request {
+            val request = Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
+                    .build()
+
+            return request
+        }
+
         fun postEmail(token: String, postEmailBody: PostEmailBody): Request {
             return postJSONWithToken(token = token, url = "$baseUrl/email",
                     json = postEmailBody.toJSON())
@@ -84,6 +100,23 @@ class ApiCall {
 
             return request
         }
+
+        fun getBodyFromEmail(token: String, uuid: String): Request {
+            return getBodyFromEmailWithToken(
+                    token = token,
+                    url =  "$baseUrl/email/body/$uuid")
+        }
+
+        fun getBodyFromEmailWithToken(token: String, url: String) : Request{
+            val request = Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
+                    .build()
+
+            return request
+        }
+
     }
 
 }

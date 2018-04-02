@@ -1,5 +1,6 @@
 package com.email.db.seeders
 
+import com.email.db.ContactTypes
 import com.email.db.dao.EmailContactJoinDao
 import com.email.db.models.EmailContact
 
@@ -29,19 +30,19 @@ class EmailContactSeeder {
                 1 -> emailContact = EmailContact(
                         emailId = 1,
                         contactId = "ascacere92@gmail.com",
-                        type = "TO")
+                        type = ContactTypes.FROM)
                 2 -> emailContact = EmailContact( emailId = 2,
                         contactId = "gabriel@criptext.com",
-                        type = "BCC")
+                        type = ContactTypes.BCC)
 
                 3 -> emailContact = EmailContact( emailId = 1,
                         contactId = "ascacere92@gmail.com",
-                        type = "CC")
+                        type = ContactTypes.CC)
 
                 4 -> emailContact = EmailContact(
-                        emailId = 1,
+                        emailId = 3,
                         contactId = "ascacere92@gmail.com",
-                        type = "FROM")
+                        type = ContactTypes.FROM)
             }
             return emailContact
         }

@@ -80,4 +80,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="email_detail_popup_menu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

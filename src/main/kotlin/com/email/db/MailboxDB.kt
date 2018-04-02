@@ -1,9 +1,8 @@
 package com.email.db
 
 import android.content.Context
-import com.email.db.models.Email
-import com.email.db.models.EmailLabel
-import com.email.db.models.Label
+import android.util.Log
+import com.email.db.models.*
 import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.labelChooser.data.LabelWrapper
@@ -27,9 +26,35 @@ interface MailboxLocalDB {
     fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
-
+    fun addEmail(email: Email) : Int
+    fun createLabelsForEmailInbox(insertedEmailId: Int)
+    fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes)
 
     class Default(applicationContext: Context): MailboxLocalDB {
+
+        override fun createLabelsForEmailInbox(insertedEmailId: Int) {
+            val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
+            db.emailLabelDao().insert(EmailLabel(
+                    labelId = labelInbox.id!!,
+                    emailId = insertedEmailId))
+        }
+
+        private fun insertContact(contactEmail: String, emailId: Int, type: ContactTypes) {
+            if(contactEmail.isNotEmpty()) {
+                val contact = Contact(email = contactEmail, name = contactEmail)
+                val emailContact = EmailContact(
+                        contactId = contactEmail,
+                        emailId = emailId,
+                        type = type)
+                db.contactDao().insert(contact)
+                db.emailContactDao().insert(emailContact)
+            }
+        }
+
+        override fun addEmail(email: Email): Int {
+            db.emailDao().insert(email)
+            return db.emailDao().getLastInsertedId()
+        }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
             val labelSet = HashSet<Label>()
@@ -53,24 +78,19 @@ interface MailboxLocalDB {
 
         override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
-                EmailThread(
-                        latestEmail = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>
-                )
+                getEmailThreadFromEmail(email)
             } as ArrayList<EmailThread>
         }
 
         override fun getArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->
-                EmailThread(latestEmail = email,
-                        labelsOfMail = ArrayList())
+                getEmailThreadFromEmail(email)
             } as ArrayList<EmailThread>
         }
 
         override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
-                EmailThread(latestEmail = email,
-                        labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>)
+                               getEmailThreadFromEmail(email)
             }
         }
 
@@ -82,13 +102,13 @@ interface MailboxLocalDB {
 
         override fun seed() {
             try {
-                LabelSeeder.seed(db.labelDao())
+  /*            LabelSeeder.seed(db.labelDao())
                 EmailSeeder.seed(db.emailDao())
                 EmailLabelSeeder.seed(db.emailLabelDao())
                 ContactSeeder.seed(db.contactDao())
                 FileSeeder.seed(db.fileDao())
                 OpenSeeder.seed(db.openDao())
-                EmailContactSeeder.seed(db.emailContactDao())
+                EmailContactSeeder.seed(db.emailContactDao())*/
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -96,7 +116,7 @@ interface MailboxLocalDB {
 
         override fun deleteEmailThreads(emailThreads: List<EmailThread>) {
             val emails: List<Email> = emailThreads.map {
-                it.latestEmail
+                it.latestEmail.email
             }
             db.emailDao().deleteAll(emails)
         }
@@ -113,7 +133,7 @@ interface MailboxLocalDB {
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
             emailThreads.forEach {
-                db.emailDao().toggleRead(id = it.latestEmail.id!!,
+                db.emailDao().toggleRead(id = it.latestEmail.email.id!!,
                         unread = updateUnreadStatus)
             }
         }
@@ -124,11 +144,58 @@ interface MailboxLocalDB {
 
         override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
             val emails = emailThreads.map {
-                    it.latestEmail.isTrash = true
-                    it.latestEmail
+                    it.latestEmail.email.isTrash = true
+                    it.latestEmail.email
                 }
 
             db.emailDao().update(emails)
+        }
+
+        private fun getEmailThreadFromEmail(email: Email): EmailThread {
+            val id = email.id!!
+            val labels = db.emailLabelDao().getLabelsFromEmail(id)
+            val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+            val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+            val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+            val files = db.fileDao().getAttachmentsFromEmail(id)
+
+            val contactFrom = if(contactsFROM.isEmpty()) {
+                null
+            } else {
+                contactsFROM[0]
+            }
+
+            return EmailThread(
+                    latestEmail = FullEmail(
+                            email = email,
+                            bcc = contactsBCC,
+                            cc = contactsCC,
+                            from = contactFrom,
+                            files = files,
+                            labels = labels,
+                            to = contactsTO ),
+                    labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>
+            )
+
+        }
+
+        override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
+            if(type == ContactTypes.FROM) {
+                insertContact(
+                        contactEmail = contacts,
+                        emailId = insertedEmailId,
+                        type = type)
+               return
+            }
+
+            val contactsList = contacts.split(",")
+            contactsList.forEach { contactEmail ->
+                insertContact(
+                        contactEmail = contactEmail,
+                        emailId = insertedEmailId,
+                        type = type)
+            }
         }
     }
 

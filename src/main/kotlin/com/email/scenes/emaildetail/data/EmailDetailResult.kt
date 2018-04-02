@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail.data
 
 import com.email.db.models.FullEmail
+import com.email.db.models.Label
 import com.email.utils.UIMessage
 
 /**
@@ -14,5 +15,13 @@ sealed class EmailDetailResult {
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception): LoadFullEmailsFromThreadId()
+    }
+
+    sealed class UnsendFullEmailFromEmailId: EmailDetailResult() {
+        data class Success(val position: Int): UnsendFullEmailFromEmailId()
+        data class Failure(
+                val position: Int,
+                val message: UIMessage,
+                val exception: Exception): UnsendFullEmailFromEmailId()
     }
 }

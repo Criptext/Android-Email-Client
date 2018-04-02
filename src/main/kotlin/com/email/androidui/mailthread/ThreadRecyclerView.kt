@@ -12,11 +12,15 @@ class ThreadRecyclerView(val recyclerView: RecyclerView,
                          threadList: VirtualList<EmailThread>)  {
 
     val ctx: Context = recyclerView.context
-    private val emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadList)
+    private var emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadList)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = emailThreadAdapter
+    }
+
+    fun setEmailThreadAdapter(emailThreadAdapter: EmailThreadAdapter) {
+        this.emailThreadAdapter = emailThreadAdapter
     }
 
     fun setThreadListener(threadEventListener: EmailThreadAdapter.OnThreadEventListener?) {

@@ -3,6 +3,7 @@ package com.email.scenes.composer
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import com.email.db.models.Contact
 import com.email.R
 import com.email.scenes.composer.ui.ComposerUIObserver
@@ -61,6 +62,19 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: UIData) {
+            bodyEditText.setText(uiData.body, TextView.BufferType.EDITABLE)
+            uiData.to.forEach { contact ->
+                toInput.addObject(contact)
+            }
+
+            uiData.cc.forEach { contact ->
+                ccInput.addObject(contact)
+            }
+
+            uiData.bcc.forEach { contact ->
+                bccInput.addObject(contact)
+            }
+
             setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
                     toContacts = uiData.to, ccContacts = uiData.cc, bccContacts = uiData.bcc)
 
