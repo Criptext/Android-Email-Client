@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.webkit.JavascriptInterface
 import android.widget.LinearLayout
-import com.email.utils.ZoomLayout
+import com.email.utils.ui.ZoomLayout
 
 /**
  * Created by hirobreak on 19/07/17.

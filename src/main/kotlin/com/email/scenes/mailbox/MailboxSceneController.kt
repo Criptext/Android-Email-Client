@@ -245,11 +245,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.selectedThreads.toList().forEach {
             val emailThread: EmailThread = it
             selectedLabels.toIDs().forEach {
-                try {
                     assignLabelToEmailThread(it, emailThreadId = emailThread.id)
-                } catch (e: SQLiteConstraintException) {
-
-                }
             }
         }
         changeMode(multiSelectON = false, silent = false)

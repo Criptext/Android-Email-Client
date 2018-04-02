@@ -3,16 +3,14 @@ package com.email.scenes.mailbox.data
 import com.email.R
 import com.email.api.HttpErrorHandlingHelper
 import com.email.bgworker.BackgroundWorker
-import com.email.db.DeliveryTypes
-import com.email.db.LabelTextTypes
-import com.email.db.MailboxLocalDB
+import com.email.db.*
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
+import com.email.utils.HTMLUtils
 import com.email.utils.UIMessage
-import com.email.utils.Utility
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -49,7 +47,7 @@ class UpdateMailboxWorker(
     private val parseEmails: (input: String) -> Result<List<EmailThread>, Exception> = {
         input ->
         Result.of {
-            parseContent(input = input)
+            loadMetadataContentFromString(input = input)
         }.flatMap{Result.of{
             db.getNotArchivedEmailThreads()
         }}.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
@@ -100,18 +98,17 @@ class UpdateMailboxWorker(
         }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     }
 
-    private fun parseContent(input: String) {
-        val jsonArray = JSONArray(input)
-        for(i in 0 until jsonArray.length()) {
-            val fullData = JSONObject(jsonArray.get(i).toString())
-            val emailData = JSONObject(fullData.getString("params"))
-            val from = emailData.getString("from")
-            val to = emailData.getString("to")
-            val bodyKey =  emailData.getString("bodyKey")
+    private fun loadMetadataContentFromString(input: String) {
+        val listMetadatas = JSONArray(input)
+        for(i in 0 until listMetadatas.length()) {
+            val fullData = JSONObject(listMetadatas.get(i).toString())
+
+            val metaData = EmailMetaData(stringMetadata = fullData.getString("params"))
+
             val resultOperationDecryptAndInsert = Result.of {
-                val encryptedBody = apiClient.getBodyFromEmail(bodyKey)
+                val encryptedBody = apiClient.getBodyFromEmail(metaData.bodyKey)
                 DecryptData(
-                        from = from,
+                        from = metaData.from,
                         deviceId = 1,
                         encryptedData = encryptedBody)
             }.flatMap(decryptBody)
@@ -119,7 +116,7 @@ class UpdateMailboxWorker(
                 is Result.Success -> {
 
                     val bodyContent = resultOperationDecryptAndInsert.value
-                    val bodyWithoutHTML = Utility.html2text(bodyContent)
+                    val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
                     val preview   = if (bodyWithoutHTML.length > 20 )
                                         bodyWithoutHTML.substring(0,20)
                                     else bodyWithoutHTML
@@ -128,23 +125,23 @@ class UpdateMailboxWorker(
                             id=null,
                             unread = true,
                             date = DateUtils.getDateFromString(
-                                    emailData.getString("date"),
+                                    metaData.date,
                                     null),
-                            threadid = emailData.getString("threadId"),
-                            subject = emailData.getString("subject"),
+                            threadid = metaData.threadId,
+                            subject = metaData.subject,
                             isTrash = false,
                             secure = true,
                             preview = preview,
-                                    key = bodyKey,
+                                    key = metaData.bodyKey,
                             isDraft = false,
                             delivered = DeliveryTypes.RECEIVED,
                             content = bodyContent
                             )
                     val insertedEmailId = db.addEmail(email)
-                    db.createContactFrom(from, insertedEmailId)
-                    db.createContactsTO(to, insertedEmailId)
-                    db.createContactsBCC(to, insertedEmailId)
-                    db.createContactsCC(to, insertedEmailId)
+                    db.createContacts(metaData.from, insertedEmailId, ContactTypes.FROM)
+                    db.createContacts(metaData.to, insertedEmailId, ContactTypes.TO)
+                    db.createContacts(metaData.bcc, insertedEmailId, ContactTypes.BCC)
+                    db.createContacts(metaData.cc, insertedEmailId, ContactTypes.CC)
                     db.createLabelsForEmailInbox(insertedEmailId)
                 } else -> {
 

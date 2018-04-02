@@ -57,6 +57,7 @@ class RegisterUserWorker(
             Result.of {
                 val user = incompleteAccount.complete(keyBundle, jwtoken)
                 db.saveNewUserData(user, keyBundle)
+                db.seedLabels()
                 user
             }
 

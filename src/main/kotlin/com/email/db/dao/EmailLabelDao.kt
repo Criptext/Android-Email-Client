@@ -12,7 +12,7 @@ import com.email.db.models.Label
 @Dao
 interface EmailLabelDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(emailLabel : EmailLabel)
 
     @Query("""SELECT email.* FROM email INNER JOIN email_label

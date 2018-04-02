@@ -1,7 +1,6 @@
 package com.email.scenes.emaildetail
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import com.email.IHostActivity
 import com.email.R
@@ -104,7 +103,6 @@ interface EmailDetailScene {
         }
 
         override fun onDecryptedBody(decryptedText: String) {
-            Log.d("decryptedBody", decryptedText)
         }
     }
 

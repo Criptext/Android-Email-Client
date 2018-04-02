@@ -7,7 +7,6 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.widget.ImageViewCompat
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.PopupMenu
 import android.util.DisplayMetrics
@@ -27,8 +26,9 @@ import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
-import com.email.utils.Utility
-import com.email.utils.ZoomLayout
+import com.email.utils.HTMLUtils
+import com.email.utils.ui.ZoomLayout
+import com.email.utils.WebViewUtils
 import com.github.ybq.android.spinkit.SpinKitView
 
 /**
@@ -167,13 +167,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         toggleUnsendProgress(isShown = false)
         setDefaultBackgroundColors()
         if(fullEmail.email.delivered != DeliveryTypes.UNSENT) {
-            bodyWebView.loadDataWithBaseURL("", Utility.
+            bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
         } else {
             val attachmentImage = layoutAttachment.findViewById<ImageView>(R.id.attachment_container)
             attachmentImage.setImageDrawable(
                     ContextCompat.getDrawable(view.context, R.drawable.eliminar_attachment_lock))
-            bodyWebView.loadDataWithBaseURL("", Utility.
+            bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml("This content was unsent"), "text/html", "utf-8", "")
 
             //ImageViewCompat.setImageTintList(unsendView,ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.unsend_button_red) ))
@@ -217,14 +217,14 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         webSettings.allowFileAccess = true
         bodyWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                Utility.openUrl(bodyWebView.context!!, url)
+                WebViewUtils.openUrl(bodyWebView.context!!, url)
                 zoomLayout.visibility = View.GONE
                 webViewLoader.visibility = View.VISIBLE
                 return true
             }
             @TargetApi(Build.VERSION_CODES.N)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                Utility.openUrl(bodyWebView.context!!, request.url.toString())
+                WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
                 zoomLayout.visibility = View.GONE
                 webViewLoader.visibility = View.VISIBLE
                 return true

@@ -27,11 +27,8 @@ interface MailboxLocalDB {
     fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Int
-    fun createContactFrom(from: String, insertedEmailId: Int)
-    fun createContactsTO(to: String, insertedEmailId: Int)
-    fun createContactsBCC(to: String, insertedEmailId: Int)
-    fun createContactsCC(to: String, insertedEmailId: Int)
     fun createLabelsForEmailInbox(insertedEmailId: Int)
+    fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes)
 
     class Default(applicationContext: Context): MailboxLocalDB {
 
@@ -43,47 +40,15 @@ interface MailboxLocalDB {
         }
 
         private fun insertContact(contactEmail: String, emailId: Int, type: ContactTypes) {
-            val contact = Contact(email = contactEmail, name = contactEmail)
-            val emailContact = EmailContact(
-                    contactId = contactEmail,
-                    emailId = emailId,
-                    type = type)
-            db.contactDao().insert(contact)
-            db.emailContactDao().insert(emailContact)
-        }
-
-        override fun createContactsTO(to: String, insertedEmailId: Int) {
-            val contactsList = to.split(",")
-            contactsList.forEach { contactEmail ->
-                insertContact(
-                        contactEmail = contactEmail,
-                        emailId = insertedEmailId,
-                        type = ContactTypes.TO)
+            if(contactEmail.isNotEmpty()) {
+                val contact = Contact(email = contactEmail, name = contactEmail)
+                val emailContact = EmailContact(
+                        contactId = contactEmail,
+                        emailId = emailId,
+                        type = type)
+                db.contactDao().insert(contact)
+                db.emailContactDao().insert(emailContact)
             }
-        }
-
-        override fun createContactsBCC(to: String, insertedEmailId: Int) {
-            val contactsList = to.split(",")
-            contactsList.forEach { contactEmail ->
-                insertContact(
-                        contactEmail = contactEmail,
-                        emailId = insertedEmailId,
-                        type = ContactTypes.BCC)
-            }
-        }
-
-        override fun createContactsCC(to: String, insertedEmailId: Int) {
-            val contactsList = to.split(",")
-            contactsList.forEach { contactEmail ->
-                insertContact(
-                        contactEmail = contactEmail,
-                        emailId = insertedEmailId,
-                        type = ContactTypes.CC)
-            }
-        }
-
-        override fun createContactFrom(from: String, insertedEmailId: Int) {
-            insertContact(contactEmail = from, emailId =  insertedEmailId, type= ContactTypes.FROM)
         }
 
         override fun addEmail(email: Email): Int {
@@ -213,6 +178,24 @@ interface MailboxLocalDB {
                     labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>
             )
 
+        }
+
+        override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
+            if(type == ContactTypes.FROM) {
+                insertContact(
+                        contactEmail = contacts,
+                        emailId = insertedEmailId,
+                        type = type)
+               return
+            }
+
+            val contactsList = contacts.split(",")
+            contactsList.forEach { contactEmail ->
+                insertContact(
+                        contactEmail = contactEmail,
+                        emailId = insertedEmailId,
+                        type = type)
+            }
         }
     }
 

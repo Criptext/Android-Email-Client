@@ -7,12 +7,10 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.View
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
-import com.email.BaseActivity
 import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
@@ -61,11 +59,11 @@ interface MailboxScene: ThreadListView {
         : MailboxScene {
 
         override fun showSyncingDialog() {
-            (hostActivity as BaseActivity).showDialog(UIMessage(R.string.updating_mailbox))
+            hostActivity.showDialog(UIMessage(R.string.updating_mailbox))
         }
 
         override fun hideSyncingDialog() {
-            (hostActivity as BaseActivity).dismissDialog()
+            hostActivity.dismissDialog()
         }
 
         private val context = mailboxView.context

@@ -1,4 +1,4 @@
-package com.email.utils
+package com.email.utils.ui
 
 import android.content.Context
 import android.util.AttributeSet
