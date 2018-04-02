@@ -274,7 +274,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
 
         setupWebview()
-
+        horizontalScrollView.isHorizontalScrollBarEnabled = false
         zoomLayout.slideContainer = { dx: Int ->
             horizontalScrollView.smoothScrollBy(dx - horizontalScrollView.scrollX, 0)
         }

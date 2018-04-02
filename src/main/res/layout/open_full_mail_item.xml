@@ -74,13 +74,12 @@
                         android:src="@drawable/reply_eliminar_esto" />
 
                     <ImageView
-                        android:tint="#89909a"
                         android:id="@+id/more"
-                        android:layout_width="25dp"
+                        android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:padding="7dp"
                         android:src="@drawable/more2"
-                        />
+                        android:tint="#89909a" />
 
                 </LinearLayout>
                 <LinearLayout
@@ -110,7 +109,7 @@
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/unsend"
-                        android:layout_width="wrap_content"
+                        android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/circle_attachment"
@@ -143,6 +142,7 @@
 
 
             <HorizontalScrollView
+                android:scrollbars="none"
                 android:layout_marginTop="100dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -187,7 +187,8 @@
                 android:layout_marginBottom="70dip"
                 android:text="@string/full_mail_item_open_default" />
 
-            <include layout="@layout/open_full_mail_attachment"
+            <include
+                layout="@layout/open_full_mail_attachment"
                 />
         </LinearLayout>
     </FrameLayout>
