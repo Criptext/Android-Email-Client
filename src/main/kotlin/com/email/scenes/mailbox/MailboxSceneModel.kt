@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.db.LabelTextTypes
 import com.email.scenes.SceneModel
+import com.email.scenes.composer.ui.UIData
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.feed.FeedModel
 
@@ -20,4 +21,5 @@ class MailboxSceneModel : SceneModel {
     val isInUnreadMode: Boolean
         get() = selectedThreads.isInUnreadMode
     var shouldShowPartialUpdateInUI = false
+    var mailToSend: UIData? = null
 }

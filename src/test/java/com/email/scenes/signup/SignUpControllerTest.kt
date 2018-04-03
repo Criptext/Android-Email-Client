@@ -2,13 +2,13 @@ package com.email.scenes.signup
 
 import com.email.api.ApiCall
 import com.email.db.KeyValueStorage
+import com.email.mocks.MockedHostActivity
 import com.email.mocks.MockedKeyValueStorage
 import com.email.mocks.MockedSignalKeyGenerator
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.signup.data.SignUpDataSource
 import com.email.scenes.signup.data.RegisterUserWorker
 import com.email.scenes.signup.data.SignUpAPIClient
-import com.email.scenes.signup.mocks.MockedIHostActivity
 import com.email.scenes.signup.mocks.MockedSignUpLocalDB
 import com.email.scenes.signup.mocks.MockedSignUpView
 import okhttp3.mockwebserver.MockResponse
@@ -53,13 +53,13 @@ class SignUpControllerTest {
                 model =  model,
                 scene = scene,
                 dataSource = dataSource,
-                host =  MockedIHostActivity()
+                host =  MockedHostActivity()
         )
     }
 
     @Test
     fun `onStart should set listeners to the view and data source and onStop should clear them`() {
-        controller.onStart()
+        controller.onStart(null)
 
         dataSource.listener `should not be` null
         scene.signUpListener `should not be` null
@@ -80,7 +80,7 @@ class SignUpControllerTest {
                 .setResponseCode(200))
         ApiCall.baseUrl = server.url("v1/mock").toString()
 
-        controller.onStart()
+        controller.onStart(null)
 
         // simulate user input
         val signUpListener = scene.signUpListener
@@ -110,7 +110,7 @@ class SignUpControllerTest {
                 .setResponseCode(400))
         ApiCall.baseUrl = server.url("v1/mock").toString()
 
-        controller.onStart()
+        controller.onStart(null)
         val signUpListener = scene.signUpListener
         fillFields(signUpListener)
         fillExistentUser(signUpListener)

@@ -1,6 +1,7 @@
 package com.email.mocks
 
 import com.email.IHostActivity
+import com.email.scenes.ActivityMessage
 import com.email.scenes.params.SceneParams
 import com.email.utils.UIMessage
 
@@ -9,6 +10,9 @@ import com.email.utils.UIMessage
  */
 
 class MockedHostActivity: IHostActivity{
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+    }
+
     override fun showDialog(message: UIMessage) {
     }
 

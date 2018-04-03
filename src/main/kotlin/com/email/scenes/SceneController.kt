@@ -14,8 +14,11 @@ abstract class SceneController {
     /**
      * Called during the host activity's `onStart()`. This where your controller's "setup" code
      * should go.
+     * @param activityMessage A message sent from another controller. The implementation should
+     * try to handle it.
+     * @return true if the message was handled correctly, otherwise false.
      */
-    abstract fun onStart()
+    abstract fun onStart(activityMessage: ActivityMessage?): Boolean
 
     /**
      * Called during the host activity's `onStop()`. This where your controller's "teardown" code

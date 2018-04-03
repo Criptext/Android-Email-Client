@@ -6,6 +6,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
@@ -160,7 +161,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
         }
     }
-    override fun onStart() {
+
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         mailboxDataSource.listener = mailboxDataSourceListener
 
@@ -168,6 +170,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 threadId = model.threadId)
 
         dataSource.submitRequest(req)
+
+        return false
     }
 
     override fun onStop() {
