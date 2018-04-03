@@ -108,7 +108,7 @@ class UpdateMailboxWorker(
             val resultOperationDecryptAndInsert = Result.of {
                 val encryptedBody = apiClient.getBodyFromEmail(metaData.bodyKey)
                 DecryptData(
-                        from = metaData.from,
+                        from = metaData.fromRecipientId,
                         deviceId = 1,
                         encryptedData = encryptedBody)
             }.flatMap(decryptBody)
@@ -138,7 +138,7 @@ class UpdateMailboxWorker(
                             content = bodyContent
                             )
                     val insertedEmailId = db.addEmail(email)
-                    db.createContacts(metaData.from, insertedEmailId, ContactTypes.FROM)
+                    db.createContacts(metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
                     db.createContacts(metaData.to, insertedEmailId, ContactTypes.TO)
                     db.createContacts(metaData.bcc, insertedEmailId, ContactTypes.BCC)
                     db.createContacts(metaData.cc, insertedEmailId, ContactTypes.CC)

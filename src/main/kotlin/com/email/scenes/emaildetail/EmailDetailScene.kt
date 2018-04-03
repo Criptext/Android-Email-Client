@@ -33,6 +33,8 @@ interface EmailDetailScene {
             defaultSelectedLabels: List<Label>,
             labels: List<Label>)
 
+    fun onDecryptedBody(decryptedText: String)
+
     class EmailDetailSceneView(
             private val emailDetailView: View,
             val hostActivity: IHostActivity)

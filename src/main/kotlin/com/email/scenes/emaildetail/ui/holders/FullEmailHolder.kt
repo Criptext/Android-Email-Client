@@ -12,6 +12,7 @@ import android.support.v7.widget.PopupMenu
 import android.util.DisplayMetrics
 import android.view.ContextThemeWrapper
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -235,6 +236,15 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 super.onPageFinished(view, url)
                 zoomLayout.visibility = View.VISIBLE
                 webViewLoader.visibility = View.GONE
+
+                val treeObserver = horizontalScrollView.viewTreeObserver
+
+                treeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                         horizontalScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
+                         horizontalScrollView.scrollTo(-200, 0)
+                    }
+                })
             }
         }
         val javascriptInterface = WebviewJavascriptInterface(
@@ -276,7 +286,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setupWebview()
         horizontalScrollView.isHorizontalScrollBarEnabled = false
         zoomLayout.slideContainer = { dx: Int ->
-            horizontalScrollView.smoothScrollBy(dx - horizontalScrollView.scrollX, 0)
+            //horizontalScrollView.smoothScrollBy(dx - horizontalScrollView.scrollX, 0)
         }
     }
 

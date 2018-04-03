@@ -41,10 +41,6 @@ interface SignUpLocalDB {
             db.rawPreKeyDao().deleteAll()
         }
 
-        override fun seedLabels() {
-            LabelSeeder.seed(db.labelDao())
-        }
-
         override fun saveNewUserData(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle) {
             saveAccount(account)
             deletePreKeys()
