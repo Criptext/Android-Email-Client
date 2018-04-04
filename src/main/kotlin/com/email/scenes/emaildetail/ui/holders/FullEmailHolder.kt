@@ -10,10 +10,9 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.PopupMenu
 import android.util.DisplayMetrics
-import android.view.ContextThemeWrapper
-import android.view.View
-import android.view.ViewTreeObserver
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -145,6 +144,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             false
         }
 
+        popupMenu.gravity = Gravity.END
         popupMenu.show()
 
     }
@@ -236,6 +236,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 super.onPageFinished(view, url)
                 zoomLayout.visibility = View.VISIBLE
                 webViewLoader.visibility = View.GONE
+                view?.evaluateJavascript("""window.scrollTo(0,0);""") { }
 
                 val treeObserver = horizontalScrollView.viewTreeObserver
 
