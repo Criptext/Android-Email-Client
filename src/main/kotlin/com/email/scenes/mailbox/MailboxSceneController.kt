@@ -3,7 +3,6 @@ package com.email.scenes.mailbox
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.LabelTextTypes
@@ -128,7 +127,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
-        Log.d("MailboxSceneController", "onStart $activityMessage")
         dataSourceController.setDataSourceListener()
         scene.attachView(threadEventListener)
         scene.observer = observer
