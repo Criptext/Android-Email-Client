@@ -5,6 +5,7 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
 import com.email.mocks.MockedWorkRunner
+import com.email.mocks.MockedIHostActivity
 import com.email.scenes.emailDetail.mocks.MockedEmailDetailLocalDB
 import com.email.scenes.emailDetail.mocks.MockedEmailDetailView
 import com.email.scenes.emailDetail.mocks.MockedMailboxLocalDB
@@ -14,14 +15,12 @@ import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
 import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.scenes.signup.mocks.MockedIHostActivity
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be`
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import java.sql.Timestamp
 
 /**
@@ -111,7 +110,7 @@ class EmailDetailControllerTest {
     @Test
     fun `onStart should set listeners to the view and data source and onStop should clear them`() {
 
-        controller.onStart()
+        controller.onStart(null)
 
         dataSource.listener `should not be` null
         mailboxDataSource.listener `should not be` null
@@ -125,7 +124,7 @@ class EmailDetailControllerTest {
     @Test
     fun `on a cold start, should show 'empty view' and load emails from thread`() {
 
-        controller.onStart()
+        controller.onStart(null)
 
         runner.assertPendingWork(listOf(LoadFullEmailsFromThreadWorker::class.java))
         db.nextLoadedEmailItems = createEmailItemsInThread(5)

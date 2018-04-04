@@ -13,6 +13,9 @@ import com.email.utils.VirtualList
  */
 
 class MockedEmailDetailView: EmailDetailScene {
+    override fun onDecryptedBody(decryptedText: String) {
+    }
+
     var notifiedDataSetChanged = false
     override fun attachView(
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,

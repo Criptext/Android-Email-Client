@@ -148,7 +148,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initNavHeader("Daniel Tigse Palma")
 
         if(MailboxData.loadThreadsWorkData != null) {
-            return
+            return false
         }
 
         MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()

@@ -2,7 +2,7 @@ package com.email.scenes.signup
 
 import com.email.api.ApiCall
 import com.email.db.KeyValueStorage
-import com.email.mocks.MockedHostActivity
+import com.email.mocks.MockedIHostActivity
 import com.email.mocks.MockedKeyValueStorage
 import com.email.mocks.MockedSignalKeyGenerator
 import com.email.mocks.MockedWorkRunner
@@ -53,7 +53,7 @@ class SignUpControllerTest {
                 model =  model,
                 scene = scene,
                 dataSource = dataSource,
-                host =  MockedHostActivity()
+                host =  MockedIHostActivity()
         )
     }
 

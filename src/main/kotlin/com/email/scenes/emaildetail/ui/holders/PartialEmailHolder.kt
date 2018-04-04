@@ -44,7 +44,6 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                     view.context, R.drawable.background_cardview_unsend)
         } else {
             bodyView.alpha = 1.toFloat()
-            // cardView.background = null
             cardView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.partial_email_drawable)
             bodyView.text = fullEmail.email.preview

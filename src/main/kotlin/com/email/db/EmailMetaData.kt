@@ -8,7 +8,7 @@ class EmailMetaData(stringMetadata: String) {
     val bcc: String
     val from: String
     val fromRecipientId: String
-    val nameRecipientId: String
+    val fromName: String
     val bodyKey: String
     val date: String
     val threadId: String
@@ -19,7 +19,7 @@ class EmailMetaData(stringMetadata: String) {
 
         from = emailData.getString("from")
         fromRecipientId = from.substring(from.indexOf("<") + 1, from.indexOf(">"))
-        nameRecipientId = from.substring(0, from.lastIndexOf("<") - 1)
+        fromName = from.substring(0, from.lastIndexOf("<") - 1)
         to = emailData.getString("to")
         cc = emailData.getString("cc")
         bcc = emailData.getString("bcc")

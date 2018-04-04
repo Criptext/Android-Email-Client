@@ -1,5 +1,7 @@
 package com.email.scenes.emailDetail.mocks
 
+import com.email.db.ContactTypes
+import com.email.db.LabelTextTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Email
 import com.email.db.models.Label
@@ -11,6 +13,14 @@ import com.email.scenes.mailbox.data.EmailThread
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
+    override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getEmailsFromMailboxLabel(labelTextTypes: LabelTextTypes, oldestEmailThread: EmailThread?, offset: Int): List<EmailThread> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun getAllEmailThreads(): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -67,21 +77,6 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createContactFrom(from: String, insertedEmailId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createContactsTO(to: String, insertedEmailId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createContactsBCC(to: String, insertedEmailId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createContactsCC(to: String, insertedEmailId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun createLabelsForEmailInbox(insertedEmailId: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

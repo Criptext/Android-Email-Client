@@ -9,7 +9,7 @@ import com.email.utils.UIMessage
  * Created by gabriel on 3/1/18.
  */
 
-class MockedHostActivity: IHostActivity{
+class MockedIHostActivity: IHostActivity{
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
     }
 
