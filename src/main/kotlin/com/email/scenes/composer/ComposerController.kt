@@ -4,6 +4,7 @@ import com.email.BaseActivity
 import com.email.db.models.Contact
 import com.email.IHostActivity
 import com.email.R
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
 import com.email.scenes.composer.data.ComposerRequest
@@ -11,6 +12,7 @@ import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.UIData
+import com.email.scenes.params.MailboxParams
 import com.email.utils.UIMessage
 
 /**
@@ -72,7 +74,8 @@ class ComposerController(private val model: ComposerModel,
             if (validationError != null)
                 scene.showError(validationError.toUIMessage())
             else
-                dataSource.submitRequest(ComposerRequest.SendMail(data))
+                //dataSource.submitRequest(ComposerRequest.SendMail(data))
+                host.exitToScene(MailboxParams(), ActivityMessage.SendMail(data))
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -81,7 +84,7 @@ class ComposerController(private val model: ComposerModel,
         get() = if (isReadyForSending()) R.menu.composer_menu_enabled
                               else R.menu.composer_menu_disabled
 
-    override fun onStart() {
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         if(model.fullEmail != null) {
             val fullEmail = model.fullEmail!!
             when(model.composerType) {
@@ -114,6 +117,8 @@ class ComposerController(private val model: ComposerModel,
         dataSource.listener = dataSourceListener
         scene.observer = observer
         model.firstTime = false
+
+        return false
     }
 
     override fun onStop() {

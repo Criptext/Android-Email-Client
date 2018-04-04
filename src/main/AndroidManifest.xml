@@ -8,7 +8,9 @@
     <application
         android:name=".DeckardApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".MailboxActivity">
+        <activity
+            android:name=".MailboxActivity"
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name=".SearchActivity"

@@ -1,6 +1,7 @@
 package com.email.scenes.signin
 
 import com.email.IHostActivity
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SignUpParams
@@ -128,9 +129,11 @@ class SignInSceneController(
         dataSource.submitRequest(req)
     }
 
-    override fun onStart() {
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         scene.initListeners(signInListener = signInListener)
+
+        return false
     }
 
     override fun onStop() {

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
 import com.email.scenes.emaildetail.EmailDetailSceneModel
@@ -76,7 +77,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun onStart() {
         super.onStart()
-        controller.onStart()
+        if (controller.onStart(activityMessage))
+            activityMessage = null
     }
 
     override fun onStop() {
@@ -135,6 +137,12 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         startActivity(params.activityClass)
     }
 
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+        BaseActivity.activityMessage = activityMessage
+        finish()
+        goToScene(params)
+    }
+
     override fun finishScene() {
         finish()
     }
@@ -149,6 +157,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     private companion object {
         val cachedModels = HashMap<Class<*>, Any>()
+        var activityMessage: ActivityMessage? = null
 
         init {
             // set initial state

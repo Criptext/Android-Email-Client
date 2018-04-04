@@ -1,6 +1,7 @@
 package com.email.scenes.search.holders
 
 import android.view.Menu
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.search.SearchScene
 import com.email.scenes.search.SearchSceneModel
@@ -23,11 +24,13 @@ class SearchSceneController(private val scene: SearchScene,
 
     }
 
-    override fun onStart() {
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         scene.attachView()
         dataSource.seed()
         val results = dataSource.getHistorySearch()
         searchListController.setSearchList(results)
+
+        return false
     }
 
     override fun onStop() {

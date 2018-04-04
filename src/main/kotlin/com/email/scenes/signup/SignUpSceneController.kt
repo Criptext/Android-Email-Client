@@ -2,6 +2,7 @@ package com.email.scenes.signup
 
 import com.email.IHostActivity
 import com.email.api.ServerErrorException
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.signup.data.SignUpRequest
@@ -235,13 +236,14 @@ class SignUpSceneController(
         return model.username == "sebas"
     }
 
-    override fun onStart() {
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         scene.showFormHolder()
         scene.initListeners(
                 signUpListener = signUpListener
         )
         scene.disableCreateAccountButton()
+        return false
     }
 
     override fun onStop() {

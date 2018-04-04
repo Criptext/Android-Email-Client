@@ -3,6 +3,7 @@ package com.email.utils
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import com.email.IHostActivity
+import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.SceneParams
 
@@ -11,7 +12,6 @@ import com.email.scenes.params.SceneParams
  */
 
 class TestActivity: AppCompatActivity(), IHostActivity {
-
     override fun showDialog(message: UIMessage) {
     }
 
@@ -47,6 +47,10 @@ class TestActivity: AppCompatActivity(), IHostActivity {
     }
 
     fun startOnUiThread() {
-        runOnUiThread { controller.onStart() }
+        runOnUiThread { controller.onStart(null) }
     }
+
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+    }
+
 }

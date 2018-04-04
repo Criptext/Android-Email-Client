@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteConstraintException
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.LabelTextTypes
+import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.labelChooser.data.LabelWrapper
@@ -125,7 +126,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    override fun onStart() {
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
         scene.attachView(threadEventListener)
         scene.observer = observer
@@ -138,6 +139,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.setToolbarNumberOfEmails(emailThreadSize)
 
         feedController.onStart()
+
+        return false
     }
 
     override fun onStop() {
