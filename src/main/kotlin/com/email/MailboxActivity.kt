@@ -88,8 +88,9 @@ class MailboxActivity : BaseActivity() {
         }
     }
 
-    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread> {
+
+    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread?>)
+        : VirtualList<EmailThread?> {
         override fun get(i: Int) = threads[i]
 
         override val size: Int

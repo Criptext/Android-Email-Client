@@ -4,6 +4,8 @@ import android.support.design.widget.NavigationView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
+import com.email.scenes.mailbox.DrawerMenuItemListener
+import com.email.scenes.mailbox.NavigationMenuOptions
 import com.email.utils.Utility
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -11,7 +13,9 @@ import de.hdodenhof.circleimageview.CircleImageView
  * Created by danieltigse on 2/7/18.
  */
 
-class DrawerMenuView(navigationView: NavigationView){
+class DrawerMenuView(navigationView: NavigationView,
+                        private val drawerMenuItemListener: DrawerMenuItemListener
+                     ){
 
     //HEADER
     private val avatarView : CircleImageView
@@ -34,6 +38,39 @@ class DrawerMenuView(navigationView: NavigationView){
     private val textViewCounterDraft: TextView
     private val textViewCounterSpam: TextView
 
+    private fun setListeners() {
+        sliderInbox.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.INBOX)
+        }
+
+        sliderSent.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.SENT)
+        }
+
+        sliderDrafts.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.DRAFT)
+        }
+
+        sliderStarred.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.STARRED)
+        }
+
+        sliderSpam.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.SPAM)
+        }
+
+        sliderTrash.setOnClickListener {
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.TRASH)
+        }
+    }
+
+
     init {
         avatarView = navigationView.findViewById(R.id.circleView)
         textViewNombre = navigationView.findViewById(R.id.textViewNombre)
@@ -52,6 +89,8 @@ class DrawerMenuView(navigationView: NavigationView){
         textViewCounterInbox = navigationView.findViewById(R.id.count_inbox)
         textViewCounterDraft = navigationView.findViewById(R.id.count_drafts)
         textViewCounterSpam = navigationView.findViewById(R.id.count_spam)
+
+        setListeners()
     }
 
     fun initNavHeader(fullName: String){

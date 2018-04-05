@@ -5,12 +5,10 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import com.email.R
-import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 
 /**
