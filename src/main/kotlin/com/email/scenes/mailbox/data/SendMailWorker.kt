@@ -1,4 +1,4 @@
-package com.email.scenes.composer.data
+package com.email.scenes.mailbox.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
@@ -9,7 +9,10 @@ import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.KnownAddress
-import com.email.scenes.composer.ui.UIData
+import com.email.scenes.composer.data.ComposerAPIClient
+import com.email.scenes.composer.data.ComposerInputData
+import com.email.scenes.composer.data.ComposerResult
+import com.email.scenes.composer.data.PostEmailBody
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
 import com.email.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
@@ -28,16 +31,17 @@ import org.json.JSONException
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      activeAccount: ActiveAccount,
-                     private val uiData: UIData,
-                     override val publishFn: (ComposerResult.SendMail) -> Unit) : BackgroundWorker<ComposerResult.SendMail> {
+                     private val composerInputData: ComposerInputData,
+                     override val publishFn: (MailboxResult.SendMail) -> Unit)
+    : BackgroundWorker<MailboxResult.SendMail> {
     override val canBeParallelized = false
 
     private val apiClient = ComposerAPIClient(activeAccount.jwt)
 
     private fun getMailRecipients(): MailRecipients {
-        val toAddresses = uiData.to.map(Contact.toAddress)
-        val ccAddresses = uiData.cc.map(Contact.toAddress)
-        val bccAddresses = uiData.bcc.map(Contact.toAddress)
+        val toAddresses = composerInputData.to.map(Contact.toAddress)
+        val ccAddresses = composerInputData.cc.map(Contact.toAddress)
+        val bccAddresses = composerInputData.bcc.map(Contact.toAddress)
 
         val toCriptext = toAddresses.filter(isFromCriptextDomain)
                                     .map(extractRecipientIdFromCriptextAddress)
@@ -81,7 +85,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             if (devices == null || devices.isEmpty())
                 throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
             devices.map { deviceId ->
-                val encryptedBody = signalClient.encryptMessage(recipientId, deviceId, uiData.body)
+                val encryptedBody = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedBody)
             }
@@ -99,9 +103,9 @@ class SendMailWorker(private val signalClient: SignalClient,
         return listOf(criptextToEmails, criptextCcEmails, criptextBccEmails).flatten()
     }
 
-    override fun catchException(ex: Exception): ComposerResult.SendMail {
+    override fun catchException(ex: Exception): MailboxResult.SendMail {
         val message = createErrorMessage(ex)
-        return ComposerResult.SendMail.Failure(message)
+        return MailboxResult.SendMail.Failure(message)
     }
 
     private fun checkEncryptionKeysOperation(mailRecipients: MailRecipients): Result<Unit, Exception> =
@@ -114,24 +118,24 @@ class SendMailWorker(private val signalClient: SignalClient,
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
-                            subject = uiData.subject,
+                            subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = null)
                     apiClient.postEmail(requestBody)
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }
 
-    override fun work(): ComposerResult.SendMail? {
+    override fun work(): MailboxResult.SendMail? {
         val mailRecipients = getMailRecipients()
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }
                 .flatMap(sendEmailOperation)
 
         return when (result) {
-            is Result.Success -> ComposerResult.SendMail.Success()
+            is Result.Success -> MailboxResult.SendMail.Success()
             is Result.Failure -> {
                 val message = createErrorMessage(result.error)
-                ComposerResult.SendMail.Failure(message)
+                MailboxResult.SendMail.Failure(message)
             }
         }
     }

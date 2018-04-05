@@ -1,9 +1,6 @@
 package com.email.db
 
-import android.content.Context
-import android.util.Log
 import com.email.db.models.*
-import com.email.db.seeders.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.labelChooser.data.LabelWrapper
 
@@ -34,7 +31,8 @@ interface MailboxLocalDB {
             oldestEmailThread: EmailThread?,
             offset: Int): List<EmailThread>
 
-    class Default(applicationContext: Context): MailboxLocalDB {
+    class Default(private val db: AppDatabase): MailboxLocalDB {
+
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
             val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
             db.emailLabelDao().insert(EmailLabel(
@@ -77,7 +75,6 @@ interface MailboxLocalDB {
             return db.emailLabelDao().insert(emailLabel)
         }
 
-        private val db = AppDatabase.getAppDatabase(applicationContext)
 
         override fun getAllEmailThreads(): List<EmailThread> {
             return db.emailDao().getAll().map { email ->

@@ -4,24 +4,14 @@ import android.support.test.espresso.Espresso.onIdle
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.typeText
 import android.support.test.espresso.matcher.ViewMatchers.*
-import android.support.test.rule.ActivityTestRule
+import com.email.MailboxActivity
 import com.email.R
 import com.email.api.ApiCall
-import com.email.db.KeyValueStorage
-import com.email.db.TestDatabase
-import com.email.signal.InDBUser
 import com.email.signal.InMemoryUser
-import com.email.signal.SignalKeyGenerator
-import com.email.signal.TestUser
-import com.email.utils.ExpectedRequest
-import com.email.utils.TestActivity
-import com.email.utils.assertSentRequests
-import com.email.utils.enqueueSuccessfulResponses
-import okhttp3.mockwebserver.MockResponse
+import com.email.utils.*
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,49 +21,27 @@ import org.junit.Test
 
 class ComposerSceneTest {
 
-    @get:Rule
-    val mActivityRule = ActivityTestRule(TestActivity::class.java)
-    private val keyGenerator = SignalKeyGenerator.Default()
     private val server = MockWebServer()
-    private lateinit var db: TestDatabase
-    private lateinit var storage: KeyValueStorage
-    private lateinit var controller: ComposerController
-    private lateinit var model: ComposerModel
 
-    private lateinit var currentUser: TestUser
 
     init {
         ApiCall.baseUrl = server.url("v1/mock").toString()
     }
 
-
-    @Before
-    fun setup() {
-        val activity = mActivityRule.activity
-
-        db = TestDatabase.getAppDatabase(activity)
-        db.resetDao().deleteAllData(1)
-
-        storage = KeyValueStorage.SharedPrefs(activity)
-        currentUser = InDBUser(db, storage, keyGenerator, "gabriel", 1).setup()
-
-        activity.setLayoutOnUiThread(R.layout.activity_composer)
-
-        onIdle()
-
-        model = ComposerModel()
-        controller = ComposerActivity.initController(db, activity, activity, model)
-        activity.controller = controller
-    }
+    @get:Rule
+    val mActivityRule = ActivityWithActiveUserTestRule(ComposerActivity::class.java, { ComposerModel() })
 
     @Test
-    fun should_send_new_email_to_server_without_issues_and_close_the_composer() {
-        val recipientUser = InMemoryUser(keyGenerator, "mayer", 1)
+    fun should_write_new_email_without_issues_and_switch_to_mailbox() {
+        val act = mActivityRule.activity
+        val controller = act.controller
+
+        // create recipient in memory and mock keybundle server response
+        val recipientUser = InMemoryUser(mActivityRule.keyGenerator, "mayer", 1)
         val recipientKeyBundle = recipientUser.fetchAPreKeyBundle().toJSON().toString()
 
+        // [POST /keybundle res, POST /email res]
         server.enqueueSuccessfulResponses(listOf("[$recipientKeyBundle]", "OK"))
-
-        mActivityRule.activity.startOnUiThread()
 
         // input email data
         onView(withId(ComposerScene.INPUT_BODY_ID))
@@ -87,9 +55,14 @@ class ComposerSceneTest {
         controller.onOptionsItemSelected(R.id.composer_send)
         onIdle()
 
-        // should be finishing if all went ok
-        mActivityRule.activity.isFinishing `shouldBe` true
+        // should be finishing composer and launching mailbox if all went ok
+        act.isFinishing shouldBe true
+        didLaunchActivity(MailboxActivity::class.java)
 
+        // wait for activity transition
+        Thread.sleep(500)
+
+        // assert that mail was correctly encrypted and sent to server
         server.assertSentRequests(listOf(
             ExpectedRequest(needsJwt = true, method = "POST",  path = "/keybundle",
             assertBodyFn = { json ->
@@ -106,46 +79,6 @@ class ComposerSceneTest {
                 subject shouldEqual "test email"
                 val recipients = json.getJSONArray("criptextEmails")
                 recipients.length() shouldEqual 1
-            })
-        ))
-    }
-
-    @Test
-    fun should_show_error_if_server_could_not_post_new_email() {
-
-        val recipientUser = InMemoryUser(keyGenerator, "mayer", 1)
-        val recipientKeyBundle = recipientUser.fetchAPreKeyBundle().toJSON().toString()
-
-        server.enqueueSuccessfulResponses(listOf("[$recipientKeyBundle]"))
-        server.enqueue(MockResponse().setResponseCode(500).setBody("Internal Server Error"))
-
-
-        mActivityRule.activity.startOnUiThread()
-
-        // input email data
-        onView(withId(ComposerScene.INPUT_BODY_ID))
-                .perform(typeText("Hello this is a test."))
-        onView(withId(ComposerScene.INPUT_TO_ID))
-                .perform(typeText("mayer@jigl.com"))
-        onView(withId(ComposerScene.INPUT_SUBJECT_ID))
-                .perform(typeText("test email"))
-
-        // press send
-        controller.onOptionsItemSelected(R.id.composer_send)
-        onIdle()
-
-        mActivityRule.activity.isFinishing `shouldBe` false
-
-
-        server.assertSentRequests(listOf(
-            ExpectedRequest(needsJwt = true, method = "POST",  path = "/keybundle",
-            assertBodyFn = { json ->
-                val recipients = json.getJSONArray("recipients")
-                recipients.length() shouldEqual 1
-                recipients[0] shouldEqual "mayer"
-
-                val knownAddresses = json.getJSONObject("knownAddresses")
-                knownAddresses.length() shouldEqual 0
             })
         ))
     }

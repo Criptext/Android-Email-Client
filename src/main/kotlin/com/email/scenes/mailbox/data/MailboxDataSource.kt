@@ -4,6 +4,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
@@ -17,6 +18,7 @@ class MailboxDataSource(
         private val signalClient: SignalClient,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
+        private val rawSessionDao: RawSessionDao,
         private val mailboxLocalDB: MailboxLocalDB )
     : WorkHandler<MailboxRequest, MailboxResult>() {
     override fun createWorkerFromParams(
@@ -51,7 +53,12 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
-
+            is MailboxRequest.SendMail -> SendMailWorker(
+                    signalClient = signalClient,
+                    activeAccount = activeAccount,
+                    rawSessionDao = rawSessionDao,
+                    composerInputData = params.data,
+                    publishFn = { res -> flushResults(res) })
         }
     }
 

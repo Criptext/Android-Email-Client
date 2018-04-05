@@ -18,13 +18,13 @@ class FeedSeeder {
         var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(feedDao: FeedDao){
-            feedItems = feedDao.getAll()
-            feedDao.deleteAll(feedItems)
+            feedItems = feedDao.getAllFeedItems()
+            feedDao.deleteFeedItems(feedItems)
             feedItems = mutableListOf()
             for (a in 1..5){
                 feedItems += fillFeed(a)
             }
-            feedDao.insertAll(feedItems)
+            feedDao.insertFeedItems(feedItems)
         }
 
         private fun fillFeed(iteration: Int): FeedItem {

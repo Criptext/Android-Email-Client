@@ -22,6 +22,7 @@ class FeedRecyclerView(feedItemsList: VirtualList<ActivityFeedItem>, recyclerVie
         recyclerView.adapter = feedAdapter
     }
 
+
     fun setFeedClickListener(feedClickListener: FeedItemHolder.FeedClickListener?){
         feedAdapter.listener = feedClickListener
     }

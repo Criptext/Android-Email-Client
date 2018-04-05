@@ -7,11 +7,8 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
-import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
-import com.email.signal.SignalClient
-import com.email.signal.SignalStoreCriptext
 
 
 class ComposerActivity : BaseActivity() {
@@ -29,12 +26,7 @@ class ComposerActivity : BaseActivity() {
                            model: ComposerModel): ComposerController {
             val view = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
             val scene = ComposerScene.Default(view)
-            val activeAccount = ActiveAccount.loadFromStorage(activity)
-            val dataSource = ComposerDataSource(
-                    signalClient = SignalClient.Default(SignalStoreCriptext(appDB)),
-                    activeAccount = activeAccount!!,
-                    rawSessionDao = appDB.rawSessionDao(),
-                    runner = AsyncTaskWorkRunner())
+            val dataSource = ComposerDataSource(runner = AsyncTaskWorkRunner())
 
             return ComposerController(model = model, scene = scene, dataSource = dataSource,
                     host = hostActivity)

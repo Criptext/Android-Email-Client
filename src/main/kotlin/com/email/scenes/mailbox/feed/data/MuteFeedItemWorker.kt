@@ -1,13 +1,13 @@
 package com.email.scenes.mailbox.feed.data
 
-import com.email.db.FeedLocalDB
 import com.email.bgworker.BackgroundWorker
+import com.email.db.dao.FeedDao
 
 /**
  * Created by gabriel on 2/21/18.
  */
 
-class MuteFeedItemWorker(private val db: FeedLocalDB,
+class MuteFeedItemWorker(private val db: FeedDao,
                          private val params: FeedRequest.MuteFeedItem,
                          override val publishFn: (FeedResult.MuteFeedItem) -> Unit)
     : BackgroundWorker<FeedResult.MuteFeedItem> {
@@ -20,7 +20,7 @@ class MuteFeedItemWorker(private val db: FeedLocalDB,
     }
 
     override fun work(): FeedResult.MuteFeedItem? {
-        db.muteFeedItem(params.id, params.isMuted)
+        db.toggleMuteFeedItem(params.id, params.isMuted)
         return FeedResult.MuteFeedItem.Success()
     }
 

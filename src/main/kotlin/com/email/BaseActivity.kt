@@ -3,8 +3,10 @@ package com.email
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.VisibleForTesting
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.ActivityMessage
@@ -44,7 +46,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
      */
     abstract val toolbarId: Int?
 
-    private lateinit var controller: SceneController
+    lateinit var controller: SceneController
+    lateinit var model: Any
 
     /**
      * Called during `onCreate` to create a controller for this activity given the current active
@@ -71,8 +74,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             setSupportActionBar(toolbar)
         }
 
-        val currentModel = getCachedModelOrThrow()
-        controller = initController(currentModel)
+        model = getCachedModelOrThrow()
+        controller = initController(model)
     }
 
     override fun onStart() {
@@ -155,9 +158,11 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         progressDialog.dismiss()
     }
 
-    private companion object {
-        val cachedModels = HashMap<Class<*>, Any>()
-        var activityMessage: ActivityMessage? = null
+
+
+    companion object {
+        private val cachedModels = HashMap<Class<*>, Any>()
+        private var activityMessage: ActivityMessage? = null
 
         init {
             // set initial state
@@ -165,6 +170,12 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             cachedModels[SignInActivity::class.java] = SignInSceneModel()
             cachedModels[SignUpActivity::class.java] = SignUpSceneModel()
         }
+
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        fun setCachedModel(clazz: Class<*>, model: Any) {
+            cachedModels[clazz] = model
+        }
+
     }
 
 }

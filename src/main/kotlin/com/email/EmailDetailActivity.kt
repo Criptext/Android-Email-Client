@@ -4,6 +4,7 @@ import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.EmailDetailScene
@@ -24,7 +25,7 @@ class  EmailDetailActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val mailboxDB: MailboxLocalDB.Default = MailboxLocalDB.
-                Default(this.applicationContext)
+                Default(AppDatabase.getAppDatabase(this.applicationContext))
         val db: EmailDetailLocalDB.Default =
                 EmailDetailLocalDB.Default(this.applicationContext)
         val emailDetailModel = receivedModel as EmailDetailSceneModel
@@ -43,7 +44,8 @@ class  EmailDetailActivity: BaseActivity() {
                         signalClient = signalClient,
                         activeAccount = activeAccount!!,
                         mailboxLocalDB = mailboxDB,
-                        runner = AsyncTaskWorkRunner()),
+                        runner = AsyncTaskWorkRunner(),
+                        rawSessionDao = appDB.rawSessionDao()),
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDetailLocalDB = db,

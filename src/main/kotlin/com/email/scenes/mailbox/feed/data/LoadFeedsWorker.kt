@@ -1,13 +1,13 @@
 package com.email.scenes.mailbox.feed.data
 
-import com.email.db.FeedLocalDB
 import com.email.bgworker.BackgroundWorker
+import com.email.db.dao.FeedDao
 
 /**
  * Created by gabriel on 2/19/18.
  */
 
-class LoadFeedsWorker(private val db: FeedLocalDB,
+class LoadFeedsWorker(private val db: FeedDao,
                       override val publishFn: (FeedResult.LoadFeed) -> Unit)
     : BackgroundWorker<FeedResult.LoadFeed> {
 
@@ -19,7 +19,7 @@ class LoadFeedsWorker(private val db: FeedLocalDB,
     override val canBeParallelized = true
 
     override fun work(): FeedResult.LoadFeed {
-        val items = db.getFeedItems()
+        val items = db.getAllFeedItems()
         return FeedResult.LoadFeed.Success(items)
     }
 

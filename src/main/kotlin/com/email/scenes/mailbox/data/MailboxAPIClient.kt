@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.api.ApiCall
+import com.email.scenes.composer.data.PostEmailBody
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -28,6 +29,16 @@ class MailboxAPIClient(private val token: String) {
                 token = token,
                 uuid= uuid
                 )
+        return ApiCall.executeRequest(client, request)
+    }
+
+    fun findKeyBundles(recipients: List<String>, knownAddresses: Map<String, List<Int>>): String {
+        val request = ApiCall.findKeyBundles(token, recipients, knownAddresses)
+        return ApiCall.executeRequest(client, request)
+    }
+
+    fun postEmail(postEmailBody: PostEmailBody): String {
+        val request = ApiCall.postEmail(token, postEmailBody)
         return ApiCall.executeRequest(client, request)
     }
 

@@ -13,7 +13,8 @@ import org.json.JSONObject
  * Created by gabriel on 3/22/18.
  */
 
-data class ExpectedRequest(val needsJwt: Boolean, val method: String, val path: String, val assertBodyFn: ((JSONObject) -> Unit)?)
+data class ExpectedRequest(val needsJwt: Boolean, val method: String, val path: String,
+                           val assertBodyFn: ((JSONObject) -> Unit)?)
 
 fun MockWebServer.enqueueSuccessfulResponses(responses: List<String>) {
     responses.forEach { resBody ->
@@ -34,7 +35,7 @@ private fun assertRequestContainsJwt(recordedRequest: RecordedRequest) {
 
 fun MockWebServer.assertSentRequests(expectedRequests: List<ExpectedRequest>) {
     expectedRequests.forEach { expectedRequest ->
-        val recordedRequest = this.takeRequest()
+        val recordedRequest = this.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
         recordedRequest.path shouldEndWith expectedRequest.path
         recordedRequest.method shouldEqual expectedRequest.method
 

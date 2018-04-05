@@ -1,6 +1,8 @@
 package com.email.scenes.emailDetail
 
 import com.email.db.DeliveryTypes
+import com.email.db.dao.signal.RawSessionDao
+import com.email.db.dao.signal.mocks.MockedRawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
@@ -56,7 +58,7 @@ class EmailDetailControllerTest {
                 signalClient = signalClient,
                 runner = MockedWorkRunner(),
                 activeAccount = activeAccount,
-                mailboxLocalDB = mailboxDb)
+                mailboxLocalDB = mailboxDb, rawSessionDao = MockedRawSessionDao())
 
         dataSource = EmailDetailDataSource(
                 signalClient = signalClient,
