@@ -39,7 +39,7 @@ interface MailboxLocalDB {
     fun deleteRelationByEmailIds(emailIds: List<Int>)
     fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label
 
-    class Default(applicationContext: Context): MailboxLocalDB {
+    class Default(private val db: AppDatabase): MailboxLocalDB {
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
             val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
             db.emailLabelDao().insert(EmailLabel(
