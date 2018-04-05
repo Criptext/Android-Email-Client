@@ -28,4 +28,8 @@ interface LabelDao {
             LIMIT 1""")
     fun get(labelTextType: LabelTextTypes): Label
 
+    @Query("""SELECT * FROM label
+            WHERE text in (:labelTextTypes)""")
+    fun get(labelTextTypes: List<String>): List<Label>
+
 }

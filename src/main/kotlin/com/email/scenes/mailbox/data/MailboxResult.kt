@@ -10,6 +10,13 @@ import com.email.utils.UIMessage
 
 sealed class MailboxResult {
 
+    sealed class UpdateEmailThreadsLabelsRelations: MailboxResult() {
+        class Success: UpdateEmailThreadsLabelsRelations()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception) : UpdateEmailThreadsLabelsRelations()
+    }
+
     sealed class GetLabels : MailboxResult() {
         class Success(val labels: List<Label>,
                       val defaultSelectedLabels: List<Label>): GetLabels()

@@ -15,7 +15,6 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
             object : LabelChooserDialog.DialogLabelsListener {
                 override fun onDialogPositiveClick() {
                     labelDataHandler.createRelationEmailLabels(model.selectedLabels)
-                    clearSelectedLabels()
                 }
 
                 override fun onDialogNegativeClick() {
@@ -39,10 +38,6 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
         labelWrapper.isSelected = false
         model.selectedLabels.remove(labelWrapper)
         scene.notifyLabelWrapperChanged(position)
-    }
-
-    fun clearSelectedLabels() {
-        model.selectedLabels.clear()
     }
 
     fun start() {

@@ -15,6 +15,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
+import com.email.db.LabelTextTypes
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -39,7 +40,10 @@ interface MailboxScene: ThreadListView {
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+    fun attachView(
+            mailboxLabel: LabelTextTypes,
+            threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+                   onDrawerMenuItemListener: DrawerMenuItemListener,
                    onScrollListener: OnScrollListener)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
@@ -53,10 +57,13 @@ interface MailboxScene: ThreadListView {
     fun refreshMails()
     fun clearRefreshing()
     fun showError(message : UIMessage)
+    fun toggleShowThreadListLoader(show: Boolean)
+    fun hideDrawer()
+    fun showRefresh()
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val threadList: VirtualList<EmailThread>)
+                           val threadList: VirtualList<EmailThread?>)
         : MailboxScene {
 
         override fun showSyncingDialog() {
@@ -114,7 +121,9 @@ interface MailboxScene: ThreadListView {
             }
 
         override fun attachView(
+                mailboxLabel: LabelTextTypes,
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+                onDrawerMenuItemListener: DrawerMenuItemListener,
                 onScrollListener: OnScrollListener){
 
             threadRecyclerView = ThreadRecyclerView(
@@ -125,7 +134,7 @@ interface MailboxScene: ThreadListView {
 
             this.threadListener = threadEventListener
 
-            drawerMenuView = DrawerMenuView(leftNavigationView)
+            drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
             openComposerButton.setOnClickListener {
                 observer?.onOpenComposerButtonClicked()
@@ -228,6 +237,10 @@ interface MailboxScene: ThreadListView {
             }
         }
 
+        override fun showRefresh() {
+            refreshLayout.isRefreshing = true
+        }
+
         override fun clearRefreshing() {
             refreshLayout.isRefreshing = false
         }
@@ -239,6 +252,18 @@ interface MailboxScene: ThreadListView {
                     context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
+        }
+
+        override fun toggleShowThreadListLoader(show: Boolean) {
+            if(show) {
+                threadRecyclerView.notifyThreadSetChanged()
+            } else {
+               TODO("REMOVE LOADER FROM RECYCLERVIEW")
+            }
+        }
+
+        override fun hideDrawer() {
+            drawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 }
