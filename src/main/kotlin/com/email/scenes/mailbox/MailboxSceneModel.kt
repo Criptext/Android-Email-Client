@@ -24,7 +24,7 @@ class MailboxSceneModel : SceneModel {
     var shouldShowPartialUpdateInUI = false
     var mailToSend: UIData? = null
 
-    val offset = 10 // We load 10 emails in each scroll
+    val offset = 20 // We load 20 emails in each scroll
     var oldestEmailThread: EmailThread? = null
         get() = if(threads.isEmpty()) null else threads.last()
     var reachEnd = false
