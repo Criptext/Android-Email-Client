@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox.data
 
+import com.email.db.LabelTextTypes
 import com.email.db.models.Label
-import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.utils.UIMessage
 
 /**
@@ -18,28 +18,47 @@ sealed class MailboxResult {
                 val exception: Exception) : GetLabels()
     }
 
-    sealed class UpdateMailbox : MailboxResult() {
-        abstract fun getDestinationMailbox(): String
-        data class Success(
-                val mailboxLabel: String,
-                val mailboxThreads: List<EmailThread>,
-                val isManual: Boolean): UpdateMailbox() {
-            override fun getDestinationMailbox(): String {
+    sealed class LoadEmailThreads : MailboxResult() {
+        abstract fun getDestinationMailbox(): LabelTextTypes
+        class Success(
+                val emailThreads: List<EmailThread>,
+                val mailboxLabel: LabelTextTypes): LoadEmailThreads() {
+
+            override fun getDestinationMailbox(): LabelTextTypes {
                 return mailboxLabel
             }
         }
 
         data class Failure(
-                val mailboxLabel: String,
-                val message: UIMessage ): UpdateMailbox() {
-            override fun getDestinationMailbox(): String {
+                val mailboxLabel: LabelTextTypes,
+                val message: UIMessage,
+                val exception: Exception) : LoadEmailThreads() {
+
+            override fun getDestinationMailbox(): LabelTextTypes {
                 return mailboxLabel
             }
         }
     }
 
-    sealed class LoadThreads {
+    sealed class UpdateMailbox : MailboxResult() {
+        abstract fun getDestinationMailbox(): LabelTextTypes
+        data class Success(
+                val mailboxLabel: LabelTextTypes,
+                val mailboxThreads: List<EmailThread>,
+                val isManual: Boolean): UpdateMailbox() {
 
+            override fun getDestinationMailbox(): LabelTextTypes {
+                return mailboxLabel
+            }
+        }
+
+        data class Failure(
+                val mailboxLabel: LabelTextTypes,
+                val message: UIMessage ): UpdateMailbox() {
+            override fun getDestinationMailbox(): LabelTextTypes {
+                return mailboxLabel
+            }
+        }
     }
 }
 

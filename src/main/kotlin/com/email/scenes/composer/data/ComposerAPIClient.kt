@@ -1,9 +1,9 @@
 package com.email.scenes.composer.data
 
 import com.email.api.ApiCall
-import com.email.utils.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
 /**
  * Created by gabriel on 3/15/18.

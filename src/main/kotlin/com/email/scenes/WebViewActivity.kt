@@ -84,7 +84,7 @@ class WebViewActivity : AppCompatActivity() {
         webViewCriptext.webChromeClient = WebChromeClient()
         webViewCriptext.settings.javaScriptEnabled = true
         webViewCriptext.settings.userAgentString = userAgent
-        webViewCriptext.setWebViewClient(client)
+        webViewCriptext.webViewClient = client
         webViewCriptext.setDownloadListener(downloadListener)
 
         val javascriptInterface = DownloadBlobInterface(this, intent.getStringExtra("name") ?: "noname")

@@ -10,7 +10,7 @@ object MailboxData {
         constructor(): this(null)
     }
 
-    class LoadThreadsWorkData(val result: MailboxResult.LoadThreads?) {
+    class LoadThreadsWorkData(val result: MailboxResult.LoadEmailThreads?) {
         constructor(): this(null)
     }
 

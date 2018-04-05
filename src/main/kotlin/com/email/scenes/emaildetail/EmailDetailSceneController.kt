@@ -175,6 +175,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     override fun onStop() {
+        dataSource.listener = null
+        mailboxDataSource.listener = null
     }
 
     override fun onBackPressed(): Boolean {

@@ -29,9 +29,12 @@ interface MailboxLocalDB {
     fun addEmail(email: Email) : Int
     fun createLabelsForEmailInbox(insertedEmailId: Int)
     fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes)
+    fun getEmailsFromMailboxLabel(
+            labelTextTypes: LabelTextTypes,
+            oldestEmailThread: EmailThread?,
+            offset: Int): List<EmailThread>
 
     class Default(applicationContext: Context): MailboxLocalDB {
-
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
             val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
             db.emailLabelDao().insert(EmailLabel(
@@ -102,13 +105,6 @@ interface MailboxLocalDB {
 
         override fun seed() {
             try {
-  /*            LabelSeeder.seed(db.labelDao())
-                EmailSeeder.seed(db.emailDao())
-                EmailLabelSeeder.seed(db.emailLabelDao())
-                ContactSeeder.seed(db.contactDao())
-                FileSeeder.seed(db.fileDao())
-                OpenSeeder.seed(db.openDao())
-                EmailContactSeeder.seed(db.emailContactDao())*/
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -196,6 +192,38 @@ interface MailboxLocalDB {
                         emailId = insertedEmailId,
                         type = type)
             }
+        }
+
+        override fun getEmailsFromMailboxLabel(
+                labelTextTypes: LabelTextTypes,
+                oldestEmailThread: EmailThread?,
+                offset: Int): List<EmailThread> {
+            val labels = db.labelDao().getAll()
+            val selectedLabel = labels.findLast {label ->
+                label.text == labelTextTypes
+            }?.id
+            val rejectedLabels = labels.filter {label ->
+                label.text != labelTextTypes
+            }.map {
+                it.id!!
+            }
+            val emails: List<Email>
+            if(oldestEmailThread != null) {
+                emails =  db.emailDao().getEmailThreadsFromMailboxLabel(
+                        starterDate = oldestEmailThread.timestamp,
+                        rejectedLabels = rejectedLabels,
+                        selectedLabel = selectedLabel!!,
+                        offset = offset )
+
+            } else {
+                emails =  db.emailDao().getInitialEmailThreadsFromMailboxLabel(
+                        rejectedLabels = rejectedLabels,
+                        selectedLabel = selectedLabel!!,
+                        offset = offset )
+            }
+            return emails.map { email ->
+                getEmailThreadFromEmail(email)
+            } as ArrayList<EmailThread>
         }
     }
 

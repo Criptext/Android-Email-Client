@@ -11,6 +11,7 @@ import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
 import com.email.db.models.Account
 import com.email.db.models.ActiveAccount
+import com.email.db.seeders.LabelSeeder
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result

@@ -32,6 +32,7 @@ interface EmailDetailScene {
     fun onFetchedLabels(
             defaultSelectedLabels: List<Label>,
             labels: List<Label>)
+
     fun onDecryptedBody(decryptedText: String)
 
     class EmailDetailSceneView(

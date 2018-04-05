@@ -41,6 +41,17 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+
+            is MailboxRequest.LoadEmailThreads -> LoadEmailThreadsWorker(
+                    db = mailboxLocalDB,
+                    activeAccount = activeAccount,
+                    labelTextTypes = params.label,
+                    offset = params.offset,
+                    oldestEmailThread = params.oldestEmailThread,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
         }
     }
 

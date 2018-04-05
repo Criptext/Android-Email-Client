@@ -9,7 +9,6 @@ import com.email.signal.SignalKeyGenerator
  */
 
 class MockedSignUpLocalDB : SignUpLocalDB {
-
     var savedUser: Account? = null
     private set
 
