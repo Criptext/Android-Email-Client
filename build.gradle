@@ -120,7 +120,6 @@ dependencies {
 
     //Http client
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
 
