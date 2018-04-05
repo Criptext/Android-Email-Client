@@ -15,6 +15,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.androidui.mailthread.ThreadListView
 import com.email.androidui.mailthread.ThreadRecyclerView
+import com.email.db.LabelTextTypes
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -39,7 +40,9 @@ interface MailboxScene: ThreadListView {
     fun initDrawerLayout()
     fun initNavHeader(fullName: String)
     fun onBackPressed(): Boolean
-    fun attachView(threadEventListener: EmailThreadAdapter.OnThreadEventListener,
+    fun attachView(
+            mailboxLabel: LabelTextTypes,
+            threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                    onDrawerMenuItemListener: DrawerMenuItemListener,
                    onScrollListener: OnScrollListener)
     fun refreshToolbarItems()
@@ -118,6 +121,7 @@ interface MailboxScene: ThreadListView {
             }
 
         override fun attachView(
+                mailboxLabel: LabelTextTypes,
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 onScrollListener: OnScrollListener){

@@ -55,6 +55,10 @@ class LoadEmailThreadsWorker(
                 db.getLabelsFromLabelType(
                         labelTextTypes = commonRejectedLabels)
             }
+            LabelTextTypes.SPAM -> {
+                db.getLabelsFromLabelType(
+                        labelTextTypes = listOf(LabelTextTypes.TRASH))
+            }
             else -> {
                 emptyList()
             }

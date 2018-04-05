@@ -38,7 +38,6 @@ class ToolbarHolder(val view: View) {
         navButton.visibility = View.VISIBLE
         numberEmails.visibility = View.VISIBLE
         backButton.visibility = View.GONE
-        title.text = "INBOX"
     }
 
     fun updateToolbarTitle(title: String) {
