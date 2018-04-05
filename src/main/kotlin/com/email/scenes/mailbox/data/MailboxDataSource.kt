@@ -7,6 +7,7 @@ import com.email.db.MailboxLocalDB
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
+import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.signal.SignalClient
 
@@ -59,19 +60,20 @@ class MailboxDataSource(
                     rawSessionDao = rawSessionDao,
                     composerInputData = params.data,
                     publishFn = { res -> flushResults(res) })
+
+            is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsRelationsWorker(
+                    db = mailboxLocalDB,
+                    activeAccount = activeAccount,
+                    selectedEmailThreads = params.selectedEmailThreads,
+                    selectedLabels = params.selectedLabels,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 
     fun getNotArchivedEmailThreads(): List<EmailThread> {
         return mailboxLocalDB.getNotArchivedEmailThreads()
-    }
-
-    fun getAllLabels(): List<LabelWrapper> {
-        return mailboxLocalDB.getAllLabelWrappers()
-    }
-
-    fun getArchivedEmailThreads(): List<EmailThread> {
-        return mailboxLocalDB.getArchivedEmailThreads()
     }
 
     fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
@@ -82,7 +84,7 @@ class MailboxDataSource(
     }
 
     fun deleteEmailThreads(emailThreads: List<EmailThread>) {
-        mailboxLocalDB.deleteEmailThreads(emailThreads)
+        mailboxLocalDB.moveSelectedEmailThreadsToTrash(emailThreads)
     }
 
     fun updateUnreadStatus(emailThreads: List<EmailThread>,
@@ -91,9 +93,6 @@ class MailboxDataSource(
         mailboxLocalDB.updateUnreadStatus(emailThreads,
                 updateUnreadStatus)
 
-    }
-    fun createLabelEmailRelation(labelId: Int, emailId: Int) {
-        return mailboxLocalDB.createLabelEmailRelation(labelId, emailId)
     }
 
     fun  moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
@@ -104,7 +103,4 @@ class MailboxDataSource(
         mailboxLocalDB.moveSelectedEmailThreadsToSpam(emailThreads)
     }
 
-    interface Listener {
-        fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox)
-    }
 }

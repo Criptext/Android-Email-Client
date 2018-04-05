@@ -36,8 +36,9 @@ interface MailboxLocalDB {
 
      fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label>
 
-    class Default(applicationContext: Context): MailboxLocalDB {
+    fun deleteRelationByEmailIds(emailIds: List<Int>)
 
+    class Default(applicationContext: Context): MailboxLocalDB {
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
             val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
             db.emailLabelDao().insert(EmailLabel(
@@ -142,7 +143,13 @@ interface MailboxLocalDB {
 
         override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
             val emails = emailThreads.map {
-                    it.latestEmail.email.isTrash = true
+                val trashLabel = db.labelDao().get(LabelTextTypes.TRASH)
+                db.emailLabelDao().insert(
+                        EmailLabel(
+                                emailId = it.id,
+                                labelId = trashLabel.id!!))
+
+                it.latestEmail.email.isTrash = true
                     it.latestEmail.email
                 }
 
@@ -235,6 +242,9 @@ interface MailboxLocalDB {
             }
             return db.labelDao().get(stringLabelTypes)
         }
-    }
 
+        override fun deleteRelationByEmailIds(emailIds: List<Int>) {
+            db.emailLabelDao().deleteRelationByEmailIds(emailIds)
+        }
+    }
 }
