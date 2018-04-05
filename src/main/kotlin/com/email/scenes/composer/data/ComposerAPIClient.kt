@@ -2,7 +2,6 @@ package com.email.scenes.composer.data
 
 import com.email.api.ApiCall
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 import kotlin.math.log
 
@@ -12,11 +11,8 @@ import kotlin.math.log
 
 class ComposerAPIClient(private val token: String) {
 
-    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)!!
-
     private val client = OkHttpClient()
             .newBuilder()
-            .addInterceptor(logging)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .build()
