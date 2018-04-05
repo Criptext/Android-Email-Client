@@ -62,6 +62,7 @@ class MailboxDataSource(
                     publishFn = { res -> flushResults(res) })
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsRelationsWorker(
+                    chosenLabel = params.chosenLabel,
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
                     selectedEmailThreads = params.selectedEmailThreads,

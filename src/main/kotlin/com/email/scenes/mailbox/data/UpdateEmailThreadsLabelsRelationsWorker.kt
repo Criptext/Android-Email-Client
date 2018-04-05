@@ -2,9 +2,11 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.db.LabelTextTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
@@ -14,7 +16,8 @@ import com.email.utils.UIMessage
 class UpdateEmailThreadsLabelsRelationsWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
-        private val selectedLabels: SelectedLabels,
+        private val chosenLabel: LabelTextTypes?,
+        private val selectedLabels: SelectedLabels?,
         private val selectedEmailThreads: List<EmailThread>,
         override val publishFn: (
                 MailboxResult.UpdateEmailThreadsLabelsRelations) -> Unit)
@@ -35,13 +38,21 @@ class UpdateEmailThreadsLabelsRelationsWorker(
             it.id
         }
         db.deleteRelationByEmailIds(emailIds = emailIds)
-        emailIds.forEach{ emailId ->
-            selectedLabels.toIDs().forEach{labelId ->
-                db.createLabelEmailRelation(
-                        emailId = emailId,
-                        labelId = labelId)
-            }
+        val selectedLabels: SelectedLabels?
+        if(chosenLabel == null) {
+            selectedLabels = this.selectedLabels
+        } else {
+            selectedLabels = SelectedLabels()
+                    selectedLabels.add(
+                            LabelWrapper(db.getLabelFromLabelType(chosenLabel)))
         }
+            emailIds.forEach{ emailId ->
+                selectedLabels?.toIDs()?.forEach{labelId ->
+                    db.createLabelEmailRelation(
+                            emailId = emailId,
+                            labelId = labelId)
+                }
+            }
 
         return MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
     }

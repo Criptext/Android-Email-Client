@@ -16,7 +16,8 @@ sealed class MailboxRequest{
             val label: LabelTextTypes): MailboxRequest()
 
     class UpdateEmailThreadsLabelsRelations(
-                val selectedLabels: SelectedLabels,
+            val chosenLabel: LabelTextTypes?,
+                val selectedLabels: SelectedLabels?,
                 val selectedEmailThreads: List<EmailThread>
             ): MailboxRequest()
 
