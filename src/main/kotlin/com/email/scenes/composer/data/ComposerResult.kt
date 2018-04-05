@@ -7,10 +7,6 @@ import com.email.utils.UIMessage
  * Created by gabriel on 2/26/18.
  */
 sealed class ComposerResult {
-    sealed class SendMail: ComposerResult() {
-        class Success: SendMail()
-        data class Failure(val message: UIMessage): SendMail()
-    }
 
     sealed class SuggestContacts: ComposerResult() {
         data class Success(val suggestions: List<Contact>): SuggestContacts()

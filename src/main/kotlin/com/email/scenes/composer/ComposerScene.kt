@@ -9,7 +9,7 @@ import com.email.R
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.ContactCompletionView
 import com.email.scenes.composer.ui.ContactsFilterAdapter
-import com.email.scenes.composer.ui.UIData
+import com.email.scenes.composer.data.ComposerInputData
 import com.email.utils.UIMessage
 import com.tokenautocomplete.TokenCompleteTextView
 
@@ -20,8 +20,8 @@ import com.tokenautocomplete.TokenCompleteTextView
 
 interface ComposerScene {
     var observer: ComposerUIObserver?
-    fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: UIData)
-    fun getDataInputByUser(): UIData
+    fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, composerInputData: ComposerInputData)
+    fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
@@ -61,7 +61,7 @@ interface ComposerScene {
         }
         override var observer: ComposerUIObserver? = null
 
-        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: UIData) {
+        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: ComposerInputData) {
             bodyEditText.setText(uiData.body, TextView.BufferType.EDITABLE)
             uiData.to.forEach { contact ->
                 toInput.addObject(contact)
@@ -83,8 +83,8 @@ interface ComposerScene {
             toInput.onFocusChangeListener = onEditTextGotFocus
         }
 
-        override fun getDataInputByUser(): UIData {
-            return UIData(to = toInput.objects, cc = ccInput.objects, bcc = bccInput.objects,
+        override fun getDataInputByUser(): ComposerInputData {
+            return ComposerInputData(to = toInput.objects, cc = ccInput.objects, bcc = bccInput.objects,
                     subject = subjectEditText.text.toString(), body = bodyEditText.text.toString())
         }
 

@@ -60,5 +60,13 @@ sealed class MailboxResult {
             }
         }
     }
+
+    sealed class SendMail: MailboxResult() {
+        class Success: SendMail()
+        data class Failure(val message: UIMessage): SendMail()
+    }
+
+    sealed class LoadThreads {
+    }
 }
 

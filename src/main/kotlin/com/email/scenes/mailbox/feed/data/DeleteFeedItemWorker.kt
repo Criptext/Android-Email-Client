@@ -1,14 +1,14 @@
 package com.email.scenes.mailbox.feed.data
 
-import com.email.db.FeedLocalDB
 import com.email.db.models.FeedItem
 import com.email.bgworker.BackgroundWorker
+import com.email.db.dao.FeedDao
 
 /**
  * Created by gabriel on 2/20/18.
  */
 
-class DeleteFeedItemWorker(private val db: FeedLocalDB,
+class DeleteFeedItemWorker(private val db: FeedDao,
                            private val feedItem: FeedItem,
                            override val publishFn: (FeedResult.DeleteFeedItem) -> Unit)
     : BackgroundWorker<FeedResult.DeleteFeedItem> {
@@ -21,7 +21,7 @@ class DeleteFeedItemWorker(private val db: FeedLocalDB,
     }
 
     override fun work(): FeedResult.DeleteFeedItem? {
-        db.deleteFeedItem(feedItem.id!!)
+        db.deleteFeedItemById(feedItem.id!!)
         return FeedResult.DeleteFeedItem.Success()
     }
 

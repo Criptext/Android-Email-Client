@@ -47,6 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rawPreKeyDao(): RawPreKeyDao
     abstract fun rawIdentityKeyDao(): RawIdentityKeyDao
     abstract fun rawSignedPreKeyDao(): RawSignedPreKeyDao
+    abstract fun resetDao(): ResetDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 

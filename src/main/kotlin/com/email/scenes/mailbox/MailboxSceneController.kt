@@ -17,6 +17,7 @@ import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
+import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SearchParams
 import com.github.kittinunf.result.Result
 
@@ -34,6 +35,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.GetLabels -> onLabelsLoaded(result)
             is MailboxResult.UpdateMailbox -> dataSourceController.onMailboxUpdated(result)
             is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
+            is MailboxResult.SendMail -> onSendMailFinished(result)
         }
     }
 
@@ -47,6 +49,13 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.GetLabels.Failure -> {
 
             }
+        }
+    }
+
+    private fun onSendMailFinished(result: MailboxResult.SendMail) {
+        when (result) {
+            is MailboxResult.SendMail.Success -> host.finishScene()
+            is MailboxResult.SendMail.Failure -> scene.showError(result.message)
         }
     }
 
@@ -140,6 +149,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        return when (activityMessage) {
+            null -> false
+            is ActivityMessage.SendMail -> {
+                val newRequest = MailboxRequest.SendMail(activityMessage.composerInputData)
+                dataSource.submitRequest(newRequest)
+                true
+            }
+        }
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
         scene.attachView(threadEventListener, onScrollListener)
@@ -162,7 +182,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.setToolbarNumberOfEmails(emailThreadSize)
         feedController.onStart()
 
-        return false
+        return handleActivityMessage(activityMessage)
     }
 
     override fun onStop() {

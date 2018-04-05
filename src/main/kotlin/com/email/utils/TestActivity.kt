@@ -19,6 +19,8 @@ class TestActivity: AppCompatActivity(), IHostActivity {
     }
 
     lateinit var controller: SceneController
+    var exitParams: SceneParams? = null
+    var exitMessage: ActivityMessage? = null
 
     override fun refreshToolbarItems() {
         invalidateOptionsMenu()
@@ -46,11 +48,14 @@ class TestActivity: AppCompatActivity(), IHostActivity {
         runOnUiThread { setContentView(id) }
     }
 
-    fun startOnUiThread() {
-        runOnUiThread { controller.onStart(null) }
+    fun startOnUiThread(activityMessage: ActivityMessage?) {
+        runOnUiThread { controller.onStart(activityMessage) }
     }
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+        exitParams = params
+        exitMessage = activityMessage
+        finish()
     }
 
 }

@@ -28,7 +28,6 @@ import com.email.db.typeConverters.*
         ContactTypeConverter::class,
         LabelColorConverter::class)
 abstract class TestDatabase : AppDatabase() {
-    abstract fun resetDao(): ResetDao
 
     companion object {
         private var INSTANCE : TestDatabase? = null

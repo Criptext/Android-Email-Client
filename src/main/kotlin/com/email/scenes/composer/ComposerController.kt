@@ -7,11 +7,10 @@ import com.email.R
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
-import com.email.scenes.composer.data.ComposerRequest
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.composer.ui.ComposerUIObserver
-import com.email.scenes.composer.ui.UIData
+import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.params.MailboxParams
 import com.email.utils.UIMessage
 
@@ -42,18 +41,12 @@ class ComposerController(private val model: ComposerModel,
 
     private val dataSourceListener: (ComposerResult) -> Unit = { result ->
         when(result) {
-            is ComposerResult.SendMail -> onSendMailFinished(result)
+            is ComposerResult.SuggestContacts -> TODO("suggest contacts")
         }
     }
 
-    private fun onSendMailFinished(result: ComposerResult.SendMail) {
-        when (result) {
-            is ComposerResult.SendMail.Success -> host.finishScene()
-            is ComposerResult.SendMail.Failure -> scene.showError(result.message)
-        }
-    }
 
-    private fun updateModelWithInputData(data: UIData) {
+    private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
         model.to.addAll(data.to)
         model.cc.clear()
@@ -109,7 +102,7 @@ class ComposerController(private val model: ComposerModel,
             }
         }
 
-        scene.bindWithModel(firstTime = model.firstTime, uiData = UIData.fromModel(model),
+        scene.bindWithModel(firstTime = model.firstTime, composerInputData = ComposerInputData.fromModel(model),
                 defaultRecipients = model.defaultRecipients)
         scene.setContactSuggestionList(arrayOf(
                 Contact("gianni@criptext.com", "Gianni Carlo"),

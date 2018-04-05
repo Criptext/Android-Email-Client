@@ -1,8 +1,8 @@
 package com.email
 
+import android.app.Activity
 import android.view.Menu
 import android.view.ViewGroup
-import com.email.db.FeedLocalDB
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
@@ -32,35 +32,10 @@ class MailboxActivity : BaseActivity() {
     private lateinit var notificationMenuClickListener: () -> Unit
 
     override fun initController(receivedModel: Any): SceneController {
-        val db: MailboxLocalDB.Default = MailboxLocalDB.Default(this.applicationContext)
         val model = receivedModel as MailboxSceneModel
-        val activeAccount = ActiveAccount.loadFromStorage(this)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
-        val mailboxDataSource = MailboxDataSource(
-                signalClient = signalClient,
-                runner = AsyncTaskWorkRunner(),
-                activeAccount = activeAccount!!,
-                mailboxLocalDB = db)
 
-        mailboxDataSource.seed()
-        val rootView = findViewById<ViewGroup>(R.id.drawer_layout)
-        val scene = MailboxScene.MailboxSceneView(
-                mailboxView = rootView,
-                hostActivity = this,
-                threadList = VirtualEmailThreadList(model.threads)
-        )
-
-        val controller = MailboxSceneController(
-                scene = scene,
-                model = model,
-                host = this,
-                dataSource = mailboxDataSource,
-                feedController = initFeedController(model.feedModel)
-        )
-
-        notificationMenuClickListener = controller.menuClickListener
-        return controller
+        return Companion.initController(appDB, this, this, model)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -71,21 +46,47 @@ class MailboxActivity : BaseActivity() {
         return true
     }
 
-    private fun initFeedController(feedModel: FeedModel): FeedController{
-        val db : FeedLocalDB.Default = FeedLocalDB.Default(this.applicationContext)
-        db.seed()
-        val feedView = FeedView.Default(
-                feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
-                container = findViewById(R.id.nav_right_view)
-        )
-        return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(), db))
+    companion object {
+        private fun initFeedController(appDB: AppDatabase, activity: Activity,
+                                       feedModel: FeedModel): FeedController {
+            val feedView = FeedView.Default(
+                    feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
+                    container = activity.findViewById(R.id.nav_right_view)
+            )
+            return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(),
+                    appDB.feedDao()))
+        }
+
+        fun initController(appDB: AppDatabase, activity: Activity, hostActivity: IHostActivity,
+                           model: MailboxSceneModel): MailboxSceneController {
+            val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
+            val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+            val activeAccount = ActiveAccount.loadFromStorage(activity)
+            val mailboxDataSource = MailboxDataSource(
+                signalClient = signalClient,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = activeAccount!!,
+                rawSessionDao = appDB.rawSessionDao(),
+                mailboxLocalDB = db)
+
+            mailboxDataSource.seed()
+            val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
+
+            val scene = MailboxScene.MailboxSceneView(
+                        mailboxView = rootView,
+                        hostActivity = hostActivity,
+                        threadList = VirtualEmailThreadList(model.threads)
+                )
+
+            return MailboxSceneController(
+                    scene = scene,
+                    model = model,
+                    host = hostActivity,
+                    dataSource = mailboxDataSource,
+                    feedController = initFeedController(appDB, activity, model.feedModel)
+            )
+        }
     }
-
-
-    override fun refreshToolbarItems() {
-        this.invalidateOptionsMenu()
-    }
-
 
     private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
         : VirtualList<EmailThread> {

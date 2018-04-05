@@ -6,7 +6,7 @@ import com.email.scenes.mailbox.feed.data.DeleteFeedItemWorker
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.feed.data.LoadFeedsWorker
 import com.email.scenes.mailbox.feed.data.MuteFeedItemWorker
-import com.email.scenes.mailbox.feed.mocks.MockedFeedLocalDB
+import com.email.scenes.mailbox.feed.mocks.MockedFeedDao
 import com.email.scenes.mailbox.feed.mocks.MockedFeedView
 import org.amshove.kluent.*
 import org.junit.Before
@@ -21,7 +21,7 @@ class FeedControllerTest {
 
     private lateinit var model: FeedModel
     private lateinit var scene: MockedFeedView
-    private lateinit var db: MockedFeedLocalDB
+    private lateinit var db: MockedFeedDao
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: FeedDataSource
     private lateinit var controller: FeedController
@@ -31,7 +31,7 @@ class FeedControllerTest {
         model = FeedModel()
         scene = MockedFeedView()
         runner = MockedWorkRunner()
-        db = MockedFeedLocalDB()
+        db = MockedFeedDao()
         dataSource = FeedDataSource(runner, db)
         controller = FeedController(model, scene, dataSource)
     }

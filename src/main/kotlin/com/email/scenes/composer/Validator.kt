@@ -1,7 +1,7 @@
 package com.email.scenes.composer
 
 import com.email.db.models.Contact
-import com.email.scenes.composer.ui.UIData
+import com.email.scenes.composer.data.ComposerInputData
 
 /**
  * Created by gabriel on 8/30/17.
@@ -9,7 +9,7 @@ import com.email.scenes.composer.ui.UIData
 
 object Validator {
 
-    fun validateContacts(data: UIData): AddressError? {
+    fun validateContacts(data: ComposerInputData): AddressError? {
         val isValid = { contact: Contact -> contact is Contact.Invalid }
         val invalidToContact = data.to.find(isValid)
         if (invalidToContact != null)

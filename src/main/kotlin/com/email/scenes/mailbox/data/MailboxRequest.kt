@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.db.LabelTextTypes
+import com.email.scenes.composer.data.ComposerInputData
 
 /**
  * Created by sebas on 3/20/18.
@@ -18,4 +19,6 @@ sealed class MailboxRequest{
             val offset: Int,
             val oldestEmailThread: EmailThread?
             ): MailboxRequest()
+
+    data class SendMail(val data: ComposerInputData): MailboxRequest()
 }

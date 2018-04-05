@@ -4,6 +4,7 @@ import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
 import com.email.db.SignUpLocalDB
 import com.email.db.models.ActiveAccount
+import com.email.db.seeders.LabelSeeder
 import com.email.scenes.signup.IncompleteAccount
 import org.whispersystems.libsignal.state.SignalProtocolStore
 
@@ -32,6 +33,7 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpLoca
 
         val activeAccount = ActiveAccount(recipientId = persistedUser.recipientId, jwt = persistedUser.jwt)
         storage.putString(KeyValueStorage.StringKey.ActiveAccount, activeAccount.toJSON().toString())
+        LabelSeeder.seed(db.labelDao())
     }
 
 }
