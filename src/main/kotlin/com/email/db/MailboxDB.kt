@@ -37,6 +37,7 @@ interface MailboxLocalDB {
      fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label>
 
     fun deleteRelationByEmailIds(emailIds: List<Int>)
+    fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label
 
     class Default(applicationContext: Context): MailboxLocalDB {
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
@@ -241,6 +242,12 @@ interface MailboxLocalDB {
                 LabelTextConverter().parseLabelTextType(labelTextType)
             }
             return db.labelDao().get(stringLabelTypes)
+        }
+
+        override fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label {
+            val stringLabelType = LabelTextConverter().parseLabelTextType(labelTextType)
+
+            return db.labelDao().get(labelTextType)
         }
 
         override fun deleteRelationByEmailIds(emailIds: List<Int>) {

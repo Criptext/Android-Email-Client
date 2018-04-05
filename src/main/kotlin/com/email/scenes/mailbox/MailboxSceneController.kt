@@ -232,28 +232,15 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun archiveSelectedEmailThreads() {
-        val emailThreads = model.selectedThreads.toList()
-        emailThreads.forEach {
-            dataSource.removeLabelsRelation(it.labelsOfMail, it.id)
+        dataSourceController.updateEmailThreadsLabelsRelations(
+                selectedLabels = null,
+                chosenLabel = LabelTextTypes.ARCHIVED)
         }
 
-        changeMode(multiSelectON = false, silent = false)
-        val fetchEmailThreads: List<EmailThread> = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        scene.setToolbarNumberOfEmails(emailThreadSize)
-        scene.notifyThreadSetChanged()
-    }
-
     private fun deleteSelectedEmailThreads() {
-        val emailThreads = model.selectedThreads.toList()
-        dataSource.deleteEmailThreads(emailThreads)
-
-        changeMode(multiSelectON = false, silent = false)
-
-        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        scene.setToolbarNumberOfEmails(emailThreadSize)
-        scene.notifyThreadSetChanged()
+        dataSourceController.updateEmailThreadsLabelsRelations(
+                selectedLabels = null,
+                chosenLabel = LabelTextTypes.TRASH)
     }
 
     private fun toggleReadSelectedEmailThreads(unreadStatus: Boolean) {
@@ -321,36 +308,24 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels): Boolean {
-        dataSourceController.updateEmailThreadsLabelsRelations(selectedLabels)
+        dataSourceController.updateEmailThreadsLabelsRelations(
+                selectedLabels,
+                null)
 
         return false
     }
 
-    fun moveSelectedEmailsToSpam() {
-        dataSource.moveSelectedEmailThreadsToSpam(model.selectedThreads.toList())
-        changeMode(multiSelectON = false, silent = false)
-
-        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        scene.notifyThreadSetChanged()
-    }
-
-    fun moveSelectedEmailsToTrash() {
-        dataSource.moveSelectedEmailThreadsToTrash(model.selectedThreads.toList())
-        changeMode(multiSelectON = false, silent = false)
-
-        val fetchEmailThreads = dataSource.getNotArchivedEmailThreads()
-        threadListController.setThreadList(fetchEmailThreads)
-        scene.notifyThreadSetChanged()
-    }
-
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
         override fun moveToSpam() {
-            moveSelectedEmailsToSpam()
+            dataSourceController.updateEmailThreadsLabelsRelations(
+                    selectedLabels = null,
+                    chosenLabel = LabelTextTypes.SPAM)
         }
 
         override fun moveToTrash() {
-            moveSelectedEmailsToTrash()
+            dataSourceController.updateEmailThreadsLabelsRelations(
+                    selectedLabels = null,
+                    chosenLabel = LabelTextTypes.TRASH)
         }
 
     }
@@ -366,10 +341,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         fun updateEmailThreadsLabelsRelations(
-                selectedLabels: SelectedLabels): Boolean {
+                selectedLabels: SelectedLabels?,
+                chosenLabel: LabelTextTypes?
+        ): Boolean {
                 val req = MailboxRequest.UpdateEmailThreadsLabelsRelations(
                         selectedEmailThreads = model.selectedThreads.toList(),
-                        selectedLabels = selectedLabels)
+                        selectedLabels = selectedLabels,
+                        chosenLabel = chosenLabel)
 
                 dataSource.submitRequest(req)
                 return true
