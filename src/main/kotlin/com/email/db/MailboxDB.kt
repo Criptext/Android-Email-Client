@@ -1,6 +1,8 @@
 package com.email.db
 
+import android.content.Context
 import com.email.db.models.*
+import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.labelChooser.data.LabelWrapper
 
@@ -27,11 +29,14 @@ interface MailboxLocalDB {
     fun createLabelsForEmailInbox(insertedEmailId: Int)
     fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes)
     fun getEmailsFromMailboxLabel(
-            labelTextTypes: LabelTextTypes,
+            labelTextType: LabelTextTypes,
             oldestEmailThread: EmailThread?,
-            offset: Int): List<EmailThread>
+            offset: Int,
+            rejectedLabels: List<Label>): List<EmailThread>
 
-    class Default(private val db: AppDatabase): MailboxLocalDB {
+     fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label>
+
+    class Default(applicationContext: Context): MailboxLocalDB {
 
         override fun createLabelsForEmailInbox(insertedEmailId: Int) {
             val labelInbox = db.labelDao().get(LabelTextTypes.INBOX)
@@ -90,7 +95,7 @@ interface MailboxLocalDB {
 
         override fun getNotArchivedEmailThreads(): List<EmailThread> {
             return db.emailDao().getNotArchivedEmailThreads().map { email ->
-                               getEmailThreadFromEmail(email)
+                getEmailThreadFromEmail(email)
             }
         }
 
@@ -194,12 +199,13 @@ interface MailboxLocalDB {
         override fun getEmailsFromMailboxLabel(
                 labelTextTypes: LabelTextTypes,
                 oldestEmailThread: EmailThread?,
-                offset: Int): List<EmailThread> {
+                offset: Int,
+                rejectedLabels: List<Label>): List<EmailThread> {
             val labels = db.labelDao().getAll()
             val selectedLabel = labels.findLast {label ->
                 label.text == labelTextTypes
             }?.id
-            val rejectedLabels = labels.filter {label ->
+            val rejectedIdLabels = rejectedLabels.filter {label ->
                 label.text != labelTextTypes
             }.map {
                 it.id!!
@@ -208,19 +214,26 @@ interface MailboxLocalDB {
             if(oldestEmailThread != null) {
                 emails =  db.emailDao().getEmailThreadsFromMailboxLabel(
                         starterDate = oldestEmailThread.timestamp,
-                        rejectedLabels = rejectedLabels,
+                        rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel!!,
                         offset = offset )
 
             } else {
                 emails =  db.emailDao().getInitialEmailThreadsFromMailboxLabel(
-                        rejectedLabels = rejectedLabels,
+                        rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel!!,
                         offset = offset )
             }
             return emails.map { email ->
                 getEmailThreadFromEmail(email)
             } as ArrayList<EmailThread>
+        }
+
+        override fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label> {
+            val stringLabelTypes = labelTextTypes.map { labelTextType->
+                LabelTextConverter().parseLabelTextType(labelTextType)
+            }
+            return db.labelDao().get(stringLabelTypes)
         }
     }
 

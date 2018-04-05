@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteConstraintException
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.LabelTextTypes
+import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
@@ -51,6 +52,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
     }
+    private fun getTitleForMailbox() : String{
+        return LabelTextConverter().parseLabelTextType(model.label)
+    }
 
     private fun onSendMailFinished(result: MailboxResult.SendMail) {
         when (result) {
@@ -61,7 +65,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val toolbarTitle: String
         get() = if (model.isInMultiSelect) model.selectedThreads.length().toString()
-        else "INBOX"
+        else getTitleForMailbox()
 
     override val menuResourceId: Int?
         get() = when {
@@ -81,9 +85,26 @@ class MailboxSceneController(private val scene: MailboxScene,
                         offset = model.offset,
                         oldestEmailThread = model.oldestEmailThread)
                 dataSource.submitRequest(req)
+                model.threads.add(null)
+                scene.toggleShowThreadListLoader(show = true)
             }
         }
     }
+
+    private fun loadMailbox(labelTextType: LabelTextTypes, lastEmailThread: EmailThread?) {
+        if(MailboxData.loadThreadsWorkData != null) {
+            return
+        }
+        MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
+
+        model.label = labelTextType
+        val req = MailboxRequest.LoadEmailThreads(
+                label = model.label,
+                offset = model.offset,
+                oldestEmailThread = lastEmailThread)
+        dataSource.submitRequest(req)
+    }
+
     private val threadListController = ThreadListController(model.threads, scene)
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener {
         override fun onGoToMail(emailThread: EmailThread) {
@@ -110,9 +131,36 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.updateToolbarTitle(toolbarTitle)
         }
     }
+    private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
+        override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
+
+            if(MailboxData.loadThreadsWorkData != null) {
+                return
+            }
+
+            scene.hideDrawer()
+            scene.showRefresh()
+
+            when(navigationMenuOptions) {
+                NavigationMenuOptions.INBOX -> model.label = LabelTextTypes.INBOX
+
+                NavigationMenuOptions.SENT -> model.label = LabelTextTypes.SENT
+
+                NavigationMenuOptions.DRAFT -> model.label = LabelTextTypes.DRAFT
+                NavigationMenuOptions.STARRED -> model.label = LabelTextTypes.STARRED
+                NavigationMenuOptions.SPAM -> model.label = LabelTextTypes.SPAM
+            }
+
+            loadMailbox(
+                    labelTextType = model.label,
+                    lastEmailThread = null)
+        }
+
+    }
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
         override fun onRefreshMails() {
+            scene.showRefresh()
             dataSourceController.updateMailbox(
                     mailboxLabel = model.label,
                     isManual = true)
@@ -162,21 +210,16 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
-        scene.attachView(threadEventListener, onScrollListener)
+        scene.attachView(threadEventListener = threadEventListener,
+                onDrawerMenuItemListener = onDrawerMenuItemListener,
+                onScrollListener = onScrollListener)
         scene.observer = observer
         scene.initDrawerLayout()
         scene.initNavHeader("Daniel Tigse Palma")
 
-        if(MailboxData.loadThreadsWorkData != null) {
-            return false
-        }
-
-        MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
-        val req = MailboxRequest.LoadEmailThreads(
-                label = model.label,
-                offset = model.offset,
-                oldestEmailThread = model.oldestEmailThread)
-        dataSource.submitRequest(req)
+        loadMailbox(
+                labelTextType = model.label,
+                lastEmailThread = model.oldestEmailThread )
 
         toggleMultiModeBar()
         scene.setToolbarNumberOfEmails(emailThreadSize)
@@ -339,6 +382,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun updateMailbox(
                 mailboxLabel: LabelTextTypes,
                 isManual: Boolean): Boolean {
+            scene.hideDrawer()
             if(MailboxData.updateMailboxWorkData== null) {
                 MailboxData.updateMailboxWorkData =
                         MailboxData.UpdateMailboxWorkData()
@@ -355,6 +399,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
             threadListController.populateThreads(resultData.mailboxThreads)
+            scene.setToolbarNumberOfEmails(emailThreadSize)
+            scene.updateToolbarTitle(toolbarTitle)
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
@@ -373,9 +419,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         fun onLoadedMoreThreads(result: MailboxResult.LoadEmailThreads) {
+            scene.clearRefreshing()
             MailboxData.loadThreadsWorkData = null
             when(result) {
                 is MailboxResult.LoadEmailThreads.Success -> {
+                    if(model.loadingType == LoadingType.FULL) {
+                        threadListController.populateThreads(result.emailThreads)
+                        scene.setToolbarNumberOfEmails(emailThreadSize)
+                        scene.notifyThreadSetChanged()
+                       return
+                    }
+
                     if(result.emailThreads.isNotEmpty()) {
                         threadListController.appendThreads(result.emailThreads)
                         scene.setToolbarNumberOfEmails(emailThreadSize)

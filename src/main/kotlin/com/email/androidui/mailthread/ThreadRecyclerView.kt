@@ -12,7 +12,7 @@ import com.email.utils.VirtualList
 class ThreadRecyclerView(val recyclerView: RecyclerView,
                          threadEventListener: EmailThreadAdapter.OnThreadEventListener?,
                          onScrollListener: OnScrollListener,
-                         threadList: VirtualList<EmailThread>)  {
+                         threadList: VirtualList<EmailThread?>)  {
 
     val ctx: Context = recyclerView.context
     private var emailThreadAdapter = EmailThreadAdapter(ctx, threadEventListener, threadList)

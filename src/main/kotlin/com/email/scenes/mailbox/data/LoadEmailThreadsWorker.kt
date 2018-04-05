@@ -5,6 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.db.LabelTextTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Label
 import com.email.utils.UIMessage
 
 /**
@@ -34,13 +35,30 @@ class LoadEmailThreadsWorker(
 
     override fun work(): MailboxResult.LoadEmailThreads? {
         val emailThreads = db.getEmailsFromMailboxLabel(
-                labelTextTypes = labelTextTypes,
+                labelTextType = labelTextTypes,
                 oldestEmailThread = oldestEmailThread,
+                rejectedLabels = selectRejectedLabels(),
                 offset = offset)
 
         return MailboxResult.LoadEmailThreads.Success(
                 emailThreads = emailThreads,
                 mailboxLabel = labelTextTypes)
+    }
+
+    private fun selectRejectedLabels(): List<Label> {
+        val commonRejectedLabels = listOf( LabelTextTypes.SPAM, LabelTextTypes.TRASH)
+        return when(labelTextTypes) {
+            LabelTextTypes.SENT,
+            LabelTextTypes.INBOX,
+            LabelTextTypes.ARCHIVED,
+            LabelTextTypes.STARRED -> {
+                db.getLabelsFromLabelType(
+                        labelTextTypes = commonRejectedLabels)
+            }
+            else -> {
+                emptyList()
+            }
+        }
     }
 
     override fun cancel() {
