@@ -13,11 +13,23 @@ import com.email.scenes.mailbox.data.EmailThread
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
-    override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
+    override fun getEmailsFromMailboxLabel(labelTextType: LabelTextTypes, oldestEmailThread: EmailThread?, offset: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getEmailsFromMailboxLabel(labelTextTypes: LabelTextTypes, oldestEmailThread: EmailThread?, offset: Int): List<EmailThread> {
+    override fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteRelationByEmailIds(emailIds: List<Int>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
