@@ -37,7 +37,7 @@ android {
         targetSdkVersion 26
         versionCode 2
         versionName "1.0.0-SNAPSHOT"
-        applicationId "com.email"
+        applicationId "com.email2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -156,6 +156,9 @@ dependencies {
 
     //Rich Editor
     implementation 'jp.wasabeef:richeditor-android:1.2.2'
+
+    //neovisionaries
+    implementation 'com.neovisionaries:nv-websocket-client:1.31'
 
 }
 
