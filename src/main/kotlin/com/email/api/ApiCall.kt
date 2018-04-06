@@ -17,15 +17,14 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-
         private val client = OkHttpClient().
                 newBuilder().
                 connectTimeout(20, TimeUnit.SECONDS).
                 readTimeout(20, TimeUnit.SECONDS).
                 build()
-        var baseUrl = "http://172.30.1.151:8000"
+        //var baseUrl = "http://172.30.1.151:8000"
 
-        //var baseUrl = "http://10.0.3.2:8000"
+        var baseUrl = "http://10.0.3.2:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun executeRequest(client: OkHttpClient, req: Request): String {

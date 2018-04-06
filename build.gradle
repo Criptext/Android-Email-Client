@@ -37,7 +37,7 @@ android {
         targetSdkVersion 26
         versionCode 2
         versionName "1.0.0-SNAPSHOT"
-        applicationId "com.email"
+        applicationId "com.email2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -153,6 +153,9 @@ dependencies {
 
     // constraint layout
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    //neovisionaries
+    implementation 'com.neovisionaries:nv-websocket-client:1.31'
 }
 
 
