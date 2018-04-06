@@ -1,5 +1,6 @@
 package com.email.api
 
+import java.util.concurrent.TimeUnit
 import com.email.scenes.composer.data.PostEmailBody
 import com.email.signal.PreKeyBundleShareData
 import okhttp3.MediaType
@@ -16,10 +17,24 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
+
+        private val client = OkHttpClient().
+                newBuilder().
+                connectTimeout(20, TimeUnit.SECONDS).
+                readTimeout(20, TimeUnit.SECONDS).
+                build()
         var baseUrl = "http://172.30.1.151:8000"
+
         //var baseUrl = "http://10.0.3.2:8000"
         private val JSON = MediaType.parse("application/json; charset=utf-8")
+
         fun executeRequest(client: OkHttpClient, req: Request): String {
+            val response = this.client.newCall(req).execute()
+            if(!response.isSuccessful) throw(ServerErrorException(response.code()))
+            return response.body()!!.string()
+        }
+
+        fun executeRequest(req: Request): String {
             val response = client.newCall(req).execute()
             if(!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.string()
