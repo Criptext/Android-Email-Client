@@ -1,9 +1,13 @@
 package com.email.scenes.composer
 
+import android.app.Activity
+import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import com.email.IHostActivity
 import com.email.db.models.Contact
 import com.email.R
 import com.email.scenes.composer.ui.ComposerUIObserver
@@ -11,8 +15,9 @@ import com.email.scenes.composer.ui.ContactCompletionView
 import com.email.scenes.composer.ui.ContactsFilterAdapter
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.utils.UIMessage
+import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
-
+import jp.wasabeef.richeditor.RichEditor
 
 /**
  * Created by gabriel on 2/26/18.
@@ -25,6 +30,7 @@ interface ComposerScene {
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
+    fun setButtonsClickListener(host: IHostActivity)
 
     class Default(view: View): ComposerScene {
 
@@ -42,9 +48,15 @@ interface ComposerScene {
         private val subjectEditText: EditText by lazy({
             view.findViewById<EditText>(INPUT_SUBJECT_ID)
         })
-        private val bodyEditText: EditText by lazy({
-            view.findViewById<EditText>(INPUT_BODY_ID)
+        private val bodyEditText: RichEditor by lazy({
+            view.findViewById<RichEditor>(INPUT_BODY_ID)
         })
+        private val backButton: ImageView by lazy {
+            view.findViewById<ImageView>(R.id.backButton) as ImageView
+        }
+        private val imageViewArrow: ImageView by lazy {
+            view.findViewById<ImageView>(R.id.imageViewArrow) as ImageView
+        }
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
             override fun onTokenAdded(token: Contact?) {
@@ -62,7 +74,7 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: ComposerInputData) {
-            bodyEditText.setText(uiData.body, TextView.BufferType.EDITABLE)
+            bodyEditText.html = uiData.body
             uiData.to.forEach { contact ->
                 toInput.addObject(contact)
             }
@@ -80,12 +92,17 @@ interface ComposerScene {
 
             subjectEditText.onFocusChangeListener = onEditTextGotFocus
             bodyEditText.onFocusChangeListener = onEditTextGotFocus
-            toInput.onFocusChangeListener = onEditTextGotFocus
+            bodyEditText.setPlaceholder(bodyEditText.context.resources.getString(R.string.message))
+
+            val splitChar = charArrayOf(',', ';', ' ')
+            toInput.setSplitChar(splitChar)
+            ccInput.setSplitChar(splitChar)
+            bccInput.setSplitChar(splitChar)
         }
 
         override fun getDataInputByUser(): ComposerInputData {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects, bcc = bccInput.objects,
-                    subject = subjectEditText.text.toString(), body = bodyEditText.text.toString())
+                    subject = subjectEditText.text.toString(), body = bodyEditText.html)
         }
 
         override fun showError(message: UIMessage) {
@@ -102,25 +119,34 @@ interface ComposerScene {
             val visibility = if (visible) View.VISIBLE else View.GONE
             ccInput.visibility = visibility
             bccInput.visibility = visibility
+            Picasso.with(imageViewArrow.context).load(
+                    if(visible) R.drawable.arrow_up else
+                    R.drawable.arrow_down).into(imageViewArrow)
+        }
+
+        override fun setButtonsClickListener(host: IHostActivity) {
+            backButton.setOnClickListener {
+                host.finishScene()
+            }
+            imageViewArrow.setOnClickListener {
+                toggleExtraFieldsVisibility(ccInput.visibility == View.GONE)
+            }
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,
                                         toContacts: List<Contact>, ccContacts: List<Contact>,
                                         bccContacts: List<Contact>) {
             toInput.allowDuplicates(false)
-            toInput.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             toInput.setTokenListener(onTokenChanged)
             ccInput.allowDuplicates(false)
-            ccInput.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             ccInput.setTokenListener(onTokenChanged)
             bccInput.allowDuplicates(false)
-            bccInput.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             bccInput.setTokenListener(onTokenChanged)
 
             if (firstTime) {
-                toInput.setPrefix("To: ")
-                ccInput.setPrefix("Cc: ")
-                bccInput.setPrefix("Bcc: ")
+                toInput.setPrefix("To:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
+                ccInput.setPrefix("Cc:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
+                bccInput.setPrefix("Bcc: ",ContextCompat.getColor(toInput.context, R.color.inputHint))
                 defaultRecipients.forEach { toInput.addObject(it) }
                 fillRecipients(toContacts, bccContacts, ccContacts)
             }

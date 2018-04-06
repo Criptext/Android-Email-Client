@@ -107,6 +107,7 @@ class ComposerController(private val model: ComposerModel,
         scene.setContactSuggestionList(arrayOf(
                 Contact("gianni@criptext.com", "Gianni Carlo"),
                 Contact("mayer@criptext.com", "Mayer Mizrachi")))
+        scene.setButtonsClickListener(host)
         dataSource.listener = dataSourceListener
         scene.observer = observer
         model.firstTime = false
