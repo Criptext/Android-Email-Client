@@ -82,12 +82,12 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val onScrollListener = object: OnScrollListener {
         override fun onReachEnd() {
+                model.loadingType = LoadingType.APPEND
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.label,
                         offset = model.offset,
                         oldestEmailThread = model.oldestEmailThread)
                 dataSource.submitRequest(req)
-                model.loadingType = LoadingType.APPEND
         }
     }
 
