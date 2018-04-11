@@ -16,7 +16,7 @@ class ThreadListController(private var threads : ArrayList<EmailThread>,
     }
 
     fun appendThreads(emails : List<EmailThread>) {
-        threads.addAll(emails)
+            threads.addAll(emails)
     }
 
     fun removeByThread(id: String) {

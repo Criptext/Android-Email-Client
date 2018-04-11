@@ -37,22 +37,31 @@ import java.util.*
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Query("""
-            SELECT * FROM email e
-            WHERE date=(SELECT MAX(date) FROM email d
-            WHERE d.threadid=e.threadid)
-            AND date<:starterDate
-            AND id IN (SELECT DISTINCT emailId
-            FROM email_label WHERE labelId
-            NOT IN (:rejectedLabels)
-            AND labelId=:selectedLabel)
-            GROUP BY threadid
-            ORDER BY date DESC LIMIT :offset
+        SELECT * FROM email e
+        WHERE date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=e.threadid)
+        AND date<:starterDate
+        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
+        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
+        GROUP BY threadid
+        ORDER BY date
+        DESC LIMIT :offset
             """)
     fun getEmailThreadsFromMailboxLabel(
             starterDate: Date,
             rejectedLabels: List<Int>,
             selectedLabel: Int,
             offset: Int ): List<Email>
+
+    @Query("""
+        SELECT * FROM email e
+        WHERE threadid=:threadId AND date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=:threadId)
+        GROUP BY threadid
+        LIMIT 1
+            """)
+    fun getLatestEmailFromThreadId(
+            threadId: String): Email
 
     @Delete
     fun deleteAll(emails: List<Email>)
@@ -83,15 +92,14 @@ import java.util.*
     fun changeDeliveryType(id: Int, deliveryType: DeliveryTypes)
 
     @Query("""
-            SELECT * FROM email e
-            WHERE date=(SELECT MAX(date) FROM email d
-            WHERE d.threadid=e.threadid)
-            AND id IN (SELECT DISTINCT emailId
-            FROM email_label WHERE labelId
-            NOT IN (:rejectedLabels)
-            AND labelId=:selectedLabel)
-            GROUP BY threadid
-            ORDER BY date DESC LIMIT :offset
+        SELECT * FROM email e
+        WHERE date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=e.threadid)
+        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
+        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
+        GROUP BY threadid
+        ORDER BY date
+        DESC LIMIT :offset
             """)
     fun getInitialEmailThreadsFromMailboxLabel(
             rejectedLabels: List<Int>,

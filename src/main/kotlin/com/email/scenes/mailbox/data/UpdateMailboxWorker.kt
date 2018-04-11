@@ -6,7 +6,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.db.*
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
-import com.email.db.typeConverters.LabelTextConverter
+import com.email.db.models.Label
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
@@ -44,12 +44,33 @@ class UpdateMailboxWorker(
             apiClient.getPendingEvents()
         }
     }
+    private fun selectRejectedLabels(): List<Label> {
+        val commonRejectedLabels = listOf( LabelTextTypes.SPAM, LabelTextTypes.TRASH)
+        return when(label) {
+           LabelTextTypes.SENT,
+           LabelTextTypes.INBOX,
+           LabelTextTypes.ARCHIVED,
+           LabelTextTypes.STARRED -> {
+               return db.getLabelsFromLabelType(
+                       labelTextTypes = commonRejectedLabels)
+           }
+            else -> {
+                return emptyList()
+            }
+        }
+    }
+
     private val parseEmails: (input: String) -> Result<List<EmailThread>, Exception> = {
         input ->
         Result.of {
             loadMetadataContentFromString(input = input)
         }.flatMap{Result.of{
-            db.getNotArchivedEmailThreads()
+            val rejectedLabels = selectRejectedLabels()
+            db.getEmailsFromMailboxLabel(
+                    labelTextTypes = label,
+                    offset = 10,
+                    rejectedLabels = rejectedLabels,
+                    oldestEmailThread = null)
         }}.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     }
 
@@ -61,7 +82,7 @@ class UpdateMailboxWorker(
         return when(operationResult) {
             is Result.Success -> {
                 return MailboxResult.UpdateMailbox.Success(
-                        mailboxLabel = LabelTextTypes.INBOX,
+                        mailboxLabel = label,
                         isManual = true,
                         mailboxThreads = operationResult.value
                 )

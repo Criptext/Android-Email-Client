@@ -2,7 +2,6 @@ package com.email.db
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Parcelable
 import android.preference.PreferenceManager
 
 /**
