@@ -53,6 +53,16 @@ import java.util.*
             selectedLabel: Int,
             offset: Int ): List<Email>
 
+    @Query("""
+        SELECT * FROM email e
+        WHERE threadid=:threadId AND date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=:threadId)
+        GROUP BY threadid
+        LIMIT 1
+            """)
+    fun getLatestEmailFromThreadId(
+            threadId: String): Email
+
     @Delete
     fun deleteAll(emails: List<Email>)
 

@@ -35,7 +35,7 @@ class LoadEmailThreadsWorker(
 
     override fun work(): MailboxResult.LoadEmailThreads? {
         val emailThreads = db.getEmailsFromMailboxLabel(
-                labelTextType = labelTextTypes,
+                labelTextTypes = labelTextTypes,
                 oldestEmailThread = oldestEmailThread,
                 rejectedLabels = selectRejectedLabels(),
                 offset = offset)

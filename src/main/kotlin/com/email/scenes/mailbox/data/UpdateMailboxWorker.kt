@@ -7,7 +7,6 @@ import com.email.db.*
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.models.Label
-import com.email.db.typeConverters.LabelTextConverter
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
@@ -68,7 +67,7 @@ class UpdateMailboxWorker(
         }.flatMap{Result.of{
             val rejectedLabels = selectRejectedLabels()
             db.getEmailsFromMailboxLabel(
-                    labelTextType = label,
+                    labelTextTypes = label,
                     offset = 10,
                     rejectedLabels = rejectedLabels,
                     oldestEmailThread = null)

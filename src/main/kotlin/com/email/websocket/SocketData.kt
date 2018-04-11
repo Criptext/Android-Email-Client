@@ -1,7 +1,9 @@
 package com.email.websocket
 
 import android.util.Log
-import org.json.JSONArray
+import com.email.db.models.FullEmail
+import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.DateUtils
 import org.json.JSONObject
 
 /**
@@ -12,14 +14,14 @@ import org.json.JSONObject
 
 object SocketData {
 
-    private val COMMAND_OPEN = 1
+    private val COMMAND_OPEN = 50
     private val COMMAND_OPEN_ATTACHMENT = 2
     private val COMMAND_DOWNLOAD_ATTACHMENT = 3
     private val COMMAND_EMAIL_UNSENT = 4
     private val COMMAND_MUTE = 5
     private val COMMAND_USER_STATUS_CHANGE = 20
     private val COMMAND_EMAIL_FAILED = 53
-    private val COMMAND_EMAIL_SENT = 54
+    private val COMMAND_EMAIL_SENT = 1
     private val COMMAND_FILE_UPLOADED = 55
 
     open class SocketNotification(val location: String, val timestamp: Long){
@@ -35,32 +37,33 @@ object SocketData {
     class AttachmentNotification(val mailToken: String, val fileToken: String, location: String,
                                  timestamp: Long): SocketNotification(location, timestamp)
 
-    sealed class Cmd(val timestamp: Int) {
-        class Open(timestamp: Int, val updateNotification: UpdateNotification): Cmd(timestamp)
+    sealed class Cmd(val timestamp: Long) {
+        class Open(timestamp: Long, val updateNotification: UpdateNotification): Cmd(timestamp)
 
-        class OpenAttachment(timestamp: Int, val attachmentNotification: AttachmentNotification)
+        class OpenAttachment(timestamp: Long, val attachmentNotification: AttachmentNotification)
             : Cmd(timestamp)
 
-        class DownloadAttachment(timestamp: Int,
+        class DownloadAttachment(timestamp: Long,
                                     val attachmentNotification: AttachmentNotification)
             : Cmd(timestamp)
 
-        class EmailUnsent(timestamp: Int, val token: String): Cmd(timestamp)
+        class EmailUnsent(timestamp: Long, val token: String): Cmd(timestamp)
 
-        class Mute(timestamp: Int, val shouldMute: Boolean, val tokens: List<String>)
+        class Mute(timestamp: Long, val shouldMute: Boolean, val tokens: List<String>)
             : Cmd(timestamp)
 
-        class UserStatusChange(timestamp: Int, val status: Int, val plan: String): Cmd(timestamp)
+        class UserStatusChange(timestamp: Long, val status: Int, val plan: String): Cmd(timestamp)
 
-        class EmailSent(timestamp: Int, val token: String): Cmd(timestamp)
+        class EmailSent(
+                timestamp: Long, val metadata: String ): Cmd(timestamp)
 
-        class FileUploaded(timestamp: Int, val token: String): Cmd(timestamp)
+        class FileUploaded(timestamp: Long, val token: String): Cmd(timestamp)
     }
 
 
 
     sealed class MailDetailResponse {
-        class Ok(val response: String): MailDetailResponse()
+        class Ok(val response: EmailThread?): MailDetailResponse()
         class Error(val exception: Exception?): MailDetailResponse()
     }
 
@@ -82,75 +85,45 @@ object SocketData {
     }
 
     private fun parseOpenCmd(json: JSONObject): Cmd.Open {
-        val timestamp = json.getInt("timestamp")
-        val notification = parseUpdateNotification(json)
-        return Cmd.Open(timestamp, notification)
+        TODO()
     }
 
     private fun parseOpenAttachmentCmd(json: JSONObject): Cmd.OpenAttachment {
-        val timestamp = json.getInt("timestamp")
-        val notification = parseAttachmentNotification(json)
-        return Cmd.OpenAttachment(timestamp, notification)
+        TODO()
     }
 
     private fun parseDownloadAttachmentCmd(json: JSONObject): Cmd.DownloadAttachment {
-        val timestamp = json.getInt("timestamp")
-        val notification = parseAttachmentNotification(json)
-
-        return Cmd.DownloadAttachment(timestamp, notification)
+        TODO()
     }
 
     private fun parseEmailUnsentCmd(json: JSONObject): Cmd.EmailUnsent {
-        val timestamp = json.getInt("timestamp")
-        val token = json.getJSONObject("args").getString("msg").split(":")[0]
-
-        return Cmd.EmailUnsent(timestamp, token)
+        TODO()
     }
 
     private fun parseMuteCmd(json: JSONObject): Cmd.Mute {
-        val timestamp = json.getInt("timestamp")
-        val msg = json.getJSONObject("args").getJSONObject("msg")
-        val shouldMute = msg.getString("mute") == "1"
-        val tokens = msg.getString("tokens").split(",")
-
-        return Cmd.Mute(timestamp, shouldMute, tokens)
+        TODO()
     }
 
     private fun parseUserStatusChangeCmd(json: JSONObject): Cmd.UserStatusChange {
-        val timestamp = json.getInt("timestamp")
-        val args = json.getJSONObject("args")
-        val status = args.getString("msg").toInt()
-        var plan = args.getString("plan")
-        if (plan.isEmpty()) {
-            plan = "Free Trial"
-        }
-
-        return Cmd.UserStatusChange(timestamp, status, plan)
+        TODO()
     }
 
     private fun parseEmailSentCmd(json: JSONObject): Cmd.EmailSent {
-        val timestamp = json.getInt("timestamp")
-        val token = json.getJSONObject("args").getString("msg").split(":")[0]
+        val params = json.getJSONObject("params")
+        val timestamp = params.getString("date")
+        val date = DateUtils.getDateFromString(timestamp, null)
 
-        return Cmd.EmailSent(timestamp, token)
+        return Cmd.EmailSent(date!!.time, json.toString())
     }
 
     private fun parseFileUploaded(json: JSONObject): Cmd.FileUploaded {
-        val timestamp = json.getInt("timestamp")
-        val token = json.getJSONObject("args").getString("msg")
-
-        return Cmd.FileUploaded(timestamp, token)
+        TODO()
     }
 
 
     private fun parseCmd(json: JSONObject): Cmd? {
         val cmd = json.getInt("cmd")
         return when (cmd) {
-            COMMAND_OPEN -> parseOpenCmd(json)
-            COMMAND_OPEN_ATTACHMENT -> parseOpenAttachmentCmd(json)
-            COMMAND_DOWNLOAD_ATTACHMENT -> parseDownloadAttachmentCmd(json)
-            COMMAND_EMAIL_UNSENT -> parseEmailUnsentCmd(json)
-            COMMAND_MUTE -> parseMuteCmd(json)
             COMMAND_USER_STATUS_CHANGE -> parseUserStatusChangeCmd(json)
             COMMAND_EMAIL_SENT -> parseEmailSentCmd(json)
             COMMAND_FILE_UPLOADED -> parseFileUploaded(json)
@@ -163,12 +136,16 @@ object SocketData {
     }
 
     fun parseSocketTextMessage(text: String): List<Cmd> {
-        Log.d("newMessage Coming,", text)
-/*         val parsedJSONArray = JSONArray(text)
-         return (0..(parsedJSONArray.length() - 1))
-                 .map { parsedJSONArray.getJSONObject(it) }
-                 .mapNotNull { parseCmd(it) }*/
-        TODO("RENDER TEXT MESSAGE IN MAILBOX")
+        val arrayCMDs = ArrayList<Cmd>()
+        val parsedData = JSONObject(text)
+        val cmd = parseCmd(parsedData)
+        arrayCMDs.add(cmd!!)
+        return arrayCMDs
+
+/*        val parsedJSONArray = JSONArray(text)
+        return (0..(parsedJSONArray.length() - 1))
+                .map { parsedJSONArray.getJSONObject(it) }
+                .mapNotNull { parseCmd(it) }*/
     }
 
 }
