@@ -15,7 +15,7 @@ import com.email.scenes.mailbox.feed.FeedModel
 class MailboxSceneModel : SceneModel {
     var loadingType = LoadingType.FULL
     var label: LabelTextTypes = LabelTextTypes.INBOX // default label
-    val threads : ArrayList<EmailThread?> = ArrayList()
+    val threads : ArrayList<EmailThread> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
     val hasSelectedUnreadMessages: Boolean

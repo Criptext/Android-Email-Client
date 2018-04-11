@@ -1,6 +1,7 @@
 package com.email.websocket
 
 import com.email.db.models.FullEmail
+import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Objects  that implement this interface can subscribe to the web socket and react to events emitted
@@ -27,7 +28,7 @@ interface WebSocketEventListener{
      * Invoked when the user sends a new email. Could have happened in a different device.
      * @param activity the activity object of the sent email
      */
-    fun onNewMessage(email: FullEmail)
+    fun onNewMessage(emailThread: EmailThread)
     //TODO(fun onNewAttachment(attachments: ArrayList<CriptextAttachment>, token: String))
     /**
      * Invoked when the user unsends an email. Could have happened in a different device.

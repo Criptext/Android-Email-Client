@@ -19,6 +19,7 @@ import com.email.scenes.mailbox.feed.ui.FeedView
 import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.VirtualList
+import com.email.websocket.WebSocketEventPublisher
 
 /**
  * Created by sebas on 1/30/18.
@@ -34,8 +35,11 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
-
-        return Companion.initController(appDB, this, this, model)
+        return Companion.initController(
+                appDB = appDB,
+                hostActivity = this,
+                activity = this,
+                model = model)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,15 +61,21 @@ class MailboxActivity : BaseActivity() {
                     appDB.feedDao()))
         }
 
-        fun initController(appDB: AppDatabase, activity: Activity, hostActivity: IHostActivity,
+        fun initController(appDB: AppDatabase,
+                           activity: Activity,
+                           hostActivity: IHostActivity,
                            model: MailboxSceneModel): MailboxSceneController {
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
+            val webSocketEvents = StateFragment.newInstance(
+                    activeAccount = activeAccount!!,
+                    context = activity).webSocketController
+
             val mailboxDataSource = MailboxDataSource(
                 signalClient = signalClient,
                 runner = AsyncTaskWorkRunner(),
-                activeAccount = activeAccount!!,
+                activeAccount = activeAccount,
                 rawSessionDao = appDB.rawSessionDao(),
                 mailboxLocalDB = db)
 
@@ -78,19 +88,21 @@ class MailboxActivity : BaseActivity() {
                         threadList = VirtualEmailThreadList(model.threads)
                 )
 
+
             return MailboxSceneController(
                     scene = scene,
                     model = model,
                     host = hostActivity,
                     dataSource = mailboxDataSource,
+                    websocketEvents = webSocketEvents,
                     feedController = initFeedController(appDB, activity, model.feedModel)
             )
         }
     }
 
 
-    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread?>)
-        : VirtualList<EmailThread?> {
+    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
+        : VirtualList<EmailThread> {
         override fun get(i: Int) = threads[i]
 
         override val size: Int

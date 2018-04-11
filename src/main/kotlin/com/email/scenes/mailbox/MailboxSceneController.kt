@@ -2,9 +2,11 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
+import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.LabelTextTypes
+import com.email.db.models.FullEmail
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -19,6 +21,8 @@ import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SearchParams
+import com.email.websocket.WebSocketEventListener
+import com.email.websocket.WebSocketEventPublisher
 
 /**
  * Created by sebas on 1/30/18.
@@ -27,6 +31,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
                              private val dataSource: MailboxDataSource,
+                             private val websocketEvents: WebSocketEventPublisher,
                              private val feedController : FeedController) : SceneController() {
 
     private val dataSourceListener = { result: MailboxResult ->
@@ -77,24 +82,16 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val onScrollListener = object: OnScrollListener {
         override fun onReachEnd() {
-            if(MailboxData.loadThreadsWorkData == null) {
-                MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.label,
                         offset = model.offset,
                         oldestEmailThread = model.oldestEmailThread)
                 dataSource.submitRequest(req)
-                model.threads.add(null)
-                scene.toggleShowThreadListLoader(show = true)
-            }
+                model.loadingType = LoadingType.APPEND
         }
     }
 
     private fun loadMailbox(labelTextType: LabelTextTypes, lastEmailThread: EmailThread?) {
-        if(MailboxData.loadThreadsWorkData != null) {
-            return
-        }
-        MailboxData.loadThreadsWorkData = MailboxData.LoadThreadsWorkData()
 
         model.label = labelTextType
         val req = MailboxRequest.LoadEmailThreads(
@@ -132,10 +129,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
-            if(MailboxData.loadThreadsWorkData != null) {
-                return
-            }
-
             scene.hideDrawer()
             scene.showRefresh()
 
@@ -152,8 +145,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     labelTextType = model.label,
                     lastEmailThread = null)
         }
-
     }
+
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
         override fun onRefreshMails() {
@@ -224,10 +217,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.setToolbarNumberOfEmails(emailThreadSize)
         feedController.onStart()
 
+        websocketEvents.subscribe(this.javaClass, webSocketEventListener)
+
         return handleActivityMessage(activityMessage)
     }
 
     override fun onStop() {
+
+        websocketEvents.unsubscribe(this.javaClass)
         feedController.onStop()
     }
 
@@ -403,12 +400,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                         scene.setToolbarNumberOfEmails(emailThreadSize)
                         scene.notifyThreadSetChanged()
                        return
-                    }
-
-                    if(result.emailThreads.isNotEmpty()) {
+                    }else {
                         threadListController.appendThreads(result.emailThreads)
                         scene.setToolbarNumberOfEmails(emailThreadSize)
                         scene.notifyThreadSetChanged()
+                        model.loadingType = LoadingType.FULL
                     }
                 }
             }
@@ -427,4 +423,36 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
     }
+
+    private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onMailOpened(token: String, message: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onFileOpenedOrDownloaded(mailToken: String, message: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onNewMessage(emailThread: EmailThread) {
+            model.threads.add(0, emailThread)
+            scene.setToolbarNumberOfEmails(emailThreadSize)
+            scene.notifyThreadSetChanged()
+            scene.scrollTop()
+        }
+
+        override fun onUnsent(token: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onMuteMessage() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onUserStatusChange(status: Int) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+
+    }
+
 }

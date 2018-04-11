@@ -20,22 +20,14 @@ class WebSocketController(private val wsClient: WebSocketClient,
 
     private val onMessageReceived = { text: String ->
         val receivedCmds = SocketData.parseSocketTextMessage(text)
-        TODO("UPDATE THE MAILBOX...")
-/*        if (receivedCmds.isNotEmpty()) {
+        if (receivedCmds.isNotEmpty()) {
             val lastCmd = receivedCmds.last()
-            updateLastSync(lastCmd.timestamp)
-
-            val newMailOpens = receivedCmds.count { it is SocketData.Cmd.Open }
-            updateUnreadNotificationsBadge(newMailOpens)
 
             receivedCmds.forEach { defaultCmdHandler.handle(it) }
-        }*/
+        }
     }
 
     init {
-/*        val lastSync = keyPairStorage.getInt(KeyPairStorage.Key.lastSync, 0)
-        val url = createCriptextSocketServerURL(accountManager.criptextUserId, lastSync)
-        */
         val url = createCriptextSocketServerURL(
                 recipienId = activeAccount.recipientId,
                 deviceId = 1 )
@@ -62,6 +54,7 @@ class WebSocketController(private val wsClient: WebSocketClient,
     companion object {
         private fun createCriptextSocketServerURL(recipienId: String, deviceId: Int): String {
             return """ws://10.0.3.2:3001?recipientId=$recipienId&deviceId=$deviceId"""
+            //return """ws://192.168.100.34:3001?recipientId=$recipienId&deviceId=$deviceId"""
         }
     }
 

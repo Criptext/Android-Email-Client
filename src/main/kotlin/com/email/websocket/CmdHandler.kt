@@ -1,5 +1,6 @@
 package com.email.websocket
 
+import android.util.Log
 import com.email.db.models.ActiveAccount
 import org.json.JSONArray
 
@@ -18,7 +19,25 @@ interface CmdHandler {
                   private val activeAccount: ActiveAccount,
                   private val webSocketListeners: Map<String, WebSocketEventListener>): CmdHandler {
 
-        private fun requestMailDetail(token: String) {
+        private val handleMailDetailResponse: (SocketData.MailDetailResponse) -> Unit =
+                { mailDetail ->
+
+                    when (mailDetail) {
+                        is SocketData.MailDetailResponse.Ok -> {
+                            webSocketListeners.values.forEach {
+                                if(mailDetail.response != null) {
+                                    it.onNewMessage(mailDetail.response)
+                                }
+                            }
+                        }
+                        is SocketData.MailDetailResponse.Error -> {
+                            Log.e("ERROR", "...")
+                        }
+                    }
+                }
+
+        private fun requestMailDetail(metadata: String) {
+            apiClient.requestMailDetail(metadata, handleMailDetailResponse)
         }
 
         private fun prependToNewOpenArray(openArray: JSONArray,
@@ -35,7 +54,7 @@ interface CmdHandler {
 
 
         private fun handleEmailSentCmd(cmd: SocketData.Cmd.EmailSent) {
-            requestMailDetail(cmd.token)
+            requestMailDetail(cmd.metadata)
         }
 
         private fun handleFileUploadedCmd(cmd: SocketData.Cmd.FileUploaded) {

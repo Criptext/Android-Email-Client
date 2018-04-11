@@ -29,7 +29,7 @@ interface MailboxLocalDB {
     fun createLabelsForEmailInbox(insertedEmailId: Int)
     fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes)
     fun getEmailsFromMailboxLabel(
-            labelTextType: LabelTextTypes,
+            labelTextTypes: LabelTextTypes,
             oldestEmailThread: EmailThread?,
             offset: Int,
             rejectedLabels: List<Label>): List<EmailThread>

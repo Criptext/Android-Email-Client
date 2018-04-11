@@ -60,10 +60,11 @@ interface MailboxScene: ThreadListView {
     fun toggleShowThreadListLoader(show: Boolean)
     fun hideDrawer()
     fun showRefresh()
+    fun scrollTop()
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
-                           val threadList: VirtualList<EmailThread?>)
+                           val threadList: VirtualList<EmailThread>)
         : MailboxScene {
 
         override fun showSyncingDialog() {
@@ -169,6 +170,9 @@ interface MailboxScene: ThreadListView {
             drawerMenuView.initNavHeader(fullName)
         }
 
+        override fun scrollTop() {
+            recyclerView.smoothScrollToPosition(0)
+        }
         override fun notifyThreadSetChanged() {
             threadRecyclerView.notifyThreadSetChanged()
         }

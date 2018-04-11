@@ -17,10 +17,9 @@ import com.email.utils.ui.ProgressViewHolder
 
 class EmailThreadAdapter(private val mContext : Context,
                          var threadListener : OnThreadEventListener?,
-                         private val threadList: VirtualList<EmailThread?>)
+                         private val threadList: VirtualList<EmailThread>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_ITEM = 1
-    private val VIEW_PROGRESS = 0
     var isMultiSelectMode = false
 
     fun toggleThreadSelection(mContext: Context,
@@ -38,7 +37,7 @@ class EmailThreadAdapter(private val mContext : Context,
         when(holder) {
             is EmailHolder? -> {
                 if (holder?.itemView == null) return
-                val mail = threadList[position]!!
+                val mail = threadList[position]
                 holder.bindMail(mail)
                 val itemClickListener = {
                     toggleThreadSelection(mContext, mail, position)
@@ -89,7 +88,7 @@ class EmailThreadAdapter(private val mContext : Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(threadList[position] != null) VIEW_ITEM else VIEW_PROGRESS
+        return VIEW_ITEM
     }
 
     interface OnThreadEventListener {
