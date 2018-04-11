@@ -15,7 +15,6 @@ interface CmdHandler {
     fun handle(cmd: SocketData.Cmd)
 
     class Default(private val apiClient: DetailedSocketDataHttpClient,
-                  private val localDB: SocketLocalDB,
                   private val activeAccount: ActiveAccount,
                   private val webSocketListeners: Map<String, WebSocketEventListener>): CmdHandler {
 

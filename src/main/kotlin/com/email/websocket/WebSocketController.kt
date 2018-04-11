@@ -12,10 +12,9 @@ import com.email.scenes.SceneController
 
 class WebSocketController(private val wsClient: WebSocketClient,
                           apiClient: DetailedSocketDataHttpClient,
-                          localDB: SocketLocalDB,
                           private val activeAccount: ActiveAccount): WebSocketEventPublisher {
     private val webSocketListeners = HashMap<String, WebSocketEventListener>()
-    private val defaultCmdHandler = CmdHandler.Default(apiClient, localDB, activeAccount,
+    private val defaultCmdHandler = CmdHandler.Default(apiClient, activeAccount,
             webSocketListeners)
 
     private val onMessageReceived = { text: String ->
@@ -53,8 +52,7 @@ class WebSocketController(private val wsClient: WebSocketClient,
 
     companion object {
         private fun createCriptextSocketServerURL(recipienId: String, deviceId: Int): String {
-            return """ws://10.0.3.2:3001?recipientId=$recipienId&deviceId=$deviceId"""
-            //return """ws://192.168.100.34:3001?recipientId=$recipienId&deviceId=$deviceId"""
+            return """ws://${WebSocket.HOST_URL}?recipientId=$recipienId&deviceId=$deviceId"""
         }
     }
 

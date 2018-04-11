@@ -1,30 +1,27 @@
-package com.email
+package com.email.websocket
 
 import android.content.Context
-import android.os.Bundle
 import com.criptext.secureemail.socket.NVWebSocketClient
 import com.email.db.AppDatabase
 import com.email.db.models.ActiveAccount
-import com.email.websocket.ActiveAndroidSocketDB
-import com.email.websocket.DetailedSocketDataOkHttpClient
-import com.email.websocket.WebSocketController
 
 /**
- * Headless fragment where state will be stored so that it can be persisted on device rotations.
+ * Headless class where state will be stored so that it can be persisted on device rotations.
  * Created by Gabriel on 3/27/17.
  */
 
-class StateFragment  {
+class WebSocket {
 
     lateinit var webSocketController: WebSocketController
         private set
 
     companion object {
 
-        private var INSTANCE : StateFragment? = null
+        const val HOST_URL = "54.245.42.9:3001"
+        private var INSTANCE : WebSocket? = null
         fun newInstance(
                 activeAccount: ActiveAccount,
-                context: Context): StateFragment {
+                context: Context): WebSocket {
 
             val stateFragment = INSTANCE
 
@@ -32,14 +29,13 @@ class StateFragment  {
                 return stateFragment
             }
 
-            val f = StateFragment()
+            val f = WebSocket()
 
             val account = activeAccount
             val appDatabase = AppDatabase.getAppDatabase(context)
             f.webSocketController = WebSocketController(
                     NVWebSocketClient(),
                     DetailedSocketDataOkHttpClient(account, appDatabase),
-                    ActiveAndroidSocketDB(),
                     account)
             INSTANCE = f
             return f

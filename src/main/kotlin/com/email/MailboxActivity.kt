@@ -19,7 +19,7 @@ import com.email.scenes.mailbox.feed.ui.FeedView
 import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.VirtualList
-import com.email.websocket.WebSocketEventPublisher
+import com.email.websocket.WebSocket
 
 /**
  * Created by sebas on 1/30/18.
@@ -68,7 +68,7 @@ class MailboxActivity : BaseActivity() {
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
-            val webSocketEvents = StateFragment.newInstance(
+            val webSocketEvents = WebSocket.newInstance(
                     activeAccount = activeAccount!!,
                     context = activity).webSocketController
 

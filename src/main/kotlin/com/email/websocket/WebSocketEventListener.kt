@@ -29,7 +29,7 @@ interface WebSocketEventListener{
      * @param activity the activity object of the sent email
      */
     fun onNewMessage(emailThread: EmailThread)
-    //TODO(fun onNewAttachment(attachments: ArrayList<CriptextAttachment>, token: String))
+
     /**
      * Invoked when the user unsends an email. Could have happened in a different device.
      * @param token the email token of the unsent email
