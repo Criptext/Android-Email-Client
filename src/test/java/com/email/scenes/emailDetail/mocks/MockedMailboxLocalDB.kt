@@ -7,12 +7,33 @@ import com.email.db.models.Email
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.mailbox.data.EmailThread
+import com.github.kittinunf.result.Result
+import java.util.*
 
 /**
  * Created by sebas on 3/29/18.
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
+    override fun updateEmailAndAddLabelSent(id: Int, threadId: String, key: String, date: Date) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createLabelEmailSent(emailId: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Int, type: ContactTypes) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateEmail(id: Int, threadId: String, key: String, date: Date) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override val getEmailThreadOperation: (threadId: String) -> Result<EmailThread, Exception>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
     override fun getEmailsFromMailboxLabel(labelTextType: LabelTextTypes, oldestEmailThread: EmailThread?, offset: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -26,10 +47,6 @@ class MockedMailboxLocalDB: MailboxLocalDB {
     }
 
     override fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

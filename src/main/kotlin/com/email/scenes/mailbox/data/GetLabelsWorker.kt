@@ -29,7 +29,6 @@ class GetLabelsWorker(
     }
 
     override fun work(): MailboxResult.GetLabels? {
-        Thread.sleep(1000)
         val labels = db.getAllLabels()
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)

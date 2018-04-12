@@ -183,18 +183,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
 
         val numberContacts = fullEmail.to.size
-        if(fullEmail.from != null) {
-            view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.INVISIBLE
-            headerView.text = fullEmail.from.name
-            toView.text = if(numberContacts > 0)
-                "To me and ${numberContacts  - 1} contacts" else "To me and $numberContacts contacts"
-        }
-        else {
-            view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.VISIBLE
-            headerView.text = "Me"
-            replyView.visibility = View.GONE
-            toView.text = "To $numberContacts contacts"
-        }
+        view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.INVISIBLE
+        headerView.text = fullEmail.from.name
+        toView.text = if(numberContacts > 0)
+            "To me and ${numberContacts  - 1} contacts" else "To me and $numberContacts contacts"
+
     }
 
     fun setupWebview(){

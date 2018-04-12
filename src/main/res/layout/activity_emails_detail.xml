@@ -1,57 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.email.utils.ui.MyDrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/include_emails_detail"
+    android:background="#f7f7f8"
+    android:title="@string/titulo_mailbox"
+    android:orientation="vertical">
 
-    <include layout="@layout/include_emails_detail"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/email_detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-    <!-- Lef Menu -->
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_left_view"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        android:background="#fcfcfc">
-
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_width="wrap_content"
+                android:id="@+id/mailbox_title_layout"
+                android:layout_marginStart="-10dp"
+                android:layout_height="match_parent">
 
-                <include layout="@layout/nav_header" />
-                <include layout="@layout/nav_body" />
+                <ImageView
+                    android:visibility="visible"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/mailbox_back_button"
+                    android:src="@drawable/back"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:layout_height="70dp"
+                    android:layout_width="70dp" />
 
             </LinearLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </RelativeLayout>
 
-    </android.support.design.widget.NavigationView>
-
-    <!-- Right Menu -->
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_right_view"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="end"
-        android:fitsSystemWindows="true">
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:id="@+id/container_recyclers"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
         <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content" >
+            <TextView
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lorem ipsum dolor sit amet consec adipising elit"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                fontPath="fonts/NunitoSans-Bold.ttf" />
 
-            <include layout="@layout/nav_feed" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/labels_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 
-    </android.support.design.widget.NavigationView>
+        <android.support.v7.widget.RecyclerView
+            android:paddingBottom="20dp"
+            android:clipToPadding="false"
+            android:id="@+id/emails_detail_recycler"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent">
 
-</com.email.utils.ui.MyDrawerLayout>
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+</LinearLayout>

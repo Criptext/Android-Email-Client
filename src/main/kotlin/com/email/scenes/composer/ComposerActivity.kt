@@ -7,6 +7,8 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
+import com.email.db.ComposerLocalDB
+import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
 
@@ -26,7 +28,12 @@ class ComposerActivity : BaseActivity() {
                            model: ComposerModel): ComposerController {
             val view = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
             val scene = ComposerScene.Default(view)
-            val dataSource = ComposerDataSource(runner = AsyncTaskWorkRunner())
+            val db = ComposerLocalDB(appDB.contactDao(), appDB.emailDao(), appDB.labelDao(),
+                    appDB.emailLabelDao(), appDB.emailContactDao())
+            val dataSource = ComposerDataSource(
+                    composerLocalDB = db,
+                    activeAccount = ActiveAccount.loadFromStorage(activity)!!,
+                    runner = AsyncTaskWorkRunner())
 
             return ComposerController(model = model, scene = scene, dataSource = dataSource,
                     host = hostActivity)

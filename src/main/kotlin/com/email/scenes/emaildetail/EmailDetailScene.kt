@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.ImageView
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
@@ -13,6 +14,7 @@ import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.scenes.mailbox.OnMoveThreadsListener
+import com.email.utils.KeyboardManager
 import com.email.utils.VirtualList
 
 /**
@@ -37,11 +39,10 @@ interface EmailDetailScene {
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
-            val hostActivity: IHostActivity)
+            private val hostActivity: IHostActivity)
         : EmailDetailScene {
 
         private val context = emailDetailView.context
-
 
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
         private lateinit var labelsRecyclerView: LabelsRecyclerView
@@ -57,6 +58,10 @@ interface EmailDetailScene {
             emailDetailView.findViewById<RecyclerView>(R.id.labels_recycler)
         }
 
+        private val backButton: ImageView by lazy {
+            emailDetailView.findViewById<ImageView>(R.id.mailbox_back_button)
+        }
+
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail> ){
@@ -67,6 +72,10 @@ interface EmailDetailScene {
                     recyclerView,
                     fullEmailEventListener,
                     fullEmailList)
+
+            backButton.setOnClickListener {
+                hostActivity.finishScene()
+            }
 
         }
 

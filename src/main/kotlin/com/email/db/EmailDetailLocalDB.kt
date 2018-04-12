@@ -30,17 +30,12 @@ interface EmailDetailLocalDB {
                 val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
                 val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
                 val files = db.fileDao().getAttachmentsFromEmail(id)
-                val contactFrom = if(contactsFROM.isEmpty()) {
-                    null
-                } else {
-                    contactsFROM[0]
-                }
 
                 FullEmail(
                         email = it,
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = contactFrom,
+                        from = contactsFROM[0],
                         files = files,
                         labels = labels,
                         to = contactsTO )

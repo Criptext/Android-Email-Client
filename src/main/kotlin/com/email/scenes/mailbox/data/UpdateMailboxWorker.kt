@@ -7,6 +7,7 @@ import com.email.db.*
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.models.Label
+import com.email.signal.DecryptData
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
@@ -108,7 +109,6 @@ class UpdateMailboxWorker(
         }
     }
 
-
     private val decryptBody: (input: DecryptData) -> Result<String, Exception> = {
         input ->
         Result.of {
@@ -122,8 +122,8 @@ class UpdateMailboxWorker(
     private fun loadMetadataContentFromString(input: String) {
         val listMetadatas = JSONArray(input)
         for(i in 0 until listMetadatas.length()) {
-            val fullData = JSONObject(listMetadatas.get(i).toString())
 
+            val fullData = JSONObject(listMetadatas.get(i).toString())
             val metaData = EmailMetaData(stringMetadata = fullData.getString("params"))
 
             val resultOperationDecryptAndInsert = Result.of {
@@ -153,16 +153,16 @@ class UpdateMailboxWorker(
                             isTrash = false,
                             secure = true,
                             preview = preview,
-                                    key = metaData.bodyKey,
+                            key = metaData.bodyKey,
                             isDraft = false,
                             delivered = DeliveryTypes.RECEIVED,
                             content = bodyContent
                             )
                     val insertedEmailId = db.addEmail(email)
-                    db.createContacts(metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
-                    db.createContacts(metaData.to, insertedEmailId, ContactTypes.TO)
-                    db.createContacts(metaData.bcc, insertedEmailId, ContactTypes.BCC)
-                    db.createContacts(metaData.cc, insertedEmailId, ContactTypes.CC)
+                    db.createContacts(metaData.fromName, metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
+                    db.createContacts(null,metaData.to, insertedEmailId, ContactTypes.TO)
+                    db.createContacts(null,metaData.bcc, insertedEmailId, ContactTypes.BCC)
+                    db.createContacts(null,metaData.cc, insertedEmailId, ContactTypes.CC)
                     db.createLabelsForEmailInbox(insertedEmailId)
                 } else -> {
 
@@ -171,8 +171,4 @@ class UpdateMailboxWorker(
         }
     }
 
-    private data class DecryptData(
-            val from: String,
-            val deviceId: Int,
-            val encryptedData: String)
 }

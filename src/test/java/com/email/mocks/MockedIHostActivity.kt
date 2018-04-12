@@ -10,7 +10,11 @@ import com.email.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+
+    var isFinished: Boolean = false
+
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+        isFinished = true
     }
 
     override fun showDialog(message: UIMessage) {
@@ -26,6 +30,7 @@ class MockedIHostActivity: IHostActivity{
     }
 
     override fun finishScene() {
+        isFinished = true
     }
 
     override fun getLocalizedString(message: UIMessage): String {

@@ -56,8 +56,8 @@ class EmailContactInfoPopup(private val anchorView: View) {
         val recycler = view.findViewById<RecyclerView>(R.id.contacts_to_recycler)
         val date = view.findViewById<TextView>(R.id.date)
 
-        viewFromName.text = fullEmail.from?.name
-        viewFromEmail.text = fullEmail.from?.email
+        viewFromName.text = fullEmail.from.name
+        viewFromEmail.text = fullEmail.from.email
 
         if(fullEmail.to.isEmpty()) {
             recycler.visibility = View.GONE

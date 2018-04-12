@@ -18,11 +18,6 @@ interface SignUpAPIClient {
             : String
 
     class Default : SignUpAPIClient {
-        private val client = OkHttpClient().
-                newBuilder().
-                connectTimeout(20, TimeUnit.SECONDS).
-                readTimeout(20, TimeUnit.SECONDS).
-                build()
 
         override fun createUser(
                 account: IncompleteAccount,
@@ -35,7 +30,7 @@ interface SignUpAPIClient {
                     recoveryEmail = account.recoveryEmail,
                     keyBundle = keybundle
             )
-            return ApiCall.executeRequest(client, request)
+            return ApiCall.executeRequest(request)
         }
     }
 }

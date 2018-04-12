@@ -47,94 +47,135 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <ScrollView
+        android:id="@+id/scrollViewCompose"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp">
+        android:layout_height="match_parent">
 
-        <com.email.scenes.composer.ui.ContactCompletionView
-            android:id="@+id/input_to"
-            android:paddingLeft="12dp"
-            android:layout_marginRight="55dp"
-            android:background="@android:color/transparent"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:maxLines="2"
-            android:textColor="#000"
-            android:textSize="14sp"
             android:layout_height="wrap_content"
-            android:minHeight="32dp"
-            android:inputType="textEmailAddress|textMultiLine"/>
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageViewArrow"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
-            android:scaleType="fitCenter"
-            android:padding="6dp"
-            android:tint="#0091FF"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/arrow_down"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
 
-    </RelativeLayout>
+                <com.email.scenes.composer.ui.ContactCompletionView
+                    android:id="@+id/input_to"
+                    android:paddingLeft="12dp"
+                    android:layout_marginRight="55dp"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:maxLines="2"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="32dp"
+                    android:inputType="textEmailAddress|textMultiLine"/>
 
-    <com.email.scenes.composer.ui.ContactCompletionView
-        android:id="@+id/input_cc"
-        android:visibility="gone"
-        android:background="@android:color/transparent"
-        android:paddingLeft="12dp"
-        android:layout_marginTop="3dp"
-        android:layout_width="match_parent"
-        android:maxLines="2"
-        android:textColor="#000"
-        android:textSize="14sp"
-        android:layout_height="wrap_content"
-        android:minHeight="32dp"
-        android:inputType="textEmailAddress|textMultiLine"/>
+                <ImageView
+                    android:id="@+id/imageViewArrow"
+                    android:layout_width="40dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitCenter"
+                    android:padding="6dp"
+                    android:tint="#0091FF"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/arrow_down"/>
 
-    <com.email.scenes.composer.ui.ContactCompletionView
-        android:id="@+id/input_bcc"
-        android:visibility="gone"
-        android:background="@android:color/transparent"
-        android:paddingLeft="12dp"
-        android:layout_marginTop="3dp"
-        android:layout_width="match_parent"
-        android:maxLines="2"
-        android:textColor="#000"
-        android:textSize="14sp"
-        android:layout_height="wrap_content"
-        android:minHeight="32dp"
-        android:inputType="textEmailAddress|textMultiLine"/>
+            </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#dbdada"
-        android:layout_marginTop="10dp"/>
+            <com.email.scenes.composer.ui.ContactCompletionView
+                android:id="@+id/input_cc"
+                android:visibility="gone"
+                android:background="@android:color/transparent"
+                android:paddingLeft="12dp"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:maxLines="2"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                android:inputType="textEmailAddress|textMultiLine"/>
 
-    <EditText
-        android:id="@+id/subject_input"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="14dp"
-        android:layout_marginRight="10dp"
-        android:hint="@string/subject"
-        android:maxLines="1"
-        android:background="@null"
-        android:layout_height="50dp"
-        android:textSize="18sp"
-        fontPath="fonts/NunitoSans-Bold.ttf"/>
+            <com.email.scenes.composer.ui.ContactCompletionView
+                android:id="@+id/input_bcc"
+                android:visibility="gone"
+                android:background="@android:color/transparent"
+                android:paddingLeft="12dp"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:maxLines="2"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                android:inputType="textEmailAddress|textMultiLine"/>
 
-    <jp.wasabeef.richeditor.RichEditor
-        android:layout_marginLeft="14dp"
-        android:layout_marginRight="14dp"
-        android:id="@+id/body_input"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:gravity="start"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#dbdada"
+                android:layout_marginTop="10dp"/>
+
+            <EditText
+                android:id="@+id/subject_input"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="10dp"
+                android:hint="@string/subject"
+                android:maxLines="1"
+                android:background="@null"
+                android:layout_height="50dp"
+                android:textSize="18sp"
+                fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+            <jp.wasabeef.richeditor.RichEditor
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
+                android:id="@+id/body_input"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="start"/>
+
+            <ImageView
+                android:id="@+id/imageViewMore"
+                android:layout_width="34dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="20dp"
+                android:padding="9dp"
+                android:visibility="gone"
+                android:background="@drawable/square_border_more"
+                android:src="@drawable/more_email"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <WebView
+                    android:id="@+id/responseBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="9dp"
+                    android:layout_marginRight="9dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone"
+                    android:scrollbars="none"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

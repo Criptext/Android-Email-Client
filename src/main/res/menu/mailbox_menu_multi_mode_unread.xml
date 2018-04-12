@@ -11,14 +11,14 @@
         android:id="@+id/mailbox_delete_selected_messages"
         app:showAsAction="always"
         android:icon="@drawable/trash"
-        android:title="Delete"/>
+        android:title="@string/delete"/>
 
 
     <item
         android:id="@+id/mailbox_message_toggle_read"
         android:icon="@drawable/mail_opened"
         app:showAsAction="always"
-        android:title="unread"/>
+        android:title="@string/mark_as_unread"/>
 
     <item
         android:icon="@drawable/more"

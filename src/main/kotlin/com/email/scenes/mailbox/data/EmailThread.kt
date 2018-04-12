@@ -21,9 +21,9 @@ class EmailThread(val latestEmail: FullEmail,
     var isSelected = false
     val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
             || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-            latestEmail.from?.name?:"Empty"
+            latestEmail.from.name ?:"Empty"
         else
-            latestEmail.from?.name?:"Empty"
+            latestEmail.from.name ?:"Empty"
     val id: Int
         get() = latestEmail.email.id!!
     val subject: String

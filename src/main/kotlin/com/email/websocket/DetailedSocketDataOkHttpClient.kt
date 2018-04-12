@@ -21,11 +21,10 @@ import org.json.JSONObject
 
 class DetailedSocketDataOkHttpClient(
         private val account: ActiveAccount,
-        private val database: AppDatabase)
+        private val db: MailboxLocalDB,
+        private val signalClient: SignalClient)
     : DetailedSocketDataHttpClient {
 
-
-    private val signalClient = SignalClient.Default(SignalStoreCriptext(database))
     override fun requestMailDetail(emailData: String, onMailDetailReady: (SocketData.MailDetailResponse) -> Unit) {
         val operation = parseEmail(emailData)
         when(operation) {
@@ -35,54 +34,14 @@ class DetailedSocketDataOkHttpClient(
                 operation.error.printStackTrace()
             }
         }
-
-        val operationResult = parseEmail(emailData).
-                mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     }
 
     private val parseEmail: (input: String) -> Result<EmailThread, Exception> = {
         input ->
         Result.of {
             loadMetadataContentFromString(input = input)
-        }.flatMap(getEmailThreadOperation).mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        }.flatMap(db.getEmailThreadOperation).mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     }
-
-    private val getEmailThreadOperation: (threadId: String) -> Result<EmailThread, Exception> = {
-        threadId ->
-        Result.of {
-            val email = database.emailDao().getLatestEmailFromThreadId(threadId)
-            getEmailThreadFromEmail(email)
-        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-    }
-    private fun getEmailThreadFromEmail(email: Email): EmailThread {
-        val id = email.id!!
-        val labels = database.emailLabelDao().getLabelsFromEmail(id)
-        val contactsCC = database.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
-        val contactsBCC = database.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
-        val contactsFROM = database.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
-        val contactsTO = database.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
-        val files = database.fileDao().getAttachmentsFromEmail(id)
-
-        val contactFrom = if(contactsFROM.isEmpty()) {
-            null
-        } else {
-            contactsFROM[0]
-        }
-
-        return EmailThread(
-                latestEmail = FullEmail(
-                        email = email,
-                        bcc = contactsBCC,
-                        cc = contactsCC,
-                        from = contactFrom,
-                        files = files,
-                        labels = labels,
-                        to = contactsTO ),
-                labelsOfMail = database.emailLabelDao().getLabelsFromEmail(email.id!!) as ArrayList<Label>
-        )
-
-    }
-    private val httpClient = OkHttpClient()
 
     private data class DecryptData(
             val from: String,
@@ -144,58 +103,16 @@ class DetailedSocketDataOkHttpClient(
                             delivered = DeliveryTypes.RECEIVED,
                             content = bodyContent
                     )
-                    val insertedEmailId = addEmail(email)
-                    createContacts(metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
-                    createContacts(metaData.to, insertedEmailId, ContactTypes.TO)
-                    createContacts(metaData.bcc, insertedEmailId, ContactTypes.BCC)
-                    createContacts(metaData.cc, insertedEmailId, ContactTypes.CC)
-                    createLabelsForEmailInbox(insertedEmailId)
+                    val insertedEmailId = db.addEmail(email)
+                    db.createContacts(metaData.fromName, metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
+                    db.createContacts(null, metaData.to, insertedEmailId, ContactTypes.TO)
+                    db.createContacts(null, metaData.bcc, insertedEmailId, ContactTypes.BCC)
+                    db.createContacts(null,metaData.cc, insertedEmailId, ContactTypes.CC)
+                    db.createLabelsForEmailInbox(insertedEmailId)
                     return metaData.threadId
                 } else -> {
                     throw Exception("")
             }
-        }
-    }
-
-    fun addEmail(email: Email): Int {
-        database.emailDao().insert(email)
-        return database.emailDao().getLastInsertedId()
-    }
-
-    fun createLabelsForEmailInbox(insertedEmailId: Int) {
-        val labelInbox = database.labelDao().get(LabelTextTypes.INBOX)
-        database.emailLabelDao().insert(EmailLabel(
-                labelId = labelInbox.id!!,
-                emailId = insertedEmailId))
-    }
-
-    private fun insertContact(contactEmail: String, emailId: Int, type: ContactTypes) {
-        if(contactEmail.isNotEmpty()) {
-            val contact = Contact(email = contactEmail, name = contactEmail)
-            val emailContact = EmailContact(
-                    contactId = contactEmail,
-                    emailId = emailId,
-                    type = type)
-            database.contactDao().insert(contact)
-            database.emailContactDao().insert(emailContact)
-        }
-    }
-
-    fun createContacts(contacts: String, insertedEmailId: Int, type: ContactTypes) {
-        if(type == ContactTypes.FROM) {
-            insertContact(
-                    contactEmail = contacts,
-                    emailId = insertedEmailId,
-                    type = type)
-            return
-        }
-
-        val contactsList = contacts.split(",")
-        contactsList.forEach { contactEmail ->
-            insertContact(
-                    contactEmail = contactEmail,
-                    emailId = insertedEmailId,
-                    type = type)
         }
     }
 }

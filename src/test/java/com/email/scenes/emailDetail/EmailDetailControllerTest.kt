@@ -4,6 +4,7 @@ import com.email.db.DeliveryTypes
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.dao.signal.mocks.MockedRawSessionDao
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
 import com.email.mocks.MockedWorkRunner
@@ -71,7 +72,8 @@ class EmailDetailControllerTest {
                 mailboxDataSource = mailboxDataSource,
                 dataSource = dataSource,
                 host = MockedIHostActivity(),
-                model = model)
+                model = model,
+                keyboard = null)
 
     }
 
@@ -105,7 +107,7 @@ class EmailDetailControllerTest {
                     files = emptyList(),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = null)
+                    from = Contact("mayer@jigl.com", "Mayer Mizrachi"))
         }.reversed()
     }
 

@@ -41,6 +41,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
             is MailboxResult.SendMail -> onSendMailFinished(result)
             is MailboxResult.UpdateEmailThreadsLabelsRelations -> dataSourceController.onUpdatedLabels(result)
+            is MailboxResult.UpdateMail -> host.finishScene()
         }
     }
 
@@ -62,7 +63,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun onSendMailFinished(result: MailboxResult.SendMail) {
         when (result) {
-            is MailboxResult.SendMail.Success -> host.finishScene()
+            is MailboxResult.SendMail.Success -> {
+                dataSource.submitRequest(MailboxRequest.UpdateEmail(result.emailId, result.response))
+            }
             is MailboxResult.SendMail.Failure -> scene.showError(result.message)
         }
     }
@@ -191,7 +194,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         return when (activityMessage) {
             null -> false
             is ActivityMessage.SendMail -> {
-                val newRequest = MailboxRequest.SendMail(activityMessage.composerInputData)
+                val newRequest = MailboxRequest.SendMail(activityMessage.emailId,
+                        activityMessage.composerInputData)
                 dataSource.submitRequest(newRequest)
                 true
             }

@@ -23,6 +23,7 @@ import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Created by gabriel on 2/26/18.
@@ -31,6 +32,7 @@ import org.json.JSONException
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      activeAccount: ActiveAccount,
+                     private val emailId: Int,
                      private val composerInputData: ComposerInputData,
                      override val publishFn: (MailboxResult.SendMail) -> Unit)
     : BackgroundWorker<MailboxResult.SendMail> {
@@ -132,7 +134,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                 .flatMap(sendEmailOperation)
 
         return when (result) {
-            is Result.Success -> MailboxResult.SendMail.Success()
+            is Result.Success -> {
+                MailboxResult.SendMail.Success(emailId, JSONObject(result.value))
+            }
             is Result.Failure -> {
                 val message = createErrorMessage(result.error)
                 MailboxResult.SendMail.Failure(message)

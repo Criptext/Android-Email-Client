@@ -75,7 +75,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             fontPath="fonts/NunitoSans-SemiBold.ttf"
-            android:text="Yes" />
+            android:text="@string/yes" />
 
     </LinearLayout>
 </LinearLayout>

@@ -15,7 +15,8 @@
         </activity>
         <activity
             android:name=".SearchActivity"
-            android:windowSoftInputMode="stateVisible"></activity>
+            android:windowSoftInputMode="stateVisible">
+        </activity>
         <activity
             android:name=".splash.SplashActivity"
             android:configChanges="orientation|screenSize"
@@ -43,7 +44,8 @@
         <activity
             android:name=".scenes.composer.ComposerActivity"
             android:label="@string/title_activity_composer"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>
