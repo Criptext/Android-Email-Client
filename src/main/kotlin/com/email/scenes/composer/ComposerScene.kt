@@ -1,19 +1,16 @@
 package com.email.scenes.composer
 
-import android.app.Activity
 import android.support.v4.content.ContextCompat
-import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
-import com.email.IHostActivity
 import com.email.db.models.Contact
 import com.email.R
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.ContactCompletionView
 import com.email.scenes.composer.ui.ContactsFilterAdapter
 import com.email.scenes.composer.data.ComposerInputData
+import com.email.scenes.composer.ui.HTMLEditText
 import com.email.utils.UIMessage
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
@@ -30,7 +27,6 @@ interface ComposerScene {
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
-    fun setButtonsClickListener(host: IHostActivity)
 
     class Default(view: View): ComposerScene {
 
@@ -48,8 +44,8 @@ interface ComposerScene {
         private val subjectEditText: EditText by lazy({
             view.findViewById<EditText>(INPUT_SUBJECT_ID)
         })
-        private val bodyEditText: RichEditor by lazy({
-            view.findViewById<RichEditor>(INPUT_BODY_ID)
+        private val bodyEditText: HTMLEditText by lazy({
+            HTMLEditText(view.findViewById<RichEditor>(INPUT_BODY_ID))
         })
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.backButton) as ImageView
@@ -74,7 +70,7 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>, uiData: ComposerInputData) {
-            bodyEditText.html = uiData.body
+            bodyEditText.text = uiData.body
             uiData.to.forEach { contact ->
                 toInput.addObject(contact)
             }
@@ -92,17 +88,24 @@ interface ComposerScene {
 
             subjectEditText.onFocusChangeListener = onEditTextGotFocus
             bodyEditText.onFocusChangeListener = onEditTextGotFocus
-            bodyEditText.setPlaceholder(bodyEditText.context.resources.getString(R.string.message))
 
             val splitChar = charArrayOf(',', ';', ' ')
             toInput.setSplitChar(splitChar)
             ccInput.setSplitChar(splitChar)
             bccInput.setSplitChar(splitChar)
+
+            backButton.setOnClickListener {
+                observer?.onBackButtonClicked()
+            }
+
+            imageViewArrow.setOnClickListener {
+                toggleExtraFieldsVisibility(ccInput.visibility == View.GONE)
+            }
         }
 
         override fun getDataInputByUser(): ComposerInputData {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects, bcc = bccInput.objects,
-                    subject = subjectEditText.text.toString(), body = bodyEditText.html)
+                    subject = subjectEditText.text.toString(), body = bodyEditText.text)
         }
 
         override fun showError(message: UIMessage) {
@@ -122,15 +125,6 @@ interface ComposerScene {
             Picasso.with(imageViewArrow.context).load(
                     if(visible) R.drawable.arrow_up else
                     R.drawable.arrow_down).into(imageViewArrow)
-        }
-
-        override fun setButtonsClickListener(host: IHostActivity) {
-            backButton.setOnClickListener {
-                host.finishScene()
-            }
-            imageViewArrow.setOnClickListener {
-                toggleExtraFieldsVisibility(ccInput.visibility == View.GONE)
-            }
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,

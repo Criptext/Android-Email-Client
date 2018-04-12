@@ -8,4 +8,5 @@ interface ComposerUIObserver {
     fun onAttachmentButtonClicked()
     fun onRecipientListChanged()
     fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean)
+    fun onBackButtonClicked()
 }
