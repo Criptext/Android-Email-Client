@@ -54,4 +54,5 @@
     <color name="green">#a0d06e</color>
     <color name="yellow">#ffbb63</color>
     <color name="unsendBtn">#dd4040</color>
+    <color name="inputHint">#a6a6a6</color>
 </resources>

@@ -2,11 +2,11 @@ package com.email.scenes.composer.ui
 
 import android.app.Activity
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.db.models.Contact
 import com.email.R
@@ -20,13 +20,16 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
     constructor(context: Context, attrs: AttributeSet): super(context, attrs)
 
     override fun getViewForObject(contact: Contact): View {
-        val l = context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = l.inflate(R.layout.contact_token, parent as ViewGroup, false) as TextView
-        view.text = contact.email
 
-        if (contact is Contact.Invalid) {
-            view.setTextColor(ContextCompat.getColor(context, R.color.unsend_button_red))
+        val l = context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view: LinearLayout
+        view = when {
+            contact is Contact.Invalid -> l.inflate(R.layout.contact_token_invalid, parent as ViewGroup, false) as LinearLayout
+            contact.email.contains(Contact.mainDomain) -> l.inflate(R.layout.contact_token, parent as ViewGroup, false) as LinearLayout
+            else -> l.inflate(R.layout.contact_token_external, parent as ViewGroup, false) as LinearLayout
         }
+
+        view.findViewById<TextView>(R.id.name).text = contact.email
 
         return view
     }

@@ -21,14 +21,11 @@
 
             <ImageView
                 android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="10dp"
                 android:layout_centerVertical="true"
-                android:padding="12dp"
-                android:tint="@android:color/white"
-                android:src="@drawable/back"
-                android:background="@drawable/circle_nav_button"/>
+                android:src="@drawable/back"/>
 
             <EditText
                 android:id="@+id/editTextSearch"
@@ -36,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_toEndOf="@+id/backButton"
                 android:layout_toStartOf="@+id/clearButton"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:hint="@string/search_email"
                 android:textSize="18sp"

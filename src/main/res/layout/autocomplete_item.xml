@@ -3,18 +3,14 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
 
-
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layoutDirection="rtl"
-        android:gravity="right">
+        android:orientation="horizontal">
 
         <RelativeLayout
             android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginRight="15dp">
+            android:layout_height="75dp">
 
             <ImageView
                 android:id="@+id/auto_circle"
@@ -23,8 +19,7 @@
                 android:scaleX="0.6"
                 android:scaleY="0.6"
                 android:src="@drawable/circle"
-                android:layout_centerInParent="true"
-                />
+                android:layout_centerInParent="true"/>
 
             <TextView
                 android:id="@+id/auto_initial"
@@ -45,7 +40,6 @@
             android:layout_weight="1"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:paddingLeft="20dp"
             android:gravity="center">
 
             <TextView
@@ -57,6 +51,7 @@
                 android:padding="3dp"
                 android:text="AUTOCOMPLETE NOMBRE"
                 android:textSize="15sp"
+                android:textColor="#4a4a4a"
                 android:layout_gravity="center"
                 android:visibility="visible"/>
 
@@ -65,6 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="este es un mail super largo para @ representar"
+                android:textColor="#7a8191"
                 android:textSize="15sp"
                 android:maxLines="1"
                 android:padding="3dp"

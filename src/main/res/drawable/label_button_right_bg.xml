@@ -4,7 +4,7 @@
     <solid
         android:color="@color/label_buttons"/>
     <corners
-        android:bottomRightRadius="20dp"
+        android:bottomRightRadius="15dp"
         />
     <padding
         android:left="10dp"

@@ -36,6 +36,10 @@ class ComposerController(private val model: ComposerModel,
 
         override fun onAttachmentButtonClicked() {
         }
+
+        override fun onBackButtonClicked() {
+            host.finishScene()
+        }
     }
 
 
