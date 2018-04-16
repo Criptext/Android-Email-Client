@@ -157,6 +157,9 @@ dependencies {
     //Rich Editor
     implementation 'jp.wasabeef:richeditor-android:1.2.2'
 
+    //neovisionaries
+    implementation 'com.neovisionaries:nv-websocket-client:1.31'
+
 }
 
 
