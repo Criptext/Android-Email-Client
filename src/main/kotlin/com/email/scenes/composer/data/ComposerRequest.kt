@@ -5,5 +5,7 @@ package com.email.scenes.composer.data
  */
 
 sealed class ComposerRequest {
-    class SuggestContacts(text: String): ComposerRequest()
+    class GetAllContacts : ComposerRequest()
+    class SaveEmailAsDraftAndSend(val composerInputData: ComposerInputData): ComposerRequest()
+    class SaveEmailAsDraft(val composerInputData: ComposerInputData): ComposerRequest()
 }

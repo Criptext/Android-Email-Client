@@ -14,16 +14,19 @@ import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
+import com.email.utils.KeyboardManager
 
 /**
  * Created by sebas on 3/12/18.
  */
 
 class  EmailDetailActivity: BaseActivity() {
+
     override val layoutId = R.layout.activity_emails_detail
     override val toolbarId = R.id.email_detail_toolbar
 
     override fun initController(receivedModel: Any): SceneController {
+
         val mailboxDB: MailboxLocalDB.Default = MailboxLocalDB.
                 Default(AppDatabase.getAppDatabase(this.applicationContext))
         val db: EmailDetailLocalDB.Default =
@@ -50,7 +53,8 @@ class  EmailDetailActivity: BaseActivity() {
                         runner = AsyncTaskWorkRunner(),
                         emailDetailLocalDB = db,
                         activeAccount = activeAccount,
-                        signalClient = signalClient)
+                        signalClient = signalClient),
+                keyboard = KeyboardManager(this)
         )
 
     }

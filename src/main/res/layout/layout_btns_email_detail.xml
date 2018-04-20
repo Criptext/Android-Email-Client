@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <Button
         style="?android:attr/borderlessButtonStyle"
         android:drawablePadding="-5dp"
@@ -17,7 +18,7 @@
         android:drawableTint="#87888f"
         android:drawableStart="@drawable/reply_layer"
         android:background="@drawable/email_detail_reply_btn_shape"
-        android:text="Reply"
+        android:text="@string/reply"
         android:layout_width="112dp"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:layout_height="match_parent" />
@@ -31,9 +32,10 @@
         android:drawableTint="#87888f"
         android:drawableLeft="@drawable/reply_all_layer"
         android:drawablePadding="5dp"
-        android:text="Reply All"
+        android:text="@string/reply_all"
         android:layout_width="112dp"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_height="match_parent" />
 
     <Button
@@ -46,8 +48,9 @@
         android:background="@drawable/email_detail_forward_btn_shape"
         android:drawableStart="@drawable/forward_layer"
         android:drawableTint="#87888f"
-        android:text="Forward"
+        android:text="@string/forward"
         android:layout_width="112dp"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:layout_height="match_parent" />
+
 </LinearLayout>

@@ -61,17 +61,12 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                     hasAttachmentsView.drawable,
                     ContextCompat.getColor(view.context, R.color.azure))
         }
-        if(fullEmail.from == null) {
-            headerView.text = "Me"
-            leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                    "Sebastian Caceres",
-                    "S", 250, 250))
-        } else {
-            headerView.text = fullEmail.from.name
-            leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                    fullEmail.from.name,
-                    fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
-        }
+
+        headerView.text = fullEmail.from.name
+        leftImageView.setImageBitmap(Utility.getBitmapFromText(
+                fullEmail.from.name,
+                fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
+
     }
 
     init {

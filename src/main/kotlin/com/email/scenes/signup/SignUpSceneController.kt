@@ -167,6 +167,7 @@ class SignUpSceneController(
         }
 
         override fun onRegisterUserSuccess(){
+            host.finishScene()
             host.goToScene(MailboxParams())
         }
 

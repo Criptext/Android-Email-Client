@@ -60,8 +60,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         headerView.text = emailThread.headerPreview
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
-                        emailThread.latestEmail.from?.name ?:"Empty",
-                        emailThread.latestEmail.from?.name?.get(0)?.toString()?.toUpperCase() ?: "E",
+                        emailThread.latestEmail.from.name ?:"Empty",
+                        emailThread.latestEmail.from.name[0].toString().toUpperCase() ?: "E",
                         250,
                         250))
 

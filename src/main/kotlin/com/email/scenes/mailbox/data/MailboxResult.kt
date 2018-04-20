@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.db.LabelTextTypes
 import com.email.db.models.Label
 import com.email.utils.UIMessage
+import org.json.JSONObject
 
 /**
  * Created by sebas on 3/20/18.
@@ -69,11 +70,14 @@ sealed class MailboxResult {
     }
 
     sealed class SendMail: MailboxResult() {
-        class Success: SendMail()
+        class Success(val emailId: Int, val response: JSONObject): SendMail()
         data class Failure(val message: UIMessage): SendMail()
     }
 
-    sealed class LoadThreads {
+    sealed class UpdateMail: MailboxResult() {
+        class Success: UpdateMail()
+        class Failure: UpdateMail()
     }
+
 }
 

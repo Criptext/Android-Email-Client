@@ -71,6 +71,13 @@ import java.util.*
             where id=:id""")
     fun toggleRead(id: Int, unread: Boolean)
 
+    @Query("""UPDATE email
+            SET threadid=:threadId,
+            key=:key,
+            date=:date
+            where id=:id""")
+    fun updateEmail(id: Int, threadId: String, key : String, date: Date)
+
     @Update
     fun update(emails: List<Email>)
 
@@ -80,11 +87,7 @@ import java.util.*
     fun getEmailsFromThreadId(threadId: String): List<Email>
 
     @Insert
-    fun insert(email: Email)
-
-
-    @Query("""SELECT MAX(id) FROM email""")
-    fun getLastInsertedId(): Int
+    fun insert(email: Email): Long
 
     @Query("""UPDATE email
             SET delivered=:deliveryType

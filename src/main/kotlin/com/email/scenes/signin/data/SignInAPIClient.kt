@@ -20,8 +20,8 @@ interface SignInAPIClient {
     class Default : SignInAPIClient {
         private val client = OkHttpClient().
                 newBuilder().
-                connectTimeout(5, TimeUnit.SECONDS).
-                readTimeout(5, TimeUnit.SECONDS).
+                connectTimeout(60, TimeUnit.SECONDS).
+                readTimeout(60, TimeUnit.SECONDS).
                 build()
 
         override fun authenticateUser(

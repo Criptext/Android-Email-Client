@@ -2,6 +2,7 @@ package com.email.scenes.composer
 
 import com.email.db.models.Contact
 import com.email.scenes.composer.data.ComposerInputData
+import com.email.utils.HtmlCompat
 
 /**
  * Created by gabriel on 8/30/17.
@@ -24,6 +25,25 @@ object Validator {
             return AddressError(AddressError.Types.bcc, invalidBccContact.email)
 
         return null
+    }
+
+    fun mailHasMoreThanSignature(data: ComposerInputData, rawSignature: String) : Boolean{
+
+        val subject = data.subject
+        val body = HtmlCompat.fromHtml(data.body).toString()
+                .replace("\n", "").replace("\r", "")
+        val signature = HtmlCompat.fromHtml(rawSignature).toString()
+                .replace("\n", "").replace("\r", "")
+
+        if(body != signature) {
+            return true
+        }
+
+        if (data.hasAtLeastOneRecipient || subject.isNotEmpty()) {
+            return true
+        }
+
+        return false
     }
 }
 

@@ -17,21 +17,15 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "http://54.245.42.9:8000"
+        var baseUrl = "https://stage.mail.criptext.com"
 
         private val client = OkHttpClient().
                 newBuilder().
-                connectTimeout(20, TimeUnit.SECONDS).
-                readTimeout(20, TimeUnit.SECONDS).
+                connectTimeout(180, TimeUnit.SECONDS).
+                readTimeout(180, TimeUnit.SECONDS).
                 build()
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
-
-        fun executeRequest(client: OkHttpClient, req: Request): String {
-            val response = this.client.newCall(req).execute()
-            if(!response.isSuccessful) throw(ServerErrorException(response.code()))
-            return response.body()!!.string()
-        }
 
         fun executeRequest(req: Request): String {
             val response = client.newCall(req).execute()

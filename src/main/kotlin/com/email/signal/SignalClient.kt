@@ -56,7 +56,9 @@ interface SignalClient {
                 val publicPreKeyBytes = if (publicPreKeyString != null)
                                             Encoding.stringToByteArray(publicPreKeyString)
                                         else null
-                val publicPreKey = Curve.decodePoint(publicPreKeyBytes, 0)
+                val publicPreKey = if(publicPreKeyBytes != null)
+                                            Curve.decodePoint(publicPreKeyBytes, 0)
+                                        else null
 
                 val signedPreKeyPublicBytes = Encoding.stringToByteArray(signedPreKeyPublicString)
                 val signedPreKeyPublic = Curve.decodePoint(signedPreKeyPublicBytes, 0)

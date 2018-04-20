@@ -9,15 +9,15 @@
         android:orientation="horizontal">
 
         <RelativeLayout
-            android:layout_width="75dp"
-            android:layout_height="75dp">
+            android:layout_width="60dp"
+            android:layout_height="60dp">
 
             <ImageView
                 android:id="@+id/auto_circle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleX="0.6"
-                android:scaleY="0.6"
+                android:scaleX="0.5"
+                android:scaleY="0.5"
                 android:src="@drawable/circle"
                 android:layout_centerInParent="true"/>
 
@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="S"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:textColor="@color/white"
                 android:layout_centerInParent="true"
                 android:paddingBottom="1dp"/>
@@ -36,7 +36,7 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_height="75dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
@@ -48,9 +48,8 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:padding="3dp"
                 android:text="AUTOCOMPLETE NOMBRE"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textColor="#4a4a4a"
                 android:layout_gravity="center"
                 android:visibility="visible"/>
@@ -61,9 +60,8 @@
                 android:layout_height="wrap_content"
                 android:text="este es un mail super largo para @ representar"
                 android:textColor="#7a8191"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:maxLines="1"
-                android:padding="3dp"
                 />
         </LinearLayout>
 
@@ -71,8 +69,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/gray"
+        android:layout_height="0.5dp"
+        android:background="#edebeb"
         android:layout_alignParentBottom="true"
         android:translationX="23dp"/>
 

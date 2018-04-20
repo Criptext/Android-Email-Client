@@ -20,6 +20,7 @@ import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.params.ComposerParams
+import com.email.utils.KeyboardManager
 import com.email.utils.VirtualList
 
 /**
@@ -30,7 +31,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
                                  private val mailboxDataSource: MailboxDataSource,
-                                 private val dataSource: EmailDetailDataSource) : SceneController() {
+                                 private val dataSource: EmailDetailDataSource,
+                                 private val keyboard: KeyboardManager?) : SceneController() {
 
     val lastIndexElement: Int by lazy {
         model.fullEmailList.size - 1
@@ -170,7 +172,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 threadId = model.threadId)
 
         dataSource.submitRequest(req)
-
+        keyboard?.hideKeyboard()
         return false
     }
 

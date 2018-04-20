@@ -145,7 +145,7 @@
     <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
     <string name="trash">Trash</string>
-    <string name="more">more</string>
+    <string name="more">More Options</string>
     <string name="criptext_com">\@criptext.com</string>
     <string name="sign_up">Sign Up</string>
     <string name="not_registered">Not registered?</string>
@@ -156,6 +156,8 @@
     <string name="btn_create_account">Create account</string>
     <string name="txt_create_criptext_account">Create your Criptext account</string>
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
+    <string name="yes">Yes</string>
+    <string name="discard">Discard</string>
 
     <!-- LOGIN ERRORS -->
     <string name="search_email">Search email</string>
@@ -173,6 +175,10 @@
 
     <string name="message">Message</string>
     <string name="subject">Subject</string>
+
+    <string name="error_getting_contacts">Error getting contacts. Please try again</string>
+    <string name="error_saving_as_draft">Error saving email. Please try again</string>
+    <string name="you_wanna_save">Do you want to save this as draft?</string>
 
     <!-- EXCEPTIONS REGISTER USER-->
     <string name="network_error_exception">Failed to register user. Please check your internet connection.</string>
@@ -207,6 +213,7 @@
     <string name="mark_as_unread">Mark as Unread</string>
     <string name="criptextdotcom">gcarlo\@criptext.com</string>
     <string name="failed_getting_labels">Failed to get labels.</string>
+    <string name="failed_getting_contacts">Failed to get contacts.</string>
 
     <string name="fail_unsend_email">Failed to unsend the email. Please try again later.</string>
     <string name="failed_getting_emails">Failed to fetch the emails. Please try again later.</string>
