@@ -28,7 +28,7 @@ class SignInFormHolder(val view: View) {
     private val progressBar: ProgressBar
     private val imageError: ImageView
 
-   var signInListener: SignInSceneController.SignInListener? = null
+   var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     private val shouldButtonBeEnabled : Boolean
         get() = usernameInputLayout.hint == "Username" && usernameInput.text.length > 0
@@ -68,20 +68,20 @@ class SignInFormHolder(val view: View) {
     fun assignLoginButtonListener() {
         signInButton.setOnClickListener {
             // start progress dialog... change UI
-            signInListener!!.onLoginClick()
+            signInUIObserver!!.onLoginClick()
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun assignSignUpTextViewListener() {
         signUpTextView.setOnClickListener{
-            signInListener!!.goToSignUp()
+            signInUIObserver!!.onSignUpLabelClicked()
         }
     }
 
     fun assignUsernameInputListener(){
         usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
-            signInListener!!.toggleUsernameFocusState(isFocused)
+            signInUIObserver!!.toggleUsernameFocusState(isFocused)
         }
 
 
@@ -92,7 +92,7 @@ class SignInFormHolder(val view: View) {
             }
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signInListener!!.onUsernameTextChanged(text.toString())
+                signInUIObserver!!.onUsernameTextChanged(text.toString())
             }
 
         })

@@ -8,4 +8,8 @@ import com.email.SignUpActivity
 
 class SignUpParams: SceneParams() {
     override val activityClass = SignUpActivity::class.java
+
+    override fun equals(other: Any?): Boolean {
+        return other?.javaClass == SignUpParams::class.java
+    }
 }

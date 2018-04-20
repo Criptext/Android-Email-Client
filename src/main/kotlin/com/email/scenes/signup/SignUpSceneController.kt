@@ -5,6 +5,7 @@ import com.email.api.ServerErrorException
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
+import com.email.scenes.params.SignInParams
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 import com.email.scenes.signup.data.SignUpDataSource
@@ -167,12 +168,11 @@ class SignUpSceneController(
         }
 
         override fun onRegisterUserSuccess(){
-            host.finishScene()
-            host.goToScene(MailboxParams())
+            host.goToScene(MailboxParams(), false)
         }
 
         override fun onBackPressed() {
-            host.finishScene()
+            this@SignUpSceneController.onBackPressed()
         }
     }
 
@@ -202,6 +202,7 @@ class SignUpSceneController(
 
     private fun submitCreateUser() {
         scene.showKeyGenerationHolder()
+
         val newAccount = IncompleteAccount(
                 username = model.username,
                 name = model.fullName,
@@ -253,7 +254,8 @@ class SignUpSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        return true
+        host.exitToScene(SignInParams(), null)
+        return false
     }
 
     override fun onOptionsItemSelected(itemId: Int) {

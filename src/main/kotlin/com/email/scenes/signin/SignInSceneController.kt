@@ -31,7 +31,7 @@ class SignInSceneController(
     private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
         when (result) {
             is SignInResult.AuthenticateUser.Success -> {
-                signInListener.onUserAuthenticated()
+                uiObserver.onUserAuthenticated()
             }
             is SignInResult.AuthenticateUser.Failure -> {
                 scene.showError(result.message)
@@ -59,13 +59,13 @@ class SignInSceneController(
             }
         }
     }
-    private val signInListener = object : SignInListener {
+    private val uiObserver = object : SignInUIObserver {
         override fun onForgotPasswordClick() {
             TODO("GO TO FORGOT PASSWORD???")
         }
 
         override fun onUserAuthenticated() {
-            host.goToScene(MailboxParams())
+            host.goToScene(MailboxParams(), false)
         }
 
         override fun onPasswordLoginClick() {
@@ -90,7 +90,7 @@ class SignInSceneController(
             scene.showPasswordLoginDialog(onPasswordLoginDialogListener)
         }
         override fun userLoginReady() {
-            host.goToScene(MailboxParams())
+            host.goToScene(MailboxParams(), false)
         }
 
         override fun onLoginClick() {
@@ -105,18 +105,12 @@ class SignInSceneController(
             model.username = text
         }
 
-        override fun goToSignUp() {
-            host.goToScene(SignUpParams())
+        override fun onSignUpLabelClicked() {
+            host.goToScene(SignUpParams(), false)
         }
 
         override fun toggleSignUpPressedState(isPressed: Boolean) {
             scene.toggleSignUpPressed(isPressed)
-        }
-    }
-
-    private val progressSignInListener = object : ProgressSignInListener{
-        override fun onFinish() {
-            scene.toggleLoginProgressBar(isLoggingIn = false)
         }
     }
 
@@ -131,13 +125,13 @@ class SignInSceneController(
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        scene.initListeners(signInListener = signInListener)
+        scene.initListeners(signInUIObserver = uiObserver)
 
         return false
     }
 
     override fun onStop() {
-        scene.signInListener = null
+        scene.signInUIObserver = null
     }
 
     override fun onBackPressed(): Boolean {
@@ -147,21 +141,16 @@ class SignInSceneController(
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
-    private fun showConnectionHolder() {
-        scene.showConnectionHolder()
-        scene.startAnimation()
-    }
-
     private fun showLoginValidationHolder() {
         scene.showLoginValidationHolder()
     }
 
-    interface SignInListener {
+    interface SignInUIObserver {
         fun onLoginClick()
         fun toggleUsernameFocusState(isFocused: Boolean)
         fun onUsernameTextChanged(text: String)
         fun toggleSignUpPressedState(isPressed: Boolean)
-        fun goToSignUp()
+        fun onSignUpLabelClicked()
         fun userLoginReady()
         fun onCantAccessDeviceClick()
         fun onPasswordLoginClick()

@@ -23,7 +23,7 @@ class PasswordLoginHolder(
     private val password: TextInputEditText
     private val buttonConfirm: Button
 
-    var signInListener: SignInSceneController.SignInListener? = null
+    var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     init {
         username = view.findViewById(R.id.username)
@@ -37,7 +37,7 @@ class PasswordLoginHolder(
 
     fun assignForgotPasswordClickListener() {
         forgotPassword.setOnClickListener {
-            signInListener?.onForgotPasswordClick()
+            signInUIObserver?.onForgotPasswordClick()
         }
     }
 
@@ -51,13 +51,13 @@ class PasswordLoginHolder(
             }
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                signInListener!!.onPasswordChangeListener(text.toString())
+                signInUIObserver!!.onPasswordChangeListener(text.toString())
             }
         })
     }
     fun assignConfirmButtonListener() {
         buttonConfirm.setOnClickListener {
-            signInListener?.onPasswordLoginClick()
+            signInUIObserver?.onPasswordLoginClick()
         }
     }
 

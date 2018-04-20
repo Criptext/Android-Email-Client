@@ -100,19 +100,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onForwardBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.FORWARD))
+                    composerType = ComposerTypes.FORWARD), true)
         }
 
         override fun onReplyBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.REPLY))
+                    composerType = ComposerTypes.REPLY), true)
         }
 
         override fun onReplyAllBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.REPLY_ALL))
+                    composerType = ComposerTypes.REPLY_ALL), true)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -124,15 +124,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY))
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY), true)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY_ALL))
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY_ALL), true)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.FORWARD))
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.FORWARD), true)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {

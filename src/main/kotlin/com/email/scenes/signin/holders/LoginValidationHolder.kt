@@ -36,7 +36,7 @@ class LoginValidationHolder(val view: View) {
     private val buttonResend: Button
 
     private val passwordLoginDialog = PasswordLoginDialog(view.context)
-    var signInListener: SignInSceneController.SignInListener? = null
+    var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     init {
         cantAccessDevice = view.findViewById(R.id.cant_access_device)
@@ -167,7 +167,7 @@ class LoginValidationHolder(val view: View) {
 
     fun assignCantAccessDeviceListener() {
         cantAccessDevice.setOnClickListener {
-            signInListener!!.onCantAccessDeviceClick()
+            signInUIObserver!!.onCantAccessDeviceClick()
         }
     }
 

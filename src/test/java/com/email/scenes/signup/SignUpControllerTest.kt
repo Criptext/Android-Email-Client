@@ -1,16 +1,19 @@
 package com.email.scenes.signup
 
+import com.email.IHostActivity
 import com.email.api.ApiCall
 import com.email.db.KeyValueStorage
 import com.email.mocks.MockedIHostActivity
 import com.email.mocks.MockedKeyValueStorage
 import com.email.mocks.MockedSignalKeyGenerator
 import com.email.mocks.MockedWorkRunner
+import com.email.scenes.params.SignInParams
 import com.email.scenes.signup.data.SignUpDataSource
 import com.email.scenes.signup.data.RegisterUserWorker
 import com.email.scenes.signup.data.SignUpAPIClient
 import com.email.scenes.signup.mocks.MockedSignUpLocalDB
 import com.email.scenes.signup.mocks.MockedSignUpView
+import io.mockk.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
@@ -33,6 +36,7 @@ class SignUpControllerTest {
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: SignUpDataSource
     private lateinit var controller: SignUpSceneController
+    private lateinit var host: IHostActivity
 
     @Before
     fun setUp() {
@@ -42,6 +46,10 @@ class SignUpControllerTest {
         db = MockedSignUpLocalDB()
         signUpAPIClient = SignUpAPIClient.Default()
         storage = MockedKeyValueStorage()
+
+        host = mockk<IHostActivity>()
+        every { host.exitToScene(any(), null) } just Runs
+
         dataSource = SignUpDataSource(
                 runner = runner,
                 signUpAPIClient = signUpAPIClient,
@@ -53,7 +61,7 @@ class SignUpControllerTest {
                 model =  model,
                 scene = scene,
                 dataSource = dataSource,
-                host =  MockedIHostActivity()
+                host =  host
         )
     }
 
@@ -98,6 +106,16 @@ class SignUpControllerTest {
         // assert db and local storage updated
         storage.getString(KeyValueStorage.StringKey.ActiveAccount, "") `should equal` """{"jwt":"Ok","recipientId":"sebas1"}"""
         db.savedUser!!.recipientId `should equal` "sebas1"
+    }
+
+    @Test
+    fun `when user presses back, should go to sign in scene`() {
+        controller.onStart(null)
+
+        val backEventWasHandledBySystem = controller.onBackPressed()
+        backEventWasHandledBySystem `should be` false
+
+        verify { host.exitToScene(SignInParams(), null) }
     }
 
     @Test

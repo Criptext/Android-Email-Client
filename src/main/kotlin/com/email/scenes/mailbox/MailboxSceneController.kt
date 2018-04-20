@@ -107,7 +107,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val threadListController = ThreadListController(model.threads, scene)
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener {
         override fun onGoToMail(emailThread: EmailThread) {
-            host.goToScene(EmailDetailParams(emailThread.threadId))
+            host.goToScene(EmailDetailParams(emailThread.threadId), true)
         }
 
         override fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int) {
@@ -160,7 +160,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onOpenComposerButtonClicked() {
-            host.goToScene(ComposerParams())
+            host.goToScene(ComposerParams(), true)
         }
     }
 
@@ -280,7 +280,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onOptionsItemSelected(itemId: Int) {
         when (itemId) {
-            R.id.mailbox_search -> host.goToScene(SearchParams())
+            R.id.mailbox_search -> host.goToScene(SearchParams(), true)
             R.id.mailbox_archive_selected_messages -> archiveSelectedEmailThreads()
             R.id.mailbox_delete_selected_messages -> deleteSelectedEmailThreads()
             R.id.mailbox_message_toggle_read -> {
