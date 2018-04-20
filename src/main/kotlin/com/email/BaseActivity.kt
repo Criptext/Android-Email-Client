@@ -119,6 +119,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         return when(params) {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
+            is SignInParams -> SignInSceneModel()
             is ComposerParams -> ComposerModel(params.fullEmail, params.composerType)
             is MailboxParams -> MailboxSceneModel()
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
@@ -134,16 +135,18 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         return getString(message.resId, *message.args)
     }
 
-    override fun goToScene(params: SceneParams) {
+    override fun goToScene(params: SceneParams, keep: Boolean) {
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass)
+
+        if (! keep) finish()
     }
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
         BaseActivity.activityMessage = activityMessage
         finish()
-        goToScene(params)
+        goToScene(params, false)
     }
 
     override fun finishScene() {

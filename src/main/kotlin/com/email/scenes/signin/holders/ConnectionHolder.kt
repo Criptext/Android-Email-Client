@@ -21,7 +21,7 @@ class ConnectionHolder(val view: View) {
     private val textViewStatus: TextView
     private val textViewEmail: TextView
     private var animLoading: AnimatorSet? = null
-    var signInListener: SignInSceneController.SignInListener? = null
+    var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     fun startLoadingAnimation() {
         loadingView.post {
@@ -92,7 +92,7 @@ class ConnectionHolder(val view: View) {
 
 
     fun startSucceedAnimation(launchMailboxScene: (
-                signInListener: SignInSceneController.SignInListener) -> Unit) {
+            signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit) {
         animLoading!!.cancel()
         loadingView.post {
             val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
@@ -113,7 +113,7 @@ class ConnectionHolder(val view: View) {
                 }
 
                 override fun onAnimationEnd(p0: Animator?) {
-                    launchMailboxScene(signInListener!!)
+                    launchMailboxScene(signInUIObserver!!)
                 }
 
                 override fun onAnimationCancel(p0: Animator?) {

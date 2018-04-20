@@ -24,12 +24,12 @@ interface SignInScene {
     fun drawError()
     fun showError(message: UIMessage)
     fun drawSuccess()
-    fun initListeners(signInListener: SignInSceneController.SignInListener)
+    fun initListeners(signInUIObserver: SignInSceneController.SignInUIObserver)
     fun showConnectionHolder()
     fun showFormHolder()
     fun startLoadingAnimation()
     fun startSucceedAnimation(launchMailboxScene: (
-            signInListener: SignInSceneController.SignInListener) -> Unit)
+            signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit)
     fun stopAnimationLoading()
     fun startAnimation()
     fun initFormUI()
@@ -39,7 +39,7 @@ interface SignInScene {
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun toggleConfirmButton(activated: Boolean)
 
-    var signInListener: SignInSceneController.SignInListener?
+    var signInUIObserver: SignInSceneController.SignInUIObserver?
 
     class SignInSceneView(val view: View): SignInScene {
 
@@ -63,12 +63,12 @@ interface SignInScene {
         private var loginValidationHolder: LoginValidationHolder? = null
         private var passwordLoginHolder: PasswordLoginHolder? = null
 
-        override var signInListener: SignInSceneController.SignInListener? = null
+        override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
-                signInFormHolder?.signInListener = value
-                connectionHolder?.signInListener = value
-                loginValidationHolder?.signInListener = value
-                passwordLoginHolder?.signInListener = value
+                signInFormHolder?.signInUIObserver = value
+                connectionHolder?.signInUIObserver = value
+                loginValidationHolder?.signInUIObserver = value
+                passwordLoginHolder?.signInUIObserver = value
                 field = value
             }
         private fun assignForgotPasswordClickListener() {
@@ -136,9 +136,9 @@ interface SignInScene {
         }
 
         override fun initListeners(
-                signInListener: SignInSceneController.SignInListener
+                signInUIObserver: SignInSceneController.SignInUIObserver
         ) {
-            this.signInListener = signInListener
+            this.signInUIObserver = signInUIObserver
             assignLoginButtonListener()
             assignSignUpTextViewListener()
             assignUsernameInputListener()
@@ -156,15 +156,15 @@ interface SignInScene {
                     R.layout.activity_connection, viewGroup)
 
             connectionHolder = ConnectionHolder(connectionLayout)
-            connectionHolder?.signInListener = signInListener
+            connectionHolder?.signInUIObserver = signInUIObserver
         }
 
         private fun removeAllViews() {
             viewGroup.removeAllViews()
-            connectionHolder?.signInListener = null
-            signInFormHolder?.signInListener = null
-            loginValidationHolder?.signInListener = null
-            passwordLoginHolder?.signInListener = null
+            connectionHolder?.signInUIObserver = null
+            signInFormHolder?.signInUIObserver = null
+            loginValidationHolder?.signInUIObserver = null
+            passwordLoginHolder?.signInUIObserver = null
         }
 
         override fun showFormHolder() {
@@ -182,12 +182,12 @@ interface SignInScene {
         }
 
         override fun startSucceedAnimation(launchMailboxScene: (
-                signInListener: SignInSceneController.SignInListener) -> Unit) {
+                signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit) {
             connectionHolder?.startSucceedAnimation(launchMailboxScene)
         }
         private val showMailboxScene = {
-            signInListener: SignInSceneController.SignInListener ->
-            signInListener.userLoginReady()
+            signInUIObserver: SignInSceneController.SignInUIObserver ->
+            signInUIObserver.userLoginReady()
         }
 
         override fun stopAnimationLoading() {
@@ -200,7 +200,7 @@ interface SignInScene {
                     view.context,
                     R.layout.activity_login_validation, viewGroup)
             loginValidationHolder = LoginValidationHolder(layout)
-            initListeners(signInListener!!)
+            initListeners(signInUIObserver!!)
         }
 
         override fun showPasswordLoginHolder(username: String) {
@@ -211,7 +211,7 @@ interface SignInScene {
             passwordLoginHolder = PasswordLoginHolder(
                     layout,
                     user = username)
-            initListeners(signInListener!!)
+            initListeners(signInUIObserver!!)
         }
 
         override fun toggleConfirmButton(activated: Boolean) {
