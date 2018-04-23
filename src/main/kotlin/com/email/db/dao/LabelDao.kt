@@ -1,7 +1,7 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.*
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.models.Label
 
 /**
@@ -26,7 +26,7 @@ interface LabelDao {
     @Query("""SELECT * FROM label
             WHERE text=:labelTextType
             LIMIT 1""")
-    fun get(labelTextType: LabelTextTypes): Label
+    fun get(labelTextType: MailFolders): Label
 
     @Query("""SELECT * FROM label
             WHERE text in (:labelTextTypes)""")

@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.utils.UIMessage
 import org.json.JSONObject
@@ -27,43 +27,43 @@ sealed class MailboxResult {
     }
 
     sealed class LoadEmailThreads : MailboxResult() {
-        abstract fun getDestinationMailbox(): LabelTextTypes
+        abstract fun getDestinationMailbox(): MailFolders
         class Success(
                 val emailThreads: List<EmailThread>,
-                val mailboxLabel: LabelTextTypes): LoadEmailThreads() {
+                val mailboxLabel: MailFolders): LoadEmailThreads() {
 
-            override fun getDestinationMailbox(): LabelTextTypes {
+            override fun getDestinationMailbox(): MailFolders {
                 return mailboxLabel
             }
         }
 
         data class Failure(
-                val mailboxLabel: LabelTextTypes,
+                val mailboxLabel: MailFolders,
                 val message: UIMessage,
                 val exception: Exception) : LoadEmailThreads() {
 
-            override fun getDestinationMailbox(): LabelTextTypes {
+            override fun getDestinationMailbox(): MailFolders {
                 return mailboxLabel
             }
         }
     }
 
     sealed class UpdateMailbox : MailboxResult() {
-        abstract fun getDestinationMailbox(): LabelTextTypes
+        abstract fun getDestinationMailbox(): MailFolders
         data class Success(
-                val mailboxLabel: LabelTextTypes,
+                val mailboxLabel: MailFolders,
                 val mailboxThreads: List<EmailThread>,
                 val isManual: Boolean): UpdateMailbox() {
 
-            override fun getDestinationMailbox(): LabelTextTypes {
+            override fun getDestinationMailbox(): MailFolders {
                 return mailboxLabel
             }
         }
 
         data class Failure(
-                val mailboxLabel: LabelTextTypes,
+                val mailboxLabel: MailFolders,
                 val message: UIMessage ): UpdateMailbox() {
-            override fun getDestinationMailbox(): LabelTextTypes {
+            override fun getDestinationMailbox(): MailFolders {
                 return mailboxLabel
             }
         }

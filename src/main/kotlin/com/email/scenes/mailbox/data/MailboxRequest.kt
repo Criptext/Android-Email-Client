@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.labelChooser.SelectedLabels
 import org.json.JSONObject
@@ -10,25 +10,25 @@ import org.json.JSONObject
  */
 
 sealed class MailboxRequest{
-    class GetLabels(
+    data class GetLabels(
             val threadIds: List<String>): MailboxRequest()
 
-    class UpdateMailbox(
-            val label: LabelTextTypes): MailboxRequest()
+    data class UpdateMailbox(
+            val label: MailFolders): MailboxRequest()
 
-    class UpdateEmailThreadsLabelsRelations(
-            val chosenLabel: LabelTextTypes?,
-                val selectedLabels: SelectedLabels?,
-                val selectedEmailThreads: List<EmailThread>
+    data class UpdateEmailThreadsLabelsRelations(
+            val chosenLabel: MailFolders?,
+            val selectedLabels: SelectedLabels?,
+            val selectedEmailThreads: List<EmailThread>
             ): MailboxRequest()
 
-    class LoadEmailThreads(
-            val label: LabelTextTypes,
+    data class LoadEmailThreads(
+            val label: MailFolders,
             val offset: Int,
             val oldestEmailThread: EmailThread?
             ): MailboxRequest()
 
     data class SendMail(val emailId: Int, val data: ComposerInputData): MailboxRequest()
 
-    class UpdateEmail(val emailId: Int, val response: JSONObject): MailboxRequest()
+    data class UpdateEmail(val emailId: Int, val response: JSONObject): MailboxRequest()
 }

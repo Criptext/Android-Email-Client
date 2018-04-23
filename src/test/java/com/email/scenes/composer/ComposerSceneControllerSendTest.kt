@@ -10,7 +10,6 @@ import com.email.scenes.composer.data.ComposerAPIClient
 import com.email.scenes.composer.data.ComposerDataSource
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.mocks.MockedComposerScene
-import com.email.splash.SplashActivity
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -134,7 +133,7 @@ class ComposerSceneControllerSendTest {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
-            override fun get(labelTextType: LabelTextTypes): Label {
+            override fun get(labelTextType: MailFolders): Label {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 

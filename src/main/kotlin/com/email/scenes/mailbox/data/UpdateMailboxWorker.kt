@@ -27,7 +27,7 @@ class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
-        private val label: LabelTextTypes,
+        private val label: MailFolders,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
@@ -46,12 +46,12 @@ class UpdateMailboxWorker(
         }
     }
     private fun selectRejectedLabels(): List<Label> {
-        val commonRejectedLabels = listOf( LabelTextTypes.SPAM, LabelTextTypes.TRASH)
+        val commonRejectedLabels = listOf( MailFolders.SPAM, MailFolders.TRASH)
         return when(label) {
-           LabelTextTypes.SENT,
-           LabelTextTypes.INBOX,
-           LabelTextTypes.ARCHIVED,
-           LabelTextTypes.STARRED -> {
+           MailFolders.SENT,
+           MailFolders.INBOX,
+           MailFolders.ARCHIVED,
+           MailFolders.STARRED -> {
                return db.getLabelsFromLabelType(
                        labelTextTypes = commonRejectedLabels)
            }
@@ -76,9 +76,9 @@ class UpdateMailboxWorker(
     }
 
     override fun work(): MailboxResult.UpdateMailbox? {
-        val operationResult = fetchPendingEvents().
-                flatMap(parseEmails).
-                mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        val operationResult = fetchPendingEvents()
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                .flatMap(parseEmails)
 
         return when(operationResult) {
             is Result.Success -> {
@@ -143,7 +143,7 @@ class UpdateMailboxWorker(
                                     else bodyWithoutHTML
 
                     val email = Email(
-                            id=null,
+                            id = 0,
                             unread = true,
                             date = DateUtils.getDateFromString(
                                     metaData.date,

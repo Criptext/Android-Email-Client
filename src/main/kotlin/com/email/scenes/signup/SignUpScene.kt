@@ -23,7 +23,7 @@ interface SignUpScene {
     fun togglePasswordErrors(show: Boolean)
     fun toggleUsernameErrors(show: Boolean)
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
-    fun initListeners(signUpListener: SignUpSceneController.SignUpListener)
+    fun initListeners(uiObserver: SignUpSceneController.SignUpUIObserver)
     fun showError(message : UIMessage)
     fun showSuccess()
     fun showKeyGenerationHolder()
@@ -34,7 +34,7 @@ interface SignUpScene {
             password: String,
             recoveryEmail: String)
 
-    var signUpListener: SignUpSceneController.SignUpListener?
+    var uiObserver: SignUpSceneController.SignUpUIObserver?
 
     class SignUpSceneView(private val view: View): SignUpScene {
 
@@ -43,9 +43,9 @@ interface SignUpScene {
         private var signUpFormHolder: SignUpFormHolder? = null
         private var keyGenerationHolder : KeyGenerationHolder? = null
 
-        override var signUpListener : SignUpSceneController.SignUpListener? = null
+        override var uiObserver: SignUpSceneController.SignUpUIObserver? = null
             set(value) {
-                signUpFormHolder?.signUpListener = value
+                signUpFormHolder?.uiObserver = value
                 field = value
             }
 
@@ -159,8 +159,8 @@ interface SignUpScene {
             signUpFormHolder?.assignCreateAccountClickListener()
         }
 
-        override fun initListeners(signUpListener: SignUpSceneController.SignUpListener){
-            this.signUpListener = signUpListener
+        override fun initListeners(uiObserver: SignUpSceneController.SignUpUIObserver){
+            this.uiObserver = uiObserver
             
             assignPasswordTextListener()
             assignConfirmPasswordTextChangeListener()
@@ -183,7 +183,7 @@ interface SignUpScene {
             toast.show()
             keyGenerationHolder?.stopTimer()
             showFormHolder()
-            initListeners(signUpListener!!)
+            initListeners(uiObserver!!)
         }
 
         override fun showKeyGenerationHolder() {
@@ -214,11 +214,11 @@ interface SignUpScene {
                     duration)
             toast.show()
 
-            signUpListener?.onRegisterUserSuccess()
+            uiObserver?.onRegisterUserSuccess()
         }
 
         private fun removeAllViews() {
-            signUpFormHolder?.signUpListener = null
+            signUpFormHolder?.uiObserver = null
             viewGroup.removeAllViews()
         }
 

@@ -1,7 +1,7 @@
 package com.email.db.typeConverters
 
 import android.arch.persistence.room.TypeConverter
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 
 /**
  * Created by sebas on 3/27/18.
@@ -10,56 +10,56 @@ import com.email.db.LabelTextTypes
 class LabelTextConverter {
 
     @TypeConverter
-    fun getLabelTextType(value: String) : LabelTextTypes  {
+    fun getLabelTextType(value: String) : MailFolders {
         return when(value) {
             "INBOX" -> {
-                LabelTextTypes.INBOX
+                MailFolders.INBOX
             }
             "STARRED" -> {
-                LabelTextTypes.STARRED
+                MailFolders.STARRED
             }
             "ARCHIVED" -> {
-                LabelTextTypes.ARCHIVED
+                MailFolders.ARCHIVED
             }
             "SENT" -> {
-                LabelTextTypes.SENT
+                MailFolders.SENT
             }
             "DRAFT" -> {
-                LabelTextTypes.DRAFT
+                MailFolders.DRAFT
             }
             "TRASH" -> {
-                LabelTextTypes.TRASH
+                MailFolders.TRASH
             }
             "SPAM" -> {
-                LabelTextTypes.SPAM
+                MailFolders.SPAM
             }
             else ->
-                LabelTextTypes.INBOX
+                MailFolders.INBOX
         }
     }
 
     @TypeConverter
-    fun parseLabelTextType(value: LabelTextTypes): String {
+    fun parseLabelTextType(value: MailFolders): String {
         return when(value) {
-            LabelTextTypes.INBOX -> {
+            MailFolders.INBOX -> {
                 "INBOX"
             }
-            LabelTextTypes.STARRED -> {
+            MailFolders.STARRED -> {
                 "STARRED"
             }
-            LabelTextTypes.ARCHIVED -> {
+            MailFolders.ARCHIVED -> {
                 "ARCHIVED"
             }
-            LabelTextTypes.SENT -> {
+            MailFolders.SENT -> {
                 "SENT"
             }
-            LabelTextTypes.DRAFT -> {
+            MailFolders.DRAFT -> {
                 "DRAFT"
             }
-            LabelTextTypes.TRASH -> {
+            MailFolders.TRASH -> {
                 "TRASH"
             }
-            LabelTextTypes.SPAM -> {
+            MailFolders.SPAM -> {
                 "SPAM"
             }
         }

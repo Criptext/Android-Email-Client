@@ -1,23 +1,24 @@
 package com.email.signal
 
 import com.email.db.AppDatabase
+import com.email.db.dao.SignUpDao
 import com.email.db.KeyValueStorage
-import com.email.db.SignUpLocalDB
 import com.email.db.models.ActiveAccount
-import com.email.db.seeders.LabelSeeder
+import com.email.db.models.Label
 import com.email.scenes.signup.IncompleteAccount
+import com.email.scenes.signup.data.StoreAccountTransaction
 import org.whispersystems.libsignal.state.SignalProtocolStore
 
 /**
  * Created by gabriel on 3/17/18.
  */
 
-class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpLocalDB: SignUpLocalDB,
+class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpDao: SignUpDao,
                generator: SignalKeyGenerator, recipientId: String, deviceId: Int)
     : TestUser(generator, recipientId, deviceId) {
 
     constructor (db: AppDatabase, storage: KeyValueStorage, generator: SignalKeyGenerator,
-                 recipientId: String, deviceId: Int) : this(db, storage, SignUpLocalDB.Default(db),
+                 recipientId: String, deviceId: Int) : this(db, storage, db.signUpDao(),
             generator, recipientId, deviceId)
 
     override val store: SignalProtocolStore by lazy {
@@ -29,11 +30,10 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpLoca
         val incompleteAccount = IncompleteAccount(username = recipientId, name = recipientId,
                 password = "12345", recoveryEmail ="support@criptext.com")
         val persistedUser = incompleteAccount.complete(privateBundle, "__MOCKED_JWT__")
-        signUpLocalDB.saveNewUserData(persistedUser, privateBundle)
 
-        val activeAccount = ActiveAccount(recipientId = persistedUser.recipientId, jwt = persistedUser.jwt)
-        storage.putString(KeyValueStorage.StringKey.ActiveAccount, activeAccount.toJSON().toString())
-        LabelSeeder.seed(db.labelDao())
+        val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage)
+        storeAccountTransaction.run(persistedUser, privateBundle)
+
     }
 
 }

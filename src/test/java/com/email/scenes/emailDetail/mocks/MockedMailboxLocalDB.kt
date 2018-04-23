@@ -1,7 +1,7 @@
 package com.email.scenes.emailDetail.mocks
 
 import com.email.db.ContactTypes
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Email
 import com.email.db.models.Label
@@ -34,11 +34,11 @@ class MockedMailboxLocalDB: MailboxLocalDB {
     override val getEmailThreadOperation: (threadId: String) -> Result<EmailThread, Exception>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
-    override fun getEmailsFromMailboxLabel(labelTextType: LabelTextTypes, oldestEmailThread: EmailThread?, offset: Int, rejectedLabels: List<Label>): List<EmailThread> {
+    override fun getEmailsFromMailboxLabel(labelTextType: MailFolders, oldestEmailThread: EmailThread?, offset: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getLabelsFromLabelType(labelTextTypes: List<LabelTextTypes>): List<Label> {
+    override fun getLabelsFromLabelType(labelTextTypes: List<MailFolders>): List<Label> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -46,7 +46,7 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getLabelFromLabelType(labelTextType: LabelTextTypes): Label {
+    override fun getLabelFromLabelType(labelTextType: MailFolders): Label {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -71,10 +71,6 @@ class MockedMailboxLocalDB: MailboxLocalDB {
     }
 
     override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun seed() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

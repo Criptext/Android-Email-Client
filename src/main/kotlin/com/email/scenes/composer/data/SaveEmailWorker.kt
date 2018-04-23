@@ -4,7 +4,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.db.ComposerLocalDB
 import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.EmailContact
@@ -38,6 +38,7 @@ class SaveEmailWorker(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    // TODO delete this duplicated code
     private fun saveEmail(fromRecipientId: String, composerInputData: ComposerInputData): Int{
 
         val bodyContent = composerInputData.body
@@ -47,7 +48,7 @@ class SaveEmailWorker(
         else bodyWithoutHTML
 
         val email = Email(
-                id=null,
+                id = 0,
                 unread = true,
                 date = Date(),
                 threadid = "",
@@ -71,7 +72,7 @@ class SaveEmailWorker(
         createContacts(null, composerInputData.cc.joinToString(","),
                 insertedId, ContactTypes.CC)
 
-        val labelInbox = db.labelDao.get(LabelTextTypes.DRAFT)
+        val labelInbox = db.labelDao.get(MailFolders.DRAFT)
         db.emailLabelDao.insert(EmailLabel(
                 labelId = labelInbox.id!!,
                 emailId = insertedId))

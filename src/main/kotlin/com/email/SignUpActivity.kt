@@ -2,8 +2,8 @@ package com.email
 
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.AsyncTaskWorkRunner
+import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
-import com.email.db.SignUpLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signup.data.SignUpDataSource
 import com.email.scenes.signup.SignUpScene
@@ -22,7 +22,7 @@ class SignUpActivity: BaseActivity() {
         get() = null
 
     override fun initController(receivedModel: Any): SceneController {
-        val db: SignUpLocalDB.Default = SignUpLocalDB.Default(this.applicationContext)
+        val appDB = AppDatabase.getAppDatabase(this.applicationContext)
         val signalKeyGenerator = SignalKeyGenerator.Default()
         val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))
         val signUpSceneModel = receivedModel as SignUpSceneModel
@@ -33,7 +33,7 @@ class SignUpActivity: BaseActivity() {
                 host = this,
                 dataSource = SignUpDataSource(runner = AsyncTaskWorkRunner(),
                         signUpAPIClient = SignUpAPIClient.Default(),
-                        signUpLocalDB = db,
+                        db = appDB.signUpDao(),
                         keyValueStorage = keyValueStorage,
                         signalKeyGenerator = signalKeyGenerator))
     }

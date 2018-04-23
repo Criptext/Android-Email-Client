@@ -89,9 +89,6 @@ class MailboxDataSource(
     fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
         return mailboxLocalDB.removeLabelsRelation(labels, emailId)
     }
-    fun seed() {
-        mailboxLocalDB.seed()
-    }
 
     fun deleteEmailThreads(emailThreads: List<EmailThread>) {
         mailboxLocalDB.moveSelectedEmailThreadsToTrash(emailThreads)

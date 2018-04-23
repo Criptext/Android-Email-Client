@@ -61,7 +61,7 @@ class SignUpSceneController(
                 && isValidRecoveryEmail
     }
 
-    private val signUpListener : SignUpListener = object : SignUpListener {
+    private val uiObserver: SignUpUIObserver = object : SignUpUIObserver {
         override fun onUsernameChangedListener(text: String) {
             if(model.errors["username"] == true) {
                 model.errors["username"] = false
@@ -242,7 +242,7 @@ class SignUpSceneController(
         dataSource.listener = dataSourceListener
         scene.showFormHolder()
         scene.initListeners(
-                signUpListener = signUpListener
+                uiObserver = uiObserver
         )
         scene.disableCreateAccountButton()
         return false
@@ -250,7 +250,7 @@ class SignUpSceneController(
 
     override fun onStop() {
         dataSource.listener = null
-        scene.signUpListener = null
+        scene.uiObserver = null
     }
 
     override fun onBackPressed(): Boolean {
@@ -269,7 +269,7 @@ class SignUpSceneController(
                 !model.checkTermsAndConditions
     }
 
-    interface SignUpListener {
+    interface SignUpUIObserver {
         fun onCreateAccountClick()
         fun onPasswordChangedListener(text: String)
         fun onConfirmPasswordChangedListener(text: String)

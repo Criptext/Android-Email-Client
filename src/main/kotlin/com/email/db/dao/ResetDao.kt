@@ -20,6 +20,8 @@ interface ResetDao {
     fun deleteAllPreKey()
     @Query("DELETE from account")
     fun deleteAllAccounts()
+    @Query("DELETE from label")
+    fun deleteAllLabels()
 
     /**
      * Apparently transactions don't compile unless you pass at least one argument -__-
@@ -31,5 +33,6 @@ interface ResetDao {
         deleteAllSessions()
         deleteAllIdentityKeys()
         deleteAllAccounts()
+        deleteAllLabels()
     }
 }
