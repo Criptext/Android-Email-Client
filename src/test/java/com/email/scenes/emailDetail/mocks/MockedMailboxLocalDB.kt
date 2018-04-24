@@ -15,19 +15,19 @@ import java.util.*
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
-    override fun updateEmailAndAddLabelSent(id: Int, threadId: String, key: String, date: Date) {
+    override fun updateEmailAndAddLabelSent(id: Long, threadId: String, key: String, date: Date) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createLabelEmailSent(emailId: Int) {
+    override fun createLabelEmailSent(emailId: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Int, type: ContactTypes) {
+    override fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Long, type: ContactTypes) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateEmail(id: Int, threadId: String, key: String, date: Date) {
+    override fun updateEmail(id: Long, threadId: String, key: String, date: Date) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -42,7 +42,7 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteRelationByEmailIds(emailIds: List<Int>) {
+    override fun deleteRelationByEmailIds(emailIds: List<Long>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -70,7 +70,7 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
+    override fun removeLabelsRelation(labels: List<Label>, emailId: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -78,7 +78,7 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createLabelEmailRelation(labelId: Int, emailId: Int) {
+    override fun createLabelEmailRelation(labelId: Long, emailId: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -98,12 +98,12 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun addEmail(email: Email): Int {
+    override fun addEmail(email: Email): Long {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 
-    override fun createLabelsForEmailInbox(insertedEmailId: Int) {
+    override fun createLabelsForEmailInbox(insertedEmailId: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

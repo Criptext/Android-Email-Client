@@ -13,13 +13,12 @@ data class LabelWrapper(val label: Label) {
           get() = label.color
      val text : String
           get() = LabelTextConverter().parseLabelTextType(label.text)
-     val id : Int
-          get() = label.id!!
+     val id : Long
+          get() = label.id
 
      var isSelected = false
 
      override fun equals(other: Any?): Boolean {
-
           other as LabelWrapper
           if (id != other.id) return false
           if (color != other.color) return false
@@ -29,6 +28,6 @@ data class LabelWrapper(val label: Label) {
      }
 
      override fun hashCode(): Int {
-          return id
+          return id.toInt()
      }
 }

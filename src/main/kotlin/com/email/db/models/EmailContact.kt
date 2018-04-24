@@ -2,7 +2,6 @@ package com.email.db.models
 
 import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
-import android.support.annotation.NonNull
 import com.email.db.ContactTypes
 
 /**
@@ -10,37 +9,19 @@ import com.email.db.ContactTypes
  */
 
 @Entity(tableName = "email_contact",
-        indices = [
-            Index(value = ["emailId"]),
-            Index(value = ["contactId"])],
-        foreignKeys = [(ForeignKey(entity = Email::class,
+        primaryKeys = [ "emailId", "contactId" ],
+        foreignKeys = [
+            ForeignKey(entity = Email::class,
                 parentColumns = ["id"],
                 onDelete = CASCADE,
-                childColumns = ["emailId"])), (ForeignKey(entity = Contact::class,
+                childColumns = ["emailId"]
+            ),
+            ForeignKey(entity = Contact::class,
                 parentColumns = ["email"],
                 onDelete = CASCADE,
-                childColumns = ["contactId"]))]
+                childColumns = ["contactId"]
+            )
+        ]
 )
-class EmailContact {
-
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    var id: Int? = null
-
-    @ColumnInfo(name = "emailId")
-    @NonNull
-    var emailId: Int
-
-    @ColumnInfo(name = "contactId")
-    @NonNull
-    var contactId: String
-
-    @ColumnInfo(name = "type")
-    var type: ContactTypes
-
-    constructor(emailId: Int, contactId: String, type: ContactTypes) {
-        this.emailId = emailId
-        this.contactId = contactId
-        this.type = type
-    }
-}
+class EmailContact(@ColumnInfo(name = "emailId") var emailId: Long, @ColumnInfo(name = "contactId")
+var contactId: String, @ColumnInfo(name = "type") var type: ContactTypes)

@@ -1,9 +1,10 @@
-package com.email
+package com.email.scenes.signin
 
+import com.email.BaseActivity
+import com.email.R
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
-import com.email.scenes.signin.*
 import com.email.scenes.signin.data.SignInAPIClient
 import com.email.scenes.signin.data.SignInDataSource
 

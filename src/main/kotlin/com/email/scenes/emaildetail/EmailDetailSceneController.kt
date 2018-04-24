@@ -1,7 +1,6 @@
 package com.email.scenes.emaildetail
 
 import android.content.Context
-import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.DeliveryTypes
@@ -93,7 +92,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
             val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
                     position = position,
-                    emailId = fullEmail.email.id!!)
+                    emailId = fullEmail.email.id)
 
             dataSource.submitRequest(req)
         }

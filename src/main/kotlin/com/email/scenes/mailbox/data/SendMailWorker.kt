@@ -32,7 +32,7 @@ import org.json.JSONObject
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      activeAccount: ActiveAccount,
-                     private val emailId: Int,
+                     private val emailId: Long,
                      private val composerInputData: ComposerInputData,
                      override val publishFn: (MailboxResult.SendMail) -> Unit)
     : BackgroundWorker<MailboxResult.SendMail> {

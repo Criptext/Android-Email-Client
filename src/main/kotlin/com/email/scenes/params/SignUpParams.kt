@@ -1,6 +1,6 @@
 package com.email.scenes.params
 
-import com.email.SignUpActivity
+import com.email.scenes.signup.SignUpActivity
 
 /**
  * Created by sebas on 2/23/18.

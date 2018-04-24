@@ -1,6 +1,5 @@
 package com.email.scenes.mailbox.data
 
-import android.util.Log
 import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.db.MailFolders
@@ -40,7 +39,6 @@ class LoadEmailThreadsWorker(
                 oldestEmailThread = oldestEmailThread,
                 rejectedLabels = selectRejectedLabels(),
                 offset = offset)
-        Log.d("Mailbox", "got email threads: $emailThreads")
 
         return MailboxResult.LoadEmailThreads.Success(
                 emailThreads = emailThreads,

@@ -4,7 +4,7 @@ import android.support.test.espresso.Espresso.onIdle
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.typeText
 import android.support.test.espresso.matcher.ViewMatchers.*
-import com.email.MailboxActivity
+import com.email.scenes.mailbox.MailboxActivity
 import com.email.R
 import com.email.api.ApiCall
 import com.email.signal.InMemoryUser

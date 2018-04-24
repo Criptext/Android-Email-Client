@@ -34,21 +34,22 @@ import com.email.db.typeConverters.*
         ContactTypeConverter::class,
         EmailDeliveryConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun emailDao(): EmailDao
-    abstract fun labelDao(): LabelDao
-    abstract fun emailLabelDao(): EmailLabelDao
-    abstract fun contactDao(): ContactDao
     abstract fun accountDao(): AccountDao
+    abstract fun contactDao(): ContactDao
+    abstract fun emailDao(): EmailDao
+    abstract fun emailLabelDao(): EmailLabelDao
     abstract fun fileDao(): FileDao
-    abstract fun openDao(): OpenDao
     abstract fun emailContactDao() : EmailContactJoinDao
     abstract fun feedDao(): FeedDao
-    abstract fun rawSessionDao(): RawSessionDao
-    abstract fun rawPreKeyDao(): RawPreKeyDao
+    abstract fun labelDao(): LabelDao
+    abstract fun mailboxDao(): MailboxDao
     abstract fun rawIdentityKeyDao(): RawIdentityKeyDao
+    abstract fun rawPreKeyDao(): RawPreKeyDao
+    abstract fun rawSessionDao(): RawSessionDao
     abstract fun rawSignedPreKeyDao(): RawSignedPreKeyDao
     abstract fun resetDao(): ResetDao
     abstract fun signUpDao(): SignUpDao
+    abstract fun openDao(): OpenDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
@@ -62,10 +63,6 @@ abstract class AppDatabase : RoomDatabase() {
                         .build()
             }
             return INSTANCE!!
-        }
-
-        fun destroyInstance() {
-            INSTANCE = null
         }
     }
 }
