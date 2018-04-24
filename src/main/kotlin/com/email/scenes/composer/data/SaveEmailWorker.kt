@@ -39,7 +39,7 @@ class SaveEmailWorker(
     }
 
     // TODO delete this duplicated code
-    private fun saveEmail(fromRecipientId: String, composerInputData: ComposerInputData): Int{
+    private fun saveEmail(fromRecipientId: String, composerInputData: ComposerInputData): Long{
 
         val bodyContent = composerInputData.body
         val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
@@ -61,7 +61,7 @@ class SaveEmailWorker(
                 delivered = DeliveryTypes.SENT,
                 content = bodyContent
         )
-        val insertedId = db.emailDao.insert(email).toInt()
+        val insertedId = db.emailDao.insert(email)
 
         createContacts(null, fromRecipientId, insertedId,
                 ContactTypes.FROM)
@@ -74,13 +74,14 @@ class SaveEmailWorker(
 
         val labelInbox = db.labelDao.get(MailFolders.DRAFT)
         db.emailLabelDao.insert(EmailLabel(
-                labelId = labelInbox.id!!,
+                labelId = labelInbox.id,
                 emailId = insertedId))
         return insertedId
 
     }
 
-    private fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Int, type: ContactTypes) {
+    private fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Long,
+                               type: ContactTypes) {
         if(type == ContactTypes.FROM) {
             insertContact(
                     contactName = contactName,
@@ -100,7 +101,8 @@ class SaveEmailWorker(
         }
     }
 
-    private fun insertContact(contactName: String?, contactEmail: String, emailId: Int, type: ContactTypes) {
+    private fun insertContact(contactName: String?, contactEmail: String, emailId: Long,
+                              type: ContactTypes) {
         if(contactEmail.isNotEmpty()) {
             val contact = Contact(email = contactEmail, name = contactName ?: contactEmail)
             val emailContact = EmailContact(

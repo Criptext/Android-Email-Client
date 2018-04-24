@@ -28,7 +28,7 @@ interface EmailContactJoinDao {
             ON contact.email=email_contact.contactId
             WHERE email_contact.emailId=:emailId
             AND email_contact.type=:contactType""")
-    fun getContactsFromEmail(emailId: Int, contactType: ContactTypes) : List<Contact>
+    fun getContactsFromEmail(emailId: Long, contactType: ContactTypes) : List<Contact>
 
 
     @Insert

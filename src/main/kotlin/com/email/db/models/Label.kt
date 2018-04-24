@@ -13,7 +13,7 @@ import com.email.db.MailFolders
 @Entity(tableName = "label")
 data class Label (
         @PrimaryKey(autoGenerate = true)
-        var id: Int,
+        var id: Long,
 
         @ColumnInfo(name = "color")
         var color: ColorTypes,

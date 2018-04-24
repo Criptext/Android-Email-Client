@@ -14,7 +14,7 @@ class MockedEmailDetailLocalDB: EmailDetailLocalDB {
         return nextLoadedEmailItems!!
     }
 
-    override fun unsendEmail(emailId: Int) {
+    override fun unsendEmail(emailId: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

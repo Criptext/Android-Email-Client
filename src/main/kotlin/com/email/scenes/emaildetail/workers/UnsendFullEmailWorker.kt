@@ -13,7 +13,7 @@ import com.email.utils.UIMessage
 
 class UnsendFullEmailWorker(
         private val db: EmailDetailLocalDB,
-        private val emailId: Int,
+        private val emailId: Long,
         private val position: Int,
         override val publishFn: (EmailDetailResult.UnsendFullEmailFromEmailId) -> Unit)
     : BackgroundWorker<EmailDetailResult.UnsendFullEmailFromEmailId> {

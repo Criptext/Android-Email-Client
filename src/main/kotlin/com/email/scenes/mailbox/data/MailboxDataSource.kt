@@ -86,7 +86,7 @@ class MailboxDataSource(
         return mailboxLocalDB.getNotArchivedEmailThreads()
     }
 
-    fun removeLabelsRelation(labels: List<Label>, emailId: Int) {
+    fun removeLabelsRelation(labels: List<Label>, emailId: Long) {
         return mailboxLocalDB.removeLabelsRelation(labels, emailId)
     }
 

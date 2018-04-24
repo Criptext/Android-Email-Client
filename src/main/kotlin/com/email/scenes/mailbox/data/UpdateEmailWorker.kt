@@ -11,7 +11,7 @@ import org.json.JSONObject
 
 class UpdateEmailWorker(
         private val db: MailboxLocalDB,
-        private val emailId: Int,
+        private val emailId: Long,
         private val response: JSONObject,
         override val publishFn: (MailboxResult.UpdateMail) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMail> {

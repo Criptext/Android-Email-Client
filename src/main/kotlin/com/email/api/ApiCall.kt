@@ -20,11 +20,11 @@ class ApiCall {
         var baseUrl = "https://stage.mail.criptext.com"
 
 
-        private val client = OkHttpClient().
-                newBuilder().
-                connectTimeout(180, TimeUnit.SECONDS).
-                readTimeout(180, TimeUnit.SECONDS).
-                build()
+        private val client = OkHttpClient()
+                .newBuilder()
+                .connectTimeout(180, TimeUnit.SECONDS)
+                .readTimeout(180, TimeUnit.SECONDS)
+                .build()
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 

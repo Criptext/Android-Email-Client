@@ -10,20 +10,20 @@ import com.email.db.models.FullEmail
 interface EmailDetailLocalDB {
 
     fun getFullEmailsFromThreadId(threadId: String): List<FullEmail>
-    fun unsendEmail(emailId: Int)
+    fun unsendEmail(emailId: Long)
 
     class Default(applicationContext: Context): EmailDetailLocalDB {
 
         private val db = AppDatabase.getAppDatabase(applicationContext)
 
-        override fun unsendEmail(emailId: Int) {
+        override fun unsendEmail(emailId: Long) {
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSENT)
         }
 
         override fun getFullEmailsFromThreadId(threadId: String): List<FullEmail> {
             val emails = db.emailDao().getEmailsFromThreadId(threadId)
             val fullEmails =  emails.map {
-                val id = it.id!!
+                val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
                 val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
                 val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)

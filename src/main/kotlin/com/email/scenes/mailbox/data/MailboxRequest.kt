@@ -28,7 +28,7 @@ sealed class MailboxRequest{
             val oldestEmailThread: EmailThread?
             ): MailboxRequest()
 
-    data class SendMail(val emailId: Int, val data: ComposerInputData): MailboxRequest()
+    data class SendMail(val emailId: Long, val data: ComposerInputData): MailboxRequest()
 
-    data class UpdateEmail(val emailId: Int, val response: JSONObject): MailboxRequest()
+    data class UpdateEmail(val emailId: Long, val response: JSONObject): MailboxRequest()
 }

@@ -4,8 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
-import com.email.*
 import com.email.db.KeyValueStorage
+import com.email.scenes.mailbox.MailboxActivity
+import com.email.scenes.signin.SignInActivity
 import java.lang.ref.WeakReference
 
 /**

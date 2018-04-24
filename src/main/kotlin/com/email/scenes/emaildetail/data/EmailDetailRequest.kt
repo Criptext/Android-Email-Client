@@ -10,5 +10,5 @@ sealed class EmailDetailRequest{
             val threadId: String): EmailDetailRequest()
 
     class UnsendFullEmailFromEmailId(
-            val emailId: Int, val position: Int): EmailDetailRequest()
+            val emailId: Long, val position: Int): EmailDetailRequest()
 }

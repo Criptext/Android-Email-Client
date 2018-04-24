@@ -1,6 +1,6 @@
 package com.email.scenes.params
 
-import com.email.MailboxActivity
+import com.email.scenes.mailbox.MailboxActivity
 import com.email.scenes.composer.data.ComposerInputData
 
 /**

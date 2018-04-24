@@ -1,16 +1,20 @@
-package com.email
+package com.email.scenes.mailbox
 
 import android.app.Activity
 import android.view.Menu
 import android.view.ViewGroup
+import com.email.BaseActivity
+import com.email.IHostActivity
+import com.email.R
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.DeliveryTypes
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Contact
 import com.email.db.models.Email
+import com.email.db.models.EmailContactIds
 import com.email.scenes.SceneController
-import com.email.scenes.mailbox.*
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.feed.data.FeedDataSource
@@ -38,20 +42,29 @@ class MailboxActivity : BaseActivity() {
     // Only use this during development
     /*
     private fun seedEmails(appDB: AppDatabase) {
+        val contacts = listOf(Contact("mayer@jigl.com", "Mayer Mizrachi"),
+                Contact("gabriel@jigl.com", "Gabriel Aumala"))
+        appDB.mailboxDao().insertContacts(contacts)
         val emails = (1..50)
-          .map { Email(id = 0, key = it.toString(), threadid = "thread$it", unread = true,
+          .map {
+              val email = Email(id = 0, key = it.toString(), threadid = "thread$it", unread = true,
                   secure = true, content = "this is message #$it", preview =  "message #$it",
                   subject = "message #$it", delivered = DeliveryTypes.RECEIVED, date = Date(),
-                  isTrash = false, isDraft = false) }
-        appDB.emailDao().insertAll(emails)
-
+                  isTrash = false, isDraft = false)
+              val senderId = "mayer@jigl.com"
+              val toIds = listOf("gabriel@jigl.com")
+              EmailContactIds(email = email, toIds = toIds, ccIds = emptyList(),
+                      bccIds = emptyList(), senderId = senderId)
+          }
+        appDB.mailboxDao().insertNewReceivedEmails(emails)
     }
     */
 
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
-        return Companion.initController(
+        // seedEmails(appDB)
+        return initController(
                 appDB = appDB,
                 hostActivity = this,
                 activity = this,

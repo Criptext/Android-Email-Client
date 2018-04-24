@@ -38,7 +38,7 @@ class SelectedLabels() {
 
     fun isEmpty(): Boolean = selectedItems.isEmpty()
 
-    fun toIDs(): List<Int> =
+    fun toIDs(): List<Long> =
             selectedItems.map { it.id }
 
     fun toList() = selectedItems.toList()

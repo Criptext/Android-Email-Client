@@ -17,11 +17,11 @@ interface EmailLabelDao {
 
     @Query("""SELECT email.* FROM email INNER JOIN email_label
             ON email.id=email_label.emailId WHERE email_label.labelId=:labelId""")
-    fun getEmailsFromLabel(labelId: Int) : List<Email>
+    fun getEmailsFromLabel(labelId: Long) : List<Email>
 
     @Query("""SELECT label.* FROM label INNER JOIN email_label
             ON label.id=email_label.labelId WHERE email_label.emailId=:emailId""")
-    fun getLabelsFromEmail(emailId: Int) : List<Label>
+    fun getLabelsFromEmail(emailId: Long) : List<Label>
 
     @Query("""SELECT DISTINCT label.* FROM label INNER JOIN
         email_label ON label.id=email_label.labelId WHERE
@@ -39,9 +39,9 @@ interface EmailLabelDao {
 
     @Query("""DELETE FROM email_label
         WHERE labelId= :labelId AND emailId=:emailId""")
-    fun deleteByEmailLabelIds(labelId: Int, emailId: Int)
+    fun deleteByEmailLabelIds(labelId: Long, emailId: Long)
 
     @Query("""DELETE FROM email_label
         WHERE emailId in (:emailIds)""")
-    fun deleteRelationByEmailIds(emailIds: List<Int>)
+    fun deleteRelationByEmailIds(emailIds: List<Long>)
 }

@@ -47,8 +47,8 @@ import java.util.*
             """)
     fun getEmailThreadsFromMailboxLabel(
             starterDate: Date,
-            rejectedLabels: List<Int>,
-            selectedLabel: Int,
+            rejectedLabels: List<Long>,
+            selectedLabel: Long,
             offset: Int ): List<Email>
 
     @Query("""
@@ -67,14 +67,14 @@ import java.util.*
     @Query("""UPDATE email
             SET unread=:unread
             where id=:id""")
-    fun toggleRead(id: Int, unread: Boolean)
+    fun toggleRead(id: Long, unread: Boolean)
 
     @Query("""UPDATE email
             SET threadid=:threadId,
             key=:key,
             date=:date
             where id=:id""")
-    fun updateEmail(id: Int, threadId: String, key : String, date: Date)
+    fun updateEmail(id: Long, threadId: String, key : String, date: Date)
 
     @Update
     fun update(emails: List<Email>)
@@ -90,7 +90,7 @@ import java.util.*
     @Query("""UPDATE email
             SET delivered=:deliveryType
             where id=:id""")
-    fun changeDeliveryType(id: Int, deliveryType: DeliveryTypes)
+    fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
     @Query("""
         SELECT * FROM email e
@@ -103,7 +103,7 @@ import java.util.*
         DESC LIMIT :offset
             """)
     fun getInitialEmailThreadsFromMailboxLabel(
-            rejectedLabels: List<Int>,
-            selectedLabel: Int,
+            rejectedLabels: List<Long>,
+            selectedLabel: Long,
             offset: Int): List<Email>
 }

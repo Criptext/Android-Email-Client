@@ -1,14 +1,13 @@
-package com.email
+package com.email.scenes.signup
 
+import com.email.BaseActivity
+import com.email.R
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
 import com.email.scenes.SceneController
 import com.email.scenes.signup.data.SignUpDataSource
-import com.email.scenes.signup.SignUpScene
-import com.email.scenes.signup.SignUpSceneController
-import com.email.scenes.signup.SignUpSceneModel
 import com.email.scenes.signup.data.SignUpAPIClient
 
 /**

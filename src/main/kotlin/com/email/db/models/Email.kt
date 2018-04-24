@@ -15,7 +15,7 @@ import java.util.Date
         indices = [Index(value = "subject", name = "subject")])
 data class Email(
         @PrimaryKey(autoGenerate = true)
-        var id:Int,
+        var id: Long,
 
         @ColumnInfo(name = "key")
         var key : String,

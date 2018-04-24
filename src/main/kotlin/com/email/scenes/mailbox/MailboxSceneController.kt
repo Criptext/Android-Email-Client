@@ -2,7 +2,6 @@ package com.email.scenes.mailbox
 
 import com.email.androidui.mailthread.ThreadListController
 import android.content.Context
-import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.MailFolders
@@ -98,7 +97,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 label = model.label,
                 offset = model.offset,
                 oldestEmailThread = lastEmailThread)
-        Log.d("Mailbox", "loadMailbox $req")
         dataSource.submitRequest(req)
     }
 
