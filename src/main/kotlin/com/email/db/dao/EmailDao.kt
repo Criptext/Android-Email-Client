@@ -72,9 +72,10 @@ import java.util.*
     @Query("""UPDATE email
             SET threadid=:threadId,
             key=:key,
-            date=:date
+            date=:date,
+            delivered=:status
             where id=:id""")
-    fun updateEmail(id: Long, threadId: String, key : String, date: Date)
+    fun updateEmail(id: Long, threadId: String, key : String, date: Date, status: DeliveryTypes)
 
     @Update
     fun update(emails: List<Email>)
@@ -106,4 +107,24 @@ import java.util.*
             rejectedLabels: List<Long>,
             selectedLabel: Long,
             offset: Int): List<Email>
+
+    @Query("""
+        SELECT * from email e
+        WHERE date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=e.threadid)
+        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
+        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
+        AND unread = 1
+        GROUP BY threadid
+        """)
+    fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: Long): List<Email>
+
+    @Query("""
+        SELECT * from email e
+        WHERE date=(SELECT MAX(date)
+        FROM email d WHERE d.threadid=e.threadid)
+        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
+        GROUP BY threadid
+        """)
+    fun getTotalThreads(selectedLabel: Long): List<Email>
 }

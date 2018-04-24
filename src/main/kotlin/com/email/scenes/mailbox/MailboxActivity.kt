@@ -63,12 +63,14 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
-        // seedEmails(appDB)
-        return initController(
+
+        val controller =  initController(
                 appDB = appDB,
                 hostActivity = this,
                 activity = this,
                 model = model)
+        notificationMenuClickListener = controller.menuClickListener
+        return controller
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -115,7 +117,6 @@ class MailboxActivity : BaseActivity() {
                         hostActivity = hostActivity,
                         threadList = VirtualEmailThreadList(model.threads)
                 )
-
 
             return MailboxSceneController(
                     scene = scene,

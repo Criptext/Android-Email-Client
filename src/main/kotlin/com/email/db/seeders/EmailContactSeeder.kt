@@ -29,19 +29,19 @@ class EmailContactSeeder {
             when (iteration) {
                 1 -> emailContact = EmailContact(
                         emailId = 1,
-                        contactId = "ascacere92@gmail.com",
+                        contactId = 1,
                         type = ContactTypes.FROM)
                 2 -> emailContact = EmailContact( emailId = 2,
-                        contactId = "gabriel@criptext.com",
+                        contactId = 2,
                         type = ContactTypes.BCC)
 
                 3 -> emailContact = EmailContact( emailId = 1,
-                        contactId = "ascacere92@gmail.com",
+                        contactId = 3,
                         type = ContactTypes.CC)
 
                 4 -> emailContact = EmailContact(
                         emailId = 3,
-                        contactId = "ascacere92@gmail.com",
+                        contactId = 4,
                         type = ContactTypes.FROM)
             }
             return emailContact

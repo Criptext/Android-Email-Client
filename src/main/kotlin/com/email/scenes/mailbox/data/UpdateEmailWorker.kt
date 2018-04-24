@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
+import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.utils.DateUtils
 import org.json.JSONObject
@@ -25,7 +26,8 @@ class UpdateEmailWorker(
     override fun work(): MailboxResult.UpdateMail? {
         db.updateEmailAndAddLabelSent(emailId, response.getString("threadId"),
                 response.getString("metadataKey"),
-                DateUtils.getDateFromString(response.getString("date"), null))
+                DateUtils.getDateFromString(response.getString("date"), null),
+                DeliveryTypes.SENT)
         return MailboxResult.UpdateMail.Success()
     }
 

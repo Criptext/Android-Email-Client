@@ -25,7 +25,6 @@ class VerifyUserWorker(
     }
 
     override fun work(): SignInResult.VerifyUser? {
-        Thread.sleep(500)
         val userExists = db.accountExistsLocally(username = username)
         if(userExists) return SignInResult.VerifyUser.Success()
 

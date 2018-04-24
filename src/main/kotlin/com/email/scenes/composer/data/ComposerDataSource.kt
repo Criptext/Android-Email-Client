@@ -12,7 +12,6 @@ import com.email.db.models.ActiveAccount
 
 class ComposerDataSource(
         private val composerLocalDB: ComposerLocalDB,
-        private val activeAccount: ActiveAccount,
         override val runner: WorkRunner)
     : WorkHandler<ComposerRequest, ComposerResult>() {
 
@@ -21,11 +20,11 @@ class ComposerDataSource(
             is ComposerRequest.GetAllContacts -> LoadContactsWorker(composerLocalDB, { res ->
                 flushResults(res)
             })
-            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(activeAccount.recipientId,
+            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
                     params.composerInputData, composerLocalDB, true, { res ->
                 flushResults(res)
             })
-            is ComposerRequest.SaveEmailAsDraftAndSend -> SaveEmailWorker(activeAccount.recipientId,
+            is ComposerRequest.SaveEmailAsDraftAndSend -> SaveEmailWorker(
                     params.composerInputData, composerLocalDB, false, { res ->
                 flushResults(res)
             })

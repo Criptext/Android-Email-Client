@@ -10,7 +10,7 @@
     <color name="colorHighlight">#0091ff</color>
     <color name="colorTour">#0075ab</color>
     <color name="tour_below">#2d92eb</color>
-    <color name="recycler_divider">#d5d5d5</color>
+    <color name="sent">#d5d5d5</color>
     <color name="colorSent">#999999</color>
     <color name="colorToggleOff">#d4d4d4</color>
     <color name="colorOpened">#0091ff</color>

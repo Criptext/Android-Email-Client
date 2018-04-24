@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.db.MailFolders
+import com.email.db.models.Account
 import com.email.db.models.Label
 import com.email.utils.UIMessage
 import org.json.JSONObject
@@ -18,12 +19,12 @@ sealed class MailboxResult {
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
     }
 
-    sealed class GetLabels : MailboxResult() {
-        class Success(val labels: List<Label>,
-                      val defaultSelectedLabels: List<Label>): GetLabels()
+    sealed class GetSelectedLabels : MailboxResult() {
+        class Success(val allLabels: List<Label>,
+                      val selectedLabels: List<Label>): GetSelectedLabels()
         data class Failure(
                 val message: UIMessage,
-                val exception: Exception) : GetLabels()
+                val exception: Exception) : GetSelectedLabels()
     }
 
     sealed class LoadEmailThreads : MailboxResult() {
@@ -79,5 +80,14 @@ sealed class MailboxResult {
         class Failure: UpdateMail()
     }
 
-}
+    sealed class GetMenuInformation : MailboxResult() {
+        data class Success(val account: Account, val totalInbox: Int, val totalDraft: Int,
+                           val totalSpam: Int): GetMenuInformation()
+        class Failure: GetMenuInformation()
+    }
 
+    sealed class UpdateUnreadStatus: MailboxResult(){
+        class Success: UpdateUnreadStatus()
+        class Failure: UpdateUnreadStatus()
+    }
+}

@@ -11,7 +11,7 @@ import com.email.db.models.Contact
 interface ContactDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(contact : Contact)
+    fun insertIgnoringConflicts(contact : Contact): Long
 
     @Insert
     fun insertAll(users : List<Contact>)
@@ -19,8 +19,8 @@ interface ContactDao {
     @Query("SELECT * FROM contact")
     fun getAll() : List<Contact>
 
-    @Query("SELECT * FROM contact LIMIT 1")
-    fun getLoggedInUser() : Contact?
+    @Query("SELECT * FROM contact where email=:email")
+    fun getContact(email : String) : Contact?
 
     @Delete
     fun deleteAll(contacts: List<Contact>)

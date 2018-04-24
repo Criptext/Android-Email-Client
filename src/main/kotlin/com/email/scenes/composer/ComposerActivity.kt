@@ -29,10 +29,9 @@ class ComposerActivity : BaseActivity() {
             val view = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
             val scene = ComposerScene.Default(view)
             val db = ComposerLocalDB(appDB.contactDao(), appDB.emailDao(), appDB.labelDao(),
-                    appDB.emailLabelDao(), appDB.emailContactDao())
+                    appDB.emailLabelDao(), appDB.emailContactDao(), appDB.accountDao())
             val dataSource = ComposerDataSource(
                     composerLocalDB = db,
-                    activeAccount = ActiveAccount.loadFromStorage(activity)!!,
                     runner = AsyncTaskWorkRunner())
 
             return ComposerController(model = model, scene = scene, dataSource = dataSource,

@@ -10,9 +10,15 @@ import java.util.regex.Pattern
 /**
  * Created by gabriel on 2/26/18.
  */
-@Entity(tableName = "contact")
+@Entity(tableName = "contact",
+        indices = [Index(value = ["email"], unique = true)] )
+
 open class Contact(
-        @PrimaryKey
+
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "id")
+        var id: Long,
+
         @ColumnInfo(name = "email")
         var email : String,
 
@@ -30,7 +36,6 @@ open class Contact(
 
     companion object {
 
-        val supportContact = Contact("support@criptext.com", "Support")
         const val mainDomain = "jigl.com"
         val toAddress: (Contact) -> String = { contact -> contact.email }
 
@@ -41,5 +46,5 @@ open class Contact(
         }
     }
 
-    class Invalid(email: String, name: String): Contact(email, name)
+    class Invalid(email: String, name: String): Contact(0, email, name)
 }

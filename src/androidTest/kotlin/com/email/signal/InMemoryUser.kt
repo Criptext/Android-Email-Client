@@ -17,13 +17,13 @@ class InMemoryUser(generator: SignalKeyGenerator, recipientId: String, deviceId:
 
     init {
         val privateBundle = registrationBundles.privateBundle
-        // insert pre keys
+        // insertIgnoringConflicts pre keys
         privateBundle.preKeys.forEach { (id , byteString) ->
             val preKey = PreKeyRecord(Encoding.stringToByteArray(byteString))
             store.storePreKey(id, preKey)
         }
 
-        // insert signed pre key
+        // insertIgnoringConflicts signed pre key
         val signedPreKeyRecord = SignedPreKeyRecord(
                 Encoding.stringToByteArray(privateBundle.signedPreKey))
         store.storeSignedPreKey(privateBundle.signedPreKeyId, signedPreKeyRecord)

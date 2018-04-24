@@ -1,7 +1,6 @@
 package com.email.scenes.emailDetail
 
 import com.email.db.DeliveryTypes
-import com.email.db.dao.signal.RawSessionDao
 import com.email.db.dao.signal.mocks.MockedRawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
@@ -93,7 +92,7 @@ class EmailDetailControllerTest {
                         date = DateUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -107,7 +106,7 @@ class EmailDetailControllerTest {
                     files = emptyList(),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact("mayer@jigl.com", "Mayer Mizrachi"))
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"))
         }.reversed()
     }
 

@@ -56,12 +56,12 @@ class RecoveryEmailWarningDialog(val context: Context) {
         val btn_no = view.findViewById(R.id.recovery_email_warning_no) as Button
 
         btn_yes.setOnClickListener {
-            onRecoverEmailWarningListener.willAssignRecoverEmail()
+            onRecoverEmailWarningListener.denyWillAssignRecoverEmail()
             dialog.dismiss()
         }
 
         btn_no.setOnClickListener {
-            onRecoverEmailWarningListener.denyWillAssignRecoverEmail()
+            onRecoverEmailWarningListener.willAssignRecoverEmail()
             dialog.dismiss()
         }
     }

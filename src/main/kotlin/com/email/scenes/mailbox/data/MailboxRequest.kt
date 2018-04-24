@@ -10,7 +10,7 @@ import org.json.JSONObject
  */
 
 sealed class MailboxRequest{
-    data class GetLabels(
+    data class GetSelectedLabels(
             val threadIds: List<String>): MailboxRequest()
 
     data class UpdateMailbox(
@@ -31,4 +31,10 @@ sealed class MailboxRequest{
     data class SendMail(val emailId: Long, val data: ComposerInputData): MailboxRequest()
 
     data class UpdateEmail(val emailId: Long, val response: JSONObject): MailboxRequest()
+
+    class GetMenuInformation : MailboxRequest()
+
+    data class UpdateUnreadStatus(val emailThreads: List<EmailThread>,
+                                  val updateUnreadStatus: Boolean): MailboxRequest()
+
 }

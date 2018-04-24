@@ -6,9 +6,6 @@ import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
-import com.email.db.models.Label
-import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.signal.SignalClient
 
 /**
@@ -28,7 +25,7 @@ class MailboxDataSource(
             : BackgroundWorker<*> {
 
         return when (params) {
-            is MailboxRequest.GetLabels -> GetLabelsWorker(
+            is MailboxRequest.GetSelectedLabels -> GetSelectedLabelsWorker(
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
                     threadIds = params.threadIds,
@@ -79,35 +76,21 @@ class MailboxDataSource(
                         flushResults(result)
                     }
             )
+            is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
+                    db = mailboxLocalDB,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is MailboxRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
+                    db = mailboxLocalDB,
+                    emailThreads = params.emailThreads,
+                    updateUnreadStatus = params.updateUnreadStatus,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
-    }
-
-    fun getNotArchivedEmailThreads(): List<EmailThread> {
-        return mailboxLocalDB.getNotArchivedEmailThreads()
-    }
-
-    fun removeLabelsRelation(labels: List<Label>, emailId: Long) {
-        return mailboxLocalDB.removeLabelsRelation(labels, emailId)
-    }
-
-    fun deleteEmailThreads(emailThreads: List<EmailThread>) {
-        mailboxLocalDB.moveSelectedEmailThreadsToTrash(emailThreads)
-    }
-
-    fun updateUnreadStatus(emailThreads: List<EmailThread>,
-                         updateUnreadStatus: Boolean
-                         ) {
-        mailboxLocalDB.updateUnreadStatus(emailThreads,
-                updateUnreadStatus)
-
-    }
-
-    fun  moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
-        mailboxLocalDB.moveSelectedEmailThreadsToTrash(emailThreads)
-    }
-
-    fun  moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
-        mailboxLocalDB.moveSelectedEmailThreadsToSpam(emailThreads)
     }
 
 }

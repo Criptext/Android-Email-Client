@@ -329,7 +329,7 @@ class EmailSeeder {
         </html>
          """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -376,7 +376,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("2013-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -399,7 +399,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("2017-05-21 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = true,
                         isTrash = true,
                         key = "key",
@@ -422,7 +422,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -442,7 +442,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key6",
@@ -754,7 +754,7 @@ class EmailSeeder {
         </html>
          """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -774,7 +774,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",
@@ -794,7 +794,7 @@ class EmailSeeder {
                             </html>
                         """.trimIndent(),
                         date = DateUtils.getDateFromString("1992-05-23 20:12:58", null),
-                        delivered = DeliveryTypes.RECEIVED,
+                        delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
                         key = "key",

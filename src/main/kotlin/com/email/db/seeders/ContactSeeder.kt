@@ -27,15 +27,18 @@ class ContactSeeder {
             lateinit var contact: Contact
             when (iteration) {
                 1 -> contact = Contact(
-                        name = "Daniel ItsgeWTF" ,
+                        id = 0,
+                        name = "Daniel Tigse" ,
                         email = "daniel@criptext.com"
                         )
 
                 2 -> contact = Contact(
+                        id = 1,
                         name = "Sebastian Caceres" ,
                         email = "ascacere92@gmail.com")
 
                 3 -> contact = Contact(
+                        id = 2,
                         name = "Gabriel Aumala" ,
                         email = "gabriel@criptext.com")
             }

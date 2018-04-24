@@ -19,7 +19,7 @@ interface RawSessionDao {
 
     /**
      * Each time signal calls storeSession it should replace any existing value, which isn't
-     * exactly supported by SQL so let's delete first and then insert in a single transaction.
+     * exactly supported by SQL so let's delete first and then insertIgnoringConflicts in a single transaction.
      */
     @Transaction
     fun store(crSessionRecord: CRSessionRecord) {

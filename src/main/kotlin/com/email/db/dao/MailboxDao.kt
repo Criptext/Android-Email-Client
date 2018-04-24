@@ -26,7 +26,7 @@ interface MailboxDao {
     @Insert
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 
-    private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes): (String) -> EmailContact =
+    private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes): (Long) -> EmailContact =
         { contactId -> EmailContact(emailId = newEmailId, contactId = contactId, type = type) }
 
     private fun appendEmailRelations(inboxId: Long, newEmailIds: List<Long>)

@@ -16,4 +16,4 @@ import java.util.*
 
 class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao,
                       val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
-                      val emailContactDao: EmailContactJoinDao)
+                      val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao)

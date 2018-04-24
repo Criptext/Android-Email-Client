@@ -16,7 +16,6 @@ import java.util.*
  * Created by danieltigse on 4/17/18.
  */
 class SaveEmailWorker(
-        private val fromRecipientId: String,
         private val composerInputData: ComposerInputData,
         private val db: ComposerLocalDB,
         private val onlySave: Boolean,
@@ -30,8 +29,7 @@ class SaveEmailWorker(
     }
 
     override fun work(): ComposerResult.SaveEmail? {
-        return ComposerResult.SaveEmail.Success(saveEmail(fromRecipientId,
-                composerInputData), onlySave)
+        return ComposerResult.SaveEmail.Success(saveEmail(composerInputData), onlySave)
     }
 
     override fun cancel() {
@@ -39,7 +37,7 @@ class SaveEmailWorker(
     }
 
     // TODO delete this duplicated code
-    private fun saveEmail(fromRecipientId: String, composerInputData: ComposerInputData): Long{
+    private fun saveEmail(composerInputData: ComposerInputData): Long{
 
         val bodyContent = composerInputData.body
         val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
@@ -49,7 +47,7 @@ class SaveEmailWorker(
 
         val email = Email(
                 id = 0,
-                unread = true,
+                unread = false,
                 date = Date(),
                 threadid = "",
                 subject = composerInputData.subject,
@@ -58,19 +56,18 @@ class SaveEmailWorker(
                 preview = preview,
                 key = "",
                 isDraft = false,
-                delivered = DeliveryTypes.SENT,
+                delivered = DeliveryTypes.NONE,
                 content = bodyContent
         )
         val insertedId = db.emailDao.insert(email)
 
-        createContacts(null, fromRecipientId, insertedId,
-                ContactTypes.FROM)
-        createContacts(null, composerInputData.to.joinToString(","),
-                insertedId, ContactTypes.TO)
-        createContacts(null, composerInputData.bcc.joinToString(","),
-                insertedId, ContactTypes.BCC)
-        createContacts(null, composerInputData.cc.joinToString(","),
-                insertedId, ContactTypes.CC)
+        val account = db.accountDao.getLoggedInAccount()!!
+        insertContact(account.name, "${account.recipientId}@${Contact.mainDomain}",
+                insertedId, ContactTypes.FROM)
+
+        createContacts(composerInputData.to, insertedId, ContactTypes.TO)
+        createContacts(composerInputData.bcc, insertedId, ContactTypes.BCC)
+        createContacts(composerInputData.cc, insertedId, ContactTypes.CC)
 
         val labelInbox = db.labelDao.get(MailFolders.DRAFT)
         db.emailLabelDao.insert(EmailLabel(
@@ -80,36 +77,30 @@ class SaveEmailWorker(
 
     }
 
-    private fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Long,
-                               type: ContactTypes) {
-        if(type == ContactTypes.FROM) {
+    private fun createContacts(contacts: List<Contact>, insertedEmailId: Long, type: ContactTypes) {
+
+        contacts.map { contact ->
             insertContact(
-                    contactName = contactName,
-                    contactEmail = contactEmail,
+                    contactName = contact.name,
+                    contactEmail = contact.email,
                     emailId = insertedEmailId,
                     type = type)
-            return
         }
 
-        val contactsList = contactEmail.split(",")
-        contactsList.forEach { email ->
-            insertContact(
-                    contactName = contactName,
-                    contactEmail = email,
-                    emailId = insertedEmailId,
-                    type = type)
-        }
     }
 
     private fun insertContact(contactName: String?, contactEmail: String, emailId: Long,
                               type: ContactTypes) {
         if(contactEmail.isNotEmpty()) {
-            val contact = Contact(email = contactEmail, name = contactName ?: contactEmail)
+            val contact = Contact(id = 0, email = contactEmail, name = contactName ?: contactEmail)
+            var contactId = db.contactDao.insertIgnoringConflicts(contact)
+            if(contactId < 0){
+                contactId = db.contactDao.getContact(contactEmail)!!.id
+            }
             val emailContact = EmailContact(
-                    contactId = contactEmail,
+                    contactId = contactId,
                     emailId = emailId,
                     type = type)
-            db.contactDao.insert(contact)
             db.emailContactDao.insert(emailContact)
         }
     }
