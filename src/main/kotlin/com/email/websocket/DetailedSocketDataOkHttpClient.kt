@@ -67,6 +67,7 @@ class DetailedSocketDataOkHttpClient(
         return ApiCall.executeRequest(request)
     }
 
+    // TODO delete this duplicated code
     private fun loadMetadataContentFromString(input: String): String {
             val fullData = JSONObject(input)
             val metaData = EmailMetaData(stringMetadata = fullData.getString("params"))
@@ -88,7 +89,7 @@ class DetailedSocketDataOkHttpClient(
                     else bodyWithoutHTML
 
                     val email = Email(
-                            id=null,
+                            id=0,
                             unread = true,
                             date = DateUtils.getDateFromString(
                                     metaData.date,

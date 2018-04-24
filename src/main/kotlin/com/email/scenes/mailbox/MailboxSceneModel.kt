@@ -1,7 +1,6 @@
 package com.email.scenes.mailbox
 
-import com.email.db.LabelTextTypes
-import com.email.db.models.FullEmail
+import com.email.db.MailFolders
 import com.email.scenes.SceneModel
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.mailbox.data.EmailThread
@@ -14,7 +13,7 @@ import com.email.scenes.mailbox.feed.FeedModel
 
 class MailboxSceneModel : SceneModel {
     var loadingType = LoadingType.FULL
-    var label: LabelTextTypes = LabelTextTypes.INBOX // default label
+    var label: MailFolders = MailFolders.INBOX // default label
     val threads : ArrayList<EmailThread> = ArrayList()
     var isInMultiSelect = false
     val selectedThreads = SelectedThreads()

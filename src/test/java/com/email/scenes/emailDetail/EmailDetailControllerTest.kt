@@ -80,7 +80,7 @@ class EmailDetailControllerTest {
     private fun createEmailItemsInThread(size: Int): List<FullEmail> {
         return (1..size).map {
             FullEmail(
-            email = Email(id = null,
+            email = Email(id = 0,
                         content = """
                              <!DOCTYPE html>
                                 <html>

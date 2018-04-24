@@ -2,9 +2,7 @@ package com.email.db.dao
 
 import android.arch.persistence.room.*
 import com.email.db.DeliveryTypes
-import com.email.db.LabelTextTypes
 import com.email.db.models.Email
-import com.email.db.models.Label
 import java.util.*
 
 /**

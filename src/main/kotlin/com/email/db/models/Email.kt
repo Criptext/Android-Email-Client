@@ -12,10 +12,10 @@ import java.util.Date
  */
 
 @Entity(tableName = "email",
-        indices = [Index(value = ["subject"], name = "subject")])
-class Email(
+        indices = [Index(value = "subject", name = "subject")])
+data class Email(
         @PrimaryKey(autoGenerate = true)
-        var id:Int?,
+        var id:Int,
 
         @ColumnInfo(name = "key")
         var key : String,
@@ -49,11 +49,4 @@ class Email(
 
         @ColumnInfo(name = "isDraft")
         var isDraft : Boolean
-) {
-
-
-    override fun toString(): String {
-        return "Email key = '$key', isDraft='$isDraft', " +
-                "isTrash='$isTrash', date='$date')"
-    }
-}
+)

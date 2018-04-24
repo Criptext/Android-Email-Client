@@ -2,7 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.scenes.labelChooser.SelectedLabels
@@ -16,7 +16,7 @@ import com.email.utils.UIMessage
 class UpdateEmailThreadsLabelsRelationsWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
-        private val chosenLabel: LabelTextTypes?,
+        private val chosenLabel: MailFolders?,
         private val selectedLabels: SelectedLabels?,
         private val selectedEmailThreads: List<EmailThread>,
         override val publishFn: (

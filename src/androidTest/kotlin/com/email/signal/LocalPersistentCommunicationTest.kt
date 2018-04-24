@@ -1,9 +1,9 @@
 package com.email.signal
 
 import android.support.test.rule.ActivityTestRule
+import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
-import com.email.db.SignUpLocalDB
-import com.email.db.TestDatabase
+import com.email.db.dao.SignUpDao
 import com.email.splash.SplashActivity
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -20,20 +20,20 @@ class LocalPersistentCommunicationTest {
 
     private val keyGenerator = SignalKeyGenerator.Default()
     private lateinit var storage: KeyValueStorage
-    private lateinit var db:  TestDatabase
-    private lateinit var signUpDB: SignUpLocalDB
+    private lateinit var db: AppDatabase
+    private lateinit var signUpDao: SignUpDao
 
 
     @Before
     fun setup() {
         storage = KeyValueStorage.SharedPrefs(mActivityRule.activity)
-        db = TestDatabase.getAppDatabase(mActivityRule.activity)
+        db = AppDatabase.getAppDatabase(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
-        signUpDB = SignUpLocalDB.Default(db)
+        signUpDao = db.signUpDao()
     }
 
     private fun newPersistedUser(recipientId: String, deviceId: Int): InDBUser {
-        return InDBUser(db, storage, signUpDB, keyGenerator, recipientId, deviceId)
+        return InDBUser(db, storage, signUpDao, keyGenerator, recipientId, deviceId)
     }
 
     @Test

@@ -19,6 +19,7 @@ class ApiCall {
     companion object {
         var baseUrl = "https://stage.mail.criptext.com"
 
+
         private val client = OkHttpClient().
                 newBuilder().
                 connectTimeout(180, TimeUnit.SECONDS).

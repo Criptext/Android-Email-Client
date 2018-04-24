@@ -5,13 +5,11 @@ import android.content.Context
 import android.util.Log
 import com.email.IHostActivity
 import com.email.R
-import com.email.db.LabelTextTypes
-import com.email.db.models.FullEmail
+import com.email.db.MailFolders
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.*
 import com.email.scenes.mailbox.feed.FeedController
@@ -19,7 +17,6 @@ import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
-import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SearchParams
 import com.email.websocket.WebSocketEventListener
 import com.email.websocket.WebSocketEventPublisher
@@ -94,13 +91,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
-    private fun loadMailbox(labelTextType: LabelTextTypes, lastEmailThread: EmailThread?) {
+    private fun loadMailbox(labelTextType: MailFolders, lastEmailThread: EmailThread?) {
 
         model.label = labelTextType
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.label,
                 offset = model.offset,
                 oldestEmailThread = lastEmailThread)
+        Log.d("Mailbox", "loadMailbox $req")
         dataSource.submitRequest(req)
     }
 
@@ -136,12 +134,12 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.showRefresh()
 
             when(navigationMenuOptions) {
-                NavigationMenuOptions.INBOX -> model.label = LabelTextTypes.INBOX
-                NavigationMenuOptions.SENT -> model.label = LabelTextTypes.SENT
-                NavigationMenuOptions.DRAFT -> model.label = LabelTextTypes.DRAFT
-                NavigationMenuOptions.STARRED -> model.label = LabelTextTypes.STARRED
-                NavigationMenuOptions.SPAM -> model.label = LabelTextTypes.SPAM
-                NavigationMenuOptions.TRASH -> model.label = LabelTextTypes.TRASH
+                NavigationMenuOptions.INBOX -> model.label = MailFolders.INBOX
+                NavigationMenuOptions.SENT -> model.label = MailFolders.SENT
+                NavigationMenuOptions.DRAFT -> model.label = MailFolders.DRAFT
+                NavigationMenuOptions.STARRED -> model.label = MailFolders.STARRED
+                NavigationMenuOptions.SPAM -> model.label = MailFolders.SPAM
+                NavigationMenuOptions.TRASH -> model.label = MailFolders.TRASH
             }
 
             loadMailbox(
@@ -235,13 +233,13 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun archiveSelectedEmailThreads() {
         dataSourceController.updateEmailThreadsLabelsRelations(
                 selectedLabels = null,
-                chosenLabel = LabelTextTypes.ARCHIVED)
+                chosenLabel = MailFolders.ARCHIVED)
         }
 
     private fun deleteSelectedEmailThreads() {
         dataSourceController.updateEmailThreadsLabelsRelations(
                 selectedLabels = null,
-                chosenLabel = LabelTextTypes.TRASH)
+                chosenLabel = MailFolders.TRASH)
     }
 
     private fun toggleReadSelectedEmailThreads(unreadStatus: Boolean) {
@@ -320,13 +318,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun moveToSpam() {
             dataSourceController.updateEmailThreadsLabelsRelations(
                     selectedLabels = null,
-                    chosenLabel = LabelTextTypes.SPAM)
+                    chosenLabel = MailFolders.SPAM)
         }
 
         override fun moveToTrash() {
             dataSourceController.updateEmailThreadsLabelsRelations(
                     selectedLabels = null,
-                    chosenLabel = LabelTextTypes.TRASH)
+                    chosenLabel = MailFolders.TRASH)
         }
 
     }
@@ -343,7 +341,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         fun updateEmailThreadsLabelsRelations(
                 selectedLabels: SelectedLabels?,
-                chosenLabel: LabelTextTypes?
+                chosenLabel: MailFolders?
         ): Boolean {
                 val req = MailboxRequest.UpdateEmailThreadsLabelsRelations(
                         selectedEmailThreads = model.selectedThreads.toList(),
@@ -355,7 +353,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
 
         fun updateMailbox(
-                mailboxLabel: LabelTextTypes,
+                mailboxLabel: MailFolders,
                 isManual: Boolean): Boolean {
             scene.hideDrawer()
             if(MailboxData.updateMailboxWorkData== null) {

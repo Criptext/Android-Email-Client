@@ -1,7 +1,6 @@
 package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
-import com.email.db.LabelTextTypes
 import com.email.db.MailboxLocalDB
 import com.email.utils.DateUtils
 import org.json.JSONObject

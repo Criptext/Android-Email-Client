@@ -5,7 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
 import com.email.db.KeyValueStorage
-import com.email.db.SignUpLocalDB
+import com.email.db.dao.SignUpDao
 
 /**
  * Created by sebas on 2/15/18.
@@ -13,7 +13,7 @@ import com.email.db.SignUpLocalDB
 
 class SignUpDataSource(override val runner: WorkRunner,
                        private val signUpAPIClient: SignUpAPIClient,
-                       private val signUpLocalDB: SignUpLocalDB,
+                       private val db: SignUpDao,
                        private val signalKeyGenerator: SignalKeyGenerator,
                        private val keyValueStorage: KeyValueStorage )
     : WorkHandler<SignUpRequest, SignUpResult>() {
@@ -22,7 +22,7 @@ class SignUpDataSource(override val runner: WorkRunner,
             BackgroundWorker<*> {
         return when (params) {
             is SignUpRequest.RegisterUser -> RegisterUserWorker(
-                    db = signUpLocalDB,
+                    db = db,
                     apiClient = signUpAPIClient,
                     incompleteAccount = params.account,
                     signalKeyGenerator = signalKeyGenerator,

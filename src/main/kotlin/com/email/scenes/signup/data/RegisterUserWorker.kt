@@ -8,37 +8,33 @@ import com.email.api.ServerErrorException
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.db.KeyValueStorage
-import com.email.db.SignUpLocalDB
-import com.email.db.models.Account
-import com.email.db.models.ActiveAccount
+import com.email.db.dao.SignUpDao
 import com.email.scenes.signup.IncompleteAccount
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
 import com.github.kittinunf.result.mapError
 import org.json.JSONException
 
 /**
+ * Sets up a new account. Generates a new key bundle and uploads it along with the user data to
+ * the server. Once the server stores the new account, all keys and user data are saved to local
+ * storage atomically.
  * Created by sebas on 2/26/18.
  */
 
 class RegisterUserWorker(
-        private val db: SignUpLocalDB,
+        db: SignUpDao,
+        keyValueStorage: KeyValueStorage,
         private val apiClient: SignUpAPIClient,
         private val signalKeyGenerator: SignalKeyGenerator,
-        private val keyValueStorage: KeyValueStorage,
         private val incompleteAccount: IncompleteAccount,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
     override val canBeParallelized = false
+    private val storeAccountTransaction = StoreAccountTransaction(db, keyValueStorage)
 
-    private val setNewUserAsActiveAccount: (Account) -> Unit = { user ->
-        val activeAccount = ActiveAccount(recipientId = user.recipientId, jwt = user.jwt)
-        keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                activeAccount.toJSON().toString())
-    }
 
     override fun catchException(ex: Exception): SignUpResult.RegisterUser {
 
@@ -52,24 +48,22 @@ class RegisterUserWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun persistNewUserData(keyBundle: SignalKeyGenerator.PrivateBundle)
-            :(String) -> Result<Account, Exception> {
+            :(String) -> Result<Unit, Exception> {
         return { jwtoken: String ->
             Result.of {
-                val user = incompleteAccount.complete(keyBundle, jwtoken)
-                db.saveNewUserData(user, keyBundle)
-                db.seedLabels()
-                user
+                val newAccount = incompleteAccount.complete(keyBundle, jwtoken)
+                storeAccountTransaction.run(account = newAccount, keyBundle = keyBundle)
             }
 
         }
     }
 
     override fun work(): SignUpResult.RegisterUser? {
-        val registrationBundle = signalKeyGenerator.register(recipientId = incompleteAccount.username,
+        val registrationBundle = signalKeyGenerator.register(
+                recipientId = incompleteAccount.username,
                 deviceId = 1)
         val operation = postNewUserToServer(registrationBundle.uploadBundle)
                           .flatMap(persistNewUserData(registrationBundle.privateBundle))
-                          .map(setNewUserAsActiveAccount)
 
         return when(operation) {
             is Result.Success -> {

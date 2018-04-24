@@ -1,8 +1,9 @@
 package com.email.scenes.mailbox.data
 
+import android.util.Log
 import com.email.R
 import com.email.bgworker.BackgroundWorker
-import com.email.db.LabelTextTypes
+import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
@@ -16,7 +17,7 @@ class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
         private val offset: Int,
-        private val labelTextTypes: LabelTextTypes,
+        private val labelTextTypes: MailFolders,
         private val oldestEmailThread: EmailThread?,
         override val publishFn: (
                 MailboxResult.LoadEmailThreads) -> Unit)
@@ -39,6 +40,7 @@ class LoadEmailThreadsWorker(
                 oldestEmailThread = oldestEmailThread,
                 rejectedLabels = selectRejectedLabels(),
                 offset = offset)
+        Log.d("Mailbox", "got email threads: $emailThreads")
 
         return MailboxResult.LoadEmailThreads.Success(
                 emailThreads = emailThreads,
@@ -46,18 +48,18 @@ class LoadEmailThreadsWorker(
     }
 
     private fun selectRejectedLabels(): List<Label> {
-        val commonRejectedLabels = listOf( LabelTextTypes.SPAM, LabelTextTypes.TRASH)
+        val commonRejectedLabels = listOf( MailFolders.SPAM, MailFolders.TRASH)
         return when(labelTextTypes) {
-            LabelTextTypes.SENT,
-            LabelTextTypes.INBOX,
-            LabelTextTypes.ARCHIVED,
-            LabelTextTypes.STARRED -> {
+            MailFolders.SENT,
+            MailFolders.INBOX,
+            MailFolders.ARCHIVED,
+            MailFolders.STARRED -> {
                 db.getLabelsFromLabelType(
                         labelTextTypes = commonRejectedLabels)
             }
-            LabelTextTypes.SPAM -> {
+            MailFolders.SPAM -> {
                 db.getLabelsFromLabelType(
-                        labelTextTypes = listOf(LabelTextTypes.TRASH))
+                        labelTextTypes = listOf(MailFolders.TRASH))
             }
             else -> {
                 emptyList()
