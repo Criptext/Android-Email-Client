@@ -9,7 +9,7 @@ import com.email.R
 import com.email.SearchActivity
 import com.email.scenes.search.data.SearchResult
 import com.email.scenes.search.ui.SearchRecyclerView
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by danieltigse on 2/2/18.

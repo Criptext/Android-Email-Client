@@ -14,7 +14,6 @@ import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
 import com.email.utils.Utility
-import com.email.utils.anim.FlipAnimator
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
@@ -45,7 +44,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    fun bindMail(emailThread: EmailThread) {
+    fun bindEmailThread(emailThread: EmailThread) {
+        subjectView.setText(emailThread.subject, TextView.BufferType.EDITABLE)
 
         subjectView.text = if (emailThread.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
@@ -67,6 +67,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {
+            DrawableCompat.setTint(
+                    check.drawable,
+                    ContextCompat.getColor(view.context, R.color.attachmentGray))
             dateView.typeface = TypefaceUtils.load(
                     view.resources.assets,
                     "fonts/NunitoSans-Bold.ttf")
@@ -87,6 +90,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         countView.visibility = View.GONE
 
         setIcons(emailThread.status)
+        toggleStatus(emailThread.isSelected, emailThread.unread)
     }
 
     private fun setIcons(deliveryType: DeliveryTypes){
@@ -148,7 +152,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         view.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
     }
 
-    fun toggleStatus(selected: Boolean, unread: Boolean) {
+    private fun toggleStatus(selected: Boolean, unread: Boolean) {
         if(selected) {
             view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_selected))
             avatarView.visibility = View.GONE
@@ -162,35 +166,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             } else {
                 view.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
             }
-        }
-    }
-
-    fun hideMultiselect() {
-        view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
-    }
-
-    fun applyIconAnimation(holder: EmailHolder, mail: EmailThread, mContext: Context) {
-        if (mail.isSelected) {
-            holder.avatarView.visibility = View.GONE
-            resetIconYAxis(holder.iconBack);
-            holder.iconBack.setVisibility(View.VISIBLE)
-            holder.iconBack.setAlpha(1.toFloat())
-            FlipAnimator.flipView(mContext,
-                    holder.iconBack,
-                    holder.avatarView,
-                    true);
-        } else if(!mail.isSelected){
-            holder.iconBack.setVisibility(View.GONE)
-            resetIconYAxis(holder.avatarView)
-            holder.avatarView.setVisibility(View.VISIBLE);
-            FlipAnimator.flipView(mContext, holder.iconBack, holder.avatarView, false);
-
-        }
-    }
-
-    private fun resetIconYAxis(view : View) {
-        if (view.rotationY != 0.toFloat() ) {
-            view.setRotationY(0.toFloat())
         }
     }
 

@@ -15,17 +15,16 @@ class MailboxSceneModel : SceneModel {
     var loadingType = LoadingType.FULL
     var label: MailFolders = MailFolders.INBOX // default label
     val threads : ArrayList<EmailThread> = ArrayList()
-    var isInMultiSelect = false
     val selectedThreads = SelectedThreads()
     val hasSelectedUnreadMessages: Boolean
         get() = selectedThreads.hasUnreadThreads
     val feedModel = FeedModel()
     val isInUnreadMode: Boolean
         get() = selectedThreads.isInUnreadMode
-    var shouldShowPartialUpdateInUI = false
     val offset = 20 // We load 20 emails in each scroll
     var oldestEmailThread: EmailThread? = null
         get() = if(threads.isEmpty()) null else threads.last()
-    var reachEnd = false
+    var isInMultiSelect = false
+    var hasReachedEnd = true
     var mailToSend: ComposerInputData? = null
 }

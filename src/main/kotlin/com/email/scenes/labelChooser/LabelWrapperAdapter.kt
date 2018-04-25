@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.labelChooser.holders.LabelHolder
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 2/2/18.

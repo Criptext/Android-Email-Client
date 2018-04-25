@@ -7,7 +7,7 @@ import com.email.scenes.search.SearchSceneModel
 import com.email.scenes.search.data.SearchDataSource
 import com.email.scenes.search.data.SearchResult
 import com.email.scenes.search.holders.SearchSceneController
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by danieltigse on 2/2/18.
@@ -30,6 +30,8 @@ class SearchActivity : BaseActivity() {
 
     private class VirtualSearchList(val results: ArrayList<SearchResult>)
         : VirtualList<SearchResult> {
+        override val hasReachedEnd = true
+
         override fun get(i: Int) = results[i]
 
         override val size: Int

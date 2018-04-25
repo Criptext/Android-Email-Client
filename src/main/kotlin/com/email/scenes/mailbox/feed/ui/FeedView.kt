@@ -6,7 +6,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.email.R
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by danieltigse on 2/7/18.

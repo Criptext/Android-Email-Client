@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.email.R
 import com.email.db.models.Label
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/14/18.

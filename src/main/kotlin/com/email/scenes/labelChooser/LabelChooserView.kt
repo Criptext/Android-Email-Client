@@ -7,7 +7,7 @@ import com.email.R
 import android.view.View
 import android.widget.ProgressBar
 import com.email.scenes.labelChooser.data.LabelWrapper
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 
 /**

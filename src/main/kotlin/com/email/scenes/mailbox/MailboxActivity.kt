@@ -16,7 +16,6 @@ import com.email.db.models.Email
 import com.email.db.models.EmailContactIds
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
@@ -24,7 +23,7 @@ import com.email.scenes.mailbox.feed.FeedModel
 import com.email.scenes.mailbox.feed.ui.FeedView
 import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocket
 import java.util.*
 
@@ -40,30 +39,30 @@ class MailboxActivity : BaseActivity() {
     private lateinit var notificationMenuClickListener: () -> Unit
 
     // Only use this during development
-    /*
     private fun seedEmails(appDB: AppDatabase) {
-        val contacts = listOf(Contact("mayer@jigl.com", "Mayer Mizrachi"),
-                Contact("gabriel@jigl.com", "Gabriel Aumala"))
+        val contacts = listOf(Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
+                Contact(2, "gabriel@jigl.com", "Gabriel Aumala"))
         appDB.mailboxDao().insertContacts(contacts)
+        val dateMilis = System.currentTimeMillis()
         val emails = (1..50)
           .map {
               val email = Email(id = 0, key = it.toString(), threadid = "thread$it", unread = true,
                   secure = true, content = "this is message #$it", preview =  "message #$it",
-                  subject = "message #$it", delivered = DeliveryTypes.RECEIVED, date = Date(),
-                  isTrash = false, isDraft = false)
-              val senderId = "mayer@jigl.com"
-              val toIds = listOf("gabriel@jigl.com")
+                  subject = "message #$it", delivered = DeliveryTypes.DELIVERED,
+                  date = Date(dateMilis + it), isTrash = false, isDraft = false)
+              val senderId = 1L
+              val toIds = listOf(2L)
               EmailContactIds(email = email, toIds = toIds, ccIds = emptyList(),
                       bccIds = emptyList(), senderId = senderId)
           }
         appDB.mailboxDao().insertNewReceivedEmails(emails)
     }
-    */
 
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
 
+        // seedEmails(appDB)
         val controller =  initController(
                 appDB = appDB,
                 hostActivity = this,
@@ -114,8 +113,7 @@ class MailboxActivity : BaseActivity() {
 
             val scene = MailboxScene.MailboxSceneView(
                         mailboxView = rootView,
-                        hostActivity = hostActivity,
-                        threadList = VirtualEmailThreadList(model.threads)
+                        hostActivity = hostActivity
                 )
 
             return MailboxSceneController(
@@ -130,12 +128,5 @@ class MailboxActivity : BaseActivity() {
     }
 
 
-    private class VirtualEmailThreadList(val threads: ArrayList<EmailThread>)
-        : VirtualList<EmailThread> {
-        override fun get(i: Int) = threads[i]
-
-        override val size: Int
-            get() = threads.size
-    }
 
 }

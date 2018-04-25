@@ -6,10 +6,9 @@ import android.widget.ProgressBar
 import com.email.R
 
 class ProgressViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-    var progressBar: ProgressBar
+    private val progressBar: ProgressBar = v.findViewById(R.id.progressBar)
 
     init {
-        progressBar = v.findViewById(R.id.progressBar)
         progressBar.isIndeterminate = true
     }
 }

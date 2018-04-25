@@ -13,7 +13,4 @@ object MailboxData {
     class LoadThreadsWorkData(val result: MailboxResult.LoadEmailThreads?) {
         constructor(): this(null)
     }
-
-    var updateMailboxWorkData: UpdateMailboxWorkData? = null
-    var loadThreadsWorkData: LoadThreadsWorkData? = null
 }

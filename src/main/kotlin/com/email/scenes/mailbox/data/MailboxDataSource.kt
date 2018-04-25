@@ -23,7 +23,6 @@ class MailboxDataSource(
             params: MailboxRequest,
             flushResults: (MailboxResult) -> Unit)
             : BackgroundWorker<*> {
-
         return when (params) {
             is MailboxRequest.GetSelectedLabels -> GetSelectedLabelsWorker(
                     db = mailboxLocalDB,

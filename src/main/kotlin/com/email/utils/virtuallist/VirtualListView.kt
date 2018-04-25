@@ -1,10 +1,12 @@
-package com.email.androidui.mailthread
+package com.email.utils.virtuallist
+
+import com.email.utils.virtuallist.VirtualListAdapter
 
 /**
  * Created by sebas on 1/30/18.
  */
 
-interface ThreadListView {
+interface VirtualListView {
 
     fun notifyThreadSetChanged()
 
@@ -14,5 +16,5 @@ interface ThreadListView {
 
     fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int)
 
-    fun changeMode(multiSelectON: Boolean, silent: Boolean)
+    fun setAdapter(virtualListAdapter: VirtualListAdapter)
 }

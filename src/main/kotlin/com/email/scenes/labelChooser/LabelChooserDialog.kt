@@ -9,7 +9,7 @@ import android.widget.Button
 import com.email.R
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 
 /**
@@ -80,6 +80,8 @@ class LabelChooserDialog(private val context: Context) {
     }
 
     private class LabelList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper> {
+        override val hasReachedEnd = true
+
         override fun get(i: Int): LabelWrapper {
             return labels[i]
         }
