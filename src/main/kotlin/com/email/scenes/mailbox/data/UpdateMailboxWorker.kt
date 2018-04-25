@@ -155,7 +155,7 @@ class UpdateMailboxWorker(
                             preview = preview,
                             key = metaData.bodyKey,
                             isDraft = false,
-                            delivered = DeliveryTypes.RECEIVED,
+                            delivered = DeliveryTypes.OPENED,
                             content = bodyContent
                             )
                     val insertedEmailId = db.addEmail(email)

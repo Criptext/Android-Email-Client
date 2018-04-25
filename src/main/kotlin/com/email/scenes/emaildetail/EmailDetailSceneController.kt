@@ -39,7 +39,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     private val mailboxDataSourceListener = {result: MailboxResult ->
         when (result) {
-            is MailboxResult.GetLabels -> onLabelsLoaded(result)
+            is MailboxResult.GetSelectedLabels -> onLabelsLoaded(result)
         }
 
     }
@@ -50,14 +50,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private fun onLabelsLoaded(result: MailboxResult.GetLabels) {
+    private fun onLabelsLoaded(result: MailboxResult.GetSelectedLabels) {
         when (result) {
-            is MailboxResult.GetLabels.Success -> {
-                scene.onFetchedLabels(result.defaultSelectedLabels,
-                        result.labels)
+            is MailboxResult.GetSelectedLabels.Success -> {
+                scene.onFetchedLabels(result.selectedLabels,
+                        result.allLabels)
             }
 
-            is MailboxResult.GetLabels.Failure -> {
+            is MailboxResult.GetSelectedLabels.Failure -> {
 
             }
         }
@@ -209,7 +209,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun showLabelsDialog() {
-        val req = MailboxRequest.GetLabels(
+        val req = MailboxRequest.GetSelectedLabels(
                 threadIds = listOf(model.threadId)
         )
 

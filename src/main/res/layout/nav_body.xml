@@ -21,6 +21,7 @@
         android:background="@color/menu_selected">
 
         <ImageView
+            android:id="@+id/imageViewInbox"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
@@ -30,12 +31,14 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleInbox"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="@string/slider_inbox"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
             android:textColor="#000"
+            fontPath="fonts/NunitoSans-Bold.ttf"
             android:layout_weight="1"/>
 
         <TextView
@@ -44,11 +47,12 @@
             android:layout_height="20dp"
             android:text="+99"
             android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textColor="@android:color/white"
             android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
+            android:layout_marginEnd="25dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -66,6 +70,7 @@
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
+            android:id="@+id/imageViewSent"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
@@ -75,6 +80,7 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleSent"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/slider_sent"
@@ -99,6 +105,7 @@
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
+            android:id="@+id/imageViewDraft"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
@@ -108,6 +115,7 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleDraft"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/slider_draft"
@@ -120,13 +128,14 @@
             android:id="@+id/count_drafts"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:text="+99"
+            android:text="1"
             android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textColor="@android:color/white"
             android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
+            android:layout_marginEnd="25dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -144,6 +153,7 @@
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
+            android:id="@+id/imageViewStarred"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
@@ -153,6 +163,7 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleStarred"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/slider_starred"
@@ -177,6 +188,7 @@
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
+            android:id="@+id/imageViewSpam"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
@@ -186,6 +198,7 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleSpam"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/slider_junk"
@@ -200,11 +213,12 @@
             android:layout_height="20dp"
             android:text="+99"
             android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textColor="@android:color/white"
             android:background="@drawable/badge_menu"
-            android:layout_marginRight="25dp"/>
+            android:layout_marginEnd="25dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -222,18 +236,55 @@
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
+            android:id="@+id/imageViewTrash"
             android:layout_width="@dimen/square_icon"
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/trash"
+            android:src="@drawable/trash_black"
             android:tint="@color/drawer_icon_unselected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
         <TextView
+            android:id="@+id/textViewTitleTrash"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/slider_trash"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="@color/drawer_text"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_item_height"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/slider_all_mail"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/imageViewAllMail"
+            android:layout_width="@dimen/square_icon"
+            android:layout_height="@dimen/square_icon"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/all_mail"
+            android:tint="@color/drawer_icon_unselected"
+            android:padding="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:id="@+id/textViewTitleAllMail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/slider_allmail"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
             android:textColor="@color/drawer_text"

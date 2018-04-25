@@ -1,34 +1,31 @@
 package com.email.scenes.composer.mocks
 
-import com.email.db.DeliveryTypes
-import com.email.db.dao.ContactDao
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import java.util.*
+import com.email.db.dao.AccountDao
+import com.email.db.models.Account
 
 /**
- * Created by gabriel on 4/24/18.
+ * Created by jigl on 4/24/18.
  */
 
-class MockedContactDao : ContactDao {
+class MockedAccountDao: AccountDao{
 
-    override fun insertIgnoringConflicts(contact: Contact): Long {
+    override fun insertAll(accounts: List<Account>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun insertAll(users: List<Contact>) {
+    override fun insert(account: Account) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getAll(): List<Contact> {
+    override fun getAll(): List<Account> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getContact(email: String): Contact? {
+    override fun getLoggedInAccount(): Account? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteAll(contacts: List<Contact>) {
+    override fun deleteAll(accounts: List<Account>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -38,7 +38,7 @@ interface MailboxScene: ThreadListView {
     fun showSyncingDialog()
     fun hideSyncingDialog()
     fun initDrawerLayout()
-    fun initNavHeader(fullName: String)
+    fun initNavHeader(fullName: String, email: String)
     fun onBackPressed(): Boolean
     fun attachView(
             mailboxLabel: MailFolders,
@@ -53,7 +53,7 @@ interface MailboxScene: ThreadListView {
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
-    fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
+    fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
     fun refreshMails()
     fun clearRefreshing()
     fun showError(message : UIMessage)
@@ -61,6 +61,7 @@ interface MailboxScene: ThreadListView {
     fun hideDrawer()
     fun showRefresh()
     fun scrollTop()
+    fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
 
     class MailboxSceneView(private val mailboxView: View,
                            val hostActivity: IHostActivity,
@@ -166,8 +167,8 @@ interface MailboxScene: ThreadListView {
             }
         }
 
-        override fun initNavHeader(fullName: String) {
-            drawerMenuView.initNavHeader(fullName)
+        override fun initNavHeader(fullName: String, email: String) {
+            drawerMenuView.initNavHeader(fullName, email)
         }
 
         override fun scrollTop() {
@@ -227,7 +228,7 @@ interface MailboxScene: ThreadListView {
             toolbarHolder.updateNumberOfMails(emailsSize)
         }
 
-        override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+        override fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
             labelChooserDialog.onFetchedLabels(
                     defaultSelectedLabels = defaultSelectedLabels,
                     allLabels = labels)
@@ -268,6 +269,10 @@ interface MailboxScene: ThreadListView {
 
         override fun hideDrawer() {
             drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        override fun setCounterLabel(menu: NavigationMenuOptions, total: Int) {
+            drawerMenuView.setCounterLabel(menu, total)
         }
     }
 }

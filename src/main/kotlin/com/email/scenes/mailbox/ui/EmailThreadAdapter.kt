@@ -22,6 +22,10 @@ class EmailThreadAdapter(private val mContext : Context,
     private val VIEW_ITEM = 1
     var isMultiSelectMode = false
 
+    init {
+        setHasStableIds(true)
+    }
+
     fun toggleThreadSelection(mContext: Context,
                               mailThread: EmailThread,
                               position: Int) {
@@ -32,6 +36,7 @@ class EmailThreadAdapter(private val mContext : Context,
         threadListener?.onGoToMail(emailThread = emailThread)
     }
 
+    override fun getItemId(position: Int) = threadList[position].id.toLong()
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         when(holder) {

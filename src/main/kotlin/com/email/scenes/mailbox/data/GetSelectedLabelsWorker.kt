@@ -11,31 +11,31 @@ import com.email.utils.UIMessage
  */
 
 
-class GetLabelsWorker(
+class GetSelectedLabelsWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
         private val threadIds: List<String>,
         override val publishFn: (
-                MailboxResult.GetLabels) -> Unit)
-    : BackgroundWorker<MailboxResult.GetLabels> {
+                MailboxResult.GetSelectedLabels) -> Unit)
+    : BackgroundWorker<MailboxResult.GetSelectedLabels> {
 
     private val apiClient = MailboxAPIClient(activeAccount.jwt)
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.GetLabels {
+    override fun catchException(ex: Exception): MailboxResult.GetSelectedLabels {
 
         val message = createErrorMessage(ex)
-        return MailboxResult.GetLabels.Failure(message, ex)
+        return MailboxResult.GetSelectedLabels.Failure(message, ex)
     }
 
-    override fun work(): MailboxResult.GetLabels? {
+    override fun work(): MailboxResult.GetSelectedLabels? {
         val labels = db.getAllLabels()
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)
 
-        return MailboxResult.GetLabels.Success(
-                labels = labels,
-                defaultSelectedLabels = defaultSelectedLabels)
+        return MailboxResult.GetSelectedLabels.Success(
+                allLabels = labels,
+                selectedLabels = defaultSelectedLabels)
     }
 
     override fun cancel() {

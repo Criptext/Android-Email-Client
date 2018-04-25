@@ -25,8 +25,8 @@
                 android:layout_height="60dp"
                 android:paddingLeft="18dp"
                 android:layout_marginStart="-10dp"
-                android:paddingBottom="18dp"
-                android:paddingTop="18dp"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
                 android:tint="@android:color/white"
                 android:src="@drawable/menu"
                 />

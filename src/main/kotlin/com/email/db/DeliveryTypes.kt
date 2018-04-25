@@ -5,5 +5,5 @@ package com.email.db
  */
 
 enum class DeliveryTypes {
-    SENT, UNSENT, RECEIVED
+    NONE, SENT, UNSENT, OPENED, DELIVERED
 }

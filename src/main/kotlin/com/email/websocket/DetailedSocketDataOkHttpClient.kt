@@ -6,13 +6,11 @@ import com.email.db.*
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.signal.SignalClient
-import com.email.signal.SignalStoreCriptext
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import okhttp3.OkHttpClient
 import org.json.JSONObject
 
 /**
@@ -101,7 +99,7 @@ class DetailedSocketDataOkHttpClient(
                             preview = preview,
                             key = metaData.bodyKey,
                             isDraft = false,
-                            delivered = DeliveryTypes.RECEIVED,
+                            delivered = DeliveryTypes.NONE,
                             content = bodyContent
                     )
                     val insertedEmailId = db.addEmail(email)

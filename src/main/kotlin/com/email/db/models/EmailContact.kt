@@ -17,11 +17,11 @@ import com.email.db.ContactTypes
                 childColumns = ["emailId"]
             ),
             ForeignKey(entity = Contact::class,
-                parentColumns = ["email"],
+                parentColumns = ["id"],
                 onDelete = CASCADE,
                 childColumns = ["contactId"]
             )
         ]
 )
 class EmailContact(@ColumnInfo(name = "emailId") var emailId: Long, @ColumnInfo(name = "contactId")
-var contactId: String, @ColumnInfo(name = "type") var type: ContactTypes)
+var contactId: Long, @ColumnInfo(name = "type") var type: ContactTypes)

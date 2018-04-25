@@ -9,11 +9,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
+import com.email.db.DeliveryTypes
 import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.email.utils.anim.FlipAnimator
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
@@ -33,7 +36,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val attachment : ImageView
     private val avatarView: CircleImageView
     private val iconBack: ImageView
-    private val iconAttachments: ImageView
     private val check: ImageView
 
     init {
@@ -44,19 +46,16 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     fun bindMail(emailThread: EmailThread) {
-        subjectView.setText(emailThread.subject, TextView.BufferType.EDITABLE)
-        if(emailThread.unread) {
-            DrawableCompat.setTint(
-                    check.drawable,
-                    ContextCompat.getColor(view.context, R.color.attachmentGray))
 
-        } else {
-            DrawableCompat.setTint(
-                    check.drawable,
-                    ContextCompat.getColor(view.context, R.color.azure))
-        }
+        subjectView.text = if (emailThread.subject.isEmpty())
+            subjectView.context.getString(R.string.nosubject)
+        else emailThread.subject
 
-        previewView.text = emailThread.preview
+        previewView.text = if(emailThread.preview.isEmpty())
+            subjectView.context.getString(R.string.nocontent)
+        else
+            emailThread.preview
+
         headerView.text = emailThread.headerPreview
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
@@ -83,8 +82,48 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                     "fonts/NunitoSans-Regular.ttf")
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
+
+        //TODO validate number of emails in thread
+        countView.visibility = View.GONE
+
+        setIcons(emailThread.status)
     }
 
+    private fun setIcons(deliveryType: DeliveryTypes){
+
+        check.visibility = View.VISIBLE
+
+        when(deliveryType){
+            DeliveryTypes.SENT -> {
+                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+            }
+            DeliveryTypes.DELIVERED -> {
+                setIconAndColor(R.drawable.read, R.color.sent)
+            }
+            DeliveryTypes.OPENED -> {
+                setIconAndColor(R.drawable.read, R.color.azure)
+            }
+            DeliveryTypes.UNSENT -> {
+                setIconAndColor(R.drawable.un_sent, R.color.unsendBtn)
+            }
+            DeliveryTypes.NONE -> {
+                check.visibility = View.GONE
+            }
+        }
+
+        //TODO validate if has attachments
+        attachment.visibility = View.GONE
+    }
+
+    private fun setIconAndColor(drawable: Int, color: Int){
+        Picasso.with(view.context).load(drawable).into(check, object : Callback{
+            override fun onError() {}
+            override fun onSuccess() {
+                DrawableCompat.setTint(check.drawable,
+                        ContextCompat.getColor(view.context, color))
+            }
+        })
+    }
 
     fun setOnIconBackClickedListener(clickOnIcon: () -> Unit){
         iconBack.setOnClickListener{
@@ -167,7 +206,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         layout = view.findViewById(R.id.mail_item_layout)
         attachment = view.findViewById(R.id.email_has_attachments)
         context = view.context
-        iconAttachments = view.findViewById(R.id.email_has_attachments)
     }
 
 }

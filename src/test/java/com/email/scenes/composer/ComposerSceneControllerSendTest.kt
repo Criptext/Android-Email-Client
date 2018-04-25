@@ -40,10 +40,9 @@ class ComposerSceneControllerSendTest {
 
         val db = ComposerLocalDB(contactDao = MockedContactDao(), labelDao = MockedLabelDao(),
                 emailDao = MockedEmailDao(), emailLabelDao = MockedEmailLabelDao(),
-                emailContactDao = MockedEmailContactJoinDao())
+                emailContactDao = MockedEmailContactJoinDao(), accountDao = MockedAccountDao())
 
-        dataSource = ComposerDataSource(db, ActiveAccount("daniel", ""),
-                AsyncTaskWorkRunner())
+        dataSource = ComposerDataSource(db, AsyncTaskWorkRunner())
         controller = ComposerController(model, scene, host, dataSource)
     }
 

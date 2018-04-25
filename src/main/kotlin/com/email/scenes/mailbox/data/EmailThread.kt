@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.db.models.Label
 import com.email.SecureEmail
+import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.utils.EmailThreadValidator
 import java.util.*
@@ -43,4 +44,7 @@ class EmailThread(val latestEmail: FullEmail,
                 ReplyTypes.forward
             else ReplyTypes.none
         }
+
+    val status: DeliveryTypes
+        get() = latestEmail.email.delivered
 }

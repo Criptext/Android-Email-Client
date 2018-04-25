@@ -27,7 +27,7 @@ class MockedComposerScene: ComposerScene {
     }
 
     override fun getDataInputByUser(): ComposerInputData {
-        return ComposerInputData(to = arrayListOf(Contact("gianni@jigl.com", "Giannni")),
+        return ComposerInputData(to = arrayListOf(Contact(1, "gianni@jigl.com", "Giannni")),
                 cc = ArrayList(), bcc = ArrayList(), subject = "Test",
                 body = "<p>Hi</p>")
     }

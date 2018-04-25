@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mail_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="8dp"
     android:paddingBottom="10dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="15dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="15dp"
     android:animateLayoutChanges="true">
+
     <include layout="@layout/mail_item_left_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content"/>
+
     <Space
         android:layout_width="5dp"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content"/>
+
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -30,6 +32,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:id="@+id/container_header">
+
             <TextView
                 android:id="@+id/email_header"
                 android:layout_width="match_parent"
@@ -41,8 +44,8 @@
                 android:textSize="14sp"
                 android:textColor="@color/textColorPrimary"
                 android:layout_weight="1"
-                android:text="Lorem Ipsum"
-                />
+                android:text="Lorem Ipsum"/>
+
             <TextView
                 android:id="@+id/email_count"
                 android:layout_width="14dp"
@@ -65,6 +68,7 @@
                 android:tint="@color/attachmentGray"
                 android:rotation="90"
                 android:visibility="visible"/>
+
             <TextView
                 android:id="@+id/email_date"
                 android:layout_width="wrap_content"
@@ -76,23 +80,25 @@
                 android:layout_marginStart="10dp"
                 android:text="11:55 am"
                 android:gravity="end"
-                android:textSize="13sp"
-                android:textColor="@color/mail_item_date"
-                />
+                android:textSize="12sp"
+                android:textColor="@color/mail_item_date"/>
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:layout_below="@id/container_header"
             android:orientation="horizontal"
             android:id="@+id/linearLayout">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1"
                 android:id="@+id/container_subheader">
+
                 <TextView
                     android:id="@+id/email_subject"
                     android:layout_width="205dp"
@@ -104,18 +110,19 @@
                     android:layout_marginEnd="3dp"
                     android:textSize="14sp"
                     android:textColor="@color/colorSubject"/>
+
                 <LinearLayout
                     android:layout_width="205dp"
                     android:layout_height="wrap_content">
+
                     <ImageView
                         android:id="@+id/check"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:layout_gravity="top"
-                        android:src="@drawable/mail_item_check"
-                        />
+                        android:layout_marginEnd="1dp"
+                        android:src="@drawable/read"/>
+
                     <TextView
                         android:id="@+id/email_preview"
                         android:layout_width="185dp"
@@ -127,8 +134,11 @@
                         android:textColor="#6a707e"/>
 
                 </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>

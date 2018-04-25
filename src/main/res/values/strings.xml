@@ -149,8 +149,8 @@
     <string name="criptext_com">\@criptext.com</string>
     <string name="sign_up">Sign Up</string>
     <string name="not_registered">Not registered?</string>
-    <string name="recover_email_warning_content_start">Without a recovery email\naddress you will not be able to\nregain access to your account if\n you forget your password.</string>
-    <string name="recover_email_warning_content_end">Would you like to set a recovery\nemail?</string>
+    <string name="recover_email_warning_content_start">You did not set a Recovery Email\nso account recovery is impossible\nif you forget your password</string>
+    <string name="recover_email_warning_content_end">Proceed without recovery email?</string>
     <string name="sign_up_terms_and_conditions_start">I have read and agreed with the</string>
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
     <string name="btn_create_account">Create account</string>
@@ -176,6 +176,11 @@
     <string name="message">Message</string>
     <string name="subject">Subject</string>
 
+    <string name="error_updating_labels">Error updating email labels. Please try again</string>
+    <string name="error_updating_status">Error updating email status. Please try again</string>
+    <string name="error_getting_counters">Error getting label counters. Please try again</string>
+    <string name="error_getting_account">Error getting user account. Please try again</string>
+    <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_getting_contacts">Error getting contacts. Please try again</string>
     <string name="error_saving_as_draft">Error saving email. Please try again</string>
     <string name="you_wanna_save">Do you want to save this as draft?</string>
@@ -219,4 +224,8 @@
     <string name="failed_getting_emails">Failed to fetch the emails. Please try again later.</string>
     <string name="updating_mailbox">Updating mailbox...</string>
     <string name="email_already_decrypted">Mailbox is already updated!</string>
+
+    <string name="nosubject">(No Subject)</string>
+    <string name="nocontent">(No Content)</string>
+    <string name="unknown">Unknown</string>
 </resources>

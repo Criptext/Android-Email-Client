@@ -10,6 +10,7 @@ import java.util.*
  */
 
 class MockedEmailDao : EmailDao {
+
     override fun insertAll(emails: List<Email>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -42,7 +43,7 @@ class MockedEmailDao : EmailDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateEmail(id: Long, threadId: String, key: String, date: Date) {
+    override fun updateEmail(id: Long, threadId: String, key: String, date: Date, status: DeliveryTypes) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -63,6 +64,14 @@ class MockedEmailDao : EmailDao {
     }
 
     override fun getInitialEmailThreadsFromMailboxLabel(rejectedLabels: List<Long>, selectedLabel: Long, offset: Int): List<Email> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: Long): List<Email> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getTotalThreads(selectedLabel: Long): List<Email> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

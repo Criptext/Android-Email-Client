@@ -168,7 +168,7 @@ class FeedControllerTest {
         deleteItemAt(3, Exception("Database Error")) // throw db error
 
         model.feedItems.size `should be` 5
-        scene.lastNotifiedInsertedPosition `should equal` 3 // should insert back item
+        scene.lastNotifiedInsertedPosition `should equal` 3 // should insertIgnoringConflicts back item
         scene.shownError!! `should end with`  "Database Error"
     }
 }

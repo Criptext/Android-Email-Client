@@ -20,7 +20,7 @@ class WebSocket {
 
     companion object {
 
-        const val HOST_URL = "54.245.42.9:3001"
+        const val HOST_URL = "52.27.44.207:3001"
         private var INSTANCE : WebSocket? = null
         fun newInstance(
                 activeAccount: ActiveAccount,
