@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.db.MailFolders
+import com.email.db.models.Label
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.labelChooser.SelectedLabels
 import org.json.JSONObject
@@ -24,7 +25,7 @@ sealed class MailboxRequest{
 
     data class LoadEmailThreads(
             val label: MailFolders,
-            val offset: Int,
+            val limit: Int,
             val oldestEmailThread: EmailThread?
             ): MailboxRequest()
 

@@ -1,7 +1,6 @@
 package com.email.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -11,7 +10,7 @@ import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.EmailContactInfoListener
 import com.email.utils.DateUtils
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 import com.email.utils.ui.PopupUtils
 
 /**
@@ -31,7 +30,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
 
-        val contactsTo = VirtualList.Map(fullEmail.to, {t -> t})
+        val contactsTo = VirtualList.Map(fullEmail.to, { t -> t})
         ContactsToRecyclerView(recyclerView, contactsTo)
 
         PopupUtils.createPopUpWindow(

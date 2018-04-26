@@ -11,7 +11,7 @@ import com.email.scenes.emaildetail.ui.holders.FooterViewHolder
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
 import com.email.scenes.emaildetail.ui.holders.PartialEmailHolder
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/12/18.

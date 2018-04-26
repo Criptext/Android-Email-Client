@@ -20,7 +20,7 @@ import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.params.ComposerParams
 import com.email.utils.KeyboardManager
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/12/18.

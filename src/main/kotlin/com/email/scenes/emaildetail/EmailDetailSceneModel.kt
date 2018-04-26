@@ -2,7 +2,7 @@ package com.email.scenes.emaildetail
 
 import com.email.db.models.FullEmail
 import com.email.scenes.SceneModel
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/12/18.

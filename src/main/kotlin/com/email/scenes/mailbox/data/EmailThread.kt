@@ -12,7 +12,7 @@ import java.util.*
  */
 
 class EmailThread(val latestEmail: FullEmail,
-                  val labelsOfMail :ArrayList<Label>) {
+                  val labelsOfMail :List<Label>) {
 
     val unread :Boolean
         get() = latestEmail.email.unread

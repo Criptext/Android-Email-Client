@@ -14,8 +14,7 @@ import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.scenes.mailbox.OnMoveThreadsListener
-import com.email.utils.KeyboardManager
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/12/18.
@@ -64,7 +63,7 @@ interface EmailDetailScene {
 
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
-                fullEmailList : VirtualList<FullEmail> ){
+                fullEmailList : VirtualList<FullEmail>){
 
             labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, getLabelsFromEmails(fullEmailList))
 
@@ -80,7 +79,7 @@ interface EmailDetailScene {
         }
 
         private fun getLabelsFromEmails(
-                emails: VirtualList<FullEmail>) : VirtualList<Label>{
+                emails: VirtualList<FullEmail>) : VirtualList<Label> {
             val labelSet = HashSet<Label>()
             for (i in 0 until emails.size) {
                 labelSet.addAll(emails[i].labels)

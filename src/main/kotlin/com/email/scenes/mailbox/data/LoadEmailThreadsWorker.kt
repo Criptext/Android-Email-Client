@@ -15,7 +15,7 @@ import com.email.utils.UIMessage
 class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
-        private val offset: Int,
+        private val limit: Int,
         private val labelTextTypes: MailFolders,
         private val oldestEmailThread: EmailThread?,
         override val publishFn: (
@@ -38,7 +38,7 @@ class LoadEmailThreadsWorker(
                 labelTextTypes = labelTextTypes,
                 oldestEmailThread = oldestEmailThread,
                 rejectedLabels = selectRejectedLabels(),
-                offset = offset)
+                limit = limit)
 
         return MailboxResult.LoadEmailThreads.Success(
                 emailThreads = emailThreads,

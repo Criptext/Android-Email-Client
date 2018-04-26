@@ -6,7 +6,7 @@ import com.email.scenes.emaildetail.EmailDetailScene
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.OnMoveThreadsListener
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/29/18.

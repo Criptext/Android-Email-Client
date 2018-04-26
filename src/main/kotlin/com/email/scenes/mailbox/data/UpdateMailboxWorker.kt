@@ -69,10 +69,10 @@ class UpdateMailboxWorker(
             val rejectedLabels = selectRejectedLabels()
             db.getEmailsFromMailboxLabel(
                     labelTextTypes = label,
-                    offset = 10,
+                    limit = 10,
                     rejectedLabels = rejectedLabels,
                     oldestEmailThread = null)
-        }}.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        }}
     }
 
     override fun work(): MailboxResult.UpdateMailbox? {

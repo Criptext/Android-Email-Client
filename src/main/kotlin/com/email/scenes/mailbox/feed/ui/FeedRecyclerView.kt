@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.utils.CustomLayoutManager
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by danieltigse on 2/5/18.

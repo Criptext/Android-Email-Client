@@ -33,7 +33,7 @@ interface MailboxLocalDB {
     fun getEmailsFromMailboxLabel(
             labelTextTypes: MailFolders,
             oldestEmailThread: EmailThread?,
-            offset: Int,
+            limit: Int,
             rejectedLabels: List<Label>): List<EmailThread>
 
     fun getLabelsFromLabelType(labelTextTypes: List<MailFolders>): List<Label>
@@ -210,7 +210,7 @@ interface MailboxLocalDB {
         override fun getEmailsFromMailboxLabel(
                 labelTextTypes: MailFolders,
                 oldestEmailThread: EmailThread?,
-                offset: Int,
+                limit: Int,
                 rejectedLabels: List<Label>): List<EmailThread> {
             val labels = db.labelDao().getAll()
             val selectedLabel = labels.findLast {label ->
@@ -226,13 +226,13 @@ interface MailboxLocalDB {
                         starterDate = oldestEmailThread.timestamp,
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel!!,
-                        offset = offset )
+                        limit = limit )
 
             else
                 db.emailDao().getInitialEmailThreadsFromMailboxLabel(
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel!!,
-                        offset = offset )
+                        limit = limit )
 
             return emails.map { email ->
                 getEmailThreadFromEmail(email)

@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.email.scenes.labelChooser.LabelWrapperAdapter
 import com.email.scenes.labelChooser.data.LabelWrapper
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 class LabelWrapperRecyclerView(recyclerView: RecyclerView,
                                threadEventListener: LabelWrapperAdapter.OnLabelWrapperEventListener?,

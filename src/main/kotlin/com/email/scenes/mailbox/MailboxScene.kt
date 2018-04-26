@@ -13,27 +13,25 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
-import com.email.androidui.mailthread.ThreadListView
-import com.email.androidui.mailthread.ThreadRecyclerView
+import com.email.utils.virtuallist.VirtualListView
+import com.email.utils.virtuallist.VirtualRecyclerView
 import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.LabelChooserDialog
 import com.email.scenes.labelChooser.LabelDataHandler
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.utils.UIMessage
-import com.email.utils.VirtualList
 import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 1/23/18.
  */
 
-interface MailboxScene: ThreadListView {
-
+interface MailboxScene{
+    val virtualListView: VirtualListView
     var observer: MailboxUIObserver?
     fun showSyncingDialog()
     fun hideSyncingDialog()
@@ -44,7 +42,7 @@ interface MailboxScene: ThreadListView {
             mailboxLabel: MailFolders,
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
-            onScrollListener: OnScrollListener)
+            threadList: VirtualEmailThreadList)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -57,17 +55,13 @@ interface MailboxScene: ThreadListView {
     fun refreshMails()
     fun clearRefreshing()
     fun showError(message : UIMessage)
-    fun toggleShowThreadListLoader(show: Boolean)
     fun hideDrawer()
     fun showRefresh()
     fun scrollTop()
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
 
-    class MailboxSceneView(private val mailboxView: View,
-                           val hostActivity: IHostActivity,
-                           val threadList: VirtualList<EmailThread>)
+    class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
-
         override fun showSyncingDialog() {
             hostActivity.showDialog(UIMessage(R.string.updating_mailbox))
         }
@@ -99,7 +93,7 @@ interface MailboxScene: ThreadListView {
         }
 
         private val drawerLayout: DrawerLayout by lazy {
-            mailboxView.findViewById(R.id.drawer_layout) as DrawerLayout
+            mailboxView.findViewById<DrawerLayout>(R.id.drawer_layout)
         }
 
         private val leftNavigationView: NavigationView by lazy {
@@ -114,30 +108,18 @@ interface MailboxScene: ThreadListView {
             mailboxView.findViewById<View>(R.id.fab)
         }
 
-        private lateinit var threadRecyclerView: ThreadRecyclerView
+        override val virtualListView = VirtualRecyclerView(recyclerView)
 
-        private var threadListener: EmailThreadAdapter.OnThreadEventListener? = null
-            set(value) {
-                threadRecyclerView.setThreadListener(value)
-                field = value
-            }
 
         override fun attachView(
                 mailboxLabel: MailFolders,
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
-                onScrollListener: OnScrollListener){
-
-            threadRecyclerView = ThreadRecyclerView(
-                    recyclerView,
-                    threadEventListener,
-                    onScrollListener,
-                    threadList)
-
-            this.threadListener = threadEventListener
+                threadList: VirtualEmailThreadList) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
+            virtualListView.setAdapter(EmailThreadAdapter(context, threadEventListener, threadList))
             openComposerButton.setOnClickListener {
                 observer?.onOpenComposerButtonClicked()
             }
@@ -173,25 +155,6 @@ interface MailboxScene: ThreadListView {
 
         override fun scrollTop() {
             recyclerView.smoothScrollToPosition(0)
-        }
-        override fun notifyThreadSetChanged() {
-            threadRecyclerView.notifyThreadSetChanged()
-        }
-
-        override fun notifyThreadRemoved(position: Int) {
-            threadRecyclerView.notifyThreadRemoved(position)
-        }
-
-        override fun notifyThreadChanged(position: Int) {
-            threadRecyclerView.notifyThreadChanged(position)
-        }
-
-        override fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int) {
-            threadRecyclerView.notifyThreadRangeInserted(positionStart, itemCount)
-        }
-
-        override fun changeMode(multiSelectON: Boolean, silent: Boolean) {
-            threadRecyclerView.changeMode(multiSelectON, silent)
         }
 
         override fun refreshToolbarItems() {
@@ -257,14 +220,6 @@ interface MailboxScene: ThreadListView {
                     context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
-        }
-
-        override fun toggleShowThreadListLoader(show: Boolean) {
-            if(show) {
-                threadRecyclerView.notifyThreadSetChanged()
-            } else {
-               TODO("REMOVE LOADER FROM RECYCLERVIEW")
-            }
         }
 
         override fun hideDrawer() {

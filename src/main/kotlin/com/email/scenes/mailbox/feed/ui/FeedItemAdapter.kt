@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.chauthai.swipereveallayout.ViewBinderHelper
-import com.email.utils.VirtualList
+import com.email.utils.virtuallist.VirtualList
 
 /**
  * Created by danieltigse on 2/7/18.
