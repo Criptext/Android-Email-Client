@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
-    android:layout_marginHorizontal="-6dp"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/cardview"
-    card_view:cardPreventCornerOverlap="false"
     android:padding="10dp"
-    app:cardElevation="0dp"
-    app:cardMaxElevation="0dp"
-    android:elevation="0dp"
-    android:background="@drawable/partial_email_drawable"
-    card_view:contentPadding="5dp"
-    card_view:contentPaddingTop="15dp"
-    card_view:cardUseCompatPadding="true">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginStart="-2dp"
+    android:layout_marginEnd="-4dp"
+    android:background="@drawable/partial_email_drawable">
+
+    <LinearLayout
         android:id="@+id/mail_item_layout"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"
         android:paddingLeft="4dp"
         android:paddingRight="15dp"
         android:animateLayoutChanges="true">
+
         <include
             layout="@layout/partial_email_left_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
+
         <Space
             android:layout_width="5dp"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content"/>
+
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -58,9 +55,7 @@
                     android:textSize="14sp"
                     android:textColor="@color/textColorPrimary"
                     android:layout_weight="1"
-                    android:text="Lorem Ipsum"
-                    />
-
+                    android:text="Lorem Ipsum"/>
 
                 <ImageView
                     android:id="@+id/email_has_attachments"
@@ -75,12 +70,10 @@
 
                 <ImageView
                     android:id="@+id/check"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="top"
-                    android:scaleX="1.5"
-                    android:scaleY="1.5"
-                    android:src="@drawable/mail_item_check" />
+                    android:src="@drawable/mail_sent" />
 
                 <TextView
                     android:id="@+id/email_date"
@@ -93,17 +86,20 @@
                     android:layout_marginStart="-5dp"
                     android:text="11:55 am"
                     android:gravity="end"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textColor="@color/mail_item_date"
                     fontPath="fonts/NunitoSans-Bold.ttf"/>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_below="@id/container_header"
                 android:orientation="horizontal"
+                android:layout_marginRight="40dp"
                 android:id="@+id/linearLayout">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -112,15 +108,18 @@
                         android:id="@+id/email_preview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
+                        android:maxLines="1"
                         android:ellipsize="end"
                         android:textSize="14sp"
-                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                        android:text="Lorem ipsum dolor asd asdas"
                         android:textColor="#6a707e"/>
 
                 </LinearLayout>
+
             </LinearLayout>
+
         </RelativeLayout>
 
     </LinearLayout>
-</android.support.v7.widget.CardView>
+
+</LinearLayout>

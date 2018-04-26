@@ -9,7 +9,9 @@
         android:id="@+id/name"
         android:textColor="@color/white"
         android:textSize="10sp"
-        android:text="This is changed"
+        android:text="IMPORTANT"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"/>

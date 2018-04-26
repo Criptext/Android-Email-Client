@@ -94,7 +94,6 @@ class FullEmailListAdapter(private val mContext : Context,
 
 
     interface OnFullEmailEventListener{
-        fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int) // va esto(?)
         fun onReplyOptionSelected(
                 fullEmail: FullEmail,
                 position: Int,
@@ -104,7 +103,8 @@ class FullEmailListAdapter(private val mContext : Context,
                                markAsRead: Boolean)
         fun onDeleteOptionSelected(fullEmail: FullEmail,
                                    position: Int)
-
+        fun onSpamOptionSelected(fullEmail: FullEmail,
+                                   position: Int)
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
         fun onForwardBtnClicked()
         fun onReplyBtnClicked()

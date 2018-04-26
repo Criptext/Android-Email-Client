@@ -35,15 +35,16 @@ import java.util.*
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Query("""
-        SELECT * FROM email e
-        WHERE date=(SELECT MAX(date)
-        FROM email d WHERE d.threadid=e.threadid)
+        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        group_concat(email_label.labelId) as allLabels,
+        max(email.unread) as unread
+        from email
+        inner join email_label on email.id = email_label.emailId
+        WHERE email_label.labelId NOT IN (:rejectedLabels)
         AND date<:starterDate
-        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
-        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
-        GROUP BY threadid
-        ORDER BY date
-        DESC LIMIT :limit
+        group by uniqueId
+        having allLabels like :selectedLabel
+        order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
             starterDate: Date,
@@ -66,8 +67,8 @@ import java.util.*
 
     @Query("""UPDATE email
             SET unread=:unread
-            where id=:id""")
-    fun toggleRead(id: Long, unread: Boolean)
+            where id in (:ids)""")
+    fun toggleRead(ids: List<Long>, unread: Boolean)
 
     @Query("""UPDATE email
             SET threadid=:threadId,
@@ -94,37 +95,48 @@ import java.util.*
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
     @Query("""
-        SELECT * FROM email e
-        WHERE date=(SELECT MAX(date)
-        FROM email d WHERE d.threadid=e.threadid)
-        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
-        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
-        GROUP BY threadid
-        ORDER BY date
-        DESC LIMIT :limit
-            """)
+        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        group_concat(email_label.labelId) as allLabels,
+        max(email.unread) as unread
+        from email
+        inner join email_label on email.id = email_label.emailId
+        WHERE email_label.labelId NOT IN (:rejectedLabels)
+        group by uniqueId
+        having allLabels like :selectedLabel
+        order by date DESC limit :limit
+        """)
     fun getInitialEmailThreadsFromMailboxLabel(
             rejectedLabels: List<Long>,
-            selectedLabel: Long,
+            selectedLabel: String,
             limit: Int): List<Email>
 
     @Query("""
-        SELECT * from email e
-        WHERE date=(SELECT MAX(date)
-        FROM email d WHERE d.threadid=e.threadid)
-        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
-        AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
-        AND unread = 1
-        GROUP BY threadid
+        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        group_concat(email_label.labelId) as allLabels,
+        max(email.unread) as unread
+        from email
+        inner join email_label on email.id = email_label.emailId
+        WHERE email_label.labelId NOT IN (:rejectedLabels)
+        and unread = 1
+        group by uniqueId
+        having allLabels like :selectedLabel
         """)
     fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: Long): List<Email>
 
     @Query("""
-        SELECT * from email e
-        WHERE date=(SELECT MAX(date)
-        FROM email d WHERE d.threadid=e.threadid)
-        AND id IN (SELECT DISTINCT emailId FROM email_label WHERE labelId=:selectedLabel)
-        GROUP BY threadid
+        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        group_concat(email_label.labelId) as allLabels,
+        max(email.unread) as unread
+        from email
+        inner join email_label on email.id = email_label.emailId
+        group by uniqueId
+        having allLabels like :selectedLabel
         """)
     fun getTotalThreads(selectedLabel: Long): List<Email>
+
+    @Query("""
+        select count(*) from email
+        where threadid=:threadId
+        """)
+    fun getTotalEmailsByThread(threadId: String): Int
 }

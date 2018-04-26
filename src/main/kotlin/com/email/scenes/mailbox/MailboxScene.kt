@@ -33,6 +33,8 @@ import com.email.utils.getLocalizedUIMessage
 interface MailboxScene{
     val virtualListView: VirtualListView
     var observer: MailboxUIObserver?
+    var threadEventListener: EmailThreadAdapter.OnThreadEventListener?
+    var onMoveThreadsListener: OnMoveThreadsListener?
     fun showSyncingDialog()
     fun hideSyncingDialog()
     fun initDrawerLayout()
@@ -55,7 +57,7 @@ interface MailboxScene{
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
     fun refreshMails()
     fun clearRefreshing()
-    fun showError(message : UIMessage)
+    fun showMessage(message : UIMessage)
     fun hideDrawer()
     fun showRefresh()
     fun scrollTop()
@@ -74,6 +76,10 @@ interface MailboxScene{
         private val context = mailboxView.context
 
         override var observer: MailboxUIObserver? = null
+
+        override var threadEventListener: EmailThreadAdapter.OnThreadEventListener? = null
+
+        override var onMoveThreadsListener: OnMoveThreadsListener? = null
 
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
@@ -123,6 +129,7 @@ interface MailboxScene{
 
             virtualListView.setAdapter(EmailThreadAdapter(context, threadEventListener, threadList))
             this.observer = observer
+            this.threadEventListener = threadEventListener
             openComposerButton.setOnClickListener {
                 observer.onOpenComposerButtonClicked()
             }
@@ -186,6 +193,7 @@ interface MailboxScene{
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
+            this.onMoveThreadsListener = onMoveThreadsListener
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener)
         }
@@ -216,7 +224,7 @@ interface MailboxScene{
             refreshLayout.isRefreshing = false
         }
 
-        override fun showError(message: UIMessage) {
+        override fun showMessage(message: UIMessage) {
             val duration = Toast.LENGTH_LONG
             val toast = Toast.makeText(
                     context,

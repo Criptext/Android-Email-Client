@@ -4,10 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import com.crashlytics.android.Crashlytics
 import com.email.db.KeyValueStorage
 import com.email.scenes.mailbox.MailboxActivity
 import com.email.scenes.signin.SignInActivity
 import java.lang.ref.WeakReference
+import com.squareup.picasso.Picasso.with
+import io.fabric.sdk.android.Fabric
+
 
 /**
  * Created by gesuwall on 3/27/17.
@@ -22,7 +26,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Fabric.with(this, Crashlytics())
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
     }

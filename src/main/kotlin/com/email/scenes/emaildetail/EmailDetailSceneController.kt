@@ -1,9 +1,9 @@
 package com.email.scenes.emaildetail
 
-import android.content.Context
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.DeliveryTypes
+import com.email.db.MailFolders
 import com.email.db.models.FullEmail
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
@@ -15,12 +15,11 @@ import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.mailbox.OnMoveThreadsListener
-import com.email.scenes.mailbox.data.MailboxDataSource
-import com.email.scenes.mailbox.data.MailboxRequest
-import com.email.scenes.mailbox.data.MailboxResult
+import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.params.ComposerParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
+import com.email.utils.UIMessage
 
 /**
  * Created by sebas on 3/12/18.
@@ -29,7 +28,6 @@ import com.email.utils.virtuallist.VirtualList
 class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
-                                 private val mailboxDataSource: MailboxDataSource,
                                  private val dataSource: EmailDetailDataSource,
                                  private val keyboard: KeyboardManager?) : SceneController() {
 
@@ -37,28 +35,46 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         model.fullEmailList.size - 1
     }
 
-    private val mailboxDataSourceListener = {result: MailboxResult ->
-        when (result) {
-            is MailboxResult.GetSelectedLabels -> onLabelsLoaded(result)
-        }
-
-    }
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
             is EmailDetailResult.UnsendFullEmailFromEmailId -> onUnsendEmail(result)
+            is EmailDetailResult.GetSelectedLabels -> onSelectedLabelsLoaded(result)
+            is EmailDetailResult.UpdateEmailThreadsLabelsRelations -> onUpdatedLabels(result)
+            is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
         }
     }
 
-    private fun onLabelsLoaded(result: MailboxResult.GetSelectedLabels) {
+    private fun onSelectedLabelsLoaded(result: EmailDetailResult.GetSelectedLabels) {
         when (result) {
-            is MailboxResult.GetSelectedLabels.Success -> {
-                scene.onFetchedLabels(result.selectedLabels,
+            is EmailDetailResult.GetSelectedLabels.Success -> {
+                scene.onFetchedSelectedLabels(result.selectedLabels,
                         result.allLabels)
             }
 
-            is MailboxResult.GetSelectedLabels.Failure -> {
+            is EmailDetailResult.GetSelectedLabels.Failure -> {
+                scene.showError(UIMessage(R.string.error_getting_labels))
+            }
+        }
+    }
 
+    private fun onUpdatedLabels(result: EmailDetailResult.UpdateEmailThreadsLabelsRelations) {
+
+        when(result) {
+            is EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success ->  {
+                host.finishScene()
+            } else -> {
+                scene.showError(UIMessage(R.string.error_updating_labels))
+            }
+        }
+    }
+
+    private fun onUpdateUnreadStatus(result: EmailDetailResult.UpdateUnreadStatus){
+        when(result) {
+            is EmailDetailResult.UpdateUnreadStatus.Success ->  {
+                host.finishScene()
+            } else -> {
+                scene.showError(UIMessage(R.string.error_updating_status))
             }
         }
     }
@@ -73,18 +89,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
             }
         }
-
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
         override fun moveToSpam() {
-            TODO("MOVE TO SPAM")
+            createRelationAllEmailLabels(null, MailFolders.SPAM)
         }
 
         override fun moveToTrash() {
-            TODO("MOVE TO TRASH")
+            createRelationAllEmailLabels(null, MailFolders.TRASH)
         }
-
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
@@ -135,14 +149,17 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            dataSource.submitRequest(EmailDetailRequest.UpdateUnreadStatus(
+                    threadId = model.threadId,
+                    updateUnreadStatus = true))
         }
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            createRelationEmailLabel(fullEmail, MailFolders.TRASH)
         }
 
-        override fun onToggleFullEmailSelection(context: Context, fullEmail: FullEmail, position: Int) {
+        override fun onSpamOptionSelected(fullEmail: FullEmail, position: Int) {
+            createRelationEmailLabel(fullEmail, MailFolders.SPAM)
         }
     }
 
@@ -159,13 +176,13 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
+                scene.showError(UIMessage(R.string.error_getting_email))
             }
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        mailboxDataSource.listener = mailboxDataSourceListener
 
         val req = EmailDetailRequest.LoadFullEmailsFromThreadId(
                 threadId = model.threadId)
@@ -177,28 +194,31 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun onStop() {
         dataSource.listener = null
-        mailboxDataSource.listener = null
     }
 
     override fun onBackPressed(): Boolean {
         return true
     }
 
-    private fun archiveSelectedThread() {
-        val threadId = model.threadId
-        TODO("ARCHIVE SELECTED THREAD")
+    private fun archiveThread() {
+        createRelationAllEmailLabels(null, null)
     }
-    private fun deleteSelectedThread() {
-        val threadId = model.threadId
-        TODO("DELETE SELECTED THREAD")
+
+    private fun deleteThread() {
+        createRelationAllEmailLabels(null, MailFolders.TRASH)
     }
+
+    private fun updateUnreadStatusThread(){
+        dataSource.submitRequest(EmailDetailRequest.UpdateUnreadStatus(
+                threadId = model.threadId,
+                updateUnreadStatus = true))
+    }
+
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId) {
-            R.id.mailbox_archive_selected_messages -> archiveSelectedThread()
-            R.id.mailbox_delete_selected_messages -> deleteSelectedThread()
-            R.id.mailbox_message_toggle_read -> {
-                TODO("MESSAGE TOGGLE READ")
-            }
+            R.id.mailbox_archive_selected_messages -> archiveThread()
+            R.id.mailbox_delete_selected_messages -> deleteThread()
+            R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
                 scene.showDialogMoveTo(onMoveThreadsListener)
             }
@@ -209,18 +229,32 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun showLabelsDialog() {
-        val req = MailboxRequest.GetSelectedLabels(
-                threadIds = listOf(model.threadId)
-        )
-
-        mailboxDataSource.submitRequest(req)
+        val req = EmailDetailRequest.GetSelectedLabels(model.threadId)
+        dataSource.submitRequest(req)
         scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
-    fun createRelationSelectedEmailLabels(selectedLabels: SelectedLabels) {
-        TODO("""START WORKER, SHOW GENERIC DIALOG,
-            ON FINISH WORKER, HIDE GENERIC DIALOG. """)
+
+    fun createRelationEmailLabel(fullEmail: FullEmail, chosenLabel: MailFolders){
+
+        val req = EmailDetailRequest.UpdateEmailThreadsLabelsRelations(
+                threadId = model.threadId,
+                selectedLabels = null,
+                chosenLabel = chosenLabel)
+
+        dataSource.submitRequest(req)
+    }
+
+    fun createRelationAllEmailLabels(selectedLabels: SelectedLabels?, chosenLabel: MailFolders?) {
+
+        val req = EmailDetailRequest.UpdateEmailThreadsLabelsRelations(
+                threadId = model.threadId,
+                selectedLabels = selectedLabels,
+                chosenLabel = chosenLabel)
+
+        dataSource.submitRequest(req)
 
     }
+
     override val menuResourceId: Int?
         get() = R.menu.mailbox_menu_multi_mode_read
 }

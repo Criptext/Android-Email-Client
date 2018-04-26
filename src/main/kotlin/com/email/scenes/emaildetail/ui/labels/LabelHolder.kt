@@ -24,50 +24,16 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
     fun bindLabel(label: Label){
         labelView.text = LabelTextConverter().
                 parseLabelTextType(label.text)
-        when(label.color) {
-            ColorTypes.RED -> {
-                val drawableBackground = ContextCompat.getDrawable(
-                        context,
-                        R.drawable.email_detail_label)
-                val color = ContextCompat.getColor(context, R.color.red)
-                drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-                labelView.background = drawableBackground
-            }
+        setDrawableBackground(label.color.toColorResourceId())
+    }
 
-            ColorTypes.GREEN -> {
-                val drawableBackground = ContextCompat.getDrawable(
-                        context,
-                        R.drawable.email_detail_label)
-                val color = ContextCompat.getColor(context, R.color.green)
-                drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-                labelView.background = drawableBackground
-            }
-
-            ColorTypes.BLUE -> {
-                val drawableBackground = ContextCompat.getDrawable(
-                        context,
-                        R.drawable.email_detail_label)
-                val color = ContextCompat.getColor(context, R.color.azure)
-                drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-                labelView.background = drawableBackground
-            }
-
-            ColorTypes.YELLOW -> {
-                val drawableBackground = ContextCompat.getDrawable(
-                        context,
-                        R.drawable.email_detail_label)
-                val color = ContextCompat.getColor(context, R.color.yellow)
-                drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-                labelView.background = drawableBackground
-            } else -> {
-            val drawableBackground = ContextCompat.getDrawable(
-                    context,
-                    R.drawable.email_detail_label)
-            val color = ContextCompat.getColor(context, R.color.azure)
-            drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-            labelView.background = drawableBackground
-        }
-        }
+    private fun setDrawableBackground(color: Int){
+        val drawableBackground = ContextCompat.getDrawable(
+                context,
+                R.drawable.email_detail_label)
+        val colorCompact = ContextCompat.getColor(context, color)
+        drawableBackground.setColorFilter(colorCompact, PorterDuff.Mode.SRC_IN)
+        labelView.background = drawableBackground
     }
 
     init {

@@ -4,6 +4,7 @@ import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Label
 import com.email.utils.UIMessage
 
 /**
@@ -13,13 +14,11 @@ import com.email.utils.UIMessage
 
 class GetSelectedLabelsWorker(
         private val db: MailboxLocalDB,
-        private val activeAccount: ActiveAccount,
         private val threadIds: List<String>,
         override val publishFn: (
                 MailboxResult.GetSelectedLabels) -> Unit)
     : BackgroundWorker<MailboxResult.GetSelectedLabels> {
 
-    private val apiClient = MailboxAPIClient(activeAccount.jwt)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.GetSelectedLabels {
@@ -29,7 +28,7 @@ class GetSelectedLabelsWorker(
     }
 
     override fun work(): MailboxResult.GetSelectedLabels? {
-        val labels = db.getAllLabels()
+        val labels = Label.defaultItems.toList()
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)
 

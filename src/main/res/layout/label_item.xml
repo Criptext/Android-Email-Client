@@ -3,28 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_horizontal"
-    android:padding="10dp"
-    >
+    android:gravity="center_vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/label_color"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/mini_circle"/>
+
     <TextView
         android:id="@+id/label_name"
-        android:layout_width="50dp"
+        android:layout_width="100dp"
         android:layout_weight="0.5"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="end"
-        android:layout_gravity="start"
-        android:textSize="15sp"
-        android:text="This text should be changed"
-        android:layout_marginLeft="15dp"
-        android:textColor="@color/label_buttons_text"
-        />
+        android:textSize="14sp"
+        android:text="INBOX"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/label_buttons_text"/>
+
     <CheckBox
         android:id="@+id/label_checkbox"
         android:layout_gravity="end"
         android:layout_width="50dp"
         android:layout_weight="0.5"
-        android:layout_marginLeft ="100dp"
+        android:layout_marginLeft ="50dp"
         android:buttonTint="@color/colorOpen"
         android:layout_height="wrap_content" />
 </LinearLayout>

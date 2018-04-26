@@ -3,6 +3,7 @@ package com.email.utils.ui
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
+import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.email.R
@@ -41,10 +42,10 @@ class PopupUtils {
                     .setLocationByAttachedView(anchorView)
                     .setAnimationAlphaShow(200, 0.3f, 1.0f)
                     .setAnimationAlphaDismiss(200, 1.0f, 0.0f)
-                    .setOutsideColor(R.color.azure)
+                    .setOutsideColor(ContextCompat.getColor(
+                            context, R.color.black_transparent))
                     .setTouchOutsideDismiss(true)
-                    .setMatchParent(false)
-                    .setMarginLeftAndRight(24, 24)
+                    .setMatchParent(true)
 
             val shouldPopUpRenderBottom = shouldPopUpRenderBottom(
                     context, anchorView)

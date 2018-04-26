@@ -33,6 +33,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      activeAccount: ActiveAccount,
                      private val emailId: Long,
+                     private val threadId: String?,
                      private val composerInputData: ComposerInputData,
                      override val publishFn: (MailboxResult.SendMail) -> Unit)
     : BackgroundWorker<MailboxResult.SendMail> {
@@ -120,6 +121,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
+                            threadId = threadId,
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = null)

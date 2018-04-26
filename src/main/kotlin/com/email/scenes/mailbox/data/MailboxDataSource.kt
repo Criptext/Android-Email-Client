@@ -28,7 +28,6 @@ class MailboxDataSource(
         return when (params) {
             is MailboxRequest.GetSelectedLabels -> GetSelectedLabelsWorker(
                     db = mailboxLocalDB,
-                    activeAccount = activeAccount,
                     threadIds = params.threadIds,
                     publishFn = { result ->
                         flushResults(result)
@@ -58,13 +57,13 @@ class MailboxDataSource(
                     activeAccount = activeAccount,
                     rawSessionDao = rawSessionDao,
                     emailId = params.emailId,
+                    threadId = params.threadId,
                     composerInputData = params.data,
                     publishFn = { res -> flushResults(res) })
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsRelationsWorker(
                     chosenLabel = params.chosenLabel,
                     db = mailboxLocalDB,
-                    activeAccount = activeAccount,
                     selectedEmailThreads = params.selectedEmailThreads,
                     selectedLabels = params.selectedLabels,
                     publishFn = { result ->

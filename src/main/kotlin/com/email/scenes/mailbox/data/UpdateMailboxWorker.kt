@@ -108,7 +108,6 @@ class UpdateMailboxWorker(
         }
     }
 
-
     private fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String {
         return try {
             signalClient.decryptMessage(recipientId = recipientId,

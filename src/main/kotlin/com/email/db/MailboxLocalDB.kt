@@ -3,7 +3,6 @@ package com.email.db
 import com.email.db.models.*
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.labelChooser.data.LabelWrapper
 import com.github.kittinunf.result.Result
 import java.util.*
 
@@ -13,19 +12,9 @@ import java.util.*
 
 interface MailboxLocalDB {
 
-    fun getAllEmailThreads(): List<EmailThread>
-    fun getArchivedEmailThreads(): List<EmailThread>
-    fun getAllLabelWrappers(): List<LabelWrapper>
-    fun getAllLabels(): List<Label>
-    fun getNotArchivedEmailThreads(): List<EmailThread>
-    fun removeLabelsRelation(labels: List<Label>, emailId: Long)
-    fun deleteEmailThreads(emailThreads: List<EmailThread>)
-    fun createLabelEmailRelation(labelId: Long, emailId: Long)
-    fun createLabelEmailSent(emailId: Long)
+    fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailThreads: List<EmailThread>,
                            updateUnreadStatus: Boolean)
-    fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>)
-    fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>)
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Long
     fun createLabelsForEmailInbox(insertedEmailId: Long)
@@ -76,91 +65,30 @@ interface MailboxLocalDB {
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
             val labelSet = HashSet<Label>()
-
             threadIds.forEach {
-                    val labels = db.
-                            emailLabelDao().
-                            getLabelsFromEmailThreadId(it)
-                    labelSet.addAll(labels)
+                val labels = db.emailLabelDao().getLabelsFromEmailThreadId(it)
+                labelSet.addAll(labels)
             }
-
             return labelSet.toList()
         }
 
-        override fun createLabelEmailRelation(labelId: Long, emailId: Long) {
-            val emailLabel = EmailLabel(labelId = labelId, emailId = emailId)
-            return db.emailLabelDao().insert(emailLabel)
+        override fun createLabelEmailRelations(emailLabels: List<EmailLabel>){
+            return db.emailLabelDao().insertAll(emailLabels)
         }
 
-        override fun createLabelEmailSent(emailId: Long){
-            createLabelEmailRelation(Label.defaultItems.sent.id, emailId)
-        }
-
-        override fun getAllEmailThreads(): List<EmailThread> {
-            return db.emailDao().getAll().map { email ->
-                getEmailThreadFromEmail(email)
-            } as ArrayList<EmailThread>
-        }
-
-        override fun getArchivedEmailThreads(): List<EmailThread> {
-            return db.emailDao().getAll().map { email ->
-                getEmailThreadFromEmail(email)
-            } as ArrayList<EmailThread>
-        }
-
-        override fun getNotArchivedEmailThreads(): List<EmailThread> {
-            return db.emailDao().getNotArchivedEmailThreads().map { email ->
-                getEmailThreadFromEmail(email)
-            }
-        }
-
-        override fun removeLabelsRelation(labels: List<Label>, emailId: Long) {
-            labels.forEach{
-                db.emailLabelDao().deleteByEmailLabelIds(it.id, emailId)
-            }
-        }
-
-        override fun deleteEmailThreads(emailThreads: List<EmailThread>) {
-            val emails: List<Email> = emailThreads.map {
-                it.latestEmail.email
-            }
-            db.emailDao().deleteAll(emails)
-        }
-
-        override fun getAllLabelWrappers(): List<LabelWrapper> {
-            return db.labelDao().getAll().map{ label ->
-                LabelWrapper(label)
-            } as ArrayList<LabelWrapper>
-        }
-
-        override fun getAllLabels(): List<Label> {
-            return db.labelDao().getAll()
+        private fun createLabelEmailSent(emailId: Long){
+            db.emailLabelDao().insert(EmailLabel(
+                    labelId = Label.defaultItems.sent.id,
+                    emailId = emailId))
         }
 
         override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
             emailThreads.forEach {
-                db.emailDao().toggleRead(id = it.latestEmail.email.id,
-                        unread = updateUnreadStatus)
-            }
-        }
-
-        override fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
-            TODO("MOVE EMAILS TO SPAM")
-        }
-
-        override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
-            val emails = emailThreads.map {
-                val trashLabelId = Label.defaultItems.trash.id
-                db.emailLabelDao().insert(
-                        EmailLabel(
-                                emailId = it.id,
-                                labelId = trashLabelId))
-
-                it.latestEmail.email.isTrash = true
-                    it.latestEmail.email
+                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId).map {
+                    it.id
                 }
-
-            db.emailDao().update(emails)
+                db.emailDao().toggleRead(ids = emailsIds, unread = updateUnreadStatus)
+            }
         }
 
         private fun getEmailThreadFromEmail(email: Email): EmailThread {
@@ -171,6 +99,7 @@ interface MailboxLocalDB {
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
+            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadid)
 
             return EmailThread(
                     latestEmail = FullEmail(
@@ -181,6 +110,7 @@ interface MailboxLocalDB {
                             files = files,
                             labels = labels,
                             to = contactsTO ),
+                    totalEmails = totalEmails,
                     labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>
             )
 
@@ -231,7 +161,7 @@ interface MailboxLocalDB {
             else
                 db.emailDao().getInitialEmailThreadsFromMailboxLabel(
                         rejectedLabels = rejectedIdLabels,
-                        selectedLabel = selectedLabel!!,
+                        selectedLabel = "%${selectedLabel!!}%",
                         limit = limit )
 
             return emails.map { email ->
@@ -247,8 +177,6 @@ interface MailboxLocalDB {
         }
 
         override fun getLabelFromLabelType(labelTextType: MailFolders): Label {
-            val stringLabelType = LabelTextConverter().parseLabelTextType(labelTextType)
-
             return db.labelDao().get(labelTextType)
         }
 

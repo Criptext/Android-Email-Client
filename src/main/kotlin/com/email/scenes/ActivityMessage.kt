@@ -7,5 +7,5 @@ import com.email.scenes.composer.data.ComposerInputData
  */
 
 sealed class ActivityMessage {
-    data class SendMail(val emailId: Long, val composerInputData: ComposerInputData): ActivityMessage()
+    data class SendMail(val emailId: Long, val threadId: String?, val composerInputData: ComposerInputData): ActivityMessage()
 }

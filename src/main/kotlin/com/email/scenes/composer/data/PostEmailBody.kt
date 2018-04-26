@@ -7,7 +7,8 @@ import org.json.JSONObject
  * Created by gabriel on 3/21/18.
  */
 
-class  PostEmailBody(val subject: String, val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?): JSONData {
+class PostEmailBody(val threadId: String?, val subject: String,
+                    val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?): JSONData {
 
     enum class RecipientTypes { to, cc, bcc, peer }
 
@@ -15,6 +16,7 @@ class  PostEmailBody(val subject: String, val criptextEmails: List<CriptextEmail
         val criptextEmailsArray = criptextEmails.toJSONArray()
 
         val json = JSONObject()
+        json.put("threadId", threadId)
         json.put("subject", subject)
         json.put("criptextEmails", criptextEmailsArray)
 

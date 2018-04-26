@@ -6,6 +6,7 @@ import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Account
 import com.email.db.models.Email
+import com.email.db.models.EmailLabel
 import com.email.db.models.Label
 import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.mailbox.data.EmailThread
@@ -18,51 +19,11 @@ import java.util.*
 
 class MockedMailboxLocalDB: MailboxLocalDB {
 
-    override fun getAllEmailThreads(): List<EmailThread> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getArchivedEmailThreads(): List<EmailThread> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllLabelWrappers(): List<LabelWrapper> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllLabels(): List<Label> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getNotArchivedEmailThreads(): List<EmailThread> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun removeLabelsRelation(labels: List<Label>, emailId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteEmailThreads(emailThreads: List<EmailThread>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createLabelEmailRelation(labelId: Long, emailId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createLabelEmailSent(emailId: Long) {
+    override fun createLabelEmailRelations(emailLabels: List<EmailLabel>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun moveSelectedEmailThreadsToSpam(emailThreads: List<EmailThread>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun moveSelectedEmailThreadsToTrash(emailThreads: List<EmailThread>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -82,7 +43,7 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getEmailsFromMailboxLabel(labelTextTypes: MailFolders, oldestEmailThread: EmailThread?, offset: Int, rejectedLabels: List<Label>): List<EmailThread> {
+    override fun getEmailsFromMailboxLabel(labelTextTypes: MailFolders, oldestEmailThread: EmailThread?, limit: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

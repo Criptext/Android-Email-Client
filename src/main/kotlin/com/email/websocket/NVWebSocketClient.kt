@@ -16,6 +16,7 @@ class NVWebSocketClient: WebSocketClient {
     private val webSocketAdapter = object : WebSocketAdapter() {
         override fun onDisconnected(websocket: WebSocket?, serverCloseFrame: WebSocketFrame?,
                                     clientCloseFrame: WebSocketFrame?, closedByServer: Boolean) {
+            Log.e("WEBSOCKET", "Disconnected")
         }
 
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,

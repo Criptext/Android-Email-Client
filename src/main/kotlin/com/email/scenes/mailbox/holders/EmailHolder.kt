@@ -81,8 +81,14 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
 
-        //TODO validate number of emails in thread
-        countView.visibility = View.GONE
+
+        if(emailThread.totalEmails > 1){
+            countView.visibility = View.VISIBLE
+            countView.text = "${emailThread.totalEmails}"
+        }
+        else{
+            countView.visibility = View.GONE
+        }
 
         setIcons(emailThread.status)
         toggleStatus(emailThread.isSelected, emailThread.unread)
