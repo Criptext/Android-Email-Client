@@ -20,7 +20,7 @@ class EmailThreadAdapter(private val mContext : Context,
     : VirtualListAdapter(threadList) {
 
     private fun toggleThreadSelection(mailThread: EmailThread, position: Int) {
-        threadListener.onToggleThreadSelection(mContext, mailThread, position)
+        threadListener.onToggleThreadSelection(mailThread, position)
     }
 
     private fun goToMail(emailThread: EmailThread) {
@@ -73,7 +73,7 @@ class EmailThreadAdapter(private val mContext : Context,
     }
 
     interface OnThreadEventListener {
-        fun onToggleThreadSelection(context: Context, thread: EmailThread, position: Int)
+        fun onToggleThreadSelection(thread: EmailThread, position: Int)
         fun onGoToMail(emailThread: EmailThread)
         fun onApproachingEnd()
     }

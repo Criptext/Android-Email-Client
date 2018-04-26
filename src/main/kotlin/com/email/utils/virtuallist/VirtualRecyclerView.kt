@@ -15,19 +15,19 @@ class VirtualRecyclerView(private val recyclerView: RecyclerView)
         recyclerView.layoutManager = mLayoutManager
     }
 
-    override fun notifyThreadSetChanged() {
+    override fun notifyDataSetChanged() {
         virtualAdapter?.notifyDataSetChanged()
     }
 
-    override fun notifyThreadRangeInserted(positionStart: Int, itemCount: Int) {
+    override fun notifyItemRangeInserted(positionStart: Int, itemCount: Int) {
         virtualAdapter?.notifyItemRangeInserted(positionStart, itemCount)
     }
 
-    override fun notifyThreadRemoved(position: Int) {
+    override fun notifyItemRemoved(position: Int) {
         virtualAdapter?.notifyItemRemoved(position)
     }
 
-    override fun notifyThreadChanged(position: Int) {
+    override fun notifyItemChanged(position: Int) {
         virtualAdapter?.notifyItemChanged(position)
     }
 

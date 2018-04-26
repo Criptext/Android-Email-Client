@@ -45,7 +45,7 @@ class MailboxDataSource(
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
                     labelTextTypes = params.label,
-                    offset = params.offset,
+                    limit = params.limit,
                     oldestEmailThread = params.oldestEmailThread,
                     publishFn = { result ->
                         flushResults(result)

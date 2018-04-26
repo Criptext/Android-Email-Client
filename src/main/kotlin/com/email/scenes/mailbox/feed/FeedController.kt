@@ -11,7 +11,7 @@ import com.email.scenes.mailbox.feed.ui.FeedView
  * Created by danieltigse on 2/15/18.
  */
 
-class FeedController(private val model: FeedModel,
+open class FeedController(private val model: FeedModel,
                      private val scene: FeedView,
                      private val feedDataSource: FeedDataSource){
 

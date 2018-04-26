@@ -43,13 +43,13 @@ import java.util.*
         AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
         GROUP BY threadid
         ORDER BY date
-        DESC LIMIT :offset
+        DESC LIMIT :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
             starterDate: Date,
             rejectedLabels: List<Long>,
             selectedLabel: Long,
-            offset: Int ): List<Email>
+            limit: Int ): List<Email>
 
     @Query("""
         SELECT * FROM email e
@@ -101,12 +101,12 @@ import java.util.*
         AND id NOT IN (SELECT DISTINCT emailId FROM email_label WHERE labelId in (:rejectedLabels))
         GROUP BY threadid
         ORDER BY date
-        DESC LIMIT :offset
+        DESC LIMIT :limit
             """)
     fun getInitialEmailThreadsFromMailboxLabel(
             rejectedLabels: List<Long>,
             selectedLabel: Long,
-            offset: Int): List<Email>
+            limit: Int): List<Email>
 
     @Query("""
         SELECT * from email e

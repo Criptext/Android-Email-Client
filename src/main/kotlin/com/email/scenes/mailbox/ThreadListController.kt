@@ -10,23 +10,17 @@ import com.email.scenes.mailbox.data.EmailThread
 class ThreadListController(private val model : MailboxSceneModel,
                            private val virtualListView: VirtualListView?) {
 
-    fun setThreadList(emails : List<EmailThread>) {
+    private fun reset(emails : List<EmailThread>) {
         model.threads.clear()
         model.threads.addAll(emails)
     }
 
-    fun appendThreads(loadedThreads : List<EmailThread>, hasReachedEnd: Boolean) {
+    fun appendAll(loadedThreads : List<EmailThread>, hasReachedEnd: Boolean) {
         model.threads.addAll(loadedThreads)
 
         model.hasReachedEnd = hasReachedEnd
-        virtualListView?.notifyThreadSetChanged()
+        virtualListView?.notifyDataSetChanged()
     }
-
-    fun removeByThread(id: String) {
-        val threadPosition = removeThreadById(model.threads, id)
-        virtualListView?.notifyThreadRemoved(threadPosition)
-    }
-
 
     companion object {
         fun removeThreadById(threads: ArrayList<EmailThread>, threadId: String): Int {
@@ -38,15 +32,20 @@ class ThreadListController(private val model : MailboxSceneModel,
     }
 
     fun populateThreads(mailboxThreads: List<EmailThread>) {
-        setThreadList(mailboxThreads)
-        virtualListView?.notifyThreadSetChanged()
+        reset(mailboxThreads)
+        virtualListView?.notifyDataSetChanged()
     }
 
     fun toggleMultiSelectMode(multiSelectON: Boolean, silent: Boolean) {
         if (model.isInMultiSelect != multiSelectON) {
             model.isInMultiSelect = multiSelectON
             if (!silent)
-                virtualListView?.notifyThreadSetChanged()
+                virtualListView?.notifyDataSetChanged()
         }
+    }
+
+    fun clear() {
+        model.threads.clear()
+        virtualListView?.notifyDataSetChanged()
     }
 }

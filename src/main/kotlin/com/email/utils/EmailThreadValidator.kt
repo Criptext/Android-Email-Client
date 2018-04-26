@@ -9,11 +9,8 @@ import com.email.db.models.Label
 class EmailThreadValidator {
 
    companion object {
-      fun isLabelInList (labels: ArrayList<Label>, textLabel: String): Boolean{
-         for (label:Label in labels) {
-            if(label.text.equals(textLabel)) return true
-         }
-         return false
+      fun isLabelInList (labels: List<Label>, textLabel: String): Boolean{
+           return labels.find { it.text.name == textLabel } != null
       }
    }
 }
