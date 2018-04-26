@@ -15,11 +15,26 @@ class ThreadListController(private val model : MailboxSceneModel,
         model.threads.addAll(emails)
     }
 
+    fun addNew(newThread: EmailThread) {
+        model.threads.add(0, newThread)
+        virtualListView?.notifyDataSetChanged()
+    }
+
     fun appendAll(loadedThreads : List<EmailThread>, hasReachedEnd: Boolean) {
         model.threads.addAll(loadedThreads)
 
         model.hasReachedEnd = hasReachedEnd
         virtualListView?.notifyDataSetChanged()
+    }
+
+    fun select(thread: EmailThread, position: Int) {
+        model.selectedThreads.add(thread)
+        virtualListView?.notifyItemChanged(position)
+    }
+
+    fun unselect(thread: EmailThread, position: Int) {
+        model.selectedThreads.remove(thread)
+        virtualListView?.notifyItemChanged(position)
     }
 
     companion object {

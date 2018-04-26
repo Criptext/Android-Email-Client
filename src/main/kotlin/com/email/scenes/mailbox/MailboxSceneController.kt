@@ -75,7 +75,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val threadListController = ThreadListController(model, scene.virtualListView)
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener {
         override fun onApproachingEnd() {
-            model.loadingType = LoadingType.APPEND
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.selectedLabel.text,
                         limit = threadsPerPage,
@@ -96,9 +95,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             val selectedThreads = model.selectedThreads
 
             if (thread.isSelected) {
-                unselectThread(thread, position)
+                threadListController.unselect(thread, position)
             } else {
-                selectThread(thread, position)
+                threadListController.select(thread, position)
             }
 
             if (selectedThreads.isEmpty()) {
@@ -147,15 +146,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.openNotificationFeed()
     }
 
-    private fun selectThread(thread: EmailThread, position: Int) {
-        model.selectedThreads.add(thread)
-        scene.virtualListView.notifyItemChanged(position)
-    }
-
-    private fun unselectThread(thread: EmailThread, position: Int) {
-        model.selectedThreads.remove(thread)
-        scene.virtualListView.notifyItemChanged(position)
-    }
 
     fun changeMode(multiSelectON: Boolean, silent: Boolean) {
 
@@ -432,9 +422,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onNewMessage(emailThread: EmailThread) {
-            model.threads.add(0, emailThread)
+            threadListController.addNew(emailThread)
             scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
-            scene.virtualListView.notifyDataSetChanged()
             scene.scrollTop()
         }
 
