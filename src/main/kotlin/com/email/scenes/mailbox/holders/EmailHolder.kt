@@ -45,8 +45,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     fun bindEmailThread(emailThread: EmailThread) {
-        subjectView.setText(emailThread.subject, TextView.BufferType.EDITABLE)
-
         subjectView.text = if (emailThread.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
         else emailThread.subject
