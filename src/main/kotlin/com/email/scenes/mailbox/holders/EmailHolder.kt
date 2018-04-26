@@ -65,9 +65,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
 
         if(emailThread.unread) {
-            DrawableCompat.setTint(
-                    check.drawable,
-                    ContextCompat.getColor(view.context, R.color.attachmentGray))
             dateView.typeface = TypefaceUtils.load(
                     view.resources.assets,
                     "fonts/NunitoSans-Bold.ttf")
