@@ -2,21 +2,19 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.api.HttpErrorHandlingHelper
+import com.email.api.ServerErrorException
+import com.email.api.models.EmailMetadata
+import com.email.api.models.Event
 import com.email.bgworker.BackgroundWorker
 import com.email.db.*
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Email
-import com.email.db.models.Label
-import com.email.signal.DecryptData
+import com.email.db.dao.MailboxDao
+import com.email.db.models.*
 import com.email.signal.SignalClient
-import com.email.utils.DateUtils
-import com.email.utils.HTMLUtils
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
-import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 
 /**
@@ -26,8 +24,9 @@ import org.whispersystems.libsignal.DuplicateMessageException
 class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
-        private val activeAccount: ActiveAccount,
-        private val label: MailFolders,
+        private val dao: MailboxDao,
+        activeAccount: ActiveAccount,
+        private val label: Label,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
@@ -42,43 +41,31 @@ class UpdateMailboxWorker(
     }
     private fun fetchPendingEvents():Result<String, Exception> {
         return Result.of {
-            apiClient.getPendingEvents()
-        }
-    }
-    private fun selectRejectedLabels(): List<Label> {
-        val commonRejectedLabels = listOf( MailFolders.SPAM, MailFolders.TRASH)
-        return when(label) {
-           MailFolders.SENT,
-           MailFolders.INBOX,
-           MailFolders.ARCHIVED,
-           MailFolders.STARRED -> {
-               return db.getLabelsFromLabelType(
-                       labelTextTypes = commonRejectedLabels)
-           }
-            else -> {
-                return emptyList()
+            try {
+                apiClient.getPendingEvents()
+            }  catch (ex: ServerErrorException) {
+                // not found means no new pending events
+                if (ex.errorCode == 404) "[]" else throw ex
             }
         }
     }
 
-    private val parseEmails: (input: String) -> Result<List<EmailThread>, Exception> = {
-        input ->
-        Result.of {
-            loadMetadataContentFromString(input = input)
-        }.flatMap{Result.of{
-            val rejectedLabels = selectRejectedLabels()
-            db.getEmailsFromMailboxLabel(
-                    labelTextTypes = label,
-                    limit = 10,
-                    rejectedLabels = rejectedLabels,
-                    oldestEmailThread = null)
-        }}
-    }
+    private fun processFailure(failure: Result.Failure<List<EmailThread>, Exception>) =
+            if (failure.error is NothingNewException)
+                MailboxResult.UpdateMailbox.Success(
+                        mailboxLabel = label,
+                        isManual = true,
+                        mailboxThreads = null)
+            else
+                    MailboxResult.UpdateMailbox.Failure(
+                    label,
+                    createErrorMessage(failure.error))
 
     override fun work(): MailboxResult.UpdateMailbox? {
         val operationResult = fetchPendingEvents()
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap(parseEmails)
+                .flatMap(parseEvents)
+                .flatMap(processEvents)
 
         return when(operationResult) {
             is Result.Success -> {
@@ -89,9 +76,7 @@ class UpdateMailboxWorker(
                 )
             }
 
-            is Result.Failure -> MailboxResult.UpdateMailbox.Failure(
-                    label,
-                    createErrorMessage(operationResult.error))
+            is Result.Failure -> processFailure(operationResult)
         }
     }
 
@@ -109,66 +94,66 @@ class UpdateMailboxWorker(
         }
     }
 
-    private val decryptBody: (input: DecryptData) -> Result<String, Exception> = {
-        input ->
+    private val parseEvents: (String) -> Result<List<Event>, Exception> = { jsonString ->
         Result.of {
-            signalClient.decryptMessage(
-                            recipientId = input.from,
-                            deviceId = input.deviceId,
-                            encryptedB64 = input.encryptedData)
-        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-    }
-
-    private fun loadMetadataContentFromString(input: String) {
-        val listMetadatas = JSONArray(input)
-        for(i in 0 until listMetadatas.length()) {
-
-            val fullData = JSONObject(listMetadatas.get(i).toString())
-            val metaData = EmailMetaData(stringMetadata = fullData.getString("params"))
-
-            val resultOperationDecryptAndInsert = Result.of {
-                val encryptedBody = apiClient.getBodyFromEmail(metaData.bodyKey)
-                DecryptData(
-                        from = metaData.fromRecipientId,
-                        deviceId = 1,
-                        encryptedData = encryptedBody)
-            }.flatMap(decryptBody)
-            when(resultOperationDecryptAndInsert) {
-                is Result.Success -> {
-
-                    val bodyContent = resultOperationDecryptAndInsert.value
-                    val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
-                    val preview   = if (bodyWithoutHTML.length > 20 )
-                                        bodyWithoutHTML.substring(0,20)
-                                    else bodyWithoutHTML
-
-                    val email = Email(
-                            id = 0,
-                            unread = true,
-                            date = DateUtils.getDateFromString(
-                                    metaData.date,
-                                    null),
-                            threadid = metaData.threadId,
-                            subject = metaData.subject,
-                            isTrash = false,
-                            secure = true,
-                            preview = preview,
-                            key = metaData.bodyKey,
-                            isDraft = false,
-                            delivered = DeliveryTypes.OPENED,
-                            content = bodyContent
-                            )
-                    val insertedEmailId = db.addEmail(email)
-                    db.createContacts(metaData.fromName, metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
-                    db.createContacts(null,metaData.to, insertedEmailId, ContactTypes.TO)
-                    db.createContacts(null,metaData.bcc, insertedEmailId, ContactTypes.BCC)
-                    db.createContacts(null,metaData.cc, insertedEmailId, ContactTypes.CC)
-                    db.createLabelsForEmailInbox(insertedEmailId)
-                } else -> {
-
+            val eventsJSONArray = JSONArray(jsonString)
+            val lastIndex = eventsJSONArray.length() - 1
+            if (lastIndex > -1) {
+                (0..lastIndex).map {
+                    val eventJSONString = eventsJSONArray.get(it).toString()
+                    Event.fromJSON(eventJSONString)
                 }
-            }
+            } else emptyList()
+
         }
     }
 
+
+    private fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String {
+        return try {
+            signalClient.decryptMessage(recipientId = recipientId,
+                    deviceId = deviceId,
+                    encryptedB64 = encryptedB64)
+        } catch (ex: Exception) {
+            "Unable to decrypt message."
+        }
+    }
+
+    private fun reloadMailbox(newEmailCount: Int): List<EmailThread> {
+        return if (newEmailCount > 0)
+            db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+        else throw NothingNewException()
+    }
+
+
+    private fun processNewEmails(events: List<Event>): Int {
+        val newEmails = events
+            .filter({ it.cmd == Event.Cmd.newEmail })
+
+        newEmails
+            .map({ EmailMetadata.fromJSON(it.params) })
+            .forEach { metadata ->
+                val incomingEmailLabels = listOf(Label.defaultItems.inbox)
+                dao.runTransaction(Runnable {
+                    val body = apiClient.getBodyFromEmail(metadata.bodyKey)
+                    val decryptedBody = decryptMessage(recipientId = metadata.fromRecipientId,
+                            deviceId = 1, encryptedB64 = body)
+                    EmailInsertionSetup.exec(dao, metadata, decryptedBody, incomingEmailLabels)
+                })
+            }
+
+        return newEmails.size
+    }
+
+
+
+    private val processEvents: (List<Event>) -> Result<List<EmailThread>, Exception> = { events ->
+        Result.of {
+            val newEmailCount = processNewEmails(events)
+            reloadMailbox(newEmailCount)
+        }
+    }
+
+    private class NothingNewException: Exception()
 }

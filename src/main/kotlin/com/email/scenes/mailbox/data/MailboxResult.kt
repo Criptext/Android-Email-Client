@@ -50,21 +50,21 @@ sealed class MailboxResult {
     }
 
     sealed class UpdateMailbox : MailboxResult() {
-        abstract fun getDestinationMailbox(): MailFolders
+        abstract fun getDestinationMailbox(): Label
         data class Success(
-                val mailboxLabel: MailFolders,
-                val mailboxThreads: List<EmailThread>,
+                val mailboxLabel: Label,
+                val mailboxThreads: List<EmailThread>?,
                 val isManual: Boolean): UpdateMailbox() {
 
-            override fun getDestinationMailbox(): MailFolders {
+            override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }
 
         data class Failure(
-                val mailboxLabel: MailFolders,
+                val mailboxLabel: Label,
                 val message: UIMessage ): UpdateMailbox() {
-            override fun getDestinationMailbox(): MailFolders {
+            override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }

@@ -48,6 +48,7 @@ class  EmailDetailActivity: BaseActivity() {
                         activeAccount = activeAccount!!,
                         mailboxLocalDB = mailboxDB,
                         runner = AsyncTaskWorkRunner(),
+                        mailboxDao = appDB.mailboxDao(),
                         rawSessionDao = appDB.rawSessionDao()),
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),

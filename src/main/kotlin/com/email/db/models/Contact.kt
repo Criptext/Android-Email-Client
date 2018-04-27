@@ -11,7 +11,7 @@ import java.util.regex.Pattern
  * Created by gabriel on 2/26/18.
  */
 @Entity(tableName = "contact",
-        indices = [Index(value = ["email"], unique = true)] )
+        indices = [Index(value = "email", unique = true)] )
 
 open class Contact(
 
@@ -25,6 +25,16 @@ open class Contact(
         @ColumnInfo(name = "name")
         var name : String
 ) {
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Contact) {
+            if (other.id != this.id) return false
+            if (other.email != this.email) return false
+            if (other.name != this.name) return false
+            return true
+        }
+        return false
+    }
 
 
     override fun toString(): String {

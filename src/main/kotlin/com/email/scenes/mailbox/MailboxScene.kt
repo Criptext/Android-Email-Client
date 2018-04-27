@@ -42,6 +42,7 @@ interface MailboxScene{
             mailboxLabel: MailFolders,
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
+            observer: MailboxUIObserver,
             threadList: VirtualEmailThreadList)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
@@ -115,17 +116,19 @@ interface MailboxScene{
                 mailboxLabel: MailFolders,
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
+                observer: MailboxUIObserver,
                 threadList: VirtualEmailThreadList) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
             virtualListView.setAdapter(EmailThreadAdapter(context, threadEventListener, threadList))
+            this.observer = observer
             openComposerButton.setOnClickListener {
-                observer?.onOpenComposerButtonClicked()
+                observer.onOpenComposerButtonClicked()
             }
 
             refreshLayout.setOnRefreshListener {
-                observer?.onRefreshMails()
+                observer.onRefreshMails()
             }
         }
 
