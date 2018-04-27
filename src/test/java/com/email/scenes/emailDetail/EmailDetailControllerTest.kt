@@ -1,7 +1,7 @@
 package com.email.scenes.emailDetail
 
 import com.email.db.DeliveryTypes
-import com.email.db.dao.MailboxDao
+import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.mocks.MockedRawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
@@ -44,7 +44,7 @@ class EmailDetailControllerTest {
     private lateinit var controller: EmailDetailSceneController
     private lateinit var protocolStore: MockedSignalProtocolStore
     private lateinit var activeAccount: ActiveAccount
-    private lateinit var mailboxDao: MailboxDao
+    private lateinit var emailInsertionDao: EmailInsertionDao
 
     @Before
     fun setUp() {
@@ -56,14 +56,14 @@ class EmailDetailControllerTest {
         runner = MockedWorkRunner()
         db = MockedEmailDetailLocalDB()
         mailboxDb = MockedMailboxLocalDB()
-        mailboxDao = mockk()
+        emailInsertionDao = mockk()
 
         mailboxDataSource = MailboxDataSource(
                 signalClient = signalClient,
                 runner = MockedWorkRunner(),
                 activeAccount = activeAccount,
                 mailboxLocalDB = mailboxDb,
-                mailboxDao = mailboxDao,
+                emailInsertionDao = emailInsertionDao,
                 rawSessionDao = MockedRawSessionDao())
 
         dataSource = EmailDetailDataSource(

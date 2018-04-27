@@ -13,7 +13,7 @@ import java.util.*
  * Created by gabriel on 4/23/18.
  */
 @Dao
-interface MailboxDao {
+interface EmailInsertionDao {
 
     @Insert
     fun insertEmail(email: Email): Long

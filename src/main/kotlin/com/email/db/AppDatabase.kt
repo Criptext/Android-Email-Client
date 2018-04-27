@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailContactDao() : EmailContactJoinDao
     abstract fun feedDao(): FeedDao
     abstract fun labelDao(): LabelDao
-    abstract fun mailboxDao(): MailboxDao
+    abstract fun emailInsertionDao(): EmailInsertionDao
     abstract fun rawIdentityKeyDao(): RawIdentityKeyDao
     abstract fun rawPreKeyDao(): RawPreKeyDao
     abstract fun rawSessionDao(): RawSessionDao

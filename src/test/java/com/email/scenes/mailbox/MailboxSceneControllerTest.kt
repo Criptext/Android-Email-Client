@@ -5,7 +5,7 @@ import com.email.api.ApiCall
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
-import com.email.db.dao.MailboxDao
+import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.*
 import com.email.mocks.MockedWorkRunner
@@ -35,7 +35,7 @@ private lateinit var model: MailboxSceneModel
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
     private lateinit var rawSessionDao: RawSessionDao
-    private lateinit var mailboxDao: MailboxDao
+    private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var api: MailboxAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: MailboxDataSource
@@ -63,9 +63,9 @@ private lateinit var model: MailboxSceneModel
         db = mockk(relaxed = true)
         rawSessionDao = mockk()
 
-        mailboxDao = mockk(relaxed = true)
+        emailInsertionDao = mockk(relaxed = true)
         val runnableSlot = CapturingSlot<Runnable>() // run transactions as they are invoked
-        every { mailboxDao.runTransaction(capture(runnableSlot)) } answers {
+        every { emailInsertionDao.runTransaction(capture(runnableSlot)) } answers {
             runnableSlot.captured.run()
         }
 
@@ -80,7 +80,7 @@ private lateinit var model: MailboxSceneModel
                 mailboxLocalDB = db,
                 activeAccount = ActiveAccount("gabriel", "__JWT_TOKEN__"),
                 rawSessionDao = rawSessionDao,
-                mailboxDao = mailboxDao
+                emailInsertionDao = emailInsertionDao
         )
 
         feedController = mockk(relaxed = true)
@@ -176,12 +176,12 @@ private lateinit var model: MailboxSceneModel
         every {
             signal.decryptMessage("mayer", 1, "__ENCRYPTED_TEXT__")
         } returns "__PLAIN_TEXT__"
-        every { mailboxDao.findContactsByEmail(listOf("mayer@jigl.com")) } returns emptyList()
+        every { emailInsertionDao.findContactsByEmail(listOf("mayer@jigl.com")) } returns emptyList()
         every {
-            mailboxDao.findContactsByEmail(listOf("gabriel@jigl.com"))
+            emailInsertionDao.findContactsByEmail(listOf("gabriel@jigl.com"))
             } returns listOf(Contact(id = 0, email ="gabriel@jigl.com", name = "Gabriel Aumala"))
         every {
-            mailboxDao.insertContacts(listOf(Contact(0, "mayer@jigl.com",
+            emailInsertionDao.insertContacts(listOf(Contact(0, "mayer@jigl.com",
                     "Mayer Mizrachi")))
         } answers { didInsertSender = true; listOf(2) }
 
@@ -210,7 +210,7 @@ private lateinit var model: MailboxSceneModel
             runner._work()
 
             // final assertions
-            verify { mailboxDao.insertEmail(assert("should have inserted new mail",
+            verify { emailInsertionDao.insertEmail(assert("should have inserted new mail",
                     { e -> e.subject == "hello" && e.content == "__PLAIN_TEXT__"}))
             }
             verify(exactly = 2) { // the update should have triggered the second call

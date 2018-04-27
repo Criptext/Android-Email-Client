@@ -3,7 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.api.models.EmailMetadata
 import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
-import com.email.db.dao.MailboxDao
+import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
@@ -38,8 +38,8 @@ object EmailInsertionSetup {
         )
     }
 
-    private fun fillMapWithNewContacts(dao: MailboxDao, contactsMap: HashMap<String, Contact>,
-                               toAddresses: List<String>) {
+    private fun fillMapWithNewContacts(dao: EmailInsertionDao, contactsMap: HashMap<String, Contact>,
+                                       toAddresses: List<String>) {
         val unknownContacts = toAddresses.filter { !contactsMap.containsKey(it) }
                 .map { Contact(id = 0, email = it, name = "") }
 
@@ -53,7 +53,7 @@ object EmailInsertionSetup {
         }
     }
 
-    private fun createContactRows(dao: MailboxDao, addressesCSV: String): List<Contact> {
+    private fun createContactRows(dao: EmailInsertionDao, addressesCSV: String): List<Contact> {
         if (addressesCSV.isEmpty()) return emptyList()
 
         val toAddresses = addressesCSV.split(",")
@@ -67,7 +67,7 @@ object EmailInsertionSetup {
         return contactsMap.values.toList()
     }
 
-    private fun createSenderContactRow(dao: MailboxDao, senderContact: Contact): Contact {
+    private fun createSenderContactRow(dao: EmailInsertionDao, senderContact: Contact): Contact {
         val existingContacts = dao.findContactsByEmail(listOf(senderContact.email))
         return if (existingContacts.isEmpty()) {
             val ids = dao.insertContacts(listOf(senderContact))
@@ -75,8 +75,8 @@ object EmailInsertionSetup {
         } else existingContacts.first()
     }
 
-    private fun createFullEmailToInsert(dao: MailboxDao, metadata: EmailMetadata, decryptedBody: String,
-                           labels: List<Label>): FullEmail {
+    private fun createFullEmailToInsert(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String,
+                                        labels: List<Label>): FullEmail {
         val emailRow = createEmailRow(metadata, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadata.fromContact)
         val toContactsRows = createContactRows(dao, metadata.to)
@@ -96,12 +96,12 @@ object EmailInsertionSetup {
     private fun createEmailLabelRelation(newEmailId: Long): (Label) -> EmailLabel =
             { label -> EmailLabel(emailId = newEmailId, labelId = label.id) }
 
-    private fun insertEmailLabelRelations(dao: MailboxDao, fullEmail: FullEmail, newEmailId: Long) {
+    private fun insertEmailLabelRelations(dao: EmailInsertionDao, fullEmail: FullEmail, newEmailId: Long) {
         val labelRelations = fullEmail.labels.map(createEmailLabelRelation(newEmailId))
         dao.insertEmailLabelRelations(labelRelations)
     }
 
-    private fun insertEmailContactRelations(dao: MailboxDao, fullEmail: FullEmail, newEmailId: Long) {
+    private fun insertEmailContactRelations(dao: EmailInsertionDao, fullEmail: FullEmail, newEmailId: Long) {
         val senderRelation = EmailContact(emailId = newEmailId, contactId = fullEmail.from.id,
                 type = ContactTypes.FROM)
         val toRelations = fullEmail.to.map(createEmailContactRelation(newEmailId, ContactTypes.TO))
@@ -123,7 +123,7 @@ object EmailInsertionSetup {
      * @param decryptedBody plain text string with the email's body
      * @param labels list of labels to add to the email once inserted.
      */
-    fun exec(dao: MailboxDao, metadata: EmailMetadata, decryptedBody: String, labels: List<Label>) {
+    fun exec(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String, labels: List<Label>) {
         val fullEmail = createFullEmailToInsert(dao, metadata, decryptedBody, labels)
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)

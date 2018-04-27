@@ -7,7 +7,7 @@ import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.bgworker.BackgroundWorker
 import com.email.db.*
-import com.email.db.dao.MailboxDao
+import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.signal.SignalClient
 import com.email.utils.UIMessage
@@ -24,7 +24,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
-        private val dao: MailboxDao,
+        private val dao: EmailInsertionDao,
         activeAccount: ActiveAccount,
         private val label: Label,
         override val publishFn: (

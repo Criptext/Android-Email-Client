@@ -10,7 +10,6 @@ import com.email.api.models.EmailMetadata
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
-import com.email.db.DeliveryTypes
 import com.email.db.models.*
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailInsertionSetup
@@ -24,7 +23,6 @@ import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocket
-import java.util.*
 
 /**
  * Created by sebas on 1/30/18.
@@ -49,8 +47,8 @@ class MailboxActivity : BaseActivity() {
                       threadId = "thread#$it", fromRecipientId = "mayer", subject = "Test #$it")
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
-              appDB.mailboxDao().runTransaction(Runnable {
-                  EmailInsertionSetup.exec(appDB.mailboxDao(), metadata, decryptedBody, labels)
+              appDB.emailInsertionDao().runTransaction(Runnable {
+                  EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody, labels)
               })
           }
 
@@ -106,7 +104,7 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 rawSessionDao = appDB.rawSessionDao(),
-                mailboxDao = appDB.mailboxDao(),
+                emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db)
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
