@@ -2,6 +2,7 @@ package com.email.websocket
 
 import com.email.api.ApiCall
 import com.email.api.HttpErrorHandlingHelper
+import com.email.api.models.EmailMetadata
 import com.email.db.*
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailThread
@@ -68,7 +69,7 @@ class DetailedSocketDataOkHttpClient(
     // TODO delete this duplicated code
     private fun loadMetadataContentFromString(input: String): String {
             val fullData = JSONObject(input)
-            val metaData = EmailMetaData(stringMetadata = fullData.getString("params"))
+            val metaData = EmailMetadata.fromJSON(fullData.getString("params"))
 
             val resultOperationDecryptAndInsert = Result.of {
                 val encryptedBody = getBodyFromEmail(metaData.bodyKey)
@@ -103,7 +104,8 @@ class DetailedSocketDataOkHttpClient(
                             content = bodyContent
                     )
                     val insertedEmailId = db.addEmail(email)
-                    db.createContacts(metaData.fromName, metaData.fromRecipientId, insertedEmailId, ContactTypes.FROM)
+                    db.createContacts(metaData.fromContact.name, metaData.fromRecipientId,
+                            insertedEmailId, ContactTypes.FROM)
                     db.createContacts(null, metaData.to, insertedEmailId, ContactTypes.TO)
                     db.createContacts(null, metaData.bcc, insertedEmailId, ContactTypes.BCC)
                     db.createContacts(null,metaData.cc, insertedEmailId, ContactTypes.CC)

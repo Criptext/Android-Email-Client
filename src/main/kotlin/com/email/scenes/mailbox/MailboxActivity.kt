@@ -6,15 +6,13 @@ import android.view.ViewGroup
 import com.email.BaseActivity
 import com.email.IHostActivity
 import com.email.R
+import com.email.api.models.EmailMetadata
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
-import com.email.db.DeliveryTypes
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import com.email.db.models.EmailContactIds
+import com.email.db.models.*
 import com.email.scenes.SceneController
+import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
@@ -25,7 +23,6 @@ import com.email.signal.SignalClient
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocket
-import java.util.*
 
 /**
  * Created by sebas on 1/30/18.
@@ -40,22 +37,21 @@ class MailboxActivity : BaseActivity() {
 
     // Only use this during development
     private fun seedEmails(appDB: AppDatabase) {
-        val contacts = listOf(Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
-                Contact(2, "gabriel@jigl.com", "Gabriel Aumala"))
-        appDB.mailboxDao().insertContacts(contacts)
-        val dateMilis = System.currentTimeMillis()
-        val emails = (1..50)
-          .map {
-              val email = Email(id = 0, key = it.toString(), threadid = "thread$it", unread = true,
-                  secure = true, content = "this is message #$it", preview =  "message #$it",
-                  subject = "message #$it", delivered = DeliveryTypes.DELIVERED,
-                  date = Date(dateMilis + it), isTrash = false, isDraft = false)
-              val senderId = 1L
-              val toIds = listOf(2L)
-              EmailContactIds(email = email, toIds = toIds, ccIds = emptyList(),
-                      bccIds = emptyList(), senderId = senderId)
+        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
+        (1..50)
+          .forEach {
+              val seconds = if (it < 10) "0$it" else it.toString()
+              val metadata = EmailMetadata(from = "Mayer Mizrachi <mayer@jigl.com>",
+                      to = "gabriel@jigl.com",  cc = "", bcc = "", fromContact = fromContact,
+                      bodyKey = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
+                      threadId = "thread#$it", fromRecipientId = "mayer", subject = "Test #$it")
+              val decryptedBody = "Hello, this is message #$it"
+              val labels = listOf(Label.defaultItems.inbox)
+              appDB.emailInsertionDao().runTransaction(Runnable {
+                  EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody, labels)
+              })
           }
-        appDB.mailboxDao().insertNewReceivedEmails(emails)
+
     }
 
     override fun initController(receivedModel: Any): SceneController {
@@ -84,7 +80,8 @@ class MailboxActivity : BaseActivity() {
         private fun initFeedController(appDB: AppDatabase, activity: Activity,
                                        feedModel: FeedModel): FeedController {
             val feedView = FeedView.Default(
-                    feedItemsList = VirtualList.Map(feedModel.feedItems, { t -> ActivityFeedItem(t)}),
+                    feedItemsList = VirtualList.Map(feedModel.feedItems,
+                            { t: FeedItem -> ActivityFeedItem(t)}),
                     container = activity.findViewById(R.id.nav_right_view)
             )
             return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(),
@@ -107,6 +104,7 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 rawSessionDao = appDB.rawSessionDao(),
+                emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db)
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)

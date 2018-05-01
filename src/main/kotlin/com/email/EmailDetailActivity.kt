@@ -4,7 +4,6 @@ import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
-import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.EmailDetailScene
@@ -48,6 +47,7 @@ class  EmailDetailActivity: BaseActivity() {
                         activeAccount = activeAccount!!,
                         mailboxLocalDB = mailboxDB,
                         runner = AsyncTaskWorkRunner(),
+                        emailInsertionDao = appDB.emailInsertionDao(),
                         rawSessionDao = appDB.rawSessionDao()),
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),

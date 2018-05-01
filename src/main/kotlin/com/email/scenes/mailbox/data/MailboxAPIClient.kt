@@ -10,8 +10,6 @@ import com.email.scenes.composer.data.PostEmailBody
 
 class MailboxAPIClient(private val token: String) {
 
-
-
     fun getPendingEvents(): String {
         val request = ApiCall.getPendingEvents(token = token)
         return ApiCall.executeRequest(request)

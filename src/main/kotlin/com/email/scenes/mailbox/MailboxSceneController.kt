@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.MailFolders
 import com.email.db.models.Contact
+import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
@@ -133,7 +134,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onRefreshMails() {
             scene.showRefresh()
             dataSourceController.updateMailbox(
-                    mailboxLabel = model.selectedLabel.text,
+                    mailboxLabel = model.selectedLabel,
                     isManual = true)
         }
 
@@ -177,8 +178,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 mailboxLabel = model.selectedLabel.text,
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
+                observer = observer,
                 threadList = VirtualEmailThreadList(model))
-        scene.observer = observer
         scene.initDrawerLayout()
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
 
@@ -314,7 +315,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return true
             }
 
-        fun updateMailbox(mailboxLabel: MailFolders, isManual: Boolean) {
+        fun updateMailbox(mailboxLabel: Label, isManual: Boolean) {
             scene.hideDrawer()
             val req = MailboxRequest.UpdateMailbox(
                     label = mailboxLabel
@@ -323,9 +324,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
-            threadListController.populateThreads(resultData.mailboxThreads)
-            scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
-            scene.updateToolbarTitle(toolbarTitle)
+            if (resultData.mailboxThreads != null) {
+                threadListController.populateThreads(resultData.mailboxThreads)
+                scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
+                scene.updateToolbarTitle(toolbarTitle)
+            }
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {

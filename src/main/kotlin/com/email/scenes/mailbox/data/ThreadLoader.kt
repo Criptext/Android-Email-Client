@@ -1,10 +1,10 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.dao.MailboxDao
+import com.email.db.dao.EmailInsertionDao
 
 /**
  * Created by gabriel on 4/24/18.
  */
-class ThreadLoader(dao: MailboxDao) {
+class ThreadLoader(dao: EmailInsertionDao) {
 
 }

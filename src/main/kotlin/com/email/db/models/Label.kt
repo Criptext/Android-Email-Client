@@ -25,6 +25,7 @@ data class Label (
     companion object {
         val defaultItems = DefaultItems()
     }
+
     class DefaultItems {
         val draft = Label(id = 1, color = ColorTypes.GREEN, text = MailFolders.DRAFT)
         val inbox = Label(id = 2, color = ColorTypes.BLUE, text = MailFolders.INBOX)
@@ -34,5 +35,15 @@ data class Label (
         val spam = Label(id = 6, color = ColorTypes.GREEN, text = MailFolders.SPAM)
 
         fun toList() = listOf(draft, inbox, sent, trash, starred, spam)
+
+        fun rejectedLabelsByMailbox(label: Label): List<Label> =
+            when (label) {
+            sent,
+            inbox,
+            starred -> listOf(spam, trash)
+            spam -> listOf(trash)
+            trash -> listOf(spam)
+            else -> emptyList()
+        }
     }
 }
