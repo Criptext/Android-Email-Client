@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.MailFolders
 import com.email.db.models.Contact
+import com.email.db.models.Email
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
@@ -195,13 +196,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
         feedController.onStart()
 
-        websocketEvents.subscribe(this.javaClass, webSocketEventListener)
+        websocketEvents.listener =  webSocketEventListener
 
         return handleActivityMessage(activityMessage)
     }
 
     override fun onStop() {
-        websocketEvents.unsubscribe(this.javaClass)
+        websocketEvents.listener = null
         feedController.onStop()
     }
 
@@ -422,33 +423,11 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onMailOpened(token: String, message: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun onNewEmail(email: Email) {
         }
 
-        override fun onFileOpenedOrDownloaded(mailToken: String, message: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun onError(uiMessage: UIMessage) {
         }
-
-        override fun onNewMessage(emailThread: EmailThread) {
-            threadListController.addNew(emailThread)
-            scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
-            scene.scrollTop()
-        }
-
-        override fun onUnsent(token: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onMuteMessage() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onUserStatusChange(status: Int) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-
     }
 
     companion object {

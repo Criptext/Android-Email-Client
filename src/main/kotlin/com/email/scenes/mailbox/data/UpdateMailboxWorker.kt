@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.R
+import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
 import com.email.api.models.EmailMetadata
@@ -32,6 +33,7 @@ class UpdateMailboxWorker(
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
 
     private val apiClient = MailboxAPIClient(activeAccount.jwt)
+    private val emailInsertionApiClient = EmailInsertionAPIClient(activeAccount.jwt)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
@@ -108,16 +110,6 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String {
-        return try {
-            signalClient.decryptMessage(recipientId = recipientId,
-                    deviceId = deviceId,
-                    encryptedB64 = encryptedB64)
-        } catch (ex: Exception) {
-            "Unable to decrypt message."
-        }
-    }
-
     private fun reloadMailbox(newEmailCount: Int): List<EmailThread> {
         return if (newEmailCount > 0)
             db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
@@ -134,12 +126,9 @@ class UpdateMailboxWorker(
             .map({ EmailMetadata.fromJSON(it.params) })
             .forEach { metadata ->
                 val incomingEmailLabels = listOf(Label.defaultItems.inbox)
-                dao.runTransaction(Runnable {
-                    val body = apiClient.getBodyFromEmail(metadata.bodyKey)
-                    val decryptedBody = decryptMessage(recipientId = metadata.fromRecipientId,
-                            deviceId = 1, encryptedB64 = body)
-                    EmailInsertionSetup.exec(dao, metadata, decryptedBody, incomingEmailLabels)
-                })
+                EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
+                        dao = dao, apiClient = emailInsertionApiClient,
+                        labels = incomingEmailLabels, metadata = metadata)
             }
 
         return newEmails.size

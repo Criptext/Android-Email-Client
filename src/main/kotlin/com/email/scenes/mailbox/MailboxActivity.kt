@@ -95,7 +95,7 @@ class MailboxActivity : BaseActivity() {
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
-            val webSocketEvents = WebSocket.newInstance(
+            val webSocketEvents = WebSocket.getInstance(
                     activeAccount = activeAccount!!,
                     context = activity).webSocketController
 

@@ -1,7 +1,11 @@
 package com.email.websocket
 
+import com.email.api.models.EmailMetadata
+import com.email.api.models.Event
 import com.email.db.models.ActiveAccount
-import com.email.scenes.SceneController
+import com.email.websocket.data.EventDataSource
+import com.email.websocket.data.EventRequest
+import com.email.websocket.data.EventResult
 
 /**
  * Manages the web socket, exposes methods to connect, disconnect, reconnect and subscribe/unsubscribe
@@ -10,28 +14,39 @@ import com.email.scenes.SceneController
  * Created by gabriel on 9/15/17.
  */
 
-class WebSocketController(private val wsClient: WebSocketClient,
-                          apiClient: DetailedSocketDataHttpClient,
-                          private val activeAccount: ActiveAccount): WebSocketEventPublisher {
-    private val webSocketListeners = HashMap<String, WebSocketEventListener>()
-    private val defaultCmdHandler = CmdHandler.Default(apiClient, activeAccount,
-            webSocketListeners)
+class WebSocketController(private val wsClient: WebSocketClient, activeAccount: ActiveAccount,
+                          private val eventDataSource: EventDataSource): WebSocketEventPublisher {
+
+    override var listener: WebSocketEventListener? = null
 
     private val onMessageReceived = { text: String ->
-        val receivedCmds = SocketData.parseSocketTextMessage(text)
-        if (receivedCmds.isNotEmpty()) {
-            val lastCmd = receivedCmds.last()
+        val event = Event.fromJSON(text)
+        if (event.cmd == Event.Cmd.newEmail) {
+            val emailMetadata = EmailMetadata.fromJSON(event.params)
+            eventDataSource.submitRequest(EventRequest.InsertNewEmail(emailMetadata))
+        }
+    }
 
-            receivedCmds.forEach { defaultCmdHandler.handle(it) }
+    private val dataSourceListener = { eventResult: EventResult ->
+        when (eventResult) {
+            is EventResult.InsertNewEmail -> publishNewEmailResult(eventResult)
         }
     }
 
     init {
         val url = createCriptextSocketServerURL(
-                recipienId = activeAccount.recipientId,
+                recipientId = activeAccount.recipientId,
                 deviceId = 1 )
 
+        eventDataSource.listener = dataSourceListener
         wsClient.connect(url, onMessageReceived)
+    }
+
+    private fun publishNewEmailResult(eventResult: EventResult.InsertNewEmail) {
+        when (eventResult) {
+            is EventResult.InsertNewEmail.Success -> listener?.onNewEmail(eventResult.newEmail)
+            is EventResult.InsertNewEmail.Failure -> listener?.onError(eventResult.message)
+        }
     }
 
     fun disconnect() {
@@ -42,17 +57,9 @@ class WebSocketController(private val wsClient: WebSocketClient,
         wsClient.reconnect()
     }
 
-    override fun subscribe(subscriberClass: Class<SceneController>, listener: WebSocketEventListener) {
-        webSocketListeners.put(subscriberClass.name, listener)
-    }
-
-    override fun unsubscribe(subscriberClass: Class<SceneController>) {
-        webSocketListeners.remove(subscriberClass.name)
-    }
-
     companion object {
-        private fun createCriptextSocketServerURL(recipienId: String, deviceId: Int): String {
-            return """ws://${WebSocket.HOST_URL}?recipientId=$recipienId&deviceId=$deviceId"""
+        private fun createCriptextSocketServerURL(recipientId: String, deviceId: Int): String {
+            return """ws://${WebSocket.HOST_URL}?recipientId=$recipientId&deviceId=$deviceId"""
         }
     }
 

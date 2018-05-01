@@ -15,6 +15,13 @@ class UIMessage(val resId: Int, val args: Array<Any>) {
         sb.append("]")
         return sb.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        // I only need to check equality in testing
+        return other is UIMessage && other.resId == this.resId
+    }
+
+    override fun hashCode(): Int = resId
 }
 
 fun Context.getLocalizedUIMessage(message: UIMessage): String {

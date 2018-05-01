@@ -18,7 +18,7 @@ class DeckardApplication : Application(){
         Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
-            WebSocket.newInstance(activeAccount, applicationContext)
+            WebSocket.getInstance(activeAccount, applicationContext)
         }
     }
 }
