@@ -71,8 +71,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         threadListController.clear()
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
-                limit = threadsPerPage,
-                oldestEmailThread = null)
+                loadParams = LoadParams.Reset(size = threadsPerPage))
         dataSource.submitRequest(req)
     }
 
@@ -81,8 +80,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onApproachingEnd() {
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.selectedLabel.text,
-                        limit = threadsPerPage,
-                        oldestEmailThread = model.threads.lastOrNull())
+                        loadParams = LoadParams.NewPage(size = threadsPerPage,
+                                oldestEmailThread = model.threads.lastOrNull()))
                 dataSource.submitRequest(req)
         }
 
@@ -358,7 +357,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result) {
                 is MailboxResult.LoadEmailThreads.Success -> {
                     val hasReachedEnd = result.emailThreads.size < threadsPerPage
-                    threadListController.appendAll(result.emailThreads, hasReachedEnd)
+                    if (model.threads.isNotEmpty() && result.isReset)
+                        threadListController.populateThreads(result.emailThreads)
+                    else
+                        threadListController.appendAll(result.emailThreads, hasReachedEnd)
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 }
             }
@@ -424,9 +426,15 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onNewEmail(email: Email) {
+            // just reset mailbox
+            val req = MailboxRequest.LoadEmailThreads(
+                    label = model.selectedLabel.text,
+                    loadParams = LoadParams.Reset(size = threadsPerPage))
+            dataSource.submitRequest(req)
         }
 
         override fun onError(uiMessage: UIMessage) {
+            scene.showMessage(uiMessage)
         }
     }
 

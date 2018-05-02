@@ -4,7 +4,6 @@ import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
-import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.utils.UIMessage
 
@@ -14,10 +13,8 @@ import com.email.utils.UIMessage
 
 class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
-        private val activeAccount: ActiveAccount,
-        private val limit: Int,
+        private val loadParams: LoadParams,
         private val labelTextTypes: MailFolders,
-        private val oldestEmailThread: EmailThread?,
         override val publishFn: (
                 MailboxResult.LoadEmailThreads) -> Unit)
     : BackgroundWorker<MailboxResult.LoadEmailThreads> {
@@ -33,16 +30,26 @@ class LoadEmailThreadsWorker(
                 exception = ex)
     }
 
+    private fun loadThreadsWithParams(): List<EmailThread> = when (loadParams) {
+        is LoadParams.NewPage -> db.getEmailsFromMailboxLabel(
+            labelTextTypes = labelTextTypes,
+            oldestEmailThread = loadParams.oldestEmailThread,
+            rejectedLabels = selectRejectedLabels(),
+            limit = loadParams.size)
+        is LoadParams.Reset -> db.getEmailsFromMailboxLabel(
+            labelTextTypes = labelTextTypes,
+            oldestEmailThread = null,
+            rejectedLabels = selectRejectedLabels(),
+            limit = loadParams.size)
+    }
+
     override fun work(): MailboxResult.LoadEmailThreads? {
-        val emailThreads = db.getEmailsFromMailboxLabel(
-                labelTextTypes = labelTextTypes,
-                oldestEmailThread = oldestEmailThread,
-                rejectedLabels = selectRejectedLabels(),
-                limit = limit)
+        val emailThreads = loadThreadsWithParams()
 
         return MailboxResult.LoadEmailThreads.Success(
                 emailThreads = emailThreads,
-                mailboxLabel = labelTextTypes)
+                mailboxLabel = labelTextTypes,
+                isReset = loadParams is LoadParams.Reset)
     }
 
     private fun selectRejectedLabels(): List<Label> {
