@@ -17,8 +17,8 @@ import kotlin.collections.HashMap
 object EmailInsertionSetup {
     private fun createEmailRow(metadata: EmailMetadata, decryptedBody: String): Email {
         val bodyWithoutHTML = HTMLUtils.html2text(decryptedBody)
-        val preview   = if (bodyWithoutHTML.length > 20 )
-                            bodyWithoutHTML.substring(0,20)
+        val preview   = if (bodyWithoutHTML.length > 100 )
+                            bodyWithoutHTML.substring(0,100)
                         else bodyWithoutHTML
         return Email(
             id = 0,
@@ -33,7 +33,7 @@ object EmailInsertionSetup {
             preview = preview,
             key = metadata.bodyKey,
             isDraft = false,
-            delivered = DeliveryTypes.OPENED,
+            delivered = DeliveryTypes.NONE,
             content = decryptedBody
         )
     }

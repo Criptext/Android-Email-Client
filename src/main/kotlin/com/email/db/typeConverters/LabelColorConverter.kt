@@ -15,19 +15,24 @@ class LabelColorConverter {
             "green", "GREEN" -> {
                 ColorTypes.GREEN
             }
-
             "red", "RED" -> {
                 ColorTypes.RED
             }
-
             "blue", "BLUE" -> {
                 ColorTypes.BLUE
             }
-
             "yellow", "YELLOW" -> {
-                ColorTypes.BLUE
-            } else ->
-                ColorTypes.WHITE
+                ColorTypes.YELLOW
+            }
+            "orange", "ORANGE" -> {
+                ColorTypes.ORANGE
+            }
+            "purple", "PURPLE" -> {
+                ColorTypes.PURPLE
+            }
+            else -> {
+                ColorTypes.GRAY
+            }
         }
     }
 
@@ -37,20 +42,23 @@ class LabelColorConverter {
             ColorTypes.GREEN -> {
                 "green"
             }
-
             ColorTypes.RED -> {
                 "red"
             }
-
             ColorTypes.BLUE -> {
                 "blue"
             }
-
             ColorTypes.YELLOW -> {
                 "yellow"
             }
+            ColorTypes.ORANGE -> {
+                "orange"
+            }
+            ColorTypes.PURPLE -> {
+                "purple"
+            }
             else ->
-                "white"
+                "gray"
         }
     }
 

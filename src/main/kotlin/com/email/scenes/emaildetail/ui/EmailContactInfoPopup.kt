@@ -27,7 +27,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
 
         val inflater = context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
-        val layout = inflater.inflate( R.layout.email_contact_info_popup, null)
+        val layout = inflater.inflate( R.layout.email_contact_info_popup, anchorView.parent as ViewGroup, false)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
 
         val contactsTo = VirtualList.Map(fullEmail.to, { t -> t})

@@ -38,7 +38,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
             is MailboxResult.SendMail -> dataSourceController.onSendMailFinished(result)
             is MailboxResult.UpdateEmailThreadsLabelsRelations -> dataSourceController.onUpdatedLabels(result)
-            is MailboxResult.UpdateMail -> host.finishScene()
+            is MailboxResult.UpdateMail -> {
+                scene.showMessage(UIMessage(R.string.email_sent))
+            }
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
         }
@@ -59,17 +61,17 @@ class MailboxSceneController(private val scene: MailboxScene,
             else -> R.menu.mailbox_menu_multi_mode_read
         }
 
-    private fun getEmailUnreadThreadSize(): Int{
+    private fun getTotalUnreadThreads(): Int{
         return model.threads.fold(0, { total, next -> total + (if(next.unread) 1 else 0) })
     }
 
 
-    private fun loadMailboxThreads() {
-        val oldestEmailThread = model.threads.lastOrNull()
+    private fun reloadMailboxThreads() {
+        threadListController.clear()
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
                 limit = threadsPerPage,
-                oldestEmailThread = oldestEmailThread)
+                oldestEmailThread = null)
         dataSource.submitRequest(req)
     }
 
@@ -84,6 +86,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onGoToMail(emailThread: EmailThread) {
+
+            if(emailThread.threadId.isEmpty()){
+                return scene.showMessage(UIMessage(R.string.not_implemented))
+            }
             dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(listOf(emailThread), false))
             host.goToScene(EmailDetailParams(emailThread.threadId), true)
         }
@@ -122,7 +128,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
                     threadListController.clear()
-                    loadMailboxThreads()
+                    reloadMailboxThreads()
                 }
             }
 
@@ -164,7 +170,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         return when (activityMessage) {
             null -> false
             is ActivityMessage.SendMail -> {
-                val newRequest = MailboxRequest.SendMail(activityMessage.emailId,
+                val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
                         activityMessage.composerInputData)
                 dataSource.submitRequest(newRequest)
                 true
@@ -183,10 +189,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initDrawerLayout()
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
 
-        if (model.threads.isEmpty()) loadMailboxThreads()
+        if (model.threads.isEmpty()) reloadMailboxThreads()
 
         toggleMultiModeBar()
-        scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
+        scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
         feedController.onStart()
 
         websocketEvents.subscribe(this.javaClass, webSocketEventListener)
@@ -202,8 +208,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun archiveSelectedEmailThreads() {
         dataSourceController.updateEmailThreadsLabelsRelations(
                 selectedLabels = null,
-                chosenLabel = MailFolders.ARCHIVED)
-        }
+                chosenLabel = null)
+    }
 
     private fun deleteSelectedEmailThreads() {
         dataSourceController.updateEmailThreadsLabelsRelations(
@@ -326,13 +332,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
             if (resultData.mailboxThreads != null) {
                 threadListController.populateThreads(resultData.mailboxThreads)
-                scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
+                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 scene.updateToolbarTitle(toolbarTitle)
             }
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
-            scene.showError(resultData.message)
+            scene.showMessage(resultData.message)
         }
 
         fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
@@ -352,7 +358,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.LoadEmailThreads.Success -> {
                     val hasReachedEnd = result.emailThreads.size < threadsPerPage
                     threadListController.appendAll(result.emailThreads, hasReachedEnd)
-                    scene.setToolbarNumberOfEmails(model.threads.size)
+                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 }
             }
         }
@@ -361,9 +367,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             changeMode(multiSelectON = false, silent = false)
             when(result) {
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Success ->  {
-                    loadMailboxThreads()
+                    reloadMailboxThreads()
                 } else -> {
-                    scene.showError(UIMessage(R.string.error_updating_labels))
+                    scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
             }
         }
@@ -373,7 +379,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.SendMail.Success -> {
                     dataSource.submitRequest(MailboxRequest.UpdateEmail(result.emailId, result.response))
                 }
-                is MailboxResult.SendMail.Failure -> scene.showError(result.message)
+                is MailboxResult.SendMail.Failure -> scene.showMessage(result.message)
             }
         }
 
@@ -384,7 +390,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                             result.allLabels)
                 }
                 is MailboxResult.GetSelectedLabels.Failure -> {
-                    scene.showError(UIMessage(R.string.error_getting_labels))
+                    scene.showMessage(UIMessage(R.string.error_getting_labels))
                 }
             }
         }
@@ -398,7 +404,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.setCounterLabel(NavigationMenuOptions.SPAM, result.totalSpam)
                 }
                 is MailboxResult.GetMenuInformation.Failure -> {
-                    scene.showError(UIMessage(R.string.error_getting_counters))
+                    scene.showMessage(UIMessage(R.string.error_getting_counters))
                 }
             }
         }
@@ -406,10 +412,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onUpdateUnreadStatus(result: MailboxResult){
             when (result) {
                 is MailboxResult.UpdateUnreadStatus.Success -> {
-                    loadMailboxThreads()
+                    reloadMailboxThreads()
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {
-                    scene.showError(UIMessage(R.string.error_updating_status))
+                    scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
             }
         }
@@ -426,7 +432,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onNewMessage(emailThread: EmailThread) {
             threadListController.addNew(emailThread)
-            scene.setToolbarNumberOfEmails(getEmailUnreadThreadSize())
+            scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
             scene.scrollTop()
         }
 

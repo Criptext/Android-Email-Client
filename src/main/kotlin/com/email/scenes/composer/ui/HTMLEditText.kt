@@ -39,4 +39,8 @@ class HTMLEditText(private val richEditor: RichEditor, scrollView: ScrollView) {
         richEditor.setEditorHeight(150)
     }
 
+    fun setFocus(){
+        richEditor.focusEditor()
+    }
+
 }

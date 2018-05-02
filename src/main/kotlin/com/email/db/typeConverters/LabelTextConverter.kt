@@ -18,9 +18,6 @@ class LabelTextConverter {
             "STARRED" -> {
                 MailFolders.STARRED
             }
-            "ARCHIVED" -> {
-                MailFolders.ARCHIVED
-            }
             "SENT" -> {
                 MailFolders.SENT
             }
@@ -34,7 +31,7 @@ class LabelTextConverter {
                 MailFolders.SPAM
             }
             else ->
-                MailFolders.INBOX
+                MailFolders.IMPORTANT
         }
     }
 
@@ -47,9 +44,6 @@ class LabelTextConverter {
             MailFolders.STARRED -> {
                 "STARRED"
             }
-            MailFolders.ARCHIVED -> {
-                "ARCHIVED"
-            }
             MailFolders.SENT -> {
                 "SENT"
             }
@@ -61,6 +55,9 @@ class LabelTextConverter {
             }
             MailFolders.SPAM -> {
                 "SPAM"
+            }
+            MailFolders.IMPORTANT -> {
+                "IMPORTANT"
             }
         }
     }

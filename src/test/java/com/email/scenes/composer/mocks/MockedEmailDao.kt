@@ -27,7 +27,7 @@ class MockedEmailDao : EmailDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getEmailThreadsFromMailboxLabel(starterDate: Date, rejectedLabels: List<Long>, selectedLabel: Long, offset: Int): List<Email> {
+    override fun getEmailThreadsFromMailboxLabel(starterDate: Date, rejectedLabels: List<Long>, selectedLabel: Long, limit: Int): List<Email> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -39,7 +39,7 @@ class MockedEmailDao : EmailDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun toggleRead(id: Long, unread: Boolean) {
+    override fun toggleRead(ids: List<Long>, unread: Boolean) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -63,7 +63,7 @@ class MockedEmailDao : EmailDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getInitialEmailThreadsFromMailboxLabel(rejectedLabels: List<Long>, selectedLabel: Long, offset: Int): List<Email> {
+    override fun getInitialEmailThreadsFromMailboxLabel(rejectedLabels: List<Long>, selectedLabel: String, limit: Int): List<Email> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -74,5 +74,10 @@ class MockedEmailDao : EmailDao {
     override fun getTotalThreads(selectedLabel: Long): List<Email> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun getTotalEmailsByThread(threadId: String): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 
 }

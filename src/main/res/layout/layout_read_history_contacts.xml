@@ -31,7 +31,7 @@
                 android:text="Read History"
                 android:gravity="center_vertical"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -39,20 +39,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/contacts_read_history_refresher"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/contacts_read_history_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="200dip" >
+                android:layout_height="match_parent">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/contacts_read_history_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
 
-                </android.support.v7.widget.RecyclerView>
-
-            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
     </LinearLayout>

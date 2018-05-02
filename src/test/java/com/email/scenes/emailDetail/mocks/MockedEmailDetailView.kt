@@ -6,6 +6,7 @@ import com.email.scenes.emaildetail.EmailDetailScene
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.OnMoveThreadsListener
+import com.email.utils.UIMessage
 import com.email.utils.virtuallist.VirtualList
 
 /**
@@ -13,6 +14,9 @@ import com.email.utils.virtuallist.VirtualList
  */
 
 class MockedEmailDetailView: EmailDetailScene {
+    override fun showError(message: UIMessage) {
+    }
+
     override fun onDecryptedBody(decryptedText: String) {
     }
 
@@ -36,7 +40,7 @@ class MockedEmailDetailView: EmailDetailScene {
     override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
     }
 
-    override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+    override fun onFetchedSelectedLabels(selectedLabels: List<Label>, allLabels: List<Label>) {
     }
 
 }

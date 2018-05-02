@@ -42,17 +42,10 @@ class  EmailDetailActivity: BaseActivity() {
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,
-                mailboxDataSource = MailboxDataSource(
-                        signalClient = signalClient,
-                        activeAccount = activeAccount!!,
-                        mailboxLocalDB = mailboxDB,
-                        runner = AsyncTaskWorkRunner(),
-                        emailInsertionDao = appDB.emailInsertionDao(),
-                        rawSessionDao = appDB.rawSessionDao()),
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDetailLocalDB = db,
-                        activeAccount = activeAccount,
+                        activeAccount = activeAccount!!,
                         signalClient = signalClient),
                 keyboard = KeyboardManager(this)
         )

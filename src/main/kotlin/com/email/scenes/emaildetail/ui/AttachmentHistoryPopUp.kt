@@ -49,7 +49,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     }
 
     private fun bindFullEmail(fullEmail: FullEmail, view: View) {
-        val refresher = view.findViewById<SwipeRefreshLayout>(R.id.attachments_history_refresher)
+
     }
 
     private fun getMockedAttachmentContacts(): List<MockedAttachmentContact> {

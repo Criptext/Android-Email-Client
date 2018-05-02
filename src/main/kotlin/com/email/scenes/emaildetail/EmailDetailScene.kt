@@ -3,6 +3,8 @@ package com.email.scenes.emaildetail
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
@@ -15,6 +17,8 @@ import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.virtuallist.VirtualList
+import com.email.utils.UIMessage
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 3/12/18.
@@ -26,13 +30,14 @@ interface EmailDetailScene {
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
             fullEmailList : VirtualList<FullEmail>)
 
+    fun showError(message : UIMessage)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
-    fun onFetchedLabels(
-            defaultSelectedLabels: List<Label>,
-            labels: List<Label>)
+    fun onFetchedSelectedLabels(
+            selectedLabels: List<Label>,
+            allLabels: List<Label>)
 
     fun onDecryptedBody(decryptedText: String)
 
@@ -61,9 +66,15 @@ interface EmailDetailScene {
             emailDetailView.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
+        private val textViewSubject: TextView by lazy {
+            emailDetailView.findViewById<TextView>(R.id.textViewSubject)
+        }
+
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail>){
+
+            textViewSubject.text = fullEmailList[0].email.subject
 
             labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, getLabelsFromEmails(fullEmailList))
 
@@ -100,10 +111,10 @@ interface EmailDetailScene {
             labelChooserDialog.showDialogLabelsChooser(dataHandler = labelDataHandler)
         }
 
-        override fun onFetchedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
+        override fun onFetchedSelectedLabels(selectedLabels: List<Label>, allLabels: List<Label>) {
             labelChooserDialog.onFetchedLabels(
-                    defaultSelectedLabels = defaultSelectedLabels,
-                    allLabels = labels)
+                    defaultSelectedLabels = selectedLabels,
+                    allLabels = allLabels)
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
@@ -112,6 +123,15 @@ interface EmailDetailScene {
         }
 
         override fun onDecryptedBody(decryptedText: String) {
+        }
+
+        override fun showError(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    context,
+                    context.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
         }
     }
 

@@ -50,7 +50,7 @@ class LoadEmailThreadsWorker(
         return when(labelTextTypes) {
             MailFolders.SENT,
             MailFolders.INBOX,
-            MailFolders.ARCHIVED,
+            MailFolders.IMPORTANT,
             MailFolders.STARRED -> {
                 db.getLabelsFromLabelType(
                         labelTextTypes = commonRejectedLabels)

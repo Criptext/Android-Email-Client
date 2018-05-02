@@ -2,15 +2,17 @@ package com.email.scenes.emaildetail.ui.holders
 
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import com.email.R
 import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.DateUtils
 import com.email.utils.Utility
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
@@ -19,9 +21,9 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
 
-    private val cardView: CardView
-    private val isSeen: ImageView
-    private val hasAttachmentsView: ImageView
+    private val rootView: LinearLayout
+    private val check: ImageView
+    private val attachment: ImageView
     private val leftImageView: CircleImageView
 
     override fun setListeners(fullEmail: FullEmail, emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {
@@ -34,46 +36,73 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun bindFullMail(fullEmail: FullEmail) {
-        if(fullEmail.email.delivered == DeliveryTypes.UNSENT) {
 
+        if(fullEmail.email.delivered == DeliveryTypes.UNSENT) {
             bodyView.alpha = 0.5.toFloat()
-            bodyView.text = "Unsent"
+            bodyView.text = bodyView.resources.getString(R.string.unsent)
             bodyView.setTextColor(ContextCompat.getColor(
                     view.context, R.color.unsent_content))
-            cardView.background = ContextCompat.getDrawable(
+            rootView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.background_cardview_unsend)
-        } else {
+        }
+        else {
             bodyView.alpha = 1.toFloat()
-            cardView.background = ContextCompat.getDrawable(
+            rootView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.partial_email_drawable)
             bodyView.text = fullEmail.email.preview
         }
 
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
 
-        if(fullEmail.files.isEmpty()) {
-            DrawableCompat.setTint(
-                    hasAttachmentsView.drawable,
-                    ContextCompat.getColor(view.context, R.color.attachmentGray))
-
-        } else {
-            DrawableCompat.setTint(
-                    hasAttachmentsView.drawable,
-                    ContextCompat.getColor(view.context, R.color.azure))
-        }
-
         headerView.text = fullEmail.from.name
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
                 fullEmail.from.name,
                 fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
 
+        setIcons(fullEmail.email.delivered)
+    }
+
+    private fun setIcons(deliveryType: DeliveryTypes){
+
+        check.visibility = View.VISIBLE
+
+        when(deliveryType){
+            DeliveryTypes.SENT -> {
+                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+            }
+            DeliveryTypes.DELIVERED -> {
+                setIconAndColor(R.drawable.read, R.color.sent)
+            }
+            DeliveryTypes.OPENED -> {
+                setIconAndColor(R.drawable.read, R.color.azure)
+            }
+            DeliveryTypes.UNSENT -> {
+
+            }
+            DeliveryTypes.NONE -> {
+                check.visibility = View.GONE
+            }
+        }
+
+        //TODO validate if has attachments
+        attachment.visibility = View.GONE
+    }
+
+    private fun setIconAndColor(drawable: Int, color: Int){
+        Picasso.with(view.context).load(drawable).into(check, object : Callback {
+            override fun onError() {}
+            override fun onSuccess() {
+                DrawableCompat.setTint(check.drawable,
+                        ContextCompat.getColor(view.context, color))
+            }
+        })
     }
 
     init {
-        isSeen = view.findViewById(R.id.check)
-        hasAttachmentsView = view.findViewById(R.id.email_has_attachments)
+        check = view.findViewById(R.id.check)
+        attachment = view.findViewById(R.id.email_has_attachments)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
-        cardView = view.findViewById(R.id.cardview)
+        rootView = view.findViewById(R.id.cardview)
     }
 
 }

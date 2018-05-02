@@ -2,149 +2,162 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/email_contact_info_popup" >
+    <LinearLayout
+        android:id="@+id/email_contact_info_popup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_marginTop="10dp"
+        <LinearLayout
             android:id="@+id/from_container"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
             <TextView
-                android:textColor="@color/black"
-                android:layout_alignParentStart="true"
                 android:id="@+id/title_from"
+                fontPath="fonts/NunitoSans-Bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="From:"
+                android:layout_alignParentStart="true"
                 android:gravity="center_vertical"
-                fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="15sp" />
+                android:text="@string/from_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
 
             <TextView
-                android:layout_marginStart="32dp"
-                android:layout_toEndOf="@+id/title_from"
                 android:id="@+id/from_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gianni Carlo"
+                android:layout_marginStart="32dp"
+                android:layout_toEndOf="@+id/title_from"
                 android:gravity="center_horizontal"
-                android:textSize="15sp" />
+                android:text="Gianni Carlo"
+                android:textColor="#7d7d7d"
+                android:textSize="14sp"/>
 
             <TextView
-                android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/from_name"
                 android:id="@+id/from_mail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/from_name"
+                android:gravity="center_vertical"
                 android:text="@string/criptextdotcom"
                 android:textColor="@color/azure"
-                android:gravity="center_vertical"
-                android:textSize="15sp" />
-        </RelativeLayout>
+                android:textSize="14sp"/>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/reply_to_container"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
             <TextView
-                android:textColor="@color/black"
                 android:id="@+id/title_reply_to"
+                fontPath="fonts/NunitoSans-Bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reply to:"
                 android:gravity="center_vertical"
-                fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="15sp" />
+                android:text="@string/reply_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
 
             <TextView
-                android:layout_marginStart="12dp"
-                android:layout_toEndOf="@+id/title_reply_to"
                 android:id="@+id/reply_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gianni Carlo"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@+id/title_reply_to"
                 android:gravity="center_vertical"
-                android:textSize="15sp" />
+                android:text="Gianni Carlo"
+                android:textColor="#7d7d7d"
+                android:textSize="14sp"/>
 
             <TextView
-                android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/reply_name"
                 android:id="@+id/reply_mail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/reply_name"
+                android:gravity="center_vertical"
                 android:text="@string/criptextdotcom"
                 android:textColor="@color/azure"
-                android:gravity="center_vertical"
-                android:textSize="15sp" />
-        </RelativeLayout>
-        <LinearLayout
-            android:id="@+id/to_container"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:textColor="@color/black"
-                android:layout_width="0dip"
-                android:layout_weight="0.20"
-                android:layout_height="wrap_content"
-                android:text="To:"
-                android:gravity="center_vertical"
-                fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="15sp" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:layout_marginStart="55dp"
-                    android:id="@+id/contacts_to_recycler"
-                    android:layout_width="wrap_content"
-                    android:layout_height="125dp"/>
-
+                android:textSize="14sp"/>
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/date_container"
-            android:layout_marginStart="10dp"
+        <LinearLayout
+            android:id="@+id/to_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="15dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-            <TextView
-                android:layout_marginTop="10dp"
-                android:textColor="@color/black"
-                android:id="@+id/title_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date:"
-                android:gravity="center_vertical"
-                fontPath="fonts/NunitoSans-Bold.ttf"
-                android:textSize="15sp" />
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal">
 
             <TextView
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.20"
+                android:gravity="center_vertical"
+                android:text="@string/to_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/contacts_to_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="55dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/date_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/title_date"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginStart="38dp"
-                android:layout_toEndOf="@id/title_date"
+                android:gravity="center_vertical"
+                android:text="@string/date_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+            <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10:30 AM"
+                android:layout_marginStart="38dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
-                android:textSize="15sp" />
+                android:text="10:30 AM"
+                android:textColor="#7d7d7d"
+                android:textSize="14sp"/>
 
-        </RelativeLayout>
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

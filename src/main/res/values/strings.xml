@@ -144,6 +144,7 @@
     <string name="titulo_mailbox">INBOX</string>
     <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
+    <string name="accept">Accept</string>
     <string name="trash">Trash</string>
     <string name="more">More Options</string>
     <string name="criptext_com">\@criptext.com</string>
@@ -179,6 +180,7 @@
     <string name="error_updating_labels">Error updating email labels. Please try again</string>
     <string name="error_updating_status">Error updating email status. Please try again</string>
     <string name="error_getting_counters">Error getting label counters. Please try again</string>
+    <string name="error_getting_email">Error getting email. Please try again</string>
     <string name="error_getting_account">Error getting user account. Please try again</string>
     <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_getting_contacts">Error getting contacts. Please try again</string>
@@ -228,4 +230,15 @@
     <string name="nosubject">(No Subject)</string>
     <string name="nocontent">(No Content)</string>
     <string name="unknown">Unknown</string>
+    <string name="to">To</string>
+    <string name="to_contacts">To "%1$d" contacts</string>
+    <string name="to_me_and">To me and "%1$d" contacts</string>
+    <string name="to_me">To me</string>
+    <string name="label_as">Label as</string>
+    <string name="not_implemented">Not Implemented</string>
+    <string name="email_sent">Email Sent Successfully</string>
+    <string name="from_popup">From:</string>
+    <string name="to_popup">To:</string>
+    <string name="reply_popup">Reply To:</string>
+    <string name="date_popup">Date:</string>
 </resources>

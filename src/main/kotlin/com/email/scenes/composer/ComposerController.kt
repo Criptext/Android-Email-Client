@@ -61,7 +61,7 @@ class ComposerController(private val model: ComposerModel,
                 }
                 else {
                     host.exitToScene(MailboxParams(), ActivityMessage.SendMail(result.emailId,
-                            scene.getDataInputByUser()))
+                            model.fullEmail?.email?.threadid, scene.getDataInputByUser()))
                 }
             }
             is ComposerResult.SaveEmail.Failure -> {
@@ -128,6 +128,7 @@ class ComposerController(private val model: ComposerModel,
                     (host as BaseActivity).title = "REPLY ALL"
                     model.body = fullEmail.email.content
                     model.to.add(fullEmail.from)
+                    model.to.addAll(fullEmail.to)
                     model.cc.addAll(fullEmail.cc)
                 }
 

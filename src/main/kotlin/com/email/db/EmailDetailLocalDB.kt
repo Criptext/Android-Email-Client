@@ -1,7 +1,11 @@
 package com.email.db
 
 import android.content.Context
+import com.email.db.models.EmailLabel
 import com.email.db.models.FullEmail
+import com.email.db.models.Label
+import com.email.scenes.mailbox.data.EmailThread
+import java.util.HashSet
 
 /**
  * Created by sebas on 3/12/18.
@@ -9,8 +13,13 @@ import com.email.db.models.FullEmail
 
 interface EmailDetailLocalDB {
 
+    fun getLabelsFromThreadId(threadId: String): List<Label>
     fun getFullEmailsFromThreadId(threadId: String): List<FullEmail>
     fun unsendEmail(emailId: Long)
+    fun deleteRelationByEmailIds(emailIds: List<Long>)
+    fun getLabelFromLabelType(labelTextType: MailFolders): Label
+    fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
+    fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean)
 
     class Default(applicationContext: Context): EmailDetailLocalDB {
 
@@ -43,6 +52,26 @@ interface EmailDetailLocalDB {
 
             fullEmails.last().viewOpen = true
             return fullEmails
+        }
+
+        override fun getLabelsFromThreadId(threadId: String): List<Label> {
+            return db.emailLabelDao().getLabelsFromEmailThreadId(threadId)
+        }
+
+        override fun deleteRelationByEmailIds(emailIds: List<Long>) {
+            db.emailLabelDao().deleteRelationByEmailIds(emailIds)
+        }
+
+        override fun getLabelFromLabelType(labelTextType: MailFolders): Label {
+            return db.labelDao().get(labelTextType)
+        }
+
+        override fun createLabelEmailRelations(emailLabels: List<EmailLabel>){
+            return db.emailLabelDao().insertAll(emailLabels)
+        }
+
+        override fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean) {
+            db.emailDao().toggleRead(ids = emailIds, unread = updateUnreadStatus)
         }
     }
 

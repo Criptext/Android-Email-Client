@@ -15,7 +15,7 @@ class LabelDataHandler(sceneController: SceneController) {
                 sceneController.createRelationSelectedEmailLabels(selectedLabels)
             }
             is EmailDetailSceneController -> {
-                sceneController.createRelationSelectedEmailLabels(selectedLabels)
+                sceneController.createRelationAllEmailLabels(selectedLabels, null)
             }
             else -> {
 

@@ -7,40 +7,41 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add labels"
-        android:textStyle="bold"
+        android:text="@string/label_as"
         android:gravity="start"
         android:layout_marginLeft="10dp"
         android:paddingTop="10dp"
         android:paddingBottom="5dp"
         android:paddingStart="20dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="20sp"
-        />
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:textSize="17sp"/>
+
     <ProgressBar
         android:padding="50dp"
         android:id="@+id/label_chooser_progress_loading"
-        android:layout_width="330dp"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/progress_bar_circle"/>
-            <android.support.v7.widget.RecyclerView
-                android:visibility="gone"
-                android:id="@+id/label_recycler"
-                android:layout_gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp">
 
-            </android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+        android:visibility="gone"
+        android:id="@+id/label_recycler"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content">
+
         <Button
             android:textColor="@color/label_buttons_text"
             android:textSize="15sp"
@@ -51,7 +52,8 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="Cancel" />
+            android:text="@string/cancel"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
 
         <Button
             android:textSize="15sp"
@@ -63,6 +65,9 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="Accept" />
+            android:text="@string/accept"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
     </LinearLayout>
+
 </LinearLayout>

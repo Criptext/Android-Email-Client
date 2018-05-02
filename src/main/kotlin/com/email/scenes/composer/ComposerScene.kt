@@ -5,10 +5,7 @@ import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.webkit.WebView
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ScrollView
-import android.widget.Toast
+import android.widget.*
 import com.email.db.models.Contact
 import com.email.R
 import com.email.db.models.FullEmail
@@ -98,12 +95,17 @@ interface ComposerScene {
                 ComposerTypes.FORWARD -> {
                     bodyEditText.text = HTMLUtils.changedHeaderHtml(MailBody.createNewForwardMessageBody(
                             composerInputData.body, ""))
+                    subjectEditText.setText("FW: ${replyData.fullEmail.email.subject}", TextView.BufferType.NORMAL)
+                    bodyEditText.setFocus()
                 }
                 ComposerTypes.REPLY, ComposerTypes.REPLY_ALL -> {
-                    responseBody.loadDataWithBaseURL("", HTMLUtils.changedHeaderHtml(MailBody.createNewReplyMessageBody(composerInputData.body,
+                    responseBody.loadDataWithBaseURL("",
+                            HTMLUtils.changedHeaderHtml(MailBody.createNewReplyMessageBody(composerInputData.body,
                             System.currentTimeMillis(), replyData.fullEmail.from.name, "")),
                             "text/html", "utf-8", "")
+                    subjectEditText.setText("RE: ${replyData.fullEmail.email.subject}", TextView.BufferType.NORMAL)
                     imageViewMore.visibility = View.VISIBLE
+                    bodyEditText.setFocus()
                 }
                 else -> {
                     bodyEditText.setMinHeight()

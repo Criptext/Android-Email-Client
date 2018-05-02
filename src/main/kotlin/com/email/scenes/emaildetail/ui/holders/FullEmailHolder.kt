@@ -1,9 +1,7 @@
 package com.email.scenes.emaildetail.ui.holders
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -28,6 +26,8 @@ import com.email.utils.HTMLUtils
 import com.email.utils.ui.ZoomLayout
 import com.email.utils.WebViewUtils
 import com.github.ybq.android.spinkit.SpinKitView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 
 /**
  * Created by sebas on 3/12/18.
@@ -43,7 +43,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val attachmentView: ImageView
     private val readView: ImageView
     private val unsendView: AppCompatImageView
-    private val layoutAttachment : RelativeLayout
+    private val email_options: View
     private val contactInfoPopUp: EmailContactInfoPopup
     private val readHistoryPopUp: ReadHistoryPopUp
     private val attachmentHistoryPopUp: AttachmentHistoryPopUp
@@ -80,10 +80,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             attachmentHistoryPopUp.createPopup(fullEmail, null)
         }
 
-        layoutAttachment.setOnClickListener{
-            TODO("HANDLE CLICK TO ATTACHMENT")
-        }
-
         replyView.setOnClickListener{
             emailListener?.onReplyOptionSelected(
                     fullEmail = fullEmail,
@@ -93,7 +89,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         unsendView.setOnClickListener {
             toggleUnsendProgress(isShown = true)
-            deactivateElementsWhileUnsending()
+            deactivateElementsForUnsend()
             emailListener?.onUnsendEmail(
                     fullEmail = fullEmail,
                     position = position)
@@ -138,6 +134,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     emailListener?.onDeleteOptionSelected(
                             fullEmail = fullEmail,
                             position = position )
+                R.id.mark_spam ->
+                    emailListener?.onSpamOptionSelected(
+                            fullEmail = fullEmail,
+                            position = position )
+
             }
             false
         }
@@ -161,36 +162,84 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         return popupMenu
     }
 
-    @SuppressLint("RestrictedApi")
     override fun bindFullMail(fullEmail: FullEmail) {
+
         toggleUnsendProgress(isShown = false)
-        setDefaultBackgroundColors()
+
         if(fullEmail.email.delivered != DeliveryTypes.UNSENT) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
-        } else {
-            val attachmentImage = layoutAttachment.findViewById<ImageView>(R.id.attachment_container)
-            attachmentImage.setImageDrawable(
-                    ContextCompat.getDrawable(view.context, R.drawable.eliminar_attachment_lock))
+            setDefaultBackgroundColors()
+        }
+        else {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml("This content was unsent"), "text/html", "utf-8", "")
-
-            val unsendDrawable = DrawableCompat.wrap(unsendView.drawable)
-
-            unsendView.supportBackgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.white))
-
-            DrawableCompat.setTintList(unsendDrawable, ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.unsend_button_red)))
+            deactivateElementsForUnsend()
+            DrawableCompat.setTint(unsendView.drawable,
+                    ContextCompat.getColor(unsendView.context, R.color.unsend_button_red))
+            unsendView.background = ContextCompat.getDrawable(unsendView.context, R.drawable.circle_unsent)
         }
 
-        val numberContacts = fullEmail.to.size
-        view.findViewById<LinearLayout>(R.id.container_my_email_options).visibility = View.INVISIBLE
         headerView.text = fullEmail.from.name
-        toView.text = if(numberContacts > 0)
-            "To me and ${numberContacts  - 1} contacts" else "To me and $numberContacts contacts"
+        email_options.visibility = if(fullEmail.email.delivered != DeliveryTypes.NONE)
+            View.VISIBLE else View.INVISIBLE
+
+        setToText(fullEmail)
+        setIcons(fullEmail.email.delivered)
 
     }
 
-    fun setupWebview(){
+    private fun setToText(fullEmail: FullEmail){
+        val numberContacts = fullEmail.to.size
+        toView.text = when {
+            fullEmail.email.delivered != DeliveryTypes.NONE && numberContacts == 1 ->
+                "${toView.resources.getString(R.string.to)} ${fullEmail.to[0].name}"
+            fullEmail.email.delivered != DeliveryTypes.NONE && numberContacts > 0 ->
+                toView.resources.getString(R.string.to_contacts, numberContacts)
+            numberContacts > 1 ->
+                toView.resources.getString(R.string.to_me_and, numberContacts  - 1)
+            else ->
+                toView.resources.getString(R.string.to_me)
+        }
+    }
+
+    private fun setIcons(deliveryType: DeliveryTypes){
+
+        readView.visibility = View.VISIBLE
+
+        when(deliveryType){
+            DeliveryTypes.SENT -> {
+                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
+            }
+            DeliveryTypes.DELIVERED -> {
+                setIconAndColor(R.drawable.read, R.color.sent)
+                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
+            }
+            DeliveryTypes.OPENED -> {
+                setIconAndColor(R.drawable.read, R.color.azure)
+                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_read)
+            }
+            DeliveryTypes.NONE -> {
+                readView.visibility = View.GONE
+            }
+        }
+
+        //TODO validate if has attachments
+        attachmentView.visibility = View.GONE
+    }
+
+    private fun setIconAndColor(drawable: Int, color: Int){
+        Picasso.with(view.context).load(drawable).into(readView, object : Callback {
+            override fun onError() {}
+            override fun onSuccess() {
+                DrawableCompat.setTint(readView.drawable,
+                        ContextCompat.getColor(view.context, color))
+            }
+        })
+    }
+
+    private fun setupWebview(){
         val metrics = DisplayMetrics()
         val display = (context.getSystemService(
                 Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
@@ -243,8 +292,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
     }
 
-    private fun deactivateElementsWhileUnsending() {
-        bodyContainer.alpha = 0.5.toFloat()
+    private fun deactivateElementsForUnsend() {
+        bodyContainer.alpha = 0.4.toFloat()
         bodyContainer.isEnabled = false
     }
 
@@ -252,6 +301,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyContainer.alpha = 1.toFloat()
         bodyContainer.isEnabled = true
     }
+
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)
         toView = view.findViewById(R.id.to)
@@ -260,8 +310,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         attachmentView =  view.findViewById(R.id.attachment)
         readView =  view.findViewById(R.id.read)
         unsendView =  view.findViewById(R.id.unsend)
+        email_options = view.findViewById(R.id.container_my_email_options)
 
-        layoutAttachment = view.findViewById(R.id.open_full_mail_attachment_container)
         contactInfoPopUp = EmailContactInfoPopup(toView)
         readHistoryPopUp = ReadHistoryPopUp(readView)
         attachmentHistoryPopUp = AttachmentHistoryPopUp(attachmentView)

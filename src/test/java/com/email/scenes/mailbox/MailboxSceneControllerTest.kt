@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox
 
 import com.email.IHostActivity
+import com.email.R
 import com.email.api.ApiCall
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
@@ -102,7 +103,7 @@ private lateinit var model: MailboxSceneModel
         val dateMilis = System.currentTimeMillis()
         return (1..size)
                 .map {
-                    val email = Email(id = 0, key = it.toString(), threadid = "thread$it", unread = true,
+                    val email = Email(id = it.toLong(), key = it.toString(), threadid = "thread$it", unread = true,
                             secure = true, content = "this is message #$it", preview = "message #$it",
                             subject = "message #$it", delivered = DeliveryTypes.DELIVERED,
                             date = Date(dateMilis + it), isTrash = false, isDraft = false)
@@ -110,7 +111,7 @@ private lateinit var model: MailboxSceneModel
                             to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
                             from = Contact(2, "mayer@criptext.com", name = "Mayer"))
-                    EmailThread(fullEmail, listOf(Label.defaultItems.inbox))
+                    EmailThread(fullEmail, listOf(Label.defaultItems.inbox), 0)
                 }
     }
     @Test
@@ -221,5 +222,94 @@ private lateinit var model: MailboxSceneModel
             }
             didInsertSender `should be` true
         }
+    }
+
+    @Test
+    fun `after clicking delete, should bulk delete selected threads and then update UI`() {
+
+        afterFirstLoad {
+
+            model.threads.size `should equal` 20
+
+            val threadEventListener = threadEventListenerSlot.captured
+
+            //Select 3 threads
+            val initialEmailThreads = model.threads.toList()
+            threadEventListener.onToggleThreadSelection(initialEmailThreads[0], 0)
+            threadEventListener.onToggleThreadSelection(initialEmailThreads[2], 10)
+
+            model.selectedThreads.length() `should equal` 2
+
+            //trigger bulk move to trash event
+            controller.onOptionsItemSelected(R.id.mailbox_delete_selected_messages)
+
+            runner.assertPendingWork(listOf(UpdateEmailThreadsLabelsRelationsWorker::class.java))
+            runner._work()
+
+            model.selectedThreads.length() `should equal` 0
+
+            //Verify that only remove 2 relations and create 2 relations
+            val emailIdsSlot = CapturingSlot<List<Long>>()
+            val emailLabelsSlot = CapturingSlot<List<EmailLabel>>()
+            verify {
+                db.deleteRelationByEmailIds(capture(emailIdsSlot))
+                db.createLabelEmailRelations(capture(emailLabelsSlot))
+            }
+
+            val emailIds = emailIdsSlot.captured
+            val emailLabels = emailLabelsSlot.captured
+            emailIds.size `should be` 2
+            emailLabels.size `should be` 2
+
+        }
+
+    }
+
+    @Test
+    fun `after clicking spam, should bulk move to spam selected threads and then update UI`() {
+
+        afterFirstLoad {
+
+            model.threads.size `should equal` 20
+
+            val threadEventListener = threadEventListenerSlot.captured
+
+            //Select 3 threads
+            val initialEmailThreads = model.threads.toList()
+            threadEventListener.onToggleThreadSelection(initialEmailThreads[0], 0)
+            threadEventListener.onToggleThreadSelection(initialEmailThreads[2], 10)
+
+            model.selectedThreads.length() `should equal` 2
+
+            //trigger bulk move to trash event
+            controller.onOptionsItemSelected(R.id.mailbox_move_to)
+
+            val onMoveThreadsListenerSlot = CapturingSlot<OnMoveThreadsListener>()
+            verify {
+                scene.showDialogMoveTo(capture(onMoveThreadsListenerSlot))
+            }
+
+            onMoveThreadsListenerSlot.captured.moveToSpam()
+
+            runner.assertPendingWork(listOf(UpdateEmailThreadsLabelsRelationsWorker::class.java))
+            runner._work()
+
+            model.selectedThreads.length() `should equal` 0
+
+            //Verify that only remove 2 relations and create 2 relations
+            val emailIdsSlot = CapturingSlot<List<Long>>()
+            val emailLabelsSlot = CapturingSlot<List<EmailLabel>>()
+            verify {
+                db.deleteRelationByEmailIds(capture(emailIdsSlot))
+                db.createLabelEmailRelations(capture(emailLabelsSlot))
+            }
+
+            val emailIds = emailIdsSlot.captured
+            val emailLabels = emailLabelsSlot.captured
+            emailIds.size `should be` 2
+            emailLabels.size `should be` 2
+
+        }
+
     }
 }

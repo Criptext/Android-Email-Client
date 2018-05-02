@@ -1,42 +1,45 @@
-package com.email.scenes.mailbox.data
+package com.email.scenes.emaildetail.workers
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.db.EmailDetailLocalDB
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.EmailLabel
+import com.email.db.models.FullEmail
+import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
- * Created by sebas on 04/05/18.
+ * Created by danieltigse on 05/01/18.
  */
 
-class UpdateEmailThreadsLabelsRelationsWorker(
-        private val db: MailboxLocalDB,
+class UpdateEmailLabelsRelationsWorker(
+        private val db: EmailDetailLocalDB,
         private val chosenLabel: MailFolders?,
         private val selectedLabels: SelectedLabels?,
-        private val selectedEmailThreads: List<EmailThread>,
+        private val threadId: String,
         override val publishFn: (
-                MailboxResult.UpdateEmailThreadsLabelsRelations) -> Unit)
-    : BackgroundWorker<MailboxResult.UpdateEmailThreadsLabelsRelations> {
+                EmailDetailResult.UpdateEmailThreadsLabelsRelations) -> Unit)
+    : BackgroundWorker<EmailDetailResult.UpdateEmailThreadsLabelsRelations> {
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations {
+    override fun catchException(ex: Exception): EmailDetailResult.UpdateEmailThreadsLabelsRelations {
 
         val message = createErrorMessage(ex)
-        return MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
+        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Failure(
                 message = message,
                 exception = ex)
     }
 
-    override fun work(): MailboxResult.UpdateEmailThreadsLabelsRelations? {
+    override fun work(): EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
-        val emailIds = selectedEmailThreads.map {
-            it.id
+        val emailIds = db.getFullEmailsFromThreadId(threadId).map {
+            it.email.id
         }
 
         db.deleteRelationByEmailIds(emailIds = emailIds)
@@ -58,7 +61,7 @@ class UpdateEmailThreadsLabelsRelationsWorker(
         }
         db.createLabelEmailRelations(emailLabels)
 
-        return MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
+        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success()
     }
 
     override fun cancel() {

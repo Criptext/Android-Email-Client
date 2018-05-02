@@ -20,8 +20,7 @@ class LoadFullEmailsFromThreadWorker(
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): EmailDetailResult.LoadFullEmailsFromThreadId {
-        val message = createErrorMessage(ex)
-        return EmailDetailResult.LoadFullEmailsFromThreadId.Failure(message, ex)
+        return EmailDetailResult.LoadFullEmailsFromThreadId.Failure()
     }
 
     override fun work(): EmailDetailResult.LoadFullEmailsFromThreadId {

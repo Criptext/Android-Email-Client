@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/tools"
     android:id="@+id/cardview"
-    card_view:contentPaddingLeft="20dp"
-    card_view:cardPreventCornerOverlap="false"
-    android:layout_marginHorizontal="-5dp"
-    app:cardElevation="0dp"
-    android:elevation="0dp"
-    card_view:cardUseCompatPadding="true">
+    android:paddingStart="20dp"
+    android:layout_marginStart="-2dp"
+    android:layout_marginEnd="-4dp"
+    android:background="@drawable/partial_email_drawable">
+
     <FrameLayout
         android:id="@+id/open_full_mail_item_container"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:background="@color/white"
         android:layout_width="fill_parent"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="20dp"
         android:layout_height="wrap_content" >
+
         <LinearLayout
             android:layout_marginTop="10dp"
             android:weightSum="2"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="0dip"
@@ -80,43 +81,46 @@
                         android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:padding="7dp"
-                        android:src="@drawable/more2"
+                        android:src="@drawable/more_email"
                         android:tint="#89909a" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/container_my_email_options"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp">
 
                     <ImageView
-                        android:padding="3dp"
-                        android:background="@drawable/circle_attachment"
+                        android:padding="5dp"
+                        android:background="@drawable/circle_read"
                         android:tint="@color/azure"
                         android:layout_marginEnd="10dp"
                         android:id="@+id/attachment"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/attachment" />
+
                     <ImageView
-                        android:background="@drawable/circle_attachment"
+                        android:background="@drawable/circle_read"
                         android:tint="@color/azure"
                         android:layout_marginEnd="10dp"
                         android:id="@+id/read"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:padding="5dp"
-                        android:src="@drawable/read_notification" />
+                        android:padding="3dp"
+                        android:src="@drawable/read" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/unsend"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/circle_attachment"
-                        android:backgroundTint="#dd4040"
-                        android:padding="5dp"
+                        android:background="@drawable/circle_unsent_filled"
+                        android:padding="7dp"
                         android:src="@drawable/un_sent"
                         android:tint="@color/white" />
 
@@ -135,6 +139,7 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/body_container"
             android:layout_width="match_parent"
@@ -142,10 +147,10 @@
             android:layout_marginRight="20dp"
             android:layout_height="wrap_content">
 
-
             <HorizontalScrollView
                 android:scrollbars="none"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="85dp"
+                android:layout_marginStart="-5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/full_mail_scroll">
@@ -161,8 +166,8 @@
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/progress_bar_webview_loading"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
+                        android:layout_height="wrap_content"/>
+
                     <com.email.utils.ui.ZoomLayout
                         android:visibility="gone"
                         android:layout_width="match_parent"
@@ -180,6 +185,7 @@
                 </LinearLayout>
 
             </HorizontalScrollView>
+
             <TextView
                 android:visibility="gone"
                 android:id="@+id/email_preview"
@@ -189,10 +195,11 @@
                 android:layout_marginBottom="70dip"
                 android:text="@string/full_mail_item_open_default" />
 
-            <include
-                layout="@layout/open_full_mail_attachment"
-                />
+            <!--<include layout="@layout/open_full_mail_attachment"/>-->
+
         </LinearLayout>
+
     </FrameLayout>
-</android.support.v7.widget.CardView>
+
+</LinearLayout>
 

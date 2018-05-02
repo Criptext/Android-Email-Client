@@ -73,7 +73,7 @@ interface SignalKeyGenerator {
         val identityKeyPair: IdentityKeyPair = KeyHelper.generateIdentityKeyPair()
         val signedPreKeyId: Int = Random().nextInt(99) + 1
         val signedPreKey: SignedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-        val preKeys: List<PreKeyRecord> = KeyHelper.generatePreKeys(0, 255)
+        val preKeys: List<PreKeyRecord> = KeyHelper.generatePreKeys(1, 100)
     }
 
     class PrivateBundle(val identityKeyPair: String, val signedPreKeyId: Int,

@@ -40,7 +40,6 @@ class EmailDetailControllerTest {
     private lateinit var mailboxDb: MockedMailboxLocalDB
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: EmailDetailDataSource
-    private lateinit var mailboxDataSource: MailboxDataSource
     private lateinit var controller: EmailDetailSceneController
     private lateinit var protocolStore: MockedSignalProtocolStore
     private lateinit var activeAccount: ActiveAccount
@@ -58,14 +57,6 @@ class EmailDetailControllerTest {
         mailboxDb = MockedMailboxLocalDB()
         emailInsertionDao = mockk()
 
-        mailboxDataSource = MailboxDataSource(
-                signalClient = signalClient,
-                runner = MockedWorkRunner(),
-                activeAccount = activeAccount,
-                mailboxLocalDB = mailboxDb,
-                emailInsertionDao = emailInsertionDao,
-                rawSessionDao = MockedRawSessionDao())
-
         dataSource = EmailDetailDataSource(
                 signalClient = signalClient,
                 activeAccount = activeAccount,
@@ -74,7 +65,6 @@ class EmailDetailControllerTest {
 
         controller = EmailDetailSceneController(
                 scene = scene,
-                mailboxDataSource = mailboxDataSource,
                 dataSource = dataSource,
                 host = MockedIHostActivity(),
                 model = model,
@@ -122,12 +112,10 @@ class EmailDetailControllerTest {
         controller.onStart(null)
 
         dataSource.listener `should not be` null
-        mailboxDataSource.listener `should not be` null
 
         controller.onStop()
 
         dataSource.listener `should be` null
-        mailboxDataSource.listener `should be` null
     }
 
     @Test

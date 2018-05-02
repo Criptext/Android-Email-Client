@@ -27,14 +27,15 @@ data class Label (
     }
 
     class DefaultItems {
-        val draft = Label(id = 1, color = ColorTypes.GREEN, text = MailFolders.DRAFT)
-        val inbox = Label(id = 2, color = ColorTypes.BLUE, text = MailFolders.INBOX)
-        val sent = Label(id = 3, color = ColorTypes.RED, text = MailFolders.SENT)
-        val trash = Label(id = 4, color = ColorTypes.WHITE, text = MailFolders.TRASH)
-        val starred = Label(id = 5, color = ColorTypes.WHITE, text = MailFolders.STARRED)
-        val spam = Label(id = 6, color = ColorTypes.GREEN, text = MailFolders.SPAM)
+        val inbox = Label(id = 1, color = ColorTypes.BLUE, text = MailFolders.INBOX)
+        val spam = Label(id = 2, color = ColorTypes.RED, text = MailFolders.SPAM)
+        val sent = Label(id = 3, color = ColorTypes.GREEN, text = MailFolders.SENT)
+        val important = Label(id = 4, color = ColorTypes.ORANGE, text = MailFolders.IMPORTANT)
+        val starred = Label(id = 5, color = ColorTypes.YELLOW, text = MailFolders.STARRED)
+        val draft = Label(id = 6, color = ColorTypes.GRAY, text = MailFolders.DRAFT)
+        val trash = Label(id = 7, color = ColorTypes.PURPLE, text = MailFolders.TRASH)
 
-        fun toList() = listOf(draft, inbox, sent, trash, starred, spam)
+        fun toList() = listOf(draft, inbox, sent, trash, starred, spam, important)
 
         fun rejectedLabelsByMailbox(label: Label): List<Label> =
             when (label) {
