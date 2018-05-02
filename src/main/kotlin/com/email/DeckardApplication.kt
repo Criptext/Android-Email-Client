@@ -2,7 +2,7 @@ package com.email
 
 import android.app.Application
 import com.email.db.models.ActiveAccount
-import com.email.websocket.WebSocket
+import com.email.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
@@ -18,7 +18,7 @@ class DeckardApplication : Application(){
         Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
-            WebSocket.getInstance(activeAccount, applicationContext)
+            WebSocketSingleton.getInstance(activeAccount, applicationContext)
         }
     }
 }

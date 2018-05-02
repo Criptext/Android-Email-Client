@@ -9,6 +9,7 @@ import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.*
+import com.email.mocks.MockedJSONData
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.mailbox.data.*
 import com.email.scenes.mailbox.feed.FeedController
@@ -31,7 +32,7 @@ import java.util.*
  */
 
 class MailboxSceneControllerTest {
-private lateinit var model: MailboxSceneModel
+    private lateinit var model: MailboxSceneModel
     private lateinit var scene: MailboxScene
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
@@ -187,14 +188,7 @@ private lateinit var model: MailboxSceneModel
         } answers { didInsertSender = true; listOf(2) }
 
         // mock server responses
-        val getEventsOneNewEmailResponse = """
-            [
-          {
-            "cmd": 1,
-            "params":
-                "{\"threadId\":\"gaumala1522191612518\",\"subject\":\"hello\",\"from\":\"Mayer Mizrachi <mayer@jigl.com>\",\"to\":\"gabriel@jigl.com\",\"cc\":\"\",\"bcc\":\"\",\"bodyKey\":\"gaumala1522191612518\",\"preview\":\"\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":81}"
-          }
-        ]"""
+        val getEventsOneNewEmailResponse = "[${MockedJSONData.sampleNewEmailEvent}]"
         server.enqueue(MockResponse()
                 .setBody(getEventsOneNewEmailResponse)
                 .setResponseCode(200))

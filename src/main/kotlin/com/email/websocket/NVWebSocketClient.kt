@@ -1,7 +1,6 @@
-package com.criptext.secureemail.socket
+package com.email.websocket
 
 import android.util.Log
-import com.email.websocket.WebSocketClient
 import com.neovisionaries.ws.client.*
 
 /**
@@ -16,11 +15,11 @@ class NVWebSocketClient: WebSocketClient {
     private val webSocketAdapter = object : WebSocketAdapter() {
         override fun onDisconnected(websocket: WebSocket?, serverCloseFrame: WebSocketFrame?,
                                     clientCloseFrame: WebSocketFrame?, closedByServer: Boolean) {
-            Log.e("WEBSOCKET", "Disconnected")
         }
 
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,
-                MutableList<String>>?) { }
+                MutableList<String>>?) {
+        }
 
         override fun onConnectError(websocket: WebSocket?, exception: WebSocketException?) {
             Log.e("WEBSOCKET", "Error : " + exception.toString())

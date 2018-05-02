@@ -59,7 +59,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
 
     companion object {
         private fun createCriptextSocketServerURL(recipientId: String, deviceId: Int): String {
-            return """ws://${WebSocket.HOST_URL}?recipientId=$recipientId&deviceId=$deviceId"""
+            return """ws://${WebSocketSingleton.HOST_URL}?recipientId=$recipientId&deviceId=$deviceId"""
         }
     }
 
