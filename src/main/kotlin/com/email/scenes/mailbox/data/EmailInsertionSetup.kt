@@ -1,10 +1,12 @@
 package com.email.scenes.mailbox.data
 
+import com.email.api.EmailInsertionAPIClient
 import com.email.api.models.EmailMetadata
 import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
+import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
 import kotlin.collections.HashMap
@@ -116,17 +118,40 @@ object EmailInsertionSetup {
     }
 
 
-    /**
-     * Inserts all the rows and relations needed for a new email
-     * @param dao Abstraction for the database methods needed to insert all rows and relations
-     * @param metadata metadata of the email to insert
-     * @param decryptedBody plain text string with the email's body
-     * @param labels list of labels to add to the email once inserted.
-     */
-    fun exec(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String, labels: List<Label>) {
+    fun exec(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String,
+                     labels: List<Label>) {
         val fullEmail = createFullEmailToInsert(dao, metadata, decryptedBody, labels)
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
+    }
+
+    private fun decryptMessage(signalClient: SignalClient, recipientId: String, deviceId: Int,
+                               encryptedB64: String): String {
+        return try {
+            signalClient.decryptMessage(recipientId = recipientId,
+                    deviceId = deviceId,
+                    encryptedB64 = encryptedB64)
+        } catch (ex: Exception) {
+            "Unable to decrypt message."
+        }
+    }
+
+    /**
+     * Inserts all the rows and relations needed for a new email in a single transaction
+     * @param apiClient Abstraction for the network calls needed
+     * @param dao Abstraction for the database methods needed to insert all rows and relations
+     * @param metadata metadata of the email to insert
+     * @param labels list of labels to add to the email once inserted.
+     */
+    fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
+                                       dao: EmailInsertionDao, metadata: EmailMetadata,
+                                       labels: List<Label>) {
+        dao.runTransaction(Runnable {
+                val body = apiClient.getBodyFromEmail(metadata.bodyKey)
+                val decryptedBody = decryptMessage(signalClient = signalClient,
+                        recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
+                EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
+            })
     }
 }
