@@ -188,8 +188,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.initDrawerLayout()
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
 
-        if (shouldSync) dataSourceController.updateMailbox(model.selectedLabel)
-        else if (model.threads.isEmpty()) reloadMailboxThreads()
+        if (model.threads.isEmpty()) reloadMailboxThreads()
 
         toggleMultiModeBar()
         scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
@@ -331,13 +330,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
+            model.lastSync = System.currentTimeMillis()
             if (resultData.mailboxThreads != null) {
-                model.lastSync = System.currentTimeMillis()
-                if (resultData.mailboxThreads.isNotEmpty()) {
-                    threadListController.populateThreads(resultData.mailboxThreads)
-                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
-                    scene.updateToolbarTitle(toolbarTitle)
-                }
+                threadListController.populateThreads(resultData.mailboxThreads)
+                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                scene.updateToolbarTitle(toolbarTitle)
             }
         }
 
@@ -366,6 +363,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     else
                         threadListController.appendAll(result.emailThreads, hasReachedEnd)
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+
+                    if (shouldSync)
+                        updateMailbox(model.selectedLabel)
                 }
             }
         }
