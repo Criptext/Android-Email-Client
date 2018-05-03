@@ -31,6 +31,7 @@ sealed class MailboxResult {
         abstract fun getDestinationMailbox(): MailFolders
         class Success(
                 val emailThreads: List<EmailThread>,
+                val isReset: Boolean,
                 val mailboxLabel: MailFolders): LoadEmailThreads() {
 
             override fun getDestinationMailbox(): MailFolders {

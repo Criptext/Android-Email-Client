@@ -25,8 +25,7 @@ sealed class MailboxRequest{
 
     data class LoadEmailThreads(
             val label: MailFolders,
-            val limit: Int,
-            val oldestEmailThread: EmailThread?
+            val loadParams: LoadParams
             ): MailboxRequest()
 
     data class SendMail(val emailId: Long, val threadId: String?, val data: ComposerInputData): MailboxRequest()

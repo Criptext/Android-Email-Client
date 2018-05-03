@@ -100,21 +100,7 @@ class MailboxSceneControllerTest {
         ApiCall.baseUrl = server.url("v1/mock").toString()
     }
 
-    private fun createEmailThreads(size: Int): List<EmailThread> {
-        val dateMilis = System.currentTimeMillis()
-        return (1..size)
-                .map {
-                    val email = Email(id = it.toLong(), key = it.toString(), threadid = "thread$it", unread = true,
-                            secure = true, content = "this is message #$it", preview = "message #$it",
-                            subject = "message #$it", delivered = DeliveryTypes.DELIVERED,
-                            date = Date(dateMilis + it), isTrash = false, isDraft = false)
-                    val fullEmail = FullEmail(email, labels = listOf(Label.defaultItems.inbox),
-                            to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
-                                    cc = emptyList(), bcc = emptyList(), files = emptyList(),
-                            from = Contact(2, "mayer@criptext.com", name = "Mayer"))
-                    EmailThread(fullEmail, listOf(Label.defaultItems.inbox), 0)
-                }
-    }
+
     @Test
     fun `should forward onStart and onStop to FeedController`() {
         controller.onStart(null)
@@ -133,7 +119,7 @@ class MailboxSceneControllerTest {
                     oldestEmailThread = null,
                     rejectedLabels = any(),
                     limit = 20)
-        } returns createEmailThreads(20)
+        } returns MailboxTestUtils.createEmailThreads(20)
 
         runner.assertPendingWork(listOf(GetMenuInformationWorker::class.java,
                 LoadEmailThreadsWorker::class.java))
@@ -151,7 +137,7 @@ class MailboxSceneControllerTest {
 
     @Test
     fun `onStart, should not try to load threads if is not empty`() {
-        model.threads.addAll(createEmailThreads(20))
+        model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
 
         controller.onStart(null)
 
