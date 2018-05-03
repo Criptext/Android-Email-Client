@@ -9,7 +9,7 @@ import com.email.db.ContactTypes
  */
 
 @Entity(tableName = "email_contact",
-        primaryKeys = [ "emailId", "contactId" ],
+        indices = [ (Index("emailId", "type", "contactId")) ],
         foreignKeys = [
             ForeignKey(entity = Email::class,
                 parentColumns = ["id"],
@@ -23,5 +23,8 @@ import com.email.db.ContactTypes
             )
         ]
 )
-class EmailContact(@ColumnInfo(name = "emailId") var emailId: Long, @ColumnInfo(name = "contactId")
-var contactId: Long, @ColumnInfo(name = "type") var type: ContactTypes)
+class EmailContact(
+        @PrimaryKey var id: Long,
+        @ColumnInfo(name = "emailId") var emailId: Long,
+        @ColumnInfo(name = "contactId") var contactId: Long,
+        @ColumnInfo(name = "type") var type: ContactTypes)

@@ -114,6 +114,11 @@ class MailboxSceneControllerTest {
 
     fun afterFirstLoad(assertions: () -> Unit) {
         controller.onStart(null)
+
+        // mock server responses
+        server.enqueue(MockResponse()
+                .setResponseCode(404))
+
         every {
             db.getEmailsFromMailboxLabel(labelTextTypes = MailFolders.INBOX,
                     oldestEmailThread = null,
@@ -122,7 +127,7 @@ class MailboxSceneControllerTest {
         } returns MailboxTestUtils.createEmailThreads(20)
 
         runner.assertPendingWork(listOf(GetMenuInformationWorker::class.java,
-                LoadEmailThreadsWorker::class.java))
+                UpdateMailboxWorker::class.java))
         runner._work()
         runner._work()
         assertions()
@@ -136,7 +141,10 @@ class MailboxSceneControllerTest {
     }
 
     @Test
-    fun `onStart, should not try to load threads if is not empty`() {
+    fun `onStart, should not try to load threads if already synced and is not empty`() {
+        // set as already synced
+        model.lastSync = System.currentTimeMillis()
+        // set as empty
         model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
 
         controller.onStart(null)
@@ -186,7 +194,6 @@ class MailboxSceneControllerTest {
         afterFirstLoad {
             observerSlot.captured.onRefreshMails() // trigger pull down to refresh
 
-
             runner.assertPendingWork(listOf(UpdateMailboxWorker::class.java))
             runner._work()
 
@@ -194,7 +201,7 @@ class MailboxSceneControllerTest {
             verify { emailInsertionDao.insertEmail(assert("should have inserted new mail",
                     { e -> e.subject == "hello" && e.content == "__PLAIN_TEXT__"}))
             }
-            verify(exactly = 2) { // the update should have triggered the second call
+            verify(exactly = 1) {
                 db.getEmailsFromMailboxLabel(labelTextTypes = MailFolders.INBOX,
                         oldestEmailThread = null,
                         rejectedLabels = any(),

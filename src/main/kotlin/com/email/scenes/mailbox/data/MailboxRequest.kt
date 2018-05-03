@@ -15,7 +15,8 @@ sealed class MailboxRequest{
             val threadIds: List<String>): MailboxRequest()
 
     data class UpdateMailbox(
-            val label: Label): MailboxRequest()
+            val label: Label,
+            val loadedThreadsCount: Int): MailboxRequest()
 
     data class UpdateEmailThreadsLabelsRelations(
             val chosenLabel: MailFolders?,

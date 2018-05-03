@@ -93,7 +93,7 @@ object EmailInsertionSetup {
     }
 
     private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes): (Contact) -> EmailContact =
-            { contact -> EmailContact(emailId = newEmailId, contactId = contact.id, type = type) }
+            { contact -> EmailContact(id = 0, emailId = newEmailId, contactId = contact.id, type = type) }
 
     private fun createEmailLabelRelation(newEmailId: Long): (Label) -> EmailLabel =
             { label -> EmailLabel(emailId = newEmailId, labelId = label.id) }
@@ -104,8 +104,8 @@ object EmailInsertionSetup {
     }
 
     private fun insertEmailContactRelations(dao: EmailInsertionDao, fullEmail: FullEmail, newEmailId: Long) {
-        val senderRelation = EmailContact(emailId = newEmailId, contactId = fullEmail.from.id,
-                type = ContactTypes.FROM)
+        val senderRelation = EmailContact(id = 0, emailId = newEmailId,
+                contactId = fullEmail.from.id, type = ContactTypes.FROM)
         val toRelations = fullEmail.to.map(createEmailContactRelation(newEmailId, ContactTypes.TO))
         val ccRelations = fullEmail.cc.map(createEmailContactRelation(newEmailId, ContactTypes.CC))
         val bccRelations = fullEmail.bcc.map(createEmailContactRelation(newEmailId, ContactTypes.BCC))

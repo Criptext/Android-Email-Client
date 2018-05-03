@@ -75,7 +75,7 @@ class LoadEmailThreadsWorker(
     override fun cancel() {
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
                 UIMessage(resId = R.string.failed_getting_emails)
     }
 }
