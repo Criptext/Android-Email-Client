@@ -36,9 +36,6 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 
-    private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes): (Long) -> EmailContact =
-        { contactId -> EmailContact(emailId = newEmailId, contactId = contactId, type = type) }
-
     @Transaction
     fun runTransaction(runnable: Runnable) {
         runnable.run()

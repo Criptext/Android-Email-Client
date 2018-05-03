@@ -39,6 +39,7 @@ class MailboxDataSource(
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
                     label = params.label,
+                    loadedThreadsCount = params.loadedThreadsCount,
                     publishFn = { result ->
                         flushResults(result)
                     })

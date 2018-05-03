@@ -28,18 +28,24 @@ class EmailContactSeeder {
             lateinit var emailContact: EmailContact
             when (iteration) {
                 1 -> emailContact = EmailContact(
+                        id = 0,
                         emailId = 1,
                         contactId = 1,
                         type = ContactTypes.FROM)
-                2 -> emailContact = EmailContact( emailId = 2,
+                2 -> emailContact = EmailContact(
+                        id = 0,
+                        emailId = 2,
                         contactId = 2,
                         type = ContactTypes.BCC)
 
-                3 -> emailContact = EmailContact( emailId = 1,
+                3 -> emailContact = EmailContact(
+                        id = 0,
+                        emailId = 1,
                         contactId = 3,
                         type = ContactTypes.CC)
 
                 4 -> emailContact = EmailContact(
+                        id = 0,
                         emailId = 3,
                         contactId = 4,
                         type = ContactTypes.FROM)

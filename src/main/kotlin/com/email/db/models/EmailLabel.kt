@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.ForeignKey.CASCADE
+import android.arch.persistence.room.Index
 
 /**
  * Created by sebas on 1/24/18.
@@ -11,6 +12,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 
 @Entity(tableName = "email_label",
         primaryKeys = [ "emailId", "labelId" ],
+        indices = [ (Index("labelId", "emailId")) ],
         foreignKeys = [
             ForeignKey(entity = Email::class,
                 parentColumns = ["id"],

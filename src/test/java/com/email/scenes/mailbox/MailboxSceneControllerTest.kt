@@ -21,6 +21,7 @@ import io.mockk.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be empty`
+import org.amshove.kluent.`should be greater than`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.junit.Before
@@ -114,6 +115,7 @@ class MailboxSceneControllerTest {
 
     fun afterFirstLoad(assertions: () -> Unit) {
         controller.onStart(null)
+
         every {
             db.getEmailsFromMailboxLabel(labelTextTypes = MailFolders.INBOX,
                     oldestEmailThread = null,
@@ -129,14 +131,42 @@ class MailboxSceneControllerTest {
     }
 
     @Test
-    fun `onStart, should load threads if empty`() {
+    fun `on a cold start should load threads from db and attempt to fetch events from server`() {
         afterFirstLoad {
             model.threads.size `should equal` 20
+
+            runner.assertPendingWork(listOf(UpdateMailboxWorker::class.java))
         }
     }
 
     @Test
-    fun `onStart, should not try to load threads if is not empty`() {
+    fun `on a cold start should update lastSync after fetching events from server`() {
+        afterFirstLoad {
+            model.threads.size `should equal` 20
+
+            // fetch an empty array of events
+            server.enqueue(MockResponse().setResponseCode(404))
+
+            runner.assertPendingWork(listOf(UpdateMailboxWorker::class.java))
+            runner._work()
+
+            model.lastSync `should be greater than` 0L
+        }
+    }
+    @Test
+    fun `if synced recently, should not fetch events after loading first thread page`() {
+        // assume it synced recently
+        model.lastSync = System.currentTimeMillis()
+        afterFirstLoad {
+            runner.assertPendingWork(emptyList())
+        }
+    }
+
+    @Test
+    fun `onStart, should not try to load threads if already synced and is not empty`() {
+        // set as already synced
+        model.lastSync = System.currentTimeMillis()
+        // set as empty
         model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
 
         controller.onStart(null)
@@ -147,6 +177,10 @@ class MailboxSceneControllerTest {
     @Test
     fun `after clicking a navigation label, should clear threads list and load new ones`() {
         afterFirstLoad {
+            // assume there is no pending work
+            runner.discardPendingWork()
+
+            // trigger ui event
             onDrawerMenuEventListenerSlot.captured.onNavigationItemClick(NavigationMenuOptions.TRASH)
 
             model.selectedLabel `should equal` Label.defaultItems.trash
@@ -184,8 +218,10 @@ class MailboxSceneControllerTest {
 
 
         afterFirstLoad {
-            observerSlot.captured.onRefreshMails() // trigger pull down to refresh
+            // assume there is no pending work
+            runner.discardPendingWork()
 
+            observerSlot.captured.onRefreshMails() // trigger pull down to refresh
 
             runner.assertPendingWork(listOf(UpdateMailboxWorker::class.java))
             runner._work()
@@ -194,7 +230,7 @@ class MailboxSceneControllerTest {
             verify { emailInsertionDao.insertEmail(assert("should have inserted new mail",
                     { e -> e.subject == "hello" && e.content == "__PLAIN_TEXT__"}))
             }
-            verify(exactly = 2) { // the update should have triggered the second call
+            verify(exactly = 2) {
                 db.getEmailsFromMailboxLabel(labelTextTypes = MailFolders.INBOX,
                         oldestEmailThread = null,
                         rejectedLabels = any(),
@@ -208,6 +244,8 @@ class MailboxSceneControllerTest {
     fun `after clicking delete, should bulk delete selected threads and then update UI`() {
 
         afterFirstLoad {
+            // assume there is no pending work
+            runner.discardPendingWork()
 
             model.threads.size `should equal` 20
 
@@ -249,6 +287,8 @@ class MailboxSceneControllerTest {
     fun `after clicking spam, should bulk move to spam selected threads and then update UI`() {
 
         afterFirstLoad {
+            // assume there is no pending work
+            runner.discardPendingWork()
 
             model.threads.size `should equal` 20
 

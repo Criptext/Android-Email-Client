@@ -52,6 +52,7 @@ interface MailboxLocalDB {
                     contactId = db.contactDao().getContact(contactEmail)!!.id
                 }
                 val emailContact = EmailContact(
+                        id = 0,
                         contactId = contactId,
                         emailId = emailId,
                         type = type)

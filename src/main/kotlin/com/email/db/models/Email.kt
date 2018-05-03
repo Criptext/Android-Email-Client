@@ -12,7 +12,7 @@ import java.util.Date
  */
 
 @Entity(tableName = "email",
-        indices = [Index(value = "subject", name = "subject")])
+        indices = [(Index(value = "subject", name = "subject"))])
 data class Email(
         @PrimaryKey(autoGenerate = true)
         var id: Long,

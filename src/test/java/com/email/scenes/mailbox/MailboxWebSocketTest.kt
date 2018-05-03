@@ -7,7 +7,9 @@ import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Label
 import com.email.mocks.MockedWorkRunner
+import com.email.scenes.mailbox.data.LoadEmailThreadsWorker
 import com.email.scenes.mailbox.data.MailboxAPIClient
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
@@ -90,7 +92,7 @@ class MailboxWebSocketTest {
     }
 
     @Test
-    fun `should reset the mailbox when an email for inbox arrives`() {
+    fun `when new email arrives, should reset the mailbox`() {
         controller.onStart(null)
 
         // skip all initialization
@@ -117,10 +119,32 @@ class MailboxWebSocketTest {
         // assert that model has not updated until async task finishes
         model.threads.size `should be` 40
 
+        runner.assertPendingWork(listOf(LoadEmailThreadsWorker::class.java))
         // async work done
         runner._work()
 
         // should have removed the previous 40 and added the 20 loaded from db
         model.threads.size `should be` 20
+    }
+
+    @Test
+    fun `When new email arrives, do nothing if mailbox is NOT on inbox`() {
+        controller.onStart(null)
+
+        // skip all initialization
+        runner.discardPendingWork()
+
+        // change folder
+        model.selectedLabel = Label.defaultItems.sent
+
+        // create new email to "send" through web socket
+        val newEmail = MailboxTestUtils.createEmailThreads(1).first().latestEmail.email
+
+        // trigger socket event
+        webSocketListenerSlot.captured.onNewEmail(newEmail)
+
+
+        // assert that there is nothing left  to do
+        runner.assertPendingWork(emptyList())
     }
 }

@@ -21,5 +21,5 @@ class MailboxSceneModel : SceneModel {
         get() = selectedThreads.isInUnreadMode
     var isInMultiSelect = false
     var hasReachedEnd = true
-    var mailToSend: ComposerInputData? = null
+    var lastSync = 0L
 }

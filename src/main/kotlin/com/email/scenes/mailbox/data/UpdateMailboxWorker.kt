@@ -27,6 +27,7 @@ class UpdateMailboxWorker(
         private val db: MailboxLocalDB,
         private val dao: EmailInsertionDao,
         activeAccount: ActiveAccount,
+        private val loadedThreadsCount: Int,
         private val label: Label,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
@@ -113,7 +114,8 @@ class UpdateMailboxWorker(
     private fun reloadMailbox(newEmailCount: Int): List<EmailThread> {
         return if (newEmailCount > 0)
             db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
-                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+                    limit = Math.max(20, loadedThreadsCount),
+                    rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
         else throw NothingNewException()
     }
 

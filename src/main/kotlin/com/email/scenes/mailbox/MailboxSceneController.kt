@@ -140,8 +140,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onRefreshMails() {
             scene.showRefresh()
             dataSourceController.updateMailbox(
-                    mailboxLabel = model.selectedLabel,
-                    isManual = true)
+                    mailboxLabel = model.selectedLabel)
         }
 
         override fun onOpenComposerButtonClicked() {
@@ -321,15 +320,17 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return true
             }
 
-        fun updateMailbox(mailboxLabel: Label, isManual: Boolean) {
+        fun updateMailbox(mailboxLabel: Label) {
             scene.hideDrawer()
             val req = MailboxRequest.UpdateMailbox(
-                    label = mailboxLabel
+                    label = mailboxLabel,
+                    loadedThreadsCount = model.threads.size
             )
             dataSource.submitRequest(req)
         }
 
         private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
+            model.lastSync = System.currentTimeMillis()
             if (resultData.mailboxThreads != null) {
                 threadListController.populateThreads(resultData.mailboxThreads)
                 scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
@@ -362,6 +363,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     else
                         threadListController.appendAll(result.emailThreads, hasReachedEnd)
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+
+                    if (shouldSync)
+                        updateMailbox(model.selectedLabel)
                 }
             }
         }
@@ -426,11 +430,13 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onNewEmail(email: Email) {
-            // just reset mailbox
-            val req = MailboxRequest.LoadEmailThreads(
-                    label = model.selectedLabel.text,
-                    loadParams = LoadParams.Reset(size = threadsPerPage))
-            dataSource.submitRequest(req)
+            if (model.selectedLabel == Label.defaultItems.inbox) {
+                // just reset mailbox
+                val req = MailboxRequest.LoadEmailThreads(
+                        label = model.selectedLabel.text,
+                        loadParams = LoadParams.Reset(size = threadsPerPage))
+                dataSource.submitRequest(req)
+            }
         }
 
         override fun onError(uiMessage: UIMessage) {
@@ -438,8 +444,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    val shouldSync: Boolean
+            get() = System.currentTimeMillis() - model.lastSync > minimumIntervalBetweenSyncs
+
     companion object {
         val threadsPerPage = 20
+        val minimumIntervalBetweenSyncs = 60000L
     }
 
 }
