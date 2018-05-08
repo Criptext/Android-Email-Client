@@ -206,6 +206,9 @@ class MailboxSceneControllerTest {
             emailInsertionDao.insertContacts(listOf(Contact(0, "mayer@jigl.com",
                     "Mayer Mizrachi")))
         } answers { didInsertSender = true; listOf(2) }
+        every {
+            emailInsertionDao.findEmailByMessageId(any())
+        } returns null
 
         // mock server responses
         val getEventsOneNewEmailResponse = "[${MockedJSONData.sampleNewEmailEvent}]"

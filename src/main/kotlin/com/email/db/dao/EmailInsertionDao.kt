@@ -18,8 +18,8 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmail(email: Email): Long
 
-    @Query("Select * from email where key = :bodyKey")
-    fun findEmailByBodyKey(bodyKey: String): Email
+    @Query("Select * from email where messageId = :messageId")
+    fun findEmailByMessageId(messageId: String): Email?
 
     @Insert
     fun insertEmails(emails: List<Email>): List<Long>

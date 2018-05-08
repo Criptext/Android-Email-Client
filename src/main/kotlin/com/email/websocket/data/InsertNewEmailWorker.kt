@@ -28,21 +28,18 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
     }
 
     private fun insertIncomingEmail() {
-        val defaultLabels = Label.DefaultItems()
-        val newEmailLabels = listOf(defaultLabels.inbox)
-
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                         dao = emailInsertionDao, apiClient = emailInsertionApi,
-                        labels = newEmailLabels, metadata = metadata)
+                        metadata = metadata)
     }
 
-    private fun loadNewEmail(): Email =
-        emailInsertionDao.findEmailByBodyKey(metadata.bodyKey)
+    private fun loadNewEmail(): Email? =
+        emailInsertionDao.findEmailByMessageId(metadata.messageId)
 
     override fun work(): EventResult.InsertNewEmail? {
         val result: Result<Email, Exception> = Result.of {
             insertIncomingEmail()
-            loadNewEmail()
+            loadNewEmail()!!
         }
 
         return when (result) {

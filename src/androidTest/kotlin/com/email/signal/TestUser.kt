@@ -20,8 +20,8 @@ abstract class TestUser(generator: SignalKeyGenerator, recipientId: String, devi
 
     fun fetchAPreKeyBundle(): PreKeyBundleShareData.DownloadBundle {
         val bundle = registrationBundles.uploadBundle
-        val preKeyPublic = bundle.preKeys[0]!!
-        val preKeyRecord = CRPreKey(0, preKeyPublic)
+        val preKeyPublic = bundle.preKeys[1]!!
+        val preKeyRecord = CRPreKey(1, preKeyPublic)
 
         return PreKeyBundleShareData.DownloadBundle(
                 shareData = registrationBundles.uploadBundle.shareData,

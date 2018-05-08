@@ -43,7 +43,7 @@ class MockedEmailDao : EmailDao {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateEmail(id: Long, threadId: String, key: String, date: Date, status: DeliveryTypes) {
+    override fun updateEmail(id: Long, threadId: String, messageId: String, date: Date, status: DeliveryTypes) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

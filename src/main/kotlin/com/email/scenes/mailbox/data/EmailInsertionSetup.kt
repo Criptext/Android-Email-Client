@@ -9,6 +9,7 @@ import com.email.db.models.*
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
+import org.whispersystems.libsignal.DuplicateMessageException
 import kotlin.collections.HashMap
 
 /**
@@ -28,12 +29,12 @@ object EmailInsertionSetup {
             date = DateUtils.getDateFromString(
                     metadata.date,
                     null),
-            threadid = metadata.threadId,
+            threadId = metadata.threadId,
             subject = metadata.subject,
             isTrash = false,
             secure = true,
             preview = preview,
-            key = metadata.bodyKey,
+            messageId = metadata.messageId,
             isDraft = false,
             delivered = DeliveryTypes.NONE,
             content = decryptedBody
@@ -133,6 +134,7 @@ object EmailInsertionSetup {
                     deviceId = deviceId,
                     encryptedB64 = encryptedB64)
         } catch (ex: Exception) {
+            if (ex is DuplicateMessageException) throw ex
             "Unable to decrypt message."
         }
     }
@@ -142,15 +144,19 @@ object EmailInsertionSetup {
      * @param apiClient Abstraction for the network calls needed
      * @param dao Abstraction for the database methods needed to insert all rows and relations
      * @param metadata metadata of the email to insert
-     * @param labels list of labels to add to the email once inserted.
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata,
-                                       labels: List<Label>) {
+                                       dao: EmailInsertionDao, metadata: EmailMetadata) {
+        val labels = listOf(Label.defaultItems.inbox)
+
+        val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null
+        if (emailAlreadyExists)
+            throw DuplicateMessageException("Email Already exists in database!")
+
+        val body = apiClient.getBodyFromEmail(metadata.messageId)
+        val decryptedBody = decryptMessage(signalClient = signalClient,
+                recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
         dao.runTransaction(Runnable {
-                val body = apiClient.getBodyFromEmail(metadata.bodyKey)
-                val decryptedBody = decryptMessage(signalClient = signalClient,
-                        recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
                 EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
             })
     }

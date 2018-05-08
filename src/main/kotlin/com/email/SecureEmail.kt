@@ -42,7 +42,7 @@ class SecureEmail {
         val ACTION_UPDATE_TOKEN = "action.update.token"
         val ACTION_TOKEN = "action.token"
         val INBOX_UPDATE = "preferences.updated"
-        val THREAD_ID = "service.threadid"
+        val THREAD_ID = "service.threadId"
         val NOTIFICATION_ID = "service.notificationid"
         val ACTIVITY_FLAG = "service.activity"
         val REPLY_FLAG = "service.reply"

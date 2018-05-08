@@ -17,7 +17,7 @@ class EmailThread(val latestEmail: FullEmail,
 
     val unread :Boolean
         get() = latestEmail.email.unread
-    val threadId = latestEmail.email.threadid
+    val threadId = latestEmail.email.threadId
     val timestamp: Date
         get() = latestEmail.email.date
     var isSelected = false

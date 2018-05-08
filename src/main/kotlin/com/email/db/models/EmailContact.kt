@@ -24,7 +24,7 @@ import com.email.db.ContactTypes
         ]
 )
 class EmailContact(
-        @PrimaryKey var id: Long,
+        @PrimaryKey(autoGenerate = true) var id: Long,
         @ColumnInfo(name = "emailId") var emailId: Long,
         @ColumnInfo(name = "contactId") var contactId: Long,
         @ColumnInfo(name = "type") var type: ContactTypes)

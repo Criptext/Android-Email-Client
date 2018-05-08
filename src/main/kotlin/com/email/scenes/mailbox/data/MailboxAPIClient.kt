@@ -33,4 +33,9 @@ class MailboxAPIClient(private val token: String) {
         return ApiCall.executeRequest(request)
     }
 
+    fun acknowledgeEvents(eventIds: List<Long>): String {
+        val request = ApiCall.acknowledgeEvents(token, eventIds)
+        return ApiCall.executeRequest(request)
+    }
+
 }

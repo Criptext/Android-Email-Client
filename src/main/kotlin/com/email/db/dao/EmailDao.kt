@@ -19,7 +19,7 @@ import java.util.*
 
     @Query("""SELECT * from email e
             WHERE date=(SELECT MAX(date) FROM email d
-            WHERE d.threadid=e.threadid) GROUP BY threadid
+            WHERE d.threadId=e.threadId) GROUP BY threadId
             ORDER BY date DESC
             """)
     fun getLatestEmails() : List<Email>
@@ -27,15 +27,15 @@ import java.util.*
     @Query("""
             SELECT * FROM email e
             WHERE date=(SELECT MAX(date) FROM email d
-            WHERE d.threadid=e.threadid) AND id
+            WHERE d.threadId=e.threadId) AND id
             IN (SELECT DISTINCT emailId
-            FROM email_label) GROUP BY threadid
+            FROM email_label) GROUP BY threadId
             ORDER BY date DESC
             """)
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
@@ -54,9 +54,9 @@ import java.util.*
 
     @Query("""
         SELECT * FROM email e
-        WHERE threadid=:threadId AND date=(SELECT MAX(date)
-        FROM email d WHERE d.threadid=:threadId)
-        GROUP BY threadid
+        WHERE threadId=:threadId AND date=(SELECT MAX(date)
+        FROM email d WHERE d.threadId=:threadId)
+        GROUP BY threadId
         LIMIT 1
             """)
     fun getLatestEmailFromThreadId(
@@ -71,18 +71,18 @@ import java.util.*
     fun toggleRead(ids: List<Long>, unread: Boolean)
 
     @Query("""UPDATE email
-            SET threadid=:threadId,
-            key=:key,
+            SET threadId=:threadId,
+            messageId=:messageId,
             date=:date,
             delivered=:status
             where id=:id""")
-    fun updateEmail(id: Long, threadId: String, key : String, date: Date, status: DeliveryTypes)
+    fun updateEmail(id: Long, threadId: String, messageId: String, date: Date, status: DeliveryTypes)
 
     @Update
     fun update(emails: List<Email>)
 
     @Query("""SELECT * FROM email
-            WHERE threadid=:threadId
+            WHERE threadId=:threadId
             ORDER BY date ASC""")
     fun getEmailsFromThreadId(threadId: String): List<Email>
 
@@ -95,7 +95,7 @@ import java.util.*
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
     @Query("""
-        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
@@ -111,7 +111,7 @@ import java.util.*
             limit: Int): List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
@@ -124,7 +124,7 @@ import java.util.*
     fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: Long): List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadid = "" THEN email.id ELSE email.threadid END as uniqueId,
+        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
@@ -136,7 +136,7 @@ import java.util.*
 
     @Query("""
         select count(*) from email
-        where threadid=:threadId
+        where threadId=:threadId
         """)
     fun getTotalEmailsByThread(threadId: String): Int
 }

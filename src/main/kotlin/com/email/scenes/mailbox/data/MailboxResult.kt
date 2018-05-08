@@ -64,7 +64,8 @@ sealed class MailboxResult {
 
         data class Failure(
                 val mailboxLabel: Label,
-                val message: UIMessage ): UpdateMailbox() {
+                val message: UIMessage,
+                val exception: Exception?): UpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }

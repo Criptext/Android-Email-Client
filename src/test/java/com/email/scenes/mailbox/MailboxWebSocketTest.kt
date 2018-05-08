@@ -102,6 +102,9 @@ class MailboxWebSocketTest {
         every {
             db.getEmailsFromMailboxLabel(MailFolders.INBOX, null, 20, any())
         } returns MailboxTestUtils.createEmailThreads(20)
+        every {
+            emailInsertionDao.findEmailByMessageId(any())
+        } returns null
 
         // set 2 pages of threads
         model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
@@ -109,7 +112,7 @@ class MailboxWebSocketTest {
         // create new email to "send" through web socket
         val newEmail = MailboxTestUtils.createEmailThreads(1).first().latestEmail.email
         newEmail.subject = "New real time email"
-        newEmail.threadid = "__THREAD_ID__"
+        newEmail.threadId = "__THREAD_ID__"
 
 
         // trigger socket event

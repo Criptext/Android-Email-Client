@@ -12,16 +12,18 @@ import java.util.Date
  */
 
 @Entity(tableName = "email",
-        indices = [(Index(value = "subject", name = "subject"))])
+        indices = [
+                Index(value = "subject", name = "subject"),
+                Index(value = "messageId", name = "messageId", unique = true)])
 data class Email(
         @PrimaryKey(autoGenerate = true)
         var id: Long,
 
-        @ColumnInfo(name = "key")
-        var key : String,
+        @ColumnInfo(name = "messageId")
+        var messageId : String,
 
-        @ColumnInfo(name = "threadid")
-        var threadid : String,
+        @ColumnInfo(name = "threadId")
+        var threadId: String,
 
         @ColumnInfo(name = "unread")
         var unread : Boolean,

@@ -25,7 +25,7 @@ interface EmailLabelDao {
 
     @Query("""SELECT DISTINCT label.* FROM label INNER JOIN
         email_label ON label.id=email_label.labelId WHERE
-        email_label.emailId IN (select id FROM email WHERE threadid=:threadId) """)
+        email_label.emailId IN (select id FROM email WHERE threadId=:threadId) """)
     fun getLabelsFromEmailThreadId(threadId: String) : List<Label>
 
     @Insert

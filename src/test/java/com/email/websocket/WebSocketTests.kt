@@ -86,8 +86,8 @@ class WebSocketTests {
             dao.insertEmail(capture(insertedEmailSlot))
         } returns 6
         every {
-            dao.findEmailByBodyKey("gaumala1522191612518")
-        } answers { insertedEmailSlot.captured }
+            dao.findEmailByMessageId("<15221916.12518@jigl.com>")
+        } answers { if (insertedEmailSlot.isCaptured) insertedEmailSlot.captured else null }
         every {
             mockedListener.onNewEmail(capture(newEmailSlot))
         } just Runs

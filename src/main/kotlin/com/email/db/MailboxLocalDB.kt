@@ -100,7 +100,7 @@ interface MailboxLocalDB {
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
-            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadid)
+            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId)
 
             return EmailThread(
                     latestEmail = FullEmail(
