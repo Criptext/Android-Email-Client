@@ -28,11 +28,13 @@ class ApiCall {
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
 
-        fun executeRequest(req: Request): String {
+        fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
             if(!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.string()
         }
+
+        fun executeRequest(req: Request) = executeRequest(this.client, req)
 
         fun createUser(
                 name: String,
@@ -47,7 +49,7 @@ class ApiCall {
             jsonObject.put("recipientId", recipientId)
             jsonObject.put("keybundle", keyBundle.toJSON())
             if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
-            return postJSON(url = "$baseUrl/user", json = jsonObject)
+            return postJSON(url = "$baseUrl/user", json = jsonObject, jwtoken = null)
         }
 
         fun authenticateUser(
@@ -59,7 +61,7 @@ class ApiCall {
             jsonObject.put("username", username)
             jsonObject.put("password", password)
             jsonObject.put("deviceId", deviceId)
-            return postJSON(url = "$baseUrl/user/auth", json = jsonObject)
+            return postJSON(url = "$baseUrl/user/auth", json = jsonObject, jwtoken = null)
         }
 
         fun findKeyBundles(token: String, recipients: List<String>, knownAddresses: Map<String, List<Int>>): Request {
@@ -107,14 +109,29 @@ class ApiCall {
             return request
         }
 
-        private fun postJSON(url: String, json: JSONObject): Request {
+        fun postJSON(url: String, jwtoken: String?, json: JSONObject): Request {
             val body = RequestBody.create(JSON, json.toString())
-            val request = Request.Builder()
+            var builder = Request.Builder()
                     .url(url)
                     .post(body)
-                    .build()
 
-            return request
+            if (jwtoken != null) {
+                builder = builder.addHeader("Authorization", "Bearer $jwtoken")
+            }
+
+            return builder.build()
+        }
+
+        fun getUrl(url: String, jwtoken: String?): Request {
+            var builder = Request.Builder()
+                    .url(url)
+                    .get()
+
+            if (jwtoken != null) {
+                builder = builder.addHeader("Authorization", "Bearer $jwtoken")
+            }
+
+            return builder.build()
         }
 
         fun getBodyFromEmail(token: String, uuid: String): Request {

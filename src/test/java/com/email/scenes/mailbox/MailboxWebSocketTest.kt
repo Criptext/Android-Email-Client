@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.IHostActivity
 import com.email.api.ApiCall
+import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
@@ -30,6 +31,7 @@ class MailboxWebSocketTest {
     private lateinit var scene: MailboxScene
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
+    private lateinit var httpClient: HttpClient
     private lateinit var rawSessionDao: RawSessionDao
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var api: MailboxAPIClient
@@ -57,14 +59,17 @@ class MailboxWebSocketTest {
             runnableSlot.captured.run()
         }
 
-        api = MailboxAPIClient("__JWT_TOKEN")
         signal = mockk()
-
         host = mockk()
+
+        server = MockWebServer()
+        httpClient = HttpClient.Default(baseUrl = server.url("v1/mock").toString(),
+                connectionTimeout = 1L, readTimeout = 1L)
 
         dataSource = MailboxDataSource(
                 runner = runner,
                 signalClient = signal,
+                httpClient = httpClient,
                 mailboxLocalDB = db,
                 activeAccount = ActiveAccount("gabriel", "__JWT_TOKEN__"),
                 rawSessionDao = rawSessionDao,
@@ -87,8 +92,6 @@ class MailboxWebSocketTest {
                 websocketEvents = webSocketEvents
         )
 
-        server = MockWebServer()
-        ApiCall.baseUrl = server.url("v1/mock").toString()
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.api.EmailInsertionAPIClient
+import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
 import com.email.api.models.EmailMetadata
@@ -31,12 +32,13 @@ class UpdateMailboxWorker(
         activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
         private val label: Label,
+        httpClient: HttpClient,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
 
-    private val apiClient = MailboxAPIClient(activeAccount.jwt)
-    private val emailInsertionApiClient = EmailInsertionAPIClient(activeAccount.jwt)
+    private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
@@ -150,6 +152,7 @@ class UpdateMailboxWorker(
                 }
                 catch (ex: Exception) {
                     // Unknown exception, probably network related, skip acknowledge
+                    ex.printStackTrace()
                     false
                 }
             }

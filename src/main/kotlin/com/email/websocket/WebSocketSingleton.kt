@@ -2,6 +2,7 @@ package com.email.websocket
 
 import android.content.Context
 import com.email.api.EmailInsertionAPIClient
+import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.models.ActiveAccount
@@ -22,7 +23,7 @@ object WebSocketSingleton {
         val appDB = AppDatabase.getAppDatabase(context.applicationContext)
         val dataSource = EventDataSource(runner = AsyncTaskWorkRunner(),
                 emailInsertionDao = appDB.emailInsertionDao(),
-                emailInsertionAPIClient = EmailInsertionAPIClient(activeAccount.jwt),
+                emailInsertionAPIClient = EmailInsertionAPIClient(HttpClient.Default(), activeAccount.jwt),
                 signalClient = SignalClient.Default(SignalStoreCriptext(appDB)))
 
         INSTANCE = WebSocketController(
