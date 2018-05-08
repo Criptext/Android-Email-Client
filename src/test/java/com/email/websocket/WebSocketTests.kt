@@ -1,6 +1,5 @@
 package com.email.websocket
 
-import com.email.api.ApiCall
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
 import com.email.db.dao.EmailInsertionDao

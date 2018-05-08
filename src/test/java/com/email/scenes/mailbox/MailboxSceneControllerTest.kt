@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.api.ApiCall
 import com.email.api.HttpClient
+import com.email.api.ServerErrorException
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
@@ -47,7 +48,6 @@ class MailboxSceneControllerTest {
     private lateinit var host: IHostActivity
     private lateinit var webSocketEvents: WebSocketEventPublisher
     private lateinit var feedController : FeedController
-    private lateinit var server : MockWebServer
 
     private val threadEventListenerSlot = CapturingSlot<EmailThreadAdapter.OnThreadEventListener>()
     private val onDrawerMenuEventListenerSlot = CapturingSlot<DrawerMenuItemListener>()
@@ -73,9 +73,6 @@ class MailboxSceneControllerTest {
             runnableSlot.captured.run()
         }
 
-        server = MockWebServer()
-        ApiCall.baseUrl = server.url("v1/mock").toString()
-
         signal = mockk()
         httpClient = mockk()
 
@@ -85,9 +82,8 @@ class MailboxSceneControllerTest {
                 runner = runner,
                 signalClient = signal,
                 mailboxLocalDB = db,
-                httpClient = HttpClient.Default(baseUrl = server.url("v1/mock").toString(),
-                        connectionTimeout = 100L, readTimeout = 100L),
-                activeAccount = ActiveAccount("gabriel", "__JWT_TOKEN__"),
+                httpClient = httpClient,
+                activeAccount = ActiveAccount("gabriel", "__JWTOKEN__"),
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )
@@ -149,7 +145,9 @@ class MailboxSceneControllerTest {
             model.threads.size `should equal` 20
 
             // fetch an empty array of events
-            server.enqueue(MockResponse().setResponseCode(404))
+            every {
+                httpClient.get(eq("/event"), eq("__JWTOKEN__"))
+            } throws ServerErrorException(404)
 
             runner.assertPendingWork(listOf(UpdateMailboxWorker::class.java))
             runner._work()
@@ -216,12 +214,15 @@ class MailboxSceneControllerTest {
 
         // mock server responses
         val getEventsOneNewEmailResponse = "[${MockedJSONData.sampleNewEmailEvent}]"
-        server.enqueue(MockResponse()
-                .setBody(getEventsOneNewEmailResponse)
-                .setResponseCode(200))
-        server.enqueue(MockResponse()
-                .setBody("__ENCRYPTED_TEXT__")
-                .setResponseCode(200))
+        every {
+            httpClient.get(url = eq("/event"), jwt = eq("__JWTOKEN__"))
+        } returns getEventsOneNewEmailResponse
+        every {
+            httpClient.get(url = eq("/email/<15221916.12518@jigl.com>"), jwt = eq("__JWTOKEN__"))
+        } returns "__ENCRYPTED_TEXT__"
+        every {
+            httpClient.post(url = eq("/event/ack"), jwt = eq("__JWTOKEN__"), body = any())
+        } returns "OK"
 
 
         afterFirstLoad {

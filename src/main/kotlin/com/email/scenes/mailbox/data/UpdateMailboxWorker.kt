@@ -165,7 +165,9 @@ class UpdateMailboxWorker(
             .filter(emailInsertedSuccessfully)
             .map(toEventId)
 
-        acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+        if (eventIdsToAcknowledge.isNotEmpty())
+            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+
         return eventIdsToAcknowledge.size
     }
 

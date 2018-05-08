@@ -30,7 +30,7 @@ class ApiCall {
 
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
-            if(!response.isSuccessful) throw(ServerErrorException(response.code()))
+            if (!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.string()
         }
 
@@ -48,7 +48,7 @@ class ApiCall {
             jsonObject.put("password", password)
             jsonObject.put("recipientId", recipientId)
             jsonObject.put("keybundle", keyBundle.toJSON())
-            if(recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
+            if (recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
             return postJSON(url = "$baseUrl/user", json = jsonObject, jwtoken = null)
         }
 
@@ -68,45 +68,12 @@ class ApiCall {
             val jsonObject = JSONObject()
             jsonObject.put("recipients", JSONArray(recipients))
             jsonObject.put("knownAddresses", JSONObject(knownAddresses))
-            return postJSONWithToken(token = token, url = "$baseUrl/keybundle", json = jsonObject)
-        }
-
-        fun acknowledgeEvents(token: String, eventIds: List<Long>): Request {
-            val jsonObject = JSONObject()
-            jsonObject.put("ids", JSONArray(eventIds))
-
-            return postJSONWithToken(token = token, url = "$baseUrl/event/ack", json = jsonObject)
-        }
-
-
-        fun getPendingEvents(token: String): Request {
-            return getEventsWithToken(token = token, url = "$baseUrl/event")
-        }
-
-        private fun getEventsWithToken(token: String, url: String): Request {
-            val request = Request.Builder()
-                    .url(url)
-                    .addHeader("Authorization", "Bearer $token")
-                    .get()
-                    .build()
-
-            return request
+            return postJSON(jwtoken = token, url = "$baseUrl/keybundle", json = jsonObject)
         }
 
         fun postEmail(token: String, postEmailBody: PostEmailBody): Request {
-            return postJSONWithToken(token = token, url = "$baseUrl/email",
+            return postJSON(jwtoken = token, url = "$baseUrl/email",
                     json = postEmailBody.toJSON())
-        }
-
-        private fun postJSONWithToken(token: String, url: String, json: JSONObject): Request {
-            val body = RequestBody.create(JSON, json.toString())
-            val request = Request.Builder()
-                    .url(url)
-                    .addHeader("Authorization", "Bearer $token")
-                    .post(body)
-                    .build()
-
-            return request
         }
 
         fun postJSON(url: String, jwtoken: String?, json: JSONObject): Request {
@@ -133,23 +100,5 @@ class ApiCall {
 
             return builder.build()
         }
-
-        fun getBodyFromEmail(token: String, uuid: String): Request {
-            return getBodyFromEmailWithToken(
-                    token = token,
-                    url =  "$baseUrl/email/body/$uuid")
-        }
-
-        fun getBodyFromEmailWithToken(token: String, url: String) : Request{
-            val request = Request.Builder()
-                    .url(url)
-                    .addHeader("Authorization", "Bearer $token")
-                    .get()
-                    .build()
-
-            return request
-        }
-
     }
-
 }
