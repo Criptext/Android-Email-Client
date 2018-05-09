@@ -48,6 +48,7 @@ class ThreadListController(private val model : MailboxSceneModel,
 
     fun populateThreads(mailboxThreads: List<EmailThread>) {
         reset(mailboxThreads)
+        println("populate")
         virtualListView?.notifyDataSetChanged()
     }
 

@@ -9,14 +9,13 @@ import com.email.db.models.Label
 import com.email.mocks.MockedJSONData
 import com.email.scenes.mailbox.MailboxTestUtils
 import com.email.signal.SignalClient
-import com.email.utils.file.hasArray
+import com.email.utils.hasArray
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldBeEmpty
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import java.net.SocketTimeoutException
@@ -150,8 +149,6 @@ class UpdateMailboxWorkerTest {
         result.mailboxThreads `should be` null // nothing to update
         insertedEmails.shouldBeEmpty() // nothing got inserted
     }
-
-    fun JSONObject.hasArrayOfSize(size: Int) = this.length() == size
 
     @Test
     fun `should request events and if new mails were already in db, should acknowledge those events`() {

@@ -1,4 +1,4 @@
-package com.email.utils.file
+package com.email.utils
 
 import org.json.JSONArray
 import org.json.JSONObject

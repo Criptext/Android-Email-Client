@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.IHostActivity
 import com.email.R
+import com.email.bgworker.WorkHandler
 import com.email.db.MailFolders
 import com.email.db.models.Contact
 import com.email.db.models.Email
@@ -28,10 +29,11 @@ import com.email.websocket.WebSocketEventPublisher
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
-                             private val dataSource: MailboxDataSource,
+                             private val dataSource: WorkHandler<MailboxRequest, MailboxResult>,
                              private val websocketEvents: WebSocketEventPublisher,
                              private val feedController : FeedController) : SceneController() {
 
+    private val threadListController = ThreadListController(model, scene.virtualListView)
     private val dataSourceListener = { result: MailboxResult ->
         when (result) {
             is MailboxResult.GetSelectedLabels -> dataSourceController.onSelectedLabelsLoaded(result)
@@ -75,7 +77,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         dataSource.submitRequest(req)
     }
 
-    private val threadListController = ThreadListController(model, scene.virtualListView)
     private val threadEventListener = object : EmailThreadAdapter.OnThreadEventListener {
         override fun onApproachingEnd() {
                 val req = MailboxRequest.LoadEmailThreads(
@@ -130,6 +131,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     threadListController.clear()
                     reloadMailboxThreads()
                 }
+                else -> { /* do nothing */ }
             }
 
         }
@@ -186,8 +188,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 observer = observer,
                 threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
-        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
 
+        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         if (model.threads.isEmpty()) reloadMailboxThreads()
 
         toggleMultiModeBar()
@@ -297,14 +299,11 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     }
 
-    private inner class DataSourceController(private val dataSource: MailboxDataSource){
+    private inner class DataSourceController(
+            private val dataSource: WorkHandler<MailboxRequest, MailboxResult>) {
 
         fun setDataSourceListener() {
             dataSource.listener = dataSourceListener
-        }
-
-        fun clearDataSourceListener() {
-            dataSource.listener = null
         }
 
         fun updateEmailThreadsLabelsRelations(
