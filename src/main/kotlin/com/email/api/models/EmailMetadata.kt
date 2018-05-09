@@ -10,7 +10,7 @@ data class EmailMetadata(
         val from: String,
         val fromRecipientId: String,
         val fromContact: Contact,
-        val bodyKey: String,
+        val messageId: String,
         val date: String,
         val threadId: String,
         val subject: String) {
@@ -32,7 +32,7 @@ data class EmailMetadata(
                     to = emailData.getString("to"),
                     cc = emailData.getString("cc"),
                     bcc = emailData.getString("bcc"),
-                    bodyKey = emailData.getString("bodyKey"),
+                    messageId = emailData.getString("messageId"),
                     date = emailData.getString("date"),
                     threadId = emailData.getString("threadId"),
                     subject = emailData.getString("subject")

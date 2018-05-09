@@ -43,7 +43,7 @@ class MailboxActivity : BaseActivity() {
               val seconds = if (it < 10) "0$it" else it.toString()
               val metadata = EmailMetadata(from = "Mayer Mizrachi <mayer@jigl.com>",
                       to = "gabriel@jigl.com",  cc = "", bcc = "", fromContact = fromContact,
-                      bodyKey = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
+                      messageId = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
                       threadId = "thread#$it", fromRecipientId = "mayer", subject = "Test #$it")
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)

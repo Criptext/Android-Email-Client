@@ -2,7 +2,6 @@ package com.email.scenes.emailDetail
 
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
-import com.email.db.dao.signal.mocks.MockedRawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
@@ -17,7 +16,6 @@ import com.email.scenes.emaildetail.EmailDetailSceneController
 import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
-import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import io.mockk.mockk
@@ -91,11 +89,11 @@ class EmailDetailControllerTest {
                         delivered = DeliveryTypes.OPENED,
                         isDraft = false,
                         isTrash = false,
-                        key = "key",
+                        messageId = "key",
                         preview = "preview $it" ,
                         secure = true,
                         subject = "Subject $it",
-                        threadid = mockedThreadId,
+                        threadId = mockedThreadId,
                         unread = false),
                     labels = emptyList(),
                     to = emptyList(),

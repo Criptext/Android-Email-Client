@@ -13,14 +13,20 @@ import java.util.*
  */
 object MailboxTestUtils {
 
+    fun createNewEmail(dateMilis: Long, number: Int): Email =
+            Email(id = number.toLong(), messageId = number.toString(),
+                            threadId = "thread$number", unread = true, secure = true,
+                            content = "this is message #$number", preview = "message #$number",
+                            subject = "message #$number", delivered = DeliveryTypes.DELIVERED,
+                            date = Date(dateMilis + number), isTrash = false, isDraft = false)
+
+    fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
+
     fun createEmailThreads(size: Int): List<EmailThread> {
         val dateMilis = System.currentTimeMillis()
         return (1..size)
                 .map {
-                    val email = Email(id = it.toLong(), key = it.toString(), threadid = "thread$it", unread = true,
-                            secure = true, content = "this is message #$it", preview = "message #$it",
-                            subject = "message #$it", delivered = DeliveryTypes.DELIVERED,
-                            date = Date(dateMilis + it), isTrash = false, isDraft = false)
+                    val email = createNewEmail(dateMilis, it)
                     val fullEmail = FullEmail(email, labels = listOf(Label.defaultItems.inbox),
                             to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),

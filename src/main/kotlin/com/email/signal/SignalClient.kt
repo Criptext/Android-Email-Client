@@ -1,6 +1,5 @@
 package com.email.signal
 
-import android.util.Log
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.SessionBuilder
 import org.whispersystems.libsignal.SessionCipher

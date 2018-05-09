@@ -61,7 +61,7 @@ class ComposerController(private val model: ComposerModel,
                 }
                 else {
                     host.exitToScene(MailboxParams(), ActivityMessage.SendMail(result.emailId,
-                            model.fullEmail?.email?.threadid, scene.getDataInputByUser()))
+                            model.fullEmail?.email?.threadId, scene.getDataInputByUser()))
                 }
             }
             is ComposerResult.SaveEmail.Failure -> {

@@ -17,6 +17,8 @@ import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.whispersystems.libsignal.DuplicateMessageException
+import java.io.IOException
+import java.net.SocketTimeoutException
 
 /**
  * Created by sebas on 3/22/18.
@@ -40,7 +42,7 @@ class UpdateMailboxWorker(
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
 
         val message = createErrorMessage(ex)
-        return MailboxResult.UpdateMailbox.Failure(label, message)
+        return MailboxResult.UpdateMailbox.Failure(label, message, ex)
     }
     private fun fetchPendingEvents():Result<String, Exception> {
         return Result.of {
@@ -61,8 +63,9 @@ class UpdateMailboxWorker(
                         mailboxThreads = null)
             else
                     MailboxResult.UpdateMailbox.Failure(
-                    label,
-                    createErrorMessage(failure.error))
+                        mailboxLabel = label,
+                        message = createErrorMessage(failure.error),
+                        exception = failure.error)
 
     override fun work(): MailboxResult.UpdateMailbox? {
         val operationResult = fetchPendingEvents()
@@ -119,21 +122,48 @@ class UpdateMailboxWorker(
         else throw NothingNewException()
     }
 
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
+            EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
+                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata)
+
+    private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
+        try {
+            apiClient.acknowledgeEvents(eventIdsToAcknowledge)
+        } catch (ex: IOException) {
+            // if this request fails, just ignore it, we can acknowledge again later
+        }
+    }
 
     private fun processNewEmails(events: List<Event>): Int {
-        val newEmails = events
-            .filter({ it.cmd == Event.Cmd.newEmail })
-
-        newEmails
-            .map({ EmailMetadata.fromJSON(it.params) })
-            .forEach { metadata ->
-                val incomingEmailLabels = listOf(Label.defaultItems.inbox)
-                EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
-                        dao = dao, apiClient = emailInsertionApiClient,
-                        labels = incomingEmailLabels, metadata = metadata)
+        val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
+        val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
+                { Pair( it.rowid,  EmailMetadata.fromJSON(it.params)) }
+        val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
+            { (_, metadata) ->
+                try {
+                    insertIncomingEmailTransaction(metadata)
+                    // insertion success, try to acknowledge it
+                    true
+                } catch (ex: DuplicateMessageException) {
+                    // duplicated, try to acknowledge it
+                    true
+                }
+                catch (ex: Exception) {
+                    // Unknown exception, probably network related, skip acknowledge
+                    false
+                }
             }
+        val toEventId: (Pair<Long, EmailMetadata>) -> Long =
+                { (eventId, _) -> eventId }
 
-        return newEmails.size
+        val eventIdsToAcknowledge = events
+            .filter(isNewEmailEvent)
+            .map(toIdAndMetadataPair)
+            .filter(emailInsertedSuccessfully)
+            .map(toEventId)
+
+        acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+        return eventIdsToAcknowledge.size
     }
 
 

@@ -22,8 +22,8 @@ class ApiCall {
 
         private val client = OkHttpClient()
                 .newBuilder()
-                .connectTimeout(180, TimeUnit.SECONDS)
-                .readTimeout(180, TimeUnit.SECONDS)
+                .connectTimeout(7, TimeUnit.SECONDS)
+                .readTimeout(7, TimeUnit.SECONDS)
                 .build()
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
@@ -67,6 +67,13 @@ class ApiCall {
             jsonObject.put("recipients", JSONArray(recipients))
             jsonObject.put("knownAddresses", JSONObject(knownAddresses))
             return postJSONWithToken(token = token, url = "$baseUrl/keybundle", json = jsonObject)
+        }
+
+        fun acknowledgeEvents(token: String, eventIds: List<Long>): Request {
+            val jsonObject = JSONObject()
+            jsonObject.put("ids", JSONArray(eventIds))
+
+            return postJSONWithToken(token = token, url = "$baseUrl/event/ack", json = jsonObject)
         }
 
 
