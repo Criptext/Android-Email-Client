@@ -17,7 +17,7 @@ interface HttpClient {
                   val readTimeout: Long): HttpClient {
 
         constructor(): this(baseUrl = "https://stage.mail.criptext.com",
-                connectionTimeout = 7000L, readTimeout = 7000L)
+                connectionTimeout = 14000L, readTimeout = 7000L)
 
         private val client = OkHttpClient()
                 .newBuilder()
