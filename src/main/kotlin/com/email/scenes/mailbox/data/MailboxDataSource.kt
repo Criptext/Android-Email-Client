@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox.data
 
+import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
 import com.email.bgworker.WorkRunner
@@ -19,6 +20,7 @@ class MailboxDataSource(
         private val activeAccount: ActiveAccount,
         private val rawSessionDao: RawSessionDao,
         private val emailInsertionDao: EmailInsertionDao,
+        private val httpClient: HttpClient,
         private val mailboxLocalDB: MailboxLocalDB )
     : WorkHandler<MailboxRequest, MailboxResult>() {
     override fun createWorkerFromParams(
@@ -37,6 +39,7 @@ class MailboxDataSource(
                     dao = emailInsertionDao,
                     signalClient = signalClient,
                     db = mailboxLocalDB,
+                    httpClient = httpClient,
                     activeAccount = activeAccount,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,

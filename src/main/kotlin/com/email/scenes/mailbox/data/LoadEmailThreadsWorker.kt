@@ -53,22 +53,14 @@ class LoadEmailThreadsWorker(
     }
 
     private fun selectRejectedLabels(): List<Label> {
-        val commonRejectedLabels = listOf( MailFolders.SPAM, MailFolders.TRASH)
+        val defaultLabels = Label.DefaultItems()
         return when(labelTextTypes) {
             MailFolders.SENT,
             MailFolders.INBOX,
             MailFolders.IMPORTANT,
-            MailFolders.STARRED -> {
-                db.getLabelsFromLabelType(
-                        labelTextTypes = commonRejectedLabels)
-            }
-            MailFolders.SPAM -> {
-                db.getLabelsFromLabelType(
-                        labelTextTypes = listOf(MailFolders.TRASH))
-            }
-            else -> {
-                emptyList()
-            }
+            MailFolders.STARRED -> listOf(defaultLabels.spam, defaultLabels.trash)
+            MailFolders.SPAM -> listOf(defaultLabels.trash)
+            else ->  emptyList()
         }
     }
 

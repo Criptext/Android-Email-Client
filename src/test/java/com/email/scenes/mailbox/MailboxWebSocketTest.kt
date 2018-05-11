@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox
 
 import com.email.IHostActivity
-import com.email.api.ApiCall
+import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
@@ -10,14 +10,12 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.mocks.MockedWorkRunner
 import com.email.scenes.mailbox.data.LoadEmailThreadsWorker
-import com.email.scenes.mailbox.data.MailboxAPIClient
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.signal.SignalClient
 import com.email.websocket.WebSocketEventListener
 import com.email.websocket.WebSocketEventPublisher
 import io.mockk.*
-import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
 import org.junit.Before
 import org.junit.Test
@@ -30,9 +28,9 @@ class MailboxWebSocketTest {
     private lateinit var scene: MailboxScene
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
+    private lateinit var httpClient: HttpClient
     private lateinit var rawSessionDao: RawSessionDao
     private lateinit var emailInsertionDao: EmailInsertionDao
-    private lateinit var api: MailboxAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: MailboxDataSource
     private lateinit var controller: MailboxSceneController
@@ -40,7 +38,6 @@ class MailboxWebSocketTest {
     private lateinit var webSocketEvents: WebSocketEventPublisher
     private lateinit var webSocketListenerSlot: CapturingSlot<WebSocketEventListener>
     private lateinit var feedController : FeedController
-    private lateinit var server : MockWebServer
 
     @Before
     fun setUp() {
@@ -57,14 +54,15 @@ class MailboxWebSocketTest {
             runnableSlot.captured.run()
         }
 
-        api = MailboxAPIClient("__JWT_TOKEN")
         signal = mockk()
-
         host = mockk()
+
+        httpClient = mockk()
 
         dataSource = MailboxDataSource(
                 runner = runner,
                 signalClient = signal,
+                httpClient = httpClient,
                 mailboxLocalDB = db,
                 activeAccount = ActiveAccount("gabriel", "__JWT_TOKEN__"),
                 rawSessionDao = rawSessionDao,
@@ -87,8 +85,6 @@ class MailboxWebSocketTest {
                 websocketEvents = webSocketEvents
         )
 
-        server = MockWebServer()
-        ApiCall.baseUrl = server.url("v1/mock").toString()
     }
 
     @Test

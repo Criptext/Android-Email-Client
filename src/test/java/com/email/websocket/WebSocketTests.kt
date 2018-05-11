@@ -1,7 +1,7 @@
 package com.email.websocket
 
-import com.email.api.ApiCall
 import com.email.api.EmailInsertionAPIClient
+import com.email.api.HttpClient
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
@@ -25,6 +25,7 @@ import org.junit.Test
 
 class WebSocketTests {
     private lateinit var signal: SignalClient
+    private lateinit var httpClient: HttpClient
     private lateinit var dao: EmailInsertionDao
     private lateinit var api: EmailInsertionAPIClient
     private lateinit var runner: MockedWorkRunner
@@ -44,7 +45,11 @@ class WebSocketTests {
         }
 
         signal = mockk()
-        api = EmailInsertionAPIClient("__JWT_TOKEN__")
+        server = MockWebServer()
+        httpClient = HttpClient.Default(baseUrl = server.url("v1/mock").toString(),
+                connectionTimeout = 1000L, readTimeout = 1000L)
+        api = EmailInsertionAPIClient(httpClient,"__JWT_TOKEN__")
+
         runner = MockedWorkRunner()
 
         dataSource = EventDataSource(runner = runner, emailInsertionDao = dao,
@@ -57,8 +62,6 @@ class WebSocketTests {
         controller = WebSocketController(wsClient = webSocket, activeAccount = account,
                 eventDataSource = dataSource)
 
-        server = MockWebServer()
-        ApiCall.baseUrl = server.url("v1/mock").toString()
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox.data
 
-import com.email.api.ApiCall
+import com.email.api.HttpClient
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
@@ -9,16 +9,16 @@ import com.email.db.models.Label
 import com.email.mocks.MockedJSONData
 import com.email.scenes.mailbox.MailboxTestUtils
 import com.email.signal.SignalClient
+import com.email.utils.hasArray
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldBeEmpty
 import org.junit.Before
 import org.junit.Test
+import java.net.SocketTimeoutException
 
 /**
  * Created by gabriel on 5/7/18.
@@ -26,14 +26,14 @@ import org.junit.Test
 class UpdateMailboxWorkerTest {
 
     private lateinit var signal: SignalClient
+    private lateinit var httpClient: HttpClient
     private lateinit var db: MailboxLocalDB
     private lateinit var dao: EmailInsertionDao
     private lateinit var activeAccount: ActiveAccount
-    private lateinit var server : MockWebServer
 
     @Before
     fun setup() {
-        activeAccount = ActiveAccount(recipientId = "gabriel", jwt = "__JWT_TOKEN__")
+        activeAccount = ActiveAccount(recipientId = "gabriel", jwt = "__JWTOKEN__")
         signal = mockk()
         db = mockk()
         dao = mockk(relaxed = true)
@@ -42,13 +42,11 @@ class UpdateMailboxWorkerTest {
             runnableSlot.captured.run()
         }
 
-        server = MockWebServer()
-        server.requestCount
-        ApiCall.baseUrl = server.url("v1/mock").toString()
+        httpClient = mockk()
     }
 
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
-        UpdateMailboxWorker(signalClient = signal, db = db, dao = dao,
+        UpdateMailboxWorker(signalClient = signal, db = db, dao = dao, httpClient = httpClient,
                 activeAccount = activeAccount, publishFn = {},
                 loadedThreadsCount = loadedThreadsCount, label = label)
 
@@ -57,19 +55,16 @@ class UpdateMailboxWorkerTest {
         val label = Label.defaultItems.inbox
         val worker = newWorker(20, label)
 
-        // mock server responses
-        server.enqueue(MockResponse() // GET /events
-                .setBody(MockedJSONData.sample2NewEmailEvents)
-                .setResponseCode(200))
-        server.enqueue(MockResponse() // GET /email/body
-                .setBody("__ENCRYPTED_TEXT_1__")
-                .setResponseCode(200))
-        server.enqueue(MockResponse() // GET /email/body
-                .setBody("__ENCRYPTED_TEXT_2__")
-                .setResponseCode(200))
-        server.enqueue(MockResponse() // POST /event/ACK
-                .setBody("OK")
-                .setResponseCode(200))
+        every {
+            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+        } returns MockedJSONData.sample2NewEmailEvents
+        every {
+            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+        } returnsMany listOf("__ENCRYPTED_TEXT_1__", "__ENCRYPTED_TEXT_2__")
+        every {
+            httpClient.post(url = "/event/ack", jwt = "__JWTOKEN__",
+                    body = match { it.hasArray("ids").ofLength(2) })
+        } returns "OK"
 
         // prepare db mocks
         every {
@@ -100,7 +95,7 @@ class UpdateMailboxWorkerTest {
 
         val result = worker.work() as MailboxResult.UpdateMailbox.Success
 
-        server.requestCount `should equal` 4
+        // server.requestCount `should equal` 4
         insertedEmails.map { Pair(it.subject, it.content) } `should equal` listOf(
                 Pair("hello", "__PLAIN_TEXT_1__"),
                 Pair("hello again", "__PLAIN_TEXT_2__")) // decrypted and inserted everything
@@ -115,9 +110,12 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(20, label)
 
         // mock server responses. Only one, assume all others timeout
-        server.enqueue(MockResponse() // GET /events
-                .setBody(MockedJSONData.sample2NewEmailEvents)
-                .setResponseCode(200))
+        every {
+            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+        } returns MockedJSONData.sample2NewEmailEvents
+        every {
+            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+        } throws SocketTimeoutException()
 
         // prepare db mocks
         every {
@@ -148,7 +146,6 @@ class UpdateMailboxWorkerTest {
 
         val result = worker.work() as MailboxResult.UpdateMailbox.Success
 
-        server.requestCount `should equal` 4
         result.mailboxThreads `should be` null // nothing to update
         insertedEmails.shouldBeEmpty() // nothing got inserted
     }
@@ -159,12 +156,13 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(20, label)
 
         // mock server responses. No body requests since mails are already in db
-        server.enqueue(MockResponse() // GET /events
-                .setBody(MockedJSONData.sample2NewEmailEvents)
-                .setResponseCode(200))
-        server.enqueue(MockResponse() // POST /event/ACK
-                .setBody("OK")
-                .setResponseCode(200))
+        every {
+            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+        } returns MockedJSONData.sample2NewEmailEvents
+        every {
+            httpClient.post(url = "/event/ack", jwt = "__JWTOKEN__",
+                    body = match { it.hasArray("ids").ofLength(2) })
+        } throws SocketTimeoutException()
 
         // prepare db mocks
         every {
@@ -195,7 +193,6 @@ class UpdateMailboxWorkerTest {
 
         worker.work() as MailboxResult.UpdateMailbox.Success
 
-        server.requestCount `should equal` 2
         insertedEmails.shouldBeEmpty() // nothing got inserted
     }
 }

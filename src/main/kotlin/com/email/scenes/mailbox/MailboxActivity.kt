@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.email.BaseActivity
 import com.email.IHostActivity
 import com.email.R
+import com.email.api.HttpClient
 import com.email.api.models.EmailMetadata
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
@@ -104,6 +105,7 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 rawSessionDao = appDB.rawSessionDao(),
+                    httpClient = HttpClient.Default(),
                 emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db)
 
