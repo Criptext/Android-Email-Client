@@ -59,7 +59,7 @@ class UpdateMailboxWorkerTest {
             httpClient.get(url = "/event", jwt = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+            httpClient.get(url = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
         } returnsMany listOf("__ENCRYPTED_TEXT_1__", "__ENCRYPTED_TEXT_2__")
         every {
             httpClient.post(url = "/event/ack", jwt = "__JWTOKEN__",
@@ -114,7 +114,7 @@ class UpdateMailboxWorkerTest {
             httpClient.get(url = "/event", jwt = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+            httpClient.get(url = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
         } throws SocketTimeoutException()
 
         // prepare db mocks

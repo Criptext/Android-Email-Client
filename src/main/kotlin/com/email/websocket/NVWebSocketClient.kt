@@ -17,6 +17,10 @@ class NVWebSocketClient: WebSocketClient {
                                     clientCloseFrame: WebSocketFrame?, closedByServer: Boolean) {
         }
 
+        override fun handleCallbackError(websocket: WebSocket?, cause: Throwable?) {
+            cause?.printStackTrace()
+        }
+
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,
                 MutableList<String>>?) {
         }

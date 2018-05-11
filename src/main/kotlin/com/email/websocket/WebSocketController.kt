@@ -1,5 +1,6 @@
 package com.email.websocket
 
+import com.email.api.Hosts
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.db.models.ActiveAccount
@@ -59,7 +60,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
 
     companion object {
         private fun createCriptextSocketServerURL(recipientId: String, deviceId: Int): String {
-            return """ws://${WebSocketSingleton.HOST_URL}?recipientId=$recipientId&deviceId=$deviceId"""
+            return """${Hosts.webSocketBaseUrl}?recipientId=$recipientId&deviceId=$deviceId"""
         }
     }
 

@@ -4,7 +4,6 @@ import com.email.R
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
-import com.email.api.ServerErrorException
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.bgworker.BackgroundWorker
@@ -19,7 +18,6 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.IOException
-import java.net.SocketTimeoutException
 
 /**
  * Created by sebas on 3/22/18.
@@ -42,32 +40,28 @@ class UpdateMailboxWorker(
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
-
         val message = createErrorMessage(ex)
         return MailboxResult.UpdateMailbox.Failure(label, message, ex)
     }
     private fun fetchPendingEvents():Result<String, Exception> {
         return Result.of {
-            try {
-                apiClient.getPendingEvents()
-            }  catch (ex: ServerErrorException) {
-                // not found means no new pending events
-                if (ex.errorCode == 404) "[]" else throw ex
-            }
+            val responseText = apiClient.getPendingEvents()
+            if (responseText.isEmpty()) "[]" else responseText
         }
     }
 
-    private fun processFailure(failure: Result.Failure<List<EmailThread>, Exception>) =
-            if (failure.error is NothingNewException)
-                MailboxResult.UpdateMailbox.Success(
-                        mailboxLabel = label,
-                        isManual = true,
-                        mailboxThreads = null)
-            else
-                    MailboxResult.UpdateMailbox.Failure(
-                        mailboxLabel = label,
-                        message = createErrorMessage(failure.error),
-                        exception = failure.error)
+    private fun processFailure(failure: Result.Failure<List<EmailThread>, Exception>): MailboxResult.UpdateMailbox {
+        return if (failure.error is NothingNewException)
+            MailboxResult.UpdateMailbox.Success(
+                    mailboxLabel = label,
+                    isManual = true,
+                    mailboxThreads = null)
+        else
+            MailboxResult.UpdateMailbox.Failure(
+                    mailboxLabel = label,
+                    message = createErrorMessage(failure.error),
+                    exception = failure.error)
+    }
 
     override fun work(): MailboxResult.UpdateMailbox? {
         val operationResult = fetchPendingEvents()

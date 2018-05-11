@@ -17,7 +17,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "https://stage.mail.criptext.com"
+        var baseUrl = Hosts.restApiBaseUrl
 
 
         private val client = OkHttpClient()
