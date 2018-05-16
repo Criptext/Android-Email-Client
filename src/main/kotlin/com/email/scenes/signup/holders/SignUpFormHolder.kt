@@ -13,6 +13,10 @@ import com.email.R
 import com.email.scenes.signup.RecoveryEmailWarningDialog
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneController
+import com.email.utils.form.FormInputState
+import com.email.utils.UIMessage
+import com.email.utils.form.TextInput
+import com.email.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 3/2/18.
@@ -20,70 +24,60 @@ import com.email.scenes.signup.SignUpSceneController
 
 class SignUpFormHolder(val view: View) {
 
-    private val username: AppCompatEditText
-    private val usernameInput: TextInputLayout
-    private val usernameSuccessImage: ImageView
-    private val usernameErrorImage: ImageView
+    private val createAccount: Button = view.findViewById(R.id.create_account)
 
-    private val fullName: AppCompatEditText
-    private  val fullNameInput: TextInputLayout
+    private val username: AppCompatEditText = view.findViewById(R.id.username)
+    private val usernameInput: FormInputViewHolder = FormInputViewHolder(
+            textInputLayout = view.findViewById(R.id.input_username),
+            editText = username,
+            validView = view.findViewById(R.id.success_username),
+            errorView = view.findViewById(R.id.error_username),
+            disableSubmitButton = { -> createAccount.isEnabled = false })
 
-    private val password: AppCompatEditText
-    private val passwordInput: TextInputLayout
-    private val passwordSuccessImage: ImageView
-    private val passwordErrorImage: ImageView
-    private val confirmPassword: AppCompatEditText
-    private val confirmPasswordInput: TextInputLayout
-    private val confirmPasswordSuccessImage: ImageView
-    private val confirmPasswordErrorImage: ImageView
-    private val recoveryEmail: AppCompatEditText
-    private val recoveryEmailInput: TextInputLayout
-    private val checkboxTerms: CheckBox
-    private val txtTermsAndConditions: TextView
-    private val createAccount: Button
-    private val imageBack: ImageView
+    private val fullName: AppCompatEditText = view.findViewById(R.id.full_name)
+    private val fullNameInput: FormInputViewHolder = FormInputViewHolder(
+            textInputLayout = view.findViewById(R.id.full_name_input),
+            editText = fullName,
+            validView = view.findViewById(R.id.success_fullname),
+            errorView = view.findViewById(R.id.error_fullname),
+            disableSubmitButton = { -> createAccount.isEnabled = false })
+
+    private val password: AppCompatEditText = view.findViewById(R.id.password)
+    private val passwordInput: TextInputLayout = view.findViewById(R.id.password_input)
+    private val passwordSuccessImage: ImageView = view.findViewById(R.id.success_password)
+    private val passwordErrorImage: ImageView = view.findViewById(R.id.error_password)
+
+    private val confirmPassword: AppCompatEditText = view.findViewById(R.id.password_repeat)
+    private val confirmPasswordInput: TextInputLayout = view.findViewById(R.id.password_repeat_input)
+    private val confirmPasswordSuccessImage: ImageView = view.findViewById(R.id.success_password_repeat)
+    private val confirmPasswordErrorImage: ImageView = view.findViewById(R.id.error_password_repeat)
+
+    private val recoveryEmail: AppCompatEditText = view.findViewById(R.id.recovery_email)
+    private val recoveryEmailInput: FormInputViewHolder = FormInputViewHolder(
+            textInputLayout = view.findViewById(R.id.recovery_email_input),
+            editText = recoveryEmail,
+            validView = view.findViewById(R.id.success_recovery),
+            errorView = view.findViewById(R.id.error_recovery),
+            disableSubmitButton = { -> createAccount.isEnabled = false })
+
+    private val checkboxTerms: CheckBox = view.findViewById(R.id.chkTermsAndConditions)
+    private val txtTermsAndConditions: TextView = view.findViewById(R.id.txt_terms_and_conditions)
+    private val imageBack: ImageView = view.findViewById(R.id.icon_back)
     private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver? = null
 
     init {
-        username = view.findViewById(R.id.username)
-        usernameInput = view.findViewById(R.id.input_username)
-        usernameSuccessImage = view.findViewById(R.id.success_username)
-        usernameErrorImage = view.findViewById(R.id.error_username)
-        fullName = view.findViewById(R.id.full_name)
-        fullNameInput = view.findViewById(R.id.full_name_input)
-        password = view.findViewById(R.id.password)
-        passwordInput = view.findViewById(R.id.password_input)
-        passwordSuccessImage = view.findViewById(R.id.success_password)
-        passwordErrorImage = view.findViewById(R.id.error_password)
-        confirmPassword = view.findViewById(R.id.password_repeat)
-        confirmPasswordInput = view.findViewById(R.id.password_repeat_input)
-        confirmPasswordSuccessImage = view.findViewById(R.id.success_password_repeat)
-        confirmPasswordErrorImage = view.findViewById(R.id.error_password_repeat)
-        recoveryEmail = view.findViewById(R.id.recovery_email)
-        recoveryEmailInput = view.findViewById(R.id.recovery_email_input)
-        checkboxTerms = view.findViewById(R.id.chkTermsAndConditions)
-        txtTermsAndConditions = view.findViewById(R.id.txt_terms_and_conditions)
-        createAccount = view.findViewById(R.id.create_account)
-        imageBack = view.findViewById(R.id.icon_back)
-
         setHintAppearences()
         setBackgroundTintLists()
     }
-
 
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener){
         recoveryEmailWarningDialog.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
     }
 
-    fun showUsernameSuccess() {
-        usernameSuccessImage.visibility = View.VISIBLE
-        usernameInput.hint = ""
-    }
-
-    fun hideUsernameSuccess() {
-        usernameSuccessImage.visibility = View.INVISIBLE
+    fun toggleUserAvailableCheckmark(visible: Boolean) {
+        // usernameInput.setValidStatus(visible)
     }
 
     fun showPasswordSuccess() {
@@ -96,14 +90,9 @@ class SignUpFormHolder(val view: View) {
         confirmPasswordSuccessImage.visibility = View.INVISIBLE
     }
 
-    @SuppressLint("RestrictedApi")
-    fun hideUsernameErrors() {
-        usernameErrorImage.visibility = View.INVISIBLE
-        usernameInput.error = ""
-    }
 
     @SuppressLint("RestrictedApi")
-    fun hidePasswordErrors() {
+    fun hidePasswordError() {
         passwordErrorImage.visibility = View.GONE
         confirmPasswordErrorImage.visibility = View.GONE
 
@@ -119,11 +108,11 @@ class SignUpFormHolder(val view: View) {
     }
 
     @SuppressLint("RestrictedApi")
-    fun showPasswordErrors() {
+    fun showPasswordError(message: UIMessage) {
         passwordErrorImage.visibility = View.VISIBLE
         confirmPasswordErrorImage.visibility = View.VISIBLE
 
-        confirmPasswordInput.error = "Passwords do not match"
+        confirmPasswordInput.error = view.context.getLocalizedUIMessage(message)
         passwordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
         confirmPasswordInput.setHintTextAppearance(R.style.textinputlayout_login_error)
         password.supportBackgroundTintList = ColorStateList.valueOf(
@@ -132,11 +121,24 @@ class SignUpFormHolder(val view: View) {
                 ContextCompat.getColor(view.context, R.color.black))
     }
 
-    @SuppressLint("RestrictedApi")
-    fun showUsernameErrors() {
-        usernameErrorImage.visibility = View.VISIBLE
-        usernameInput.error = "Username not available"
-        usernameInput.hint = ""
+    fun setPasswordError(message: UIMessage?) {
+        if (message == null) hidePasswordError()
+        else {
+            showPasswordError(message)
+            disableCreateAccountButton()
+        }
+    }
+
+    fun setFullNameState(state: FormInputState) {
+        fullNameInput.setState(state)
+    }
+
+    fun setRecoveryEmailState(state: FormInputState) {
+        recoveryEmailInput.setState(state)
+    }
+
+    fun setUsernameState(state: FormInputState) {
+        usernameInput.setState(state)
     }
 
     fun disableCreateAccountButton() {
@@ -151,10 +153,6 @@ class SignUpFormHolder(val view: View) {
         return passwordErrorImage.visibility == View.VISIBLE
     }
 
-
-    fun isUsernameErrorShown(): Boolean {
-        return usernameErrorImage.visibility == View.VISIBLE
-    }
 
     fun assignPasswordTextListener() {
         password.addTextChangedListener( object : TextWatcher {
@@ -270,7 +268,7 @@ class SignUpFormHolder(val view: View) {
                 ContextCompat.getColor(view.context, R.color.signup_hint_color))
     }
 
-    fun setHintAppearences(){
+    private fun setHintAppearences(){
         usernameInput.setHintTextAppearance(
                 R.style.NormalTextAppearenceUsernameInput)
         passwordInput.setHintTextAppearance(
@@ -284,15 +282,22 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun fillSceneWidgets(
-            username: String,
-            fullName: String,
+            username: TextInput,
+            fullName: TextInput,
             password: String,
-            recoveryEmail: String) {
-        this.username.setText(username, TextView.BufferType.EDITABLE)
-        this.fullName.setText(fullName, TextView.BufferType.EDITABLE)
+            confirmPassword: String,
+            recoveryEmail: TextInput,
+            isChecked: Boolean) {
+
+        this.username.setText(username.value, TextView.BufferType.EDITABLE)
+        this.fullName.setText(fullName.value, TextView.BufferType.EDITABLE)
         this.password.setText(password, TextView.BufferType.EDITABLE)
-        this.confirmPassword.setText(password, TextView.BufferType.EDITABLE)
-        this.recoveryEmail.setText(recoveryEmail, TextView.BufferType.EDITABLE)
-        this.checkboxTerms.isChecked = true
+        this.confirmPassword.setText(confirmPassword, TextView.BufferType.EDITABLE)
+        this.recoveryEmail.setText(recoveryEmail.value, TextView.BufferType.EDITABLE)
+        this.checkboxTerms.isChecked = isChecked
+
+        setUsernameState(username.state)
+        setFullNameState(fullName.state)
+        setRecoveryEmailState(recoveryEmail.state)
     }
 }

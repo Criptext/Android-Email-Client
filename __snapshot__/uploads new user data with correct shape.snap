@@ -1,0 +1,27 @@
+{
+  "password": "secretPassword",
+  "keybundle": {
+    "signedPreKeyId": 1,
+    "preKeys": [
+      {
+        "id": 1,
+        "publicKey": "__PK_1__"
+      },
+      {
+        "id": 2,
+        "publicKey": "__PK_2__"
+      },
+      {
+        "id": 3,
+        "publicKey": "__PK_3__"
+      }
+    ],
+    "signedPreKeySignature": "__SIGNED_PRE_KEY_SIGNATURE__",
+    "registrationId": 54378,
+    "signedPreKeyPublic": "__SIGNED_PRE_KEY_PUBLIC__",
+    "identityPublicKey": "__IDENTITY_PUBLIC_KEY__"
+  },
+  "name": "A Tester",
+  "recipientId": "tester",
+  "recoveryEmail": "tester@gmail.com"
+}

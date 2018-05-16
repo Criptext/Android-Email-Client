@@ -6,7 +6,9 @@ import android.widget.*
 import com.email.R
 import com.email.scenes.keygeneration.KeyGenerationHolder
 import com.email.scenes.signup.holders.SignUpFormHolder
+import com.email.utils.form.FormInputState
 import com.email.utils.UIMessage
+import com.email.utils.form.TextInput
 import com.email.utils.getLocalizedUIMessage
 
 /**
@@ -16,12 +18,37 @@ import com.email.utils.getLocalizedUIMessage
 interface SignUpScene {
     fun isPasswordErrorShown() : Boolean
     fun isUsernameErrorShown() : Boolean
-    fun isUserAvailable(userAvailable : Boolean)
+
+    /**
+     * Show or hide the check mark that informs the user that the username is available.
+     * @param visible if true, show the check mark otherwise hide it.
+     */
+    fun toggleUserAvailableCheckmark(visible: Boolean)
     fun enableCreateAccountButton()
     fun disableCreateAccountButton()
     fun togglePasswordSuccess(show: Boolean)
-    fun togglePasswordErrors(show: Boolean)
-    fun toggleUsernameErrors(show: Boolean)
+    /**
+     * Set the error message right next to the passwordValue input field.
+     * @param message The message to display. Any existing message is replaced. If this value
+     * is null, any existing message is removed. If this value is not null, then the create button
+     * is disabled.
+     */
+    fun setPasswordError(message: UIMessage?)
+    /**
+     * Displays the username input field as valid, error or unknown depending on the passed state
+     * value.
+     */
+    fun setUsernameState(state: FormInputState)
+    /**
+     * Displays the full name input field as valid, error or unknown depending on the passed state
+     * value.
+     */
+    fun setFullNameState(state: FormInputState)
+    /**
+     * Displays the full name input field as valid, error or unknown depending on the passed state
+     * value.
+     */
+    fun setRecoveryEmailState(state: FormInputState)
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(uiObserver: SignUpSceneController.SignUpUIObserver)
     fun showError(message : UIMessage)
@@ -29,10 +56,12 @@ interface SignUpScene {
     fun showKeyGenerationHolder()
     fun showFormHolder()
     fun resetSceneWidgetsFromModel(
-            username: String,
-            fullName: String,
-            password: String,
-            recoveryEmail: String)
+        username: TextInput,
+        fullName: TextInput,
+        password: String,
+        confirmPassword: String,
+        recoveryEmail: TextInput,
+        isChecked: Boolean)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver?
 
@@ -54,14 +83,6 @@ interface SignUpScene {
             signUpFormHolder?.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
         }
 
-        private fun showUsernameSucess() {
-            signUpFormHolder?.showUsernameSuccess()
-        }
-
-        private fun hideUsernameSucess() {
-            signUpFormHolder?.hideUsernameSuccess()
-        }
-
         override fun togglePasswordSuccess(show: Boolean) {
             if(show) {
                 signUpFormHolder?.showPasswordSuccess()
@@ -70,20 +91,20 @@ interface SignUpScene {
             }
         }
 
-        override fun toggleUsernameErrors(show: Boolean) {
-            if(show) {
-                signUpFormHolder?.showUsernameErrors()
-            } else {
-                signUpFormHolder?.hideUsernameErrors()
-            }
+        override fun setUsernameState(state: FormInputState) {
+            signUpFormHolder?.setUsernameState(state)
         }
 
-        override fun togglePasswordErrors(show: Boolean) {
-            if(show) {
-                signUpFormHolder?.showPasswordErrors()
-            } else {
-                signUpFormHolder?.hidePasswordErrors()
-            }
+        override fun setPasswordError(message: UIMessage?) {
+            signUpFormHolder?.setPasswordError(message)
+        }
+
+        override fun setFullNameState(state: FormInputState) {
+            signUpFormHolder?.setFullNameState(state)
+        }
+
+        override fun setRecoveryEmailState(state: FormInputState) {
+            signUpFormHolder?.setRecoveryEmailState(state)
         }
 
         override fun disableCreateAccountButton() {
@@ -100,7 +121,7 @@ interface SignUpScene {
 
 
         override fun isUsernameErrorShown(): Boolean {
-            return signUpFormHolder!!.isUsernameErrorShown()
+            throw Exception("WTF are you doing?")
         }
 
         private fun assignPasswordTextListener() {
@@ -135,16 +156,8 @@ interface SignUpScene {
             signUpFormHolder?.assignBackButtonListener()
         }
 
-        override fun isUserAvailable(userAvailable: Boolean){
-            if(userAvailable) {
-                showUsernameSucess()
-                toggleUsernameErrors(show = false)
-            } else {
-                hideUsernameSucess()
-                toggleUsernameErrors(show = true)
-            }
-        }
-        init {
+        override fun toggleUserAvailableCheckmark(visible: Boolean) {
+            signUpFormHolder?.toggleUserAvailableCheckmark(visible)
         }
 
         override fun showFormHolder() {
@@ -223,15 +236,19 @@ interface SignUpScene {
         }
 
         override fun resetSceneWidgetsFromModel(
-                username: String,
-                fullName: String,
+                username: TextInput,
+                fullName: TextInput,
                 password: String,
-                recoveryEmail: String) {
+                confirmPassword: String,
+                recoveryEmail: TextInput,
+                isChecked: Boolean) {
             signUpFormHolder?.fillSceneWidgets(
                     username = username,
                     fullName = fullName,
                     password = password,
-                    recoveryEmail = recoveryEmail)
+                    confirmPassword = password,
+                    recoveryEmail = recoveryEmail,
+                    isChecked = isChecked)
         }
     }
 }

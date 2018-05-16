@@ -2,8 +2,11 @@ package com.email.scenes.signup
 
 import com.email.BaseActivity
 import com.email.R
+import com.email.api.Hosts
+import com.email.api.HttpClient
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.AsyncTaskWorkRunner
+import com.email.bgworker.RunnableThrottler
 import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
 import com.email.scenes.SceneController
@@ -26,12 +29,14 @@ class SignUpActivity: BaseActivity() {
         val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))
         val signUpSceneModel = receivedModel as SignUpSceneModel
         val keyValueStorage = KeyValueStorage.SharedPrefs(this)
+        val runnableThrottler = RunnableThrottler.Default(500L)
         return SignUpSceneController(
                 model = signUpSceneModel,
                 scene = signUpSceneView,
                 host = this,
+                runnableThrottler = runnableThrottler,
                 dataSource = SignUpDataSource(runner = AsyncTaskWorkRunner(),
-                        signUpAPIClient = SignUpAPIClient.Default(),
+                        httpClient = HttpClient.Default(),
                         db = appDB.signUpDao(),
                         keyValueStorage = keyValueStorage,
                         signalKeyGenerator = signalKeyGenerator))

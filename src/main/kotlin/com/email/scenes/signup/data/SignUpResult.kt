@@ -21,5 +21,10 @@ sealed class SignUpResult {
                 val message: UIMessage,
                 val exception: Exception): PostKeyBundle()
     }
+
+    sealed class CheckUsernameAvailability: SignUpResult() {
+        data class Success(val isAvailable: Boolean): CheckUsernameAvailability()
+        class Failure: CheckUsernameAvailability()
+    }
 }
 

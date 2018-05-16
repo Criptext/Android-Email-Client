@@ -7,7 +7,8 @@ import com.email.scenes.signup.IncompleteAccount
  */
 
 sealed class SignUpRequest{
-    class RegisterUser(val account: IncompleteAccount,
+    data class RegisterUser(val account: IncompleteAccount,
                        val recipientId: String
                        ): SignUpRequest()
+    data class CheckUserAvailabilty(val username: String): SignUpRequest()
 }

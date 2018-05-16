@@ -5,6 +5,6 @@ package com.email.api
  */
 
 object Hosts {
-    val restApiBaseUrl = "https://stage.mail.criptext.com"
+    val restApiBaseUrl = "http://stage.mail.criptext.com"
     val webSocketBaseUrl = "ws://stage.socket.criptext.com"
 }

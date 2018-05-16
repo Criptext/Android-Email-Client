@@ -2,6 +2,7 @@ package com.email.scenes.signup.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.signal.PreKeyBundleShareData
 import com.email.api.ServerErrorException
@@ -26,13 +27,14 @@ import org.json.JSONException
 class RegisterUserWorker(
         db: SignUpDao,
         keyValueStorage: KeyValueStorage,
-        private val apiClient: SignUpAPIClient,
+        httpClient: HttpClient,
         private val signalKeyGenerator: SignalKeyGenerator,
         private val incompleteAccount: IncompleteAccount,
         override val publishFn: (SignUpResult.RegisterUser) -> Unit)
     : BackgroundWorker<SignUpResult.RegisterUser> {
 
     override val canBeParallelized = false
+    private val apiClient = SignUpAPIClient(httpClient)
     private val storeAccountTransaction = StoreAccountTransaction(db, keyValueStorage)
 
 

@@ -94,6 +94,16 @@
     <string name="unsent">Unsent</string>
     <string name="encrypt_this_email">Encrypt this email</string>
 
+    <!-- SIGNUP -->
+    <string name="password_length_error">Password must be at least 8 characters.</string>
+    <string name="password_mismatch_error">Passwords do not match.</string>
+    <string name="taken_username_error">This username is not available.</string>
+    <string name="username_invalid_error">Invalid username.</string>
+    <string name="username_length_error">Username must be at least 3 characters.</string>
+    <string name="email_invalid_error">Invalid email address.</string>
+    <string name="fullname_length_error">Name is too long.</string>
+    <string name="fullname_empty_error">Name cannot be empty.</string>
+
     <!-- LOGIN -->
     <string name="login">Log In</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>

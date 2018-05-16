@@ -131,66 +131,101 @@
 
             </RelativeLayout>
 
-            <FrameLayout
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-12dp">
+                android:layout_marginTop="10dp">
+                <FrameLayout
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_toStartOf="@+id/container_inputFullname"
+                    >
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/full_name_input"
-                    android:textColorHint="@color/signup_hint_color"
-                    android:layout_width="260dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|center_horizontal">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/full_name"
-                        android:textSize="15sp"
-                        android:textColor="@color/white"
+                    <ImageView
+                        android:id="@+id/error_fullname"
+                        android:visibility="invisible"
+                        android:src="@drawable/x_rounded"
+                        android:padding="3dp"
+                        android:background="@drawable/error_circle"
                         android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <ImageView
+                        android:id="@+id/success_fullname"
+                        android:visibility="invisible"
+                        android:src="@drawable/check"
+                        android:tint="@android:color/white"
+                        android:padding="9dp"
+                        android:background="@drawable/success_circle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/container_inputFullname"
+                    android:layout_width="260dp"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/full_name_input"
+                        android:textColorHint="@color/signup_hint_color"
+                        android:layout_width="260dp"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapWords"
-                        android:hint="Full Name" />
+                        android:layout_gravity="top|center_horizontal">
 
-                </android.support.design.widget.TextInputLayout>
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/full_name"
+                            android:textSize="15sp"
+                            android:textColor="@color/white"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapWords"
+                            android:hint="Full Name" />
 
-            </FrameLayout>
+                    </android.support.design.widget.TextInputLayout>
+
+                </FrameLayout>
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="10dp">
 
-                <ImageView
-                    android:id="@+id/error_password"
-                    android:visibility="invisible"
-                    android:layout_gravity="center_vertical|start"
-                    android:src="@drawable/x_rounded"
-                    android:layout_marginTop="22dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="3dp"
-                    android:padding="3dp"
-                    android:layout_toStartOf="@+id/password_input"
-                    android:background="@drawable/error_circle"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"/>
-
-                <ImageView
-                    android:id="@+id/success_password"
-                    android:visibility="invisible"
-                    android:src="@drawable/check"
-                    android:layout_gravity="center_vertical|start"
-                    android:background="@drawable/success_circle"
-                    android:padding="9dp"
-                    android:tint="@android:color/white"
-                    android:layout_toStartOf="@+id/password_input"
+                <FrameLayout
                     android:layout_marginTop="22dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="3dp"
                     android:layout_width="30dp"
-                    android:layout_height="30dp"/>
+                    android:layout_toStartOf="@+id/password_input"
+                    android:layout_height="30dp">
+                    <ImageView
+                        android:id="@+id/error_password"
+                        android:visibility="invisible"
+                        android:src="@drawable/x_rounded"
+                        android:layout_gravity="center_vertical|start"
+                        android:padding="3dp"
+                        android:background="@drawable/error_circle"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"/>
+                    <ImageView
+                        android:id="@+id/success_password"
+                        android:visibility="invisible"
+                        android:src="@drawable/check"
+                        android:background="@drawable/success_circle"
+                        android:padding="9dp"
+                        android:tint="@android:color/white"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"/>
+                </FrameLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/password_input"
@@ -211,6 +246,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:singleLine="true"
+                        android:nextFocusDown="@+id/password_repeat"
                         android:hint="Password"/>
 
                 </android.support.design.widget.TextInputLayout>
@@ -223,34 +260,32 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
 
-                <ImageView
-                    android:id="@+id/error_password_repeat"
-                    android:visibility="invisible"
-                    android:src="@drawable/x_rounded"
-                    android:layout_gravity="center_vertical|start"
+                <FrameLayout
                     android:layout_marginTop="22dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="3dp"
-                    android:padding="3dp"
-                    android:layout_toStartOf="@+id/password_repeat_input"
-                    android:background="@drawable/error_circle"
                     android:layout_width="30dp"
-                    android:layout_height="30dp"/>
-
-                <ImageView
-                    android:id="@+id/success_password_repeat"
-                    android:visibility="invisible"
-                    android:src="@drawable/check"
-                    android:layout_gravity="center_vertical|start"
-                    android:background="@drawable/success_circle"
-                    android:padding="9dp"
-                    android:tint="@android:color/white"
-                    android:layout_marginTop="22dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="3dp"
                     android:layout_toStartOf="@+id/password_repeat_input"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"/>
+                    android:layout_height="30dp">
+                    <ImageView
+                        android:id="@+id/error_password_repeat"
+                        android:visibility="invisible"
+                        android:src="@drawable/x_rounded"
+                        android:layout_gravity="center_vertical|start"
+                        android:padding="3dp"
+                        android:background="@drawable/error_circle"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"/>
+                    <ImageView
+                        android:id="@+id/success_password_repeat"
+                        android:visibility="invisible"
+                        android:src="@drawable/check"
+                        android:background="@drawable/success_circle"
+                        android:padding="9dp"
+                        android:tint="@android:color/white"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"/>
+                </FrameLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/password_repeat_input"
@@ -271,6 +306,8 @@
                         android:textColor="@color/white"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:nextFocusDown="@+id/recovery_email"
                         android:inputType="textPassword"
                         android:hint="Confirm Password" />
 
@@ -278,24 +315,67 @@
 
             </RelativeLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/recovery_email_input"
-                android:layout_width="260dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-12dp"
-                android:textColorHint="@color/signup_hint_color"
-                android:layout_gravity="top|center_horizontal">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content">
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/recovery_email"
-                    android:textSize="15sp"
-                    android:textColor="@color/white"
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_width="30dp"
+                    android:layout_toStartOf="@+id/recovery_email_input"
+                    android:layout_height="30dp">
+                    <ImageView
+                        android:id="@+id/error_recovery"
+                        android:visibility="invisible"
+                        android:src="@drawable/x_rounded"
+                        android:background="@drawable/error_circle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <ImageView
+                        android:id="@+id/success_recovery"
+                        android:visibility="invisible"
+                        android:src="@drawable/check"
+                        android:tint="@android:color/white"
+                        android:padding="9dp"
+                        android:layout_gravity="center|start"
+                        android:background="@drawable/success_circle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </FrameLayout>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/recovery_email_input"
+                    android:layout_width="260dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="Recovery email (optional)" />
+                    android:textColorHint="@color/signup_hint_color"
+                    app:hintTextAppearance="@style/NormalTextAppearence"
+                    app:errorTextAppearance="@style/textinputlayout_login_error"
+                    android:layout_centerHorizontal="true"
+                    app:errorEnabled="true"
+                    android:layout_gravity="top|center_horizontal">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/recovery_email"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:hint="Recovery email (optional)" />
+
+                </android.support.design.widget.TextInputLayout>
+
+
+            </RelativeLayout>
+
+
 
             <RelativeLayout
                 android:layout_width="260dp"
