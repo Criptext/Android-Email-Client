@@ -9,14 +9,16 @@ import java.util.concurrent.TimeUnit
  */
 
 interface HttpClient {
-    fun post(url: String, jwt: String?, body: JSONObject): String
-    fun get(url: String, jwt: String?): String
+    fun post(path: String, jwt: String?, body: JSONObject): String
+    fun get(path: String, jwt: String?): String
 
     class Default(val baseUrl: String,
                   val connectionTimeout: Long,
                   val readTimeout: Long): HttpClient {
 
-        constructor(): this(baseUrl = "https://stage.mail.criptext.com",
+        // This is the constructor most activities should use.
+        // primary constructor is more for testing.
+        constructor(): this(baseUrl = Hosts.restApiBaseUrl,
                 connectionTimeout = 14000L, readTimeout = 7000L)
 
         private val client = OkHttpClient()
@@ -26,13 +28,13 @@ interface HttpClient {
                 .build()
 
 
-        override fun post(url: String, jwt: String?, body: JSONObject): String {
-            val request = ApiCall.postJSON(baseUrl + url, jwt, body)
+        override fun post(path: String, jwt: String?, body: JSONObject): String {
+            val request = ApiCall.postJSON(baseUrl + path, jwt, body)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun get(url: String, jwt: String?): String {
-            val request = ApiCall.getUrl(baseUrl + url, jwt)
+        override fun get(path: String, jwt: String?): String {
+            val request = ApiCall.getUrl(baseUrl + path, jwt)
             return ApiCall.executeRequest(client, request)
         }
 

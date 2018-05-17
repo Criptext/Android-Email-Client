@@ -17,7 +17,7 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = "https://stage.mail.criptext.com"
+        var baseUrl = Hosts.restApiBaseUrl
 
 
         private val client = OkHttpClient()
@@ -45,10 +45,10 @@ class ApiCall {
         ): Request {
             val jsonObject = JSONObject()
             jsonObject.put("name", name)
-            jsonObject.put("password", password)
+            jsonObject.put("passwordValue", password)
             jsonObject.put("recipientId", recipientId)
             jsonObject.put("keybundle", keyBundle.toJSON())
-            if (recoveryEmail != null) jsonObject.put("recoveryEmail", recoveryEmail)
+            if (recoveryEmail != null) jsonObject.put("recoveryEmailValue", recoveryEmail)
             return postJSON(url = "$baseUrl/user", json = jsonObject, jwtoken = null)
         }
 
@@ -59,7 +59,7 @@ class ApiCall {
         ): Request {
             val jsonObject = JSONObject()
             jsonObject.put("username", username)
-            jsonObject.put("password", password)
+            jsonObject.put("passwordValue", password)
             jsonObject.put("deviceId", deviceId)
             return postJSON(url = "$baseUrl/user/auth", json = jsonObject, jwtoken = null)
         }

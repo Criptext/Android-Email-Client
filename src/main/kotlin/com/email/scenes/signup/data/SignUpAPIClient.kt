@@ -1,36 +1,32 @@
 package com.email.scenes.signup.data
 
-import com.email.api.ApiCall
+import com.email.api.HttpClient
 import com.email.signal.PreKeyBundleShareData
 import com.email.scenes.signup.IncompleteAccount
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
+import org.json.JSONObject
 
 /**
  * Created by sebas on 2/26/18.
  */
 
-interface SignUpAPIClient {
+class SignUpAPIClient(private val httpClient: HttpClient) {
 
     fun createUser(
             account: IncompleteAccount,
-            keybundle : PreKeyBundleShareData.UploadBundle)
-            : String
+            keyBundle : PreKeyBundleShareData.UploadBundle
+    ): String {
+        val jsonObject = JSONObject()
+        jsonObject.put("name", account.name)
+        jsonObject.put("password", account.password)
+        jsonObject.put("recipientId", account.username)
+        jsonObject.put("keybundle", keyBundle.toJSON())
+        if (account.recoveryEmail != null)
+            jsonObject.put("recoveryEmail", account.recoveryEmail)
 
-    class Default : SignUpAPIClient {
+        return httpClient.post("/user", null, jsonObject)
+    }
 
-        override fun createUser(
-                account: IncompleteAccount,
-                keybundle : PreKeyBundleShareData.UploadBundle
-        ): String {
-            val request = ApiCall.createUser(
-                    recipientId = account.username,
-                    name = account.name,
-                    password = account.password,
-                    recoveryEmail = account.recoveryEmail,
-                    keyBundle = keybundle
-            )
-            return ApiCall.executeRequest(request)
-        }
+    fun isUsernameAvailable(username: String): String {
+        return httpClient.get("/user/available?username=$username", null)
     }
 }

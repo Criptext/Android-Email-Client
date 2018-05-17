@@ -16,7 +16,6 @@ import com.email.websocket.data.EventDataSource
  */
 
 object WebSocketSingleton {
-    const val HOST_URL = "stage.socket.criptext.com:3001"
     private var INSTANCE : WebSocketController? = null
 
     private fun newInstance(activeAccount: ActiveAccount, context: Context): WebSocketController {

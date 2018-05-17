@@ -56,13 +56,13 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(20, label)
 
         every {
-            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+            httpClient.get(path = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
         } returnsMany listOf("__ENCRYPTED_TEXT_1__", "__ENCRYPTED_TEXT_2__")
         every {
-            httpClient.post(url = "/event/ack", jwt = "__JWTOKEN__",
+            httpClient.post(path = "/event/ack", jwt = "__JWTOKEN__",
                     body = match { it.hasArray("ids").ofLength(2) })
         } returns "OK"
 
@@ -111,10 +111,10 @@ class UpdateMailboxWorkerTest {
 
         // mock server responses. Only one, assume all others timeout
         every {
-            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(url = match { it.startsWith("/email") }, jwt = "__JWTOKEN__")
+            httpClient.get(path = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
         } throws SocketTimeoutException()
 
         // prepare db mocks
@@ -157,10 +157,10 @@ class UpdateMailboxWorkerTest {
 
         // mock server responses. No body requests since mails are already in db
         every {
-            httpClient.get(url = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.post(url = "/event/ack", jwt = "__JWTOKEN__",
+            httpClient.post(path = "/event/ack", jwt = "__JWTOKEN__",
                     body = match { it.hasArray("ids").ofLength(2) })
         } throws SocketTimeoutException()
 

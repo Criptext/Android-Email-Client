@@ -2,6 +2,7 @@ package com.email.signal
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 import com.email.splash.SplashActivity
 import org.amshove.kluent.shouldEqual
 import org.junit.Rule
@@ -32,9 +33,39 @@ class LocalCommunicationTest {
 
         val textDecryptedByBob = bob.decrypt("alice", 1, textEncryptedByAlice)
         textDecryptedByBob shouldEqual originalTextFromAlice
+
+        val originalReplyFromBob = "Hello Alice! I'm fine. I'm using Criptext too"
+        val replyEncryptedByBob = bob.encrypt("alice", 1, originalReplyFromBob)
+
+        val replyDecryptedByAlice = alice.decrypt("bob", 1, replyEncryptedByBob)
+        replyDecryptedByAlice shouldEqual originalReplyFromBob
+
     }
 
 
+    @Test
+    @Throws(InterruptedException::class)
+    fun should_be_able_to_exchange_50_e2e_messages_in_memory_with_signal() {
+        val alice = InMemoryUser(generator, "alice", 1).setup()
+        val bob = InMemoryUser(generator, "bob", 1).setup()
 
+        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        alice.buildSession(keyBundleFromBob)
+
+        for (i in 1..50) {
+            val originalTextFromAlice = "Hello Bob! How are you! I'm using Criptext. This is my 1st e-mail."
+            val textEncryptedByAlice = alice.encrypt("bob", 1, originalTextFromAlice)
+
+            val textDecryptedByBob = bob.decrypt("alice", 1, textEncryptedByAlice)
+            textDecryptedByBob shouldEqual originalTextFromAlice
+
+            val originalReplyFromBob = "Hello Alice! I'm fine. I'm using Criptext too"
+            val replyEncryptedByBob = bob.encrypt("alice", 1, originalReplyFromBob)
+
+            val replyDecryptedByAlice = alice.decrypt("bob", 1, replyEncryptedByBob)
+            replyDecryptedByAlice shouldEqual originalReplyFromBob
+        }
+
+    }
 
 }

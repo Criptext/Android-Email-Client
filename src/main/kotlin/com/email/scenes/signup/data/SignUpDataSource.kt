@@ -1,5 +1,6 @@
 package com.email.scenes.signup.data
 
+import com.email.api.HttpClient
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkHandler
@@ -12,7 +13,7 @@ import com.email.db.dao.SignUpDao
  */
 
 class SignUpDataSource(override val runner: WorkRunner,
-                       private val signUpAPIClient: SignUpAPIClient,
+                       private val httpClient: HttpClient,
                        private val db: SignUpDao,
                        private val signalKeyGenerator: SignalKeyGenerator,
                        private val keyValueStorage: KeyValueStorage )
@@ -23,12 +24,17 @@ class SignUpDataSource(override val runner: WorkRunner,
         return when (params) {
             is SignUpRequest.RegisterUser -> RegisterUserWorker(
                     db = db,
-                    apiClient = signUpAPIClient,
+                    httpClient = httpClient,
                     incompleteAccount = params.account,
                     signalKeyGenerator = signalKeyGenerator,
                     keyValueStorage = keyValueStorage,
                     publishFn = { result ->
                 flushResults(result)
+            })
+            is SignUpRequest.CheckUserAvailabilty -> CheckUsernameAvailabilityWorker(
+                    httpClient = httpClient,
+                    username = params.username,
+                    publishFn = { result -> flushResults(result)
             })
         }
     }

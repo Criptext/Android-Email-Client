@@ -6,7 +6,6 @@ import com.email.api.models.EmailMetadata
 import com.email.bgworker.BackgroundWorker
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.Email
-import com.email.db.models.Label
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.signal.SignalClient
 import com.email.utils.UIMessage

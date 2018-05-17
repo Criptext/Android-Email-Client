@@ -6,6 +6,7 @@ import org.whispersystems.libsignal.SessionCipher
 import org.whispersystems.libsignal.SignalProtocolAddress
 import org.whispersystems.libsignal.ecc.Curve
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage
+import org.whispersystems.libsignal.protocol.SignalMessage
 import org.whispersystems.libsignal.state.PreKeyBundle
 import org.whispersystems.libsignal.state.SignalProtocolStore
 import java.nio.charset.Charset
@@ -92,9 +93,15 @@ interface SignalClient {
 
         override fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String {
             val encryptedBytes = Encoding.stringToByteArray(encryptedB64)
-            val signalMessage = PreKeySignalMessage(encryptedBytes)
-            val cipher = SessionCipher(store, SignalProtocolAddress(recipientId, deviceId))
-            return cipher.decrypt(signalMessage).toString(Charset.forName("UTF-8"))
+            val senderAddress = SignalProtocolAddress(recipientId, deviceId)
+            val cipher = SessionCipher(store, senderAddress)
+            val decryptedMessage =
+                    if (store.containsSession(senderAddress))
+                        cipher.decrypt(SignalMessage(encryptedBytes))
+                    else
+                        cipher.decrypt(PreKeySignalMessage(encryptedBytes))
+
+            return decryptedMessage.toString(Charset.forName("UTF-8"))
         }
 
     }

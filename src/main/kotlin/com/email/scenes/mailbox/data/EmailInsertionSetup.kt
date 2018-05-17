@@ -154,9 +154,9 @@ object EmailInsertionSetup {
             throw DuplicateMessageException("Email Already exists in database!")
 
         val body = apiClient.getBodyFromEmail(metadata.messageId)
-        val decryptedBody = decryptMessage(signalClient = signalClient,
-                recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
         dao.runTransaction(Runnable {
+                val decryptedBody = decryptMessage(signalClient = signalClient,
+                    recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
                 EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
             })
     }

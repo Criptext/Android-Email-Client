@@ -6,6 +6,6 @@ package com.email.api
 
 class EmailInsertionAPIClient(private val httpClient: HttpClient, private val token: String) {
     fun getBodyFromEmail(messageId: String): String {
-        return httpClient.get("/email/$messageId", token)
+        return httpClient.get("/email/body/$messageId", token)
     }
 }
