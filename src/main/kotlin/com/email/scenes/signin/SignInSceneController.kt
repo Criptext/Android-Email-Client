@@ -8,6 +8,10 @@ import com.email.scenes.params.SignUpParams
 import com.email.scenes.signin.data.SignInDataSource
 import com.email.scenes.signin.data.SignInRequest
 import com.email.scenes.signin.data.SignInResult
+import com.email.scenes.signin.holders.SignInLayoutState
+import com.email.validation.AccountDataValidator
+import com.email.validation.FormData
+import com.email.validation.ProgressButtonState
 
 /**
  * Created by sebas on 2/15/18.
@@ -23,67 +27,84 @@ class SignInSceneController(
 
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
-            is SignInResult.VerifyUser -> onVerifyUser(result)
             is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
+        }
+    }
+
+    private fun onAuthenticationFailed(result: SignInResult.AuthenticateUser.Failure) {
+        scene.showError(result.message)
+
+        val currentState = model.state
+        if (currentState is SignInLayoutState.InputPassword) {
+            model.state = currentState.copy(password = "",
+                    buttonState = ProgressButtonState.disabled)
+            scene.resetInput()
         }
     }
 
     private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
         when (result) {
             is SignInResult.AuthenticateUser.Success -> {
-                uiObserver.onUserAuthenticated()
+                host.goToScene(MailboxParams(), false)
             }
-            is SignInResult.AuthenticateUser.Failure -> {
-                scene.showError(result.message)
-            }
+            is SignInResult.AuthenticateUser.Failure -> onAuthenticationFailed(result)
         }
+
     }
 
 
     val onPasswordLoginDialogListener = object : OnPasswordLoginDialogListener {
         override fun acceptPasswordLogin() {
-            scene.showPasswordLoginHolder(model.username)
         }
 
         override fun cancelPasswordLogin() {
         }
     }
-    private fun onVerifyUser(result: SignInResult.VerifyUser) {
-        scene.toggleLoginProgressBar(isLoggingIn = false)
-        when (result) {
-            is SignInResult.VerifyUser.Success -> {
-                showLoginValidationHolder()
+
+    private fun onSignInButtonClicked(currentState: SignInLayoutState.Start) {
+        val userInput = AccountDataValidator.validateUsername(currentState.username)
+        when (userInput) {
+            is FormData.Valid -> {
+                model.state = SignInLayoutState.InputPassword(
+                        username = userInput.value,
+                        password = "",
+                        buttonState = ProgressButtonState.disabled)
+                scene.initLayout(model.state, uiObserver)
             }
-            is SignInResult.VerifyUser.Failure -> {
-                scene.drawError()
-            }
+            is FormData.Error ->
+                scene.drawInputError(userInput.message)
         }
     }
-    private val uiObserver = object : SignInUIObserver {
-        override fun onForgotPasswordClick() {
-            TODO("GO TO FORGOT PASSWORD???")
-        }
 
-        override fun onUserAuthenticated() {
-            host.goToScene(MailboxParams(), false)
-        }
+    private fun onSignInButtonClicked(currentState: SignInLayoutState.InputPassword) {
+        if (currentState.password.isNotEmpty()) {
+            val newButtonState = ProgressButtonState.waiting
+            model.state = currentState.copy(buttonState = newButtonState)
+            scene.setSubmitButtonState(newButtonState)
 
-        override fun onPasswordLoginClick() {
             val req = SignInRequest.AuthenticateUser(
-                    username = model.username,
-                    password = model.password,
-                    deviceId = 1 // (?) wtf
+                    username = currentState.username,
+                    password = currentState.password
             )
             dataSource.submitRequest(req)
         }
+    }
 
-        override fun onPasswordChangeListener(password: String) {
-            model.password = password
-            if(model.password.isNotEmpty()) {
-                scene.toggleConfirmButton(activated = true)
-            } else {
-                scene.toggleConfirmButton(activated = false)
+    private val uiObserver = object : SignInUIObserver {
+        override fun onBackPressed() {
+            this@SignInSceneController.onBackPressed()
+        }
+
+        override fun onSubmitButtonClicked() {
+            val state = model.state
+            when (state) {
+                is SignInLayoutState.Start -> onSignInButtonClicked(state)
+                is SignInLayoutState.InputPassword -> onSignInButtonClicked(state)
             }
+        }
+
+        override fun onForgotPasswordClick() {
+            TODO("GO TO FORGOT PASSWORD???")
         }
 
         override fun onCantAccessDeviceClick(){
@@ -93,39 +114,39 @@ class SignInSceneController(
             host.goToScene(MailboxParams(), false)
         }
 
-        override fun onLoginClick() {
-            validateUsername(model.username)
-        }
-
         override fun toggleUsernameFocusState(isFocused: Boolean) {
         }
 
-        override fun onUsernameTextChanged(text: String) {
-            scene.drawNormalSignInOptions()
-            model.username = text
+        override fun onPasswordChangeListener(newPassword: String) {
+            val currentState = model.state
+            if (currentState is SignInLayoutState.InputPassword) {
+                val newButtonState = if (newPassword.isEmpty()) ProgressButtonState.disabled
+                                     else ProgressButtonState.enabled
+                model.state = currentState.copy(
+                        password = newPassword,
+                        buttonState = newButtonState)
+                scene.setSubmitButtonState(state = newButtonState)
+            }
+        }
+        override fun onUsernameTextChanged(newUsername: String) {
+            model.state = SignInLayoutState.Start(username = newUsername)
+            val buttonState = if (newUsername.isNotEmpty()) ProgressButtonState.enabled
+                              else ProgressButtonState.disabled
+            scene.setSubmitButtonState(buttonState)
         }
 
         override fun onSignUpLabelClicked() {
             host.goToScene(SignUpParams(), false)
         }
-
-        override fun toggleSignUpPressedState(isPressed: Boolean) {
-            scene.toggleSignUpPressed(isPressed)
-        }
     }
 
-    fun validateUsername(username: String) {
-
-        scene.toggleLoginProgressBar(isLoggingIn = true)
-        val req = SignInRequest.VerifyUser(
-                username = username
-        )
-        dataSource.submitRequest(req)
+    private fun resetLayout() {
+        scene.initLayout(model.state, uiObserver)
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        scene.initListeners(signInUIObserver = uiObserver)
+        scene.initLayout(state = model.state, signInUIObserver = uiObserver)
 
         return false
     }
@@ -135,27 +156,34 @@ class SignInSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        return true
+        val currentState = model.state
+        return when (currentState) {
+            is SignInLayoutState.Start -> true
+            is SignInLayoutState.InputPassword -> {
+                model.state = SignInLayoutState.Start(currentState.username)
+                resetLayout()
+                false
+            }
+            is SignInLayoutState.WaitForApproval -> {
+                model.state = SignInLayoutState.Start("")
+                resetLayout()
+                false
+            }
+        }
     }
 
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
-    private fun showLoginValidationHolder() {
-        scene.showLoginValidationHolder()
-    }
-
     interface SignInUIObserver {
-        fun onLoginClick()
+        fun onSubmitButtonClicked()
         fun toggleUsernameFocusState(isFocused: Boolean)
-        fun onUsernameTextChanged(text: String)
-        fun toggleSignUpPressedState(isPressed: Boolean)
         fun onSignUpLabelClicked()
         fun userLoginReady()
         fun onCantAccessDeviceClick()
-        fun onPasswordLoginClick()
-        fun onPasswordChangeListener(password: String)
-        fun onUserAuthenticated()
+        fun onPasswordChangeListener(newPassword: String)
+        fun onUsernameTextChanged(newUsername: String)
         fun onForgotPasswordClick()
+        fun onBackPressed()
     }
 }

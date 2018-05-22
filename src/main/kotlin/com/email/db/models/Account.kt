@@ -22,8 +22,8 @@ class Account(
         @ColumnInfo(name = "jwt")
         var jwt : String,
 
-        @ColumnInfo(name = "identityb64")
-        var identityB64 : String,
+        @ColumnInfo(name = "identityKeyPairB64")
+        var identityKeyPairB64: String,
 
         @ColumnInfo(name = "registrationId")
         var registrationId : Int

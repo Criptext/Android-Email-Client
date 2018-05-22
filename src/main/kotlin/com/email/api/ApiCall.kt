@@ -36,22 +36,6 @@ class ApiCall {
 
         fun executeRequest(req: Request) = executeRequest(this.client, req)
 
-        fun createUser(
-                name: String,
-                password: String,
-                recoveryEmail: String?,
-                recipientId: String,
-                keyBundle: PreKeyBundleShareData.UploadBundle
-        ): Request {
-            val jsonObject = JSONObject()
-            jsonObject.put("name", name)
-            jsonObject.put("passwordValue", password)
-            jsonObject.put("recipientId", recipientId)
-            jsonObject.put("keybundle", keyBundle.toJSON())
-            if (recoveryEmail != null) jsonObject.put("recoveryEmailValue", recoveryEmail)
-            return postJSON(url = "$baseUrl/user", json = jsonObject, jwtoken = null)
-        }
-
         fun authenticateUser(
                 username: String,
                 password: String,
@@ -59,7 +43,7 @@ class ApiCall {
         ): Request {
             val jsonObject = JSONObject()
             jsonObject.put("username", username)
-            jsonObject.put("passwordValue", password)
+            jsonObject.put("password", password)
             jsonObject.put("deviceId", deviceId)
             return postJSON(url = "$baseUrl/user/auth", json = jsonObject, jwtoken = null)
         }

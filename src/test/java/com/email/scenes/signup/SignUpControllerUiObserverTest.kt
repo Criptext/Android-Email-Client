@@ -2,9 +2,9 @@ package com.email.scenes.signup
 
 import com.email.R
 import com.email.scenes.signup.data.SignUpRequest
-import com.email.utils.form.FormInputState
+import com.email.validation.FormInputState
 import com.email.utils.UIMessage
-import com.email.utils.form.TextInput
+import com.email.validation.TextInput
 import io.mockk.*
 import org.amshove.kluent.`should equal`
 import org.junit.Before

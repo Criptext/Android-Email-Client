@@ -14,7 +14,7 @@ interface KeyValueStorage {
     fun putString(key: StringKey, value: String)
 
     enum class StringKey(val stringKey: String) {
-        ActiveAccount("ActiveAccount")
+        ActiveAccount("ActiveAccount"), SignInSession("SignInSession")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {

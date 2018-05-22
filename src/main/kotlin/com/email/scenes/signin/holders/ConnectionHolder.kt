@@ -15,7 +15,7 @@ import com.email.scenes.signin.SignInSceneController
  * Created by sebas on 3/2/18.
  */
 
-class ConnectionHolder(val view: View) {
+class ConnectionHolder(val view: View): BaseSignInHolder() {
 
     private val loadingView: View
     private val textViewStatus: TextView

@@ -4,7 +4,6 @@ import com.email.api.HttpClient
 import com.email.db.KeyValueStorage
 import com.email.db.dao.SignUpDao
 import com.email.scenes.signup.IncompleteAccount
-import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
 import com.email.signal.SignalKeyGenerator
 import com.gaumala.kotlinsnapshot.Camera
@@ -42,21 +41,6 @@ class RegisterUserWorkerTest {
                 signalKeyGenerator = keyGenerator, incompleteAccount = incompleteAccount,
                 publishFn = {})
 
-    private fun createRegistrationBundles(recipientId: String): SignalKeyGenerator.RegistrationBundles {
-        val preKeys = mapOf(Pair(1, "__PK_1__"), Pair(2, "__PK_2__"), Pair(3, "__PK_3__"))
-        val registrationId = 54378
-        return SignalKeyGenerator.RegistrationBundles(
-                privateBundle = SignalKeyGenerator.PrivateBundle(identityKeyPair = "__IDENTITY_KEY_PAIR__",
-                        signedPreKeyId = 1, signedPreKey = "__SIGNED_PRE_KEY__",
-                        registrationId = registrationId, preKeys = preKeys),
-                uploadBundle = PreKeyBundleShareData.UploadBundle(
-                        shareData = PreKeyBundleShareData(recipientId = recipientId, deviceId = 1,
-                                signedPreKeyId = 1, signedPreKeyPublic = "__SIGNED_PRE_KEY_PUBLIC__",
-                                signedPreKeySignature = "__SIGNED_PRE_KEY_SIGNATURE__",
-                                identityPublicKey = "__IDENTITY_PUBLIC_KEY__",
-                                registrationId = registrationId), preKeys = preKeys)
-        )
-    }
 
     @Test
     fun `should post a new user to the server`() {
@@ -64,7 +48,7 @@ class RegisterUserWorkerTest {
 
         every {
             keyGenerator.register("tester", 1)
-        } returns createRegistrationBundles("tester")
+        } returns RegisterUserTestUtils.createRegistrationBundles("tester", 1)
         every { httpClient.post("/user", null, capture(bodySlot)) } returns "OK"
         every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
 

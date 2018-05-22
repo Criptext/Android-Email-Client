@@ -20,6 +20,6 @@ data class IncompleteAccount(
                         recipientId = this.username,
                         jwt = jwt,
                         registrationId = privateBundle.registrationId,
-                        identityB64 = privateBundle.identityKeyPair
+                        identityKeyPairB64 = privateBundle.identityKeyPair
                 )
 }

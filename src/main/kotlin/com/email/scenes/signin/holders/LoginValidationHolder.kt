@@ -22,7 +22,7 @@ import com.email.scenes.signin.SignInSceneController
  * Created by sebas on 3/8/18.
  */
 
-class LoginValidationHolder(val view: View) {
+class LoginValidationHolder(val view: View): BaseSignInHolder() {
 
     private val cantAccessDevice: TextView
     private var animLoading: AnimatorSet? = null
