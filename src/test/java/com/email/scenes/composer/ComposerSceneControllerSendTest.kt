@@ -24,7 +24,6 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class ComposerSceneControllerSendTest {
 
-    private lateinit var apiClient: ComposerAPIClient
     private lateinit var scene: MockedComposerScene
     private lateinit var model: ComposerModel
     private lateinit var controller: ComposerController
@@ -33,7 +32,6 @@ class ComposerSceneControllerSendTest {
 
     @Before
     fun createComposerSceneController() {
-        apiClient = ComposerAPIClient("")
         scene = MockedComposerScene()
         host = MockedIHostActivity()
         model = ComposerModel(fullEmail = null, composerType = null)

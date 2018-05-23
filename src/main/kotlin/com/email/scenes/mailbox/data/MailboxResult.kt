@@ -73,7 +73,7 @@ sealed class MailboxResult {
     }
 
     sealed class SendMail: MailboxResult() {
-        class Success(val emailId: Long, val response: JSONObject): SendMail()
+        class Success(val emailId: Long): SendMail()
         data class Failure(val message: UIMessage): SendMail()
     }
 

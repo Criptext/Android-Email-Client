@@ -382,9 +382,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
-                is MailboxResult.SendMail.Success -> {
-                    dataSource.submitRequest(MailboxRequest.UpdateEmail(result.emailId, result.response))
-                }
+                is MailboxResult.SendMail.Success ->
+                    scene.showMessage(UIMessage(R.string.mail_sent_success))
                 is MailboxResult.SendMail.Failure -> scene.showMessage(result.message)
             }
         }

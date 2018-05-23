@@ -58,6 +58,8 @@ class MailboxDataSource(
                     signalClient = signalClient,
                     activeAccount = activeAccount,
                     rawSessionDao = rawSessionDao,
+                    db = mailboxLocalDB,
+                    httpClient = httpClient,
                     emailId = params.emailId,
                     threadId = params.threadId,
                     composerInputData = params.data,
@@ -74,7 +76,7 @@ class MailboxDataSource(
             is MailboxRequest.UpdateEmail -> UpdateEmailWorker(
                     db = mailboxLocalDB,
                     emailId = params.emailId,
-                    response = params.response,
+                    sentMailData = params.sentMailData,
                     publishFn = { result ->
                         flushResults(result)
                     }

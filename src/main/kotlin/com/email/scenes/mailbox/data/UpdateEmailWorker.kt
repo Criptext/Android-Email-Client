@@ -13,7 +13,7 @@ import org.json.JSONObject
 class UpdateEmailWorker(
         private val db: MailboxLocalDB,
         private val emailId: Long,
-        private val response: JSONObject,
+        private val sentMailData: SentMailData,
         override val publishFn: (MailboxResult.UpdateMail) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMail> {
 
@@ -24,9 +24,9 @@ class UpdateEmailWorker(
     }
 
     override fun work(): MailboxResult.UpdateMail? {
-        db.updateEmailAndAddLabelSent(emailId, response.getString("threadId"),
-                response.getString("metadataKey"),
-                DateUtils.getDateFromString(response.getString("date"), null),
+        db.updateEmailAndAddLabelSent(emailId, sentMailData.threadId,
+                sentMailData.metadataKey.toString(),
+                DateUtils.getDateFromString(sentMailData.date, null),
                 DeliveryTypes.SENT)
         return MailboxResult.UpdateMail.Success()
     }

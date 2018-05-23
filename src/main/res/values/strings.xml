@@ -186,6 +186,7 @@
 
     <string name="message">Message</string>
     <string name="subject">Subject</string>
+    <string name="mail_sent_success">Mail sent successfully</string>
 
     <string name="error_updating_labels">Error updating email labels. Please try again</string>
     <string name="error_updating_status">Error updating email status. Please try again</string>
