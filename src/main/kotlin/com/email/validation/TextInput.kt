@@ -1,4 +1,4 @@
-package com.email.utils.form
+package com.email.validation
 
 /**
  * Created by gabriel on 5/17/18.

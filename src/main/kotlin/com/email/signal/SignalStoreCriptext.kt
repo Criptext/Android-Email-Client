@@ -142,7 +142,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         }
 
         override fun getIdentityKeyPair(): IdentityKeyPair {
-            val rawIdentityKeyPair = getLoggedInAccount().identityB64
+            val rawIdentityKeyPair = getLoggedInAccount().identityKeyPairB64
             val bytesIdentityKeyPair = Encoding.stringToByteArray(rawIdentityKeyPair)
             return IdentityKeyPair(bytesIdentityKeyPair)
         }

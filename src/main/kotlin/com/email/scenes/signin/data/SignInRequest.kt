@@ -6,8 +6,7 @@ package com.email.scenes.signin.data
 
 sealed class SignInRequest{
     class AuthenticateUser(val username: String,
-                           val password: String,
-                           val deviceId: Int
+                           val password: String
     ): SignInRequest()
 
     class VerifyUser(val username: String

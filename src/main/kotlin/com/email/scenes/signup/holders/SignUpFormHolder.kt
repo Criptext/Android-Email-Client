@@ -13,9 +13,9 @@ import com.email.R
 import com.email.scenes.signup.RecoveryEmailWarningDialog
 import com.email.scenes.signup.OnRecoveryEmailWarningListener
 import com.email.scenes.signup.SignUpSceneController
-import com.email.utils.form.FormInputState
+import com.email.validation.FormInputState
 import com.email.utils.UIMessage
-import com.email.utils.form.TextInput
+import com.email.validation.TextInput
 import com.email.utils.getLocalizedUIMessage
 
 /**

@@ -2,11 +2,14 @@ package com.email.scenes.signin
 
 import com.email.BaseActivity
 import com.email.R
+import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
+import com.email.db.AppDatabase
+import com.email.db.KeyValueStorage
 import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
-import com.email.scenes.signin.data.SignInAPIClient
 import com.email.scenes.signin.data.SignInDataSource
+import com.email.signal.SignalKeyGenerator
 
 /**
  * Created by sebas on 2/15/18.
@@ -18,7 +21,9 @@ class SignInActivity : BaseActivity() {
         get() = null
 
     override fun initController(receivedModel: Any): SceneController {
-        val db: SignInLocalDB.Default = SignInLocalDB.Default(this.applicationContext)
+        val appCtx = this.applicationContext
+        val db: SignInLocalDB.Default = SignInLocalDB.Default(appCtx)
+        val appDB = AppDatabase.getAppDatabase(appCtx)
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel
         return SignInSceneController(
@@ -27,7 +32,10 @@ class SignInActivity : BaseActivity() {
                 host = this,
                 dataSource = SignInDataSource(
                         runner = AsyncTaskWorkRunner(),
-                        signInAPIClient = SignInAPIClient.Default(),
+                        keyGenerator = SignalKeyGenerator.Default(),
+                        httpClient = HttpClient.Default(),
+                        signUpDao = appDB.signUpDao(),
+                        keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),
                         signInLocalDB = db)
         )
     }

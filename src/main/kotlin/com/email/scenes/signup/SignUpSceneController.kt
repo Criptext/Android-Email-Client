@@ -9,13 +9,13 @@ import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SignInParams
-import com.email.scenes.signup.data.FormValidator
+import com.email.validation.AccountDataValidator
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
-import com.email.utils.form.FormData
-import com.email.utils.form.FormInputState
+import com.email.validation.FormData
+import com.email.validation.FormInputState
 import com.email.utils.UIMessage
-import com.email.utils.form.TextInput
+import com.email.validation.TextInput
 
 /**
  * Created by sebas on 2/15/18.
@@ -27,8 +27,6 @@ class SignUpSceneController(
         private val host : IHostActivity,
         private val dataSource: WorkHandler<SignUpRequest, SignUpResult>,
         private val runnableThrottler: RunnableThrottler): SceneController() {
-
-    private val validator = FormValidator()
 
     override val menuResourceId: Int?
         get() = null
@@ -64,7 +62,7 @@ class SignUpSceneController(
             val newUsername = if (text.isEmpty()) {
                 model.username.copy(state = FormInputState.Unknown())
             } else {
-                val userInput = validator.validateUsername(text)
+                val userInput = AccountDataValidator.validateUsername(text)
                 when (userInput) {
                     is FormData.Valid -> {
                         runnableThrottler.push(Runnable {
@@ -92,7 +90,7 @@ class SignUpSceneController(
             val newFullName = if (text.isEmpty()) {
                 model.fullName.copy(state = FormInputState.Unknown())
             } else {
-                val userInput = validator.validateFullName(text)
+                val userInput = AccountDataValidator.validateFullName(text)
                 when (userInput) {
                     is FormData.Valid -> {
                         model.fullName.copy(value = userInput.value,
@@ -114,16 +112,16 @@ class SignUpSceneController(
             val newRecoveryEmail = if (text.isEmpty()) {
                 TextInput(value = text, state = FormInputState.Unknown())
             } else {
-                val userInput = validator.validateRecoveryEmailAddress(text)
+                val userInput = AccountDataValidator.validateRecoveryEmailAddress(text)
                 when (userInput) {
                     is FormData.Valid -> {
                         TextInput(value = userInput.value,
-                                  state = FormInputState.Valid())
+                                state = FormInputState.Valid())
                     }
 
                     is FormData.Error -> {
                         TextInput(value = text,
-                                  state = FormInputState.Error(userInput.message))
+                                state = FormInputState.Error(userInput.message))
                     }
                 }
             }

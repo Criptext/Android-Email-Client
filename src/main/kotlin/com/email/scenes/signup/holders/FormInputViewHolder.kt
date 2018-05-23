@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
 import android.view.View
 import com.email.R
-import com.email.utils.form.FormInputState
+import com.email.validation.FormInputState
 import com.email.utils.getLocalizedUIMessage
 
 /**

@@ -1,45 +1,26 @@
 package com.email.scenes.signin.data
 
-import com.email.api.ApiCall
-import com.email.api.ServerErrorException
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
+import com.email.api.HttpClient
+import com.email.signal.PreKeyBundleShareData
+import org.json.JSONObject
 
 /**
  * Created by sebas on 2/28/18.
  */
 
-interface SignInAPIClient {
+class SignInAPIClient(private val httpClient: HttpClient) {
 
     fun authenticateUser(
             username: String,
-            password: String,
-            deviceId: Int)
-            : String
-
-    class Default : SignInAPIClient {
-        private val client = OkHttpClient().
-                newBuilder().
-                connectTimeout(60, TimeUnit.SECONDS).
-                readTimeout(60, TimeUnit.SECONDS).
-                build()
-
-        override fun authenticateUser(
-                username: String,
-                password: String,
-                deviceId: Int): String {
-
-                val request = ApiCall.authenticateUser(
-                        username = username,
-                        password = password,
-                        deviceId = deviceId
-                )
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    return response.message()
-                } else
-                    throw ServerErrorException(response.code())
-        }
+            password: String)
+            : String {
+        val jsonObject = JSONObject()
+        jsonObject.put("username", username)
+        jsonObject.put("password", password)
+        return httpClient.post(path = "/user/auth", body = jsonObject, jwt = null)
     }
 
+    fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): String {
+        return httpClient.post(path = "/keybundle", body = bundle.toJSON(), jwt = jwt)
+    }
 }

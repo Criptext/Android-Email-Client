@@ -1,110 +1,40 @@
 package com.email.scenes.signin
 
-import android.annotation.SuppressLint
-import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.email.R
-import com.email.scenes.signin.holders.ConnectionHolder
-import com.email.scenes.signin.holders.LoginValidationHolder
-import com.email.scenes.signin.holders.PasswordLoginHolder
-import com.email.scenes.signin.holders.SignInFormHolder
+import com.email.scenes.signin.holders.*
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
+import com.email.validation.ProgressButtonState
 
 /**
  * Created by sebas on 2/15/18.
  */
 
 interface SignInScene {
-    fun drawNormalSignInOptions()
-    fun toggleSignUpPressed(isPressed: Boolean)
-    fun toggleLoginProgressBar(isLoggingIn : Boolean)
-    fun drawError()
+    fun resetInput()
     fun showError(message: UIMessage)
+    fun drawInputError(error: UIMessage)
     fun drawSuccess()
-    fun initListeners(signInUIObserver: SignInSceneController.SignInUIObserver)
-    fun showConnectionHolder()
-    fun showFormHolder()
-    fun startLoadingAnimation()
-    fun startSucceedAnimation(launchMailboxScene: (
-            signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit)
-    fun stopAnimationLoading()
-    fun startAnimation()
-    fun initFormUI()
-    fun showLoginValidationHolder()
-    fun showPasswordLoginHolder(username: String)
+    fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
-    fun toggleConfirmButton(activated: Boolean)
+    fun setSubmitButtonState(state: ProgressButtonState)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
     class SignInSceneView(val view: View): SignInScene {
 
-        override fun showPasswordLoginDialog(
-                onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-            loginValidationHolder?.showPasswordLoginDialog(onPasswordLoginDialogListener)
-        }
-
-        override fun startAnimation() {
-            startLoadingAnimation()
-
-            Handler().postDelayed({
-                startSucceedAnimation(showMailboxScene)
-            }, 3000)
-        }
-
-        private val res = view.context.resources
         private val viewGroup = view.parent as ViewGroup
-        private var signInFormHolder: SignInFormHolder? = null
-        private var connectionHolder: ConnectionHolder? = null
-        private var loginValidationHolder: LoginValidationHolder? = null
-        private var passwordLoginHolder: PasswordLoginHolder? = null
+        private var holder: BaseSignInHolder
 
         override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
-                signInFormHolder?.signInUIObserver = value
-                connectionHolder?.signInUIObserver = value
-                loginValidationHolder?.signInUIObserver = value
-                passwordLoginHolder?.signInUIObserver = value
+                holder.uiObserver = value
                 field = value
             }
-        private fun assignForgotPasswordClickListener() {
-            passwordLoginHolder?.assignForgotPasswordClickListener()
-        }
-
-        private fun assignConfirmButtonListener() {
-            passwordLoginHolder?.assignConfirmButtonListener()
-        }
-        private fun assignPasswordChangeListener() {
-            passwordLoginHolder?.assignPasswordChangeListener()
-        }
-        private fun assignCantAccessDeviceListener() {
-            loginValidationHolder?.assignCantAccessDeviceListener()
-        }
-        private fun assignUsernameInputListener(){
-            signInFormHolder?.assignUsernameInputListener()
-        }
-
-        @SuppressLint("ClickableViewAccessibility")
-        private fun assignSignUpTextViewListener() {
-            signInFormHolder?.assignSignUpTextViewListener()
-        }
-
-        private fun assignLoginButtonListener() {
-            signInFormHolder?.assignLoginButtonListener()
-        }
-
-        override fun toggleSignUpPressed(isPressed: Boolean){
-            signInFormHolder?.toggleSignUpPressed(isPressed)
-        }
-        @SuppressLint("RestrictedApi")
-        override fun drawError() {
-            signInFormHolder?.drawError()
-            passwordLoginHolder?.drawError()
-        }
 
         override fun showError(message: UIMessage) {
             val duration = Toast.LENGTH_LONG
@@ -115,107 +45,78 @@ interface SignInScene {
             toast.show()
         }
 
-        @SuppressLint("RestrictedApi")
-        override fun drawNormalSignInOptions(){
-            signInFormHolder?.drawNormalSignInOptions()
-        }
-
         override fun drawSuccess() {
-            TODO("Show progress dialog...")
-        }
-
-        override fun toggleLoginProgressBar(isLoggingIn : Boolean){
-            signInFormHolder?.toggleLoginProgressBar(isLoggingIn)
         }
 
         init {
-            showFormHolder()
-        }
-
-        override fun initFormUI() {
-        }
-
-        override fun initListeners(
-                signInUIObserver: SignInSceneController.SignInUIObserver
-        ) {
-            this.signInUIObserver = signInUIObserver
-            assignLoginButtonListener()
-            assignSignUpTextViewListener()
-            assignUsernameInputListener()
-            assignCantAccessDeviceListener()
-            assignConfirmButtonListener()
-            assignPasswordChangeListener()
-            assignForgotPasswordClickListener()
-          }
-
-
-        override fun showConnectionHolder() {
-            removeAllViews()
-            val connectionLayout = View.inflate(
+            val signInLayout = View.inflate(
                     view.context,
-                    R.layout.activity_connection, viewGroup)
-
-            connectionHolder = ConnectionHolder(connectionLayout)
-            connectionHolder?.signInUIObserver = signInUIObserver
+                    R.layout.activity_signin_form, viewGroup)
+            holder = SignInStartHolder(signInLayout, "")
         }
+
+
+        override fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver) {
+            removeAllViews()
+            holder = when (state) {
+                is SignInLayoutState.WaitForApproval -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_connection, viewGroup)
+                    ConnectionHolder(newLayout)
+                }
+
+                is SignInLayoutState.InputPassword -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_password_login, viewGroup)
+                    PasswordLoginHolder(newLayout, state)
+                }
+
+                is SignInLayoutState.Start -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_signin_form, viewGroup)
+                    SignInStartHolder(newLayout, state.username)
+                }
+            }
+            holder.uiObserver = signInUIObserver
+        }
+
 
         private fun removeAllViews() {
             viewGroup.removeAllViews()
-            connectionHolder?.signInUIObserver = null
-            signInFormHolder?.signInUIObserver = null
-            loginValidationHolder?.signInUIObserver = null
-            passwordLoginHolder?.signInUIObserver = null
+            holder.uiObserver = null
         }
 
-        override fun showFormHolder() {
-            removeAllViews()
-            val layout = View.inflate(
-                    view.context,
-                    R.layout.activity_form_signin, viewGroup)
-            val formLayout = layout.findViewById<View>(R.id.signin_form_container)
-            signInFormHolder = SignInFormHolder(formLayout)
-        }
-
-
-        override fun startLoadingAnimation() {
-            connectionHolder?.startLoadingAnimation()
-        }
-
-        override fun startSucceedAnimation(launchMailboxScene: (
-                signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit) {
-            connectionHolder?.startSucceedAnimation(launchMailboxScene)
-        }
         private val showMailboxScene = {
             signInUIObserver: SignInSceneController.SignInUIObserver ->
             signInUIObserver.userLoginReady()
         }
 
-        override fun stopAnimationLoading() {
-            connectionHolder?.stopAnimationLoading()
+        override fun resetInput() {
+            val currentHolder = holder
+            when (currentHolder) {
+                is PasswordLoginHolder -> currentHolder.resetInput()
+            }
         }
 
-        override fun showLoginValidationHolder() {
-            removeAllViews()
-            val layout = View.inflate(
-                    view.context,
-                    R.layout.activity_login_validation, viewGroup)
-            loginValidationHolder = LoginValidationHolder(layout)
-            initListeners(signInUIObserver!!)
+        override fun setSubmitButtonState(state: ProgressButtonState) {
+            val currentHolder = holder
+            when (currentHolder) {
+                is PasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
+                is SignInStartHolder -> currentHolder.setSubmitButtonState(state)
+            }
         }
 
-        override fun showPasswordLoginHolder(username: String) {
-            removeAllViews()
-            val layout = View.inflate(
-                    view.context,
-                    R.layout.activity_password_login, viewGroup)
-            passwordLoginHolder = PasswordLoginHolder(
-                    layout,
-                    user = username)
-            initListeners(signInUIObserver!!)
+        override fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
         }
 
-        override fun toggleConfirmButton(activated: Boolean) {
-            passwordLoginHolder?.toggleConfirmButton(activated = activated)
+        override fun drawInputError(error: UIMessage) {
+            val currentHolder = holder
+            when (currentHolder) {
+                is SignInStartHolder -> currentHolder.drawError(error)
+            }
         }
     }
 }

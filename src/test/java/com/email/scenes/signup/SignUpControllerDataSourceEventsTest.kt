@@ -2,12 +2,10 @@ package com.email.scenes.signup
 
 import com.email.R
 import com.email.scenes.signup.data.SignUpResult
-import com.email.utils.form.FormInputState
+import com.email.validation.FormInputState
 import com.email.utils.UIMessage
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should be`
-import org.amshove.kluent.`should not be instance of`
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException

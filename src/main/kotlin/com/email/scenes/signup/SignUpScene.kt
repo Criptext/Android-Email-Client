@@ -6,9 +6,9 @@ import android.widget.*
 import com.email.R
 import com.email.scenes.keygeneration.KeyGenerationHolder
 import com.email.scenes.signup.holders.SignUpFormHolder
-import com.email.utils.form.FormInputState
+import com.email.validation.FormInputState
 import com.email.utils.UIMessage
-import com.email.utils.form.TextInput
+import com.email.validation.TextInput
 import com.email.utils.getLocalizedUIMessage
 
 /**
@@ -56,12 +56,12 @@ interface SignUpScene {
     fun showKeyGenerationHolder()
     fun showFormHolder()
     fun resetSceneWidgetsFromModel(
-        username: TextInput,
-        fullName: TextInput,
-        password: String,
-        confirmPassword: String,
-        recoveryEmail: TextInput,
-        isChecked: Boolean)
+            username: TextInput,
+            fullName: TextInput,
+            password: String,
+            confirmPassword: String,
+            recoveryEmail: TextInput,
+            isChecked: Boolean)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver?
 

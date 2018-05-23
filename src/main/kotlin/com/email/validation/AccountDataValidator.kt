@@ -1,7 +1,6 @@
-package com.email.scenes.signup.data
+package com.email.validation
 
 import com.email.R
-import com.email.utils.form.FormData
 import com.email.utils.UIMessage
 import java.util.regex.Pattern
 
@@ -9,7 +8,7 @@ import java.util.regex.Pattern
  * Created by gabriel on 5/15/18.
  */
 
-class FormValidator {
+object AccountDataValidator {
 
     // matches "99.99% of all email addresses in actual use today"
     // https://stackoverflow.com/a/1373724/5207721

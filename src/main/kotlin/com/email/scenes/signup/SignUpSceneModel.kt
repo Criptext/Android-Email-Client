@@ -1,8 +1,8 @@
 package com.email.scenes.signup
 
 import com.email.scenes.SceneModel
-import com.email.utils.form.FormInputState
-import com.email.utils.form.TextInput
+import com.email.validation.FormInputState
+import com.email.validation.TextInput
 
 /**
  * Created by sebas on 2/23/18.

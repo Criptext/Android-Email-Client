@@ -1,4 +1,4 @@
-package com.email.utils.form
+package com.email.validation
 
 import com.email.utils.UIMessage
 

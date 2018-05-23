@@ -119,7 +119,7 @@ android:focusableInTouchMode="true" >
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/btn_signup_background"
                 android:textColor="@color/white"
-                android:text="Log In"
+                android:text="Sign In"
                 android:textAllCaps="false"
                 android:layout_marginTop="10dp"/>
 
