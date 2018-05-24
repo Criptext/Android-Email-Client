@@ -47,7 +47,7 @@ class MailboxActivity : BaseActivity() {
                       to = "gabriel@jigl.com",  cc = "", bcc = "", fromContact = fromContact,
                       messageId = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
                       messageType = SignalEncryptedData.Type.normal, threadId = "thread#$it",
-                      fromRecipientId = "mayer", subject = "Test #$it")
+                      senderRecipientId = "mayer", subject = "Test #$it", senderDeviceId = 1)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction(Runnable {

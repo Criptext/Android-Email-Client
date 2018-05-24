@@ -140,6 +140,19 @@ object EmailInsertionSetup {
         }
     }
 
+    private fun getDecryptedEmailBody(signalClient: SignalClient,
+                                      body: String,
+                                      metadata: EmailMetadata) =
+        if (metadata.messageType != null && metadata.senderDeviceId != null) {
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = body,
+                    type = metadata.messageType)
+
+            decryptMessage(signalClient = signalClient,
+                    recipientId = metadata.senderRecipientId, deviceId = metadata.senderDeviceId,
+                    encryptedData = encryptedData)
+        } else body
+
     /**
      * Inserts all the rows and relations needed for a new email in a single transaction
      * @param apiClient Abstraction for the network calls needed
@@ -155,11 +168,10 @@ object EmailInsertionSetup {
             throw DuplicateMessageException("Email Already exists in database!")
 
         val body = apiClient.getBodyFromEmail(metadata.messageId)
-        val encryptedData = SignalEncryptedData(encryptedB64 = body, type = metadata.messageType)
+
+        val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
+
         dao.runTransaction(Runnable {
-                val decryptedBody = decryptMessage(signalClient = signalClient,
-                    recipientId = metadata.fromRecipientId, deviceId = 1,
-                    encryptedData = encryptedData)
                 EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
             })
     }

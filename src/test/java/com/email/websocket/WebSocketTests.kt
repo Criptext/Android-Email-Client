@@ -13,7 +13,6 @@ import com.email.signal.SignalEncryptedData
 import com.email.websocket.data.EventDataSource
 import com.email.websocket.data.InsertNewEmailWorker
 import io.mockk.*
-import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
@@ -47,8 +46,7 @@ class WebSocketTests {
 
         signal = mockk()
         server = MockWebServer()
-        httpClient = HttpClient.Default(baseUrl = server.url("v1/mock").toString(),
-                connectionTimeout = 1000L, readTimeout = 1000L)
+        httpClient = mockk()
         api = EmailInsertionAPIClient(httpClient,"__JWT_TOKEN__")
 
         runner = MockedWorkRunner()
@@ -66,7 +64,7 @@ class WebSocketTests {
     }
 
     @Test
-    fun `when socket receives a new email, should store it in db and invoke the event listener`() {
+    fun `when socket receives a new encrypted email, should store it in db and invoke the event listener`() {
         var didInsertSender = false
         val mockedListener: WebSocketEventListener = mockk(relaxed = true)
         val insertedEmailSlot  = CapturingSlot<Email>()
@@ -76,7 +74,7 @@ class WebSocketTests {
         every {
             val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT__",
                     type = SignalEncryptedData.Type.preKey)
-            signal.decryptMessage(recipientId = "mayer", deviceId = 1,
+            signal.decryptMessage(recipientId = "mayer", deviceId = 2,
                     encryptedData = encryptedData)
         } returns "__PLAIN_TEXT__"
 
@@ -99,11 +97,9 @@ class WebSocketTests {
             mockedListener.onNewEmail(capture(newEmailSlot))
         } just Runs
 
-        // mock server response
-        server.enqueue(MockResponse()
-                .setBody("__ENCRYPTED_TEXT__")
-                .setResponseCode(200))
-
+        every {
+            httpClient.get(path = "/email/body/<15221916.12518@jigl.com>", jwt = "__JWT_TOKEN__")
+        } returns "__ENCRYPTED_TEXT__"
 
         controller.listener = mockedListener
 
@@ -121,5 +117,54 @@ class WebSocketTests {
 
         newEmailReceivedByListener `should be` newInsertedEmail
         newEmailReceivedByListener.content `should equal` "__PLAIN_TEXT__"
+    }
+
+    @Test
+    fun `when socket receives a new plain text email, should store it in db and invoke the event listener`() {
+        var didInsertSender = false
+        val mockedListener: WebSocketEventListener = mockk(relaxed = true)
+        val insertedEmailSlot  = CapturingSlot<Email>()
+        val newEmailSlot  = CapturingSlot<Email>()
+
+        // prepare mocks
+        every { dao.findContactsByEmail(listOf("someone@gmail.com")) } returns emptyList()
+        every {
+            dao.findContactsByEmail(listOf("gabriel@jigl.com"))
+            } returns listOf(Contact(id = 0, email ="gabriel@jigl.com", name = "Gabriel Aumala"))
+        every {
+            dao.insertContacts(listOf(Contact(0, "someone@gmail.com",
+                    "Some One")))
+        } answers { didInsertSender = true; listOf(2) }
+
+        every {
+            dao.insertEmail(capture(insertedEmailSlot))
+        } returns 6
+        every {
+            dao.findEmailByMessageId("<15221916.12520@jigl.com>")
+        } answers { if (insertedEmailSlot.isCaptured) insertedEmailSlot.captured else null }
+        every {
+            mockedListener.onNewEmail(capture(newEmailSlot))
+        } just Runs
+
+        every {
+            httpClient.get(path = "/email/body/<15221916.12520@jigl.com>", jwt = "__JWT_TOKEN__")
+        } returns "__PLAIN_TEXT_FROM_SERVER__"
+
+        controller.listener = mockedListener
+
+        val onMessageReceived = onMessageReceivedSlot.captured
+        onMessageReceived(MockedJSONData.sampleNewEmailEventPlainText) // trigger new message event
+
+        runner.assertPendingWork(listOf(InsertNewEmailWorker::class.java))
+        runner._work() // trigger async work done
+
+        didInsertSender `should be` true
+
+        // assert that listener got the latest inserted email
+        val newEmailReceivedByListener = newEmailSlot.captured
+        val newInsertedEmail = insertedEmailSlot.captured
+
+        newEmailReceivedByListener `should be` newInsertedEmail
+        newEmailReceivedByListener.content `should equal` "__PLAIN_TEXT_FROM_SERVER__"
     }
 }

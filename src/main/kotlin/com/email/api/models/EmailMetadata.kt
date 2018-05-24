@@ -9,11 +9,12 @@ data class EmailMetadata(
         val cc: String,
         val bcc: String,
         val from: String,
-        val fromRecipientId: String,
+        val senderRecipientId: String,
+        val senderDeviceId: Int?,
         val fromContact: Contact,
         val messageId: String,
         val date: String,
-        val messageType: SignalEncryptedData.Type,
+        val messageType: SignalEncryptedData.Type?,
         val threadId: String,
         val subject: String) {
 
@@ -27,11 +28,12 @@ data class EmailMetadata(
             val fromName = from.substring(0, from.lastIndexOf("<") - 1)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
-            val messageType = emailData.getInt("messageType")
-            val isPreKeyMessage = messageType == SignalEncryptedData.Type.preKey.toInt()
+            val messageType = emailData.optInt("messageType")
+            val senderDeviceId = emailData.optInt("senderDeviceId")
             return EmailMetadata(
                     from = from,
-                    fromRecipientId = fromRecipientId,
+                    senderRecipientId = fromRecipientId,
+                    senderDeviceId = if (senderDeviceId != 0) senderDeviceId else null,
                     fromContact = fromContact,
                     to = emailData.getString("to"),
                     cc = emailData.getString("cc"),
@@ -40,8 +42,8 @@ data class EmailMetadata(
                     date = emailData.getString("date"),
                     threadId = emailData.getString("threadId"),
                     subject = emailData.getString("subject"),
-                    messageType = if (isPreKeyMessage) SignalEncryptedData.Type.preKey
-                                  else SignalEncryptedData.Type.normal
+                    messageType = SignalEncryptedData.Type.fromInt(messageType)
+
             )
 
         }
