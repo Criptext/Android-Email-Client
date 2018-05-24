@@ -21,6 +21,7 @@ import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.feed.FeedModel
 import com.email.scenes.mailbox.feed.ui.FeedView
 import com.email.signal.SignalClient
+import com.email.signal.SignalEncryptedData
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocketSingleton
@@ -45,7 +46,8 @@ class MailboxActivity : BaseActivity() {
               val metadata = EmailMetadata(from = "Mayer Mizrachi <mayer@jigl.com>",
                       to = "gabriel@jigl.com",  cc = "", bcc = "", fromContact = fromContact,
                       messageId = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
-                      threadId = "thread#$it", fromRecipientId = "mayer", subject = "Test #$it")
+                      messageType = SignalEncryptedData.Type.normal, threadId = "thread#$it",
+                      fromRecipientId = "mayer", subject = "Test #$it")
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction(Runnable {

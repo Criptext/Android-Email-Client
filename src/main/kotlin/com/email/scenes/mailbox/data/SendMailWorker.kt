@@ -93,9 +93,10 @@ class SendMailWorker(private val signalClient: SignalClient,
             if (devices == null || devices.isEmpty())
                 throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
             devices.map { deviceId ->
-                val encryptedBody = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
+                val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
-                        type = type, body = encryptedBody)
+                        type = type, body = encryptedData.encryptedB64,
+                        messageType = encryptedData.type)
             }
         }.flatten()
     }

@@ -7,6 +7,7 @@ import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.signal.SignalClient
+import com.email.signal.SignalEncryptedData
 import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
@@ -128,11 +129,11 @@ object EmailInsertionSetup {
     }
 
     private fun decryptMessage(signalClient: SignalClient, recipientId: String, deviceId: Int,
-                               encryptedB64: String): String {
+                               encryptedData: SignalEncryptedData): String {
         return try {
             signalClient.decryptMessage(recipientId = recipientId,
                     deviceId = deviceId,
-                    encryptedB64 = encryptedB64)
+                    encryptedData = encryptedData)
         } catch (ex: Exception) {
             if (ex is DuplicateMessageException) throw ex
             "Unable to decrypt message."
@@ -154,9 +155,11 @@ object EmailInsertionSetup {
             throw DuplicateMessageException("Email Already exists in database!")
 
         val body = apiClient.getBodyFromEmail(metadata.messageId)
+        val encryptedData = SignalEncryptedData(encryptedB64 = body, type = metadata.messageType)
         dao.runTransaction(Runnable {
                 val decryptedBody = decryptMessage(signalClient = signalClient,
-                    recipientId = metadata.fromRecipientId, deviceId = 1, encryptedB64 = body)
+                    recipientId = metadata.fromRecipientId, deviceId = 1,
+                    encryptedData = encryptedData)
                 EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
             })
     }

@@ -9,6 +9,7 @@ import com.email.db.models.Email
 import com.email.mocks.MockedJSONData
 import com.email.mocks.MockedWorkRunner
 import com.email.signal.SignalClient
+import com.email.signal.SignalEncryptedData
 import com.email.websocket.data.EventDataSource
 import com.email.websocket.data.InsertNewEmailWorker
 import io.mockk.*
@@ -73,7 +74,10 @@ class WebSocketTests {
 
         // prepare mocks
         every {
-            signal.decryptMessage("mayer", 1, "__ENCRYPTED_TEXT__")
+            val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT__",
+                    type = SignalEncryptedData.Type.preKey)
+            signal.decryptMessage(recipientId = "mayer", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT__"
 
         every { dao.findContactsByEmail(listOf("mayer@jigl.com")) } returns emptyList()

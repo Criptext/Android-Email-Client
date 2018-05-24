@@ -12,6 +12,7 @@ import com.email.db.models.signal.CRPreKey
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
+import com.email.signal.SignalEncryptedData
 import com.gaumala.kotlinsnapshot.Camera
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -86,7 +87,8 @@ class SendEmailWorkerTest {
         every {
             signal.encryptMessage(recipientId = "mayer", deviceId = 1,
                     plainText = "Hello this is a test.")
-        } returns "__ENCRYPTED_DATA__"
+        } returns SignalEncryptedData(encryptedB64 = "__ENCRYPTED_DATA__",
+                type = SignalEncryptedData.Type.preKey)
         every {
             httpClient.post(path = "/keybundle/find", jwt = "__JWTOKEN__",
                     body = capture(findKeybundlesBodySlot))

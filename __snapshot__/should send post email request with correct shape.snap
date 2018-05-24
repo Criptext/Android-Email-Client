@@ -1,5 +1,6 @@
 {
     "criptextEmails": [{
+        "messageType": 3,
         "recipientId": "mayer",
         "type": "to",
         "body": "__ENCRYPTED_DATA__",

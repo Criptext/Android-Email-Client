@@ -9,6 +9,7 @@ import com.email.db.models.Label
 import com.email.mocks.MockedJSONData
 import com.email.scenes.mailbox.MailboxTestUtils
 import com.email.signal.SignalClient
+import com.email.signal.SignalEncryptedData
 import com.email.utils.hasArray
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -87,10 +88,20 @@ class UpdateMailboxWorkerTest {
 
         // prepare signal mocks
         every {
-            signal.decryptMessage(recipientId = "mayer", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_1__")
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = "__ENCRYPTED_TEXT_1__",
+                    type = SignalEncryptedData.Type.preKey
+            )
+            signal.decryptMessage(recipientId = "mayer", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_1__"
         every {
-            signal.decryptMessage(recipientId = "gianni", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_2__")
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = "__ENCRYPTED_TEXT_2__",
+                    type = SignalEncryptedData.Type.preKey
+            )
+            signal.decryptMessage(recipientId = "gianni", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
         val result = worker.work() as MailboxResult.UpdateMailbox.Success
@@ -138,10 +149,16 @@ class UpdateMailboxWorkerTest {
 
         // prepare signal mocks
         every {
-            signal.decryptMessage(recipientId = "mayer", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_1__")
+            val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT_1__",
+                    type = SignalEncryptedData.Type.preKey)
+            signal.decryptMessage(recipientId = "mayer", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_1__"
         every {
-            signal.decryptMessage(recipientId = "gianni", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_2__")
+            val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT_2__",
+                    type = SignalEncryptedData.Type.preKey)
+            signal.decryptMessage(recipientId = "gianni", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
         val result = worker.work() as MailboxResult.UpdateMailbox.Success
@@ -185,10 +202,16 @@ class UpdateMailboxWorkerTest {
 
         // prepare signal mocks
         every {
-            signal.decryptMessage(recipientId = "mayer", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_1__")
+            val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT_1__",
+                    type = SignalEncryptedData.Type.preKey)
+            signal.decryptMessage(recipientId = "mayer", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_1__"
         every {
-            signal.decryptMessage(recipientId = "gianni", deviceId = 1, encryptedB64 = "__ENCRYPTED_TEXT_2__")
+            val encryptedData = SignalEncryptedData(encryptedB64 = "__ENCRYPTED_TEXT_1__",
+                    type = SignalEncryptedData.Type.preKey)
+            signal.decryptMessage(recipientId = "gianni", deviceId = 1,
+                    encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
         worker.work() as MailboxResult.UpdateMailbox.Success
