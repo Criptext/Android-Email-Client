@@ -161,6 +161,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onSpamOptionSelected(fullEmail: FullEmail, position: Int) {
             createRelationEmailLabel(fullEmail, MailFolders.SPAM)
         }
+
+        override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
+            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.CONTINUE_DRAFT), true)
+        }
     }
 
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){

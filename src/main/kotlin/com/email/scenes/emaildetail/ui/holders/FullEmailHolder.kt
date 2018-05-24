@@ -17,6 +17,7 @@ import android.widget.*
 import com.email.R
 import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
+import com.email.db.models.Label
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
 import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
@@ -37,6 +38,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private val context = view.context
     private val layout : FrameLayout
+    private val continueDraftView: ImageView
     private val replyView: ImageView
     private val moreView: ImageView
     private val toView: TextView
@@ -78,6 +80,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         attachmentView.setOnClickListener {
             attachmentHistoryPopUp.createPopup(fullEmail, null)
+        }
+
+        continueDraftView.setOnClickListener{
+            emailListener?.onContinueDraftOptionSelected(fullEmail)
         }
 
         replyView.setOnClickListener{
@@ -185,8 +191,22 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             View.VISIBLE else View.INVISIBLE
 
         setToText(fullEmail)
+        setDraftIcon(fullEmail)
         setIcons(fullEmail.email.delivered)
 
+    }
+
+    private fun setDraftIcon(fullEmail: FullEmail){
+        if(fullEmail.labels.contains(Label.defaultItems.draft)){
+            continueDraftView.visibility = View.VISIBLE
+            replyView.visibility = View.GONE
+            moreView.visibility = View.GONE
+        }
+        else{
+            continueDraftView.visibility = View.GONE
+            replyView.visibility = View.VISIBLE
+            moreView.visibility = View.VISIBLE
+        }
     }
 
     private fun setToText(fullEmail: FullEmail){
@@ -307,6 +327,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         toView = view.findViewById(R.id.to)
         moreView = view.findViewById(R.id.more)
         replyView = view.findViewById(R.id.reply)
+        continueDraftView = view.findViewById(R.id.continue_draft)
         attachmentView =  view.findViewById(R.id.attachment)
         readView =  view.findViewById(R.id.read)
         unsendView =  view.findViewById(R.id.unsend)

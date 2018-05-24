@@ -62,6 +62,7 @@ interface MailboxScene{
     fun showRefresh()
     fun scrollTop()
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
+    fun toggleNoMailsView(visible: Boolean)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -115,6 +116,14 @@ interface MailboxScene{
             mailboxView.findViewById<View>(R.id.fab)
         }
 
+        private val noMailsView: View by lazy {
+            mailboxView.findViewById<View>(R.id.viewNoMails)
+        }
+
+        private val backButton: ImageView by lazy {
+            mailboxView.findViewById<ImageView>(R.id.mailbox_back_button)
+        }
+
         override val virtualListView = VirtualRecyclerView(recyclerView)
 
 
@@ -137,6 +146,12 @@ interface MailboxScene{
             refreshLayout.setOnRefreshListener {
                 observer.onRefreshMails()
             }
+
+            backButton.setOnClickListener {
+                observer.onBackButtonPressed()
+            }
+
+            toggleNoMailsView(threadList.size == 0)
         }
 
         override fun initDrawerLayout() {
@@ -239,6 +254,10 @@ interface MailboxScene{
 
         override fun setCounterLabel(menu: NavigationMenuOptions, total: Int) {
             drawerMenuView.setCounterLabel(menu, total)
+        }
+
+        override fun toggleNoMailsView(visible: Boolean) {
+            noMailsView.visibility = if (visible) View.VISIBLE else View.GONE
         }
     }
 }

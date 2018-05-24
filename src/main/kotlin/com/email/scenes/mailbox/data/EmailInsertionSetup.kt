@@ -61,12 +61,13 @@ object EmailInsertionSetup {
         if (addressesCSV.isEmpty()) return emptyList()
 
         val toAddresses = addressesCSV.split(",")
-        val existingContacts = dao.findContactsByEmail(toAddresses)
+        val toAddressesNotDuplicated = toAddresses.map { Pair(it, it) }.toMap().values.toList()
+        val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)
 
         val contactsMap = HashMap<String, Contact>()
         existingContacts.map { Pair(it.email, it) }.toMap(contactsMap)
 
-        fillMapWithNewContacts(dao, contactsMap, toAddresses)
+        fillMapWithNewContacts(dao, contactsMap, toAddressesNotDuplicated)
 
         return contactsMap.values.toList()
     }

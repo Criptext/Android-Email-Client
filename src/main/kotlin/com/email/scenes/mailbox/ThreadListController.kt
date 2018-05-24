@@ -64,4 +64,8 @@ class ThreadListController(private val model : MailboxSceneModel,
         model.threads.clear()
         virtualListView?.notifyDataSetChanged()
     }
+
+    fun reRenderAll() {
+        virtualListView?.notifyDataSetChanged()
+    }
 }

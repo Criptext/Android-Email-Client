@@ -5,5 +5,5 @@ package com.email.db
  */
 
 enum class MailFolders {
-    INBOX, STARRED, IMPORTANT, SENT, DRAFT, SPAM, TRASH
+    INBOX, STARRED, IMPORTANT, SENT, DRAFT, SPAM, TRASH, ALL_MAIL
 }

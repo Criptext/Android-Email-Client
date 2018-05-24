@@ -144,9 +144,10 @@ interface MailboxLocalDB {
                 limit: Int,
                 rejectedLabels: List<Label>): List<EmailThread> {
             val labels = db.labelDao().getAll()
-            val selectedLabel = labels.findLast {label ->
-                label.text == labelTextTypes
-            }?.id
+            val selectedLabel = if(labelTextTypes == MailFolders.ALL_MAIL) "%" else
+                "%${labels.findLast {
+                    label ->label.text == labelTextTypes
+                }?.id}%"
             val rejectedIdLabels = rejectedLabels.filter {label ->
                 label.text != labelTextTypes
             }.map {
@@ -156,13 +157,13 @@ interface MailboxLocalDB {
                 db.emailDao().getEmailThreadsFromMailboxLabel(
                         starterDate = oldestEmailThread.timestamp,
                         rejectedLabels = rejectedIdLabels,
-                        selectedLabel = selectedLabel!!,
+                        selectedLabel = selectedLabel,
                         limit = limit )
 
             else
                 db.emailDao().getInitialEmailThreadsFromMailboxLabel(
                         rejectedLabels = rejectedIdLabels,
-                        selectedLabel = "%${selectedLabel!!}%",
+                        selectedLabel = selectedLabel,
                         limit = limit )
 
             return emails.map { email ->
@@ -210,11 +211,11 @@ interface MailboxLocalDB {
         }
 
         override fun getUnreadCounterLabel(labelId: Long): Int {
-            return db.emailDao().getTotalUnreadThreads(emptyList(), labelId).size
+            return db.emailDao().getTotalUnreadThreads(emptyList(), "%$labelId%").size
         }
 
         override fun getTotalCounterLabel(labelId: Long): Int {
-            return db.emailDao().getTotalThreads(labelId).size
+            return db.emailDao().getTotalThreads("%$labelId%").size
         }
     }
 

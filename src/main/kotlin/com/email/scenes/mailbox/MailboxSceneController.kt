@@ -12,6 +12,7 @@ import com.email.scenes.ActivityMessage
 import com.email.scenes.labelChooser.LabelDataHandler
 import com.email.scenes.labelChooser.SelectedLabels
 import com.email.scenes.SceneController
+import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.mailbox.data.*
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
@@ -88,8 +89,12 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onGoToMail(emailThread: EmailThread) {
 
-            if(emailThread.threadId.isEmpty()){
-                return scene.showMessage(UIMessage(R.string.not_implemented))
+            if(emailThread.totalEmails == 1 &&
+                    emailThread.labelsOfMail.contains(Label.defaultItems.draft)){
+                return host.goToScene(ComposerParams(
+                        fullEmail = emailThread.latestEmail,
+                        composerType = ComposerTypes.CONTINUE_DRAFT
+                ), true)
             }
             dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(listOf(emailThread), false))
             host.goToScene(EmailDetailParams(emailThread.threadId), true)
@@ -125,10 +130,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.DRAFT,
                 NavigationMenuOptions.STARRED,
                 NavigationMenuOptions.SPAM,
-                NavigationMenuOptions.TRASH -> {
+                NavigationMenuOptions.TRASH,
+                NavigationMenuOptions.ALL_MAIL -> {
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
                     threadListController.clear()
+                    scene.toggleNoMailsView(false)
                     reloadMailboxThreads()
                 }
                 else -> { /* do nothing */ }
@@ -139,6 +146,14 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+
+        override fun onBackButtonPressed() {
+            if(model.isInMultiSelect){
+                changeMode(multiSelectON = false, silent = false)
+                threadListController.reRenderAll()
+            }
+        }
+
         override fun onRefreshMails() {
             scene.showRefresh()
             dataSourceController.updateMailbox(
@@ -235,6 +250,11 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onBackPressed(): Boolean {
+        if(model.isInMultiSelect){
+            changeMode(multiSelectON = false, silent = false)
+            threadListController.reRenderAll()
+            return false
+        }
         return scene.onBackPressed()
     }
 
@@ -332,6 +352,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             model.lastSync = System.currentTimeMillis()
             if (resultData.mailboxThreads != null) {
                 threadListController.populateThreads(resultData.mailboxThreads)
+                scene.toggleNoMailsView(resultData.mailboxThreads.isEmpty())
                 scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 scene.updateToolbarTitle(toolbarTitle)
             }
@@ -362,7 +383,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     else
                         threadListController.appendAll(result.emailThreads, hasReachedEnd)
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
-
+                    scene.toggleNoMailsView(result.emailThreads.isEmpty())
                     if (shouldSync)
                         updateMailbox(model.selectedLabel)
                 }

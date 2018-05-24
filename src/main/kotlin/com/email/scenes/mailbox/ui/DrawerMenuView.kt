@@ -99,6 +99,12 @@ class DrawerMenuView(navigationView: NavigationView,
             drawerMenuItemListener.onNavigationItemClick(
                     navigationMenuOptions = NavigationMenuOptions.TRASH)
         }
+
+        sliderAllMail.setOnClickListener {
+            setActiveLabel(NavigationMenuOptions.ALL_MAIL)
+            drawerMenuItemListener.onNavigationItemClick(
+                    navigationMenuOptions = NavigationMenuOptions.ALL_MAIL)
+        }
     }
 
     init {
@@ -149,7 +155,7 @@ class DrawerMenuView(navigationView: NavigationView,
         textViewCorreo.text = email
     }
 
-    fun setActiveLabel(menu: NavigationMenuOptions){
+    private fun setActiveLabel(menu: NavigationMenuOptions){
         clearActiveLabel()
         when(menu){
             NavigationMenuOptions.INBOX -> {
@@ -176,7 +182,7 @@ class DrawerMenuView(navigationView: NavigationView,
         }
     }
 
-    fun setResourcesSelected(slider: LinearLayout, textView: TextView, imageView: ImageView){
+    private fun setResourcesSelected(slider: LinearLayout, textView: TextView, imageView: ImageView){
         slider.setBackgroundColor(ContextCompat.getColor(slider.context, R.color.menu_selected))
         textView.typeface = TypefaceUtils.load(textView.resources.assets,
                 "fonts/NunitoSans-Bold.ttf")
@@ -185,29 +191,28 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int){
+        textViewCounterInbox.text = total.toString()
         when(menu){
             NavigationMenuOptions.INBOX -> {
                 textViewCounterInbox.visibility = if (total > 0) View.VISIBLE else View.GONE
-                textViewCounterInbox.text = "${total}"
             }
             NavigationMenuOptions.DRAFT -> {
                 textViewCounterDraft.visibility = if (total > 0) View.VISIBLE else View.GONE
-                textViewCounterDraft.text = "${total}"
             }
             NavigationMenuOptions.SPAM -> {
                 textViewCounterSpam.visibility = if (total > 0) View.VISIBLE else View.GONE
-                textViewCounterSpam.text = "${total}"
             }
         }
     }
 
-    fun clearActiveLabel(){
+    private fun clearActiveLabel(){
         sliderInbox.setBackgroundColor(Color.TRANSPARENT)
         sliderDrafts.setBackgroundColor(Color.TRANSPARENT)
         sliderSent.setBackgroundColor(Color.TRANSPARENT)
         sliderSpam.setBackgroundColor(Color.TRANSPARENT)
         sliderTrash.setBackgroundColor(Color.TRANSPARENT)
         sliderStarred.setBackgroundColor(Color.TRANSPARENT)
+        sliderAllMail.setBackgroundColor(Color.TRANSPARENT)
         textViewTitleInbox.typeface = TypefaceUtils.load(textViewTitleInbox.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
         textViewTitleSent.typeface = TypefaceUtils.load(textViewTitleSent.resources.assets,

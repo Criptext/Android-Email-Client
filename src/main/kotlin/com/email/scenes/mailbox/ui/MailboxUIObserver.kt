@@ -7,4 +7,5 @@ package com.email.scenes.mailbox.ui
 interface MailboxUIObserver {
     fun onOpenComposerButtonClicked()
     fun onRefreshMails()
+    fun onBackButtonPressed()
 }

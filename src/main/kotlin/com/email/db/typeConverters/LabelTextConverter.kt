@@ -59,6 +59,9 @@ class LabelTextConverter {
             MailFolders.IMPORTANT -> {
                 "IMPORTANT"
             }
+            MailFolders.ALL_MAIL -> {
+                "ALL MAIL"
+            }
         }
     }
 }

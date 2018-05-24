@@ -9,6 +9,10 @@ import com.email.db.models.Label
  * Created by gabriel on 4/24/18.
  */
 class MockedEmailLabelDao: EmailLabelDao {
+    override fun deleteByEmailId(id: Long) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun insert(emailLabel: EmailLabel) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -5,8 +5,7 @@
     android:layout_height="wrap_content"
     android:id="@+id/cardview"
     android:paddingStart="20dp"
-    android:layout_marginStart="-2dp"
-    android:layout_marginEnd="-4dp"
+    android:layout_marginBottom="10dp"
     android:background="@drawable/partial_email_drawable">
 
     <FrameLayout
@@ -67,6 +66,14 @@
                     android:layout_width="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:tint="#89909a"
+                        android:id="@+id/continue_draft"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="7dp"
+                        android:src="@drawable/continue_draft" />
 
                     <ImageView
                         android:tint="#89909a"

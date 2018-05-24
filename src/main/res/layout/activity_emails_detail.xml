@@ -65,7 +65,6 @@
                 android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet consec adipising elit"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 fontPath="fonts/NunitoSans-Bold.ttf" />

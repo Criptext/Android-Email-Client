@@ -16,6 +16,8 @@ import java.util.*
  * Created by danieltigse on 4/17/18.
  */
 class SaveEmailWorker(
+        private val threadId: String?,
+        private val emailId: Long?,
         private val composerInputData: ComposerInputData,
         private val db: ComposerLocalDB,
         private val onlySave: Boolean,
@@ -36,7 +38,6 @@ class SaveEmailWorker(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    // TODO delete this duplicated code
     private fun saveEmail(composerInputData: ComposerInputData): Long{
 
         val bodyContent = composerInputData.body
@@ -45,23 +46,28 @@ class SaveEmailWorker(
             bodyWithoutHTML.substring(0,100)
         else bodyWithoutHTML
 
+        if(emailId != null){
+            db.emailDao.deleteById(emailId)
+            db.emailLabelDao.deleteByEmailId(emailId)
+        }
+
+        val account = db.accountDao.getLoggedInAccount()!!
         val email = Email(
                 id = 0,
                 unread = false,
                 date = Date(),
-                threadId = "",
+                threadId = threadId ?: "${System.currentTimeMillis()}:${account.deviceId}",
                 subject = composerInputData.subject,
                 isTrash = false,
                 secure = true,
                 preview = preview,
-                messageId = "${System.currentTimeMillis()}:1",
+                messageId = "${System.currentTimeMillis()}:${account.deviceId}",
                 isDraft = false,
                 delivered = DeliveryTypes.NONE,
                 content = bodyContent
         )
         val insertedId = db.emailDao.insert(email)
 
-        val account = db.accountDao.getLoggedInAccount()!!
         insertContact(account.name, "${account.recipientId}@${Contact.mainDomain}",
                 insertedId, ContactTypes.FROM)
 
