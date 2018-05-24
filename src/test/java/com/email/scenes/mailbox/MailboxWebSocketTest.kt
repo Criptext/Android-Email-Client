@@ -64,7 +64,8 @@ class MailboxWebSocketTest {
                 signalClient = signal,
                 httpClient = httpClient,
                 mailboxLocalDB = db,
-                activeAccount = ActiveAccount("gabriel", "__JWT_TOKEN__"),
+                activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 3,
+                        jwt = "__JWT_TOKEN__"),
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )

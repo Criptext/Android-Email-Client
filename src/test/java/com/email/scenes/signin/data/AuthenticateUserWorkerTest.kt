@@ -80,7 +80,7 @@ class AuthenticateUserWorkerTest {
         }
         verify {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"jwt":"__JWTOKEN__","recipientId":"tester"}""")
+                    """{"jwt":"__JWTOKEN__","recipientId":"tester","deviceId":2}""")
         }
 
         // request snapshots
@@ -165,7 +165,7 @@ class AuthenticateUserWorkerTest {
         // verify data got stored
         verify {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"jwt":"__JWTOKEN__","recipientId":"tester"}""")
+                    """{"jwt":"__JWTOKEN__","recipientId":"tester","deviceId":2}""")
         }
         // should have not authenticated with server
         verify(inverse = true) {

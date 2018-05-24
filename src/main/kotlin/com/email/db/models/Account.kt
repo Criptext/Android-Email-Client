@@ -16,6 +16,9 @@ class Account(
         @ColumnInfo(name = "recipientId")
         var recipientId : String,
 
+        @ColumnInfo(name = "deviceId")
+        var deviceId : Int,
+
         @ColumnInfo(name = "name")
         var name : String,
 

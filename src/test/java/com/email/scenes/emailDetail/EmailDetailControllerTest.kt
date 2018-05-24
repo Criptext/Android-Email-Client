@@ -47,7 +47,8 @@ class EmailDetailControllerTest {
     fun setUp() {
         protocolStore = MockedSignalProtocolStore()
         val signalClient = SignalClient.Default(protocolStore)
-        activeAccount = ActiveAccount.fromJSONString(""" { "jwt":"John", "recipientId":"hola"} """)
+        activeAccount = ActiveAccount.fromJSONString(
+                """ { "jwt":"John", "recipientId":"hola", "deviceId":1} """)
         model = EmailDetailSceneModel(mockedThreadId)
         scene = MockedEmailDetailView()
         runner = MockedWorkRunner()

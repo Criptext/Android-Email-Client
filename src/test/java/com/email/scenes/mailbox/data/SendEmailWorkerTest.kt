@@ -38,7 +38,7 @@ class SendEmailWorkerTest {
 
     @Before
     fun setup() {
-        activeAccount = ActiveAccount(recipientId = "gabriel", jwt = "__JWTOKEN__")
+        activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 4, jwt = "__JWTOKEN__")
         signal = mockk(relaxed = true)
         db = mockk(relaxed = true)
         dao = mockk(relaxed = true)

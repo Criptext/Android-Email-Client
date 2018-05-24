@@ -57,7 +57,8 @@ class WebSocketTests {
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
 
-        val account = ActiveAccount(recipientId = "tester", jwt = "__JWT_TOKEN__")
+        val account = ActiveAccount(recipientId = "tester", deviceId = 1, jwt = "__JWT_TOKEN__")
+
         controller = WebSocketController(wsClient = webSocket, activeAccount = account,
                 eventDataSource = dataSource)
 

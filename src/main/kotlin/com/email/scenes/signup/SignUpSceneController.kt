@@ -254,6 +254,7 @@ class SignUpSceneController(
                 username = model.username.value,
                 name = model.fullName.value,
                 password = model.password,
+                deviceId = 1,
                 recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null
         )
 
