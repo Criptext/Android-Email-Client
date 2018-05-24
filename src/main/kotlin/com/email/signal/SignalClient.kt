@@ -26,19 +26,20 @@ interface SignalClient {
      * @param deviceId The id of the only device owned by `recipientId` that can decrypt this
      * message. Make sure that you have already established a session with this recipientId + deviceId.
      * @param plainText A plain message to encrypt, encoded in UTF-8.
-     * @returns A Base64 string with the encrypted bytes.
+     * @returns A SignalEncryptedData object with the base64 string of the encrypted data and
+     * the encryption type (preKey or normal)
      */
-    fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): String
+    fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): SignalEncryptedData
 
     /**
      * decrypts a message using Signal.
      * @param recipientId the username of the Criptext user that encrypted this message
      * @param deviceId The id of the device owned by `recipientId` that encrypted this
      * message.
-     * @param encryptedB64 A Base64 string with the encrypted bytes.
+     * @param encryptedData The data to decrypt.
      * @returns The original UTF-8 plain text message.
      */
-    fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String
+    fun decryptMessage(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData): String
 
     class Default(private val store: SignalProtocolStore) : SignalClient {
         private val createNewSessionParams: (PreKeyBundleShareData.DownloadBundle) -> NewSessionParams =
@@ -85,21 +86,29 @@ interface SignalClient {
             bundles.map(createNewSessionParams).forEach(buildNewSession)
         }
 
-        override fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): String {
+        override fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): SignalEncryptedData {
             val cipher = SessionCipher(store, SignalProtocolAddress(recipientId, deviceId))
             val cipherText = cipher.encrypt(plainText.toByteArray(Charset.forName("UTF-8")))
-            return Encoding.byteArrayToString(cipherText.serialize())
+            cipherText.type
+            val encryptedB64 = Encoding.byteArrayToString(cipherText.serialize())
+            val encryptionType = if (cipherText is PreKeySignalMessage)
+                                     SignalEncryptedData.Type.preKey
+                                 else
+                                     SignalEncryptedData.Type.normal
+
+            return SignalEncryptedData(encryptedB64, encryptionType)
         }
 
-        override fun decryptMessage(recipientId: String, deviceId: Int, encryptedB64: String): String {
-            val encryptedBytes = Encoding.stringToByteArray(encryptedB64)
+        override fun decryptMessage(recipientId: String, deviceId: Int,
+                                    encryptedData: SignalEncryptedData): String {
+            val encryptedBytes = Encoding.stringToByteArray(encryptedData.encryptedB64)
             val senderAddress = SignalProtocolAddress(recipientId, deviceId)
             val cipher = SessionCipher(store, senderAddress)
             val decryptedMessage =
-                    if (store.containsSession(senderAddress))
-                        cipher.decrypt(SignalMessage(encryptedBytes))
-                    else
+                    if (encryptedData.type == SignalEncryptedData.Type.preKey)
                         cipher.decrypt(PreKeySignalMessage(encryptedBytes))
+                    else
+                        cipher.decrypt(SignalMessage(encryptedBytes))
 
             return decryptedMessage.toString(Charset.forName("UTF-8"))
         }

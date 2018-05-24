@@ -16,8 +16,9 @@ object RegisterUserTestUtils {
                         signedPreKeyId = 1, signedPreKey = "__SIGNED_PRE_KEY__",
                         registrationId = registrationId, preKeys = preKeys),
                 uploadBundle = PreKeyBundleShareData.UploadBundle(
-                        shareData = PreKeyBundleShareData(recipientId = recipientId, deviceId = 1,
-                                signedPreKeyId = 1, signedPreKeyPublic = "__SIGNED_PRE_KEY_PUBLIC__",
+                        shareData = PreKeyBundleShareData(recipientId = recipientId,
+                                deviceId = deviceId, signedPreKeyId = 1,
+                                signedPreKeyPublic = "__SIGNED_PRE_KEY_PUBLIC__",
                                 signedPreKeySignature = "__SIGNED_PRE_KEY_SIGNATURE__",
                                 identityPublicKey = "__IDENTITY_PUBLIC_KEY__",
                                 registrationId = registrationId), preKeys = preKeys)

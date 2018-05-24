@@ -1,6 +1,7 @@
 package com.email.api.models
 
 import com.email.db.models.Contact
+import com.email.signal.SignalEncryptedData
 import org.json.JSONObject
 
 data class EmailMetadata(
@@ -8,10 +9,12 @@ data class EmailMetadata(
         val cc: String,
         val bcc: String,
         val from: String,
-        val fromRecipientId: String,
+        val senderRecipientId: String,
+        val senderDeviceId: Int?,
         val fromContact: Contact,
         val messageId: String,
         val date: String,
+        val messageType: SignalEncryptedData.Type?,
         val threadId: String,
         val subject: String) {
 
@@ -25,9 +28,12 @@ data class EmailMetadata(
             val fromName = from.substring(0, from.lastIndexOf("<") - 1)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
+            val messageType = emailData.optInt("messageType")
+            val senderDeviceId = emailData.optInt("senderDeviceId")
             return EmailMetadata(
                     from = from,
-                    fromRecipientId = fromRecipientId,
+                    senderRecipientId = fromRecipientId,
+                    senderDeviceId = if (senderDeviceId != 0) senderDeviceId else null,
                     fromContact = fromContact,
                     to = emailData.getString("to"),
                     cc = emailData.getString("cc"),
@@ -35,7 +41,9 @@ data class EmailMetadata(
                     messageId = emailData.getString("messageId"),
                     date = emailData.getString("date"),
                     threadId = emailData.getString("threadId"),
-                    subject = emailData.getString("subject")
+                    subject = emailData.getString("subject"),
+                    messageType = SignalEncryptedData.Type.fromInt(messageType)
+
             )
 
         }

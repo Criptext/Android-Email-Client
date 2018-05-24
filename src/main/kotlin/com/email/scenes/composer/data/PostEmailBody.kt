@@ -1,6 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.api.JSONData
+import com.email.signal.SignalEncryptedData
 import org.json.JSONObject
 
 /**
@@ -24,7 +25,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
     }
 
     data class CriptextEmail(val recipientId: String, val deviceId: Int,
-                                     val type: RecipientTypes, val body: String): JSONData {
+                             val messageType: SignalEncryptedData.Type,
+                             val type: RecipientTypes, val body: String): JSONData {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
@@ -32,6 +34,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("deviceId", deviceId)
             json.put("type", type.toString())
             json.put("body", body)
+            json.put("messageType", messageType.toInt())
             return json
         }
     }

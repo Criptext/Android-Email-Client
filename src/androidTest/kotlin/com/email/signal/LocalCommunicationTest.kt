@@ -21,25 +21,26 @@ class LocalCommunicationTest {
 
     @Test
     @Throws(InterruptedException::class)
-    fun should_be_able_to_exchange_e2e_messages_in_memory_with_signal() {
+    fun should_be_able_to_receive_50_e2e_messages_in_a_row_in_memory_with_signal() {
         val alice = InMemoryUser(generator, "alice", 1).setup()
         val bob = InMemoryUser(generator, "bob", 1).setup()
 
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
         alice.buildSession(keyBundleFromBob)
 
-        val originalTextFromAlice = "Hello Bob! How are you! I'm using Criptext. This is my 1st e-mail."
-        val textEncryptedByAlice = alice.encrypt("bob", 1, originalTextFromAlice)
+        for (i in 1..50) {
+            val originalTextFromAlice = "Hello Bob! How are you! I'm using Criptext. This is my e-mail #$i."
+            val textEncryptedByAlice = alice.encrypt("bob", 1, originalTextFromAlice)
 
-        val textDecryptedByBob = bob.decrypt("alice", 1, textEncryptedByAlice)
-        textDecryptedByBob shouldEqual originalTextFromAlice
+            val textDecryptedByBob = bob.decrypt("alice", 1, textEncryptedByAlice)
+            textDecryptedByBob shouldEqual originalTextFromAlice
+        }
 
-        val originalReplyFromBob = "Hello Alice! I'm fine. I'm using Criptext too"
+        val originalReplyFromBob = "Hello Alice! I received all your 50 messages."
         val replyEncryptedByBob = bob.encrypt("alice", 1, originalReplyFromBob)
 
         val replyDecryptedByAlice = alice.decrypt("bob", 1, replyEncryptedByBob)
         replyDecryptedByAlice shouldEqual originalReplyFromBob
-
     }
 
 
@@ -59,7 +60,7 @@ class LocalCommunicationTest {
             val textDecryptedByBob = bob.decrypt("alice", 1, textEncryptedByAlice)
             textDecryptedByBob shouldEqual originalTextFromAlice
 
-            val originalReplyFromBob = "Hello Alice! I'm fine. I'm using Criptext too"
+            val originalReplyFromBob = "Hello Alice! I'm fine. I'm using Criptext too, this is my reply #$i."
             val replyEncryptedByBob = bob.encrypt("alice", 1, originalReplyFromBob)
 
             val replyDecryptedByAlice = alice.decrypt("bob", 1, replyEncryptedByBob)

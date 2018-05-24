@@ -35,7 +35,7 @@ abstract class TestUser(generator: SignalKeyGenerator, recipientId: String, devi
     fun encrypt(recipientId: String, deviceId: Int, text: String) =
         client.encryptMessage(recipientId, deviceId, text)
 
-    fun decrypt(recipientId: String, deviceId: Int, text: String) =
-            client.decryptMessage(recipientId, deviceId, text)
+    fun decrypt(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData) =
+            client.decryptMessage(recipientId, deviceId, encryptedData)
 
 }

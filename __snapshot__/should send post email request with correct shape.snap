@@ -1,0 +1,10 @@
+{
+    "criptextEmails": [{
+        "messageType": 3,
+        "recipientId": "mayer",
+        "type": "to",
+        "body": "__ENCRYPTED_DATA__",
+        "deviceId": 1
+    }],
+    "subject": "Test E-mail"
+}

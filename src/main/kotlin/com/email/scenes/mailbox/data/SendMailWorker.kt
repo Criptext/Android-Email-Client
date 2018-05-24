@@ -2,19 +2,22 @@ package com.email.scenes.mailbox.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
 import com.email.bgworker.BackgroundWorker
+import com.email.db.DeliveryTypes
+import com.email.db.MailboxLocalDB
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.KnownAddress
 import com.email.scenes.composer.data.ComposerAPIClient
 import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.PostEmailBody
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
+import com.email.utils.DateUtils
 import com.email.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
 import com.email.utils.EmailAddressUtils.isFromCriptextDomain
 import com.email.utils.UIMessage
@@ -31,6 +34,8 @@ import org.json.JSONObject
 
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
+                     private val db: MailboxLocalDB,
+                     httpClient: HttpClient,
                      activeAccount: ActiveAccount,
                      private val emailId: Long,
                      private val threadId: String?,
@@ -39,7 +44,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     : BackgroundWorker<MailboxResult.SendMail> {
     override val canBeParallelized = false
 
-    private val apiClient = ComposerAPIClient(activeAccount.jwt)
+    private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
 
     private fun getMailRecipients(): MailRecipients {
         val toAddresses = composerInputData.to.map(Contact.toAddress)
@@ -88,9 +93,10 @@ class SendMailWorker(private val signalClient: SignalClient,
             if (devices == null || devices.isEmpty())
                 throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
             devices.map { deviceId ->
-                val encryptedBody = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
+                val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
-                        type = type, body = encryptedBody)
+                        type = type, body = encryptedData.encryptedB64,
+                        messageType = encryptedData.type)
             }
         }.flatten()
     }
@@ -111,13 +117,16 @@ class SendMailWorker(private val signalClient: SignalClient,
         return MailboxResult.SendMail.Failure(message)
     }
 
-    private fun checkEncryptionKeysOperation(mailRecipients: MailRecipients): Result<Unit, Exception> =
+    private fun checkEncryptionKeysOperation(mailRecipients: MailRecipients)
+            : Result<Unit, Exception> =
             Result.of { addMissingSessions(mailRecipients.criptextRecipients) }
 
-    private fun encryptOperation(mailRecipients: MailRecipients): Result<List<PostEmailBody.CriptextEmail>, Exception> =
+    private fun encryptOperation(mailRecipients: MailRecipients)
+            : Result<List<PostEmailBody.CriptextEmail>, Exception> =
             Result.of { createEncryptedEmails(mailRecipients) }
 
-    private val sendEmailOperation: (List<PostEmailBody.CriptextEmail>) -> Result<String, Exception> =
+    private val sendEmailOperation
+            : (List<PostEmailBody.CriptextEmail>) -> Result<String, Exception> =
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
@@ -129,15 +138,28 @@ class SendMailWorker(private val signalClient: SignalClient,
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }
 
+    private val updateSentMailInDB: (String) -> Result<Unit, Exception> =
+            { response ->
+               Result.of {
+                   val sentMailData = SentMailData.fromJSON(JSONObject(response))
+                   db.updateEmailAndAddLabelSent(id = emailId, threadId = sentMailData.threadId,
+                       key = sentMailData.metadataKey.toString(), status = DeliveryTypes.SENT,
+                       date = DateUtils.getDateFromString(sentMailData.date, null)
+                   )
+               }
+            }
+
+
     override fun work(): MailboxResult.SendMail? {
         val mailRecipients = getMailRecipients()
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }
                 .flatMap(sendEmailOperation)
+                .flatMap(updateSentMailInDB)
 
         return when (result) {
             is Result.Success -> {
-                MailboxResult.SendMail.Success(emailId, JSONObject(result.value))
+                MailboxResult.SendMail.Success(emailId)
             }
             is Result.Failure -> {
                 val message = createErrorMessage(result.error)
@@ -163,11 +185,5 @@ class SendMailWorker(private val signalClient: SignalClient,
                                  val bccCriptext: List<String>) {
         val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext).flatten()
     }
-
-
-
-
-
-
 
 }
