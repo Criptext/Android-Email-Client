@@ -52,7 +52,7 @@ class RegisterUserWorkerTest {
         every { httpClient.post("/user", null, capture(bodySlot)) } returns "OK"
         every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
 
-        val newAccount = IncompleteAccount(username ="tester", name = "A Tester",
+        val newAccount = IncompleteAccount(username ="tester", name = "A Tester", deviceId = 1,
                 password = "secretPassword", recoveryEmail = "tester@gmail.com")
         val worker = newWorker(newAccount)
 

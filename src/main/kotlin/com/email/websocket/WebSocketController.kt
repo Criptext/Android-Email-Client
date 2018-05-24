@@ -37,7 +37,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     init {
         val url = createCriptextSocketServerURL(
                 recipientId = activeAccount.recipientId,
-                deviceId = 1 )
+                deviceId = activeAccount.deviceId)
 
         eventDataSource.listener = dataSourceListener
         wsClient.connect(url, onMessageReceived)

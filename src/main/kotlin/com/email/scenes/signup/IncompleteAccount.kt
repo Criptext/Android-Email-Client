@@ -9,6 +9,7 @@ import com.email.signal.SignalKeyGenerator
 
 data class IncompleteAccount(
         val username: String,
+        val deviceId: Int,
         val name: String,
         val password: String,
         val recoveryEmail: String?
@@ -18,6 +19,7 @@ data class IncompleteAccount(
                 Account(
                         name = this.name,
                         recipientId = this.username,
+                        deviceId = this.deviceId,
                         jwt = jwt,
                         registrationId = privateBundle.registrationId,
                         identityKeyPairB64 = privateBundle.identityKeyPair
