@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.ActivityMessage
+import com.email.scenes.ModelFactory
 import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
 import com.email.scenes.emaildetail.EmailDetailSceneModel
@@ -123,9 +124,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
             is SignInParams -> SignInSceneModel()
-            is ComposerParams -> ComposerModel(params.fullEmail, params.composerType)
             is MailboxParams -> MailboxSceneModel()
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
+            is ComposerParams -> ModelFactory.createComposerModel(params.fullEmail,
+                    params.composerType)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -172,7 +174,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                .pickFile(this)
     }
 
-
+    protected fun setActivityMessage(message: ActivityMessage?) {
+        activityMessage = message
+    }
 
     companion object {
         private val cachedModels = HashMap<Class<*>, Any>()
