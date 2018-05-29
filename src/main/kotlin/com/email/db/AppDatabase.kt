@@ -47,7 +47,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rawPreKeyDao(): RawPreKeyDao
     abstract fun rawSessionDao(): RawSessionDao
     abstract fun rawSignedPreKeyDao(): RawSignedPreKeyDao
-    abstract fun resetDao(): ResetDao
     abstract fun signUpDao(): SignUpDao
     abstract fun openDao(): OpenDao
     companion object {

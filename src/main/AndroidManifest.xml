@@ -44,6 +44,9 @@
             android:label="@string/title_activity_composer"
             android:theme="@style/AppTheme">
         </activity>
+        <activity android:name=".androidtest.TestActivity"
+            android:exported="false"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3b4ddc55293ff0e9bf22a8927dc076a5ac0b17ec" />
