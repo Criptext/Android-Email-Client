@@ -2,6 +2,7 @@ package com.email.scenes.composer
 
 import android.content.DialogInterface
 import com.email.BaseActivity
+import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.ActivityMessage
@@ -34,6 +35,7 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
 
         override fun onBackButtonClicked() {

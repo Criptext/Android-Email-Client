@@ -50,7 +50,8 @@
     <ScrollView
         android:id="@+id/scrollViewCompose"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -178,4 +179,22 @@
 
     </ScrollView>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <FrameLayout
+            android:layout_gravity="top|end"
+            android:id="@+id/attachment_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/circle_composer_menu_item"
+            android:layout_marginEnd="12dp">
+            <ImageView
+                android:layout_width="12.9dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/attachment_copy"
+                />
+        </FrameLayout>
+    </FrameLayout>
 </LinearLayout>

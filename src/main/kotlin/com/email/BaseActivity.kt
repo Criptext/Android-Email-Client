@@ -23,6 +23,7 @@ import com.email.scenes.signup.SignUpActivity
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.utils.UIMessage
 import com.email.utils.dialog.SingletonProgressDialog
+import droidninja.filepicker.FilePickerBuilder
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -161,6 +162,14 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun dismissDialog() {
         progressDialog.dismiss()
+    }
+
+    override fun launchExternalActivityForResult(params: ExternalActivityParams) {
+        // Currently the only external activity is file picker so just launch that
+        FilePickerBuilder.getInstance()
+               .setMaxCount(5)
+               .setActivityTheme(R.style.LibAppTheme)
+               .pickFile(this)
     }
 
 

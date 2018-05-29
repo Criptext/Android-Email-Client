@@ -1,5 +1,6 @@
 package com.email.mocks
 
+import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.scenes.ActivityMessage
 import com.email.scenes.params.SceneParams
@@ -10,6 +11,9 @@ import com.email.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun launchExternalActivityForResult(params: ExternalActivityParams) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     var isFinished: Boolean = false
 
