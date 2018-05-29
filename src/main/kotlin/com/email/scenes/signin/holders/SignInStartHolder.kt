@@ -87,15 +87,15 @@ class SignInStartHolder(val view: View, initialUsername: String): BaseSignInHold
             ProgressButtonState.disabled -> {
                 signInButton.visibility = View.VISIBLE
                 signInButton.isEnabled = false
-                progressBar.visibility = View.INVISIBLE
+                progressBar.visibility = View.GONE
             }
             ProgressButtonState.enabled -> {
                 signInButton.visibility = View.VISIBLE
                 signInButton.isEnabled = true
-                progressBar.visibility = View.INVISIBLE
+                progressBar.visibility = View.GONE
             }
             ProgressButtonState.waiting -> {
-                signInButton.visibility = View.INVISIBLE
+                signInButton.visibility = View.GONE
                 signInButton.isEnabled = false
                 progressBar.visibility = View.VISIBLE
             }

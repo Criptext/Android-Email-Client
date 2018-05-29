@@ -58,7 +58,8 @@ class LoadEmailThreadsWorker(
             MailFolders.SENT,
             MailFolders.INBOX,
             MailFolders.IMPORTANT,
-            MailFolders.STARRED -> listOf(defaultLabels.spam, defaultLabels.trash)
+            MailFolders.STARRED,
+            MailFolders.ALL_MAIL -> listOf(defaultLabels.spam, defaultLabels.trash)
             MailFolders.SPAM -> listOf(defaultLabels.trash)
             else ->  emptyList()
         }

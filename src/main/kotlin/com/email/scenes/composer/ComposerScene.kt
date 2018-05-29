@@ -91,11 +91,11 @@ interface ComposerScene {
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
                                    composerInputData: ComposerInputData, replyData: ReplyData?) {
 
+            subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {
                     bodyEditText.text = HTMLUtils.changedHeaderHtml(MailBody.createNewForwardMessageBody(
                             composerInputData.body, ""))
-                    subjectEditText.setText("FW: ${replyData.fullEmail.email.subject}", TextView.BufferType.NORMAL)
                     bodyEditText.setFocus()
                 }
                 ComposerTypes.REPLY, ComposerTypes.REPLY_ALL -> {
@@ -103,8 +103,11 @@ interface ComposerScene {
                             HTMLUtils.changedHeaderHtml(MailBody.createNewReplyMessageBody(composerInputData.body,
                             System.currentTimeMillis(), replyData.fullEmail.from.name, "")),
                             "text/html", "utf-8", "")
-                    subjectEditText.setText("RE: ${replyData.fullEmail.email.subject}", TextView.BufferType.NORMAL)
                     imageViewMore.visibility = View.VISIBLE
+                    bodyEditText.setFocus()
+                }
+                ComposerTypes.CONTINUE_DRAFT -> {
+                    bodyEditText.text = HTMLUtils.changedHeaderHtml(composerInputData.body)
                     bodyEditText.setFocus()
                 }
                 else -> {

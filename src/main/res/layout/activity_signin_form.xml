@@ -107,8 +107,10 @@ android:focusableInTouchMode="true" >
             <ProgressBar
                 android:id="@+id/signin_progress_login"
                 android:visibility="gone"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
+                android:layout_width="270dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/login_shape"/>
 

@@ -112,6 +112,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onUnsendEmail(fullEmail: FullEmail, position: Int)
         fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
+        fun onContinueDraftOptionSelected(fullEmail: FullEmail)
     }
 
     private enum class EmailViewTypes {

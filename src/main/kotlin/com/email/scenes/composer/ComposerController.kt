@@ -102,7 +102,12 @@ class ComposerController(private val model: ComposerModel,
             if (validationError != null)
                 scene.showError(validationError.toUIMessage())
             else
-                dataSource.submitRequest(ComposerRequest.SaveEmailAsDraftAndSend(data))
+                dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
+                        threadId =  model.fullEmail?.email?.threadId,
+                        emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
+                            model.fullEmail?.email?.id else null,
+                        composerInputData = data,
+                        onlySave = false))
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -119,22 +124,33 @@ class ComposerController(private val model: ComposerModel,
             val fullEmail = model.fullEmail!!
             when(model.composerType) {
                 ComposerTypes.REPLY -> {
-                    (host as BaseActivity).title = "REPLY"
                     model.body = fullEmail.email.content
                     model.to.add(fullEmail.from)
+                    model.subject = "${if(fullEmail.email.subject.startsWith("RE: ")) "" else "RE: "}" +
+                            "${fullEmail.email.subject}"
                 }
 
                 ComposerTypes.REPLY_ALL -> {
-                    (host as BaseActivity).title = "REPLY ALL"
                     model.body = fullEmail.email.content
                     model.to.add(fullEmail.from)
                     model.to.addAll(fullEmail.to)
                     model.cc.addAll(fullEmail.cc)
+                    model.subject = "${if(fullEmail.email.subject.startsWith("RE: ")) "" else "RE: "}" +
+                            "${fullEmail.email.subject}"
                 }
 
                 ComposerTypes.FORWARD -> {
-                    (host as BaseActivity).title = "FORWARD"
                     model.body = fullEmail.email.content
+                    model.subject = "${if(fullEmail.email.subject.startsWith("FW: ")) "" else "FW: "}" +
+                            "${fullEmail.email.subject}"
+                }
+
+                ComposerTypes.CONTINUE_DRAFT -> {
+                    model.body = fullEmail.email.content
+                    model.to.addAll(fullEmail.to)
+                    model.cc.addAll(fullEmail.cc)
+                    model.bcc.addAll(fullEmail.bcc)
+                    model.subject = fullEmail.email.subject
                 }
             }
         }
@@ -180,7 +196,12 @@ class ComposerController(private val model: ComposerModel,
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
-                    dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(scene.getDataInputByUser()))
+                    dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
+                            threadId = model.fullEmail?.email?.threadId,
+                            emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
+                                model.fullEmail?.email?.id else null,
+                            composerInputData = scene.getDataInputByUser(),
+                            onlySave = true))
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
                     //TODO Delete draft if necessary

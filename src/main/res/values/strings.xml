@@ -213,6 +213,7 @@
     <string name="send_bad_status">Failed to send e-mail. Bad status code: %1$s</string>
     <string name="send_invalid_address">Failed to send e-mail. The recipient address does not exist in the Criptext server.</string>
     <string name="send_try_again_error">Failed to send e-mail. Please try again later.</string>
+    <string name="insert_try_again_error">Failed to insert e-mail. Please try again later.</string>
 
     <!-- EXCEPTIONS AUTHENTICATE USER-->
     <string name="login_network_error_exception">Failed to authenticate user. Please check your internet connection.</string>
@@ -255,4 +256,7 @@
     <string name="to_popup">To:</string>
     <string name="reply_popup">Reply To:</string>
     <string name="date_popup">Date:</string>
+    
+    <string name="no_mails">There are no emails</string>
+    <string name="no_mails_subtitle">Have fun</string>
 </resources>

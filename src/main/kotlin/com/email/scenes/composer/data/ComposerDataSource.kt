@@ -20,12 +20,8 @@ class ComposerDataSource(
             is ComposerRequest.GetAllContacts -> LoadContactsWorker(composerLocalDB, { res ->
                 flushResults(res)
             })
-            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
-                    params.composerInputData, composerLocalDB, true, { res ->
-                flushResults(res)
-            })
-            is ComposerRequest.SaveEmailAsDraftAndSend -> SaveEmailWorker(
-                    params.composerInputData, composerLocalDB, false, { res ->
+            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(params.threadId, params.emailId,
+                    params.composerInputData, composerLocalDB, params.onlySave, { res ->
                 flushResults(res)
             })
         }

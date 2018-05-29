@@ -5,5 +5,5 @@ package com.email.scenes.composer.data
  */
 
 enum class ComposerTypes {
-    REPLY, REPLY_ALL, FORWARD
+    REPLY, REPLY_ALL, FORWARD, CONTINUE_DRAFT
 }

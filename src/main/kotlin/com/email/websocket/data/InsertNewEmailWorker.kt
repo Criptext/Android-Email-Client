@@ -45,7 +45,7 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
             is Result.Success ->  EventResult.InsertNewEmail.Success(result.value)
             is Result.Failure -> {
                 val errorMessage = result.error.message ?: result.error.javaClass.name
-                val message = UIMessage(R.string.send_try_again_error, arrayOf(errorMessage))
+                val message = UIMessage(R.string.insert_try_again_error, arrayOf(errorMessage))
                 EventResult.InsertNewEmail.Failure(message)
             }
         }

@@ -40,6 +40,7 @@ class EmailThreadAdapter(private val mContext : Context,
 
         holder.itemView.setOnClickListener {
             if (! threadList.isInMultiSelectMode) goToMail(emailThread = mail)
+            else toggleThreadSelection(mail, position)
         }
 
         holder.itemView.setOnLongClickListener({
