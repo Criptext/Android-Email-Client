@@ -28,7 +28,7 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpDao:
     init {
         val privateBundle = registrationBundles.privateBundle
         val incompleteAccount = IncompleteAccount(username = recipientId, name = recipientId,
-                password = "12345", recoveryEmail ="support@criptext.com")
+                password = "12345", recoveryEmail ="support@criptext.com", deviceId = deviceId)
         val persistedUser = incompleteAccount.complete(privateBundle, "__MOCKED_JWT__")
 
         val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage)

@@ -3,6 +3,7 @@ package com.email.signal
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
+import com.email.androidtest.TestActivity
 import com.email.splash.SplashActivity
 import org.amshove.kluent.shouldEqual
 import org.junit.Rule
@@ -16,7 +17,7 @@ import org.junit.runner.RunWith
 class LocalCommunicationTest {
 
     @get:Rule
-    val mActivityRule = ActivityTestRule(SplashActivity::class.java)
+    val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private val generator = SignalKeyGenerator.Default()
 
     @Test
