@@ -191,16 +191,18 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int){
-        textViewCounterInbox.text = total.toString()
         when(menu){
             NavigationMenuOptions.INBOX -> {
                 textViewCounterInbox.visibility = if (total > 0) View.VISIBLE else View.GONE
+                textViewCounterInbox.text = total.toString()
             }
             NavigationMenuOptions.DRAFT -> {
                 textViewCounterDraft.visibility = if (total > 0) View.VISIBLE else View.GONE
+                textViewCounterDraft.text = total.toString()
             }
             NavigationMenuOptions.SPAM -> {
                 textViewCounterSpam.visibility = if (total > 0) View.VISIBLE else View.GONE
+                textViewCounterSpam.text = total.toString()
             }
         }
     }

@@ -44,11 +44,6 @@ data class Email(
         var delivered : DeliveryTypes,
 
         @ColumnInfo(name = "date")
-        var date : Date,
+        var date : Date
 
-        @ColumnInfo(name = "isTrash")
-        var isTrash : Boolean,
-
-        @ColumnInfo(name = "isDraft")
-        var isDraft : Boolean
 )

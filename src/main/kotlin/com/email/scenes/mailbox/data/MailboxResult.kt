@@ -77,11 +77,6 @@ sealed class MailboxResult {
         data class Failure(val message: UIMessage): SendMail()
     }
 
-    sealed class UpdateMail: MailboxResult() {
-        class Success: UpdateMail()
-        class Failure: UpdateMail()
-    }
-
     sealed class GetMenuInformation : MailboxResult() {
         data class Success(val account: Account, val totalInbox: Int, val totalDraft: Int,
                            val totalSpam: Int): GetMenuInformation()

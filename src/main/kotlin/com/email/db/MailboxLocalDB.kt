@@ -18,7 +18,6 @@ interface MailboxLocalDB {
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Long
     fun createLabelsForEmailInbox(insertedEmailId: Long)
-    fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Long, type: ContactTypes)
     fun getEmailsFromMailboxLabel(
             labelTextTypes: MailFolders,
             oldestEmailThread: EmailThread?,
@@ -41,23 +40,6 @@ interface MailboxLocalDB {
             db.emailLabelDao().insert(EmailLabel(
                     labelId = labelInbox.id,
                     emailId = insertedEmailId))
-        }
-
-        private fun insertContact(contactName: String?, contactEmail: String, emailId: Long,
-                                  type: ContactTypes) {
-            if(contactEmail.isNotEmpty()) {
-                val contact = Contact(id = 0, email = contactEmail, name = contactName ?: contactEmail)
-                var contactId = db.contactDao().insertIgnoringConflicts(contact)
-                if(contactId < 0){
-                    contactId = db.contactDao().getContact(contactEmail)!!.id
-                }
-                val emailContact = EmailContact(
-                        id = 0,
-                        contactId = contactId,
-                        emailId = emailId,
-                        type = type)
-                db.emailContactDao().insert(emailContact)
-            }
         }
 
         override fun addEmail(email: Email): Long {
@@ -101,6 +83,8 @@ interface MailboxLocalDB {
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
             val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId)
+            email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
+                    .replace("^(Fw|FW): ".toRegex(), "")
 
             return EmailThread(
                     latestEmail = FullEmail(
@@ -115,27 +99,6 @@ interface MailboxLocalDB {
                     labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>
             )
 
-        }
-
-        override fun createContacts(contactName: String?, contactEmail: String,
-                                    insertedEmailId: Long, type: ContactTypes) {
-            if(type == ContactTypes.FROM) {
-                insertContact(
-                        contactName = contactName,
-                        contactEmail = contactEmail,
-                        emailId = insertedEmailId,
-                        type = type)
-               return
-            }
-
-            val contactsList = contactEmail.split(",")
-            contactsList.forEach { email ->
-                insertContact(
-                        contactName = contactName,
-                        contactEmail = email,
-                        emailId = insertedEmailId,
-                        type = type)
-            }
         }
 
         override fun getEmailsFromMailboxLabel(

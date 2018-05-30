@@ -1,5 +1,6 @@
 package com.email.scenes.labelChooser.holders
 
+import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -8,7 +9,6 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
-import com.email.db.ColorTypes
 import com.email.scenes.labelChooser.data.LabelWrapper
 
 /**
@@ -30,8 +30,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     fun bindLabel(labelThread: LabelWrapper) {
         nameView.text = labelThread.text
         checkBoxView.isChecked = labelThread.isSelected
-        DrawableCompat.setTint(labelColor.drawable, ContextCompat.getColor(labelColor.context,
-                labelThread.color.toColorResourceId()))
+        DrawableCompat.setTint(labelColor.drawable, Color.parseColor("#${labelThread.color}"))
     }
 
     init {

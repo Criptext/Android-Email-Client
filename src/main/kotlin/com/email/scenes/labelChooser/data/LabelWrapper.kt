@@ -1,6 +1,5 @@
 package com.email.scenes.labelChooser.data
 
-import com.email.db.ColorTypes
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 
@@ -9,7 +8,7 @@ import com.email.db.typeConverters.LabelTextConverter
  */
 
 data class LabelWrapper(val label: Label) {
-     val color : ColorTypes
+     val color : String
           get() = label.color
      val text : String
           get() = LabelTextConverter().parseLabelTextType(label.text)

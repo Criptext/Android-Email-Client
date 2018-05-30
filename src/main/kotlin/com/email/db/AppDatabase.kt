@@ -29,8 +29,8 @@ import com.email.db.typeConverters.*
 @TypeConverters(
         DateConverter::class,
         BooleanConverter::class,
-        LabelColorConverter::class,
         LabelTextConverter::class,
+        LabelTypeConverter::class,
         ContactTypeConverter::class,
         EmailDeliveryConverter::class)
 abstract class AppDatabase : RoomDatabase() {

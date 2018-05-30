@@ -31,8 +31,6 @@ sealed class MailboxRequest{
 
     data class SendMail(val emailId: Long, val threadId: String?, val data: ComposerInputData): MailboxRequest()
 
-    data class UpdateEmail(val emailId: Long, val sentMailData: SentMailData): MailboxRequest()
-
     class GetMenuInformation : MailboxRequest()
 
     data class UpdateUnreadStatus(val emailThreads: List<EmailThread>,

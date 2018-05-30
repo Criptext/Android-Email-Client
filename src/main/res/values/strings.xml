@@ -105,7 +105,7 @@
     <string name="fullname_empty_error">Name cannot be empty.</string>
 
     <!-- LOGIN -->
-    <string name="login">Log In</string>
+    <string name="login">Sign In</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
     <string name="didnt_get_prompt">Didn’t get the prompt?</string>
     <string name="not_approved">Your request to access this account was rejected by a verified device. Multiple rejections could lead your device to be blacklisted from Criptext.</string>

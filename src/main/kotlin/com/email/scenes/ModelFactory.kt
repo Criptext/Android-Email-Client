@@ -10,7 +10,7 @@ object ModelFactory {
         newModel.body = fullParentEmail.email.content
         newModel.to.add(fullParentEmail.from)
         newModel.subject =
-                (if(fullParentEmail.email.subject.startsWith("RE: ")) "" else "RE: ") +
+                (if(fullParentEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
                 fullParentEmail.email.subject
         return newModel
     }
@@ -22,7 +22,7 @@ object ModelFactory {
         newModel.to.addAll(fullParentEmail.to)
         newModel.cc.addAll(fullParentEmail.cc)
         newModel.subject =
-                (if(fullParentEmail.email.subject.startsWith("RE: ")) "" else "RE: ") +
+                (if(fullParentEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
                 fullParentEmail.email.subject
         return newModel
     }
@@ -31,7 +31,7 @@ object ModelFactory {
         val newModel = ComposerModel()
         newModel.body = fullParentEmail.email.content
         newModel.subject =
-                (if(fullParentEmail.email.subject.startsWith("FW: ")) "" else "FW: ") +
+                (if(fullParentEmail.email.subject.matches("^(Fw|FW): .*\$".toRegex())) "" else "FW: ") +
                 fullParentEmail.email.subject
         return newModel
     }

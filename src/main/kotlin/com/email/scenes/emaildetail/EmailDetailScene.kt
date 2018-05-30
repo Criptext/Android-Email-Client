@@ -74,7 +74,9 @@ interface EmailDetailScene {
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail>){
 
-            textViewSubject.text = fullEmailList[0].email.subject
+            textViewSubject.text = if (fullEmailList[0].email.subject.isEmpty())
+                textViewSubject.context.getString(R.string.nosubject)
+            else fullEmailList[0].email.subject
 
             labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, getLabelsFromEmails(fullEmailList))
 

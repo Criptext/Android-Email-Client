@@ -37,7 +37,7 @@ import java.util.*
     @Query("""
         select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
-        max(email.unread) as unread
+        max(email.unread) as unread, max(email.date)
         from email
         inner join email_label on email.id = email_label.emailId
         AND date<:starterDate
@@ -97,7 +97,7 @@ import java.util.*
     @Query("""
         select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
-        max(email.unread) as unread
+        max(email.unread) as unread, max(email.date)
         from email
         inner join email_label on email.id = email_label.emailId
         group by uniqueId

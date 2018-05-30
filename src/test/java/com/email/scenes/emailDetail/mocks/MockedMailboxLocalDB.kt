@@ -39,10 +39,6 @@ class MockedMailboxLocalDB: MailboxLocalDB {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createContacts(contactName: String?, contactEmail: String, insertedEmailId: Long, type: ContactTypes) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun getEmailsFromMailboxLabel(labelTextTypes: MailFolders, oldestEmailThread: EmailThread?, limit: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -132,9 +132,11 @@
                 android:layout_marginRight="10dp"
                 android:hint="@string/subject"
                 android:maxLines="1"
+                android:lines="1"
                 android:background="@null"
                 android:layout_height="50dp"
                 android:textSize="18sp"
+                android:inputType="textCapSentences"
                 fontPath="fonts/NunitoSans-Bold.ttf"/>
 
             <jp.wasabeef.richeditor.RichEditor

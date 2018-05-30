@@ -21,11 +21,7 @@ class EmailThread(val latestEmail: FullEmail,
     val timestamp: Date
         get() = latestEmail.email.date
     var isSelected = false
-    val headerPreview: String = if(EmailThreadValidator.isLabelInList(labelsOfMail,SecureEmail.LABEL_SENT)
-            || EmailThreadValidator.isLabelInList(labelsOfMail, SecureEmail.LABEL_DRAFT))
-            latestEmail.from.name
-        else
-            latestEmail.from.name
+    val headerPreview: String = getContactsInvolved(latestEmail)
     val id: Long
         get() = latestEmail.email.id
     val subject: String
@@ -33,19 +29,22 @@ class EmailThread(val latestEmail: FullEmail,
     val preview: String
         get() = latestEmail.email.preview
 
-    val replyType: ReplyTypes
-        get() {
-            val length = subject.length
-            if (length < 4)
-                return ReplyTypes.none
-            val title = subject.substring(0, Math.min(length, 5)).toLowerCase()
-            return if (title.startsWith("re: "))
-                ReplyTypes.reply
-            else if (title.startsWith("fwd: ") || title.startsWith("fw: "))
-                ReplyTypes.forward
-            else ReplyTypes.none
-        }
-
     val status: DeliveryTypes
         get() = latestEmail.email.delivered
+
+    private fun getContactsInvolved(email: FullEmail): String{
+
+        if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails > 1){
+            return email.to.joinToString { it.name } + ", " + email.from.name +
+                    if(email.cc.isEmpty()) "" else email.cc.joinToString { it.name }
+        }
+        else if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails == 1){
+            return email.to.joinToString { it.name } +
+                    if(email.cc.isEmpty()) "" else email.cc.joinToString { it.name }
+        }
+        else{
+            return email.from.name
+        }
+
+    }
 }

@@ -21,16 +21,6 @@
                 android:src="@drawable/circle"
                 android:layout_centerInParent="true"/>
 
-            <TextView
-                android:id="@+id/auto_initial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="S"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:layout_centerInParent="true"
-                android:paddingBottom="1dp"/>
-
         </RelativeLayout>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

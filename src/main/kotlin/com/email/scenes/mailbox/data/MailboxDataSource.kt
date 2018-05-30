@@ -73,14 +73,6 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
-            is MailboxRequest.UpdateEmail -> UpdateEmailWorker(
-                    db = mailboxLocalDB,
-                    emailId = params.emailId,
-                    sentMailData = params.sentMailData,
-                    publishFn = { result ->
-                        flushResults(result)
-                    }
-            )
             is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
                     db = mailboxLocalDB,
                     publishFn = { result ->
