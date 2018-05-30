@@ -20,10 +20,7 @@ import kotlin.collections.HashMap
  */
 object EmailInsertionSetup {
     private fun createEmailRow(metadata: EmailMetadata, decryptedBody: String): Email {
-        val bodyWithoutHTML = HTMLUtils.html2text(decryptedBody)
-        val preview   = if (bodyWithoutHTML.length > 200 )
-                            bodyWithoutHTML.substring(0,200)
-                        else bodyWithoutHTML
+        val preview = HTMLUtils.createEmailPreview(decryptedBody)
         return Email(
             id = 0,
             unread = true,
@@ -122,6 +119,10 @@ object EmailInsertionSetup {
     fun exec(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String,
                      labels: List<Label>) {
         val fullEmail = createFullEmailToInsert(dao, metadata, decryptedBody, labels)
+        exec(dao, fullEmail)
+    }
+
+    fun exec(dao: EmailInsertionDao, fullEmail: FullEmail) {
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)

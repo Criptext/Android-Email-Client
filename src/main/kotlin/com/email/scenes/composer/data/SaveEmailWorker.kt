@@ -1,14 +1,10 @@
 package com.email.scenes.composer.data
 
 import com.email.bgworker.BackgroundWorker
-import com.email.db.ComposerLocalDB
-import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
-import com.email.db.MailFolders
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import com.email.db.models.EmailContact
-import com.email.db.models.EmailLabel
+import com.email.db.dao.EmailInsertionDao
+import com.email.db.models.*
+import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.HTMLUtils
 import java.util.*
 
@@ -19,7 +15,8 @@ class SaveEmailWorker(
         private val threadId: String?,
         private val emailId: Long?,
         private val composerInputData: ComposerInputData,
-        private val db: ComposerLocalDB,
+        private val account: ActiveAccount,
+        private val dao: EmailInsertionDao,
         private val onlySave: Boolean,
         override val publishFn: (ComposerResult.SaveEmail) -> Unit)
     : BackgroundWorker<ComposerResult.SaveEmail> {
@@ -31,84 +28,52 @@ class SaveEmailWorker(
     }
 
     override fun work(): ComposerResult.SaveEmail? {
-        return ComposerResult.SaveEmail.Success(saveEmail(composerInputData), onlySave)
+        if(emailId != null){
+            // TODO delete draft?
+        }
+        saveEmail()
+        return ComposerResult.SaveEmail.Success(0L, onlySave)
     }
 
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private fun saveEmail(composerInputData: ComposerInputData): Long{
-
+    private fun createEmailFromComposerInputData(): FullEmail {
         val bodyContent = composerInputData.body
-        val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
-        val preview = if (bodyWithoutHTML.length > 200 )
-            bodyWithoutHTML.substring(0,200)
-        else bodyWithoutHTML
-
-        if(emailId != null){
-            db.emailDao.deleteById(emailId)
-            db.emailLabelDao.deleteByEmailId(emailId)
-        }
-
-        val account = db.accountDao.getLoggedInAccount()!!
+        val preview = HTMLUtils.createEmailPreview(bodyContent)
+        val draftMessageId = createDraftMessageId(account.deviceId)
         val email = Email(
                 id = 0,
                 unread = false,
                 date = Date(),
-                threadId = threadId ?: "${System.currentTimeMillis()}:${account.deviceId}",
+                threadId = threadId ?: draftMessageId,
                 subject = composerInputData.subject,
                 secure = true,
                 preview = preview,
-                messageId = "${System.currentTimeMillis()}:${account.deviceId}",
+                messageId = draftMessageId,
+                isDraft = false,
                 delivered = DeliveryTypes.NONE,
                 content = bodyContent
         )
-        val insertedId = db.emailDao.insert(email)
+        val defaultLabels = Label.DefaultItems()
+        val sender = Contact(id = 0, name = account.name,
+                email = "${account.recipientId}@${Contact.mainDomain}")
 
-        insertContact(account.name, "${account.recipientId}@${Contact.mainDomain}",
-                insertedId, ContactTypes.FROM)
-
-        createContacts(composerInputData.to, insertedId, ContactTypes.TO)
-        createContacts(composerInputData.bcc, insertedId, ContactTypes.BCC)
-        createContacts(composerInputData.cc, insertedId, ContactTypes.CC)
-
-        val labelInbox = db.labelDao.get(MailFolders.DRAFT)
-        db.emailLabelDao.insert(EmailLabel(
-                labelId = labelInbox.id,
-                emailId = insertedId))
-        return insertedId
-
+        return FullEmail(email = email, labels = listOf(defaultLabels.draft),
+            to = composerInputData.to, cc = composerInputData.cc, bcc = composerInputData.bcc,
+            files = emptyList(), from = sender)
     }
 
-    private fun createContacts(contacts: List<Contact>, insertedEmailId: Long, type: ContactTypes) {
 
-        contacts.map { contact ->
-            insertContact(
-                    contactName = contact.name,
-                    contactEmail = contact.email,
-                    emailId = insertedEmailId,
-                    type = type)
-        }
+    private fun createDraftMessageId(deviceId: Int): String =
+            "${System.currentTimeMillis()}:$deviceId"
 
+    private fun saveEmail() {
+        val fullEmail = createEmailFromComposerInputData()
+        dao.runTransaction(Runnable {
+            EmailInsertionSetup.exec(dao, fullEmail)
+        })
     }
-
-    private fun insertContact(contactName: String?, contactEmail: String, emailId: Long,
-                              type: ContactTypes) {
-        if(contactEmail.isNotEmpty()) {
-            val contact = Contact(id = 0, email = contactEmail, name = contactName ?: contactEmail)
-            var contactId = db.contactDao.insertIgnoringConflicts(contact)
-            if(contactId < 0){
-                contactId = db.contactDao.getContact(contactEmail)!!.id
-            }
-            val emailContact = EmailContact(
-                    id = 0,
-                    contactId = contactId,
-                    emailId = emailId,
-                    type = type)
-            db.emailContactDao.insert(emailContact)
-        }
-    }
-
 }
 

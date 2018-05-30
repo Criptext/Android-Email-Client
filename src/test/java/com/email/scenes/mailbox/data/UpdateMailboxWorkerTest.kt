@@ -34,7 +34,8 @@ class UpdateMailboxWorkerTest {
 
     @Before
     fun setup() {
-        activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 1, jwt = "__JWTOKEN__")
+        activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 1,
+                jwt = "__JWTOKEN__")
         signal = mockk()
         db = mockk()
         dao = mockk(relaxed = true)
