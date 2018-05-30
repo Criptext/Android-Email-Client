@@ -1,7 +1,7 @@
 package com.email.scenes.composer
 
 import android.content.DialogInterface
-import com.email.BaseActivity
+import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
 import com.email.scenes.ActivityMessage
@@ -34,6 +34,7 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
 
         override fun onBackButtonClicked() {
@@ -116,54 +117,34 @@ class ComposerController(private val model: ComposerModel,
         get() = if (isReadyForSending()) R.menu.composer_menu_enabled
                               else R.menu.composer_menu_disabled
 
+    private fun addNewAttachments(filepaths: List<String>) {
+        filepaths.forEach {
+            if (! model.attachments.contains(it))
+                model.attachments[it] = ComposerAttachment(it)
+        }
+    }
+
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        if (activityMessage is ActivityMessage.AddAttachments) {
+            addNewAttachments(activityMessage.filepaths)
+            return true
+        }
+        return false
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
 
-        if(model.fullEmail != null) {
-            val fullEmail = model.fullEmail!!
-            when(model.composerType) {
-                ComposerTypes.REPLY -> {
-                    model.body = fullEmail.email.content
-                    model.to.add(fullEmail.from)
-                    model.subject = "${if(fullEmail.email.subject.startsWith("RE: ")) "" else "RE: "}" +
-                            "${fullEmail.email.subject}"
-                }
-
-                ComposerTypes.REPLY_ALL -> {
-                    model.body = fullEmail.email.content
-                    model.to.add(fullEmail.from)
-                    model.to.addAll(fullEmail.to)
-                    model.cc.addAll(fullEmail.cc)
-                    model.subject = "${if(fullEmail.email.subject.startsWith("RE: ")) "" else "RE: "}" +
-                            "${fullEmail.email.subject}"
-                }
-
-                ComposerTypes.FORWARD -> {
-                    model.body = fullEmail.email.content
-                    model.subject = "${if(fullEmail.email.subject.startsWith("FW: ")) "" else "FW: "}" +
-                            "${fullEmail.email.subject}"
-                }
-
-                ComposerTypes.CONTINUE_DRAFT -> {
-                    model.body = fullEmail.email.content
-                    model.to.addAll(fullEmail.to)
-                    model.cc.addAll(fullEmail.cc)
-                    model.bcc.addAll(fullEmail.bcc)
-                    model.subject = fullEmail.email.subject
-                }
-            }
-        }
-
-        scene.bindWithModel(firstTime = model.firstTime, composerInputData = ComposerInputData.fromModel(model),
+        scene.bindWithModel(firstTime = model.firstTime,
+                composerInputData = ComposerInputData.fromModel(model),
                 defaultRecipients = model.defaultRecipients,
                 replyData = if(model.fullEmail == null) null else ReplyData.FromModel(model))
         dataSourceController.getAllContacts()
-        dataSource.listener = dataSourceListener
         scene.observer = observer
         model.firstTime = false
 
-        return false
+        return handleActivityMessage(activityMessage)
     }
 
     override fun onStop() {

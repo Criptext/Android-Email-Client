@@ -32,4 +32,9 @@ interface IHostActivity {
     fun getLocalizedString(message: UIMessage): String
     fun showDialog(message: UIMessage)
     fun dismissDialog()
+    /**
+     * Launch an activity for a result, and then pass that result as an ActivityMessage
+     * @param params Object with the necessary data to launch the correct activity.
+     */
+    fun launchExternalActivityForResult(params: ExternalActivityParams)
 }

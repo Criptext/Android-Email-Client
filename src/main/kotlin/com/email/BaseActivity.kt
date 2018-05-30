@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.ActivityMessage
+import com.email.scenes.ModelFactory
 import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
 import com.email.scenes.emaildetail.EmailDetailSceneModel
@@ -23,6 +24,7 @@ import com.email.scenes.signup.SignUpActivity
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.utils.UIMessage
 import com.email.utils.dialog.SingletonProgressDialog
+import droidninja.filepicker.FilePickerBuilder
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -122,9 +124,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
             is SignInParams -> SignInSceneModel()
-            is ComposerParams -> ComposerModel(params.fullEmail, params.composerType)
             is MailboxParams -> MailboxSceneModel()
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
+            is ComposerParams -> ModelFactory.createComposerModel(params.fullEmail,
+                    params.composerType)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -163,7 +166,17 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         progressDialog.dismiss()
     }
 
+    override fun launchExternalActivityForResult(params: ExternalActivityParams) {
+        // Currently the only external activity is file picker so just launch that
+        FilePickerBuilder.getInstance()
+               .setMaxCount(5)
+               .setActivityTheme(R.style.LibAppTheme)
+               .pickFile(this)
+    }
 
+    protected fun setActivityMessage(message: ActivityMessage?) {
+        activityMessage = message
+    }
 
     companion object {
         private val cachedModels = HashMap<Class<*>, Any>()

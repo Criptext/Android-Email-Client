@@ -2,8 +2,10 @@ package com.email.scenes.composer
 
 import com.email.db.models.Contact
 import com.email.db.models.FullEmail
+import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerTypes
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Created by gabriel on 2/26/18.
@@ -21,6 +23,7 @@ class ComposerModel() {
     val to = LinkedList<Contact>()
     val cc = LinkedList<Contact>()
     val bcc = LinkedList<Contact>()
+    val attachments = HashMap<String, ComposerAttachment>()
 
     var firstTime = true
     var defaultRecipients: List<Contact> = emptyList()

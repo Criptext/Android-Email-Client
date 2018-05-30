@@ -8,7 +8,6 @@ import android.webkit.WebView
 import android.widget.*
 import com.email.db.models.Contact
 import com.email.R
-import com.email.db.models.FullEmail
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.composer.ui.ContactCompletionView
 import com.email.scenes.composer.ui.ContactsFilterAdapter
@@ -71,6 +70,9 @@ interface ComposerScene {
         private val imageViewMore: ImageView by lazy {
             view.findViewById<ImageView>(R.id.imageViewMore) as ImageView
         }
+        private val attachmentButton: View by lazy {
+            view.findViewById<View>(R.id.attachment_button)
+        }
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
             override fun onTokenAdded(token: Contact?) {
@@ -115,28 +117,18 @@ interface ComposerScene {
                 }
             }
 
-            composerInputData.to.forEach { contact ->
-                toInput.addObject(contact)
-            }
 
-            composerInputData.cc.forEach { contact ->
-                ccInput.addObject(contact)
-            }
-
-            composerInputData.bcc.forEach { contact ->
-                bccInput.addObject(contact)
-            }
 
             setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
-                    toContacts = composerInputData.to, ccContacts = composerInputData.cc, bccContacts = composerInputData.bcc)
+                    toContacts = composerInputData.to,
+                    ccContacts = composerInputData.cc, bccContacts = composerInputData.bcc)
 
+            setListeners()
+        }
+
+        private fun setListeners() {
             subjectEditText.onFocusChangeListener = onEditTextGotFocus
             bodyEditText.onFocusChangeListener = onEditTextGotFocus
-
-            val splitChar = charArrayOf(',', ';', ' ')
-            toInput.setSplitChar(splitChar)
-            ccInput.setSplitChar(splitChar)
-            bccInput.setSplitChar(splitChar)
 
             backButton.setOnClickListener {
                 observer?.onBackButtonClicked()
@@ -151,6 +143,9 @@ interface ComposerScene {
                                             else View.VISIBLE
             }
 
+            attachmentButton.setOnClickListener {
+                observer?.onAttachmentButtonClicked()
+            }
         }
 
         override fun getDataInputByUser(): ComposerInputData {
@@ -189,6 +184,7 @@ interface ComposerScene {
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,
                                         toContacts: List<Contact>, ccContacts: List<Contact>,
                                         bccContacts: List<Contact>) {
+
             toInput.allowDuplicates(false)
             toInput.setTokenListener(onTokenChanged)
             ccInput.allowDuplicates(false)
@@ -203,12 +199,18 @@ interface ComposerScene {
                 defaultRecipients.forEach { toInput.addObject(it) }
                 fillRecipients(toContacts, bccContacts, ccContacts)
             }
+
+            val splitChar = charArrayOf(',', ';', ' ')
+
+            toInput.setSplitChar(splitChar)
+            ccInput.setSplitChar(splitChar)
+            bccInput.setSplitChar(splitChar)
         }
 
-        private fun fillRecipients(initContacts: List<Contact>,
+        private fun fillRecipients(toContacts: List<Contact>,
                                    bccContacts: List<Contact>,
                                    ccContacts: List<Contact>) {
-            for (contact in initContacts) {
+            for (contact in toContacts) {
                 toInput.addObject(contact)
             }
             for (contact in bccContacts) {

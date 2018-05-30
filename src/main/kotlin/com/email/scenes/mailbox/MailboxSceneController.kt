@@ -184,13 +184,13 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return when (activityMessage) {
-            null -> false
             is ActivityMessage.SendMail -> {
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
                         activityMessage.composerInputData)
                 dataSource.submitRequest(newRequest)
                 true
             }
+            else -> false
         }
     }
 
