@@ -184,8 +184,6 @@ interface ComposerScene {
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,
                                         toContacts: List<Contact>, ccContacts: List<Contact>,
                                         bccContacts: List<Contact>) {
-            fillRecipients(toContacts = toContacts, ccContacts = ccContacts,
-                    bccContacts = bccContacts)
 
             toInput.allowDuplicates(false)
             toInput.setTokenListener(onTokenChanged)
