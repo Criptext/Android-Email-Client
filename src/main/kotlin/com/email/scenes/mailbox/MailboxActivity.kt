@@ -43,11 +43,10 @@ class MailboxActivity : BaseActivity() {
         (1..50)
           .forEach {
               val seconds = if (it < 10) "0$it" else it.toString()
-              val metadata = EmailMetadata(from = "Mayer Mizrachi <mayer@jigl.com>",
-                      to = "gabriel@jigl.com",  cc = "", bcc = "", fromContact = fromContact,
-                      messageId = "gabriel/1/$it", date = "2018-02-21 14:00:$seconds",
-                      messageType = SignalEncryptedData.Type.normal, threadId = "thread#$it",
-                      senderRecipientId = "mayer", subject = "Test #$it", senderDeviceId = 1)
+              val metadata = EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
+                      fromContact = fromContact, messageId = "gabriel/1/$it",
+                      date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
+                      subject = "Test #$it")
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction(Runnable {

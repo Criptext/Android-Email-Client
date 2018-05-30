@@ -3,6 +3,7 @@ package com.email.db.dao
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Query
 import android.arch.persistence.room.Transaction
+import com.email.db.models.EmailLabel
 
 /**
  * Created by gabriel on 3/17/18.
@@ -22,6 +23,10 @@ interface ResetDao {
     fun deleteAllAccounts()
     @Query("DELETE from label")
     fun deleteAllLabels()
+    @Query("DELETE from email")
+    fun deleteAllEmails()
+    @Query("DELETE from contact")
+    fun deleteAllContacts()
 
     /**
      * Apparently transactions don't compile unless you pass at least one argument -__-
@@ -33,6 +38,8 @@ interface ResetDao {
         deleteAllSessions()
         deleteAllIdentityKeys()
         deleteAllAccounts()
+        deleteAllEmails()
         deleteAllLabels()
+        deleteAllContacts()
     }
 }

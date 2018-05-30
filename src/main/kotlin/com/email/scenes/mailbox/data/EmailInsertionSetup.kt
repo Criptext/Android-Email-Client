@@ -19,7 +19,7 @@ import kotlin.collections.HashMap
  * Created by gabriel on 4/26/18.
  */
 object EmailInsertionSetup {
-    private fun createEmailRow(metadata: EmailMetadata, decryptedBody: String): Email {
+    private fun createEmailRow(metadata: EmailMetadata.DBColumns, decryptedBody: String): Email {
         val preview = HTMLUtils.createEmailPreview(decryptedBody)
         return Email(
             id = 0,
@@ -56,7 +56,7 @@ object EmailInsertionSetup {
         if (addressesCSV.isEmpty()) return emptyList()
 
         val toAddresses = addressesCSV.split(",")
-        val toAddressesNotDuplicated = toAddresses.map { Pair(it, it) }.toMap().values.toList()
+        val toAddressesNotDuplicated = toAddresses.toSet().toList()
         val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)
 
         val contactsMap = HashMap<String, Contact>()
@@ -75,13 +75,15 @@ object EmailInsertionSetup {
         } else existingContacts.first()
     }
 
-    private fun createFullEmailToInsert(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String,
+    private fun createFullEmailToInsert(dao: EmailInsertionDao,
+                                        metadataColumns: EmailMetadata.DBColumns,
+                                        decryptedBody: String,
                                         labels: List<Label>): FullEmail {
-        val emailRow = createEmailRow(metadata, decryptedBody)
-        val senderContactRow = createSenderContactRow(dao, metadata.fromContact)
-        val toContactsRows = createContactRows(dao, metadata.to)
-        val ccContactsRows = createContactRows(dao, metadata.cc)
-        val bccContactsRows = createContactRows(dao, metadata.bcc)
+        val emailRow = createEmailRow(metadataColumns, decryptedBody)
+        val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
+        val toContactsRows = createContactRows(dao, metadataColumns.to)
+        val ccContactsRows = createContactRows(dao, metadataColumns.cc)
+        val bccContactsRows = createContactRows(dao, metadataColumns.bcc)
         return FullEmail(email = emailRow,
                 to = toContactsRows,
                 cc = ccContactsRows,
@@ -90,23 +92,32 @@ object EmailInsertionSetup {
                 from = senderContactRow, files = emptyList())
     }
 
-    private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes): (Contact) -> EmailContact =
-            { contact -> EmailContact(id = 0, emailId = newEmailId, contactId = contact.id, type = type) }
+    private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes)
+            : (Contact) -> EmailContact =
+            {
+                contact -> EmailContact(id = 0, emailId = newEmailId,
+                    contactId = contact.id, type = type)
+            }
 
     private fun createEmailLabelRelation(newEmailId: Long): (Label) -> EmailLabel =
             { label -> EmailLabel(emailId = newEmailId, labelId = label.id) }
 
-    private fun insertEmailLabelRelations(dao: EmailInsertionDao, fullEmail: FullEmail, newEmailId: Long) {
+    private fun insertEmailLabelRelations(dao: EmailInsertionDao,
+                                          fullEmail: FullEmail,
+                                          newEmailId: Long) {
         val labelRelations = fullEmail.labels.map(createEmailLabelRelation(newEmailId))
         dao.insertEmailLabelRelations(labelRelations)
     }
 
-    private fun insertEmailContactRelations(dao: EmailInsertionDao, fullEmail: FullEmail, newEmailId: Long) {
+    private fun insertEmailContactRelations(dao: EmailInsertionDao,
+                                            fullEmail: FullEmail,
+                                            newEmailId: Long) {
         val senderRelation = EmailContact(id = 0, emailId = newEmailId,
                 contactId = fullEmail.from.id, type = ContactTypes.FROM)
         val toRelations = fullEmail.to.map(createEmailContactRelation(newEmailId, ContactTypes.TO))
         val ccRelations = fullEmail.cc.map(createEmailContactRelation(newEmailId, ContactTypes.CC))
-        val bccRelations = fullEmail.bcc.map(createEmailContactRelation(newEmailId, ContactTypes.BCC))
+        val bccRelations = fullEmail.bcc.map(
+                createEmailContactRelation(newEmailId, ContactTypes.BCC))
 
         val contactRelations = listOf(toRelations, ccRelations, bccRelations)
                 .flatten()
@@ -116,13 +127,15 @@ object EmailInsertionSetup {
     }
 
 
-    fun exec(dao: EmailInsertionDao, metadata: EmailMetadata, decryptedBody: String,
-                     labels: List<Label>) {
-        val fullEmail = createFullEmailToInsert(dao, metadata, decryptedBody, labels)
+    fun exec(dao: EmailInsertionDao,
+             metadataColumns: EmailMetadata.DBColumns,
+             decryptedBody: String,
+             labels: List<Label>) {
+        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels)
         exec(dao, fullEmail)
     }
 
-    fun exec(dao: EmailInsertionDao, fullEmail: FullEmail) {
+    private fun exec(dao: EmailInsertionDao, fullEmail: FullEmail) {
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
@@ -172,7 +185,7 @@ object EmailInsertionSetup {
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
         dao.runTransaction(Runnable {
-                EmailInsertionSetup.exec(dao, metadata, decryptedBody, labels)
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels)
             })
     }
 }

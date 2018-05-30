@@ -18,6 +18,9 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmail(email: Email): Long
 
+    @Query("DELETE FROM email WHERE id = :draftEmailId" )
+    fun deletePreviouslyCreatedDraft(draftEmailId: Long)
+
     @Query("Select * from email where messageId = :messageId")
     fun findEmailByMessageId(messageId: String): Email?
 

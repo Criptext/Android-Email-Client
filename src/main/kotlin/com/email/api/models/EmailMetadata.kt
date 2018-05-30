@@ -18,6 +18,9 @@ data class EmailMetadata(
         val threadId: String,
         val subject: String) {
 
+    fun extractDBColumns(): DBColumns =
+            DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
+                    subject = subject, date = date, fromContact = fromContact)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -48,4 +51,19 @@ data class EmailMetadata(
 
         }
     }
+
+    /**
+     * EmailMetadata class has a couple of fields that are not persisted to the database.
+     * The DBColumns class is a subset of EmailMetadata, containing only the data that you will
+     * definitely need to persist.
+     */
+    data class DBColumns(
+        val to: String,
+        val cc: String,
+        val bcc: String,
+        val messageId: String,
+        val date: String,
+        val threadId: String,
+        val fromContact: Contact,
+        val subject: String)
 }

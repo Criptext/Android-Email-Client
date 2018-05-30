@@ -23,7 +23,7 @@ import android.arch.persistence.room.Index
                 onDelete = CASCADE,
                 childColumns = ["labelId"])
         ])
-class EmailLabel(
+data class EmailLabel(
         @ColumnInfo(name = "emailId") var emailId: Long,
         @ColumnInfo(name = "labelId") var labelId: Long
         )

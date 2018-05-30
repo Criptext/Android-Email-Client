@@ -1,10 +1,12 @@
 package com.email.scenes.composer.data
 
+import com.email.api.models.EmailMetadata
 import com.email.bgworker.BackgroundWorker
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
+import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
 import java.util.*
 
@@ -29,7 +31,7 @@ class SaveEmailWorker(
 
     override fun work(): ComposerResult.SaveEmail? {
         if(emailId != null){
-            // TODO delete draft?
+
         }
         saveEmail()
         return ComposerResult.SaveEmail.Success(0L, onlySave)
@@ -38,41 +40,37 @@ class SaveEmailWorker(
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+    private val selectEmail: (Contact) -> String = { contact -> contact.email }
 
-    private fun createEmailFromComposerInputData(): FullEmail {
-        val bodyContent = composerInputData.body
-        val preview = HTMLUtils.createEmailPreview(bodyContent)
+    private fun List<Contact>.toCSVEmails(): String =
+            this.joinToString(separator = ",", transform = selectEmail)
+
+    private fun createMetadataColumns(): EmailMetadata.DBColumns {
         val draftMessageId = createDraftMessageId(account.deviceId)
-        val email = Email(
-                id = 0,
-                unread = false,
-                date = Date(),
-                threadId = threadId ?: draftMessageId,
-                subject = composerInputData.subject,
-                secure = true,
-                preview = preview,
-                messageId = draftMessageId,
-                isDraft = false,
-                delivered = DeliveryTypes.NONE,
-                content = bodyContent
-        )
-        val defaultLabels = Label.DefaultItems()
         val sender = Contact(id = 0, name = account.name,
                 email = "${account.recipientId}@${Contact.mainDomain}")
 
-        return FullEmail(email = email, labels = listOf(defaultLabels.draft),
-            to = composerInputData.to, cc = composerInputData.cc, bcc = composerInputData.bcc,
-            files = emptyList(), from = sender)
+        return EmailMetadata.DBColumns(messageId = draftMessageId,
+                threadId = threadId ?: draftMessageId, subject = composerInputData.subject,
+                to = composerInputData.to.toCSVEmails(),
+                cc = composerInputData.cc.toCSVEmails(),
+                bcc = composerInputData.bcc.toCSVEmails(),
+                date = DateUtils.printDateWithServerFormat(Date()),
+                fromContact = sender
+                )
     }
-
 
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
 
     private fun saveEmail() {
-        val fullEmail = createEmailFromComposerInputData()
+        val metadataColumns = createMetadataColumns()
+        val defaultLabels = Label.DefaultItems()
+        val labels = listOf(defaultLabels.draft)
         dao.runTransaction(Runnable {
-            EmailInsertionSetup.exec(dao, fullEmail)
+            if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
+            EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
+                    decryptedBody = composerInputData.body, labels = labels)
         })
     }
 }
