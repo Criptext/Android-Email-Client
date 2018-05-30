@@ -39,9 +39,9 @@ class WebSocketTests {
     @Before
     fun setUp() {
         dao = mockk(relaxed = true)
-        val runnableSlot = CapturingSlot<Runnable>() // run transactions as they are invoked
-        every { dao.runTransaction(capture(runnableSlot)) } answers {
-            runnableSlot.captured.run()
+        val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
+        every { dao.runTransaction(capture(lambdaSlot)) } answers {
+            lambdaSlot.captured()
         }
 
         signal = mockk()

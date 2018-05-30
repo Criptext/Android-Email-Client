@@ -49,8 +49,9 @@ class MailboxActivity : BaseActivity() {
                       subject = "Test #$it")
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
-              appDB.emailInsertionDao().runTransaction(Runnable {
-                  EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody, labels)
+              appDB.emailInsertionDao().runTransaction({
+                  EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody,
+                          labels)
               })
           }
 

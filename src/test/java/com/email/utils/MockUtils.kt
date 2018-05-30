@@ -9,10 +9,10 @@ import io.mockk.every
  */
 
 fun EmailInsertionDao.runTransactionsAsTheyAreInvoked() {
-    val runnableSlot = CapturingSlot<Runnable>()
+    val lambdaSlot = CapturingSlot<() -> Long>()
     every {
-        this@runTransactionsAsTheyAreInvoked.runTransaction(capture(runnableSlot))
+        this@runTransactionsAsTheyAreInvoked.runTransaction(capture(lambdaSlot))
     } answers {
-        runnableSlot.captured.run()
+        lambdaSlot.captured()
     }
 }

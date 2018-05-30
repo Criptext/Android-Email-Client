@@ -130,15 +130,16 @@ object EmailInsertionSetup {
     fun exec(dao: EmailInsertionDao,
              metadataColumns: EmailMetadata.DBColumns,
              decryptedBody: String,
-             labels: List<Label>) {
+             labels: List<Label>): Long {
         val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels)
-        exec(dao, fullEmail)
+        return exec(dao, fullEmail)
     }
 
-    private fun exec(dao: EmailInsertionDao, fullEmail: FullEmail) {
+    private fun exec(dao: EmailInsertionDao, fullEmail: FullEmail): Long {
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
+        return newEmailId
     }
 
     private fun decryptMessage(signalClient: SignalClient, recipientId: String, deviceId: Int,
@@ -184,7 +185,7 @@ object EmailInsertionSetup {
 
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
-        dao.runTransaction(Runnable {
+        dao.runTransaction({
                 EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels)
             })
     }

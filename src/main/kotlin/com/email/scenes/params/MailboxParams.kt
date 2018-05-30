@@ -10,5 +10,9 @@ import com.email.scenes.composer.data.ComposerInputData
 open class MailboxParams: SceneParams() {
     override val activityClass = MailboxActivity::class.java
 
-    class SendMail(val newMailData: ComposerInputData): MailboxParams()
+    override fun equals(other: Any?): Boolean {
+        return other is MailboxParams
+    }
+
+    data class SendMail(val newMailData: ComposerInputData): MailboxParams()
 }

@@ -30,11 +30,9 @@ class SaveEmailWorker(
     }
 
     override fun work(): ComposerResult.SaveEmail? {
-        if(emailId != null){
-
-        }
-        saveEmail()
-        return ComposerResult.SaveEmail.Success(0L, onlySave)
+        val (newEmailId, savedMailThreadId) = saveEmail()
+        return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
+                onlySave = onlySave, composerInputData = composerInputData)
     }
 
     override fun cancel() {
@@ -63,15 +61,16 @@ class SaveEmailWorker(
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
 
-    private fun saveEmail() {
+    private fun saveEmail(): Pair<Long, String> {
         val metadataColumns = createMetadataColumns()
         val defaultLabels = Label.DefaultItems()
         val labels = listOf(defaultLabels.draft)
-        dao.runTransaction(Runnable {
+        val newEmailId = dao.runTransaction({
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
                     decryptedBody = composerInputData.body, labels = labels)
         })
+        return Pair(newEmailId, metadataColumns.threadId)
     }
 }
 

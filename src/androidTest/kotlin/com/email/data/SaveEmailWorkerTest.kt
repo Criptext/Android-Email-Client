@@ -77,8 +77,8 @@ class SaveEmailWorkerTest {
         // insert previously generated draft to DB
         val previousDraft = Email(id = 0, messageId = "__MESSAGE_ID__", unread = false,
                 content = "This was my original draft", preview = "__PREVIEW__", subject = "draft",
-                delivered = DeliveryTypes.NONE, date = Date(), isTrash = false, isDraft = true,
-                secure = false, threadId = "__MESSAGE_ID__")
+                delivered = DeliveryTypes.NONE, date = Date(), secure = false,
+                threadId = "__MESSAGE_ID__")
         val draftId = db.emailDao().insert(previousDraft)
 
 

@@ -40,7 +40,7 @@ interface EmailInsertionDao {
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 
     @Transaction
-    fun runTransaction(runnable: Runnable) {
-        runnable.run()
+    fun runTransaction(insertFn: () -> Long): Long {
+        return insertFn()
     }
 }
