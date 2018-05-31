@@ -88,8 +88,6 @@ class EmailDetailControllerTest {
                                 "1992-05-23 20:12:58",
                                 null),
                         delivered = DeliveryTypes.OPENED,
-                        isDraft = false,
-                        isTrash = false,
                         messageId = "key",
                         preview = "preview $it" ,
                         secure = true,

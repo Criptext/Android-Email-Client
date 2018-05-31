@@ -21,8 +21,8 @@ import kotlin.collections.HashMap
 object EmailInsertionSetup {
     private fun createEmailRow(metadata: EmailMetadata, decryptedBody: String): Email {
         val bodyWithoutHTML = HTMLUtils.html2text(decryptedBody)
-        val preview   = if (bodyWithoutHTML.length > 100 )
-                            bodyWithoutHTML.substring(0,100)
+        val preview   = if (bodyWithoutHTML.length > 200 )
+                            bodyWithoutHTML.substring(0,200)
                         else bodyWithoutHTML
         return Email(
             id = 0,
@@ -32,11 +32,9 @@ object EmailInsertionSetup {
                     null),
             threadId = metadata.threadId,
             subject = metadata.subject,
-            isTrash = false,
             secure = true,
             preview = preview,
             messageId = metadata.messageId,
-            isDraft = false,
             delivered = DeliveryTypes.NONE,
             content = decryptedBody
         )
@@ -45,7 +43,7 @@ object EmailInsertionSetup {
     private fun fillMapWithNewContacts(dao: EmailInsertionDao, contactsMap: HashMap<String, Contact>,
                                        toAddresses: List<String>) {
         val unknownContacts = toAddresses.filter { !contactsMap.containsKey(it) }
-                .map { Contact(id = 0, email = it, name = "") }
+                .map { Contact(id = 0, email = it, name = it.split("@")[0]) }
 
         if (unknownContacts.isNotEmpty()) {
             val insertedContactIds = dao.insertContacts(unknownContacts)

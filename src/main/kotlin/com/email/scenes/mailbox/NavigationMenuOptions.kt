@@ -1,6 +1,6 @@
 package com.email.scenes.mailbox
 
-import com.email.db.ColorTypes
+import com.email.db.LabelTypes
 import com.email.db.MailFolders
 import com.email.db.models.Label
 
@@ -14,7 +14,8 @@ enum class NavigationMenuOptions {
         STARRED -> Label.defaultItems.starred
         SPAM -> Label.defaultItems.spam
         TRASH -> Label.defaultItems.trash
-        ALL_MAIL -> Label(id = -1, color = ColorTypes.PURPLE, text = MailFolders.ALL_MAIL)
+        ALL_MAIL -> Label(id = -1, color = "000000", text = MailFolders.ALL_MAIL,
+                visible = true, type = LabelTypes.SYSTEM)
         else -> null
     }
 }

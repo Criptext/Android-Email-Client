@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail.ui.labels
 
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
@@ -7,7 +8,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
-import com.email.db.ColorTypes
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 
@@ -24,15 +24,14 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
     fun bindLabel(label: Label){
         labelView.text = LabelTextConverter().
                 parseLabelTextType(label.text)
-        setDrawableBackground(label.color.toColorResourceId())
+        setDrawableBackground(Color.parseColor("#${label.color}"))
     }
 
     private fun setDrawableBackground(color: Int){
         val drawableBackground = ContextCompat.getDrawable(
                 context,
                 R.drawable.email_detail_label)
-        val colorCompact = ContextCompat.getColor(context, color)
-        drawableBackground.setColorFilter(colorCompact, PorterDuff.Mode.SRC_IN)
+        drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
         labelView.background = drawableBackground
     }
 

@@ -42,8 +42,8 @@ class SaveEmailWorker(
 
         val bodyContent = composerInputData.body
         val bodyWithoutHTML = HTMLUtils.html2text(bodyContent)
-        val preview = if (bodyWithoutHTML.length > 100 )
-            bodyWithoutHTML.substring(0,100)
+        val preview = if (bodyWithoutHTML.length > 200 )
+            bodyWithoutHTML.substring(0,200)
         else bodyWithoutHTML
 
         if(emailId != null){
@@ -58,11 +58,9 @@ class SaveEmailWorker(
                 date = Date(),
                 threadId = threadId ?: "${System.currentTimeMillis()}:${account.deviceId}",
                 subject = composerInputData.subject,
-                isTrash = false,
                 secure = true,
                 preview = preview,
                 messageId = "${System.currentTimeMillis()}:${account.deviceId}",
-                isDraft = false,
                 delivered = DeliveryTypes.NONE,
                 content = bodyContent
         )

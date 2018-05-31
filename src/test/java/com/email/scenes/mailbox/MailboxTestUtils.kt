@@ -18,7 +18,7 @@ object MailboxTestUtils {
                             threadId = "thread$number", unread = true, secure = true,
                             content = "this is message #$number", preview = "message #$number",
                             subject = "message #$number", delivered = DeliveryTypes.DELIVERED,
-                            date = Date(dateMilis + number), isTrash = false, isDraft = false)
+                            date = Date(dateMilis + number))
 
     fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
 

@@ -42,9 +42,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
             is MailboxResult.SendMail -> dataSourceController.onSendMailFinished(result)
             is MailboxResult.UpdateEmailThreadsLabelsRelations -> dataSourceController.onUpdatedLabels(result)
-            is MailboxResult.UpdateMail -> {
-                scene.showMessage(UIMessage(R.string.email_sent))
-            }
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
         }
@@ -355,6 +352,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.toggleNoMailsView(resultData.mailboxThreads.isEmpty())
                 scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 scene.updateToolbarTitle(toolbarTitle)
+                dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             }
         }
 
@@ -395,6 +393,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result) {
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Success ->  {
                     reloadMailboxThreads()
+                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 } else -> {
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
@@ -403,8 +402,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
-                is MailboxResult.SendMail.Success ->
+                is MailboxResult.SendMail.Success -> {
                     scene.showMessage(UIMessage(R.string.mail_sent_success))
+                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                }
                 is MailboxResult.SendMail.Failure -> scene.showMessage(result.message)
             }
         }
