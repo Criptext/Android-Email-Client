@@ -18,5 +18,12 @@ class HTMLUtils {
             val changeFontHtml = head + htmlText + collapseScript() + closedTag
             return changeFontHtml
         }
+
+        fun createEmailPreview(emailBody: String): String {
+            val bodyWithoutHTML = HTMLUtils.html2text(emailBody)
+            return if (bodyWithoutHTML.length > 100 )
+                bodyWithoutHTML.substring(0,100)
+            else bodyWithoutHTML
+        }
     }
 }

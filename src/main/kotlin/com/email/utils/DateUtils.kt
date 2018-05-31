@@ -23,6 +23,18 @@ class DateUtils {
 
             return sdf.parse(stringDate)
         }
+
+        fun parseDateWithServerFormat(dateString: String, isUTC: Boolean): Date {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            if (isUTC)
+                sdf.timeZone = TimeZone.getTimeZone("UTC")
+            return sdf.parse(dateString)
+        }
+        fun printDateWithServerFormat(date: Date): String {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            return sdf.format(date)
+        }
+
         fun getHoraVerdadera(timestamp: Long): String {
             val formattedDate = SimpleDateFormat("h:mm a").format(timestamp).toUpperCase()
             return formattedDate.replace("P.M.".toRegex(), "PM").replace("A.M.".toRegex(), "AM")

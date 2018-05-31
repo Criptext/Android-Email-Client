@@ -14,7 +14,9 @@ sealed class ComposerResult {
     }
 
     sealed class SaveEmail : ComposerResult() {
-        data class Success(val emailId: Long, val onlySave: Boolean) : SaveEmail()
+        data class Success(val emailId: Long, val threadId: String,
+                           val composerInputData: ComposerInputData,
+                           val onlySave: Boolean) : SaveEmail()
         class Failure: SaveEmail()
     }
 

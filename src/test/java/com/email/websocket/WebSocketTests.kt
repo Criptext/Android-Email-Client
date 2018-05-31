@@ -39,9 +39,9 @@ class WebSocketTests {
     @Before
     fun setUp() {
         dao = mockk(relaxed = true)
-        val runnableSlot = CapturingSlot<Runnable>() // run transactions as they are invoked
-        every { dao.runTransaction(capture(runnableSlot)) } answers {
-            runnableSlot.captured.run()
+        val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
+        every { dao.runTransaction(capture(lambdaSlot)) } answers {
+            lambdaSlot.captured()
         }
 
         signal = mockk()
@@ -57,7 +57,8 @@ class WebSocketTests {
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
 
-        val account = ActiveAccount(recipientId = "tester", deviceId = 1, jwt = "__JWT_TOKEN__")
+        val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
+                jwt = "__JWT_TOKEN__")
 
         controller = WebSocketController(wsClient = webSocket, activeAccount = account,
                 eventDataSource = dataSource)

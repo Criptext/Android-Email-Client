@@ -34,13 +34,14 @@ class UpdateMailboxWorkerTest {
 
     @Before
     fun setup() {
-        activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 1, jwt = "__JWTOKEN__")
+        activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 1,
+                jwt = "__JWTOKEN__")
         signal = mockk()
         db = mockk()
         dao = mockk(relaxed = true)
-        val runnableSlot = CapturingSlot<Runnable>() // run transactions as they are invoked
-        every { dao.runTransaction(capture(runnableSlot)) } answers {
-            runnableSlot.captured.run()
+        val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
+        every { dao.runTransaction(capture(lambdaSlot)) } answers {
+            lambdaSlot.captured()
         }
 
         httpClient = mockk()

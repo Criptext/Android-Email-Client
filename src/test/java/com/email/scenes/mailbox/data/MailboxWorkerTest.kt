@@ -30,7 +30,8 @@ open class MailboxWorkerTest {
     @Before
     fun setup() {
         lastResult = null
-        activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 2, jwt = "__JWTOKEN__")
+        activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
+                jwt = "__JWTOKEN__")
         signalClient = mockk()
         db = mockk()
         dao = mockk(relaxed = true)

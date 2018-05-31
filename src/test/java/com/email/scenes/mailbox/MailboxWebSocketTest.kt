@@ -49,9 +49,9 @@ class MailboxWebSocketTest {
         rawSessionDao = mockk()
 
         emailInsertionDao = mockk(relaxed = true)
-        val runnableSlot = CapturingSlot<Runnable>() // run transactions as they are invoked
-        every { emailInsertionDao.runTransaction(capture(runnableSlot)) } answers {
-            runnableSlot.captured.run()
+        val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
+        every { emailInsertionDao.runTransaction(capture(lambdaSlot)) } answers {
+            lambdaSlot.captured()
         }
 
         signal = mockk()
@@ -64,8 +64,8 @@ class MailboxWebSocketTest {
                 signalClient = signal,
                 httpClient = httpClient,
                 mailboxLocalDB = db,
-                activeAccount = ActiveAccount(recipientId = "gabriel", deviceId = 3,
-                        jwt = "__JWT_TOKEN__"),
+                activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
+                        deviceId = 3, jwt = "__JWT_TOKEN__"),
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )
