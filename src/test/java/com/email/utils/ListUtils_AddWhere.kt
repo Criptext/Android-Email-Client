@@ -1,5 +1,6 @@
-package com.email.utils.file
+package com.email.utils
 
+import com.email.utils.addWhere
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 

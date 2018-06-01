@@ -3,7 +3,6 @@ package com.email.scenes.mailbox.data
 import com.email.api.HttpClient
 import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
-import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
@@ -22,8 +21,6 @@ import org.amshove.kluent.`should be instance of`
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
-import java.util.*
-import kotlin.concurrent.thread
 
 /**
  * Created by gabriel on 5/22/18.
@@ -91,11 +88,11 @@ class SendEmailWorkerTest {
         } returns SignalEncryptedData(encryptedB64 = "__ENCRYPTED_DATA__",
                 type = SignalEncryptedData.Type.preKey)
         every {
-            httpClient.post(path = "/keybundle/find", jwt = "__JWTOKEN__",
+            httpClient.post(path = "/keybundle/find", authToken = "__JWTOKEN__",
                     body = capture(findKeybundlesBodySlot))
         } returns mockFindKeyBundlesResponse()
         every {
-            httpClient.post(path = "/email", jwt = "__JWTOKEN__",
+            httpClient.post(path = "/email", authToken = "__JWTOKEN__",
                     body = capture(postEmailBodySlot))
         } returns mockedSentMailData.toJSON().toString()
         every {

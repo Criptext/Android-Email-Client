@@ -1,8 +1,8 @@
 package com.email.scenes.mailbox.feed.ui
 
 import com.email.db.models.FeedItem
-import com.email.utils.file.addWhere
-import com.email.utils.file.findFromPosition
+import com.email.utils.addWhere
+import com.email.utils.findFromPosition
 
 /**
  * Created by danieltigse on 02/14/18.

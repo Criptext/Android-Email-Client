@@ -17,6 +17,7 @@ import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldBeEmpty
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import java.net.SocketTimeoutException
@@ -58,14 +59,14 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(20, label)
 
         every {
-            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", authToken = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(path = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
+            httpClient.get(path = match { it.startsWith("/email/body") }, authToken = "__JWTOKEN__")
         } returnsMany listOf("__ENCRYPTED_TEXT_1__", "__ENCRYPTED_TEXT_2__")
         every {
-            httpClient.post(path = "/event/ack", jwt = "__JWTOKEN__",
-                    body = match { it.hasArray("ids").ofLength(2) })
+            httpClient.post(path = "/event/ack", authToken = "__JWTOKEN__",
+                    body = match { it: JSONObject -> it.hasArray("ids").ofLength(2) })
         } returns "OK"
 
         // prepare db mocks
@@ -123,10 +124,10 @@ class UpdateMailboxWorkerTest {
 
         // mock server responses. Only one, assume all others timeout
         every {
-            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", authToken = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.get(path = match { it.startsWith("/email/body") }, jwt = "__JWTOKEN__")
+            httpClient.get(path = match { it.startsWith("/email/body") }, authToken = "__JWTOKEN__")
         } throws SocketTimeoutException()
 
         // prepare db mocks
@@ -175,11 +176,11 @@ class UpdateMailboxWorkerTest {
 
         // mock server responses. No body requests since mails are already in db
         every {
-            httpClient.get(path = "/event", jwt = "__JWTOKEN__")
+            httpClient.get(path = "/event", authToken = "__JWTOKEN__")
         } returns MockedJSONData.sample2NewEmailEvents
         every {
-            httpClient.post(path = "/event/ack", jwt = "__JWTOKEN__",
-                    body = match { it.hasArray("ids").ofLength(2) })
+            httpClient.post(path = "/event/ack", authToken = "__JWTOKEN__",
+                    body = match { it: JSONObject -> it.hasArray("ids").ofLength(2) })
         } throws SocketTimeoutException()
 
         // prepare db mocks

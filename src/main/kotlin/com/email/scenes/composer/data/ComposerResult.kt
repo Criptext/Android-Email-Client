@@ -1,7 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.db.models.Contact
-import com.email.db.models.Email
+import com.email.utils.UIMessage
 
 /**
  * Created by gabriel on 2/26/18.
@@ -20,4 +20,8 @@ sealed class ComposerResult {
         class Failure: SaveEmail()
     }
 
+    sealed class UploadFile : ComposerResult() {
+        data class Success(val filepath: String): UploadFile()
+        data class Failure(val filepath: String, val message: UIMessage): UploadFile()
+    }
 }

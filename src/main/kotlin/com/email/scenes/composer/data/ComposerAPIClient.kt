@@ -1,6 +1,5 @@
 package com.email.scenes.composer.data
 
-import com.email.api.ApiCall
 import com.email.api.HttpClient
 import org.json.JSONArray
 import org.json.JSONObject
@@ -15,11 +14,11 @@ class ComposerAPIClient(private val httpClient: HttpClient, private val token: S
         val jsonObject = JSONObject()
         jsonObject.put("recipients", JSONArray(recipients))
         jsonObject.put("knownAddresses", JSONObject(knownAddresses))
-        return httpClient.post(path = "/keybundle/find", jwt = token, body = jsonObject)
+        return httpClient.post(path = "/keybundle/find", authToken = token, body = jsonObject)
     }
 
     fun postEmail(postEmailBody: PostEmailBody): String {
-        return httpClient.post(path = "/email", jwt = token, body = postEmailBody.toJSON())
+        return httpClient.post(path = "/email", authToken = token, body = postEmailBody.toJSON())
     }
 
 }

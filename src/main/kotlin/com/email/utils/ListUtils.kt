@@ -1,4 +1,4 @@
-package com.email.utils.file
+package com.email.utils
 
 /**
  * Created by gabriel on 8/24/17.

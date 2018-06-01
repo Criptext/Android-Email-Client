@@ -17,10 +17,10 @@ class SignInAPIClient(private val httpClient: HttpClient) {
         val jsonObject = JSONObject()
         jsonObject.put("username", username)
         jsonObject.put("password", password)
-        return httpClient.post(path = "/user/auth", body = jsonObject, jwt = null)
+        return httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
     }
 
     fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): String {
-        return httpClient.post(path = "/keybundle", body = bundle.toJSON(), jwt = jwt)
+        return httpClient.post(path = "/keybundle", body = bundle.toJSON(), authToken = jwt)
     }
 }

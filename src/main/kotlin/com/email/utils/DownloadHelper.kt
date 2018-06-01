@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import com.email.utils.file.FilenameUtils
 
 /**
  * Created by hirobreak on 08/06/17.

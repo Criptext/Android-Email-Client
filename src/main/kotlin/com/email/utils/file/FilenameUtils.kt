@@ -1,4 +1,4 @@
-package com.email.utils
+package com.email.utils.file
 
 import java.net.URLConnection
 

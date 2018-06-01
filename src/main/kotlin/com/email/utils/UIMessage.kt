@@ -25,5 +25,10 @@ class UIMessage(val resId: Int, val args: Array<Any>) {
 }
 
 fun Context.getLocalizedUIMessage(message: UIMessage): String {
-    return this.getString(message.resId, *message.args)
+    val expandedArgs = message.args.map {
+        if ( it is UIMessage) this.getLocalizedUIMessage(it)
+        else it
+    }.toTypedArray()
+
+    return this.getString(message.resId, *expandedArgs)
 }

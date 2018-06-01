@@ -1,9 +1,8 @@
-package com.email.utils.file
+package com.email.utils
 
+import com.email.utils.findFromPosition
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Created by gabriel on 2/21/18.
