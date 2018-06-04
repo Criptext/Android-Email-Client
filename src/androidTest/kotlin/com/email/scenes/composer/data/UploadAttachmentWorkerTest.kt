@@ -1,0 +1,121 @@
+package com.email.scenes.composer.data
+
+import android.support.test.rule.ActivityTestRule
+import android.support.test.runner.AndroidJUnit4
+import com.email.Config
+import com.email.androidtest.TestActivity
+import com.email.androidtest.TestDatabase
+import com.email.api.HttpClient
+import com.email.db.models.Label
+import com.email.signal.Encoding
+import com.email.utils.*
+import com.email.utils.file.AndroidFs
+import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.shouldBeGreaterThan
+import org.amshove.kluent.shouldEqual
+import org.json.JSONObject
+import org.junit.*
+import org.junit.runner.RunWith
+import java.nio.charset.Charset
+
+@RunWith(AndroidJUnit4::class)
+class UploadAttachmentWorkerTest {
+
+    @get:Rule
+    val mActivityRule = ActivityTestRule(TestActivity::class.java)
+
+    private lateinit var db: TestDatabase
+    private lateinit var mockWebServer: MockWebServer
+    private val fileServiceAuthToken =
+            Encoding.byteArrayToString(
+                    "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(
+                            Charset.forName("UTF-8")
+                    )
+            )
+
+    private lateinit var httpClient: HttpClient
+
+    private fun getFilServiceBaseUrl(): String {
+        val realBaseUrl = "http://services.criptext.com"
+        return if (Config.mockCriptextHTTPRequests) {
+            mockWebServer = MockWebServer()
+            mockWebServer.start()
+            mockWebServer.url("/mock").toString()
+        } else
+            realBaseUrl
+    }
+
+    @Before
+    fun setup() {
+        db = TestDatabase.getInstance(mActivityRule.activity)
+        db.resetDao().deleteAllData(1)
+
+        httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.basic,
+                baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
+                readTimeout = 7000L)
+    }
+
+    @After
+    fun teardown() {
+        if (Config.mockCriptextHTTPRequests)
+            mockWebServer.close()
+    }
+
+    private fun newWorker(filepath: String): UploadAttachmentWorker =
+            UploadAttachmentWorker(filepath = filepath, fileServiceAuthToken = fileServiceAuthToken,
+                    httpClient = httpClient, publishFn = {})
+
+    @Test
+    fun should_upload_file_without_errors() {
+
+        val fileToUpload = AndroidFs.getFileFromImageCache(mActivityRule.activity,
+                testBinaryFileName)
+
+        if (Config.mockCriptextHTTPRequests) {
+            mockWebServer.enqueueSuccessfulResponses(listOf(
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"filetoken":"__FILETOKEN__"}"""
+            ))
+        }
+
+        try {
+            FileDownloader.download(testBinaryFileURL, fileToUpload)
+
+            val worker = newWorker(fileToUpload.absolutePath)
+
+            worker.work() as ComposerResult.UploadFile.Success
+        } finally {
+            fileToUpload.delete()
+        }
+
+        if(Config.mockCriptextHTTPRequests) {
+            mockWebServer.assertSentRequests(listOf(
+                    ExpectedRequest(
+                        expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                        method = "POST", path = "/file/upload",
+                        assertBodyFn = {
+                            val jsonBody = JSONObject(it)
+                            jsonBody.getString("filename") shouldEqual testBinaryFileName
+                            jsonBody.getInt("filesize") shouldBeGreaterThan 1
+                            jsonBody.getInt("chunkSize") shouldBeGreaterThan 1
+                            jsonBody.getInt("totalChunks") shouldBeGreaterThan 1
+                    }),
+                    ExpectedRequest(
+                            expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                            method = "POST", path = "/file/chunk", assertBodyFn = null),
+                    ExpectedRequest(
+                            expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                            method = "POST", path = "/file/chunk", assertBodyFn = null)
+            ))
+        }
+
+    }
+
+    companion object {
+        private val testBinaryFileURL = "https://cdn.criptext.com/Email/images/emailhome/icon-dwm-mobile.png"
+        private val testBinaryFileName = "my_image.png"
+    }
+
+
+}

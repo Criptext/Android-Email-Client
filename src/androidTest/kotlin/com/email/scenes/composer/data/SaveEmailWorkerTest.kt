@@ -1,4 +1,4 @@
-package com.email.data
+package com.email.scenes.composer.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -10,9 +10,6 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
-import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.composer.data.ComposerResult
-import com.email.scenes.composer.data.SaveEmailWorker
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
