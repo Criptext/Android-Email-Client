@@ -90,7 +90,7 @@ class UploadAttachmentWorker(private val filepath: String,
     }
 
     companion object {
-        private const val chunkSize = 512 * 1024 * 1024
+        private const val chunkSize = 512 * 1024
 
     }
 
