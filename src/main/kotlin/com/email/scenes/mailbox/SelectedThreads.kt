@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox
 
 import com.email.scenes.mailbox.data.EmailThread
-import com.email.utils.file.removeWithDiscrimination
+import com.email.utils.removeWithDiscrimination
 import java.util.*
 
 class SelectedThreads {

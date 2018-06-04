@@ -8,7 +8,6 @@ import android.util.Base64
 import android.webkit.JavascriptInterface
 import android.widget.Toast
 import com.email.BuildConfig
-import com.email.utils.FilenameUtils
 
 /**
  * Created by hirobreak on 02/08/17.

@@ -100,7 +100,7 @@ class WebSocketTests {
         } just Runs
 
         every {
-            httpClient.get(path = "/email/body/<15221916.12518@jigl.com>", jwt = "__JWT_TOKEN__")
+            httpClient.get(path = "/email/body/<15221916.12518@jigl.com>", authToken = "__JWT_TOKEN__")
         } returns "__ENCRYPTED_TEXT__"
 
         controller.listener = mockedListener
@@ -149,7 +149,7 @@ class WebSocketTests {
         } just Runs
 
         every {
-            httpClient.get(path = "/email/body/<15221916.12520@jigl.com>", jwt = "__JWT_TOKEN__")
+            httpClient.get(path = "/email/body/<15221916.12520@jigl.com>", authToken = "__JWT_TOKEN__")
         } returns "__PLAIN_TEXT_FROM_SERVER__"
 
         controller.listener = mockedListener

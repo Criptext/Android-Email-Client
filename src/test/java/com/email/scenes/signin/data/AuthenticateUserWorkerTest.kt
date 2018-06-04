@@ -100,10 +100,10 @@ class AuthenticateUserWorkerTest {
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
                     .toJSON().toString()
         every {
-            httpClient.post("/user/auth", null, any())
+            httpClient.post("/user/auth", null, any<JSONObject>())
         } returns mockedAuthResponse
         every {
-            httpClient.post("/keybundle", "__JWTOKEN__", any())
+            httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
         } throws SocketTimeoutException()
 
 
@@ -143,7 +143,7 @@ class AuthenticateUserWorkerTest {
         } returns mockedAuthResponse
 
         every {
-            httpClient.post("/keybundle", "__JWTOKEN__", any())
+            httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
         } returns "OK"
 
 
@@ -169,7 +169,7 @@ class AuthenticateUserWorkerTest {
         }
         // should have not authenticated with server
         verify(inverse = true) {
-            httpClient.post("/user/auth", any(), any())
+            httpClient.post("/user/auth", any(), any<JSONObject>())
         }
     }
 

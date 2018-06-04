@@ -13,9 +13,6 @@ import org.json.JSONObject
 class ApiCall {
 
     companion object {
-        var baseUrl = Hosts.restApiBaseUrl
-
-        private val JSON = MediaType.parse("application/json; charset=utf-8")
 
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
@@ -23,29 +20,6 @@ class ApiCall {
             return response.body()!!.string()
         }
 
-        fun postJSON(url: String, jwtoken: String?, json: JSONObject): Request {
-            val body = RequestBody.create(JSON, json.toString())
-            var builder = Request.Builder()
-                    .url(url)
-                    .post(body)
 
-            if (jwtoken != null) {
-                builder = builder.addHeader("Authorization", "Bearer $jwtoken")
-            }
-
-            return builder.build()
-        }
-
-        fun getUrl(url: String, jwtoken: String?): Request {
-            var builder = Request.Builder()
-                    .url(url)
-                    .get()
-
-            if (jwtoken != null) {
-                builder = builder.addHeader("Authorization", "Bearer $jwtoken")
-            }
-
-            return builder.build()
-        }
     }
 }

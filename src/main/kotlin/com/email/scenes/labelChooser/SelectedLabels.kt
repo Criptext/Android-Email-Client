@@ -1,7 +1,7 @@
 package com.email.scenes.labelChooser
 
 import com.email.scenes.labelChooser.data.LabelWrapper
-import com.email.utils.file.removeWithDiscrimination
+import com.email.utils.removeWithDiscrimination
 import java.util.*
 
 /**
