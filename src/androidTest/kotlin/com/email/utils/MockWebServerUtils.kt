@@ -1,20 +1,19 @@
 package com.email.utils
 
+import com.email.api.HttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.amshove.kluent.shouldBeGreaterThan
 import org.amshove.kluent.shouldEndWith
 import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldStartWith
-import org.json.JSONObject
 
 /**
  * Created by gabriel on 3/22/18.
  */
 
-data class ExpectedRequest(val needsJwt: Boolean, val method: String, val path: String,
-                           val assertBodyFn: ((JSONObject) -> Unit)?)
+data class ExpectedRequest(val expectedAuthScheme: ExpectedAuthScheme, val method: String, val path: String,
+                           val assertBodyFn: ((String) -> Unit)?)
 
 fun MockWebServer.enqueueSuccessfulResponses(responses: List<String>) {
     responses.forEach { resBody ->
@@ -22,26 +21,44 @@ fun MockWebServer.enqueueSuccessfulResponses(responses: List<String>) {
     }
 }
 
-private fun parseJSONRequestBody(recordedRequest: RecordedRequest): JSONObject {
-    val bodyString = recordedRequest.body.readUtf8()
-    return JSONObject(bodyString)
+private fun stringifyRequestBody(recordedRequest: RecordedRequest): String {
+    return recordedRequest.body.readUtf8()
 }
 
-private fun assertRequestContainsJwt(recordedRequest: RecordedRequest) {
-    val authorizationHeader = recordedRequest.getHeader("Authorization")
-    authorizationHeader shouldStartWith "Bearer "
-    authorizationHeader.length shouldBeGreaterThan 10
+private fun assertRequestAuthorization(scheme: ExpectedAuthScheme, recordedRequest: RecordedRequest) {
+    when (scheme) {
+        is ExpectedAuthScheme.Jwt -> {
+            val authorizationHeader = recordedRequest.getHeader("Authorization")
+            authorizationHeader shouldEqual "Bearer ${scheme.token}"
+        }
+        is ExpectedAuthScheme.Basic -> {
+            val authorizationHeader = recordedRequest.getHeader("Authorization")
+            authorizationHeader shouldEqual "Basic ${scheme.token}"
+        }
+    }
 }
 
 fun MockWebServer.assertSentRequests(expectedRequests: List<ExpectedRequest>) {
-    expectedRequests.forEach { expectedRequest ->
-        val recordedRequest = this.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
-        recordedRequest.path shouldEndWith expectedRequest.path
-        recordedRequest.method shouldEqual expectedRequest.method
+    expectedRequests.forEachIndexed { i, expectedRequest ->
+        try {
+            val recordedRequest = this.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
+            recordedRequest.path shouldEndWith expectedRequest.path
+            recordedRequest.method shouldEqual expectedRequest.method
+            assertRequestAuthorization(expectedRequest.expectedAuthScheme, recordedRequest)
 
-        if (expectedRequest.needsJwt) assertRequestContainsJwt(recordedRequest)
-
-        val assertFn = expectedRequest.assertBodyFn
-        if (assertFn != null) assertFn(parseJSONRequestBody(recordedRequest))
+            val assertFn = expectedRequest.assertBodyFn
+            if (assertFn != null) assertFn(stringifyRequestBody(recordedRequest))
+        } catch (e: Exception) {
+            throw RequestAssertionException(pos = i, req = expectedRequest, throwable = e)
+        }
     }
 }
+
+sealed class ExpectedAuthScheme {
+    class None: ExpectedAuthScheme()
+    data class Jwt(val token: String): ExpectedAuthScheme()
+    data class Basic(val token: String): ExpectedAuthScheme()
+}
+
+class RequestAssertionException(pos: Int, req: ExpectedRequest, throwable: Throwable): Exception(
+        "Failed to assert sent request $req at position $pos of input list.",  throwable)

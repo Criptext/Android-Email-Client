@@ -72,6 +72,7 @@ class UploadAttachmentWorker(private val filepath: String,
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        ex.printStackTrace()
         when (ex) { // these are not the real errors TODO fix!
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
             is ServerErrorException -> {
@@ -90,7 +91,7 @@ class UploadAttachmentWorker(private val filepath: String,
     }
 
     companion object {
-        private const val chunkSize = 512 * 1024 * 1024
+        private const val chunkSize = 512 * 1024
 
     }
 
