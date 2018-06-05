@@ -6,14 +6,10 @@ import com.email.Config
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.HttpClient
-import com.email.db.models.Label
 import com.email.signal.Encoding
 import com.email.utils.*
 import com.email.utils.file.AndroidFs
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.shouldBeGreaterThan
-import org.amshove.kluent.shouldEqual
-import org.json.JSONObject
 import org.junit.*
 import org.junit.runner.RunWith
 import java.nio.charset.Charset
@@ -93,14 +89,7 @@ class UploadAttachmentWorkerTest {
             mockWebServer.assertSentRequests(listOf(
                     ExpectedRequest(
                         expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
-                        method = "POST", path = "/file/upload",
-                        assertBodyFn = {
-                            val jsonBody = JSONObject(it)
-                            jsonBody.getString("filename") shouldEqual testBinaryFileName
-                            jsonBody.getInt("filesize") shouldBeGreaterThan 1
-                            jsonBody.getInt("chunkSize") shouldBeGreaterThan 1
-                            jsonBody.getInt("totalChunks") shouldBeGreaterThan 1
-                    }),
+                        method = "POST", path = "/file/upload", assertBodyFn = null),
                     ExpectedRequest(
                             expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
                             method = "POST", path = "/file/chunk", assertBodyFn = null),

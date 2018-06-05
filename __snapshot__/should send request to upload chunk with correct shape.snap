@@ -1,0 +1,1 @@
+{part=StringItem(value=2), chunk=ByteArrayItem(name=my_photo.png, value=[1, 2, 3, 4, 5, 6, 7, 8, 9, 127]), filetoken=StringItem(value=__FILE_TOKEN__)}

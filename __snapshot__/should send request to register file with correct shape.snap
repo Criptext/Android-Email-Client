@@ -1,0 +1,6 @@
+{
+    "filename": "my_photo.png",
+    "chunkSize": 512,
+    "totalChunks": 2,
+    "filesize": 1024
+}

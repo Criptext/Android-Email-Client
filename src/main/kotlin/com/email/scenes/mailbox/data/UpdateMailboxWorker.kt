@@ -146,7 +146,6 @@ class UpdateMailboxWorker(
                 }
                 catch (ex: Exception) {
                     // Unknown exception, probably network related, skip acknowledge
-                    ex.printStackTrace()
                     false
                 }
             }
