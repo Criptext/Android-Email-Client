@@ -6,6 +6,7 @@ import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.utils.UIMessage
 import com.email.utils.file.ChunkFileReader
 import com.github.kittinunf.result.Result
@@ -56,7 +57,8 @@ class UploadAttachmentWorker(private val filepath: String,
                     chunkSize = chunkSize, fileSize = fileSize.toInt(), totalChunks = totalChunks)
         }
 
-    override fun work(): ComposerResult.UploadFile? {
+    override fun work(reporter: ProgressReporter<ComposerResult.UploadFile>)
+            : ComposerResult.UploadFile? {
         val file = File(filepath)
 
         val result = registerFile(file)

@@ -1,4 +1,4 @@
-package com.email.scenes.keygeneration
+package com.email.scenes.signup.holders
 
 import android.view.View
 import android.widget.ProgressBar

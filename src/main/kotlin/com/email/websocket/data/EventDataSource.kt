@@ -2,7 +2,7 @@ package com.email.websocket.data
 
 import com.email.api.EmailInsertionAPIClient
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.dao.EmailInsertionDao
 import com.email.signal.SignalClient
@@ -14,7 +14,7 @@ import com.email.signal.SignalClient
 class EventDataSource(override val runner: WorkRunner,
                       private val emailInsertionDao: EmailInsertionDao,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
-                      private val signalClient: SignalClient): WorkHandler<EventRequest, EventResult>() {
+                      private val signalClient: SignalClient): BackgroundWorkManager<EventRequest, EventResult>() {
 
     override fun createWorkerFromParams(params: EventRequest, flushResults: (EventResult) -> Unit): BackgroundWorker<*> {
         return when (params) {

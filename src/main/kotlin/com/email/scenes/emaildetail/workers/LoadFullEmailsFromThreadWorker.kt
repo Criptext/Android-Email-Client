@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail.workers
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.utils.UIMessage
@@ -23,7 +24,8 @@ class LoadFullEmailsFromThreadWorker(
         return EmailDetailResult.LoadFullEmailsFromThreadId.Failure()
     }
 
-    override fun work(): EmailDetailResult.LoadFullEmailsFromThreadId {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.LoadFullEmailsFromThreadId>)
+        : EmailDetailResult.LoadFullEmailsFromThreadId {
         val items = db.getFullEmailsFromThreadId(threadId = threadId)
         return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items)
     }
@@ -31,7 +33,7 @@ class LoadFullEmailsFromThreadWorker(
     override fun cancel() {
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
         UIMessage(resId = R.string.fail_register_try_again_error_exception)
     }
 }

@@ -5,6 +5,7 @@ import com.email.R
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.KeyValueStorage
 import com.email.db.dao.SignUpDao
 import com.email.db.models.Account
@@ -87,7 +88,7 @@ class AuthenticateUserWorker(
 
     }
 
-    override fun work(): SignInResult.AuthenticateUser? {
+    override fun work(reporter: ProgressReporter<SignInResult.AuthenticateUser>): SignInResult.AuthenticateUser? {
 
         val result = signInOperation()
                 .flatMap(signalRegistrationOperation)

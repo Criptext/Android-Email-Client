@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail.workers
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.utils.UIMessage
@@ -28,7 +29,8 @@ class UnsendFullEmailWorker(
                 Failure(position, message, ex)
     }
 
-    override fun work(): EmailDetailResult.UnsendFullEmailFromEmailId {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.UnsendFullEmailFromEmailId>)
+            : EmailDetailResult.UnsendFullEmailFromEmailId {
         Thread.sleep(500)
         db.unsendEmail(emailId)
         return EmailDetailResult.UnsendFullEmailFromEmailId.Success(position)
@@ -37,7 +39,7 @@ class UnsendFullEmailWorker(
     override fun cancel() {
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
         UIMessage(resId = R.string.fail_unsend_email)
     }
 }

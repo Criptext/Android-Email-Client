@@ -9,11 +9,11 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.LabelChooserDialog
+import com.email.scenes.label_chooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
-import com.email.scenes.labelChooser.LabelDataHandler
+import com.email.scenes.label_chooser.LabelDataHandler
 import com.email.scenes.mailbox.MoveToDialog
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.virtuallist.VirtualList

@@ -3,6 +3,7 @@ package com.email.scenes.signup.data
 import com.email.api.HttpClient
 import com.email.api.ServerErrorException
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.github.kittinunf.result.Result
 
 /**
@@ -22,7 +23,8 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
         return SignUpResult.CheckUsernameAvailability.Failure()
     }
 
-    override fun work(): SignUpResult.CheckUsernameAvailability? {
+    override fun work(reporter: ProgressReporter<SignUpResult.CheckUsernameAvailability>)
+            : SignUpResult.CheckUsernameAvailability? {
         val result = Result.of { apiClient.isUsernameAvailable(username) }
 
         return when (result) {

@@ -1,6 +1,7 @@
 package com.email.scenes.emaildetail.workers
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
@@ -25,7 +26,8 @@ class UpdateUnreadStatusWorker(
         return EmailDetailResult.UpdateUnreadStatus.Failure()
     }
 
-    override fun work(): EmailDetailResult.UpdateUnreadStatus? {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateUnreadStatus>)
+            : EmailDetailResult.UpdateUnreadStatus? {
         val emailIds = db.getFullEmailsFromThreadId(threadId).map {
             it.email.id
         }

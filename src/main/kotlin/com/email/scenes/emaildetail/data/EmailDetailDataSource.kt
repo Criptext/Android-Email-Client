@@ -1,7 +1,7 @@
 package com.email.scenes.emaildetail.data
 
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.EmailDetailLocalDB
 import com.email.db.models.ActiveAccount
@@ -16,7 +16,7 @@ class EmailDetailDataSource(private val signalClient: SignalClient,
                             private val activeAccount: ActiveAccount,
                             override val runner: WorkRunner,
                             private val emailDetailLocalDB: EmailDetailLocalDB)
-    : WorkHandler<EmailDetailRequest, EmailDetailResult>()
+    : BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>()
 {
 
     override fun createWorkerFromParams(params: EmailDetailRequest,

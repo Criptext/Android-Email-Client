@@ -1,12 +1,12 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
-import com.email.scenes.labelChooser.data.LabelWrapper
-import com.email.scenes.labelChooser.holders.LabelHolder
+import com.email.scenes.label_chooser.data.LabelWrapper
+import com.email.scenes.label_chooser.holders.LabelHolder
 import com.email.utils.virtuallist.VirtualList
 
 /**

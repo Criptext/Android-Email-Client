@@ -12,10 +12,9 @@ import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
-import com.email.scenes.labelChooser.LabelDataHandler
-import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.label_chooser.LabelDataHandler
+import com.email.scenes.label_chooser.SelectedLabels
 import com.email.scenes.mailbox.OnMoveThreadsListener
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.params.ComposerParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList

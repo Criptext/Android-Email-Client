@@ -1,7 +1,6 @@
-package com.email.scenes.labelChooser.holders
+package com.email.scenes.label_chooser.holders
 
 import android.graphics.Color
-import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -9,7 +8,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.data.LabelWrapper
 
 /**
  * Created by sebas on 2/2/18.

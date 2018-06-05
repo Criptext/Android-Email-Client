@@ -6,6 +6,7 @@ import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.signal.RawSessionDao
@@ -150,7 +151,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             }
 
 
-    override fun work(): MailboxResult.SendMail? {
+    override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
         val mailRecipients = getMailRecipients()
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }

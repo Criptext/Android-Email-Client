@@ -1,7 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.ComposerLocalDB
 import com.email.db.dao.EmailInsertionDao
@@ -16,7 +16,7 @@ class ComposerDataSource(
         private val activeAccount: ActiveAccount,
         private val emailInsertionDao: EmailInsertionDao,
         override val runner: WorkRunner)
-    : WorkHandler<ComposerRequest, ComposerResult>() {
+    : BackgroundWorkManager<ComposerRequest, ComposerResult>() {
 
     override fun createWorkerFromParams(params: ComposerRequest,
                                         flushResults: (ComposerResult) -> Unit)

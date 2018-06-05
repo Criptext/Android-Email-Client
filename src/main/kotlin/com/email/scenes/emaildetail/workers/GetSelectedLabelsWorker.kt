@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail.workers
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
@@ -27,7 +28,8 @@ class GetSelectedLabelsWorker(
         return EmailDetailResult.GetSelectedLabels.Failure()
     }
 
-    override fun work(): EmailDetailResult.GetSelectedLabels? {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.GetSelectedLabels>)
+            : EmailDetailResult.GetSelectedLabels? {
         val labels = Label.defaultItems.toList()
         val defaultSelectedLabels = db.getLabelsFromThreadId(
                 threadId = threadId)
@@ -40,7 +42,7 @@ class GetSelectedLabelsWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
             UIMessage(resId = R.string.failed_getting_labels)
     }
 }

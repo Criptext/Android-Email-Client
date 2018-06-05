@@ -1,6 +1,5 @@
 package com.email.scenes.emailDetail.mocks
 
-import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
@@ -8,7 +7,6 @@ import com.email.db.models.Account
 import com.email.db.models.Email
 import com.email.db.models.EmailLabel
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelWrapper
 import com.email.scenes.mailbox.data.EmailThread
 import com.github.kittinunf.result.Result
 import java.util.*

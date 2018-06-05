@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.db.models.Label
 import com.email.scenes.mailbox.MailboxTestUtils
 import io.mockk.every
+import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.junit.Test
 
@@ -26,7 +27,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
                 loadParams = LoadParams.NewPage(20, null)))
 
-        runner._work() // execute worker
+        runner._work(mockk()) // execute worker
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 
@@ -51,7 +52,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
                 loadParams = LoadParams.NewPage(20, currentThreads.last())))
 
-        runner._work() // execute worker
+        runner._work(mockk()) // execute worker
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 
@@ -74,7 +75,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
                 loadParams = LoadParams.Reset(20)))
 
-        runner._work() // execute worker
+        runner._work(mockk()) // execute worker
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 

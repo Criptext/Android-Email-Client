@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.feed.data
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.dao.FeedDao
 
 /**
@@ -19,7 +20,7 @@ class MuteFeedItemWorker(private val db: FeedDao,
                 lastKnownPosition = params.position, isMuted = !params.isMuted)
     }
 
-    override fun work(): FeedResult.MuteFeedItem? {
+    override fun work(reporter: ProgressReporter<FeedResult.MuteFeedItem>): FeedResult.MuteFeedItem? {
         db.toggleMuteFeedItem(params.id, params.isMuted)
         return FeedResult.MuteFeedItem.Success()
     }

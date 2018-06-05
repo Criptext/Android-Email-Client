@@ -70,7 +70,7 @@ class AuthenticateUserWorkerTest {
                     defaultLabels = any())
         } answers { extraStepsSlot.captured.run() }
 
-        val result = worker.work()
+        val result = worker.work(mockk())
 
         result `should be instance of` SignInResult.AuthenticateUser.Success::class.java
 
@@ -118,7 +118,7 @@ class AuthenticateUserWorkerTest {
                     defaultLabels = any())
         } answers { extraStepsSlot.captured.run() }
 
-        val result = worker.work()
+        val result = worker.work(mockk())
 
         result `should be instance of` SignInResult.AuthenticateUser.Failure::class.java
 
@@ -158,7 +158,7 @@ class AuthenticateUserWorkerTest {
                     defaultLabels = any())
         } answers { extraStepsSlot.captured.run() }
 
-        val result = worker.work()
+        val result = worker.work(mockk())
 
         result `should be instance of` SignInResult.AuthenticateUser.Success::class.java
 

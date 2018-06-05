@@ -2,7 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
@@ -22,7 +22,7 @@ class MailboxDataSource(
         private val emailInsertionDao: EmailInsertionDao,
         private val httpClient: HttpClient,
         private val mailboxLocalDB: MailboxLocalDB )
-    : WorkHandler<MailboxRequest, MailboxResult>() {
+    : BackgroundWorkManager<MailboxRequest, MailboxResult>() {
     override fun createWorkerFromParams(
             params: MailboxRequest,
             flushResults: (MailboxResult) -> Unit)

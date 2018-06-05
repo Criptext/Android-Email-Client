@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.utils.DateUtils
@@ -23,7 +24,8 @@ class UpdateUnreadStatusWorker(
         return MailboxResult.UpdateUnreadStatus.Failure()
     }
 
-    override fun work(): MailboxResult.UpdateUnreadStatus? {
+    override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>)
+            : MailboxResult.UpdateUnreadStatus? {
         db.updateUnreadStatus(emailThreads, updateUnreadStatus)
         return MailboxResult.UpdateUnreadStatus.Success()
     }

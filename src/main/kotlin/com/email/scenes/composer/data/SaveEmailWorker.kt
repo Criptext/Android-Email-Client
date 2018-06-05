@@ -2,12 +2,11 @@ package com.email.scenes.composer.data
 
 import com.email.api.models.EmailMetadata
 import com.email.bgworker.BackgroundWorker
-import com.email.db.DeliveryTypes
+import com.email.bgworker.ProgressReporter
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.DateUtils
-import com.email.utils.HTMLUtils
 import java.util.*
 
 /**
@@ -29,7 +28,8 @@ class SaveEmailWorker(
         return ComposerResult.SaveEmail.Failure()
     }
 
-    override fun work(): ComposerResult.SaveEmail? {
+    override fun work(reporter: ProgressReporter<ComposerResult.SaveEmail>)
+            : ComposerResult.SaveEmail? {
         val (newEmailId, savedMailThreadId) = saveEmail()
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
                 onlySave = onlySave, composerInputData = composerInputData)

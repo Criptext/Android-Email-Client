@@ -1,10 +1,7 @@
 package com.email.scenes.emaildetail.data
 
 import com.email.db.MailFolders
-import com.email.db.models.FullEmail
-import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.MailboxRequest
+import com.email.scenes.label_chooser.SelectedLabels
 
 /**
  * Created by sebas on 3/12/18.

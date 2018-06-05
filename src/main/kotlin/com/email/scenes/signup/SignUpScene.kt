@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.email.R
-import com.email.scenes.keygeneration.KeyGenerationHolder
+import com.email.scenes.signup.holders.KeyGenerationHolder
 import com.email.scenes.signup.holders.SignUpFormHolder
 import com.email.validation.FormInputState
 import com.email.utils.UIMessage

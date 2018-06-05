@@ -17,8 +17,8 @@ import com.email.utils.virtuallist.VirtualListView
 import com.email.utils.virtuallist.VirtualRecyclerView
 import com.email.db.MailFolders
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.LabelChooserDialog
-import com.email.scenes.labelChooser.LabelDataHandler
+import com.email.scenes.label_chooser.LabelChooserDialog
+import com.email.scenes.label_chooser.LabelDataHandler
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter

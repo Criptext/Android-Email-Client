@@ -1,4 +1,4 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
 import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.EmailDetailSceneController

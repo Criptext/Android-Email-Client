@@ -4,7 +4,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.api.ServerErrorException
 import com.email.bgworker.RunnableThrottler
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
@@ -25,7 +25,7 @@ class SignUpSceneController(
         private val model: SignUpSceneModel,
         private val scene: SignUpScene,
         private val host : IHostActivity,
-        private val dataSource: WorkHandler<SignUpRequest, SignUpResult>,
+        private val dataSource: BackgroundWorkManager<SignUpRequest, SignUpResult>,
         private val runnableThrottler: RunnableThrottler): SceneController() {
 
     override val menuResourceId: Int?

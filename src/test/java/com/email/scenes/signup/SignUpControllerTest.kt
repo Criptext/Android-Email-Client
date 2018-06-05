@@ -2,7 +2,7 @@ package com.email.scenes.signup
 
 import com.email.IHostActivity
 import com.email.bgworker.RunnableThrottler
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.signup.data.SignUpRequest
 import com.email.scenes.signup.data.SignUpResult
 import io.mockk.*
@@ -13,7 +13,7 @@ import io.mockk.*
 open class SignUpControllerTest {
     protected lateinit var model: SignUpSceneModel
     protected lateinit var scene: SignUpScene
-    protected lateinit var dataSource: WorkHandler<SignUpRequest, SignUpResult>
+    protected lateinit var dataSource: BackgroundWorkManager<SignUpRequest, SignUpResult>
     protected lateinit var sentRequests: MutableList<SignUpRequest>
     protected lateinit var controller: SignUpSceneController
     protected lateinit var host: IHostActivity

@@ -100,7 +100,7 @@ class SendEmailWorkerTest {
         } returns emptyList() andThen listOf(KnownAddress(recipientId = "mayer", deviceId = 1))
 
 
-        worker.work() `should be instance of` MailboxResult.SendMail.Success::class.java
+        worker.work(mockk()) `should be instance of` MailboxResult.SendMail.Success::class.java
 
         assertThatSendEmailHttpRequestsHaveCorrectShape(findKeybundlesBodySlot, postEmailBodySlot)
         verify { // assert email got updated in db

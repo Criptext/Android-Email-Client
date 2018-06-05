@@ -7,6 +7,7 @@ import com.email.api.HttpErrorHandlingHelper
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.*
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
@@ -63,7 +64,8 @@ class UpdateMailboxWorker(
                     exception = failure.error)
     }
 
-    override fun work(): MailboxResult.UpdateMailbox? {
+    override fun work(reporter: ProgressReporter<MailboxResult.UpdateMailbox>)
+            : MailboxResult.UpdateMailbox? {
         val operationResult = fetchPendingEvents()
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap(parseEvents)

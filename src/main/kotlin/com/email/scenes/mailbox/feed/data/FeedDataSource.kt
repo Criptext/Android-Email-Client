@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox.feed.data
 
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.dao.FeedDao
 
@@ -10,7 +10,7 @@ import com.email.db.dao.FeedDao
  */
 
 class FeedDataSource(override val runner: WorkRunner, private val feedLocalDB: FeedDao)
-    : WorkHandler<FeedRequest, FeedResult>() {
+    : BackgroundWorkManager<FeedRequest, FeedResult>() {
 
     override fun createWorkerFromParams(params: FeedRequest, flushResults: (FeedResult) -> Unit): BackgroundWorker<*> {
         return when (params) {

@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
@@ -20,7 +21,8 @@ class GetMenuInformationWorker(
         return MailboxResult.GetMenuInformation.Failure()
     }
 
-    override fun work(): MailboxResult.GetMenuInformation? {
+    override fun work(reporter: ProgressReporter<MailboxResult.GetMenuInformation>)
+            : MailboxResult.GetMenuInformation? {
         return MailboxResult.GetMenuInformation.Success(
                 account = db.getExistingAccount(),
                 totalInbox = db.getUnreadCounterLabel(Label.defaultItems.inbox.id),

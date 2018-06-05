@@ -16,13 +16,23 @@ class AsyncTaskWorkRunner: WorkRunner {
     }
 
     private class MyAsyncTask<U>(private val worker: BackgroundWorker<U>)
-        : AsyncTask<Void, Void, U>() {
+        : AsyncTask<Void, U, U>() {
 
-        override fun doInBackground(vararg params: Void?): U? = worker.work()
+        private val reporter = object: ProgressReporter<U> {
+            override fun report(progressPercentage: U) {
+                publishProgress(progressPercentage)
+            }
+        }
+
+        override fun doInBackground(vararg params: Void?): U? = worker.work(reporter)
 
         override fun onPostExecute(result: U?) {
             if (result != null)
                 worker.publishFn(result)
+        }
+
+        override fun onProgressUpdate(vararg values: U) {
+            values.forEach { worker.publishFn(it) }
         }
     }
 }
