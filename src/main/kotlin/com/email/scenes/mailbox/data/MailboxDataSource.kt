@@ -65,14 +65,25 @@ class MailboxDataSource(
                     composerInputData = params.data,
                     publishFn = { res -> flushResults(res) })
 
-            is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsRelationsWorker(
-                    chosenLabel = params.chosenLabel,
+            is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(
                     db = mailboxLocalDB,
                     selectedEmailThreads = params.selectedEmailThreads,
                     selectedLabels = params.selectedLabels,
+                    currentLabel = params.currentLabel,
+                    removeCurrentLabel = params.removeCurrentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     })
+
+            is MailboxRequest.MoveEmailThread -> MoveEmailThreadWorker(
+                    chosenLabel = params.chosenLabel,
+                    db = mailboxLocalDB,
+                    selectedEmailThreads = params.selectedEmailThreads,
+                    currentLabel = params.currentLabel,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
             is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
                     db = mailboxLocalDB,
                     publishFn = { result ->
@@ -83,6 +94,7 @@ class MailboxDataSource(
                     db = mailboxLocalDB,
                     emailThreads = params.emailThreads,
                     updateUnreadStatus = params.updateUnreadStatus,
+                    currentLabel = params.currentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     }

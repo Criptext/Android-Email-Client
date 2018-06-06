@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
+import com.email.db.MailFolders
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.LabelChooserDialog
@@ -14,7 +15,9 @@ import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.label_chooser.LabelDataHandler
+import com.email.scenes.mailbox.DeleteThreadDialog
 import com.email.scenes.mailbox.MoveToDialog
+import com.email.scenes.mailbox.OnDeleteThreadListener
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
@@ -35,6 +38,7 @@ interface EmailDetailScene {
     fun notifyFullEmailChanged(position: Int)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
     fun onFetchedSelectedLabels(
             selectedLabels: List<Label>,
             allLabels: List<Label>)
@@ -53,6 +57,7 @@ interface EmailDetailScene {
 
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
+        private val deleteDialog = DeleteThreadDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -121,7 +126,12 @@ interface EmailDetailScene {
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
-                    onMoveThreadsListener = onMoveThreadsListener)
+                    onMoveThreadsListener = onMoveThreadsListener,
+                    currentFolder = MailFolders.ALL_MAIL)
+        }
+
+        override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {
+            deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
         }
 
         override fun onDecryptedBody(decryptedText: String) {

@@ -43,6 +43,8 @@
     <string name="delete">Delete</string>
     <string name="forward">Forward</string>
     <string name="mailbox_add_labels">Add labels</string>
+    <string name="mailbox_not_spam">Report not spam</string>
+    <string name="mailbox_not_trash">Remove from trash</string>
     <string name="mailbox_move_to">Move to</string>
     <string name="reply_all">Reply All</string>
 
@@ -50,6 +52,7 @@
     <string name="slider_inbox">Inbox</string>
     <string name="slider_draft">Drafts</string>
     <string name="slider_starred">Starred</string>
+    <string name="slider_important">Important</string>
     <string name="slider_sent">Sent</string>
     <string name="slider_junk">Spam</string>
     <string name="slider_trash">Trash</string>
@@ -161,6 +164,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="not_registered">Not registered?</string>
     <string name="recover_email_warning_content_start">You did not set a Recovery Email\nso account recovery is impossible\nif you forget your password</string>
+    <string name="delete_thread_warning">Are you sure you want to delete the selected thread(s) PERMANENTLY?</string>
     <string name="recover_email_warning_content_end">Proceed without recovery email?</string>
     <string name="sign_up_terms_and_conditions_start">I have read and agreed with the</string>
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
@@ -188,8 +192,10 @@
     <string name="subject">Subject</string>
     <string name="mail_sent_success">Mail sent successfully</string>
 
+    <string name="error_moving_threads">Error moving threads. Please try again</string>
     <string name="error_updating_labels">Error updating email labels. Please try again</string>
     <string name="error_updating_status">Error updating email status. Please try again</string>
+    <string name="error_moving_emails">Error moving email. Please try again</string>
     <string name="error_getting_counters">Error getting label counters. Please try again</string>
     <string name="error_getting_email">Error getting email. Please try again</string>
     <string name="error_getting_account">Error getting user account. Please try again</string>
@@ -259,4 +265,5 @@
     
     <string name="no_mails">There are no emails</string>
     <string name="no_mails_subtitle">Have fun</string>
+    <string name="draft">Draft</string>
 </resources>

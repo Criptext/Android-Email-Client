@@ -32,6 +32,7 @@ class DateUtils {
         }
         fun printDateWithServerFormat(date: Date): String {
             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
             return sdf.format(date)
         }
 

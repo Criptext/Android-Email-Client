@@ -79,11 +79,11 @@
                 <ImageView
                     android:id="@+id/imageViewArrow"
                     android:layout_width="40dp"
-                    android:layout_height="20dp"
+                    android:layout_height="32dp"
                     android:layout_marginRight="10dp"
                     android:layout_centerVertical="true"
                     android:scaleType="fitCenter"
-                    android:padding="6dp"
+                    android:padding="12dp"
                     android:tint="#0091FF"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/arrow_down"/>

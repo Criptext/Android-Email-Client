@@ -19,6 +19,13 @@ sealed class MailboxResult {
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
     }
 
+    sealed class MoveEmailThread: MailboxResult() {
+        class Success: MoveEmailThread()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception) : MoveEmailThread()
+    }
+
     sealed class GetSelectedLabels : MailboxResult() {
         class Success(val allLabels: List<Label>,
                       val selectedLabels: List<Label>): GetSelectedLabels()

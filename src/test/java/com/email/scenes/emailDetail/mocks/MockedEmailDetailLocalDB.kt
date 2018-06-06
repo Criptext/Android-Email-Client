@@ -12,6 +12,25 @@ import com.email.db.models.Label
  */
 
 class MockedEmailDetailLocalDB: EmailDetailLocalDB {
+    override fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail> {
+        return nextLoadedEmailItems!!
+    }
+
+    override fun deleteThread(threadId: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteEmail(emailId: Long) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCustomLabels(): List<Label> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getLabelsFromThreadId(threadId: String): List<Label> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -31,10 +50,6 @@ class MockedEmailDetailLocalDB: EmailDetailLocalDB {
 
     override fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getFullEmailsFromThreadId(threadId: String): List<FullEmail> {
-        return nextLoadedEmailItems!!
     }
 
     override fun unsendEmail(emailId: Long) {

@@ -97,14 +97,14 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
     }
 
     @Test
-    fun `after clicking button to move to spam, should send UpdateEmailThreadsLabelsRelations request`() {
+    fun `after clicking button to move to spam, should send MoveEmailThread request`() {
         controller.onStart(null)
         sentRequests.clear() // ignore requests sent during `onStart`()
 
         // capture onMoveThreadsListener
         val onMoveThreadsListenerSlot = CapturingSlot<OnMoveThreadsListener>()
         every {
-            scene.showDialogMoveTo(capture(onMoveThreadsListenerSlot))
+            scene.showDialogMoveTo(capture(onMoveThreadsListenerSlot), Label.defaultItems.inbox.text)
         } just Runs
 
         // set 2 selected threads
@@ -119,7 +119,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         onMoveThreadsListenerSlot.captured.moveToSpam()
 
         val sentRequest = sentRequests.first()
-        sentRequest `should be instance of` MailboxRequest.UpdateEmailThreadsLabelsRelations::class.java
+        sentRequest `should be instance of` MailboxRequest.MoveEmailThread::class.java
     }
 
     @Test

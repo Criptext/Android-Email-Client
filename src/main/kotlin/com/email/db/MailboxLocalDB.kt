@@ -14,7 +14,9 @@ interface MailboxLocalDB {
 
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailThreads: List<EmailThread>,
-                           updateUnreadStatus: Boolean)
+                           updateUnreadStatus: Boolean,
+                           rejectedLabels: List<Long>)
+    fun getCustomLabels(): List<Label>
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Long
     fun createLabelsForEmailInbox(insertedEmailId: Long)
@@ -26,13 +28,14 @@ interface MailboxLocalDB {
 
     fun getLabelsFromLabelType(labelTextTypes: List<MailFolders>): List<Label>
     fun deleteRelationByEmailIds(emailIds: List<Long>)
+    fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
     fun getLabelFromLabelType(labelTextType: MailFolders): Label
     fun updateEmailAndAddLabelSent(id: Long, threadId : String, key : String, date: Date, status: DeliveryTypes)
     fun getExistingAccount(): Account
     fun getUnreadCounterLabel(labelId: Long): Int
     fun getTotalCounterLabel(labelId: Long): Int
-
-    val getEmailThreadOperation: (threadId: String) -> Result<EmailThread, Exception>
+    fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
+    fun deleteThreads(threadIds: List<String>)
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
         override fun createLabelsForEmailInbox(insertedEmailId: Long) {
@@ -44,6 +47,10 @@ interface MailboxLocalDB {
 
         override fun addEmail(email: Email): Long {
             return db.emailDao().insert(email)
+        }
+
+        override fun getCustomLabels(): List<Label>{
+            return db.labelDao().getAllCustomLabels()
         }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
@@ -65,16 +72,19 @@ interface MailboxLocalDB {
                     emailId = emailId))
         }
 
-        override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
+        override fun updateUnreadStatus(emailThreads: List<EmailThread>,
+                                        updateUnreadStatus: Boolean,
+                                        rejectedLabels: List<Long>) {
             emailThreads.forEach {
-                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId).map {
+                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId, rejectedLabels)
+                        .map {
                     it.id
                 }
                 db.emailDao().toggleRead(ids = emailsIds, unread = updateUnreadStatus)
             }
         }
 
-        private fun getEmailThreadFromEmail(email: Email): EmailThread {
+        private fun getEmailThreadFromEmail(email: Email, rejectedLabels: List<Long>): EmailThread {
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -82,7 +92,7 @@ interface MailboxLocalDB {
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
-            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId)
+            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId, rejectedLabels)
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                     .replace("^(Fw|FW): ".toRegex(), "")
 
@@ -130,7 +140,10 @@ interface MailboxLocalDB {
                         limit = limit )
 
             return emails.map { email ->
-                getEmailThreadFromEmail(email)
+                getEmailThreadFromEmail(email,
+                        Label.defaultItems.rejectedLabelsByMailbox(
+                                db.labelDao().get(labelTextTypes)
+                        ).map { it.id })
             } as ArrayList<EmailThread>
         }
 
@@ -149,12 +162,8 @@ interface MailboxLocalDB {
             db.emailLabelDao().deleteRelationByEmailIds(emailIds)
         }
 
-        override val getEmailThreadOperation = {
-            threadId: String ->
-            Result.of {
-                val email = db.emailDao().getLatestEmailFromThreadId(threadId)
-                getEmailThreadFromEmail(email)
-            }
+        override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>){
+            db.emailLabelDao().deleteRelationByLabelAndEmailIds(labelId, emailIds)
         }
 
         fun updateEmail(id: Long, threadId: String, key : String, date: Date, status: DeliveryTypes){
@@ -179,6 +188,14 @@ interface MailboxLocalDB {
 
         override fun getTotalCounterLabel(labelId: Long): Int {
             return db.emailDao().getTotalThreads("%$labelId%").size
+        }
+
+        override fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email> {
+            return db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels)
+        }
+
+        override fun deleteThreads(threadIds: List<String>) {
+            db.emailDao().deleteThreads(threadIds)
         }
     }
 

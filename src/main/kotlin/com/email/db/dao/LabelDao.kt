@@ -16,6 +16,9 @@ interface LabelDao {
     @Query("SELECT * FROM label")
     fun getAll() : List<Label>
 
+    @Query("SELECT * FROM label where type = 'CUSTOM'")
+    fun getAllCustomLabels() : List<Label>
+
     @Delete
     fun deleteMultipleLabels(labels: List<Label>)
 

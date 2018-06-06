@@ -51,7 +51,8 @@ interface MailboxScene{
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
-    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: MailFolders)
+    fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
@@ -84,6 +85,7 @@ interface MailboxScene{
 
         private val labelChooserDialog = LabelChooserDialog(context)
         private val moveToDialog = MoveToDialog(context)
+        private val deleteDialog = DeleteThreadDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -207,10 +209,16 @@ interface MailboxScene{
             drawerLayout.openDrawer(GravityCompat.END)
         }
 
-        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
+        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener,
+                                      currentFolder: MailFolders) {
             this.onMoveThreadsListener = onMoveThreadsListener
             moveToDialog.showMoveToDialog(
-                    onMoveThreadsListener = onMoveThreadsListener)
+                    onMoveThreadsListener = onMoveThreadsListener,
+                    currentFolder = currentFolder)
+        }
+
+        override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {
+            deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {

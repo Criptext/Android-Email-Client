@@ -23,6 +23,7 @@ import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
 import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
+import com.email.utils.DateUtils
 import com.email.utils.HTMLUtils
 import com.email.utils.ui.ZoomLayout
 import com.email.utils.WebViewUtils
@@ -186,6 +187,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             unsendView.background = ContextCompat.getDrawable(unsendView.context, R.drawable.circle_unsent)
         }
 
+        dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
         headerView.text = fullEmail.from.name
         email_options.visibility = if(fullEmail.email.delivered != DeliveryTypes.NONE)
             View.VISIBLE else View.INVISIBLE

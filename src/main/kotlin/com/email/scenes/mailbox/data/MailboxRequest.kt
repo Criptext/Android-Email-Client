@@ -18,10 +18,17 @@ sealed class MailboxRequest{
             val loadedThreadsCount: Int): MailboxRequest()
 
     data class UpdateEmailThreadsLabelsRelations(
-            val chosenLabel: MailFolders?,
-            val selectedLabels: SelectedLabels?,
-            val selectedEmailThreads: List<EmailThread>
+            val selectedLabels: SelectedLabels,
+            val selectedEmailThreads: List<EmailThread>,
+            val currentLabel: Label,
+            val removeCurrentLabel: Boolean
             ): MailboxRequest()
+
+    data class MoveEmailThread(
+            val chosenLabel: MailFolders?,
+            val selectedEmailThreads: List<EmailThread>,
+            val currentLabel: Label
+    ): MailboxRequest()
 
     data class LoadEmailThreads(
             val label: MailFolders,
@@ -33,6 +40,7 @@ sealed class MailboxRequest{
     class GetMenuInformation : MailboxRequest()
 
     data class UpdateUnreadStatus(val emailThreads: List<EmailThread>,
-                                  val updateUnreadStatus: Boolean): MailboxRequest()
+                                  val updateUnreadStatus: Boolean,
+                                  val currentLabel: Label): MailboxRequest()
 
 }

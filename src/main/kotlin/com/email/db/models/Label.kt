@@ -51,7 +51,7 @@ data class Label (
 
         fun toList() = listOf(draft, inbox, sent, trash, starred, spam, important)
 
-        fun rejectedLabelsByMailbox(label: Label): List<Label> =
+        fun rejectedLabelsByMailbox(label: Label?): List<Label> =
             when (label) {
             sent,
             inbox,
