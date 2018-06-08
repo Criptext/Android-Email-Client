@@ -66,7 +66,7 @@ class SignUpSceneController(
                 when (userInput) {
                     is FormData.Valid -> {
                         runnableThrottler.push(Runnable {
-                            val newRequest = SignUpRequest.CheckUserAvailabilty(userInput.value)
+                            val newRequest = SignUpRequest.CheckUserAvailability(userInput.value)
                             dataSource.submitRequest(newRequest)
                         })
 

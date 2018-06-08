@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.email.R
 import com.email.scenes.signin.holders.*
+import com.email.scenes.signup.holders.KeyGenerationHolder
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 import com.email.validation.ProgressButtonState
@@ -22,6 +23,7 @@ interface SignInScene {
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
+    fun showKeyGenerationHolder()
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -52,7 +54,7 @@ interface SignInScene {
             val signInLayout = View.inflate(
                     view.context,
                     R.layout.activity_signin_form, viewGroup)
-            holder = SignInStartHolder(signInLayout, "")
+            holder = SignInStartHolder(signInLayout, "", true)
         }
 
 
@@ -73,11 +75,18 @@ interface SignInScene {
                     PasswordLoginHolder(newLayout, state)
                 }
 
+                is SignInLayoutState.LoginValidation -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_login_validation, viewGroup)
+                    LoginValidationHolder(newLayout, state)
+                }
+
                 is SignInLayoutState.Start -> {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_signin_form, viewGroup)
-                    SignInStartHolder(newLayout, state.username)
+                    SignInStartHolder(newLayout, state.username, state.firstTime)
                 }
             }
             holder.uiObserver = signInUIObserver
@@ -110,6 +119,7 @@ interface SignInScene {
         }
 
         override fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+            (holder as LoginValidationHolder).showPasswordLoginDialog(onPasswordLoginDialogListener)
         }
 
         override fun drawInputError(error: UIMessage) {
@@ -118,6 +128,19 @@ interface SignInScene {
                 is SignInStartHolder -> currentHolder.drawError(error)
             }
         }
+
+        override fun showKeyGenerationHolder() {
+            viewGroup.removeAllViews()
+            val keyGenerationLayout = View.inflate(
+                    view.context,
+                    R.layout.view_key_generation, viewGroup)
+            KeyGenerationHolder(keyGenerationLayout, {
+                if(it >= 100){
+                    holder.uiObserver?.onProgressHolderFinish()
+                }
+            }, 100)
+        }
+
     }
 }
 

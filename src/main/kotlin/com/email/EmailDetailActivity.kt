@@ -26,8 +26,6 @@ class  EmailDetailActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
 
-        val mailboxDB: MailboxLocalDB.Default = MailboxLocalDB.
-                Default(AppDatabase.getAppDatabase(this.applicationContext))
         val db: EmailDetailLocalDB.Default =
                 EmailDetailLocalDB.Default(this.applicationContext)
         val emailDetailModel = receivedModel as EmailDetailSceneModel
@@ -36,17 +34,14 @@ class  EmailDetailActivity: BaseActivity() {
                 findViewById(R.id.include_emails_detail), this)
 
         val activeAccount = ActiveAccount.loadFromStorage(this)
-        val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         return EmailDetailSceneController(
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,
+                activeAccount = activeAccount!!,
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
-                        emailDetailLocalDB = db,
-                        activeAccount = activeAccount!!,
-                        signalClient = signalClient),
+                        emailDetailLocalDB = db),
                 keyboard = KeyboardManager(this)
         )
 

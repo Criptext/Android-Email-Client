@@ -105,8 +105,7 @@ interface MailboxLocalDB {
                             files = files,
                             labels = labels,
                             to = contactsTO ),
-                    totalEmails = totalEmails,
-                    labelsOfMail = db.emailLabelDao().getLabelsFromEmail(email.id) as ArrayList<Label>
+                    totalEmails = totalEmails
             )
 
         }

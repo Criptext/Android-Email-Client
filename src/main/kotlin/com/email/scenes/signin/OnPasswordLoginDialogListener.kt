@@ -5,6 +5,6 @@ package com.email.scenes.signin
  */
 
 interface OnPasswordLoginDialogListener {
-    fun acceptPasswordLogin()
+    fun acceptPasswordLogin(username: String)
     fun cancelPasswordLogin()
 }

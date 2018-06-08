@@ -2,13 +2,13 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
-import com.email.db.models.ActiveAccount
 import com.email.db.models.EmailLabel
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.SelectedLabels
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
@@ -34,7 +34,7 @@ class MoveEmailThreadWorker(
                 exception = ex)
     }
 
-    override fun work(): MailboxResult.MoveEmailThread? {
+    override fun work(reporter: ProgressReporter<MailboxResult.MoveEmailThread>): MailboxResult.MoveEmailThread? {
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val emailIds = selectedEmailThreads.flatMap {
@@ -45,7 +45,6 @@ class MoveEmailThreadWorker(
 
         if(chosenLabel == null){
             //It means the threads will be deleted permanently
-            db.deleteRelationByEmailIds(emailIds = emailIds)
             db.deleteThreads(threadIds = selectedEmailThreads.map { it.threadId })
             return MailboxResult.MoveEmailThread.Success()
         }

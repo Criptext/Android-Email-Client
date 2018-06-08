@@ -10,6 +10,7 @@ import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.data.SignInDataSource
 import com.email.signal.SignalKeyGenerator
+import com.email.utils.KeyboardManager
 
 /**
  * Created by sebas on 2/15/18.
@@ -36,7 +37,8 @@ class SignInActivity : BaseActivity() {
                         httpClient = HttpClient.Default(),
                         signUpDao = appDB.signUpDao(),
                         keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),
-                        signInLocalDB = db)
+                        signInLocalDB = db),
+                keyboard = KeyboardManager(this)
         )
     }
 }

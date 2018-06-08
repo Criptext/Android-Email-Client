@@ -11,4 +11,6 @@ sealed class SignInRequest{
 
     class VerifyUser(val username: String
     ): SignInRequest()
+
+    data class CheckUserAvailability(val username: String): SignInRequest()
 }

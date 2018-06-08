@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.BackgroundWorkManager
 import com.email.db.MailFolders
+import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
@@ -31,6 +32,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
                              private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>,
+                             private val activeAccount: ActiveAccount,
                              private val websocketEvents: WebSocketEventPublisher,
                              private val feedController : FeedController) : SceneController() {
 
@@ -104,10 +106,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onGoToMail(emailThread: EmailThread) {
 
             if(emailThread.totalEmails == 1 &&
-                    emailThread.labelsOfMail.contains(Label.defaultItems.draft)){
+                    emailThread.latestEmail.labels.contains(Label.defaultItems.draft)){
                 return host.goToScene(ComposerParams(
                         fullEmail = emailThread.latestEmail,
-                        composerType = ComposerTypes.CONTINUE_DRAFT
+                        composerType = ComposerTypes.CONTINUE_DRAFT,
+                        userEmail = "${activeAccount.recipientId}@${Contact.mainDomain}"
                 ), true)
             }
             dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(
@@ -336,12 +339,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val onDeleteThreadListener = object : OnDeleteThreadListener {
-        override fun yesDelete() {
+        override fun onDeleteConfirmed() {
             dataSourceController.moveEmailThread(chosenLabel = null)
-        }
-
-        override fun notDelete() {
-
         }
     }
 

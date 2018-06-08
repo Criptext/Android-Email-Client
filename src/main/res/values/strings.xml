@@ -101,6 +101,7 @@
     <string name="password_length_error">Password must be at least 8 characters.</string>
     <string name="password_mismatch_error">Passwords do not match.</string>
     <string name="taken_username_error">This username is not available.</string>
+    <string name="username_doesnt_exist">Username does not exist</string>
     <string name="username_invalid_error">Invalid username.</string>
     <string name="username_length_error">Username must be at least 3 characters.</string>
     <string name="email_invalid_error">Invalid email address.</string>
@@ -202,6 +203,7 @@
     <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_getting_contacts">Error getting contacts. Please try again</string>
     <string name="error_saving_as_draft">Error saving email. Please try again</string>
+    <string name="error_checking_availability">Error checking username availability</string>
     <string name="you_wanna_save">Do you want to save this as draft?</string>
 
     <!-- EXCEPTIONS SOCKET-->

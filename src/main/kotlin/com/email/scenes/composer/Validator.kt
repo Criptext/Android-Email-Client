@@ -2,7 +2,7 @@ package com.email.scenes.composer
 
 import com.email.db.models.Contact
 import com.email.scenes.composer.data.ComposerInputData
-import com.email.utils.HtmlCompat
+import com.email.utils.compat.HtmlCompat
 
 /**
  * Created by gabriel on 8/30/17.

@@ -1,7 +1,10 @@
 package com.email.scenes.signin.holders
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.res.ColorStateList
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.design.widget.TextInputLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatEditText
@@ -9,12 +12,16 @@ import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewAnimationUtils
+import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.email.R
 import com.email.utils.UIMessage
+import com.email.utils.compat.ViewAnimationUtilsCompat
 import com.email.utils.getLocalizedUIMessage
 import com.email.validation.ProgressButtonState
 
@@ -22,8 +29,12 @@ import com.email.validation.ProgressButtonState
  * Created by sebas on 3/2/18.
  */
 
-class SignInStartHolder(val view: View, initialUsername: String): BaseSignInHolder() {
+class SignInStartHolder(
+        val view: View,
+        initialUsername: String,
+        firstTime: Boolean): BaseSignInHolder() {
 
+    private val rootLayout: View = view.findViewById<View>(R.id.viewRoot)
     private val usernameInput : AppCompatEditText = view.findViewById(R.id.input_username)
     private val usernameInputLayout : TextInputLayout = view.findViewById(R.id.input_username_layout)
     private val signInButton : Button = view.findViewById(R.id.signin_button)
@@ -35,6 +46,34 @@ class SignInStartHolder(val view: View, initialUsername: String): BaseSignInHold
         usernameInput.text = SpannableStringBuilder(initialUsername)
         showNormalTints()
         setListeners()
+
+        if(firstTime) {
+            rootLayout.visibility = View.INVISIBLE
+            addGlobalLayout()
+        }
+    }
+
+    private fun addGlobalLayout(){
+
+        val viewTreeObserver = rootLayout.viewTreeObserver
+        if (viewTreeObserver.isAlive) {
+            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    revealActivity(view.resources.displayMetrics.widthPixels / 2,
+                            view.resources.displayMetrics.heightPixels / 2)
+                    rootLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            })
+        }
+    }
+
+    private fun revealActivity(x: Int, y: Int) {
+
+        val finalRadius = (Math.max(rootLayout.width, rootLayout.height) * 1.1).toFloat()
+        val circularReveal = ViewAnimationUtilsCompat.createCircularReveal(rootLayout, x, y, 0f, finalRadius)
+        rootLayout.visibility = View.VISIBLE;
+        circularReveal?.start()
+
     }
 
     private fun showNormalTints(){

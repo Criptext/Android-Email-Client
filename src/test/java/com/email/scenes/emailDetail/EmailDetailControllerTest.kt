@@ -13,8 +13,8 @@ import com.email.scenes.emaildetail.EmailDetailSceneController
 import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
-import com.email.signal.SignalClient
 import com.email.utils.DateUtils
+import com.email.utils.KeyboardManager
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be`
@@ -43,7 +43,6 @@ class EmailDetailControllerTest {
     @Before
     fun setUp() {
         protocolStore = MockedSignalProtocolStore()
-        val signalClient = SignalClient.Default(protocolStore)
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
         model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox)
@@ -54,8 +53,6 @@ class EmailDetailControllerTest {
         emailInsertionDao = mockk()
 
         dataSource = EmailDetailDataSource(
-                signalClient = signalClient,
-                activeAccount = activeAccount,
                 runner = runner,
                 emailDetailLocalDB = db)
 
@@ -64,7 +61,8 @@ class EmailDetailControllerTest {
                 dataSource = dataSource,
                 host = MockedIHostActivity(),
                 model = model,
-                keyboard = null)
+                activeAccount = activeAccount,
+                keyboard = mockk(relaxed = true))
 
     }
 

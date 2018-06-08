@@ -1,4 +1,4 @@
-package com.email.utils
+package com.email.utils.compat
 
 import android.text.Html
 import android.text.Spanned
@@ -20,5 +20,5 @@ class HtmlCompat {
             }
     }
 
-    fun fromHtml(html: String) = HtmlCompat.fromHtml(html)
+    fun fromHtml(html: String) = Companion.fromHtml(html)
 }

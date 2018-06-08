@@ -3,90 +3,46 @@ package com.email.scenes.signin.holders
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.annotation.TargetApi
-import android.os.Build
-import android.os.Handler
-import android.support.annotation.RequiresApi
 import android.view.View
-import android.view.ViewAnimationUtils
-import android.view.ViewTreeObserver
-import android.view.animation.AccelerateInterpolator
 import android.widget.Button
 import android.widget.TextView
 import com.email.R
 import com.email.scenes.signin.OnPasswordLoginDialogListener
 import com.email.scenes.signin.PasswordLoginDialog
-import com.email.scenes.signin.SignInSceneController
 
 /**
  * Created by sebas on 3/8/18.
  */
 
-class LoginValidationHolder(val view: View): BaseSignInHolder() {
+class LoginValidationHolder(
+        val view: View,
+        val initialState: SignInLayoutState.LoginValidation
+): BaseSignInHolder() {
 
-    private val cantAccessDevice: TextView
     private var animLoading: AnimatorSet? = null
     private val rootLayout: View
-
+    private val cantAccessDevice: TextView
     private val textViewTitle: TextView
     private val textViewBody: TextView
     private val textViewPrompt: TextView
     private val textViewNotApproved: TextView
-
+    private val backButton: View
     private val buttonResend: Button
 
     private val passwordLoginDialog = PasswordLoginDialog(view.context)
-    var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     init {
-        cantAccessDevice = view.findViewById(R.id.cant_access_device)
         rootLayout = view.findViewById<View>(R.id.viewRoot)
+        cantAccessDevice = view.findViewById(R.id.cant_access_device)
         textViewTitle = view.findViewById(R.id.textViewTitle)
         textViewBody = view.findViewById(R.id.textViewBody)
         buttonResend = view.findViewById(R.id.buttonResend)
-        textViewNotApproved = view.findViewById<TextView>(R.id.textViewNotAproved)
+        textViewNotApproved = view.findViewById(R.id.textViewNotAproved)
         textViewPrompt = view.findViewById(R.id.textViewPrompt)
+        backButton = view.findViewById(R.id.icon_back)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            rootLayout.visibility = View.INVISIBLE
-            addGlobalLayout()
-        } else {
-            rootLayout.visibility = View.VISIBLE
-        }
-
+        setListeners()
         startLoadingAnimation()
-        Handler().postDelayed({
-            showFailedLogin()
-        }, 3000)
-    }
-
-    private fun addGlobalLayout(){
-
-        val viewTreeObserver = rootLayout.viewTreeObserver
-        if (viewTreeObserver.isAlive) {
-            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                override fun onGlobalLayout() {
-                    revealActivity(view.resources.displayMetrics.widthPixels / 2,
-                            view.resources.displayMetrics.heightPixels / 2)
-                    rootLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                }
-            })
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun revealActivity(x: Int, y: Int) {
-
-        val finalRadius = (Math.max(rootLayout.width, rootLayout.height) * 1.1).toFloat()
-
-        val circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, x, y, 0f, finalRadius)
-        circularReveal.duration = 500
-        circularReveal.interpolator = AccelerateInterpolator()
-
-        rootLayout.visibility = View.VISIBLE;
-        circularReveal.start()
-
     }
 
     private fun startLoadingAnimation(){
@@ -165,14 +121,18 @@ class LoginValidationHolder(val view: View): BaseSignInHolder() {
         }
     }
 
-    fun assignCantAccessDeviceListener() {
+    private fun setListeners() {
+
+        backButton.setOnClickListener {
+            uiObserver?.onBackPressed()
+        }
+
         cantAccessDevice.setOnClickListener {
-            signInUIObserver!!.onCantAccessDeviceClick()
+            uiObserver?.onCantAccessDeviceClick()
         }
     }
 
-    fun showPasswordLoginDialog(
-            onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-        passwordLoginDialog.showPasswordLoginDialog(onPasswordLoginDialogListener)
+    fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+        passwordLoginDialog.showPasswordLoginDialog(initialState.username, onPasswordLoginDialogListener)
     }
 }

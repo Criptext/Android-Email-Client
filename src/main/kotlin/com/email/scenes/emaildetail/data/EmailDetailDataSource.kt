@@ -12,9 +12,7 @@ import com.email.signal.SignalClient
  * Created by sebas on 3/12/18.
  */
 
-class EmailDetailDataSource(private val signalClient: SignalClient,
-                            private val activeAccount: ActiveAccount,
-                            override val runner: WorkRunner,
+class EmailDetailDataSource(override val runner: WorkRunner,
                             private val emailDetailLocalDB: EmailDetailLocalDB)
     : BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>()
 {

@@ -57,12 +57,11 @@ class DeleteThreadDialog(val context: Context) {
         val btn_no = view.findViewById(R.id.delete_thread_warning_no) as Button
 
         btn_yes.setOnClickListener {
-            onDeleteThreadListener.yesDelete()
+            onDeleteThreadListener.onDeleteConfirmed()
             dialog.dismiss()
         }
 
         btn_no.setOnClickListener {
-            onDeleteThreadListener.notDelete()
             dialog.dismiss()
         }
     }

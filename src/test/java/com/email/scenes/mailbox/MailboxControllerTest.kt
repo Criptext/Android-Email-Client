@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.IHostActivity
 import com.email.bgworker.BackgroundWorkManager
+import com.email.db.models.ActiveAccount
 import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.mailbox.feed.FeedController
@@ -25,6 +26,7 @@ open class MailboxControllerTest {
     protected lateinit var feedController : FeedController
     protected lateinit var sentRequests: MutableList<MailboxRequest>
     protected lateinit var virtualListView: VirtualListView
+    protected lateinit var activeAccount: ActiveAccount
 
     open fun setUp() {
         model = MailboxSceneModel()
@@ -35,6 +37,8 @@ open class MailboxControllerTest {
         feedController = mockk(relaxed = true)
         webSocketEvents = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
+        activeAccount = ActiveAccount.fromJSONString(
+                """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
 
         virtualListView = mockk(relaxed = true)
         every { scene::virtualListView.get() } returns virtualListView
@@ -45,6 +49,7 @@ open class MailboxControllerTest {
                 dataSource = dataSource,
                 host =  host,
                 feedController = feedController,
+                activeAccount = activeAccount,
                 websocketEvents = webSocketEvents
         )
 

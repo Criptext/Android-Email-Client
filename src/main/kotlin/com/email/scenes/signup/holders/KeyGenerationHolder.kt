@@ -26,6 +26,9 @@ class KeyGenerationHolder(
         this.progress = progress
         percentageAdvanced.text = this.progress.toString()
         progressBar.progress = this.progress
+        if(progress >= 100){
+            stopTimer()
+        }
     }
 
     fun stopTimer() {

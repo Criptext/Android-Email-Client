@@ -36,7 +36,7 @@ class SignUpControllerUiObserverTest: SignUpControllerTest() {
         uiObserverSlot.captured.onUsernameChangedListener("tester")
 
         runnableSlot.captured.run()
-        sentRequests `should equal` mutableListOf(SignUpRequest.CheckUserAvailabilty("tester"))
+        sentRequests `should equal` mutableListOf(SignUpRequest.CheckUserAvailability("tester"))
 
     }
 

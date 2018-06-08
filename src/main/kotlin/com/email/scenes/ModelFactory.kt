@@ -1,17 +1,15 @@
 package com.email.scenes
 
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.scenes.composer.ComposerModel
 import com.email.scenes.composer.data.ComposerTypes
 
 object ModelFactory {
     private fun createReplyComposerModel(fullParentEmail: FullEmail, type: ComposerTypes,
-                                         activeAccount: ActiveAccount): ComposerModel {
+                                         userEmail: String): ComposerModel {
         val newModel = ComposerModel(fullParentEmail, type)
         newModel.body = fullParentEmail.email.content
-        if(fullParentEmail.from.email == "${activeAccount.recipientId}@${Contact.mainDomain}"){
+        if(fullParentEmail.from.email == userEmail){
             newModel.to.addAll(fullParentEmail.to)
         }
         else{
@@ -24,16 +22,16 @@ object ModelFactory {
     }
 
     private fun createReplyAllComposerModel(fullParentEmail: FullEmail, type: ComposerTypes,
-                                            activeAccount: ActiveAccount): ComposerModel {
+                                            userEmail: String): ComposerModel {
         val newModel = ComposerModel(fullParentEmail, type)
         newModel.body = fullParentEmail.email.content
-        if(fullParentEmail.from.email == "${activeAccount.recipientId}@${Contact.mainDomain}"){
+        if(fullParentEmail.from.email == userEmail){
             newModel.to.addAll(fullParentEmail.to)
         }
         else{
             newModel.to.add(fullParentEmail.from)
             newModel.to.addAll(fullParentEmail.to.filter {
-                it.email != "${activeAccount.recipientId}@${Contact.mainDomain}"
+                it.email != userEmail
             })
         }
         newModel.cc.addAll(fullParentEmail.cc)
@@ -63,11 +61,11 @@ object ModelFactory {
     }
 
     fun createComposerModel(fullParentEmail: FullEmail?, type: ComposerTypes?,
-                            activeAccount: ActiveAccount): ComposerModel {
-        return if (fullParentEmail != null && type != null) {
+                            userEmail: String?): ComposerModel {
+        return if (fullParentEmail != null && type != null && userEmail != null) {
             when (type) {
-                ComposerTypes.REPLY -> createReplyComposerModel(fullParentEmail, type, activeAccount)
-                ComposerTypes.REPLY_ALL -> createReplyAllComposerModel(fullParentEmail, type, activeAccount)
+                ComposerTypes.REPLY -> createReplyComposerModel(fullParentEmail, type, userEmail)
+                ComposerTypes.REPLY_ALL -> createReplyAllComposerModel(fullParentEmail, type, userEmail)
                 ComposerTypes.FORWARD -> createForwardComposerModel(fullParentEmail, type)
                 ComposerTypes.CONTINUE_DRAFT -> createDraftComposerModel(fullParentEmail, type)
             }

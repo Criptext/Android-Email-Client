@@ -40,6 +40,12 @@ class SignInDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     })
+
+            is SignInRequest.CheckUserAvailability -> CheckUsernameAvailabilityWorker(
+                    httpClient = httpClient,
+                    username = params.username,
+                    publishFn = { result -> flushResults(result)
+                    })
         }
     }
 }

@@ -122,6 +122,7 @@ class MailboxActivity : BaseActivity() {
                     scene = scene,
                     model = model,
                     host = hostActivity,
+                    activeAccount = activeAccount,
                     dataSource = mailboxDataSource,
                     websocketEvents = webSocketEvents,
                     feedController = initFeedController(appDB, activity, model.feedModel)

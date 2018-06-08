@@ -38,6 +38,7 @@ class MailboxWebSocketTest {
     private lateinit var webSocketEvents: WebSocketEventPublisher
     private lateinit var webSocketListenerSlot: CapturingSlot<WebSocketEventListener>
     private lateinit var feedController : FeedController
+    private lateinit var activeAccount: ActiveAccount
 
     @Before
     fun setUp() {
@@ -59,13 +60,15 @@ class MailboxWebSocketTest {
 
         httpClient = mockk()
 
+        activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
+                deviceId = 3, jwt = "__JWT_TOKEN__")
+
         dataSource = MailboxDataSource(
                 runner = runner,
                 signalClient = signal,
                 httpClient = httpClient,
                 mailboxLocalDB = db,
-                activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
-                        deviceId = 3, jwt = "__JWT_TOKEN__"),
+                activeAccount = activeAccount,
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )
@@ -83,7 +86,8 @@ class MailboxWebSocketTest {
                 dataSource = dataSource,
                 host =  host,
                 feedController = feedController,
-                websocketEvents = webSocketEvents
+                websocketEvents = webSocketEvents,
+                activeAccount = activeAccount
         )
 
     }

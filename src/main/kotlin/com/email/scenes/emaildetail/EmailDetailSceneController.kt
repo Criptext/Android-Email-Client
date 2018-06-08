@@ -4,6 +4,8 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
+import com.email.db.models.ActiveAccount
+import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
@@ -29,12 +31,15 @@ import com.email.utils.UIMessage
 class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
+                                 activeAccount: ActiveAccount,
                                  private val dataSource: EmailDetailDataSource,
-                                 private val keyboard: KeyboardManager?) : SceneController() {
+                                 private val keyboard: KeyboardManager) : SceneController() {
 
     val lastIndexElement: Int by lazy {
         model.fullEmailList.size - 1
     }
+
+    private val userEmail = "${activeAccount.recipientId}@${Contact.mainDomain}"
 
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
@@ -114,12 +119,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val onDeleteThreadListener = object : OnDeleteThreadListener {
-        override fun yesDelete() {
+        override fun onDeleteConfirmed() {
             moveEmailThread(chosenLabel = null)
-        }
-
-        override fun notDelete() {
-
         }
     }
 
@@ -135,19 +136,22 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onForwardBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.FORWARD), true)
+                    composerType = ComposerTypes.FORWARD,
+                    userEmail = userEmail), true)
         }
 
         override fun onReplyBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.REPLY), true)
+                    composerType = ComposerTypes.REPLY,
+                    userEmail = userEmail), true)
         }
 
         override fun onReplyAllBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
-                    composerType = ComposerTypes.REPLY_ALL), true)
+                    composerType = ComposerTypes.REPLY_ALL,
+                    userEmail = userEmail), true)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -159,15 +163,24 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY), true)
+            host.goToScene(ComposerParams(
+                    fullEmail = fullEmail,
+                    composerType = ComposerTypes.REPLY,
+                    userEmail = userEmail), true)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.REPLY_ALL), true)
+            host.goToScene(ComposerParams(
+                    fullEmail = fullEmail,
+                    composerType = ComposerTypes.REPLY_ALL,
+                    userEmail = userEmail), true)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.FORWARD), true)
+            host.goToScene(ComposerParams(
+                    fullEmail = fullEmail,
+                    composerType = ComposerTypes.FORWARD,
+                    userEmail = userEmail), true)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
@@ -186,7 +199,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
-            host.goToScene(ComposerParams(fullEmail = fullEmail, composerType = ComposerTypes.CONTINUE_DRAFT), true)
+            host.goToScene(ComposerParams(
+                    fullEmail = fullEmail,
+                    composerType = ComposerTypes.CONTINUE_DRAFT,
+                    userEmail = userEmail), true)
         }
     }
 
@@ -215,7 +231,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 threadId = model.threadId, currentLabel = model.currentLabel)
 
         dataSource.submitRequest(req)
-        keyboard?.hideKeyboard()
+        keyboard.hideKeyboard()
         return false
     }
 

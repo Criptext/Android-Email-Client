@@ -9,12 +9,15 @@ import com.email.scenes.composer.data.ComposerTypes
  */
 
 class ComposerParams(): SceneParams() {
-        var fullEmail: FullEmail? = null
-        var composerType: ComposerTypes? = null
 
-    constructor(fullEmail: FullEmail, composerType: ComposerTypes) : this() {
+    var fullEmail: FullEmail? = null
+    var composerType: ComposerTypes? = null
+    var userEmail: String? = null
+
+    constructor(fullEmail: FullEmail, composerType: ComposerTypes, userEmail: String) : this() {
         this.fullEmail = fullEmail
         this.composerType = composerType
+        this.userEmail = userEmail
     }
 
     override val activityClass = ComposerActivity::class.java

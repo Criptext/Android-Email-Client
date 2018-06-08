@@ -6,6 +6,5 @@ package com.email.scenes.mailbox
  */
 
 interface OnDeleteThreadListener {
-    fun yesDelete()
-    fun notDelete()
+    fun onDeleteConfirmed()
 }
