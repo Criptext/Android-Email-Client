@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.feed.data
 
 import com.email.db.models.FeedItem
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.dao.FeedDao
 
 /**
@@ -20,7 +21,7 @@ class DeleteFeedItemWorker(private val db: FeedDao,
         return FeedResult.DeleteFeedItem.Failure(message, feedItem)
     }
 
-    override fun work(): FeedResult.DeleteFeedItem? {
+    override fun work(reporter: ProgressReporter<FeedResult.DeleteFeedItem>): FeedResult.DeleteFeedItem? {
         db.deleteFeedItemById(feedItem.id!!)
         return FeedResult.DeleteFeedItem.Success()
     }

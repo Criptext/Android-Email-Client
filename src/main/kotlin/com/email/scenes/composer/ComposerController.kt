@@ -4,7 +4,7 @@ import android.content.DialogInterface
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
@@ -19,7 +19,7 @@ import com.email.utils.UIMessage
 class ComposerController(private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
-                         private val dataSource: WorkHandler<ComposerRequest, ComposerResult>)
+                         private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
     private val dataSourceController = DataSourceController(dataSource)
@@ -205,7 +205,7 @@ class ComposerController(private val model: ComposerModel,
     }
 
     private inner class DataSourceController(
-            private val dataSource: WorkHandler<ComposerRequest, ComposerResult>){
+            private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>){
 
         fun setDataSourceListener() {
             dataSource.listener = dataSourceListener

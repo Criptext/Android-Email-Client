@@ -1,7 +1,7 @@
 package com.email.scenes.mailbox
 
 import com.email.IHostActivity
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.mailbox.data.MailboxRequest
 import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.mailbox.feed.FeedController
@@ -18,7 +18,7 @@ open class MailboxControllerTest {
     protected lateinit var model: MailboxSceneModel
     protected lateinit var scene: MailboxScene
     protected lateinit var signal: SignalClient
-    protected lateinit var dataSource: WorkHandler<MailboxRequest, MailboxResult>
+    protected lateinit var dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>
     protected lateinit var controller: MailboxSceneController
     protected lateinit var host: IHostActivity
     protected lateinit var webSocketEvents: WebSocketEventPublisher

@@ -2,15 +2,15 @@ package com.email.scenes.mailbox
 
 import com.email.IHostActivity
 import com.email.R
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.db.MailFolders
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.ActivityMessage
-import com.email.scenes.labelChooser.LabelDataHandler
-import com.email.scenes.labelChooser.SelectedLabels
+import com.email.scenes.label_chooser.LabelDataHandler
+import com.email.scenes.label_chooser.SelectedLabels
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.mailbox.data.*
@@ -30,7 +30,7 @@ import com.email.websocket.WebSocketEventPublisher
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
-                             private val dataSource: WorkHandler<MailboxRequest, MailboxResult>,
+                             private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>,
                              private val websocketEvents: WebSocketEventPublisher,
                              private val feedController : FeedController) : SceneController() {
 
@@ -317,7 +317,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private inner class DataSourceController(
-            private val dataSource: WorkHandler<MailboxRequest, MailboxResult>) {
+            private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>) {
 
         fun setDataSourceListener() {
             dataSource.listener = dataSourceListener

@@ -56,7 +56,7 @@ class RegisterUserWorkerTest {
                 password = "secretPassword", recoveryEmail = "tester@gmail.com")
         val worker = newWorker(newAccount)
 
-        worker.work() `should be instance of` SignUpResult.RegisterUser.Success::class.java
+        worker.work(mockk()) `should be instance of` SignUpResult.RegisterUser.Success::class.java
 
         val uploadedJSONString = bodySlot.captured.toString(2)
         camera.matchWithSnapshot("uploads new user data with correct shape", uploadedJSONString)

@@ -3,6 +3,7 @@ package com.email.scenes.signin.data
 import android.accounts.NetworkErrorException
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.SignInLocalDB
 import com.email.utils.UIMessage
 import org.json.JSONException
@@ -24,7 +25,7 @@ class VerifyUserWorker(
         return SignInResult.VerifyUser.Failure(message, ex)
     }
 
-    override fun work(): SignInResult.VerifyUser? {
+    override fun work(reporter: ProgressReporter<SignInResult.VerifyUser>): SignInResult.VerifyUser? {
         val userExists = db.accountExistsLocally(username = username)
         if(userExists) return SignInResult.VerifyUser.Success()
 

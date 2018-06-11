@@ -1,4 +1,4 @@
-package com.email.scenes.labelChooser.data
+package com.email.scenes.label_chooser.data
 
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter

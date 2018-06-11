@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
@@ -27,7 +28,8 @@ class GetSelectedLabelsWorker(
         return MailboxResult.GetSelectedLabels.Failure(message, ex)
     }
 
-    override fun work(): MailboxResult.GetSelectedLabels? {
+    override fun work(reporter: ProgressReporter<MailboxResult.GetSelectedLabels>)
+            : MailboxResult.GetSelectedLabels? {
         val labels = Label.defaultItems.toList()
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)

@@ -1,4 +1,4 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
 import android.support.v7.widget.RecyclerView
 import com.email.androidui.labelwrapper.LabelWrapperListView
@@ -6,7 +6,7 @@ import com.email.androidui.labelwrapper.LabelWrapperRecyclerView
 import com.email.R
 import android.view.View
 import android.widget.ProgressBar
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.virtuallist.VirtualList
 
 

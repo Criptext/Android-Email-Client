@@ -5,7 +5,7 @@ package com.email.bgworker
  * Created by gabriel on 2/20/18.
  */
 
-abstract class WorkHandler<in I: Any, O: Any> {
+abstract class BackgroundWorkManager<in I: Any, O: Any> {
     private val state: MutableMap<Class<out I>, WorkState<O>> = HashMap()
 
     abstract val runner: WorkRunner

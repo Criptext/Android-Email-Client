@@ -2,7 +2,7 @@ package com.email.scenes.signin.data
 
 import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
-import com.email.bgworker.WorkHandler
+import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.KeyValueStorage
 import com.email.db.SignInLocalDB
@@ -19,7 +19,7 @@ class SignInDataSource(override val runner: WorkRunner,
                        private val keyValueStorage: KeyValueStorage,
                        private val signUpDao: SignUpDao,
                        private val signInLocalDB: SignInLocalDB)
-    : WorkHandler<SignInRequest, SignInResult>() {
+    : BackgroundWorkManager<SignInRequest, SignInResult>() {
     override fun createWorkerFromParams(params: SignInRequest,
                                         flushResults: (SignInResult) -> Unit):
             BackgroundWorker<*> {

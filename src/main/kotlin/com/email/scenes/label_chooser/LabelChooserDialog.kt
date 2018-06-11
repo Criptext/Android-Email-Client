@@ -1,4 +1,4 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Button
 import com.email.R
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.virtuallist.VirtualList
 
 

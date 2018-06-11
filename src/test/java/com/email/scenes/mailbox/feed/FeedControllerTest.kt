@@ -8,6 +8,7 @@ import com.email.scenes.mailbox.feed.data.LoadFeedsWorker
 import com.email.scenes.mailbox.feed.data.MuteFeedItemWorker
 import com.email.scenes.mailbox.feed.mocks.MockedFeedDao
 import com.email.scenes.mailbox.feed.mocks.MockedFeedView
+import io.mockk.mockk
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -69,7 +70,7 @@ class FeedControllerTest {
         db.nextLoadedFeedItems = createFeedItems(5)
         scene.notifiedDataSetChanged = false
 
-        runner._work()
+        runner._work(mockk())
 
         model.feedItems.size `should be` 5
         scene.isNoFeedsViewVisible `should be` false
@@ -79,7 +80,7 @@ class FeedControllerTest {
     private fun muteItemAt(position: Int, exception: Exception?) {
         // init
         controller.onStart()
-        runner._work()
+        runner._work(mockk())
 
 
         val mutedItem = model.feedItems[position]
@@ -99,7 +100,7 @@ class FeedControllerTest {
 
         // complete task and run callbacks
         runner.assertPendingWork(listOf(MuteFeedItemWorker::class.java))
-        runner._work()
+        runner._work(mockk())
     }
 
 
@@ -130,7 +131,7 @@ class FeedControllerTest {
     private fun deleteItemAt(position: Int, exception: Exception?) {
         // init
         controller.onStart()
-        runner._work()
+        runner._work(mockk())
 
         val deletedItem = model.feedItems[position]
         scene.lastNotifiedChangedPosition = -1
@@ -148,7 +149,7 @@ class FeedControllerTest {
 
         // complete task and run callbacks
         runner.assertPendingWork(listOf(DeleteFeedItemWorker::class.java))
-        runner._work()
+        runner._work(mockk())
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.email.mocks
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.bgworker.WorkRunner
 import org.amshove.kluent.`should equal`
 import java.util.*
@@ -20,11 +21,11 @@ class MockedWorkRunner: WorkRunner {
         pendingWork.clear()
     }
 
-    fun _work() {
+    fun _work(reporter: ProgressReporter<Any?>) {
         if (pendingWork.isNotEmpty()) {
             val worker = pendingWork.pop()
             val task = MockedAsyncTask(worker)
-            task.execute()
+            task.execute(reporter)
         }
     }
 
@@ -37,10 +38,10 @@ class MockedWorkRunner: WorkRunner {
         pendingWork.add(worker)
     }
 
-    private class MockedAsyncTask<U>(private val worker: BackgroundWorker<U>) {
+    private class MockedAsyncTask<out U>(private val worker: BackgroundWorker<U>) {
 
-        fun execute() {
-            val result = try { worker.work() } catch (ex: Exception) {
+        fun execute(reporter: ProgressReporter<U>) {
+            val result = try { worker.work(reporter) } catch (ex: Exception) {
                 worker.catchException(ex)
             }
 

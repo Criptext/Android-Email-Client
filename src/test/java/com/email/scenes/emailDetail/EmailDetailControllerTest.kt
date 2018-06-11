@@ -123,7 +123,7 @@ class EmailDetailControllerTest {
         runner.assertPendingWork(listOf(LoadFullEmailsFromThreadWorker::class.java))
         db.nextLoadedEmailItems = createEmailItemsInThread(5)
 
-        runner._work()
+        runner._work(mockk())
 
         model.fullEmailList.size  `should be` 5
         scene.notifiedDataSetChanged `should be` true

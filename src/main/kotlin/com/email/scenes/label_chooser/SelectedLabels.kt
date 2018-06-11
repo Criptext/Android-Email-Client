@@ -1,6 +1,6 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.removeWithDiscrimination
 import java.util.*
 

@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
@@ -43,7 +44,8 @@ class LoadEmailThreadsWorker(
             limit = loadParams.size)
     }
 
-    override fun work(): MailboxResult.LoadEmailThreads? {
+    override fun work(reporter: ProgressReporter<MailboxResult.LoadEmailThreads>)
+            : MailboxResult.LoadEmailThreads? {
         val emailThreads = loadThreadsWithParams()
 
         return MailboxResult.LoadEmailThreads.Success(

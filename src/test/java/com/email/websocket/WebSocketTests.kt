@@ -109,7 +109,7 @@ class WebSocketTests {
         onMessageReceived(MockedJSONData.sampleNewEmailEvent) // trigger new message event
 
         runner.assertPendingWork(listOf(InsertNewEmailWorker::class.java))
-        runner._work() // trigger async work done
+        runner._work(mockk()) // trigger async work done
 
         didInsertSender `should be` true
 
@@ -158,7 +158,7 @@ class WebSocketTests {
         onMessageReceived(MockedJSONData.sampleNewEmailEventPlainText) // trigger new message event
 
         runner.assertPendingWork(listOf(InsertNewEmailWorker::class.java))
-        runner._work() // trigger async work done
+        runner._work(mockk()) // trigger async work done
 
         didInsertSender `should be` true
 

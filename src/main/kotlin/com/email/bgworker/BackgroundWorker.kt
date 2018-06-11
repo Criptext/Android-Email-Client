@@ -20,8 +20,10 @@ interface BackgroundWorker<T> {
      * database operations without lagging the UI. Returns a result that can be published in the
      * UI thread. It should return null if, and only if, cancel()
      * was called in a different thread before every long running operation finishes.
+     * @param reporter a ProgressReporter object that the work function can use to report progress
+     * to the UI thread.
      */
-    fun work(): T?
+    fun work(reporter: ProgressReporter<T>): T?
 
     /**
      * Cancels the work. if it's called before the work function returns, no result is delivered.

@@ -121,7 +121,7 @@ class MailboxWebSocketTest {
 
         runner.assertPendingWork(listOf(LoadEmailThreadsWorker::class.java))
         // async work done
-        runner._work()
+        runner._work(mockk())
 
         // should have removed the previous 40 and added the 20 loaded from db
         model.threads.size `should be` 20

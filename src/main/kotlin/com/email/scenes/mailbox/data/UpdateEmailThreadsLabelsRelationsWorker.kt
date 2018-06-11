@@ -2,12 +2,12 @@ package com.email.scenes.mailbox.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
-import com.email.db.models.ActiveAccount
 import com.email.db.models.EmailLabel
-import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.SelectedLabels
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
@@ -33,7 +33,8 @@ class UpdateEmailThreadsLabelsRelationsWorker(
                 exception = ex)
     }
 
-    override fun work(): MailboxResult.UpdateEmailThreadsLabelsRelations? {
+    override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
+            : MailboxResult.UpdateEmailThreadsLabelsRelations? {
 
         val emailIds = selectedEmailThreads.map {
             it.id

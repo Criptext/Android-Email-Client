@@ -1,7 +1,7 @@
-package com.email.scenes.labelChooser
+package com.email.scenes.label_chooser
 
 import com.email.db.models.Label
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.data.LabelWrapper
 
 /**
  * Created by sebas on 2/2/18.

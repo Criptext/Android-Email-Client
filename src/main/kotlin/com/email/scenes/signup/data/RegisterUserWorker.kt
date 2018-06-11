@@ -8,9 +8,11 @@ import com.email.signal.PreKeyBundleShareData
 import com.email.api.ServerErrorException
 import com.email.signal.SignalKeyGenerator
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.KeyValueStorage
 import com.email.db.dao.SignUpDao
 import com.email.scenes.signup.IncompleteAccount
+import com.email.scenes.signup.data.SignUpResult.RegisterUser
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -30,18 +32,18 @@ class RegisterUserWorker(
         httpClient: HttpClient,
         private val signalKeyGenerator: SignalKeyGenerator,
         private val incompleteAccount: IncompleteAccount,
-        override val publishFn: (SignUpResult.RegisterUser) -> Unit)
-    : BackgroundWorker<SignUpResult.RegisterUser> {
+        override val publishFn: (RegisterUser) -> Unit)
+    : BackgroundWorker<RegisterUser> {
 
     override val canBeParallelized = false
     private val apiClient = SignUpAPIClient(httpClient)
     private val storeAccountTransaction = StoreAccountTransaction(db, keyValueStorage)
 
 
-    override fun catchException(ex: Exception): SignUpResult.RegisterUser {
+    override fun catchException(ex: Exception): RegisterUser {
 
         val message = createErrorMessage(ex)
-        return SignUpResult.RegisterUser.Failure(message, ex)
+        return RegisterUser.Failure(message, ex)
     }
 
     private fun postNewUserToServer(keyBundle: PreKeyBundleShareData.UploadBundle)
@@ -60,7 +62,7 @@ class RegisterUserWorker(
         }
     }
 
-    override fun work(): SignUpResult.RegisterUser? {
+    override fun work(reporter: ProgressReporter<RegisterUser>): RegisterUser? {
         val registrationBundle = signalKeyGenerator.register(
                 recipientId = incompleteAccount.username,
                 deviceId = 1)
@@ -69,10 +71,10 @@ class RegisterUserWorker(
 
         return when(operation) {
             is Result.Success -> {
-                SignUpResult.RegisterUser.Success()
+                RegisterUser.Success()
             }
             is Result.Failure -> {
-                SignUpResult.RegisterUser.Failure(
+                RegisterUser.Failure(
                         exception = operation.error,
                         message = createErrorMessage(operation.error))
             }

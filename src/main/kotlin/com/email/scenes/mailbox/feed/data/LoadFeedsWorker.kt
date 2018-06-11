@@ -1,6 +1,7 @@
 package com.email.scenes.mailbox.feed.data
 
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.dao.FeedDao
 
 /**
@@ -18,7 +19,7 @@ class LoadFeedsWorker(private val db: FeedDao,
 
     override val canBeParallelized = true
 
-    override fun work(): FeedResult.LoadFeed {
+    override fun work(reporter: ProgressReporter<FeedResult.LoadFeed>): FeedResult.LoadFeed {
         val items = db.getAllFeedItems()
         return FeedResult.LoadFeed.Success(items)
     }

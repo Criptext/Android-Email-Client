@@ -106,7 +106,7 @@ class UpdateMailboxWorkerTest {
                     encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
-        val result = worker.work() as MailboxResult.UpdateMailbox.Success
+        val result = worker.work(mockk()) as MailboxResult.UpdateMailbox.Success
 
         // server.requestCount `should equal` 4
         insertedEmails.map { Pair(it.subject, it.content) } `should equal` listOf(
@@ -163,7 +163,7 @@ class UpdateMailboxWorkerTest {
                     encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
-        val result = worker.work() as MailboxResult.UpdateMailbox.Success
+        val result = worker.work(mockk()) as MailboxResult.UpdateMailbox.Success
 
         result.mailboxThreads `should be` null // nothing to update
         insertedEmails.shouldBeEmpty() // nothing got inserted
@@ -216,7 +216,7 @@ class UpdateMailboxWorkerTest {
                     encryptedData = encryptedData)
         } returns "__PLAIN_TEXT_2__"
 
-        worker.work() as MailboxResult.UpdateMailbox.Success
+        worker.work(mockk()) as MailboxResult.UpdateMailbox.Success
 
         insertedEmails.shouldBeEmpty() // nothing got inserted
     }

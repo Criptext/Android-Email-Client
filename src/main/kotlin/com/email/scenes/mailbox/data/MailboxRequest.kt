@@ -3,8 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.labelChooser.SelectedLabels
-import org.json.JSONObject
+import com.email.scenes.label_chooser.SelectedLabels
 
 /**
  * Created by sebas on 3/20/18.

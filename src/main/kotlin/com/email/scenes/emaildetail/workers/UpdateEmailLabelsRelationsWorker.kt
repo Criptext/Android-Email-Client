@@ -2,15 +2,13 @@ package com.email.scenes.emaildetail.workers
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailFolders
-import com.email.db.MailboxLocalDB
-import com.email.db.models.ActiveAccount
 import com.email.db.models.EmailLabel
-import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.data.EmailDetailResult
-import com.email.scenes.labelChooser.SelectedLabels
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.SelectedLabels
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
@@ -36,7 +34,8 @@ class UpdateEmailLabelsRelationsWorker(
                 exception = ex)
     }
 
-    override fun work(): EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateEmailThreadsLabelsRelations>)
+            : EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
         val emailIds = db.getFullEmailsFromThreadId(threadId).map {
             it.email.id
@@ -67,7 +66,7 @@ class UpdateEmailLabelsRelationsWorker(
     override fun cancel() {
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
         UIMessage(resId = R.string.failed_getting_emails)
     }
 }

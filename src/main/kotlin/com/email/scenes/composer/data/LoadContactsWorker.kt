@@ -2,6 +2,7 @@ package com.email.scenes.composer.data
 
 import com.email.R
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.ComposerLocalDB
 import com.email.db.dao.ContactDao
 import com.email.utils.UIMessage
@@ -20,7 +21,8 @@ class LoadContactsWorker(
         return ComposerResult.GetAllContacts.Failure("Failed to get Contacts")
     }
 
-    override fun work(): ComposerResult.GetAllContacts? {
+    override fun work(reporter: ProgressReporter<ComposerResult.GetAllContacts>)
+            : ComposerResult.GetAllContacts? {
         val contacts = db.contactDao.getAll()
         return ComposerResult.GetAllContacts.Success(contacts = contacts)
     }

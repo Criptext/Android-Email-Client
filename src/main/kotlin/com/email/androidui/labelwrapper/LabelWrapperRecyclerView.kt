@@ -3,8 +3,8 @@ package com.email.androidui.labelwrapper
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.email.scenes.labelChooser.LabelWrapperAdapter
-import com.email.scenes.labelChooser.data.LabelWrapper
+import com.email.scenes.label_chooser.LabelWrapperAdapter
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.virtuallist.VirtualList
 
 class LabelWrapperRecyclerView(recyclerView: RecyclerView,

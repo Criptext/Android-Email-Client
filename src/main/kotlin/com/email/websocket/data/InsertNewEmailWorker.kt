@@ -4,6 +4,7 @@ import com.email.R
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.models.EmailMetadata
 import com.email.bgworker.BackgroundWorker
+import com.email.bgworker.ProgressReporter
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.Email
 import com.email.scenes.mailbox.data.EmailInsertionSetup
@@ -35,7 +36,8 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
     private fun loadNewEmail(): Email? =
         emailInsertionDao.findEmailByMessageId(metadata.messageId)
 
-    override fun work(): EventResult.InsertNewEmail? {
+    override fun work(reporter: ProgressReporter<EventResult.InsertNewEmail>)
+            : EventResult.InsertNewEmail? {
         val result: Result<Email, Exception> = Result.of {
             insertIncomingEmail()
             loadNewEmail()!!
