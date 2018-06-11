@@ -35,12 +35,12 @@ class LoadEmailThreadsWorker(
         is LoadParams.NewPage -> db.getEmailsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
             oldestEmailThread = loadParams.oldestEmailThread,
-            rejectedLabels = selectRejectedLabels(),
+            rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
             limit = loadParams.size)
         is LoadParams.Reset -> db.getEmailsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
             oldestEmailThread = null,
-            rejectedLabels = selectRejectedLabels(),
+            rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
             limit = loadParams.size)
     }
 
@@ -54,18 +54,6 @@ class LoadEmailThreadsWorker(
                 isReset = loadParams is LoadParams.Reset)
     }
 
-    private fun selectRejectedLabels(): List<Label> {
-        val defaultLabels = Label.DefaultItems()
-        return when(labelTextTypes) {
-            MailFolders.SENT,
-            MailFolders.INBOX,
-            MailFolders.IMPORTANT,
-            MailFolders.STARRED,
-            MailFolders.ALL_MAIL -> listOf(defaultLabels.spam, defaultLabels.trash)
-            MailFolders.SPAM -> listOf(defaultLabels.trash)
-            else ->  emptyList()
-        }
-    }
 
     override fun cancel() {
     }

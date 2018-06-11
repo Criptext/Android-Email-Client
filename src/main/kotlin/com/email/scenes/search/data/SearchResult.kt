@@ -1,11 +1,21 @@
 package com.email.scenes.search.data
 
-/**
- * Created by danieltigse on 2/6/18.
- */
+import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.UIMessage
 
-class SearchResult(val subject: String, val recipients: String) {
+sealed class SearchResult{
 
-    val threadId: String? = null
+    sealed class SearchEmails : SearchResult() {
+        class Success(
+                val emailThreads: List<EmailThread>,
+                val isReset: Boolean,
+                val queryText: String)
+            : SearchEmails()
+        data class Failure(val message: UIMessage) : SearchEmails()
+    }
 
+    sealed class UpdateUnreadStatus: SearchResult(){
+        class Success: UpdateUnreadStatus()
+        class Failure: UpdateUnreadStatus()
+    }
 }

@@ -1,6 +1,6 @@
 package com.email.scenes.params
 
-import com.email.SearchActivity
+import com.email.scenes.search.SearchActivity
 
 /**
  * Created by gabriel on 2/15/18.

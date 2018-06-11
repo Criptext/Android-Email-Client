@@ -8,7 +8,7 @@ import com.email.utils.ui.ProgressViewHolder
 
 /**
  * Base class for all RecyclerView adapters that are backed up by a Virtual list and want to
- * add more items as soon as the user approaches the end of the list.
+ * add more searchItems as soon as the user approaches the end of the list.
  *
  * When extending this class don't override onCreateViewHolder, use onCreateActualViewHolder
  * instead. Don't override getViewItemType, use getActualViewItemType. Don't override getItemId,

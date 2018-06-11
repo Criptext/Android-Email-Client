@@ -55,10 +55,24 @@ data class Label (
             when (label) {
             sent,
             inbox,
+            important,
             starred -> listOf(spam, trash)
             spam -> listOf(trash)
             trash -> listOf(spam)
             else -> emptyList()
+        }
+
+        fun rejectedLabelsByFolder(folder: MailFolders): List<Label> {
+            return when(folder) {
+                MailFolders.SENT,
+                MailFolders.INBOX,
+                MailFolders.IMPORTANT,
+                MailFolders.STARRED,
+                MailFolders.ALL_MAIL -> listOf(spam, trash)
+                MailFolders.SPAM -> listOf(trash)
+                MailFolders.TRASH -> listOf(spam)
+                else ->  emptyList()
+            }
         }
     }
 }
