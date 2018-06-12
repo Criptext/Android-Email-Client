@@ -10,6 +10,9 @@ import org.json.JSONObject
  */
 
 data class ActiveAccount(val name: String, val recipientId: String, val deviceId: Int, val jwt: String) : JSONData {
+
+    val userEmail = "$recipientId@${Contact.mainDomain}"
+
     override fun toJSON(): JSONObject {
         val json = JSONObject()
         json.put("name", name)

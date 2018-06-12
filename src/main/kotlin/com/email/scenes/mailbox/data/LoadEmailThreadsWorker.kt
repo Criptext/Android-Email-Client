@@ -16,6 +16,7 @@ class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
         private val loadParams: LoadParams,
         private val labelTextTypes: MailFolders,
+        private val userEmail: String,
         override val publishFn: (
                 MailboxResult.LoadEmailThreads) -> Unit)
     : BackgroundWorker<MailboxResult.LoadEmailThreads> {
@@ -32,16 +33,18 @@ class LoadEmailThreadsWorker(
     }
 
     private fun loadThreadsWithParams(): List<EmailThread> = when (loadParams) {
-        is LoadParams.NewPage -> db.getEmailsFromMailboxLabel(
+        is LoadParams.NewPage -> db.getThreadsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
             oldestEmailThread = loadParams.oldestEmailThread,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
-            limit = loadParams.size)
-        is LoadParams.Reset -> db.getEmailsFromMailboxLabel(
+            limit = loadParams.size,
+            userEmail = userEmail)
+        is LoadParams.Reset -> db.getThreadsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
             oldestEmailThread = null,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
-            limit = loadParams.size)
+            limit = loadParams.size,
+            userEmail = userEmail)
     }
 
     override fun work(reporter: ProgressReporter<MailboxResult.LoadEmailThreads>)

@@ -142,6 +142,7 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="encrypting">Encrypting…</string>
     <string name="sending">Sending…</string>
+    <string name="sending_email">Sending email…</string>
     <string name="documents">Documents</string>
     <string name="photo_library">Photo Library</string>
     <string name="camera">Camera</string>

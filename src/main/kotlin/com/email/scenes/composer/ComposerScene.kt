@@ -17,6 +17,7 @@ import com.email.scenes.composer.data.MailBody
 import com.email.scenes.composer.data.ReplyData
 import com.email.scenes.composer.ui.HTMLEditText
 import com.email.utils.HTMLUtils
+import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 import com.squareup.picasso.Picasso
@@ -36,7 +37,7 @@ interface ComposerScene {
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
-    class Default(view: View): ComposerScene {
+    class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
         private val ctx = view.context
 
@@ -96,28 +97,27 @@ interface ComposerScene {
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {
-                    bodyEditText.text = HTMLUtils.changedHeaderHtml(MailBody.createNewForwardMessageBody(
-                            composerInputData.body, ""))
-                    bodyEditText.setFocus()
+                    bodyEditText.text = MailBody.createNewForwardMessageBody(
+                            composerInputData.body, "")
                 }
                 ComposerTypes.REPLY, ComposerTypes.REPLY_ALL -> {
-                    responseBody.loadDataWithBaseURL("",
-                            HTMLUtils.changedHeaderHtml(MailBody.createNewReplyMessageBody(composerInputData.body,
-                            System.currentTimeMillis(), replyData.fullEmail.from.name, "")),
-                            "text/html", "utf-8", "")
-                    imageViewMore.visibility = View.VISIBLE
                     bodyEditText.setFocus()
+                    keyboard.showKeyboardWithDelay(bodyEditText.view)
+                    bodyEditText.text = MailBody.createNewReplyMessageBody(
+                            originMessageHtml = composerInputData.body,
+                            date = System.currentTimeMillis(),
+                            senderName = replyData.fullEmail.from.name,
+                            signature = "")
                 }
                 ComposerTypes.CONTINUE_DRAFT -> {
-                    bodyEditText.text = HTMLUtils.changedHeaderHtml(composerInputData.body)
                     bodyEditText.setFocus()
+                    keyboard.showKeyboardWithDelay(bodyEditText.view)
+                    bodyEditText.text = composerInputData.body
                 }
                 else -> {
                     bodyEditText.setMinHeight()
                 }
             }
-
-
 
             setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
                     toContacts = composerInputData.to,

@@ -51,14 +51,16 @@ class MoveEmailThreadsWorkerTest{
     @Test
     fun test_should_move_two_emails_to_spam_folder(){
 
-        mailboxLocalDB.getEmailsFromMailboxLabel(
+        mailboxLocalDB.getThreadsFromMailboxLabel(
+                userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
                 oldestEmailThread = null,
                 limit = 20
         ).size shouldBe 0
 
-        val emailThreads = mailboxLocalDB.getEmailsFromMailboxLabel(
+        val emailThreads = mailboxLocalDB.getThreadsFromMailboxLabel(
+                userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
                 labelTextTypes = Label.defaultItems.inbox.text,
                 oldestEmailThread = null,
@@ -72,7 +74,8 @@ class MoveEmailThreadsWorkerTest{
         )
         worker.work(mock()) as MailboxResult.MoveEmailThread.Success
 
-        mailboxLocalDB.getEmailsFromMailboxLabel(
+        mailboxLocalDB.getThreadsFromMailboxLabel(
+                userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
                 oldestEmailThread = null,

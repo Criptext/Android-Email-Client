@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.DeliveryTypes
+import com.email.db.models.Label
 import com.email.scenes.MailItemHolder
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
@@ -54,7 +55,12 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         else
             emailThread.preview
 
-        headerView.text = emailThread.headerPreview
+        headerView.text = when (emailThread.currentLabel) {
+            Label.defaultItems.sent.text ->
+                "${headerView.context.resources.getString(R.string.to_popup)} ${emailThread.headerPreview}"
+            else -> emailThread.headerPreview
+        }
+
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
                         emailThread.latestEmail.from.name ?:"Empty",
@@ -100,7 +106,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
         when(deliveryType){
             DeliveryTypes.SENT -> {
-                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+                setIconAndColor(R.drawable.read, R.color.sent)
             }
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)

@@ -15,6 +15,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
 import com.email.R
+import com.email.SecureEmail
 import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
@@ -24,6 +25,7 @@ import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
 import com.email.utils.DateUtils
+import com.email.utils.EmailThreadValidator
 import com.email.utils.HTMLUtils
 import com.email.utils.ui.ZoomLayout
 import com.email.utils.WebViewUtils
@@ -188,7 +190,15 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
 
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
-        headerView.text = fullEmail.from.name
+        headerView.text =
+                if(EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT)) {
+                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))
+                    headerView.context.getString(R.string.draft)
+                }
+                else {
+                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.textColorPrimary))
+                    fullEmail.from.name
+                }
         email_options.visibility = if(fullEmail.email.delivered != DeliveryTypes.NONE)
             View.VISIBLE else View.INVISIBLE
 
@@ -213,10 +223,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private fun setToText(fullEmail: FullEmail){
         val numberContacts = fullEmail.to.size
+        val isFromMe = (fullEmail.email.delivered != DeliveryTypes.NONE
+                || EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT))
         toView.text = when {
-            fullEmail.email.delivered != DeliveryTypes.NONE && numberContacts == 1 ->
+            isFromMe && numberContacts == 1 ->
                 "${toView.resources.getString(R.string.to)} ${fullEmail.to[0].name}"
-            fullEmail.email.delivered != DeliveryTypes.NONE && numberContacts > 0 ->
+            isFromMe && numberContacts > 1 ->
                 toView.resources.getString(R.string.to_contacts, numberContacts)
             numberContacts > 1 ->
                 toView.resources.getString(R.string.to_me_and, numberContacts  - 1)
@@ -231,7 +243,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         when(deliveryType){
             DeliveryTypes.SENT -> {
-                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+                setIconAndColor(R.drawable.read, R.color.sent)
                 readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
             }
             DeliveryTypes.DELIVERED -> {

@@ -9,6 +9,7 @@ import com.email.scenes.mailbox.data.LoadParams
 import com.email.utils.UIMessage
 
 class SearchEmailWorker(
+        private val userEmail: String,
         private val db: SearchLocalDB,
         private val queryText: String,
         private val loadParams: LoadParams,
@@ -26,11 +27,13 @@ class SearchEmailWorker(
         is LoadParams.NewPage -> db.searchMailsInDB(
                 queryText = queryText,
                 oldestEmailThread = loadParams.oldestEmailThread,
-                limit = loadParams.size)
+                limit = loadParams.size,
+                userEmail = userEmail)
         is LoadParams.Reset -> db.searchMailsInDB(
                 queryText = queryText,
                 oldestEmailThread = null,
-                limit = loadParams.size)
+                limit = loadParams.size,
+                userEmail = userEmail)
     }
 
     override fun work(reporter: ProgressReporter<SearchResult.SearchEmails>): SearchResult.SearchEmails? {

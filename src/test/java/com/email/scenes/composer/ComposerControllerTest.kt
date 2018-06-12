@@ -5,6 +5,7 @@ import com.email.R
 import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.composer.data.ComposerRequest
 import com.email.scenes.composer.data.ComposerResult
+import com.email.utils.KeyboardManager
 import io.mockk.mockk
 
 open class ComposerControllerTest {

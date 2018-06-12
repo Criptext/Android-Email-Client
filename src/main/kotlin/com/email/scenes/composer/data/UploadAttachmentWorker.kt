@@ -66,6 +66,7 @@ class UploadAttachmentWorker(private val filepath: String,
                 .flatMap(getFileTokenFromJSONResponse)
                 .flatMap(uploadFile(file))
 
+
         return when (result) {
             is Result.Success -> ComposerResult.UploadFile.Success(filepath)
             is Result.Failure -> ComposerResult.UploadFile.Failure(filepath,

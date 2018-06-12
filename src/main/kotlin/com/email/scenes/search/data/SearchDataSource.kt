@@ -22,6 +22,7 @@ class SearchDataSource(
                     db = searchLocalDB,
                     queryText = params.queryText,
                     loadParams = params.loadParams,
+                    userEmail = params.userEmail,
                     publishFn = { result ->
                         flushResults(result)
                     })

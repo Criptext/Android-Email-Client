@@ -9,4 +9,5 @@ sealed class ComposerRequest {
     class SaveEmailAsDraft(val threadId: String?, val emailId: Long?,
                            val composerInputData: ComposerInputData,
                            val onlySave: Boolean): ComposerRequest()
+    class DeleteDraft(val emailId: Long): ComposerRequest()
 }

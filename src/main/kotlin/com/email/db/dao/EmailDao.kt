@@ -39,12 +39,12 @@ import java.util.*
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
-        inner join email_label on email.id = email_label.emailId
+        left join email_label on email.id = email_label.emailId
         and date < :starterDate
         where not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
-        having allLabels like :selectedLabel
+        having coalesce(allLabels, "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
@@ -109,7 +109,7 @@ import java.util.*
     fun update(emails: List<Email>)
 
     @Query("""SELECT * FROM email
-            inner join email_label on email.id = email_label.emailId
+            left join email_label on email.id = email_label.emailId
             WHERE threadId=:threadId
             AND NOT EXISTS
             (SELECT * FROM email_label WHERE email_label.emailId = email.id and email_label.labelId IN (:rejectedLabels))
@@ -130,11 +130,11 @@ import java.util.*
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
-        inner join email_label on email.id = email_label.emailId
+        left join email_label on email.id = email_label.emailId
         where not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
-        having allLabels like :selectedLabel
+        having coalesce(allLabels, "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabel(
@@ -171,12 +171,12 @@ import java.util.*
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
-        inner join email_label on email.id = email_label.emailId
+        left join email_label on email.id = email_label.emailId
         where not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         and unread = 1
         group by uniqueId
-        having allLabels like :selectedLabel
+        having coalesce(allLabels, "") like :selectedLabel
         """)
     fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: String): List<Email>
 
@@ -185,15 +185,15 @@ import java.util.*
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
-        inner join email_label on email.id = email_label.emailId
+        left join email_label on email.id = email_label.emailId
         group by uniqueId
-        having allLabels like :selectedLabel
+        having coalesce(allLabels, "") like :selectedLabel
         """)
     fun getTotalThreads(selectedLabel: String): List<Email>
 
     @Query("""
         select count(distinct(email.id)) from email
-        inner join email_label on email.id = email_label.emailId
+        left join email_label on email.id = email_label.emailId
         where threadId=:threadId
         and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))

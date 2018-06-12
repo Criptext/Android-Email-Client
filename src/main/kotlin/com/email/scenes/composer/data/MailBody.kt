@@ -33,7 +33,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             val blockQuoteStart = """<blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">"""
             val blockQuoteEnd = "</blockquote>"
             val formattedDate = SimpleDateFormat("MM/dd/yyyy").format(date)
-            val dateString = "on $formattedDate $senderName wrote:<br/>"
+            val dateString = "<br/><br/>on $formattedDate $senderName wrote:<br/>"
 
             val builder = StringBuilder("")
             builder.append(replyBodyContainerTagStart)

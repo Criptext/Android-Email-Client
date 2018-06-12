@@ -45,7 +45,8 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
 
         secondRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.inbox.text,
-                loadParams = LoadParams.Reset(size = 20)
+                loadParams = LoadParams.Reset(size = 20),
+                userEmail = "gabriel@jigl.com"
         )
     }
 

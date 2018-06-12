@@ -20,6 +20,7 @@ import com.email.scenes.label_chooser.SelectedLabels
 import com.email.scenes.mailbox.OnDeleteThreadListener
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.scenes.params.ComposerParams
+import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
@@ -38,8 +39,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     val lastIndexElement: Int by lazy {
         model.fullEmailList.size - 1
     }
-
-    private val userEmail = "${activeAccount.recipientId}@${Contact.mainDomain}"
 
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
@@ -69,7 +68,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         when(result) {
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success ->  {
-                host.finishScene()
+                val message = ActivityMessage.UpdateLabelsThread(
+                        threadId = result.threadId,
+                        selectedLabelIds = result.selectedLabelIds
+                )
+                host.exitToScene(MailboxParams(), message)
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_labels))
             }
@@ -79,7 +82,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUpdateUnreadStatus(result: EmailDetailResult.UpdateUnreadStatus){
         when(result) {
             is EmailDetailResult.UpdateUnreadStatus.Success ->  {
-                host.finishScene()
+                val message = ActivityMessage.UpdateUnreadStatusThread(result.threadId, result.unread)
+                host.exitToScene(MailboxParams(), message)
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_status))
             }
@@ -89,7 +93,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onMoveEmailThread(result: EmailDetailResult.MoveEmailThread){
         when(result) {
             is EmailDetailResult.MoveEmailThread.Success ->  {
-                host.finishScene()
+                val message = ActivityMessage.MoveThread(result.threadId)
+                host.exitToScene(MailboxParams(), message)
             } else -> {
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
@@ -109,11 +114,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
-        override fun moveToSpam() {
+
+        override fun onMoveToInboxClicked() {
+            moveEmailThread(MailFolders.INBOX)
+        }
+
+        override fun onMoveToSpamClicked() {
             moveEmailThread(MailFolders.SPAM)
         }
 
-        override fun moveToTrash() {
+        override fun onMoveToTrashClicked() {
             moveEmailThread(MailFolders.TRASH)
         }
     }
@@ -137,21 +147,24 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
                     composerType = ComposerTypes.FORWARD,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun onReplyBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
                     composerType = ComposerTypes.REPLY,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun onReplyAllBtnClicked() {
             host.goToScene(ComposerParams(
                     fullEmail = model.fullEmailList[lastIndexElement],
                     composerType = ComposerTypes.REPLY_ALL,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -166,21 +179,24 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             host.goToScene(ComposerParams(
                     fullEmail = fullEmail,
                     composerType = ComposerTypes.REPLY,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             host.goToScene(ComposerParams(
                     fullEmail = fullEmail,
                     composerType = ComposerTypes.REPLY_ALL,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             host.goToScene(ComposerParams(
                     fullEmail = fullEmail,
                     composerType = ComposerTypes.FORWARD,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
@@ -202,7 +218,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             host.goToScene(ComposerParams(
                     fullEmail = fullEmail,
                     composerType = ComposerTypes.CONTINUE_DRAFT,
-                    userEmail = userEmail), true)
+                    userEmail = activeAccount.userEmail,
+                    emailDetailActivity = host), true)
         }
     }
 

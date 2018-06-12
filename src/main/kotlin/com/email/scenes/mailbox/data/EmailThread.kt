@@ -1,10 +1,10 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.models.Label
-import com.email.SecureEmail
 import com.email.db.DeliveryTypes
+import com.email.db.MailFolders
+import com.email.db.models.Contact
 import com.email.db.models.FullEmail
-import com.email.utils.EmailThreadValidator
+import com.email.db.models.Label
 import java.util.*
 
 /**
@@ -12,6 +12,8 @@ import java.util.*
  */
 
 class EmailThread(val latestEmail: FullEmail,
+                  val participants: List<Contact>,
+                  val currentLabel: MailFolders,
                   val totalEmails: Int) {
 
     val unread :Boolean
@@ -20,7 +22,7 @@ class EmailThread(val latestEmail: FullEmail,
     val timestamp: Date
         get() = latestEmail.email.date
     var isSelected = false
-    val headerPreview: String = getContactsInvolved(latestEmail)
+    val headerPreview: String = participants.joinToString { it.name }
     val id: Long
         get() = latestEmail.email.id
     val subject: String
@@ -30,24 +32,4 @@ class EmailThread(val latestEmail: FullEmail,
 
     val status: DeliveryTypes
         get() = latestEmail.email.delivered
-
-    private fun getContactsInvolved(email: FullEmail): String{
-
-        return if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails > 1){
-            email.to.joinToString { it.name } + ", " + email.from.name +
-                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
-        }
-        else if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails == 1){
-            email.to.joinToString { it.name } +
-                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
-        }
-        else if(totalEmails > 1){
-            email.from.name + ", " + email.to.joinToString { it.name } +
-                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
-        }
-        else{
-            email.from.name
-        }
-
-    }
 }

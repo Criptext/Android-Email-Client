@@ -26,6 +26,7 @@ open class MailboxWorkerTest {
     protected lateinit var dataSource: MailboxDataSource
     protected lateinit var runner: MockedWorkRunner
     protected var lastResult: MailboxResult? = null
+    protected var userEmail = "gabriel@criptext.com"
 
     @Before
     fun setup() {

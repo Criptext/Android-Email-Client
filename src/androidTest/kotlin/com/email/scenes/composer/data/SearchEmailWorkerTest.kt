@@ -29,6 +29,7 @@ class SearchEmailWorkerTest{
     private lateinit var searchLocalDB: SearchLocalDB
 
     private val queryText = "mayer@jigl.com"
+    private val userEmail = "gabriel@jigl.com"
 
     @Before
     fun setup() {
@@ -72,7 +73,8 @@ class SearchEmailWorkerTest{
         searchLocalDB.searchMailsInDB(
                 queryText = queryText,
                 oldestEmailThread = null,
-                limit = 20
+                limit = 20,
+                userEmail = userEmail
         ).size shouldBe 2
 
     }
@@ -82,6 +84,7 @@ class SearchEmailWorkerTest{
                     db = mock(),
                     queryText = queryText,
                     loadParams = loadParams,
+                    userEmail = userEmail,
                     publishFn = {})
 
 }

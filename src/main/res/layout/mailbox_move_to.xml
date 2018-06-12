@@ -26,6 +26,21 @@ android:layout_height="wrap_content">
         android:layout_marginTop="5dp">
 
         <Button
+            android:id="@+id/move_to_inbox"
+            android:textColor="@color/label_buttons_text"
+            android:textSize="14sp"
+            android:stateListAnimator="@null"
+            android:background="@drawable/mailbox_buttons_move_to"
+            android:layout_width="match_parent"
+            android:layout_gravity="start"
+            android:gravity="start"
+            android:paddingStart="25dp"
+            android:textAllCaps="false"
+            android:layout_height="wrap_content"
+            android:text="@string/inbox"
+            android:visibility="gone"/>
+
+        <Button
             android:id="@+id/move_to_spam"
             android:textColor="@color/label_buttons_text"
             android:textSize="14sp"

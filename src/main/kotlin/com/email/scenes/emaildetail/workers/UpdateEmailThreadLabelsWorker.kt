@@ -66,7 +66,7 @@ class UpdateEmailThreadLabelsWorker(
             db.createLabelEmailRelations(emailLabels)
         }
 
-        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success()
+        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, selectedLabels.toIDs())
     }
 
     override fun cancel() {

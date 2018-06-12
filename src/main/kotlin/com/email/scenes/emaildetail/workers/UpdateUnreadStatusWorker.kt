@@ -34,7 +34,7 @@ class UpdateUnreadStatusWorker(
             it.email.id
         }
         db.updateUnreadStatus(emailIds, updateUnreadStatus)
-        return EmailDetailResult.UpdateUnreadStatus.Success()
+        return EmailDetailResult.UpdateUnreadStatus.Success(threadId, updateUnreadStatus)
     }
 
     override fun cancel() {

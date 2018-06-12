@@ -82,15 +82,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
     private fun getTotalUnreadThreads(): Int{
-        return model.threads.fold(0, { total, next -> total + (if(next.unread) 1 else 0) })
+        return model.threads.fold(0, { total, next ->
+            total + (if(next.unread) 1 else 0)
+        })
     }
-
 
     private fun reloadMailboxThreads() {
         threadListController.clear()
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
-                loadParams = LoadParams.Reset(size = threadsPerPage))
+                loadParams = LoadParams.Reset(size = threadsPerPage),
+                userEmail = activeAccount.userEmail)
         dataSource.submitRequest(req)
     }
 
@@ -99,7 +101,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.selectedLabel.text,
                         loadParams = LoadParams.NewPage(size = threadsPerPage,
-                                oldestEmailThread = model.threads.lastOrNull()))
+                        oldestEmailThread = model.threads.lastOrNull()),
+                        userEmail = activeAccount.userEmail)
                 dataSource.submitRequest(req)
         }
 
@@ -110,7 +113,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return host.goToScene(ComposerParams(
                         fullEmail = emailThread.latestEmail,
                         composerType = ComposerTypes.CONTINUE_DRAFT,
-                        userEmail = "${activeAccount.recipientId}@${Contact.mainDomain}"
+                        userEmail = activeAccount.userEmail,
+                        emailDetailActivity = null
                 ), true)
             }
             dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(
@@ -207,6 +211,28 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
                         activityMessage.composerInputData)
                 dataSource.submitRequest(newRequest)
+                scene.showMessage(UIMessage(R.string.sending_email))
+                true
+            }
+            is ActivityMessage.UpdateUnreadStatusThread -> {
+                threadListController.updateUnreadStatusAndNotifyItem(activityMessage.threadId,
+                        activityMessage.unread)
+                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                true
+            }
+            is ActivityMessage.MoveThread -> {
+                if(activityMessage.threadId != null) {
+                    threadListController.removeThreadById(activityMessage.threadId)
+                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                    scene.toggleNoMailsView(model.threads.isEmpty())
+                }
+                else{
+                    reloadMailboxThreads()
+                }
+                true
+            }
+            is ActivityMessage.UpdateLabelsThread -> {
+                reloadMailboxThreads()
                 true
             }
             else -> false
@@ -328,11 +354,16 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
-        override fun moveToSpam() {
+
+        override fun onMoveToInboxClicked() {
+            dataSourceController.moveEmailThread(chosenLabel = MailFolders.INBOX)
+        }
+
+        override fun onMoveToSpamClicked() {
             dataSourceController.moveEmailThread(chosenLabel = MailFolders.SPAM)
         }
 
-        override fun moveToTrash() {
+        override fun onMoveToTrashClicked() {
             dataSourceController.moveEmailThread(chosenLabel = MailFolders.TRASH)
         }
 
@@ -453,8 +484,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
                 is MailboxResult.SendMail.Success -> {
-                    scene.showMessage(UIMessage(R.string.mail_sent_success))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                    reloadMailboxThreads()
                 }
                 is MailboxResult.SendMail.Failure -> scene.showMessage(result.message)
             }
@@ -504,7 +535,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 // just reset mailbox
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.selectedLabel.text,
-                        loadParams = LoadParams.Reset(size = threadsPerPage))
+                        loadParams = LoadParams.Reset(size = threadsPerPage),
+                        userEmail = activeAccount.userEmail)
                 dataSource.submitRequest(req)
             }
         }

@@ -1,7 +1,9 @@
 package com.email.scenes.composer.ui
 
+import android.content.Context
 import android.graphics.Color
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
 import com.email.R
 import jp.wasabeef.richeditor.RichEditor

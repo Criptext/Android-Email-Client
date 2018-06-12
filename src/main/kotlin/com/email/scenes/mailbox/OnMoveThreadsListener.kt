@@ -5,6 +5,7 @@ package com.email.scenes.mailbox
  */
 
 interface OnMoveThreadsListener {
-    fun moveToSpam()
-    fun moveToTrash()
+    fun onMoveToInboxClicked()
+    fun onMoveToSpamClicked()
+    fun onMoveToTrashClicked()
 }
