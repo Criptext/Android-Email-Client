@@ -29,11 +29,14 @@ class ComposerDataSource(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
                     account = activeAccount, dao = emailInsertionDao,
-                    onlySave = params.onlySave, publishFn = { res -> flushResults(res) })
+                    onlySave = params.onlySave, attachments = params.attachments, publishFn = { res -> flushResults(res) })
             is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
                     emailId = params.emailId,
                     db = composerLocalDB,
                     publishFn = { res -> flushResults(res) })
+            is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filepath = params.filepath,
+                    httpClient = params.httpClient, fileServiceAuthToken = params.authToken,
+                    publishFn = { res -> flushResults(res)})
         }
     }
 

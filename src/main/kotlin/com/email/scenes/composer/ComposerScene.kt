@@ -3,19 +3,15 @@ package com.email.scenes.composer
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.webkit.WebView
 import android.widget.*
 import com.email.db.models.Contact
 import com.email.R
-import com.email.scenes.composer.ui.ComposerUIObserver
-import com.email.scenes.composer.ui.ContactCompletionView
-import com.email.scenes.composer.ui.ContactsFilterAdapter
-import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.composer.data.ComposerTypes
-import com.email.scenes.composer.data.MailBody
-import com.email.scenes.composer.data.ReplyData
-import com.email.scenes.composer.ui.HTMLEditText
+import com.email.scenes.composer.data.*
+import com.email.scenes.composer.ui.*
 import com.email.utils.HTMLUtils
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
@@ -31,13 +27,17 @@ import jp.wasabeef.richeditor.RichEditor
 interface ComposerScene {
     var observer: ComposerUIObserver?
     fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                      composerInputData: ComposerInputData, replyData: ReplyData?)
+                      composerInputData: ComposerInputData, replyData: ReplyData?,
+                      attachments: LinkedHashMap<String, ComposerAttachment>)
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
+    fun notifyDataSetChanged()
+
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
+
 
         private val ctx = view.context
 
@@ -74,6 +74,9 @@ interface ComposerScene {
         private val attachmentButton: View by lazy {
             view.findViewById<View>(R.id.attachment_button)
         }
+        private val attachmentRecyclerView: RecyclerView by lazy {
+            view.findViewById<RecyclerView>(R.id.composer_attachment_recyclerview)
+        }
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
             override fun onTokenAdded(token: Contact?) {
@@ -92,8 +95,11 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                                   composerInputData: ComposerInputData, replyData: ReplyData?) {
-
+                                   composerInputData: ComposerInputData, replyData: ReplyData?,
+                                   attachments: LinkedHashMap<String, ComposerAttachment>) {
+            val mLayoutManager = LinearLayoutManager(ctx)
+            attachmentRecyclerView.layoutManager = mLayoutManager
+            attachmentRecyclerView.adapter = AttachmentListAdapter(ctx, attachments)
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {
@@ -124,6 +130,10 @@ interface ComposerScene {
                     ccContacts = composerInputData.cc, bccContacts = composerInputData.bcc)
 
             setListeners()
+        }
+
+        override fun notifyDataSetChanged() {
+            attachmentRecyclerView.adapter.notifyDataSetChanged()
         }
 
         private fun setListeners() {

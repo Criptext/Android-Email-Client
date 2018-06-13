@@ -9,7 +9,8 @@ import com.email.scenes.composer.ComposerModel
  */
 
 data class ComposerInputData(val to: List<Contact>, val cc: List<Contact>,
-                             val bcc: List<Contact>, val subject: String, val body: String) {
+                             val bcc: List<Contact>, val subject: String,
+                             val body: String) {
 
     val hasAtLeastOneRecipient: Boolean
         get () = to.isNotEmpty() || cc.isNotEmpty() || bcc.isNotEmpty()

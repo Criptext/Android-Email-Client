@@ -19,6 +19,7 @@ class SaveEmailWorker(
         private val account: ActiveAccount,
         private val dao: EmailInsertionDao,
         private val onlySave: Boolean,
+        private val attachments: List<ComposerAttachment>,
         override val publishFn: (ComposerResult.SaveEmail) -> Unit)
     : BackgroundWorker<ComposerResult.SaveEmail> {
 
@@ -32,7 +33,7 @@ class SaveEmailWorker(
             : ComposerResult.SaveEmail? {
         val (newEmailId, savedMailThreadId) = saveEmail()
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
-                onlySave = onlySave, composerInputData = composerInputData)
+                onlySave = onlySave, composerInputData = composerInputData, attachments = attachments)
     }
 
     override fun cancel() {

@@ -14,6 +14,7 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.KnownAddress
 import com.email.scenes.composer.data.ComposerAPIClient
+import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.composer.data.PostEmailBody
 import com.email.signal.PreKeyBundleShareData
@@ -41,6 +42,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val emailId: Long,
                      private val threadId: String?,
                      private val composerInputData: ComposerInputData,
+                     private val attachments: List<ComposerAttachment>,
                      override val publishFn: (MailboxResult.SendMail) -> Unit)
     : BackgroundWorker<MailboxResult.SendMail> {
     override val canBeParallelized = false
@@ -126,6 +128,11 @@ class SendMailWorker(private val signalClient: SignalClient,
             : Result<List<PostEmailBody.CriptextEmail>, Exception> =
             Result.of { createEncryptedEmails(mailRecipients) }
 
+    private fun createCriptextAttachment(attachments: List<ComposerAttachment>)
+            : List<PostEmailBody.CriptextAttachment> = attachments.map { attachment ->
+        PostEmailBody.CriptextAttachment(token = attachment.filetoken)
+    }
+
     private val sendEmailOperation
             : (List<PostEmailBody.CriptextEmail>) -> Result<String, Exception> =
             { criptextEmails ->
@@ -134,7 +141,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                             threadId = threadId,
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
-                            guestEmail = null)
+                            guestEmail = null,
+                            attachments = createCriptextAttachment(this.attachments))
                     apiClient.postEmail(requestBody)
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }

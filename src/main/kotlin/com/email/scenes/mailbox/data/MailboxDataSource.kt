@@ -64,6 +64,7 @@ class MailboxDataSource(
                     emailId = params.emailId,
                     threadId = params.threadId,
                     composerInputData = params.data,
+                    attachments = params.attachments,
                     publishFn = { res -> flushResults(res) })
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(

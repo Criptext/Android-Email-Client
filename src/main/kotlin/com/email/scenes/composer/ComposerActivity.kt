@@ -20,6 +20,7 @@ class ComposerActivity : BaseActivity() {
     override val toolbarId = R.id.toolbar
 
     override fun initController(receivedModel: Any): SceneController {
+        val account = ActiveAccount.Companion.loadFromStorage(this)!!
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)

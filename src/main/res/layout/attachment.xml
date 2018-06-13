@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:id="@+id/wrapper_attachment">
+
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="23dp"
+        android:layout_marginRight="23dp"
+        android:layout_marginTop="8dp"
+        android:background="#fcfcfc">
+
+        <ImageView
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/icon_file_pdf"
+            android:layout_centerVertical="true"
+            android:id="@+id/attachment_type_image"/>
+        
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignRight="@id/attachment_type_image"
+            android:layout_alignBottom="@id/attachment_type_image"
+            android:layout_marginBottom="-6dp"
+            android:layout_marginRight="-6dp"
+            android:src="@drawable/check"/>
+        
+        <TextView
+            android:id="@+id/attachment_filename"
+            android:layout_width="wrap_content"
+            android:layout_height="13dp"
+            android:text="This is my sheep.pdf"
+            android:layout_toRightOf="@id/attachment_type_image"
+            android:layout_centerVertical="true"
+            android:textSize="10sp"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+        <ProgressBar
+            android:id="@+id/attachment_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progress="50"
+            android:progressTint="#0091ff"
+            android:progressBackgroundTint="#b7e0ff"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="13.4dp"
+        android:layout_height="13.4dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginRight="17dp"
+        android:background="@drawable/clock"/>
+</RelativeLayout>
