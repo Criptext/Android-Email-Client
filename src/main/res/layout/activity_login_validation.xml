@@ -7,17 +7,17 @@
     android:layout_height="match_parent"
     android:background="@drawable/login_background">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.12">
+    <FrameLayout
+        android:layout_height="70dp"
+        android:layout_gravity="top"
+        android:layout_width="match_parent">
 
         <ImageView
             android:id="@+id/icon_back"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="25dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/back_signup"/>
 
@@ -25,18 +25,17 @@
             android:layout_width="110dp"
             android:layout_height="28dp"
             android:src="@drawable/logo"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="25dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="25dp"/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/viewBody"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.50"
+        android:layout_weight="0.62"
         android:orientation="vertical"
         android:gravity="bottom|center_horizontal"
         android:transitionGroup="true">

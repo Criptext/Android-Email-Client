@@ -5,6 +5,7 @@ import com.email.db.models.Label
 import com.email.scenes.emaildetail.EmailDetailScene
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.label_chooser.LabelDataHandler
+import com.email.scenes.mailbox.OnDeleteThreadListener
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.UIMessage
 import com.email.utils.virtuallist.VirtualList
@@ -14,6 +15,9 @@ import com.email.utils.virtuallist.VirtualList
  */
 
 class MockedEmailDetailView: EmailDetailScene {
+    override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {
+    }
+
     override fun showError(message: UIMessage) {
     }
 

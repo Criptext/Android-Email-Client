@@ -1,6 +1,5 @@
 package com.email.scenes.composer
 
-import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
 import com.email.BaseActivity
@@ -13,7 +12,6 @@ import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
 import droidninja.filepicker.FilePickerConst
-
 
 class ComposerActivity : BaseActivity() {
 
@@ -29,11 +27,13 @@ class ComposerActivity : BaseActivity() {
                 appDB.emailLabelDao(), appDB.emailContactDao(), appDB.accountDao())
         val dataSource = ComposerDataSource(
                 composerLocalDB = db,
-                activeAccount = ActiveAccount.Companion.loadFromStorage(this)!!,
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 emailInsertionDao = appDB.emailInsertionDao(),
                 runner = AsyncTaskWorkRunner())
-
-        return ComposerController(model = model, scene = scene, dataSource = dataSource,
+        return ComposerController(
+                model = model,
+                scene = scene,
+                dataSource = dataSource,
                 host = this)
     }
 

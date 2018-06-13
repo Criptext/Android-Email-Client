@@ -55,21 +55,22 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
             LabelWrapper(it)
         }
 
-        val selectedLabelWrappers = ArrayList<LabelWrapper>()
-        val setSelectedLabelWrappers= HashSet<LabelWrapper>()
+        val selectedLabelWrappers = defaultSelectedLabels.map {
+            val labelWrapper = LabelWrapper(it)
+            labelWrapper.isSelected = true
+            labelWrapper
+        }
 
         labelWrappers.forEach { labelWrapper ->
-            defaultSelectedLabels.forEach { defaultSelectedLabel ->
-                if(labelWrapper.id == defaultSelectedLabel.id) {
-                    setSelectedLabelWrappers.add(labelWrapper)
-                    return@forEach
+            defaultSelectedLabels.forEach { selectedLabel ->
+                if(labelWrapper.id == selectedLabel.id){
+                    labelWrapper.isSelected = true
                 }
             }
         }
 
-        selectedLabelWrappers.addAll(setSelectedLabelWrappers)
-        model.labels.addAll(labelWrappers)
         model.selectedLabels.addMultipleSelected(selectedLabelWrappers)
+        model.labels.addAll(labelWrappers)
 
         scene.onFetchedLabels()
     }

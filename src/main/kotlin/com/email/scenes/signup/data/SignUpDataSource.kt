@@ -31,7 +31,7 @@ class SignUpDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                 flushResults(result)
             })
-            is SignUpRequest.CheckUserAvailabilty -> CheckUsernameAvailabilityWorker(
+            is SignUpRequest.CheckUserAvailability -> CheckUsernameAvailabilityWorker(
                     httpClient = httpClient,
                     username = params.username,
                     publishFn = { result -> flushResults(result)

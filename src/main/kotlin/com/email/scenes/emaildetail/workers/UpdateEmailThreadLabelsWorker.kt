@@ -4,22 +4,22 @@ import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
-import com.email.db.MailFolders
 import com.email.db.models.EmailLabel
+import com.email.db.models.Label
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.label_chooser.SelectedLabels
-import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**
  * Created by danieltigse on 05/01/18.
  */
 
-class UpdateEmailLabelsRelationsWorker(
+class UpdateEmailThreadLabelsWorker(
         private val db: EmailDetailLocalDB,
-        private val chosenLabel: MailFolders?,
-        private val selectedLabels: SelectedLabels?,
+        private val currentLabel: Label,
+        private val selectedLabels: SelectedLabels,
         private val threadId: String,
+        private val removeCurrentLabel: Boolean,
         override val publishFn: (
                 EmailDetailResult.UpdateEmailThreadsLabelsRelations) -> Unit)
     : BackgroundWorker<EmailDetailResult.UpdateEmailThreadsLabelsRelations> {
@@ -37,28 +37,34 @@ class UpdateEmailLabelsRelationsWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateEmailThreadsLabelsRelations>)
             : EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
-        val emailIds = db.getFullEmailsFromThreadId(threadId).map {
+        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val emailIds = db.getFullEmailsFromThreadId(threadId, rejectedLabels).map {
             it.email.id
         }
 
-        db.deleteRelationByEmailIds(emailIds = emailIds)
-        var selectedLabels = SelectedLabels()
-        if(this.selectedLabels != null) {
-            selectedLabels = this.selectedLabels
-        }
-        else if(chosenLabel != null){
-            selectedLabels.add(LabelWrapper(db.getLabelFromLabelType(chosenLabel)))
-        }
-
-        val emailLabels = arrayListOf<EmailLabel>()
-        emailIds.flatMap{ emailId ->
-            selectedLabels.toIDs().map{ labelId ->
-                emailLabels.add(EmailLabel(
-                        emailId = emailId,
-                        labelId = labelId))
+        if(removeCurrentLabel){
+            if(currentLabel == Label.defaultItems.starred
+                    || currentLabel == Label.defaultItems.important
+                    || currentLabel == Label.defaultItems.sent){
+                db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
+            }
+            else{
+                db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
             }
         }
-        db.createLabelEmailRelations(emailLabels)
+        else{
+            db.deleteRelationByEmailIds(emailIds = emailIds)
+
+            val emailLabels = arrayListOf<EmailLabel>()
+            emailIds.flatMap{ emailId ->
+                selectedLabels.toIDs().map{ labelId ->
+                    emailLabels.add(EmailLabel(
+                            emailId = emailId,
+                            labelId = labelId))
+                }
+            }
+            db.createLabelEmailRelations(emailLabels)
+        }
 
         return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success()
     }

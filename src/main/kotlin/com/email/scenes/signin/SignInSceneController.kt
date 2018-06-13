@@ -1,6 +1,7 @@
 package com.email.scenes.signin
 
 import com.email.IHostActivity
+import com.email.R
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.params.MailboxParams
@@ -9,6 +10,8 @@ import com.email.scenes.signin.data.SignInDataSource
 import com.email.scenes.signin.data.SignInRequest
 import com.email.scenes.signin.data.SignInResult
 import com.email.scenes.signin.holders.SignInLayoutState
+import com.email.utils.KeyboardManager
+import com.email.utils.UIMessage
 import com.email.validation.AccountDataValidator
 import com.email.validation.FormData
 import com.email.validation.ProgressButtonState
@@ -21,13 +24,15 @@ class SignInSceneController(
         private val model: SignInSceneModel,
         private val scene: SignInScene,
         private val host: IHostActivity,
-        private val dataSource: SignInDataSource): SceneController() {
+        private val dataSource: SignInDataSource,
+        private val keyboard: KeyboardManager): SceneController() {
 
     override val menuResourceId: Int? = null
 
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
             is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
+            is SignInResult.CheckUsernameAvailability -> onCheckUsernameAvailability(result)
         }
     }
 
@@ -42,19 +47,44 @@ class SignInSceneController(
         }
     }
 
+    private fun onCheckUsernameAvailability(result: SignInResult.CheckUsernameAvailability) {
+        when (result) {
+            is SignInResult.CheckUsernameAvailability.Success -> {
+                if(result.userExists) {
+                    keyboard.hideKeyboard()
+                    model.state = SignInLayoutState.LoginValidation(username = result.username)
+                    scene.initLayout(model.state, uiObserver)
+                }
+                else{
+                    scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
+                }
+            }
+            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(UIMessage(R.string.error_checking_availability))
+        }
+        scene.setSubmitButtonState(ProgressButtonState.enabled)
+    }
+
     private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
         when (result) {
             is SignInResult.AuthenticateUser.Success -> {
-                host.goToScene(MailboxParams(), false)
+                scene.showKeyGenerationHolder()
             }
             is SignInResult.AuthenticateUser.Failure -> onAuthenticationFailed(result)
         }
-
     }
 
+    private fun onAcceptPasswordLogin(username: String){
+        model.state = SignInLayoutState.InputPassword(
+                username = username,
+                password = "",
+                buttonState = ProgressButtonState.disabled)
+        scene.initLayout(model.state, uiObserver)
+    }
 
-    val onPasswordLoginDialogListener = object : OnPasswordLoginDialogListener {
-        override fun acceptPasswordLogin() {
+    private val passwordLoginDialogListener = object : OnPasswordLoginDialogListener {
+
+        override fun acceptPasswordLogin(username: String) {
+            onAcceptPasswordLogin(username)
         }
 
         override fun cancelPasswordLogin() {
@@ -65,11 +95,9 @@ class SignInSceneController(
         val userInput = AccountDataValidator.validateUsername(currentState.username)
         when (userInput) {
             is FormData.Valid -> {
-                model.state = SignInLayoutState.InputPassword(
-                        username = userInput.value,
-                        password = "",
-                        buttonState = ProgressButtonState.disabled)
-                scene.initLayout(model.state, uiObserver)
+                val newRequest = SignInRequest.CheckUserAvailability(userInput.value)
+                dataSource.submitRequest(newRequest)
+                scene.setSubmitButtonState(ProgressButtonState.waiting)
             }
             is FormData.Error ->
                 scene.drawInputError(userInput.message)
@@ -91,6 +119,11 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver {
+
+        override fun onProgressHolderFinish() {
+            host.goToScene(MailboxParams(), false)
+        }
+
         override fun onBackPressed() {
             this@SignInSceneController.onBackPressed()
         }
@@ -108,7 +141,8 @@ class SignInSceneController(
         }
 
         override fun onCantAccessDeviceClick(){
-            scene.showPasswordLoginDialog(onPasswordLoginDialogListener)
+            scene.showPasswordLoginDialog(
+                    onPasswordLoginDialogListener = this@SignInSceneController.passwordLoginDialogListener)
         }
         override fun userLoginReady() {
             host.goToScene(MailboxParams(), false)
@@ -129,7 +163,7 @@ class SignInSceneController(
             }
         }
         override fun onUsernameTextChanged(newUsername: String) {
-            model.state = SignInLayoutState.Start(username = newUsername)
+            model.state = SignInLayoutState.Start(username = newUsername, firstTime = false)
             val buttonState = if (newUsername.isNotEmpty()) ProgressButtonState.enabled
                               else ProgressButtonState.disabled
             scene.setSubmitButtonState(buttonState)
@@ -159,13 +193,18 @@ class SignInSceneController(
         val currentState = model.state
         return when (currentState) {
             is SignInLayoutState.Start -> true
+            is SignInLayoutState.LoginValidation -> {
+                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                resetLayout()
+                false
+            }
             is SignInLayoutState.InputPassword -> {
-                model.state = SignInLayoutState.Start(currentState.username)
+                model.state = SignInLayoutState.LoginValidation(currentState.username)
                 resetLayout()
                 false
             }
             is SignInLayoutState.WaitForApproval -> {
-                model.state = SignInLayoutState.Start("")
+                model.state = SignInLayoutState.Start("", firstTime = false)
                 resetLayout()
                 false
             }
@@ -185,5 +224,6 @@ class SignInSceneController(
         fun onUsernameTextChanged(newUsername: String)
         fun onForgotPasswordClick()
         fun onBackPressed()
+        fun onProgressHolderFinish()
     }
 }

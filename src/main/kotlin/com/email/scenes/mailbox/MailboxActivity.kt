@@ -46,7 +46,7 @@ class MailboxActivity : BaseActivity() {
               val metadata = EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
                       fromContact = fromContact, messageId = "gabriel/1/$it",
                       date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
-                      subject = "Test #$it")
+                      subject = "Test #$it", unread = true)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction({
@@ -122,6 +122,7 @@ class MailboxActivity : BaseActivity() {
                     scene = scene,
                     model = model,
                     host = hostActivity,
+                    activeAccount = activeAccount,
                     dataSource = mailboxDataSource,
                     websocketEvents = webSocketEvents,
                     feedController = initFeedController(appDB, activity, model.feedModel)

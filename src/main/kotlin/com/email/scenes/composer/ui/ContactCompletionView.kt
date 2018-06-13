@@ -25,7 +25,7 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
         val view: LinearLayout
         view = when {
             contact is Contact.Invalid -> l.inflate(R.layout.contact_token_invalid, parent as ViewGroup, false) as LinearLayout
-            contact.email.contains(Contact.mainDomain) -> l.inflate(R.layout.contact_token, parent as ViewGroup, false) as LinearLayout
+            contact.email.endsWith(Contact.mainDomain) -> l.inflate(R.layout.contact_token, parent as ViewGroup, false) as LinearLayout
             else -> l.inflate(R.layout.contact_token_external, parent as ViewGroup, false) as LinearLayout
         }
 

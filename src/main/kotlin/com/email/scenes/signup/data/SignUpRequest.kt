@@ -10,5 +10,5 @@ sealed class SignUpRequest{
     data class RegisterUser(val account: IncompleteAccount,
                        val recipientId: String
                        ): SignUpRequest()
-    data class CheckUserAvailabilty(val username: String): SignUpRequest()
+    data class CheckUserAvailability(val username: String): SignUpRequest()
 }

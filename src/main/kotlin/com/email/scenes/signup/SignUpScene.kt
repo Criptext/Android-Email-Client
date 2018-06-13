@@ -205,19 +205,19 @@ interface SignUpScene {
                     view.context,
                     R.layout.view_key_generation, viewGroup)
             keyGenerationHolder = KeyGenerationHolder(
-                    keyGenerationLayout, checkProgress, 200)
+                    keyGenerationLayout, checkProgress, 100)
         }
 
         private val checkProgress = {
             progress: Int
             ->
-            if(progress >= 99) {
+            if(progress >= 100) {
                 keyGenerationHolder?.stopTimer()
             }
             Unit
         }
         override fun showSuccess() {
-            keyGenerationHolder?.updateProgress(99)
+            keyGenerationHolder?.updateProgress(100)
             keyGenerationHolder?.stopTimer()
 
             val duration = Toast.LENGTH_LONG

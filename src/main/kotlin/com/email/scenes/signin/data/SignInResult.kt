@@ -21,4 +21,9 @@ sealed class SignInResult {
                 val message: UIMessage,
                 val exception: Exception): VerifyUser()
     }
+
+    sealed class CheckUsernameAvailability: SignInResult() {
+        data class Success(val userExists: Boolean, val username: String): CheckUsernameAvailability()
+        class Failure: CheckUsernameAvailability()
+    }
 }

@@ -16,8 +16,9 @@ import com.email.R
 class PasswordLoginDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
+    private var username: String = ""
 
-    fun showPasswordLoginDialog(
+    fun showPasswordLoginDialog(username: String,
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -25,6 +26,7 @@ class PasswordLoginDialog(val context: Context) {
 
         dialogBuilder.setView(dialogView)
 
+        this.username = username
         dialog = createDialog(dialogView,
                 dialogBuilder,
                 onPasswordLoginDialogListener)
@@ -52,15 +54,15 @@ class PasswordLoginDialog(val context: Context) {
         return newPasswordLoginDialog
     }
 
-    fun assignButtonEvents(view: View,
-                           dialog: AlertDialog,
-                           onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+    private fun assignButtonEvents(view: View,
+                                   dialog: AlertDialog,
+                                   onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
 
         val btn_yes = view.findViewById(R.id.password_login_yes) as Button
         val btn_no = view.findViewById(R.id.password_login_no) as Button
 
         btn_yes.setOnClickListener {
-            onPasswordLoginDialogListener.acceptPasswordLogin()
+            onPasswordLoginDialogListener.acceptPasswordLogin(username)
             dialog.dismiss()
         }
 

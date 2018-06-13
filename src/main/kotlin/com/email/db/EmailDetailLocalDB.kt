@@ -14,12 +14,16 @@ import java.util.HashSet
 interface EmailDetailLocalDB {
 
     fun getLabelsFromThreadId(threadId: String): List<Label>
-    fun getFullEmailsFromThreadId(threadId: String): List<FullEmail>
+    fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail>
     fun unsendEmail(emailId: Long)
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelFromLabelType(labelTextType: MailFolders): Label
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean)
+    fun deleteThread(threadId: String)
+    fun deleteEmail(emailId: Long)
+    fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
+    fun getCustomLabels(): List<Label>
 
     class Default(applicationContext: Context): EmailDetailLocalDB {
 
@@ -29,8 +33,8 @@ interface EmailDetailLocalDB {
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSENT)
         }
 
-        override fun getFullEmailsFromThreadId(threadId: String): List<FullEmail> {
-            val emails = db.emailDao().getEmailsFromThreadId(threadId)
+        override fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail> {
+            val emails = db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels)
             val fullEmails =  emails.map {
                 val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
@@ -72,6 +76,22 @@ interface EmailDetailLocalDB {
 
         override fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean) {
             db.emailDao().toggleRead(ids = emailIds, unread = updateUnreadStatus)
+        }
+
+        override fun deleteThread(threadId: String) {
+            db.emailDao().deleteThreads(listOf(threadId))
+        }
+
+        override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>){
+            db.emailLabelDao().deleteRelationByLabelAndEmailIds(labelId, emailIds)
+        }
+
+        override fun deleteEmail(emailId: Long) {
+            db.emailDao().deleteById(emailId)
+        }
+
+        override fun getCustomLabels(): List<Label>{
+            return db.labelDao().getAllCustomLabels()
         }
     }
 

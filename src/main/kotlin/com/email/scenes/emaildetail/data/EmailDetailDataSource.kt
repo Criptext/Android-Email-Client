@@ -12,9 +12,7 @@ import com.email.signal.SignalClient
  * Created by sebas on 3/12/18.
  */
 
-class EmailDetailDataSource(private val signalClient: SignalClient,
-                            private val activeAccount: ActiveAccount,
-                            override val runner: WorkRunner,
+class EmailDetailDataSource(override val runner: WorkRunner,
                             private val emailDetailLocalDB: EmailDetailLocalDB)
     : BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>()
 {
@@ -26,6 +24,7 @@ class EmailDetailDataSource(private val signalClient: SignalClient,
             is EmailDetailRequest.LoadFullEmailsFromThreadId -> LoadFullEmailsFromThreadWorker(
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
+                    currentLabel = params.currentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -45,11 +44,12 @@ class EmailDetailDataSource(private val signalClient: SignalClient,
                         flushResults(result)
                     })
 
-            is EmailDetailRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailLabelsRelationsWorker(
+            is EmailDetailRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadLabelsWorker(
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
-                    chosenLabel = params.chosenLabel,
                     selectedLabels = params.selectedLabels,
+                    currentLabel = params.currentLabel,
+                    removeCurrentLabel = params.removeCurrentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -58,6 +58,25 @@ class EmailDetailDataSource(private val signalClient: SignalClient,
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
                     updateUnreadStatus = params.updateUnreadStatus,
+                    currentLabel = params.currentLabel,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
+            is EmailDetailRequest.MoveEmailThread -> MoveEmailThreadWorker(
+                    chosenLabel = params.chosenLabel,
+                    db = emailDetailLocalDB,
+                    threadId = params.threadId,
+                    currentLabel = params.currentLabel,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+
+            is EmailDetailRequest.MoveEmail -> MoveEmailWorker(
+                    chosenLabel = params.chosenLabel,
+                    db = emailDetailLocalDB,
+                    emailId = params.emailId,
+                    currentLabel = params.currentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     })

@@ -16,12 +16,27 @@ import java.util.*
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
-
-    override fun createLabelEmailRelations(emailLabels: List<EmailLabel>) {
+    override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean, rejectedLabels: List<Long>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean) {
+    override fun getCustomLabels(): List<Label> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteThreads(threadIds: List<String>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createLabelEmailRelations(emailLabels: List<EmailLabel>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -68,9 +83,5 @@ class MockedMailboxLocalDB: MailboxLocalDB {
     override fun getTotalCounterLabel(labelId: Long): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    override val getEmailThreadOperation: (threadId: String) -> Result<EmailThread, Exception>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-
 
 }

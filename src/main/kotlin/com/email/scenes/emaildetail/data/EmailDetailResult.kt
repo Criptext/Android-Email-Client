@@ -41,4 +41,11 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
     }
+
+    sealed class MoveEmailThread: EmailDetailResult() {
+        class Success: MoveEmailThread()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception) : MoveEmailThread()
+    }
 }

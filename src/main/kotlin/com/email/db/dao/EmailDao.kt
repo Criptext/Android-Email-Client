@@ -35,15 +35,16 @@ import java.util.*
     fun getNotArchivedEmailThreads() : List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
+        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         inner join email_label on email.id = email_label.emailId
-        AND date<:starterDate
+        and date < :starterDate
+        where not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
         having allLabels like :selectedLabel
-        and email_label.labelId NOT IN (:rejectedLabels)
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
@@ -82,9 +83,13 @@ import java.util.*
     fun update(emails: List<Email>)
 
     @Query("""SELECT * FROM email
+            inner join email_label on email.id = email_label.emailId
             WHERE threadId=:threadId
+            AND NOT EXISTS
+            (SELECT * FROM email_label WHERE email_label.emailId = email.id and email_label.labelId IN (:rejectedLabels))
+            GROUP BY email.messageId,email.threadId
             ORDER BY date ASC""")
-    fun getEmailsFromThreadId(threadId: String): List<Email>
+    fun getEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(email: Email): Long
@@ -95,14 +100,15 @@ import java.util.*
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
     @Query("""
-        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
+        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         inner join email_label on email.id = email_label.emailId
+        where not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
         having allLabels like :selectedLabel
-        and email_label.labelId NOT IN (:rejectedLabels)
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabel(
@@ -116,10 +122,11 @@ import java.util.*
         max(email.unread) as unread
         from email
         inner join email_label on email.id = email_label.emailId
+        where not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         and unread = 1
         group by uniqueId
         having allLabels like :selectedLabel
-        and email_label.labelId NOT IN (:rejectedLabels)
         """)
     fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: String): List<Email>
 
@@ -135,11 +142,18 @@ import java.util.*
     fun getTotalThreads(selectedLabel: String): List<Email>
 
     @Query("""
-        select count(*) from email
+        select count(distinct(email.id)) from email
+        inner join email_label on email.id = email_label.emailId
         where threadId=:threadId
+        and not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         """)
-    fun getTotalEmailsByThread(threadId: String): Int
+    fun getTotalEmailsByThread(threadId: String, rejectedLabels: List<Long>): Int
 
     @Query("DELETE from email WHERE id = :id")
     fun deleteById(id: Long)
+
+    @Query("DELETE from email WHERE threadId in (:threadIds)")
+    fun deleteThreads(threadIds: List<String>)
+
 }

@@ -2,10 +2,8 @@ package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
-import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
-import com.email.utils.DateUtils
-import org.json.JSONObject
+import com.email.db.models.Label
 
 /**
  * Created by danieltigse on 4/18/18.
@@ -15,6 +13,7 @@ class UpdateUnreadStatusWorker(
         private val db: MailboxLocalDB,
         private val emailThreads: List<EmailThread>,
         private val updateUnreadStatus: Boolean,
+        private val currentLabel: Label,
         override val publishFn: (MailboxResult.UpdateUnreadStatus) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateUnreadStatus> {
 
@@ -24,9 +23,9 @@ class UpdateUnreadStatusWorker(
         return MailboxResult.UpdateUnreadStatus.Failure()
     }
 
-    override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>)
-            : MailboxResult.UpdateUnreadStatus? {
-        db.updateUnreadStatus(emailThreads, updateUnreadStatus)
+    override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>): MailboxResult.UpdateUnreadStatus? {
+        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        db.updateUnreadStatus(emailThreads, updateUnreadStatus, rejectedLabels)
         return MailboxResult.UpdateUnreadStatus.Success()
     }
 

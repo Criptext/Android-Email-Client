@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.email.db.models.ActiveAccount
 import com.email.scenes.ActivityMessage
 import com.email.scenes.ModelFactory
 import com.email.scenes.SceneController
@@ -125,9 +126,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignUpParams -> SignUpSceneModel()
             is SignInParams -> SignInSceneModel()
             is MailboxParams -> MailboxSceneModel()
-            is  EmailDetailParams -> EmailDetailSceneModel(params.threadId)
+            is  EmailDetailParams -> EmailDetailSceneModel(params.threadId, params.currentLabel)
             is ComposerParams -> ModelFactory.createComposerModel(params.fullEmail,
-                    params.composerType)
+                    params.composerType, params.userEmail)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

@@ -12,10 +12,10 @@ class LabelDataHandler(sceneController: SceneController) {
         selectedLabels: SelectedLabels ->
         when(sceneController) {
             is MailboxSceneController -> {
-                sceneController.createRelationSelectedEmailLabels(selectedLabels)
+                sceneController.updateEmailThreadsLabelsRelations(selectedLabels)
             }
             is EmailDetailSceneController -> {
-                sceneController.createRelationAllEmailLabels(selectedLabels, null)
+                sceneController.updateThreadLabelsRelation(selectedLabels)
             }
             else -> {
 

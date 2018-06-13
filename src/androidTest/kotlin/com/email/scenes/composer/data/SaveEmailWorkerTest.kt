@@ -4,12 +4,14 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
+import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
+import org.amshove.kluent.mock
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
@@ -27,6 +29,7 @@ class SaveEmailWorkerTest {
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__")
 
+    private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mock()
 
     @Before
     fun setup() {
@@ -57,7 +60,7 @@ class SaveEmailWorkerTest {
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData)
 
-        worker.work() as ComposerResult.SaveEmail.Success
+        worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
         val insertedEmails = db.emailDao().getAll()
@@ -93,7 +96,7 @@ class SaveEmailWorkerTest {
         val worker = newWorker(emailId = draftId, threadId = "__MESSAGE_ID__", onlySave = false,
                 inputData = inputData)
 
-        worker.work() as ComposerResult.SaveEmail.Success
+        worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
         val insertedEmails = db.emailDao().getAll()
@@ -124,7 +127,7 @@ class SaveEmailWorkerTest {
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData)
 
-        worker.work() as ComposerResult.SaveEmail.Success
+        worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
         val insertedContacts = db.contactDao().getAll()

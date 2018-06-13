@@ -54,8 +54,8 @@ class SaveEmailWorker(
                 cc = composerInputData.cc.toCSVEmails(),
                 bcc = composerInputData.bcc.toCSVEmails(),
                 date = DateUtils.printDateWithServerFormat(Date()),
-                fromContact = sender
-                )
+                fromContact = sender,
+                unread = false)
     }
 
     private fun createDraftMessageId(deviceId: Int): String =

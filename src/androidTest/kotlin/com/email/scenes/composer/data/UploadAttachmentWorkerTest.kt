@@ -10,6 +10,7 @@ import com.email.signal.Encoding
 import com.email.utils.*
 import com.email.utils.file.AndroidFs
 import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.mock
 import org.junit.*
 import org.junit.runner.RunWith
 import java.nio.charset.Charset
@@ -80,7 +81,7 @@ class UploadAttachmentWorkerTest {
 
             val worker = newWorker(fileToUpload.absolutePath)
 
-            worker.work() as ComposerResult.UploadFile.Success
+            worker.work(mock()) as ComposerResult.UploadFile.Success
         } finally {
             fileToUpload.delete()
         }

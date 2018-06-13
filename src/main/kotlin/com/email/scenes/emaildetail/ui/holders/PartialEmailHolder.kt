@@ -6,10 +6,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.email.R
+import com.email.SecureEmail
 import com.email.db.DeliveryTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.DateUtils
+import com.email.utils.EmailThreadValidator
 import com.email.utils.Utility
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -54,7 +56,16 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
 
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
 
-        headerView.text = fullEmail.from.name
+        headerView.text =
+                if(EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT)) {
+                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))
+                    headerView.context.getString(R.string.draft)
+                }
+                else {
+                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.textColorPrimary))
+                    fullEmail.from.name
+                }
+
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
                 fullEmail.from.name,
                 fullEmail.from.name[0].toString().toUpperCase(), 250, 250))

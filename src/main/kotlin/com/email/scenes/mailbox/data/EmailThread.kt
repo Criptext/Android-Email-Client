@@ -12,7 +12,6 @@ import java.util.*
  */
 
 class EmailThread(val latestEmail: FullEmail,
-                  val labelsOfMail :List<Label>,
                   val totalEmails: Int) {
 
     val unread :Boolean
@@ -34,16 +33,20 @@ class EmailThread(val latestEmail: FullEmail,
 
     private fun getContactsInvolved(email: FullEmail): String{
 
-        if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails > 1){
-            return email.to.joinToString { it.name } + ", " + email.from.name +
-                    if(email.cc.isEmpty()) "" else email.cc.joinToString { it.name }
+        return if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails > 1){
+            email.to.joinToString { it.name } + ", " + email.from.name +
+                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
         }
         else if(EmailThreadValidator.isLabelInList(email.labels,SecureEmail.LABEL_SENT) && totalEmails == 1){
-            return email.to.joinToString { it.name } +
-                    if(email.cc.isEmpty()) "" else email.cc.joinToString { it.name }
+            email.to.joinToString { it.name } +
+                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
+        }
+        else if(totalEmails > 1){
+            email.from.name + ", " + email.to.joinToString { it.name } +
+                    if(email.cc.isEmpty()) "" else ", " + email.cc.joinToString { it.name }
         }
         else{
-            return email.from.name
+            email.from.name
         }
 
     }

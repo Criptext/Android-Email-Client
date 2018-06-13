@@ -2,10 +2,7 @@ package com.email.scenes.emailDetail
 
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import com.email.db.models.FullEmail
+import com.email.db.models.*
 import com.email.mocks.MockedWorkRunner
 import com.email.mocks.MockedIHostActivity
 import com.email.scenes.emailDetail.mocks.MockedEmailDetailLocalDB
@@ -16,8 +13,8 @@ import com.email.scenes.emaildetail.EmailDetailSceneController
 import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
-import com.email.signal.SignalClient
 import com.email.utils.DateUtils
+import com.email.utils.KeyboardManager
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be`
@@ -46,10 +43,9 @@ class EmailDetailControllerTest {
     @Before
     fun setUp() {
         protocolStore = MockedSignalProtocolStore()
-        val signalClient = SignalClient.Default(protocolStore)
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
-        model = EmailDetailSceneModel(mockedThreadId)
+        model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox)
         scene = MockedEmailDetailView()
         runner = MockedWorkRunner()
         db = MockedEmailDetailLocalDB()
@@ -57,8 +53,6 @@ class EmailDetailControllerTest {
         emailInsertionDao = mockk()
 
         dataSource = EmailDetailDataSource(
-                signalClient = signalClient,
-                activeAccount = activeAccount,
                 runner = runner,
                 emailDetailLocalDB = db)
 
@@ -67,7 +61,8 @@ class EmailDetailControllerTest {
                 dataSource = dataSource,
                 host = MockedIHostActivity(),
                 model = model,
-                keyboard = null)
+                activeAccount = activeAccount,
+                keyboard = mockk(relaxed = true))
 
     }
 

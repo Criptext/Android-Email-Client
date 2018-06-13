@@ -1,9 +1,6 @@
 package com.email.db.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
-import android.arch.persistence.room.Transaction
+import android.arch.persistence.room.*
 import com.email.db.ContactTypes
 import com.email.db.models.*
 import java.util.*
@@ -29,6 +26,11 @@ interface EmailInsertionDao {
 
     @Insert
     fun insertContacts(contacts: List<Contact>): List<Long>
+
+    @Query("""UPDATE contact
+            SET name=:name
+            where id=:id""")
+    fun updateContactName(id: Long, name: String)
 
     @Query("SELECT * FROM contact where email in (:emailAddresses)")
     fun findContactsByEmail(emailAddresses: List<String>): List<Contact>

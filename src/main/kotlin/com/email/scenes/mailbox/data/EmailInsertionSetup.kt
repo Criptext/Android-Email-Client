@@ -23,7 +23,7 @@ object EmailInsertionSetup {
         val preview = HTMLUtils.createEmailPreview(decryptedBody)
         return Email(
             id = 0,
-            unread = true,
+            unread = metadata.unread,
             date = DateUtils.getDateFromString(
                     metadata.date,
                     null),
@@ -72,7 +72,10 @@ object EmailInsertionSetup {
         return if (existingContacts.isEmpty()) {
             val ids = dao.insertContacts(listOf(senderContact))
             Contact(id = ids.first(), name = senderContact.name, email = senderContact.email)
-        } else existingContacts.first()
+        } else {
+            dao.updateContactName(existingContacts.first().id, senderContact.name)
+            existingContacts.first()
+        }
     }
 
     private fun createFullEmailToInsert(dao: EmailInsertionDao,
