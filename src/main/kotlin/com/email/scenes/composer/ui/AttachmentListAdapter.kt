@@ -19,10 +19,10 @@ class AttachmentListAdapter(private val mContext: Context, private val attachmen
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-        val attachment = attachmentsList.toList().get(position).second ?: return
-        var mView = holder as AttachmentViewHolder ?: return
-        mView.filename.text = attachment.filepath.split("/").last()
-        mView.progressBar.progress = attachment.uploadProgress
+        val attachment = attachmentsList.toList().get(position).second
+        val mView = holder as AttachmentViewHolder
+        mView.setFields(name = attachment.filepath.split("/").last(), type = attachment.type)
+        mView.setProgress(attachment.uploadProgress)
     }
 
 }

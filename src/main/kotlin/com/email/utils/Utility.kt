@@ -1,6 +1,7 @@
 package com.email.utils
 
 import android.graphics.*
+import android.webkit.MimeTypeMap
 import com.email.R
 import com.email.db.AttachmentTypes
 import com.email.utils.ui.TextDrawable
@@ -67,19 +68,37 @@ class Utility {
 
         fun getDrawableAttachmentFromType(type: AttachmentTypes) = when (type) {
             AttachmentTypes.EXCEL ->
-                R.drawable.attachment_excel_eliminar
+                R.drawable.xls
 
             AttachmentTypes.WORD ->
-                R.drawable.attachment_word_eliminar
+                R.drawable.word
 
             AttachmentTypes.PDF ->
-                R.drawable.attachment_pdf_eliminar
+                R.drawable.pdf
 
             AttachmentTypes.PPT ->
-                R.drawable.attachment_ppt_eliminar
+                R.drawable.ppt
 
             AttachmentTypes.IMAGE ->
-                R.drawable.attachment_image_eliminar
+                R.drawable.img
+
+            AttachmentTypes.DEFAULT ->
+                R.drawable.generic
+        }
+
+        fun getAttachmentTypeFromPath(filepath: String): AttachmentTypes {
+            var type = AttachmentTypes.DEFAULT
+            val extension = filepath.split(".").last()
+            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+            type = when {
+                mimetype.contains("image") -> AttachmentTypes.IMAGE
+                mimetype.contains("word") -> AttachmentTypes.WORD
+                mimetype.contains("powerpoint") || mimetype.contains("presentation") -> AttachmentTypes.PPT
+                mimetype.contains("excel") || mimetype.contains("sheet") -> AttachmentTypes.EXCEL
+                mimetype.contains("pdf") -> AttachmentTypes.PDF
+                else -> AttachmentTypes.DEFAULT
+            }
+            return type
         }
     }
 }

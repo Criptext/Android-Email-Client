@@ -1,5 +1,6 @@
 package com.email.scenes
 
+import com.email.db.models.File
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerInputData
 

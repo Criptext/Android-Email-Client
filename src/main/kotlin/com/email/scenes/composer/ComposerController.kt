@@ -65,24 +65,24 @@ class ComposerController(private val model: ComposerModel,
 
     private fun onUploadFile(result: ComposerResult.UploadFile){
         when (result) {
+            is ComposerResult.UploadFile.Register -> {
+                val composerAttachment = model.attachments[result.filepath] ?: return
+                composerAttachment.size = result.size
+                composerAttachment.filetoken = result.filetoken
+            }
             is ComposerResult.UploadFile.Progress -> {
                 val composerAttachment = model.attachments[result.filepath] ?: return
                 composerAttachment.uploadProgress = result.percentage
-                composerAttachment.filetoken = result.filetoken
-                scene.notifyDataSetChanged()
-                Log.d("PRINT", result.percentage.toString())
             }
             is ComposerResult.UploadFile.Success -> {
                 val composerAttachment = model.attachments[result.filepath] ?: return
                 composerAttachment.uploadProgress = 100
-                scene.notifyDataSetChanged()
-                Log.d("PRINT", result.toString())
             }
             is ComposerResult.UploadFile.Failure -> {
-                Log.d("PRINT", result.toString())
+                //TODO
             }
         }
-
+        scene.notifyDataSetChanged()
     }
 
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {

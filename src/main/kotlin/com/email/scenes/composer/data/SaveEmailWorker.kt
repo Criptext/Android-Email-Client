@@ -62,14 +62,20 @@ class SaveEmailWorker(
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
 
+    private fun createFilesData(): List<File> =
+        attachments.map {
+            File(it.filetoken, it.filepath.split("/").last(), it.size, 1, Date(), false, 0)
+        }
+
     private fun saveEmail(): Pair<Long, String> {
         val metadataColumns = createMetadataColumns()
         val defaultLabels = Label.DefaultItems()
         val labels = listOf(defaultLabels.draft)
+        val files = createFilesData()
         val newEmailId = dao.runTransaction({
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
-                    decryptedBody = composerInputData.body, labels = labels)
+                    decryptedBody = composerInputData.body, labels = labels, files = files)
         })
         return Pair(newEmailId, metadataColumns.threadId)
     }

@@ -24,7 +24,7 @@ class File(
         var name : String,
 
         @ColumnInfo(name = "size")
-        var size : Int,
+        var size : Long,
 
         @ColumnInfo(name = "status")
         var status : Int,
@@ -37,7 +37,7 @@ class File(
 
         @ColumnInfo(name = "emailId")
         @NonNull
-        var emailId : Int
+        var emailId : Long
 
 ) {
     override fun toString(): String {

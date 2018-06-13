@@ -36,7 +36,7 @@ class UploadAttachmentWorker(private val filepath: String,
             val chunks = (file.length() / chunkSize).toInt() + 1
             val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
                 reporter.report(ComposerResult.UploadFile.Progress(file.absolutePath,
-                        index * 100 / chunks, fileToken))
+                        index * 100 / chunks))
                 fileServiceAPIClient.uploadChunk(chunk = chunk, fileName = file.name,
                         part = index + 1, fileToken = fileToken)
             }
@@ -48,6 +48,13 @@ class UploadAttachmentWorker(private val filepath: String,
         Result.of {
             val jsonObject = JSONObject(stringResponse)
             jsonObject.getString("filetoken")
+        }
+    }
+
+    private fun notifyRegisteredFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<String, Exception> = { filetoken ->
+        Result.of {
+            reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, file.length(), filetoken))
+            filetoken
         }
     }
 
@@ -66,6 +73,7 @@ class UploadAttachmentWorker(private val filepath: String,
         val result = registerFile(file)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap(getFileTokenFromJSONResponse)
+                .flatMap(notifyRegisteredFile(file, reporter))
                 .flatMap(uploadFile(file, reporter))
 
 

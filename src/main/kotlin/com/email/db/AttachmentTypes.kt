@@ -6,5 +6,5 @@ package com.email.db
 
 
 enum class AttachmentTypes {
-    EXCEL, WORD, PDF, PPT, IMAGE
+    EXCEL, WORD, PDF, PPT, IMAGE, DEFAULT
 }

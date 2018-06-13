@@ -1,6 +1,7 @@
 package com.email.scenes.composer.data
 
 import com.email.db.models.Contact
+import com.email.db.models.File
 import com.email.utils.UIMessage
 
 /**
@@ -22,7 +23,8 @@ sealed class ComposerResult {
 
     sealed class UploadFile : ComposerResult() {
         data class Success(val filepath: String): UploadFile()
-        data class Progress(val filepath: String, val percentage: Int, val filetoken: String): UploadFile()
+        data class Register(val filepath: String, val size: Long, val filetoken: String): UploadFile()
+        data class Progress(val filepath: String, val percentage: Int): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
     }
 

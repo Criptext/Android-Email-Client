@@ -41,6 +41,9 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 
+    @Insert
+    fun insertEmailFiles(emailFiles: List<File>)
+
     @Transaction
     fun runTransaction(insertFn: () -> Long): Long {
         return insertFn()
