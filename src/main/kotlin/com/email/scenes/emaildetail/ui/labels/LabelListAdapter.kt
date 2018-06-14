@@ -15,7 +15,7 @@ import com.email.utils.virtuallist.VirtualList
 class LabelListAdapter(private val mContext: Context,
                        private val labels: VirtualList<Label>
 ) : RecyclerView.Adapter<LabelHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): LabelHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelHolder{
         val mView = LayoutInflater.from(mContext).inflate(R.layout.label_holder, null)
         return LabelHolder(mView)
     }
@@ -24,8 +24,8 @@ class LabelListAdapter(private val mContext: Context,
         return labels.size
     }
 
-    override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
+    override fun onBindViewHolder(holder: LabelHolder, position: Int) {
         val label = labels[position]
-        holder?.bindLabel(label)
+        holder.bindLabel(label)
     }
 }

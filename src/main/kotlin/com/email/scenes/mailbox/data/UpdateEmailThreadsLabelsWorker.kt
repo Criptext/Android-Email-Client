@@ -36,7 +36,6 @@ class UpdateEmailThreadsLabelsWorker(
 
     private fun removeCurrentLabelFromEmails(emailIds: List<Long>) {
         if(currentLabel == defaultItems.starred
-          || currentLabel == defaultItems.important
           || currentLabel == defaultItems.sent)
             db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
         else
@@ -61,6 +60,7 @@ class UpdateEmailThreadsLabelsWorker(
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val emailIds = selectedThreadIds.flatMap { threadId ->
             db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
+
         }
 
         if(shouldRemoveCurrentLabel)

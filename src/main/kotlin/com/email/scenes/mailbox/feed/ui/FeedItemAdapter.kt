@@ -22,7 +22,7 @@ class FeedItemAdapter(val feedItemsList: VirtualList<ActivityFeedItem>,
         setHasStableIds(true)
     }
 
-    override fun onBindViewHolder(holder: FeedItemHolder?, position: Int) {
+    override fun onBindViewHolder(holder: FeedItemHolder, position: Int) {
         if(holder != null) {
             val feedItem = feedItemsList[position]
             holder.bindFeed(feedItem, position, listener)

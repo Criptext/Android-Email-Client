@@ -29,7 +29,10 @@ class Account(
         var identityKeyPairB64: String,
 
         @ColumnInfo(name = "registrationId")
-        var registrationId : Int
+        var registrationId : Int,
+
+        @ColumnInfo(name = "signature")
+        var signature: String
 ) {
 
     override fun toString(): String {

@@ -83,7 +83,7 @@ interface MailboxScene{
 
         override var onMoveThreadsListener: OnMoveThreadsListener? = null
 
-        private val labelChooserDialog = LabelChooserDialog(context)
+        private val labelChooserDialog = LabelChooserDialog(context, mailboxView)
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
 

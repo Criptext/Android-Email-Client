@@ -90,7 +90,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
     class AttachmentContactsAdapter(private val mContext: Context,
                                           private val contacts: List<MockedAttachmentContact>
     ) : RecyclerView.Adapter<AttachmentContactHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AttachmentContactHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentContactHolder {
             val mView = LayoutInflater.from(mContext).
                     inflate(R.layout.attachment_history_item, null)
             return AttachmentContactHolder(mView)
@@ -100,9 +100,9 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
             return contacts.size
         }
 
-        override fun onBindViewHolder(holder: AttachmentContactHolder?, position: Int) {
+        override fun onBindViewHolder(holder: AttachmentContactHolder, position: Int) {
             val contact = contacts[position]
-            holder?.bindAttachmentContact(contact)
+            holder.bindAttachmentContact(contact)
         }
     }
 

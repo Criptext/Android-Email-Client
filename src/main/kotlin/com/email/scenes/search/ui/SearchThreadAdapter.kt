@@ -52,7 +52,7 @@ class SearchThreadAdapter(private val mContext : Context,
         })
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is EmailHolder -> {
                 if (holder.itemView == null) return

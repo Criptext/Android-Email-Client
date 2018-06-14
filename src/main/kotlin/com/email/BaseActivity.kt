@@ -20,6 +20,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.email.scenes.mailbox.MailboxSceneModel
 import com.email.scenes.params.*
 import com.email.scenes.search.SearchSceneModel
+import com.email.scenes.settings.SettingsModel
+import com.email.scenes.settings.signature.SignatureModel
 import com.email.scenes.signin.SignInActivity
 import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpActivity
@@ -27,6 +29,7 @@ import com.email.scenes.signup.SignUpSceneModel
 import com.email.utils.UIMessage
 import com.email.utils.compat.PermissionUtilsCompat
 import com.email.utils.dialog.SingletonProgressDialog
+import com.email.utils.file.IntentUtils
 import droidninja.filepicker.FilePickerBuilder
 import java.io.File
 
@@ -132,6 +135,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview)
             is ComposerParams -> ComposerModel(params.type)
+            is SettingsParams -> SettingsModel()
+            is SignatureParams -> SignatureModel(params.recipientId)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -180,9 +185,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.FilePresent -> {
                 val file = File(params.filepath)
-                val newIntent = Intent(Intent.ACTION_VIEW)
-                newIntent.setDataAndType(Uri.fromFile(file), params.mimeType)
-                newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                val newIntent = IntentUtils.createIntentToOpenFileInExternalApp(this, file)
                 startActivity(newIntent)
             }
         }
@@ -219,7 +222,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     enum class RequestCode {
-        readAccess
+        writeAccess
     }
 
 }

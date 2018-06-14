@@ -27,7 +27,7 @@ class SaveEmailWorkerTest {
     private lateinit var db: TestDatabase
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
     private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 

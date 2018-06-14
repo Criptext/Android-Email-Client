@@ -18,7 +18,7 @@ class SearchHistoryAdapter(private val searchHistoryList: VirtualSearchHistoryLi
                            private val searchListener: OnSearchEventListener)
     :VirtualListAdapter(searchHistoryList) {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is SearchHolder -> {
                 val result = searchHistoryList[position]

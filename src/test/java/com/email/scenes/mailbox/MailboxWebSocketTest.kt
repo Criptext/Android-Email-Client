@@ -64,7 +64,7 @@ class MailboxWebSocketTest {
         httpClient = mockk()
 
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
-                deviceId = 3, jwt = "__JWT_TOKEN__")
+                deviceId = 3, jwt = "__JWT_TOKEN__", signature = "")
 
         dataSource = MailboxDataSource(
                 runner = runner,

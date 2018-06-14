@@ -34,7 +34,7 @@ open class MailboxWorkerTest {
     fun setup() {
         lastResult = null
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
-                jwt = "__JWTOKEN__")
+                jwt = "__JWTOKEN__", signature = "")
         signalClient = mockk()
         db = mockk()
         emailDao = mockk()

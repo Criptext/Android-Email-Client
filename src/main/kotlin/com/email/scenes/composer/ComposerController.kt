@@ -6,6 +6,7 @@ import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.BackgroundWorkManager
+import com.email.db.models.ActiveAccount
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
@@ -23,6 +24,7 @@ import com.email.BaseActivity
 class ComposerController(private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
+                         private val activeAccount: ActiveAccount,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
@@ -45,8 +47,8 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
-            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)){
+            if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
             }
         }
@@ -75,7 +77,7 @@ class ComposerController(private val model: ComposerModel,
         when (result) {
             is ComposerResult.LoadInitialData.Success -> {
                 updateModelWithInputData(result.initialData)
-                bindWithModel(result.initialData)
+                bindWithModel(result.initialData, activeAccount.signature)
                 model.initialized = true
             }
 
@@ -231,16 +233,21 @@ class ComposerController(private val model: ComposerModel,
             is ComposerType.Reply -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.ReplyAll -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
+            is ComposerType.Draft -> ComposerRequest.LoadInitialData(type, type.draftId)
             else -> null
         }
 
         if (request != null) dataSource.submitRequest(request)
     }
 
-    private fun bindWithModel(composerInputData: ComposerInputData) {
+    private fun bindWithModel(composerInputData: ComposerInputData, signature: String) {
+        if(model.isReplyOrDraft){
+            scene.setFocusToComposer()
+        }
         scene.bindWithModel(firstTime = model.firstTime,
                 composerInputData = composerInputData,
-                attachments = model.attachments)
+                attachments = model.attachments,
+                signature = signature)
         model.firstTime = false
     }
 
@@ -249,9 +256,10 @@ class ComposerController(private val model: ComposerModel,
         dataSourceController.setDataSourceListener()
 
         if (model.initialized)
-            bindWithModel(ComposerInputData.fromModel(model))
+            bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
         else
             loadInitialData()
+
         dataSourceController.getAllContacts()
         scene.observer = observer
 
@@ -281,7 +289,7 @@ class ComposerController(private val model: ComposerModel,
     private fun shouldGoBackWithoutSave(): Boolean{
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
-        return !Validator.mailHasMoreThanSignature(data, "")
+        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature)
     }
 
     private fun exitDeletingDraft() {
@@ -327,9 +335,9 @@ class ComposerController(private val model: ComposerModel,
     }
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
+        if (requestCode != BaseActivity.RequestCode.writeAccess.ordinal) return
 
-        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED){
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))

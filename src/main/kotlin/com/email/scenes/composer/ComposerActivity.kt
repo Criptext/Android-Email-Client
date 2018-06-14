@@ -32,15 +32,17 @@ class ComposerActivity : BaseActivity() {
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
                 fileDao = appDB.fileDao())
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val dataSource = ComposerDataSource(
                 httpClient = httpClient,
                 composerLocalDB = db,
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 emailInsertionDao = appDB.emailInsertionDao(),
                 runner = AsyncTaskWorkRunner(), authToken = Hosts.fileServiceAuthToken)
         return ComposerController(
                 model = model,
                 scene = scene,
+                activeAccount = activeAccount,
                 dataSource = dataSource,
                 host = this)
     }

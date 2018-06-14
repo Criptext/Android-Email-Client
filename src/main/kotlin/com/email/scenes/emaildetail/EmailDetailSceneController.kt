@@ -180,8 +180,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
-            if (!host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)){
+            if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 return
             }
             val email = model.emails[emailPosition]
@@ -253,8 +253,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
-            val type = ComposerType.Reply(originalId = fullEmail.email.id,
-                                          threadId = fullEmail.email.threadId)
+            val type = ComposerType.Draft(draftId = fullEmail.email.id)
             host.goToScene(ComposerParams(type), true)
         }
     }
@@ -369,8 +368,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>,
                                          grantResults: IntArray) {
-        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
-        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
+        if (requestCode != BaseActivity.RequestCode.writeAccess.ordinal) return
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED)
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/mailbox_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <LinearLayout
+                android:layout_toEndOf="@id/mailbox_nav_button"
+                android:layout_width="match_parent"
+                android:id="@+id/mailbox_title_layout"
+                android:layout_marginStart="-10dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:visibility="visible"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/mailbox_back_button"
+                    android:src="@drawable/back"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:layout_height="70dp"
+                    android:layout_width="70dp" />
+
+                <TextView
+                    android:id="@+id/mailbox_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_settings"
+                    android:gravity="left|center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/sliding_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:tabTextAppearance="@style/CriptextTabText"
+            app:tabTextColor="@color/black"
+            app:tabSelectedTextColor="@color/azure"
+            app:tabIndicatorColor="@color/azure"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <include
+            android:id="@+id/viewSettingsGeneral"
+            layout="@layout/view_settings_general" />
+
+        <include
+            android:id="@+id/viewSettingsLabels"
+            layout="@layout/view_settings_labels" />
+
+        <include
+            android:id="@+id/viewSettingsDevices"
+            layout="@layout/view_settings_devices" />
+
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

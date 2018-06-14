@@ -40,8 +40,6 @@ data class Label (
                 type = LabelTypes.SYSTEM, visible = true)
         val sent = Label(id = 3, color = "a0d06e", text = MailFolders.SENT,
                 type = LabelTypes.SYSTEM, visible = true)
-        val important = Label(id = 4, color = "ffbb63", text = MailFolders.IMPORTANT,
-                type = LabelTypes.SYSTEM, visible = true)
         val starred = Label(id = 5, color = "ffe137", text = MailFolders.STARRED,
                 type = LabelTypes.SYSTEM, visible = true)
         val draft = Label(id = 6, color = "626262", text = MailFolders.DRAFT,
@@ -49,13 +47,12 @@ data class Label (
         val trash = Label(id = 7, color = "ed63ff", text = MailFolders.TRASH,
                 type = LabelTypes.SYSTEM, visible = true)
 
-        fun toList() = listOf(draft, inbox, sent, trash, starred, spam, important)
+        fun toList() = listOf(draft, inbox, sent, trash, starred, spam)
 
         fun rejectedLabelsByMailbox(label: Label?): List<Label> =
             when (label) {
             sent,
             inbox,
-            important,
             starred -> listOf(spam, trash)
             spam -> listOf(trash)
             trash -> listOf(spam)
@@ -66,7 +63,6 @@ data class Label (
             return when(folder) {
                 MailFolders.SENT,
                 MailFolders.INBOX,
-                MailFolders.IMPORTANT,
                 MailFolders.STARRED,
                 MailFolders.ALL_MAIL -> listOf(spam, trash)
                 MailFolders.SPAM -> listOf(trash)

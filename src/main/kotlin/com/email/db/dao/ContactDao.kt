@@ -25,4 +25,8 @@ interface ContactDao {
     @Delete
     fun deleteAll(contacts: List<Contact>)
 
+    @Query("""UPDATE contact
+            SET name=:name
+            where email=:email""")
+    fun updateContactName(email: String, name: String)
 }

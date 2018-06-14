@@ -27,11 +27,9 @@ class LabelTextConverter {
             "TRASH" -> {
                 MailFolders.TRASH
             }
-            "SPAM" -> {
+            else -> {
                 MailFolders.SPAM
             }
-            else ->
-                MailFolders.IMPORTANT
         }
     }
 
@@ -55,9 +53,6 @@ class LabelTextConverter {
             }
             MailFolders.SPAM -> {
                 "SPAM"
-            }
-            MailFolders.IMPORTANT -> {
-                "IMPORTANT"
             }
             MailFolders.ALL_MAIL -> {
                 "ALL MAIL"

@@ -31,7 +31,7 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
         val drawableBackground = ContextCompat.getDrawable(
                 context,
                 R.drawable.email_detail_label)
-        drawableBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        drawableBackground?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
         labelView.background = drawableBackground
     }
 

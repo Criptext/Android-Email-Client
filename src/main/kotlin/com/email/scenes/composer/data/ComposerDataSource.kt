@@ -45,6 +45,7 @@ class ComposerDataSource(
                     emailId = params.emailId,
                     composerType = params.composerType,
                     userEmailAddress = activeAccount.userEmail,
+                    signature = activeAccount.signature,
                     publishFn = { res -> flushResults(res)})
         }
     }

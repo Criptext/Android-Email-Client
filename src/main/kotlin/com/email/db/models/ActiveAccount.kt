@@ -9,7 +9,8 @@ import org.json.JSONObject
  * Created by gabriel on 3/22/18.
  */
 
-data class ActiveAccount(val name: String, val recipientId: String, val deviceId: Int, val jwt: String) : JSONData {
+data class ActiveAccount(val name: String, val recipientId: String,
+                         val deviceId: Int, val jwt: String, val signature: String) : JSONData {
 
     val userEmail = "$recipientId@${Contact.mainDomain}"
 
@@ -19,7 +20,20 @@ data class ActiveAccount(val name: String, val recipientId: String, val deviceId
         json.put("recipientId", recipientId)
         json.put("deviceId", deviceId)
         json.put("jwt", jwt)
+        json.put("signature", signature)
         return json
+    }
+
+    fun updateFullName(storage: KeyValueStorage, fullName: String){
+        val account = toJSON()
+        account.put("name", fullName)
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+    }
+
+    fun updateSignature(storage: KeyValueStorage, signature: String){
+        val account = toJSON()
+        account.put("signature", signature)
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
     }
 
     companion object {
@@ -29,9 +43,10 @@ data class ActiveAccount(val name: String, val recipientId: String, val deviceId
             val recipientId = json.getString("recipientId")
             val deviceId = json.getInt("deviceId")
             val jwt = json.getString("jwt")
+            val signature = json.getString("signature")
 
             return ActiveAccount(name = name, recipientId = recipientId, deviceId = deviceId,
-                    jwt = jwt)
+                    jwt = jwt, signature = signature)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

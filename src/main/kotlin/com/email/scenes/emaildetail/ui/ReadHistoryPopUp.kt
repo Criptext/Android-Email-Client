@@ -84,7 +84,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
     class ContactsToListAdapter(private val mContext: Context,
                                       private val contacts: List<MockedContact>
     ) : RecyclerView.Adapter<ContactHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder{
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactHolder{
             val mView = LayoutInflater.from(mContext).
                     inflate(R.layout.contact_read_history_item, null)
             return ContactHolder(mView)
@@ -94,7 +94,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
             return contacts.size
         }
 
-        override fun onBindViewHolder(holder: ContactHolder?, position: Int) {
+        override fun onBindViewHolder(holder: ContactHolder, position: Int) {
             val contact = contacts[position]
             holder?.bindContact(contact)
         }

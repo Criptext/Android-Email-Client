@@ -21,7 +21,7 @@ class StoreAccountTransaction(private val dao: SignUpDao,
 
     private fun setNewUserAsActiveAccount(user: Account) {
         val activeAccount = ActiveAccount(name = user.name, recipientId = user.recipientId,
-                deviceId = user.deviceId, jwt = user.jwt)
+                deviceId = user.deviceId, jwt = user.jwt, signature = "")
         keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())
     }

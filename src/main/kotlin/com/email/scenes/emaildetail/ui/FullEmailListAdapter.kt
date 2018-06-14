@@ -45,7 +45,7 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     override fun onBindViewHolder(
-            holder: RecyclerView.ViewHolder?,
+            holder: RecyclerView.ViewHolder,
             position: Int) {
         when(holder){
             is ParentEmailHolder -> {

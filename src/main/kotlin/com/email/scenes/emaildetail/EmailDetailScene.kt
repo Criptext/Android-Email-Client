@@ -58,7 +58,7 @@ interface EmailDetailScene {
         private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
         private lateinit var labelsRecyclerView: LabelsRecyclerView
 
-        private val labelChooserDialog = LabelChooserDialog(context)
+        private val labelChooserDialog = LabelChooserDialog(context, emailDetailView)
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
 

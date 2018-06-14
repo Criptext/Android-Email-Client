@@ -14,6 +14,7 @@ class LoadInitialDataWorker(
         private val db: ComposerLocalDB,
         override val publishFn: (ComposerResult.LoadInitialData) -> Unit,
         private val userEmailAddress: String,
+        private val signature: String,
         private val composerType: ComposerType,
         private val emailId: Long)
     : BackgroundWorker<ComposerResult.LoadInitialData> {
@@ -33,21 +34,25 @@ class LoadInitialDataWorker(
         val to = if (replyToAll) fullEmail.to.filter { it.email != userEmailAddress }
                                              .plus(fullEmail.from)
                  else listOf(fullEmail.from)
+        val subject = (if(fullEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
+                                fullEmail.email.subject
         val body = MailBody.createNewReplyMessageBody(
                             originMessageHtml = fullEmail.email.content,
                             date = System.currentTimeMillis(),
                             senderName = fullEmail.from.name,
-                            signature = "")
+                            signature = signature)
         return ComposerInputData(to = to, cc = emptyList(), bcc = emptyList(),
-                body = body, subject = "RE: " + fullEmail.email.subject)
+                body = body, subject = subject)
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
         val body = MailBody.createNewForwardMessageBody(
                             originMessageHtml = fullEmail.email.content,
-                            signature = "")
+                            signature = signature)
+        val subject = (if(fullEmail.email.subject.matches("^(Fw|FW): .*\$".toRegex())) "" else "FW: ") +
+                fullEmail.email.subject
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
-                body = body, subject = "FW: " + fullEmail.email.subject)
+                body = body, subject = subject)
 
     }
 
