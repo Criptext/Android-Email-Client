@@ -45,7 +45,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
             clearMocks(host)
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
-                    onlySave = false, composerInputData = mockedComposerInputData))
+                    onlySave = false, composerInputData = mockedComposerInputData, attachments = emptyList()))
 
             val sendMailMessageWithExpectedEmailId: (ActivityMessage?) -> Boolean = {
                 (it as ActivityMessage.SendMail).emailId == 1L
@@ -62,7 +62,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
             clearMocks(host)
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
-                    onlySave = true, composerInputData = mockedComposerInputData))
+                    onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList()))
 
             verify { host.finishScene() }
         }

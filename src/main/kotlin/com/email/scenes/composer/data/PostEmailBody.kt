@@ -16,14 +16,15 @@ class PostEmailBody(val threadId: String?, val subject: String,
 
     override fun toJSON(): JSONObject {
         val criptextEmailsArray = criptextEmails.toJSONArray()
-        val attachmentsArray = attachments.toJSONArray()
-
 
         val json = JSONObject()
         json.put("threadId", threadId)
         json.put("subject", subject)
         json.put("criptextEmails", criptextEmailsArray)
-        json.put("files", attachmentsArray)
+        if(attachments.isNotEmpty()){
+            val attachmentsArray = attachments.toJSONArray()
+            json.put("files", attachmentsArray)
+        }
 
         return json
     }

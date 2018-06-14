@@ -46,7 +46,7 @@ class SendEmailWorkerTest {
     private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData): SendMailWorker =
         SendMailWorker(signalClient = signal, emailId = emailId, threadId = threadId,
                 rawSessionDao = dao, httpClient = httpClient, composerInputData = inputData,
-                activeAccount = activeAccount, db = db, publishFn = {})
+                activeAccount = activeAccount, db = db, attachments = emptyList(), publishFn = {})
 
     private fun mockFindKeyBundlesResponse(): String {
         val shareData = PreKeyBundleShareData(recipientId = "mayer", deviceId = 1,
