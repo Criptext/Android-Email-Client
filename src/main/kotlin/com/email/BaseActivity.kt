@@ -170,9 +170,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
         // Currently the only external activity is file picker so just launch that
         FilePickerBuilder.getInstance()
-               .setMaxCount(5)
-               .setActivityTheme(R.style.LibAppTheme)
-               .pickFile(this)
+            .setMaxCount(5)
+            .setActivityTheme(R.style.LibAppTheme)
+            .pickFile(this)
     }
 
     protected fun setActivityMessage(message: ActivityMessage?) {

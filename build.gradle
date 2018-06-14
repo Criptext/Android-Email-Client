@@ -179,6 +179,8 @@ dependencies {
     // file picker
     implementation 'com.droidninja:filepicker:2.1.5'
 
+    implementation 'com.github.danieltigse:TimeDurationPicker:0.3'
+
 }
 
 

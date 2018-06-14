@@ -1,6 +1,8 @@
 package com.email.scenes.composer
 
+import android.support.v4.app.FragmentManager
 import android.content.DialogInterface
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
@@ -48,7 +50,9 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            val dialogBuilder = AttachmentsDialog.Builder().setAttributes(dialogObserver)
+            val fragmentManager = (host as AppCompatActivity).supportFragmentManager
+            dialogBuilder.build().show(fragmentManager, "Attachment")
         }
 
         override fun onBackButtonClicked() {
@@ -58,6 +62,16 @@ class ComposerController(private val model: ComposerModel,
             else{
                 showDraftDialog()
             }
+        }
+    }
+
+    private val dialogObserver = object : AttachmentsDialog.AttachmentDialogObserver {
+        override fun onGalleryRequested() {}
+
+        override fun onCameraRequested() {}
+
+        override fun onDocumentRequested() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
     }
 
