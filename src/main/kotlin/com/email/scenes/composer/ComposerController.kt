@@ -15,6 +15,7 @@ import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
+import java.io.File
 
 /**
  * Created by gabriel on 2/26/18.
@@ -30,6 +31,12 @@ class ComposerController(private val model: ComposerModel,
     private val httpClient = HttpClient.Default("https://services.criptext.com", HttpClient.AuthScheme.basic, 14000L, 7000L)
 
     private val observer = object: ComposerUIObserver {
+        override fun onAttachmentRemoveClicked(position: Int) {
+            val filepath = model.attachments.keys.toList().get(position)
+            model.attachments.remove(filepath)
+            scene.notifyDataSetChanged()
+        }
+
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
             scene.toggleExtraFieldsVisibility(visible = userIsEditingRecipients)
         }
@@ -67,7 +74,6 @@ class ComposerController(private val model: ComposerModel,
         when (result) {
             is ComposerResult.UploadFile.Register -> {
                 val composerAttachment = model.attachments[result.filepath] ?: return
-                composerAttachment.size = result.size
                 composerAttachment.filetoken = result.filetoken
             }
             is ComposerResult.UploadFile.Progress -> {
@@ -160,7 +166,8 @@ class ComposerController(private val model: ComposerModel,
     private fun addNewAttachments(filepaths: List<String>) {
         filepaths.forEach {
             if (! model.attachments.contains(it)) {
-                model.attachments[it] = ComposerAttachment(it)
+                val file = File(it)
+                model.attachments[it] = ComposerAttachment(it, file.length())
                 scene.notifyDataSetChanged()
                 uploadSelectedFile(it)
             }

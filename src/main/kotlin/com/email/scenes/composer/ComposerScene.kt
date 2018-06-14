@@ -12,6 +12,7 @@ import com.email.db.models.Contact
 import com.email.R
 import com.email.scenes.composer.data.*
 import com.email.scenes.composer.ui.*
+import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.utils.HTMLUtils
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
@@ -26,6 +27,7 @@ import jp.wasabeef.richeditor.RichEditor
 
 interface ComposerScene {
     var observer: ComposerUIObserver?
+    var attachmentsObserver: AttachmentViewObserver?
     fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
                       composerInputData: ComposerInputData, replyData: ReplyData?,
                       attachments: LinkedHashMap<String, ComposerAttachment>)
@@ -94,12 +96,21 @@ interface ComposerScene {
 
         override var observer: ComposerUIObserver? = null
 
+        override var attachmentsObserver: AttachmentViewObserver? = object : AttachmentViewObserver {
+            override fun onRemoveClick(position: Int) {
+                observer?.onAttachmentRemoveClicked(position)
+            }
+        }
+
+
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
                                    composerInputData: ComposerInputData, replyData: ReplyData?,
                                    attachments: LinkedHashMap<String, ComposerAttachment>) {
             val mLayoutManager = LinearLayoutManager(ctx)
+            val adapter = AttachmentListAdapter(ctx, attachments)
+            adapter.observer = attachmentsObserver
             attachmentRecyclerView.layoutManager = mLayoutManager
-            attachmentRecyclerView.adapter = AttachmentListAdapter(ctx, attachments)
+            attachmentRecyclerView.adapter = adapter
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {

@@ -100,5 +100,19 @@ class Utility {
             }
             return type
         }
+
+        fun prettyPrintSize(size: Long): String {
+            val mySize = size.toFloat()
+            if (mySize < 1000f) {
+                return "${String.format("%.2f", mySize)} Bytes"
+            }
+            if (mySize < 1000000f) {
+                return "${String.format("%.2f", mySize/1000)} KB"
+            }
+            if (mySize < 1000000000f) {
+                return "${String.format("%.2f", mySize/1000000)} MB"
+            }
+            return "${String.format("%.2f", mySize/1000000000)} GB"
+        }
     }
 }

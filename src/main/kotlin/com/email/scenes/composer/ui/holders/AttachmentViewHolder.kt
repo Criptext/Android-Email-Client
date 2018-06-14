@@ -1,27 +1,33 @@
 package com.email.scenes.composer.ui.holders
 
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.*
 import com.email.R
 import com.email.db.AttachmentTypes
+import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.utils.Utility
 
-class AttachmentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?) : RecyclerView.ViewHolder(view) {
 
     val progressBar : ProgressBar = view.findViewById(R.id.attachment_progress_bar)
     val filename: TextView = view.findViewById(R.id.attachment_filename)
+    val filesize: TextView = view.findViewById(R.id.attachment_size)
     val statusView: ImageView = view.findViewById(R.id.status_view)
     val typeView: ImageView = view.findViewById(R.id.attachment_type_image)
     val containerView: RelativeLayout = view.findViewById(R.id.attachment_container)
+    val removeButton: Button = view.findViewById(R.id.attachment_remove)
 
     init {
         statusView.visibility = View.GONE
+        removeButton.setOnClickListener {
+            observer?.onRemoveClick(adapterPosition)
+        }
     }
 
-    fun setFields(name: String, type: AttachmentTypes){
+    fun setFields(name: String, size: Long, type: AttachmentTypes){
         filename.text = name
+        filesize.text = Utility.prettyPrintSize(size)
         typeView.setImageResource(Utility.getDrawableAttachmentFromType(type))
     }
 
