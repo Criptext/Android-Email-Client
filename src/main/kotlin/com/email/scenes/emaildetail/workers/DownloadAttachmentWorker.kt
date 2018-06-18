@@ -23,7 +23,7 @@ import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileToken: String,
-                               private val dirPath: String,
+                               private val emailId: Long,
                              httpClient: HttpClient,
                              fileServiceAuthToken: String,
                              override val publishFn: (EmailDetailResult.DownloadFile) -> Unit)
@@ -60,9 +60,11 @@ class DownloadAttachmentWorker(private val fileToken: String,
             : (FileMetadata) -> Result<Unit, Exception> = { fileMetadata ->
         Result.of {
             val file = AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
-            val fileStream = FileOutputStream(file, true)
+            val fileStream = FileOutputStream(file)
             filepath = file.absolutePath
             val onNewChunkDownload: (Int) -> Unit = { index ->
+                reporter.report( EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
+                        index * 100 / fileMetadata.chunks))
                 val data = fileServiceAPIClient.downloadChunk(fileMetadata.fileToken, index + 1)
                 val channel = fileStream.channel
                 channel.position(index * fileMetadata.chunkSize)

@@ -52,7 +52,7 @@ sealed class EmailDetailRequest{
 
     data class DownloadFile(
             val fileToken: String,
-            val dirPath: String,
+            val emailId: Long,
             val httpClient: HttpClient,
             val authToken: String
     ): EmailDetailRequest()

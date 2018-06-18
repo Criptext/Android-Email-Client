@@ -121,9 +121,9 @@ class UpdateMailboxWorker(
         else throw NothingNewException()
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, files: List<File>) =
             EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
-                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata, files = emptyList())
+                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata, files = files)
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
         try {
@@ -135,12 +135,12 @@ class UpdateMailboxWorker(
 
     private fun processNewEmails(events: List<Event>): Int {
         val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
-                { Pair( it.rowid,  EmailMetadata.fromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
-            { (_, metadata) ->
+        val toIdAndMetadataTriple: (Event) -> Triple<Long, EmailMetadata, List<File>> =
+                { Triple( it.rowid, EmailMetadata.fromJSON(it.params), File.listFromJSON(it.params)) }
+        val emailInsertedSuccessfully: (Triple<Long, EmailMetadata, List<File>>) -> Boolean =
+            { (_, metadata, files) ->
                 try {
-                    insertIncomingEmailTransaction(metadata)
+                    insertIncomingEmailTransaction(metadata, files)
                     // insertion success, try to acknowledge it
                     true
                 } catch (ex: DuplicateMessageException) {
@@ -152,12 +152,12 @@ class UpdateMailboxWorker(
                     false
                 }
             }
-        val toEventId: (Pair<Long, EmailMetadata>) -> Long =
-                { (eventId, _) -> eventId }
+        val toEventId: (Triple<Long, EmailMetadata, List<File>>) -> Long =
+                { (eventId, _, _) -> eventId }
 
         val eventIdsToAcknowledge = events
             .filter(isNewEmailEvent)
-            .map(toIdAndMetadataPair)
+            .map(toIdAndMetadataTriple)
             .filter(emailInsertedSuccessfully)
             .map(toEventId)
 

@@ -29,7 +29,7 @@ class FileListAdapter(private val mContext: Context, private val attachmentsList
         val mView = holder as AttachmentViewHolder
         val type = Utility.getAttachmentTypeFromPath(attachment.name)
         mView.setFields(name = attachment.name, size = attachment.size, type = type)
-        mView.setProgress(100)
+        mView.setProgress(attachment.progress)
     }
 
 }

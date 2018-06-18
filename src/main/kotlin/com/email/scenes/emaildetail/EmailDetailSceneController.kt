@@ -124,17 +124,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private fun downloadFile(fileToken: String){
+    private fun downloadFile(emailId: Long, fileToken: String){
         dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
-                dirPath = (host as AppCompatActivity).filesDir.absolutePath,
-                httpClient = httpClient, authToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="))
+                emailId = emailId, httpClient = httpClient,
+                authToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="))
     }
 
     private fun onDownloadedFile(result: EmailDetailResult){
         when(result){
             is EmailDetailResult.DownloadFile.Success -> {
                 val file = File(result.filepath)
-                Log.d("SUCCESS ${result.filepath} : ${file.length()}", "PRINT")
                 val newIntent = Intent(Intent.ACTION_VIEW)
                 val mimeType = Utility.getMimeTypeFromPath(result.filepath)
                 newIntent.setDataAndType(Uri.fromFile(file), mimeType)
@@ -142,7 +141,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 (host as AppCompatActivity).startActivity(newIntent)
             }
             is EmailDetailResult.DownloadFile.Failure -> {
-                Log.d("FAILURE", "PRINT")
+                Log.d("PRINT", "Failure")
+            }
+            is EmailDetailResult.DownloadFile.Progress -> {
+                val emailIndex = model.fullEmailList.indexOfFirst { it.email.id == result.emailId }
+                if (emailIndex < 0) return
+                val attachmentIndex = model.fullEmailList[emailIndex].files.indexOfFirst { it.token == result.filetoken }
+                if (attachmentIndex < 0) return
+                model.fullEmailList[emailIndex].files[attachmentIndex].progress = result.progress
+                scene.updateAttachmentProgress(emailIndex, attachmentIndex)
             }
         }
     }
@@ -171,8 +178,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
         override fun onAttachmentSelect(emailPosition: Int, attachmentPosition: Int) {
-            val attachment = model.fullEmailList[emailPosition].files[attachmentPosition]
-            downloadFile(attachment.token)
+            val email = model.fullEmailList[emailPosition]
+            val attachment = email.files[attachmentPosition]
+            downloadFile(email.email.id, attachment.token)
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {

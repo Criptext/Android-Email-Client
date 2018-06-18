@@ -56,5 +56,6 @@ sealed class EmailDetailResult {
     sealed class DownloadFile : EmailDetailResult() {
         data class Success(val filepath: String): DownloadFile()
         data class Failure(val fileToken: String, val message: UIMessage): DownloadFile()
+        data class Progress(val emailId: Long, val filetoken: String, val progress: Int) : DownloadFile()
     }
 }

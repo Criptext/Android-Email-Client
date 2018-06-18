@@ -35,14 +35,22 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     fun setProgress(progress: Int){
         progressBar.progress = progress
-        if (progress == 100){
-            progressBar.visibility = View.GONE
-            statusView.visibility = View.VISIBLE
-            containerView.alpha = 1f
-        } else {
-            progressBar.visibility = View.VISIBLE
-            statusView.visibility = View.GONE
-            containerView.alpha = 0.6f
+        when {
+            progress < 0 -> {
+                progressBar.visibility = View.GONE
+                statusView.visibility = View.GONE
+                containerView.alpha = 1f
+            }
+            progress == 100 -> {
+                progressBar.visibility = View.GONE
+                statusView.visibility = View.VISIBLE
+                containerView.alpha = 1f
+            }
+            else -> {
+                progressBar.visibility = View.VISIBLE
+                statusView.visibility = View.GONE
+                containerView.alpha = 0.6f
+            }
         }
     }
 

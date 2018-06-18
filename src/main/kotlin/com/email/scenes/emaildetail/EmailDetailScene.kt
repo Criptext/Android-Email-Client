@@ -13,6 +13,7 @@ import com.email.db.models.Label
 import com.email.scenes.label_chooser.LabelChooserDialog
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
+import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.label_chooser.LabelDataHandler
 import com.email.scenes.mailbox.DeleteThreadDialog
@@ -44,6 +45,7 @@ interface EmailDetailScene {
             allLabels: List<Label>)
 
     fun onDecryptedBody(decryptedText: String)
+    fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -138,6 +140,12 @@ interface EmailDetailScene {
 
         override fun onDecryptedBody(decryptedText: String) {
             
+        }
+
+        override fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int) {
+            val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
+                    as? FullEmailHolder ?: return
+            holder.updateAttachmentProgress(attachmentPosition)
         }
 
         override fun showError(message: UIMessage) {

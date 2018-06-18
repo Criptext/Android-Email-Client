@@ -32,7 +32,8 @@
             android:id="@+id/status_view"
             android:src="@drawable/icon_check"
             android:tint="@color/white"
-            android:background="@drawable/bg_blue_circle"/>
+            android:background="@drawable/bg_blue_circle"
+            android:visibility="gone"/>
         
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,6 +72,7 @@
 
     <ProgressBar
         android:id="@+id/attachment_progress_bar"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_alignParentBottom="true"

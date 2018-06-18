@@ -22,6 +22,7 @@ import com.email.db.DeliveryTypes
 import com.email.db.models.File
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.scenes.composer.ui.holders.AttachmentViewHolder
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
 import com.email.scenes.emaildetail.ui.*
@@ -350,6 +351,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private fun setDefaultBackgroundColors() {
         bodyContainer.alpha = 1.toFloat()
         bodyContainer.isEnabled = true
+    }
+
+    fun updateAttachmentProgress(attachmentPosition: Int){
+        attachmentsRecyclerView.adapter?.notifyItemChanged(attachmentPosition)
     }
 
     init {

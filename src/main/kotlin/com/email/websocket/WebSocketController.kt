@@ -4,6 +4,7 @@ import com.email.api.Hosts
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.db.models.ActiveAccount
+import com.email.db.models.File
 import com.email.websocket.data.EventDataSource
 import com.email.websocket.data.EventRequest
 import com.email.websocket.data.EventResult
@@ -24,7 +25,8 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
         val event = Event.fromJSON(text)
         if (event.cmd == Event.Cmd.newEmail) {
             val emailMetadata = EmailMetadata.fromJSON(event.params)
-            eventDataSource.submitRequest(EventRequest.InsertNewEmail(emailMetadata))
+            val files = File.listFromJSON(event.params)
+            eventDataSource.submitRequest(EventRequest.InsertNewEmail(emailMetadata, files))
         }
     }
 
