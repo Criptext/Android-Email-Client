@@ -1,8 +1,10 @@
 package com.email.scenes.emaildetail
 
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.email.IHostActivity
 import com.email.R
-import com.email.bgworker.BackgroundWorkManager
+import com.email.api.HttpClient
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
@@ -24,6 +26,12 @@ import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import com.email.utils.Utility
+import java.io.File
+
 
 /**
  * Created by sebas on 3/12/18.
@@ -36,6 +44,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val keyboard: KeyboardManager) : SceneController() {
 
+    val lastIndexElement: Int by lazy {
+        model.fullEmailList.size - 1
+    }
+
+    private val httpClient = HttpClient.Default("https://services.criptext.com", HttpClient.AuthScheme.basic, 14000L, 7000L)
+
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
@@ -44,6 +58,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations -> onUpdatedLabels(result)
             is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
+            is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
         }
     }
 
@@ -109,6 +124,29 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
+    private fun downloadFile(fileToken: String){
+        dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
+                dirPath = (host as AppCompatActivity).filesDir.absolutePath,
+                httpClient = httpClient, authToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="))
+    }
+
+    private fun onDownloadedFile(result: EmailDetailResult){
+        when(result){
+            is EmailDetailResult.DownloadFile.Success -> {
+                val file = File(result.filepath)
+                Log.d("SUCCESS ${result.filepath} : ${file.length()}", "PRINT")
+                val newIntent = Intent(Intent.ACTION_VIEW)
+                val mimeType = Utility.getMimeTypeFromPath(result.filepath)
+                newIntent.setDataAndType(Uri.fromFile(file), mimeType)
+                newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                (host as AppCompatActivity).startActivity(newIntent)
+            }
+            is EmailDetailResult.DownloadFile.Failure -> {
+                Log.d("FAILURE", "PRINT")
+            }
+        }
+    }
+
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
@@ -131,6 +169,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+
+        override fun onAttachmentSelect(emailPosition: Int, attachmentPosition: Int) {
+            val attachment = model.fullEmailList[emailPosition].files[attachmentPosition]
+            downloadFile(attachment.token)
+        }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
             val req = EmailDetailRequest.UnsendFullEmailFromEmailId(

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.db.models.FullEmail
+import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.ui.holders.FooterViewHolder
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
@@ -113,6 +114,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onContinueDraftOptionSelected(fullEmail: FullEmail)
+        fun onAttachmentSelect(emailPosition: Int, attachmentPosition: Int)
     }
 
     private enum class EmailViewTypes {

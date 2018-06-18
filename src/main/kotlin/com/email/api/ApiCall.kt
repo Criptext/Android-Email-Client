@@ -1,5 +1,6 @@
 package com.email.api
 
+import android.util.Log
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,6 +19,12 @@ class ApiCall {
             val response = client.newCall(req).execute()
             if (!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.string()
+        }
+
+        fun executeFileRequest(client: OkHttpClient, req: Request): ByteArray {
+            val response = client.newCall(req).execute()
+            if (!response.isSuccessful) throw(ServerErrorException(response.code()))
+            return response.body()!!.bytes()
         }
 
 

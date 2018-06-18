@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail.data
 
+import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.SelectedLabels
@@ -49,4 +50,10 @@ sealed class EmailDetailRequest{
             val metadataKeys: List<Long>
     ): EmailDetailRequest()
 
+    data class DownloadFile(
+            val fileToken: String,
+            val dirPath: String,
+            val httpClient: HttpClient,
+            val authToken: String
+    ): EmailDetailRequest()
 }

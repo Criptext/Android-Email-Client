@@ -52,4 +52,9 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
     }
+
+    sealed class DownloadFile : EmailDetailResult() {
+        data class Success(val filepath: String): DownloadFile()
+        data class Failure(val fileToken: String, val message: UIMessage): DownloadFile()
+    }
 }

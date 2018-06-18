@@ -95,6 +95,14 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is EmailDetailRequest.DownloadFile -> DownloadAttachmentWorker(
+                    fileToken = params.fileToken,
+                    dirPath = params.dirPath,
+                    httpClient = params.httpClient,
+                    fileServiceAuthToken = params.authToken,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 }

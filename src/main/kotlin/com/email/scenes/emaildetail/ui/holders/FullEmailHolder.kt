@@ -6,7 +6,9 @@ import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.AppCompatImageView
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
+import android.support.v7.widget.RecyclerView
 import android.util.DisplayMetrics
 import android.view.*
 import android.webkit.WebChromeClient
@@ -17,13 +19,12 @@ import android.widget.*
 import com.email.R
 import com.email.SecureEmail
 import com.email.db.DeliveryTypes
+import com.email.db.models.File
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
-import com.email.scenes.emaildetail.ui.AttachmentHistoryPopUp
-import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
-import com.email.scenes.emaildetail.ui.FullEmailListAdapter
-import com.email.scenes.emaildetail.ui.ReadHistoryPopUp
+import com.email.scenes.emaildetail.ui.*
 import com.email.utils.DateUtils
 import com.email.utils.EmailThreadValidator
 import com.email.utils.HTMLUtils
@@ -58,6 +59,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val progressBarUnsend: SpinKitView
     private val bodyContainer : LinearLayout
     private val webViewLoader: ProgressBar
+    private val attachmentsRecyclerView: RecyclerView
 
     override fun setListeners(fullEmail: FullEmail,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -103,6 +105,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     fullEmail = fullEmail,
                     position = position)
         }
+
+        setAttachments(fullEmail.files, emailListener)
     }
     private fun toggleUnsendProgress(isShown: Boolean) {
         if(isShown)  {
@@ -205,7 +209,19 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setToText(fullEmail)
         setDraftIcon(fullEmail)
         setIcons(fullEmail.email.delivered)
+    }
 
+    private fun setAttachments(files: List<File>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
+        val adapter = FileListAdapter(view.context, files)
+        val mLayoutManager = LinearLayoutManager(view.context)
+        adapter.observer = object: AttachmentViewObserver {
+            override fun onViewClick(position: Int) {
+                emailListener?.onAttachmentSelect(adapterPosition, position)
+            }
+            override fun onRemoveClick(position: Int) {}
+        }
+        attachmentsRecyclerView.layoutManager = mLayoutManager
+        attachmentsRecyclerView.adapter = adapter
     }
 
     private fun setDraftIcon(fullEmail: FullEmail){
@@ -358,6 +374,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         progressBarUnsend = view.findViewById(R.id.spin_kit_unsend)
         bodyContainer = view.findViewById(R.id.body_container)
         webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
+
+        attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
 
         setupWebview()
         horizontalScrollView.isHorizontalScrollBarEnabled = false

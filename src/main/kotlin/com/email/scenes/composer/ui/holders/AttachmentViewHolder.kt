@@ -19,6 +19,9 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     init {
         statusView.visibility = View.GONE
+        view.setOnClickListener {
+            observer?.onViewClick(adapterPosition)
+        }
         removeButton.setOnClickListener {
             observer?.onRemoveAttachmentClicked(adapterPosition)
         }

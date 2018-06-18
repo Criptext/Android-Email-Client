@@ -137,6 +137,7 @@ interface EmailDetailScene {
         }
 
         override fun onDecryptedBody(decryptedText: String) {
+            
         }
 
         override fun showError(message: UIMessage) {
