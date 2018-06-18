@@ -65,54 +65,12 @@ class Utility {
             return Color.parseColor("#"+color)
         }
 
-
-        fun getDrawableAttachmentFromType(type: AttachmentTypes) = when (type) {
-            AttachmentTypes.EXCEL ->
-                R.drawable.xls
-
-            AttachmentTypes.WORD ->
-                R.drawable.word
-
-            AttachmentTypes.PDF ->
-                R.drawable.pdf
-
-            AttachmentTypes.PPT ->
-                R.drawable.ppt
-
-            AttachmentTypes.IMAGE ->
-                R.drawable.img
-
-            AttachmentTypes.DEFAULT ->
-                R.drawable.generic
-        }
-
-        fun getAttachmentTypeFromPath(filepath: String): AttachmentTypes {
-            var type = AttachmentTypes.DEFAULT
-            val extension = filepath.split(".").last()
-            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-            type = when {
-                mimetype.contains("image") -> AttachmentTypes.IMAGE
-                mimetype.contains("word") -> AttachmentTypes.WORD
-                mimetype.contains("powerpoint") || mimetype.contains("presentation") -> AttachmentTypes.PPT
-                mimetype.contains("excel") || mimetype.contains("sheet") -> AttachmentTypes.EXCEL
-                mimetype.contains("pdf") -> AttachmentTypes.PDF
-                else -> AttachmentTypes.DEFAULT
-            }
-            return type
-        }
-
-        fun prettyPrintSize(size: Long): String {
-            val mySize = size.toFloat()
-            if (mySize < 1000f) {
-                return "${String.format("%.2f", mySize)} Bytes"
-            }
-            if (mySize < 1000000f) {
-                return "${String.format("%.2f", mySize/1000)} KB"
-            }
-            if (mySize < 1000000000f) {
-                return "${String.format("%.2f", mySize/1000000)} MB"
-            }
-            return "${String.format("%.2f", mySize/1000000000)} GB"
+        fun readableFileSize(size: Long): String{
+            val unit = 1024
+            if (size < unit) return "$size B"
+            val exp = (Math.log(size.toDouble()) / Math.log(unit.toDouble())).toInt()
+            val pre = ("KMGTPE")[exp - 1]
+            return String.format("%.2f %sB", size / Math.pow(unit.toDouble(), exp.toDouble()), pre)
         }
     }
 }

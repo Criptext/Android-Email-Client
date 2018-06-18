@@ -1,5 +1,5 @@
 package com.email.scenes.composer.ui.holders
 
 interface AttachmentViewObserver{
-    fun onRemoveClick(position: Int)
+    fun onRemoveAttachmentClicked(position: Int)
 }

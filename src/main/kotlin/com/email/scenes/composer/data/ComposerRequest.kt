@@ -13,6 +13,5 @@ sealed class ComposerRequest {
                            val composerInputData: ComposerInputData,
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>): ComposerRequest()
     class DeleteDraft(val emailId: Long): ComposerRequest()
-    class UploadAttachment(val filepath: String, val httpClient: HttpClient,
-                           val authToken: String): ComposerRequest()
+    class UploadAttachment(val filepath: String): ComposerRequest()
 }

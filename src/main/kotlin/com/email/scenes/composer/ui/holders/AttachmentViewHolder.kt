@@ -1,12 +1,13 @@
 package com.email.scenes.composer.ui.holders
 
+import android.support.v7.widget.DrawableUtils
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.*
 import com.email.R
 import com.email.db.AttachmentTypes
-import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.utils.Utility
+import com.email.utils.ui.DrawableUtility
 
 class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?) : RecyclerView.ViewHolder(view) {
 
@@ -21,14 +22,14 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
     init {
         statusView.visibility = View.GONE
         removeButton.setOnClickListener {
-            observer?.onRemoveClick(adapterPosition)
+            observer?.onRemoveAttachmentClicked(adapterPosition)
         }
     }
 
     fun setFields(name: String, size: Long, type: AttachmentTypes){
         filename.text = name
-        filesize.text = Utility.prettyPrintSize(size)
-        typeView.setImageResource(Utility.getDrawableAttachmentFromType(type))
+        filesize.text = Utility.readableFileSize(size)
+        typeView.setImageResource(DrawableUtility.getDrawableAttachmentFromType(type))
     }
 
     fun setProgress(progress: Int){

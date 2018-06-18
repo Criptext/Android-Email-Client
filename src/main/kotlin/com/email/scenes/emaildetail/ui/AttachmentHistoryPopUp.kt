@@ -13,6 +13,7 @@ import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.AttachmentHistoryListener
 import com.email.utils.DateUtils
 import com.email.utils.Utility
+import com.email.utils.ui.DrawableUtility
 import com.email.utils.ui.PopupUtils
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -135,7 +136,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
             }
 
             Picasso.with(context)
-                    .load(Utility.getDrawableAttachmentFromType(contact.fileType))
+                    .load(DrawableUtility.getDrawableAttachmentFromType(contact.fileType))
                     .into(fileType)
 
             fileName.text = contact.file

@@ -1,15 +1,10 @@
 package com.email.scenes.composer
 
-import android.support.v4.app.FragmentManager
 import android.content.DialogInterface
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
-import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorkManager
-import com.email.db.models.ActiveAccount
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
@@ -30,13 +25,12 @@ class ComposerController(private val model: ComposerModel,
     : SceneController() {
 
     private val dataSourceController = DataSourceController(dataSource)
-    private val httpClient = HttpClient.Default("https://services.criptext.com", HttpClient.AuthScheme.basic, 14000L, 7000L)
 
     private val observer = object: ComposerUIObserver {
         override fun onAttachmentRemoveClicked(position: Int) {
             val filepath = model.attachments.keys.toList().get(position)
             model.attachments.remove(filepath)
-            scene.notifyDataSetChanged()
+            scene.notifyAttachmentSetChanged()
         }
 
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
@@ -50,9 +44,7 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
-            val dialogBuilder = AttachmentsDialog.Builder().setAttributes(dialogObserver)
-            val fragmentManager = (host as AppCompatActivity).supportFragmentManager
-            dialogBuilder.build().show(fragmentManager, "Attachment")
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
 
         override fun onBackButtonClicked() {
@@ -62,16 +54,6 @@ class ComposerController(private val model: ComposerModel,
             else{
                 showDraftDialog()
             }
-        }
-    }
-
-    private val dialogObserver = object : AttachmentsDialog.AttachmentDialogObserver {
-        override fun onGalleryRequested() {}
-
-        override fun onCameraRequested() {}
-
-        override fun onDocumentRequested() {
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
     }
 
@@ -99,10 +81,11 @@ class ComposerController(private val model: ComposerModel,
                 composerAttachment.uploadProgress = 100
             }
             is ComposerResult.UploadFile.Failure -> {
-                //TODO
+                model.attachments.remove(result.filepath)
+                scene.showAttachmentErrorDialog(result.filepath)
             }
         }
-        scene.notifyDataSetChanged()
+        scene.notifyAttachmentSetChanged()
     }
 
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {
@@ -151,7 +134,7 @@ class ComposerController(private val model: ComposerModel,
     private fun isReadyForSending() = model.to.isNotEmpty()
 
     private fun uploadSelectedFile(filepath: String){
-        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath, httpClient = httpClient, authToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="))
+        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath))
     }
 
     private fun onSendButtonClicked() {
@@ -177,20 +160,19 @@ class ComposerController(private val model: ComposerModel,
         get() = if (isReadyForSending()) R.menu.composer_menu_enabled
                               else R.menu.composer_menu_disabled
 
-    private fun addNewAttachments(filepaths: List<String>) {
-        filepaths.forEach {
-            if (! model.attachments.contains(it)) {
-                val file = File(it)
-                model.attachments[it] = ComposerAttachment(it, file.length())
-                scene.notifyDataSetChanged()
-                uploadSelectedFile(it)
+    private fun addNewAttachments(filesMetadata: List<Pair<String, Long>>) {
+        filesMetadata.forEach {
+            if (! model.attachments.contains(it.first)) {
+                model.attachments[it.first] = ComposerAttachment(it.first, it.second)
+                scene.notifyAttachmentSetChanged()
+                uploadSelectedFile(it.first)
             }
         }
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.AddAttachments) {
-            addNewAttachments(activityMessage.filepaths)
+            addNewAttachments(activityMessage.filesMetadata)
             return true
         }
         return false

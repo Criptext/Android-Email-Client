@@ -7,6 +7,7 @@ import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.DateUtils
+import com.email.utils.file.FilenameUtils
 import java.util.*
 
 /**
@@ -64,7 +65,15 @@ class SaveEmailWorker(
 
     private fun createFilesData(): List<File> =
         attachments.map {
-            File(it.filetoken, it.filepath.split("/").last(), it.size, 1, Date(), false, 0)
+            File(
+                    token = it.filetoken,
+                    name = FilenameUtils.getName(it.filepath),
+                    size = it.size,
+                    status = 1,
+                    date = Date(),
+                    readOnly = false,
+                    emailId = 0
+            )
         }
 
     private fun saveEmail(): Pair<Long, String> {

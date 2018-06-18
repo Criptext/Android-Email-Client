@@ -4,6 +4,8 @@ import android.content.Intent
 import android.view.ViewGroup
 import com.email.BaseActivity
 import com.email.R
+import com.email.api.Hosts
+import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.ComposerLocalDB
@@ -13,6 +15,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
 import com.email.utils.KeyboardManager
 import droidninja.filepicker.FilePickerConst
+import java.io.File
 
 class ComposerActivity : BaseActivity() {
 
@@ -20,7 +23,7 @@ class ComposerActivity : BaseActivity() {
     override val toolbarId = R.id.toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val account = ActiveAccount.Companion.loadFromStorage(this)!!
+        val httpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.basic, 14000L, 7000L)
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
@@ -28,10 +31,11 @@ class ComposerActivity : BaseActivity() {
         val db = ComposerLocalDB(appDB.contactDao(), appDB.emailDao(), appDB.labelDao(),
                 appDB.emailLabelDao(), appDB.emailContactDao(), appDB.accountDao())
         val dataSource = ComposerDataSource(
+                httpClient = httpClient,
                 composerLocalDB = db,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 emailInsertionDao = appDB.emailInsertionDao(),
-                runner = AsyncTaskWorkRunner())
+                runner = AsyncTaskWorkRunner(), authToken = Hosts.fileServiceAuthToken)
         return ComposerController(
                 model = model,
                 scene = scene,
@@ -41,7 +45,11 @@ class ComposerActivity : BaseActivity() {
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent) {
         val selectedAttachments = data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS)
-        setActivityMessage(ActivityMessage.AddAttachments(selectedAttachments))
+        val attachmentsList = selectedAttachments.map {
+            val size = File(it).length()
+            Pair(it, size)
+        }
+        setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

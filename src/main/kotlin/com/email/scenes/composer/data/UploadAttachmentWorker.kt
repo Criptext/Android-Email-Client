@@ -52,10 +52,8 @@ class UploadAttachmentWorker(private val filepath: String,
     }
 
     private fun notifyRegisteredFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<String, Exception> = { filetoken ->
-        Result.of {
-            reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, filetoken))
-            filetoken
-        }
+        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, filetoken))
+        Result.of(filetoken)
     }
 
     private fun registerFile(file: File): Result<String, Exception> =

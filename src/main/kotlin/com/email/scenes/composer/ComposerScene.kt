@@ -35,8 +35,9 @@ interface ComposerScene {
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
+    fun showAttachmentErrorDialog(filename: String)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
-    fun notifyDataSetChanged()
+    fun notifyAttachmentSetChanged()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -97,7 +98,7 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override var attachmentsObserver: AttachmentViewObserver? = object : AttachmentViewObserver {
-            override fun onRemoveClick(position: Int) {
+            override fun onRemoveAttachmentClicked(position: Int) {
                 observer?.onAttachmentRemoveClicked(position)
             }
         }
@@ -143,7 +144,7 @@ interface ComposerScene {
             setListeners()
         }
 
-        override fun notifyDataSetChanged() {
+        override fun notifyAttachmentSetChanged() {
             attachmentRecyclerView.adapter.notifyDataSetChanged()
         }
 
@@ -200,6 +201,12 @@ interface ComposerScene {
             builder.setMessage(ctx.resources.getString(R.string.you_wanna_save))
                     .setPositiveButton(ctx.resources.getString(R.string.yes), dialogClickListener)
                     .setNegativeButton(ctx.resources.getString(R.string.discard), dialogClickListener).show()
+        }
+
+        override fun showAttachmentErrorDialog(filename: String){
+            val builder = AlertDialog.Builder(ctx)
+            builder.setMessage("Unable to upload $filename. Please try again")
+                    .show()
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,
