@@ -1,7 +1,6 @@
 package com.email.scenes.composer.data
 
 import com.email.db.models.Contact
-import com.email.db.models.File
 import com.email.utils.UIMessage
 
 /**

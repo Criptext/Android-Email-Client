@@ -11,7 +11,7 @@ import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.utils.file.FilenameUtils
 import droidninja.filepicker.utils.FileUtils
 
-class AttachmentListAdapter(private val mContext: Context, private val attachmentsList: LinkedHashMap<String, ComposerAttachment>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class AttachmentListAdapter(private val mContext: Context, private val attachmentsList: ArrayList<ComposerAttachment>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var observer: AttachmentViewObserver? = null
 
@@ -25,7 +25,7 @@ class AttachmentListAdapter(private val mContext: Context, private val attachmen
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-        val attachment = attachmentsList.toList().get(position).second
+        val attachment = attachmentsList[position]
         val mView = holder as AttachmentViewHolder
         mView.setFields(name = FilenameUtils.getName(attachment.filepath), size = attachment.size, type = attachment.type)
         mView.setProgress(attachment.uploadProgress)

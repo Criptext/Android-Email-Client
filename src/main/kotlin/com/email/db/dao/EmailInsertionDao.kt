@@ -1,9 +1,7 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.*
-import com.email.db.ContactTypes
 import com.email.db.models.*
-import java.util.*
 
 /**
  * Interface that encapsulates all database interactions needed by the mailbox scene.
@@ -42,7 +40,7 @@ interface EmailInsertionDao {
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 
     @Insert
-    fun insertEmailFiles(emailFiles: List<File>)
+    fun insertEmailFiles(emailFiles: List<CRFile>)
 
     @Transaction
     fun runTransaction(insertFn: () -> Long): Long {

@@ -23,7 +23,7 @@ class DownloadHelper {
             val request = DownloadManager.Request(uri)
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
             request.setTitle(filename)
-            request.setDescription("Criptext Secure File")
+            request.setDescription("Criptext Secure CRFile")
             request.setMimeType(FilenameUtils.getMimeType(filename))
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)

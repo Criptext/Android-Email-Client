@@ -30,7 +30,7 @@ interface ComposerScene {
     var attachmentsObserver: AttachmentViewObserver?
     fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
                       composerInputData: ComposerInputData, replyData: ReplyData?,
-                      attachments: LinkedHashMap<String, ComposerAttachment>)
+                      attachments: ArrayList<ComposerAttachment>)
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
@@ -106,7 +106,7 @@ interface ComposerScene {
 
         override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
                                    composerInputData: ComposerInputData, replyData: ReplyData?,
-                                   attachments: LinkedHashMap<String, ComposerAttachment>) {
+                                   attachments: ArrayList<ComposerAttachment>) {
             val mLayoutManager = LinearLayoutManager(ctx)
             val adapter = AttachmentListAdapter(ctx, attachments)
             adapter.observer = attachmentsObserver

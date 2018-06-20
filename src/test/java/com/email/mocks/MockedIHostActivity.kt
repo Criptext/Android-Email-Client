@@ -12,7 +12,7 @@ import com.email.utils.UIMessage
 
 class MockedIHostActivity: IHostActivity{
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     var isFinished: Boolean = false

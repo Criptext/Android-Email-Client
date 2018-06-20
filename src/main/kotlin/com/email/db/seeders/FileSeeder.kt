@@ -1,7 +1,7 @@
 package com.email.db.seeders
 
 import com.email.db.dao.FileDao
-import com.email.db.models.File
+import com.email.db.models.CRFile
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -12,7 +12,7 @@ import java.util.*
 class FileSeeder {
 
     companion object {
-        var files : List<File> = mutableListOf()
+        var files : List<CRFile> = mutableListOf()
         var sdf : SimpleDateFormat = SimpleDateFormat( "yyyy-MM-dd HH:mm:dd")
 
         fun seed(fileDao: FileDao){
@@ -25,10 +25,10 @@ class FileSeeder {
             fileDao.insertAll(files)
         }
 
-        private fun fillFile(iteration: Int): File {
-            lateinit var file: File
+        private fun fillFile(iteration: Int): CRFile {
+            lateinit var file: CRFile
             when (iteration) {
-                1 -> file = File( token = "XXXXXXXXXX2312XXXXX1",
+                1 -> file = CRFile( token = "XXXXXXXXXX2312XXXXX1",
                         name = "attachment 1" ,
                         size = 10,
                         status = 1,
@@ -37,7 +37,7 @@ class FileSeeder {
                         readOnly = false
                 )
 
-                2 -> file = File( token = "XXXXXXXXXX2312XXXXX2",
+                2 -> file = CRFile( token = "XXXXXXXXXX2312XXXXX2",
                         name = "attachment 2" ,
                         size = 10,
                         status = 1,

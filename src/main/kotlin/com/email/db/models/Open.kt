@@ -11,7 +11,7 @@ import java.util.*
 
 @Entity(tableName = "open",
         indices = [Index(value = ["date"]), Index(value = ["fileId"])],
-        foreignKeys = [ForeignKey(entity = File::class,
+        foreignKeys = [ForeignKey(entity = CRFile::class,
                                           parentColumns = ["token"],
                                           onDelete = CASCADE,
                                           childColumns = ["fileId"])])

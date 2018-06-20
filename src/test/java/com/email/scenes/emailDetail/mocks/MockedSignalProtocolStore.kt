@@ -13,78 +13,78 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord
  */
 class MockedSignalProtocolStore(): SignalProtocolStore {
     override fun saveIdentity(address: SignalProtocolAddress?, identityKey: IdentityKey?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun containsSignedPreKey(signedPreKeyId: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getIdentityKeyPair(): IdentityKeyPair {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getSubDeviceSessions(name: String?): MutableList<Int> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun isTrustedIdentity(address: SignalProtocolAddress?, identityKey: IdentityKey?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun storeSignedPreKey(signedPreKeyId: Int, record: SignedPreKeyRecord?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun storePreKey(preKeyId: Int, record: PreKeyRecord?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun deleteAllSessions(name: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getLocalRegistrationId(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun containsPreKey(preKeyId: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun containsSession(address: SignalProtocolAddress?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun loadSession(address: SignalProtocolAddress?): SessionRecord {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun deleteSession(address: SignalProtocolAddress?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun removeSignedPreKey(signedPreKeyId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun removePreKey(preKeyId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun storeSession(address: SignalProtocolAddress?, record: SessionRecord?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun loadPreKey(preKeyId: Int): PreKeyRecord {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun loadSignedPreKey(signedPreKeyId: Int): SignedPreKeyRecord {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun loadSignedPreKeys(): MutableList<SignedPreKeyRecord> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 }

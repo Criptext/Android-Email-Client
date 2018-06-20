@@ -38,7 +38,7 @@ class SaveEmailWorker(
     }
 
     override fun cancel() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
     private val selectEmail: (Contact) -> String = { contact -> contact.email }
 
@@ -63,9 +63,9 @@ class SaveEmailWorker(
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
 
-    private fun createFilesData(): List<File> =
+    private fun createFilesData(): List<CRFile> =
         attachments.map {
-            File(
+            CRFile(
                     token = it.filetoken,
                     name = FilenameUtils.getName(it.filepath),
                     size = it.size,

@@ -15,7 +15,7 @@ import android.support.annotation.NonNull
                                           parentColumns = ["id"],
                                           onDelete = CASCADE,
                                           childColumns = ["emailId"])])
-class File(
+class CRFile(
 
         @PrimaryKey
         var token: String,
@@ -41,7 +41,7 @@ class File(
 
 ) {
     override fun toString(): String {
-        return "File name='$name', " +
+        return "CRFile name='$name', " +
                 "size='$size', " +
                 "status='$status', " +
                 "date='$date', " +

@@ -6,7 +6,6 @@ import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
-import com.email.scenes.composer.data.ComposerAttachment
 import com.email.signal.SignalClient
 import com.email.signal.SignalEncryptedData
 import com.email.utils.DateUtils
@@ -83,7 +82,7 @@ object EmailInsertionSetup {
                                         metadataColumns: EmailMetadata.DBColumns,
                                         decryptedBody: String,
                                         labels: List<Label>,
-                                        files: List<File>): FullEmail {
+                                        files: List<CRFile>): FullEmail {
         val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
@@ -142,7 +141,7 @@ object EmailInsertionSetup {
              metadataColumns: EmailMetadata.DBColumns,
              decryptedBody: String,
              labels: List<Label>,
-             files: List<File>): Long {
+             files: List<CRFile>): Long {
         val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels, files)
         return exec(dao, fullEmail)
     }
@@ -187,7 +186,7 @@ object EmailInsertionSetup {
      * @param metadata metadata of the email to insert
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata, files: List<File>) {
+                                       dao: EmailInsertionDao, metadata: EmailMetadata, files: List<CRFile>) {
         val labels = listOf(Label.defaultItems.inbox)
 
         val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null

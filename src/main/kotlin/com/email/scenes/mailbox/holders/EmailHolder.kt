@@ -148,7 +148,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         }
     }
     override fun fillIcons() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun drawInMultiSelectMode() {

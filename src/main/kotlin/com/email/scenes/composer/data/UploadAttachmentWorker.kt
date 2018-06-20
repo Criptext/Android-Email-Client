@@ -32,6 +32,7 @@ class UploadAttachmentWorker(private val filepath: String,
 
 
     private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
+        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken))
         Result.of {
             val chunks = (file.length() / chunkSize).toInt() + 1
             val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
@@ -51,11 +52,6 @@ class UploadAttachmentWorker(private val filepath: String,
         }
     }
 
-    private fun notifyRegisteredFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<String, Exception> = { filetoken ->
-        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, filetoken))
-        Result.of(filetoken)
-    }
-
     private fun registerFile(file: File): Result<String, Exception> =
         Result.of {
             val fileSize = file.length()
@@ -71,7 +67,6 @@ class UploadAttachmentWorker(private val filepath: String,
         val result = registerFile(file)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap(getFileTokenFromJSONResponse)
-                .flatMap(notifyRegisteredFile(file, reporter))
                 .flatMap(uploadFile(file, reporter))
 
 
@@ -98,7 +93,7 @@ class UploadAttachmentWorker(private val filepath: String,
         }
     }
     override fun cancel() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     companion object {

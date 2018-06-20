@@ -37,5 +37,5 @@ interface VirtualList<out U>: Iterable<U> {
 
         override val size: Int
             get () = originalItems.size
-}
+    }
 }

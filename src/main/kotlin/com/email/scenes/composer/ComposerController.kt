@@ -12,6 +12,7 @@ import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
+import com.email.utils.virtuallist.VirtualList
 import java.io.File
 
 /**
@@ -28,8 +29,7 @@ class ComposerController(private val model: ComposerModel,
 
     private val observer = object: ComposerUIObserver {
         override fun onAttachmentRemoveClicked(position: Int) {
-            val filepath = model.attachments.keys.toList().get(position)
-            model.attachments.remove(filepath)
+            model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
         }
 
@@ -69,23 +69,33 @@ class ComposerController(private val model: ComposerModel,
     private fun onUploadFile(result: ComposerResult.UploadFile){
         when (result) {
             is ComposerResult.UploadFile.Register -> {
-                val composerAttachment = model.attachments[result.filepath] ?: return
+                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
                 composerAttachment.filetoken = result.filetoken
             }
             is ComposerResult.UploadFile.Progress -> {
-                val composerAttachment = model.attachments[result.filepath] ?: return
+                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
                 composerAttachment.uploadProgress = result.percentage
             }
             is ComposerResult.UploadFile.Success -> {
-                val composerAttachment = model.attachments[result.filepath] ?: return
-                composerAttachment.uploadProgress = 100
+                val composerAttachment = getAttachmentByPath(result.filepath)
+                composerAttachment?.uploadProgress = 100
+                handleNextUpload()
             }
             is ComposerResult.UploadFile.Failure -> {
-                model.attachments.remove(result.filepath)
+                removeAttachmentByPath(result.filepath)
                 scene.showAttachmentErrorDialog(result.filepath)
+                handleNextUpload()
             }
         }
         scene.notifyAttachmentSetChanged()
+    }
+
+    private fun getAttachmentByPath(filepath: String): ComposerAttachment? {
+        return model.attachments.firstOrNull{it.filepath == filepath}
+    }
+
+    private fun removeAttachmentByPath(filepath: String) {
+        model.attachments.removeAll{it.filepath == filepath}
     }
 
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {
@@ -151,7 +161,7 @@ class ComposerController(private val model: ComposerModel,
                         emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
                             model.fullEmail?.email?.id else null,
                         composerInputData = data,
-                        onlySave = false, attachments = model.attachments.values.toList()))
+                        onlySave = false, attachments = model.attachments))
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -161,13 +171,23 @@ class ComposerController(private val model: ComposerModel,
                               else R.menu.composer_menu_disabled
 
     private fun addNewAttachments(filesMetadata: List<Pair<String, Long>>) {
-        filesMetadata.forEach {
-            if (! model.attachments.contains(it.first)) {
-                model.attachments[it.first] = ComposerAttachment(it.first, it.second)
-                scene.notifyAttachmentSetChanged()
-                uploadSelectedFile(it.first)
-            }
+        val predicate: (Pair<String, Long>) -> (Boolean) = { data ->
+            model.attachments.indexOfFirst { it.filepath == data.first  } < 0
         }
+        model.attachments.addAll(filesMetadata.filter(predicate).map {
+            ComposerAttachment(it.first, it.second)
+        })
+        scene.notifyAttachmentSetChanged()
+        handleNextUpload()
+    }
+
+    private fun handleNextUpload(){
+        if(model.attachments.indexOfFirst { it.uploadProgress in 0..99 } >= 0){
+            return
+        }
+        val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
+        attachmentToUpload.uploadProgress = 0
+        uploadSelectedFile(attachmentToUpload.filepath)
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
@@ -229,7 +249,7 @@ class ComposerController(private val model: ComposerModel,
                             emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
                                 model.fullEmail?.email?.id else null,
                             composerInputData = scene.getDataInputByUser(),
-                            onlySave = true, attachments = model.attachments.values.toList()))
+                            onlySave = true, attachments = model.attachments))
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
                     if(model.composerType == ComposerTypes.CONTINUE_DRAFT){

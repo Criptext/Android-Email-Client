@@ -1,8 +1,5 @@
 package com.email.scenes.composer.data
 
-import com.email.api.HttpClient
-import com.email.db.models.File
-
 /**
  * Created by gabriel on 2/26/18.
  */
