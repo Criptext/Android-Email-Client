@@ -6,6 +6,7 @@ import android.widget.*
 import com.email.R
 import com.email.db.AttachmentTypes
 import com.email.utils.Utility
+import com.email.utils.file.CRFileUtils
 
 class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?) : RecyclerView.ViewHolder(view) {
 
@@ -26,7 +27,7 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     fun setFields(name: String, size: Long, type: AttachmentTypes){
         filename.text = name
-        filesize.text = Utility.readableFileSize(size)
+        filesize.text = CRFileUtils.readableFileSize(size)
         typeView.setImageResource(type.getDrawableImage())
     }
 

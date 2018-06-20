@@ -7,7 +7,7 @@ import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.DateUtils
-import com.email.utils.file.FilenameUtils
+import com.email.utils.file.CRFileUtils
 import java.util.*
 
 /**
@@ -67,7 +67,7 @@ class SaveEmailWorker(
         attachments.map {
             CRFile(
                     token = it.filetoken,
-                    name = FilenameUtils.getName(it.filepath),
+                    name = CRFileUtils.getName(it.filepath),
                     size = it.size,
                     status = 1,
                     date = Date(),
