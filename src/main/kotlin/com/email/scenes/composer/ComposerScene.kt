@@ -205,7 +205,7 @@ interface ComposerScene {
 
         override fun showAttachmentErrorDialog(filename: String){
             val builder = AlertDialog.Builder(ctx)
-            builder.setMessage("Unable to upload $filename. Please try again")
+            builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
                     .show()
         }
 
