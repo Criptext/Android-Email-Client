@@ -12,9 +12,13 @@ interface KeyValueStorage {
 
     fun getString(key: StringKey, default: String): String
     fun putString(key: StringKey, value: String)
+    fun getStringSet(key: StringKey): MutableSet<String>?
+    fun putStringSet(key: StringKey, value: MutableSet<String>)
+    fun clearAll()
 
     enum class StringKey(val stringKey: String) {
-        ActiveAccount("ActiveAccount"), SignInSession("SignInSession")
+        ActiveAccount("ActiveAccount"), SignInSession("SignInSession"),
+        SearchHistory("searchHistory")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {
@@ -33,5 +37,16 @@ interface KeyValueStorage {
             withApply { editor -> editor.putString(key.stringKey, value) }
         }
 
+        override fun getStringSet(key: StringKey): MutableSet<String>? {
+            return prefs.getStringSet(key.stringKey, null)
+        }
+
+        override fun putStringSet(key: StringKey, value: MutableSet<String>) {
+            withApply { editor -> editor.putStringSet(key.stringKey, value) }
+        }
+
+        override fun clearAll() {
+            withApply { editor -> editor.clear() }
+        }
     }
 }

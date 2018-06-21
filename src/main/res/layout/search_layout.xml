@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/rootView">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/mailbox_toolbar"
@@ -41,7 +41,9 @@
                 android:textColorHint="#50ffffff"
                 android:theme="@style/editTextSearch"
                 android:focusable="true"
-                android:background="@null">
+                android:background="@null"
+                android:inputType="text"
+                android:imeOptions="actionSearch">
                 <requestFocus />
             </EditText>
 
@@ -55,7 +57,7 @@
                 android:layout_alignParentRight="true"
                 android:tint="@android:color/white"
                 android:src="@drawable/x"
-                android:alpha="0.4"
+                android:visibility="gone"
                 android:background="@drawable/circle_nav_button"/>
 
         </RelativeLayout>
@@ -65,6 +67,85 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewSearchResults"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/mailbox_toolbar"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/viewNoHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/search"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:gravity="center_horizontal"
+            android:text="@string/no_history"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#9b9b9b"
+            android:gravity="center_horizontal"
+            android:text="@string/no_history_subtitle"
+            fontPath="fonts/NunitoSans-Italic.ttf"/>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewThreadsResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_below="@+id/mailbox_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/viewNoMails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:visibility="gone"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/envelope_opened"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:gravity="center_horizontal"
+            android:text="@string/no_search_results"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#9b9b9b"
+            android:gravity="center_horizontal"
+            android:text="@string/no_search_subtitle"
+            fontPath="fonts/NunitoSans-Italic.ttf"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

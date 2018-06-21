@@ -14,7 +14,7 @@
             android:launchMode="singleTop">
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".scenes.search.SearchActivity"
             android:windowSoftInputMode="stateVisible">
         </activity>
         <activity

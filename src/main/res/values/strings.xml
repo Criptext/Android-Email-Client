@@ -247,6 +247,7 @@
 
     <string name="fail_unsend_email">Failed to unsend the email. Please try again later.</string>
     <string name="failed_getting_emails">Failed to fetch the emails. Please try again later.</string>
+    <string name="failed_searching_emails">Failed to search emails. Please try again later.</string>
     <string name="updating_mailbox">Updating mailbox...</string>
     <string name="email_already_decrypted">Mailbox is already updated!</string>
 
@@ -264,8 +265,12 @@
     <string name="to_popup">To:</string>
     <string name="reply_popup">Reply To:</string>
     <string name="date_popup">Date:</string>
-    
+
+    <string name="no_history">There is not search history</string>
+    <string name="no_history_subtitle">Make your first search</string>
     <string name="no_mails">There are no emails</string>
     <string name="no_mails_subtitle">Have fun</string>
+    <string name="no_search_results">No search results</string>
+    <string name="no_search_subtitle">Trash &amp; Spam emails are not displayed</string>
     <string name="draft">Draft</string>
 </resources>

@@ -54,6 +54,32 @@ import java.util.*
             limit: Int ): List<Email>
 
     @Query("""
+        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
+        max(email.unread) as unread, max(email.date),
+        group_concat(distinct(contact.name)) as contactNames,
+        group_concat(distinct(contact.email)) as contactEmails
+        from email
+        inner join email_label on email.id = email_label.emailId
+        left join email_contact on email.id = email_contact.emailId
+        left join contact on email_contact.contactId = contact.id
+        and date < :starterDate
+        where not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        group by uniqueId
+        having contactNames like :queryText
+        or contactEmails like :queryText
+        or preview like :queryText
+        or content like :queryText
+        or subject like :queryText
+        order by date DESC limit :limit
+        """)
+    fun searchEmailThreads(
+            starterDate: Date,
+            queryText: String,
+            rejectedLabels: List<Long>,
+            limit: Int): List<Email>
+
+    @Query("""
         SELECT * FROM email e
         WHERE threadId=:threadId AND date=(SELECT MAX(date)
         FROM email d WHERE d.threadId=:threadId)
@@ -114,6 +140,30 @@ import java.util.*
     fun getInitialEmailThreadsFromMailboxLabel(
             rejectedLabels: List<Long>,
             selectedLabel: String,
+            limit: Int): List<Email>
+
+    @Query("""
+        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
+        max(email.unread) as unread, max(email.date),
+        group_concat(distinct(contact.name)) as contactNames,
+        group_concat(distinct(contact.email)) as contactEmails
+        from email
+        inner join email_label on email.id = email_label.emailId
+        left join email_contact on email.id = email_contact.emailId
+        left join contact on email_contact.contactId = contact.id
+        where not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        group by uniqueId
+        having contactNames like :queryText
+        or contactEmails like :queryText
+        or preview like :queryText
+        or content like :queryText
+        or subject like :queryText
+        order by date DESC limit :limit
+        """)
+    fun searchInitialEmailThreads(
+            queryText: String,
+            rejectedLabels: List<Long>,
             limit: Int): List<Email>
 
     @Query("""

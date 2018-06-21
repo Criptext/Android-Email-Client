@@ -5,31 +5,28 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.email.R
-import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.search.data.SearchResult
+import com.email.scenes.search.data.SearchItem
 import com.squareup.picasso.Picasso
 
 /**
  * Created by danieltigse on 2/5/18.
  */
 
-class SearchHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
+class SearchHolder(view: View): RecyclerView.ViewHolder(view){
 
     private val textViewSubject : TextView
     private val textViewRecipients : TextView
     private val imageViewTypeSearch : ImageView
+    val rootView: View
 
     init {
-        view.setOnClickListener(this)
         textViewSubject = view.findViewById(R.id.textViewSubject)
         textViewRecipients = view.findViewById(R.id.textViewRecipients)
         imageViewTypeSearch = view.findViewById(R.id.imageViewTypeSearch)
+        rootView = view.findViewById(R.id.rootView)
     }
 
-    override fun onClick(p0: View?) {
-    }
-
-    fun bindWithSearch(search: SearchResult){
+    fun bindWithSearch(search: SearchItem){
         textViewSubject.text = search.subject
         if(search.recipients.isEmpty()){
             textViewRecipients.visibility = View.GONE

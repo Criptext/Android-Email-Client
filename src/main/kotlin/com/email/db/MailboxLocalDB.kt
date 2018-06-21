@@ -107,7 +107,6 @@ interface MailboxLocalDB {
                             to = contactsTO ),
                     totalEmails = totalEmails
             )
-
         }
 
         override fun getEmailsFromMailboxLabel(
