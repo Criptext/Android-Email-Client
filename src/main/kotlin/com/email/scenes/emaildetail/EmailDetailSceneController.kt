@@ -30,6 +30,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import com.email.utils.Utility
+import com.email.utils.file.FileUtils
 import java.io.File
 
 
@@ -135,7 +136,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.DownloadFile.Success -> {
                 val file = File(result.filepath)
                 val newIntent = Intent(Intent.ACTION_VIEW)
-                val mimeType = Utility.getMimeTypeFromPath(result.filepath)
+                val mimeType = FileUtils.getMimeType(result.filepath)
                 newIntent.setDataAndType(Uri.fromFile(file), mimeType)
                 newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 (host as AppCompatActivity).startActivity(newIntent)
@@ -367,6 +368,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 showLabelsDialog()
             }
         }
+    }
+
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     }
 
     private fun showLabelsDialog() {

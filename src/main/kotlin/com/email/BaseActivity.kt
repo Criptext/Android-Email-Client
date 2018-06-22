@@ -1,9 +1,14 @@
 package com.email
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -175,6 +180,19 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             .pickFile(this)
     }
 
+    override fun checkAndRequestPermission(requestCode: Int, permission: String): Boolean =
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED) {
+                true
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf<String>(permission), requestCode)
+                false
+            }
+        } else {
+            true
+        }
+
+
     protected fun setActivityMessage(message: ActivityMessage?) {
         activityMessage = message
     }
@@ -194,7 +212,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         fun setCachedModel(clazz: Class<*>, model: Any) {
             cachedModels[clazz] = model
         }
+    }
 
+    enum class RequestCode {
+        readAccess, writeAccess
     }
 
 }

@@ -1,11 +1,11 @@
 package com.email.websocket.data
 
 import com.email.api.models.EmailMetadata
-import com.email.db.models.File
+import com.email.db.models.CRFile
 
 /**
  * Created by gabriel on 5/1/18.
  */
 sealed class EventRequest {
-    data class InsertNewEmail(val emailMetadata: EmailMetadata, val files: List<File>): EventRequest()
+    data class InsertNewEmail(val emailMetadata: EmailMetadata, val files: List<CRFile>): EventRequest()
 }

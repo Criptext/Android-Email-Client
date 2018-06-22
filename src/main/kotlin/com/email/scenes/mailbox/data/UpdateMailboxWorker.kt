@@ -121,7 +121,7 @@ class UpdateMailboxWorker(
         else throw NothingNewException()
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, files: List<File>) =
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, files: List<CRFile>) =
             EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                             dao = dao, apiClient = emailInsertionApiClient, metadata = metadata, files = files)
 
@@ -135,9 +135,9 @@ class UpdateMailboxWorker(
 
     private fun processNewEmails(events: List<Event>): Int {
         val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
-        val toIdAndMetadataTriple: (Event) -> Triple<Long, EmailMetadata, List<File>> =
-                { Triple( it.rowid, EmailMetadata.fromJSON(it.params), File.listFromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Triple<Long, EmailMetadata, List<File>>) -> Boolean =
+        val toIdAndMetadataTriple: (Event) -> Triple<Long, EmailMetadata, List<CRFile>> =
+                { Triple( it.rowid, EmailMetadata.fromJSON(it.params), CRFile.listFromJSON(it.params)) }
+        val emailInsertedSuccessfully: (Triple<Long, EmailMetadata, List<CRFile>>) -> Boolean =
             { (_, metadata, files) ->
                 try {
                     insertIncomingEmailTransaction(metadata, files)
@@ -152,7 +152,7 @@ class UpdateMailboxWorker(
                     false
                 }
             }
-        val toEventId: (Triple<Long, EmailMetadata, List<File>>) -> Long =
+        val toEventId: (Triple<Long, EmailMetadata, List<CRFile>>) -> Long =
                 { (eventId, _, _) -> eventId }
 
         val eventIdsToAcknowledge = events

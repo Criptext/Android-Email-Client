@@ -56,14 +56,14 @@ class CRFile(
     }
 
     companion object {
-        fun listFromJSON(metadataString: String): List<File>{
+        fun listFromJSON(metadataString: String): List<CRFile>{
             val emailData = JSONObject(metadataString)
             if (!emailData.has("files")) return emptyList()
             val jsonFiles = emailData.getJSONArray("files")
-            val files = ArrayList<File>()
+            val files = ArrayList<CRFile>()
             for (i in 0 until jsonFiles.length()) {
                 val file = jsonFiles.getJSONObject(i)
-                files.add(File(
+                files.add(CRFile(
                         file.getString("token"),
                         file.getString("name"),
                         file.getLong("size"),

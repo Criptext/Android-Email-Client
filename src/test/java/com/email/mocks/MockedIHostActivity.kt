@@ -41,4 +41,8 @@ class MockedIHostActivity: IHostActivity{
         return "test"
     }
 
+    override fun checkAndRequestPermission(permission: String): Boolean {
+        return true
+    }
+
 }
