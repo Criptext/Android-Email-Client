@@ -1,7 +1,7 @@
 package com.email.api
 
 import com.email.api.models.MultipartFormItem
-import com.email.utils.file.CRFileUtils
+import com.email.utils.file.FileUtils
 import okhttp3.*
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -52,7 +52,7 @@ interface HttpClient {
         private fun MultipartBody.Builder.addByteItem(name: String,
                                                       item: MultipartFormItem.ByteArrayItem)
                 : MultipartBody.Builder {
-            val mimeType = CRFileUtils.getMimeType(item.name)
+            val mimeType = FileUtils.getMimeType(item.name)
             val fileBody = RequestBody.create(MediaType.parse(mimeType), item.value)
             return this.addFormDataPart(name, item.name, fileBody)
         }
@@ -60,7 +60,7 @@ interface HttpClient {
         private fun MultipartBody.Builder.addFileItem(name: String,
                                                       item: MultipartFormItem.FileItem)
                 : MultipartBody.Builder {
-            val mimeType = CRFileUtils.getMimeType(item.name)
+            val mimeType = FileUtils.getMimeType(item.name)
             val fileBody = RequestBody.create(MediaType.parse(mimeType), item.value)
             return this.addFormDataPart(name, item.name, fileBody)
         }

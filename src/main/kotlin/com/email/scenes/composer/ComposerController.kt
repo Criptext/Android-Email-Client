@@ -171,10 +171,10 @@ class ComposerController(private val model: ComposerModel,
                               else R.menu.composer_menu_disabled
 
     private fun addNewAttachments(filesMetadata: List<Pair<String, Long>>) {
-        val predicate: (Pair<String, Long>) -> (Boolean) = { data ->
+        val isNewAttachment: (Pair<String, Long>) -> (Boolean) = { data ->
             model.attachments.indexOfFirst { it.filepath == data.first  } < 0
         }
-        model.attachments.addAll(filesMetadata.filter(predicate).map {
+        model.attachments.addAll(filesMetadata.filter(isNewAttachment).map {
             ComposerAttachment(it.first, it.second)
         })
         scene.notifyAttachmentSetChanged()
@@ -186,7 +186,6 @@ class ComposerController(private val model: ComposerModel,
             return
         }
         val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
-        attachmentToUpload.uploadProgress = 0
         uploadSelectedFile(attachmentToUpload.filepath)
     }
 

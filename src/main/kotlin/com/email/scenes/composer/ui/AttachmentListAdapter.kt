@@ -8,9 +8,9 @@ import com.email.R
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.ui.holders.AttachmentViewHolder
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
-import com.email.utils.file.CRFileUtils
+import com.email.utils.file.FileUtils
 
-class AttachmentListAdapter(private val mContext: Context, private val attachmentsList: ArrayList<ComposerAttachment>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class AttachmentListAdapter(private val mContext: Context, private val attachmentsList: List<ComposerAttachment>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var observer: AttachmentViewObserver? = null
 
@@ -26,7 +26,7 @@ class AttachmentListAdapter(private val mContext: Context, private val attachmen
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         val attachment = attachmentsList[position]
         val mView = holder as AttachmentViewHolder
-        mView.setFields(name = CRFileUtils.getName(attachment.filepath), size = attachment.size, type = attachment.type)
+        mView.setFields(name = FileUtils.getName(attachment.filepath), size = attachment.size, type = attachment.type)
         mView.setProgress(attachment.uploadProgress)
     }
 

@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import com.email.utils.file.CRFileUtils
+import com.email.utils.file.FileUtils
 
 /**
  * Created by hirobreak on 08/06/17.
@@ -24,7 +24,7 @@ class DownloadHelper {
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
             request.setTitle(filename)
             request.setDescription("Criptext Secure CRFile")
-            request.setMimeType(CRFileUtils.getMimeType(filename))
+            request.setMimeType(FileUtils.getMimeType(filename))
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
             return downloadManager.enqueue(request)

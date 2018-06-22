@@ -9,7 +9,7 @@ import java.net.URLConnection
  * Created by gesuwall on 5/2/17.
  */
 
-class CRFileUtils {
+class FileUtils {
     companion object {
         /**
          * The extension separator character.
