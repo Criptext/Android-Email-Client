@@ -9,7 +9,6 @@ import com.email.scenes.mailbox.ui.MailboxUIObserver
 import io.mockk.*
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.junit.Before
 import org.junit.Test
@@ -116,7 +115,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         //trigger bulk move
         controller.onOptionsItemSelected(R.id.mailbox_move_to)
         //trigger click move to spam
-        onMoveThreadsListenerSlot.captured.moveToSpam()
+        onMoveThreadsListenerSlot.captured.onMoveToSpamClicked()
 
         val sentRequest = sentRequests.first()
         sentRequest `should be instance of` MailboxRequest.MoveEmailThread::class.java
@@ -161,6 +160,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         val sentRequest = sentRequests.first()
         sentRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.trash.text,
-                loadParams = LoadParams.Reset(size = 20))
+                loadParams = LoadParams.Reset(size = 20),
+                userEmail = "gabriel@jigl.com")
     }
 }

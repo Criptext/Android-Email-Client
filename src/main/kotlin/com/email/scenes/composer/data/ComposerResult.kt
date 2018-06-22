@@ -24,4 +24,11 @@ sealed class ComposerResult {
         data class Success(val filepath: String): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
     }
+
+    sealed class DeleteDraft : ComposerResult() {
+        class Success: DeleteDraft()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): DeleteDraft()
+    }
 }

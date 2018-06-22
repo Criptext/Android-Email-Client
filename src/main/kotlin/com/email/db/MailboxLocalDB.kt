@@ -1,8 +1,10 @@
 package com.email.db
 
+import com.email.SecureEmail
 import com.email.db.models.*
 import com.email.db.typeConverters.LabelTextConverter
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.EmailThreadValidator
 import com.github.kittinunf.result.Result
 import java.util.*
 
@@ -20,7 +22,8 @@ interface MailboxLocalDB {
     fun getLabelsFromThreadIds(threadIds: List<String>): List<Label>
     fun addEmail(email: Email) : Long
     fun createLabelsForEmailInbox(insertedEmailId: Long)
-    fun getEmailsFromMailboxLabel(
+    fun getThreadsFromMailboxLabel(
+            userEmail: String,
             labelTextTypes: MailFolders,
             oldestEmailThread: EmailThread?,
             limit: Int,
@@ -84,7 +87,9 @@ interface MailboxLocalDB {
             }
         }
 
-        private fun getEmailThreadFromEmail(email: Email, rejectedLabels: List<Long>): EmailThread {
+        private fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
+                                            rejectedLabels: List<Long>, userEmail: String): EmailThread {
+
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -92,11 +97,34 @@ interface MailboxLocalDB {
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
-            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId, rejectedLabels)
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                     .replace("^(Fw|FW): ".toRegex(), "")
 
+            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+            val participants = emails.flatMap {
+                val contacts = mutableListOf<Contact>()
+                if(selectedLabel == Label.defaultItems.sent.text){
+                    val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
+                    if(EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)){
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
+                    }
+                }
+                else{
+                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
+                }
+                contacts.map { contact ->
+                    if(contact.email == userEmail){
+                        //It's difficult to reach String resources, so I will leave the 'me' string for now
+                        contact.name = "me"
+                    }
+                }
+                contacts
+            }
+
             return EmailThread(
+                    participants = participants.distinctBy { it.id },
+                    currentLabel = selectedLabel,
                     latestEmail = FullEmail(
                             email = email,
                             bcc = contactsBCC,
@@ -105,15 +133,14 @@ interface MailboxLocalDB {
                             files = files,
                             labels = labels,
                             to = contactsTO ),
-                    totalEmails = totalEmails
+                    totalEmails = emails.size
             )
         }
 
-        override fun getEmailsFromMailboxLabel(
-                labelTextTypes: MailFolders,
-                oldestEmailThread: EmailThread?,
-                limit: Int,
-                rejectedLabels: List<Label>): List<EmailThread> {
+        override fun getThreadsFromMailboxLabel(userEmail: String, labelTextTypes: MailFolders,
+                                                oldestEmailThread: EmailThread?, limit: Int,
+                                                rejectedLabels: List<Label>): List<EmailThread> {
+
             val labels = db.labelDao().getAll()
             val selectedLabel = if(labelTextTypes == MailFolders.ALL_MAIL) "%" else
                 "%${labels.findLast {
@@ -138,10 +165,10 @@ interface MailboxLocalDB {
                         limit = limit )
 
             return emails.map { email ->
-                getEmailThreadFromEmail(email,
+                getEmailThreadFromEmail(email, labelTextTypes,
                         Label.defaultItems.rejectedLabelsByMailbox(
                                 db.labelDao().get(labelTextTypes)
-                        ).map { it.id })
+                        ).map { it.id }, userEmail)
             } as ArrayList<EmailThread>
         }
 

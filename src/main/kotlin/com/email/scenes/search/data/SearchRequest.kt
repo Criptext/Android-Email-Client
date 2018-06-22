@@ -7,6 +7,7 @@ import com.email.scenes.mailbox.data.EmailThread
 sealed class SearchRequest{
 
     data class SearchEmails(
+            val userEmail: String,
             val queryText: String,
             val loadParams: LoadParams
     ): SearchRequest()

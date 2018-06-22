@@ -12,8 +12,9 @@ class WebViewUtils {
 
     companion object {
 
+        private const val imageUri = "file:///android_asset/showmore.png"
+
         fun collapseScript() : String{
-            val imageUri = "file:///android_asset/showmore.png"
             val sb = StringBuilder()
             sb.append("<script>")
 
@@ -48,7 +49,7 @@ class WebViewUtils {
 
             sb.append("var replybody = document.getElementsByTagName(\"blockquote\")[0];")
             sb.append("var newNode = document.createElement(\"img\");")
-            sb.append("newNode.src = \"${imageUri}\";")
+            sb.append("newNode.src = \"$imageUri\";")
             sb.append("newNode.width = 30;")
             sb.append("newNode.style.paddingTop = \"10px\";")
             sb.append("newNode.style.paddingBottom = \"10px\";")

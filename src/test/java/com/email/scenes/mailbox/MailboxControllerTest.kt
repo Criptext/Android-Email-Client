@@ -38,7 +38,7 @@ open class MailboxControllerTest {
         webSocketEvents = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
-                """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
+                """ { "name":"John","jwt":"_JWT_","recipientId":"gabriel","deviceId":1} """)
 
         virtualListView = mockk(relaxed = true)
         every { scene::virtualListView.get() } returns virtualListView

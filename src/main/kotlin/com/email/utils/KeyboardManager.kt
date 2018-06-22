@@ -29,4 +29,10 @@ class KeyboardManager(val act: Activity) {
     fun showKeyboard(inputView: View) {
         imm.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT)
     }
+
+    fun showKeyboardWithDelay(inputView: View){
+        inputView.postDelayed({
+            imm.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
+    }
 }

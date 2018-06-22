@@ -31,19 +31,19 @@ sealed class EmailDetailResult {
     }
 
     sealed class UpdateUnreadStatus: EmailDetailResult(){
-        class Success: UpdateUnreadStatus()
+        data class Success(val threadId: String, val unread: Boolean): UpdateUnreadStatus()
         class Failure: UpdateUnreadStatus()
     }
 
     sealed class UpdateEmailThreadsLabelsRelations: EmailDetailResult() {
-        class Success: UpdateEmailThreadsLabelsRelations()
+        data class Success(val threadId: String, val selectedLabelIds: List<Long>): UpdateEmailThreadsLabelsRelations()
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
     }
 
     sealed class MoveEmailThread: EmailDetailResult() {
-        class Success: MoveEmailThread()
+        data class Success(val threadId: String?): MoveEmailThread()
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()

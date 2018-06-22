@@ -28,7 +28,7 @@ class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
         private val dao: EmailInsertionDao,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
         private val label: Label,
         httpClient: HttpClient,
@@ -114,9 +114,10 @@ class UpdateMailboxWorker(
 
     private fun reloadMailbox(newEmailCount: Int): List<EmailThread> {
         return if (newEmailCount > 0)
-            db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+            db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
                     limit = Math.max(20, loadedThreadsCount),
-                    rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+                    rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
+                    userEmail = activeAccount.userEmail)
         else throw NothingNewException()
     }
 

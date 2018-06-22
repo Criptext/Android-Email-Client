@@ -1,5 +1,6 @@
 package com.email.scenes.composer
 
+import com.email.IHostActivity
 import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.scenes.composer.data.ComposerAttachment
@@ -14,6 +15,7 @@ import kotlin.collections.HashMap
 class ComposerModel() {
     var fullEmail: FullEmail? = null
     var composerType: ComposerTypes? = null
+    var emailDetailActivity: IHostActivity? = null
 
     constructor(fullEmail: FullEmail?, composerType: ComposerTypes?):this() {
         this.fullEmail = fullEmail

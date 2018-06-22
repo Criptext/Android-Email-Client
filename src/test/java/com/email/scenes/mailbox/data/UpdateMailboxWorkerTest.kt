@@ -32,6 +32,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var db: MailboxLocalDB
     private lateinit var dao: EmailInsertionDao
     private lateinit var activeAccount: ActiveAccount
+    protected var userEmail = "gabriel@jigl.com"
 
     @Before
     fun setup() {
@@ -71,8 +72,9 @@ class UpdateMailboxWorkerTest {
 
         // prepare db mocks
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
-                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+            db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
+                    userEmail = userEmail)
         } returns MailboxTestUtils.createEmailThreads(20)
         val insertedEmails = mutableListOf<Email>()
         every {
@@ -132,8 +134,9 @@ class UpdateMailboxWorkerTest {
 
         // prepare db mocks
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
-                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+            db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
+                    userEmail = userEmail)
         } returns MailboxTestUtils.createEmailThreads(20)
         val insertedEmails = mutableListOf<Email>()
         every {
@@ -185,8 +188,9 @@ class UpdateMailboxWorkerTest {
 
         // prepare db mocks
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
-                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label))
+            db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+                    limit = 20, rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
+                    userEmail = userEmail)
         } returns MailboxTestUtils.createEmailThreads(20)
         val insertedEmails = mutableListOf<Email>()
         every {

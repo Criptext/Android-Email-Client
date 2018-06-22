@@ -25,10 +25,15 @@ class ComposerDataSource(
             is ComposerRequest.GetAllContacts -> LoadContactsWorker(composerLocalDB, { res ->
                 flushResults(res)
             })
-            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(threadId = params.threadId,
+            is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
+                    threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
                     account = activeAccount, dao = emailInsertionDao,
                     onlySave = params.onlySave, publishFn = { res -> flushResults(res) })
+            is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
+                    emailId = params.emailId,
+                    db = composerLocalDB,
+                    publishFn = { res -> flushResults(res) })
         }
     }
 

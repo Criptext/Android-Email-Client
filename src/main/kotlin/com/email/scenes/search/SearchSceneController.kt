@@ -71,7 +71,8 @@ class SearchSceneController(private val scene: SearchScene,
             val req = SearchRequest.SearchEmails(
                     queryText = model.queryText,
                     loadParams = LoadParams.NewPage(size = MailboxSceneController.threadsPerPage,
-                            oldestEmailThread = model.threads.lastOrNull()))
+                    oldestEmailThread = model.threads.lastOrNull()),
+                    userEmail = activeAccount.userEmail)
             dataSource.submitRequest(req)
         }
 
@@ -82,7 +83,8 @@ class SearchSceneController(private val scene: SearchScene,
                 return host.goToScene(ComposerParams(
                         fullEmail = emailThread.latestEmail,
                         composerType = ComposerTypes.CONTINUE_DRAFT,
-                        userEmail = "${activeAccount.recipientId}@${Contact.mainDomain}"
+                        userEmail = activeAccount.userEmail,
+                        emailDetailActivity = null
                 ), true)
             }
             dataSource.submitRequest(SearchRequest.UpdateUnreadStatus(
@@ -106,7 +108,8 @@ class SearchSceneController(private val scene: SearchScene,
             if(text.isNotBlank()) {
                 val req = SearchRequest.SearchEmails(
                         queryText = text,
-                        loadParams = LoadParams.Reset(size = MailboxSceneController.threadsPerPage))
+                        loadParams = LoadParams.Reset(size = MailboxSceneController.threadsPerPage),
+                        userEmail = activeAccount.userEmail)
                 dataSource.submitRequest(req)
                 scene.hideAllListViews()
             }

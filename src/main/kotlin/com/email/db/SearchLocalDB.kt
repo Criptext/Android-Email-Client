@@ -3,10 +3,13 @@ package com.email.db
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.email.SecureEmail
+import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.mailbox.data.EmailThread
+import com.email.utils.EmailThreadValidator
 import java.util.ArrayList
 
 /**
@@ -16,6 +19,7 @@ import java.util.ArrayList
 interface SearchLocalDB{
 
     fun searchMailsInDB(
+            userEmail: String,
             queryText: String,
             oldestEmailThread: EmailThread?,
             limit: Int): List<EmailThread>
@@ -25,7 +29,7 @@ interface SearchLocalDB{
 
     class Default(private val db: AppDatabase): SearchLocalDB{
 
-        override fun searchMailsInDB(queryText: String,
+        override fun searchMailsInDB(userEmail: String, queryText: String,
                                      oldestEmailThread: EmailThread?,
                                      limit: Int): List<EmailThread> {
 
@@ -43,12 +47,16 @@ interface SearchLocalDB{
                         limit = limit )
 
             return emails.map { email ->
-                getEmailThreadFromEmail(email)
+                getEmailThreadFromEmail(email, Label.defaultItems.inbox.text,
+                        Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox)
+                                .map { it.id }, userEmail)
             } as ArrayList<EmailThread>
 
         }
 
-        private fun getEmailThreadFromEmail(email: Email): EmailThread {
+        private fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
+                                            rejectedLabels: List<Long>, userEmail: String): EmailThread {
+
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -56,11 +64,34 @@ interface SearchLocalDB{
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
-            val totalEmails = db.emailDao().getTotalEmailsByThread(email.threadId, listOf())
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                     .replace("^(Fw|FW): ".toRegex(), "")
 
+            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+            val participants = emails.flatMap {
+                val contacts = mutableListOf<Contact>()
+                if(selectedLabel == Label.defaultItems.sent.text){
+                    val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
+                    if(EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)){
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
+                    }
+                }
+                else{
+                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
+                }
+                contacts.map { contact ->
+                    if(contact.email == userEmail){
+                        //It's difficult to reach String resources, so I will leave the 'me' string for now
+                        contact.name = "me"
+                    }
+                }
+                contacts
+            }
+
             return EmailThread(
+                    participants = participants.distinctBy { it.id },
+                    currentLabel = selectedLabel,
                     latestEmail = FullEmail(
                             email = email,
                             bcc = contactsBCC,
@@ -69,7 +100,7 @@ interface SearchLocalDB{
                             files = files,
                             labels = labels,
                             to = contactsTO ),
-                    totalEmails = totalEmails
+                    totalEmails = emails.size
             )
         }
 

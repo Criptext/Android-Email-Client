@@ -56,24 +56,31 @@ class MoveToDialog(val context: Context) {
                            onMoveThreadsListener: OnMoveThreadsListener,
                            currentFolder: MailFolders) {
 
+        val btn_inbox = view.findViewById(R.id.move_to_inbox) as Button
         val btn_spam = view.findViewById(R.id.move_to_spam) as Button
         val btn_trash = view.findViewById(R.id.move_to_trash) as Button
         val btn_cancel = view.findViewById(R.id.move_to_cancel) as Button
 
         when(currentFolder){
+            MailFolders.ALL_MAIL -> btn_inbox.visibility = View.VISIBLE
             MailFolders.SPAM -> btn_spam.visibility = View.GONE
             MailFolders.TRASH -> btn_trash.visibility = View.GONE
             else -> {
             }
         }
 
+        btn_inbox.setOnClickListener {
+            onMoveThreadsListener.onMoveToInboxClicked()
+            dialog.dismiss()
+        }
+
         btn_spam.setOnClickListener {
-            onMoveThreadsListener.moveToSpam()
+            onMoveThreadsListener.onMoveToSpamClicked()
             dialog.dismiss()
         }
 
         btn_trash.setOnClickListener {
-            onMoveThreadsListener.moveToTrash()
+            onMoveThreadsListener.onMoveToTrashClicked()
             dialog.dismiss()
         }
 

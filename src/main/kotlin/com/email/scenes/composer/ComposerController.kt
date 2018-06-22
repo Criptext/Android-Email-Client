@@ -10,6 +10,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
+import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
 
 /**
@@ -53,6 +54,7 @@ class ComposerController(private val model: ComposerModel,
         when(result) {
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
+            is ComposerResult.DeleteDraft -> host.finishScene()
         }
     }
 
@@ -63,6 +65,7 @@ class ComposerController(private val model: ComposerModel,
                     host.finishScene()
                 }
                 else {
+                    model.emailDetailActivity?.finishScene()
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData)
@@ -190,8 +193,14 @@ class ComposerController(private val model: ComposerModel,
                             onlySave = true))
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
-                    //TODO Delete draft if necessary
-                    host.finishScene()
+                    if(model.composerType == ComposerTypes.CONTINUE_DRAFT){
+                        dataSource.submitRequest(ComposerRequest.DeleteDraft(
+                                emailId = model.fullEmail?.email?.id!!
+                        ))
+                    }
+                    else {
+                        host.finishScene()
+                    }
                 }
             }
         }

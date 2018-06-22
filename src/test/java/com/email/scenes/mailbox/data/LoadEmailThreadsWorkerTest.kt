@@ -20,12 +20,12 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = null, rejectedLabels = any())
+            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+                oldestEmailThread = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.NewPage(20, null)))
+                loadParams = LoadParams.NewPage(20, null), userEmail = userEmail))
 
         runner._work(mockk()) // execute worker
 
@@ -45,12 +45,12 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = currentThreads.last(), rejectedLabels = any())
+            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+                oldestEmailThread = currentThreads.last(), rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.NewPage(20, currentThreads.last())))
+                loadParams = LoadParams.NewPage(20, currentThreads.last()), userEmail = userEmail))
 
         runner._work(mockk()) // execute worker
 
@@ -68,12 +68,12 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getEmailsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = null, rejectedLabels = any())
+            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+                oldestEmailThread = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.Reset(20)))
+                loadParams = LoadParams.Reset(20), userEmail = userEmail))
 
         runner._work(mockk()) // execute worker
 

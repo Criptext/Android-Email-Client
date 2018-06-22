@@ -13,7 +13,7 @@ import com.email.utils.virtuallist.VirtualList
 class FullEmailRecyclerView(
         val recyclerView: RecyclerView,
         fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
-        fullEmailList: VirtualList<FullEmail>) {
+        val fullEmailList: VirtualList<FullEmail>) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -30,6 +30,9 @@ class FullEmailRecyclerView(
         fullEmailListAdapter.notifyDataSetChanged()
     }
 
+    fun scrollToLast() {
+        recyclerView.scrollToPosition(fullEmailList.size - 1)
+    }
 
     fun notifyFullEmailRemoved(position: Int) {
         fullEmailListAdapter.notifyItemRemoved(position)

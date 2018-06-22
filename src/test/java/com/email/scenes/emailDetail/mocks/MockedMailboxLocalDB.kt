@@ -16,6 +16,10 @@ import java.util.*
  */
 
 class MockedMailboxLocalDB: MailboxLocalDB {
+    override fun getThreadsFromMailboxLabel(userEmail: String, labelTextTypes: MailFolders, oldestEmailThread: EmailThread?, limit: Int, rejectedLabels: List<Label>): List<EmailThread> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun updateUnreadStatus(emailThreads: List<EmailThread>, updateUnreadStatus: Boolean, rejectedLabels: List<Long>) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -49,10 +53,6 @@ class MockedMailboxLocalDB: MailboxLocalDB {
     }
 
     override fun createLabelsForEmailInbox(insertedEmailId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getEmailsFromMailboxLabel(labelTextTypes: MailFolders, oldestEmailThread: EmailThread?, limit: Int, rejectedLabels: List<Label>): List<EmailThread> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

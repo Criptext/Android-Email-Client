@@ -9,12 +9,17 @@ import com.email.scenes.emailDetail.mocks.MockedEmailDetailLocalDB
 import com.email.scenes.emailDetail.mocks.MockedEmailDetailView
 import com.email.scenes.emailDetail.mocks.MockedMailboxLocalDB
 import com.email.scenes.emailDetail.mocks.MockedSignalProtocolStore
+import com.email.scenes.emaildetail.EmailDetailScene
 import com.email.scenes.emaildetail.EmailDetailSceneController
 import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
+import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
+import com.email.signal.SignalClient
 import com.email.utils.DateUtils
-import com.email.utils.KeyboardManager
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be`
@@ -26,35 +31,33 @@ import java.sql.Timestamp
  * Created by sebas on 3/29/18.
  */
 
-class EmailDetailControllerTest {
+open class EmailDetailControllerTest {
 
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
-    private lateinit var model: EmailDetailSceneModel
-    private lateinit var scene: MockedEmailDetailView
-    private lateinit var db: MockedEmailDetailLocalDB
-    private lateinit var mailboxDb: MockedMailboxLocalDB
-    private lateinit var runner: MockedWorkRunner
-    private lateinit var dataSource: EmailDetailDataSource
-    private lateinit var controller: EmailDetailSceneController
-    private lateinit var protocolStore: MockedSignalProtocolStore
-    private lateinit var activeAccount: ActiveAccount
-    private lateinit var emailInsertionDao: EmailInsertionDao
+    protected lateinit var model: EmailDetailSceneModel
+    protected lateinit var scene: EmailDetailScene
+    protected lateinit var db: MockedEmailDetailLocalDB
+    protected lateinit var mailboxDb: MockedMailboxLocalDB
+    protected lateinit var runner: MockedWorkRunner
+    protected lateinit var dataSource: EmailDetailDataSource
+    protected lateinit var controller: EmailDetailSceneController
+    protected lateinit var protocolStore: MockedSignalProtocolStore
+    protected lateinit var activeAccount: ActiveAccount
+    protected lateinit var emailInsertionDao: EmailInsertionDao
+    protected lateinit var sentRequests: MutableList<EmailDetailRequest>
 
-    @Before
-    fun setUp() {
+    open fun setUp() {
         protocolStore = MockedSignalProtocolStore()
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
         model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox)
-        scene = MockedEmailDetailView()
+        scene = mockk(relaxed = true)
         runner = MockedWorkRunner()
         db = MockedEmailDetailLocalDB()
         mailboxDb = MockedMailboxLocalDB()
         emailInsertionDao = mockk()
 
-        dataSource = EmailDetailDataSource(
-                runner = runner,
-                emailDetailLocalDB = db)
+        dataSource = mockk(relaxed = true)
 
         controller = EmailDetailSceneController(
                 scene = scene,
@@ -63,6 +66,9 @@ class EmailDetailControllerTest {
                 model = model,
                 activeAccount = activeAccount,
                 keyboard = mockk(relaxed = true))
+
+        sentRequests = mutableListOf()
+        every { dataSource.submitRequest(capture(sentRequests)) } just Runs
 
     }
 
@@ -96,32 +102,6 @@ class EmailDetailControllerTest {
                     bcc = emptyList(),
                     from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"))
         }.reversed()
-    }
-
-    @Test
-    fun `onStart should set listeners to the view and data source and onStop should clear them`() {
-
-        controller.onStart(null)
-
-        dataSource.listener `should not be` null
-
-        controller.onStop()
-
-        dataSource.listener `should be` null
-    }
-
-    @Test
-    fun `on a cold start, should show 'empty view' and load emails from thread`() {
-
-        controller.onStart(null)
-
-        runner.assertPendingWork(listOf(LoadFullEmailsFromThreadWorker::class.java))
-        db.nextLoadedEmailItems = createEmailItemsInThread(5)
-
-        runner._work(mockk())
-
-        model.fullEmailList.size  `should be` 5
-        scene.notifiedDataSetChanged `should be` true
     }
 
 }

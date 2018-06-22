@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
 import android.widget.ImageView
-import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.utils.virtuallist.VirtualListView
@@ -25,6 +24,7 @@ import com.email.scenes.mailbox.ui.EmailThreadAdapter
 import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
+import com.email.utils.ui.SnackBarHelper
 
 /**
  * Created by sebas on 1/23/18.
@@ -248,12 +248,7 @@ interface MailboxScene{
         }
 
         override fun showMessage(message: UIMessage) {
-            val duration = Toast.LENGTH_LONG
-            val toast = Toast.makeText(
-                    context,
-                    context.getLocalizedUIMessage(message),
-                    duration)
-            toast.show()
+            SnackBarHelper.show(openComposerButton, context.getLocalizedUIMessage(message))
         }
 
         override fun hideDrawer() {
@@ -267,5 +262,6 @@ interface MailboxScene{
         override fun toggleNoMailsView(visible: Boolean) {
             noMailsView.visibility = if (visible) View.VISIBLE else View.GONE
         }
+
     }
 }

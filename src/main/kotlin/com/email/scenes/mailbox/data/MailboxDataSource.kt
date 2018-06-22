@@ -51,6 +51,7 @@ class MailboxDataSource(
                     db = mailboxLocalDB,
                     loadParams = params.loadParams,
                     labelTextTypes = params.label,
+                    userEmail = params.userEmail,
                     publishFn = { result ->
                         flushResults(result)
                     })

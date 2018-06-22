@@ -79,7 +79,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
 
         when(deliveryType){
             DeliveryTypes.SENT -> {
-                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+                setIconAndColor(R.drawable.read, R.color.sent)
             }
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)

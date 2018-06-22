@@ -128,7 +128,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is MailboxParams -> MailboxSceneModel()
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId, params.currentLabel)
             is ComposerParams -> ModelFactory.createComposerModel(params.fullEmail,
-                    params.composerType, params.userEmail)
+                    params.composerType, params.userEmail, params.emailDetailActivity)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

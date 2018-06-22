@@ -31,7 +31,7 @@ object MailboxTestUtils {
                             to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
                             from = Contact(2, "mayer@criptext.com", name = "Mayer"))
-                    EmailThread(fullEmail, 0)
+                    EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0)
                 }
     }
 }

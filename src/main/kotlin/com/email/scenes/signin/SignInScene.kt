@@ -138,7 +138,7 @@ interface SignInScene {
                 if(it >= 100){
                     holder.uiObserver?.onProgressHolderFinish()
                 }
-            }, 100)
+            }, 50)
         }
 
     }

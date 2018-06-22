@@ -11,6 +11,7 @@ import com.email.db.models.ActiveAccount
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerDataSource
+import com.email.utils.KeyboardManager
 import droidninja.filepicker.FilePickerConst
 
 class ComposerActivity : BaseActivity() {
@@ -22,7 +23,7 @@ class ComposerActivity : BaseActivity() {
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
-        val scene = ComposerScene.Default(view)
+        val scene = ComposerScene.Default(view, KeyboardManager(this))
         val db = ComposerLocalDB(appDB.contactDao(), appDB.emailDao(), appDB.labelDao(),
                 appDB.emailLabelDao(), appDB.emailContactDao(), appDB.accountDao())
         val dataSource = ComposerDataSource(

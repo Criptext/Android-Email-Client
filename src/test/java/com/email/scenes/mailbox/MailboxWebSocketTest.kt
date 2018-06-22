@@ -101,7 +101,8 @@ class MailboxWebSocketTest {
 
         // mock database result
         every {
-            db.getEmailsFromMailboxLabel(MailFolders.INBOX, null, 20, any())
+            db.getThreadsFromMailboxLabel("gabriel@jigl.com",
+                    MailFolders.INBOX, null, 20, any())
         } returns MailboxTestUtils.createEmailThreads(20)
         every {
             emailInsertionDao.findEmailByMessageId(any())

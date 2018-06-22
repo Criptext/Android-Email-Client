@@ -46,7 +46,7 @@ class MoveEmailThreadWorker(
             //It means the threads will be deleted permanently
             db.deleteRelationByEmailIds(emailIds = emailIds)
             db.deleteThread(threadId)
-            return EmailDetailResult.MoveEmailThread.Success()
+            return EmailDetailResult.MoveEmailThread.Success(threadId)
         }
 
         if(currentLabel == Label.defaultItems.trash && chosenLabel == MailFolders.SPAM){
@@ -68,7 +68,7 @@ class MoveEmailThreadWorker(
         }
         db.createLabelEmailRelations(emailLabels)
 
-        return EmailDetailResult.MoveEmailThread.Success()
+        return EmailDetailResult.MoveEmailThread.Success(threadId)
     }
 
     override fun cancel() {

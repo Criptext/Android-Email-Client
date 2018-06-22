@@ -90,6 +90,8 @@ interface EmailDetailScene {
                     fullEmailEventListener,
                     fullEmailList)
 
+            fullEmailsRecyclerView.scrollToLast()
+
             backButton.setOnClickListener {
                 hostActivity.finishScene()
             }

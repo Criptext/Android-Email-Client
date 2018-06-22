@@ -37,12 +37,21 @@ class ThreadListController(private val model : MailboxSceneModel,
         virtualListView?.notifyItemChanged(position)
     }
 
-    companion object {
-        fun removeThreadById(threads: ArrayList<EmailThread>, threadId: String): Int {
-            val threadPosition = threads.indexOfFirst { thread -> thread.threadId == threadId }
-            if (threadPosition > -1)
-                threads.removeAt(threadPosition)
-            return threadPosition
+    fun updateUnreadStatusAndNotifyItem(threadId: String, unread: Boolean){
+        val threadPosition = model.threads.indexOfFirst { thread ->
+            thread.latestEmail.email.unread = unread
+            thread.threadId == threadId
+        }
+        if (threadPosition > -1){
+            virtualListView?.notifyItemChanged(threadPosition)
+        }
+    }
+
+    fun removeThreadById(threadId: String) {
+        val threadPosition = model.threads.indexOfFirst { thread -> thread.threadId == threadId }
+        if (threadPosition > -1) {
+            model.threads.removeAt(threadPosition)
+            virtualListView?.notifyItemRemoved(threadPosition)
         }
     }
 
