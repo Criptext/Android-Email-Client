@@ -17,43 +17,43 @@ class MockedEmailDetailLocalDB: EmailDetailLocalDB {
     }
 
     override fun deleteThread(threadId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun deleteEmail(emailId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getCustomLabels(): List<Label> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getLabelsFromThreadId(threadId: String): List<Label> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun deleteRelationByEmailIds(emailIds: List<Long>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun getLabelFromLabelType(labelTextType: MailFolders): Label {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun createLabelEmailRelations(emailLabels: List<EmailLabel>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     override fun unsendEmail(emailId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     var nextLoadedEmailItems: List<FullEmail>? = null

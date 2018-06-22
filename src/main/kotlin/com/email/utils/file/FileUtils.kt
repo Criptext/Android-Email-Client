@@ -1,5 +1,7 @@
 package com.email.utils.file
 
+import android.webkit.MimeTypeMap
+import com.email.db.AttachmentTypes
 import java.net.URLConnection
 
 /**
@@ -7,7 +9,7 @@ import java.net.URLConnection
  * Created by gesuwall on 5/2/17.
  */
 
-class FilenameUtils {
+class FileUtils {
     companion object {
         /**
          * The extension separator character.
@@ -212,7 +214,28 @@ class FilenameUtils {
                 return "application/vnd.android.package-archive"
 
             // Additions and corrections are welcomed.
-            return URLConnection.guessContentTypeFromName(filename) ?: "application/octet-stream"
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "application/octet-stream"
+        }
+
+        fun getAttachmentTypeFromPath(filepath: String): AttachmentTypes {
+            val mimetype = getMimeType(filepath)
+            val type = when {
+                mimetype.contains("image") -> AttachmentTypes.IMAGE
+                mimetype.contains("word") -> AttachmentTypes.WORD
+                mimetype.contains("powerpoint") || mimetype.contains("presentation") -> AttachmentTypes.PPT
+                mimetype.contains("excel") || mimetype.contains("sheet") -> AttachmentTypes.EXCEL
+                mimetype.contains("pdf") -> AttachmentTypes.PDF
+                else -> AttachmentTypes.DEFAULT
+            }
+            return type
+        }
+
+        fun readableFileSize(size: Long): String{
+            val unit = 1024
+            if (size < unit) return "$size B"
+            val exp = (Math.log(size.toDouble()) / Math.log(unit.toDouble())).toInt()
+            val pre = ("KMGTPE")[exp - 1]
+            return String.format("%.2f %sB", size / Math.pow(unit.toDouble(), exp.toDouble()), pre)
         }
 
     }

@@ -123,7 +123,7 @@ class UpdateMailboxWorker(
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
             EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
-                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata)
+                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata, files = emptyList())
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
         try {

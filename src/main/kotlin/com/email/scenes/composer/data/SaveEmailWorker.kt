@@ -7,6 +7,7 @@ import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.DateUtils
+import com.email.utils.file.FileUtils
 import java.util.*
 
 /**
@@ -19,6 +20,7 @@ class SaveEmailWorker(
         private val account: ActiveAccount,
         private val dao: EmailInsertionDao,
         private val onlySave: Boolean,
+        private val attachments: List<ComposerAttachment>,
         override val publishFn: (ComposerResult.SaveEmail) -> Unit)
     : BackgroundWorker<ComposerResult.SaveEmail> {
 
@@ -32,11 +34,11 @@ class SaveEmailWorker(
             : ComposerResult.SaveEmail? {
         val (newEmailId, savedMailThreadId) = saveEmail()
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
-                onlySave = onlySave, composerInputData = composerInputData)
+                onlySave = onlySave, composerInputData = composerInputData, attachments = attachments)
     }
 
     override fun cancel() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
     private val selectEmail: (Contact) -> String = { contact -> contact.email }
 
@@ -61,14 +63,28 @@ class SaveEmailWorker(
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
 
+    private fun createFilesData(): List<CRFile> =
+        attachments.map {
+            CRFile(
+                    token = it.filetoken,
+                    name = FileUtils.getName(it.filepath),
+                    size = it.size,
+                    status = 1,
+                    date = Date(),
+                    readOnly = false,
+                    emailId = 0
+            )
+        }
+
     private fun saveEmail(): Pair<Long, String> {
         val metadataColumns = createMetadataColumns()
         val defaultLabels = Label.DefaultItems()
         val labels = listOf(defaultLabels.draft)
+        val files = createFilesData()
         val newEmailId = dao.runTransaction({
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
-                    decryptedBody = composerInputData.body, labels = labels)
+                    decryptedBody = composerInputData.body, labels = labels, files = files)
         })
         return Pair(newEmailId, metadataColumns.threadId)
     }

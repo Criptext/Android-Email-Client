@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.db.MailFolders
 import com.email.db.models.Label
+import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.label_chooser.SelectedLabels
 
@@ -36,7 +37,7 @@ sealed class MailboxRequest{
             val userEmail: String
             ): MailboxRequest()
 
-    data class SendMail(val emailId: Long, val threadId: String?, val data: ComposerInputData): MailboxRequest()
+    data class SendMail(val emailId: Long, val threadId: String?, val data: ComposerInputData, val attachments: List<ComposerAttachment>): MailboxRequest()
 
     class GetMenuInformation : MailboxRequest()
 

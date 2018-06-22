@@ -11,7 +11,7 @@ data class FullEmail(
         val to: List<Contact>,
         val bcc: List<Contact>,
         val from: Contact,
-        val files: List<File>) {
+        val files: List<CRFile>) {
 
     var viewOpen = false
 

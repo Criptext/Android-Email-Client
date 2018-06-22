@@ -16,12 +16,14 @@ sealed class ComposerResult {
     sealed class SaveEmail : ComposerResult() {
         data class Success(val emailId: Long, val threadId: String,
                            val composerInputData: ComposerInputData,
-                           val onlySave: Boolean) : SaveEmail()
+                           val onlySave: Boolean, val attachments: List<ComposerAttachment>) : SaveEmail()
         class Failure: SaveEmail()
     }
 
     sealed class UploadFile : ComposerResult() {
         data class Success(val filepath: String): UploadFile()
+        data class Register(val filepath: String, val filetoken: String): UploadFile()
+        data class Progress(val filepath: String, val percentage: Int): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
     }
 

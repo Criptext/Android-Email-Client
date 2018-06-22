@@ -1,5 +1,6 @@
 package com.email.scenes.composer.data
 
+import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
@@ -12,9 +13,11 @@ import com.email.db.models.ActiveAccount
  */
 
 class ComposerDataSource(
+        private val httpClient: HttpClient,
         private val composerLocalDB: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
         private val emailInsertionDao: EmailInsertionDao,
+        private val authToken: String,
         override val runner: WorkRunner)
     : BackgroundWorkManager<ComposerRequest, ComposerResult>() {
 
@@ -29,11 +32,14 @@ class ComposerDataSource(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
                     account = activeAccount, dao = emailInsertionDao,
-                    onlySave = params.onlySave, publishFn = { res -> flushResults(res) })
+                    onlySave = params.onlySave, attachments = params.attachments, publishFn = { res -> flushResults(res) })
             is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
                     emailId = params.emailId,
                     db = composerLocalDB,
                     publishFn = { res -> flushResults(res) })
+            is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filepath = params.filepath,
+                    httpClient = httpClient, fileServiceAuthToken = authToken,
+                    publishFn = { res -> flushResults(res)})
         }
     }
 

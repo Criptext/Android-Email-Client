@@ -206,6 +206,7 @@
     <string name="error_saving_as_draft">Error saving email. Please try again</string>
     <string name="error_checking_availability">Error checking username availability</string>
     <string name="you_wanna_save">Do you want to save this as draft?</string>
+    <string name="unable_to_upload">Unable to upload %1$s. Please try again</string>
 
     <!-- EXCEPTIONS SOCKET-->
     <string name="socket_insert_exception">Failed to store new e-mail: "%1$s"</string>

@@ -21,7 +21,7 @@ class EventDataSource(override val runner: WorkRunner,
             is EventRequest.InsertNewEmail -> InsertNewEmailWorker(
                     emailInsertionDao = emailInsertionDao, signalClient = signalClient,
                     emailInsertionApi = emailInsertionAPIClient, metadata = params.emailMetadata,
-                    publishFn = flushResults)
+                    publishFn = flushResults, files = emptyList())
         }
     }
 }

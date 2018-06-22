@@ -1,7 +1,6 @@
 package com.email.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -12,7 +11,6 @@ import com.email.db.AttachmentTypes
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.AttachmentHistoryListener
 import com.email.utils.DateUtils
-import com.email.utils.Utility
 import com.email.utils.ui.PopupUtils
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -135,7 +133,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
             }
 
             Picasso.with(context)
-                    .load(Utility.getDrawableAttachmentFromType(contact.fileType))
+                    .load(contact.fileType.getDrawableImage())
                     .into(fileType)
 
             fileName.text = contact.file

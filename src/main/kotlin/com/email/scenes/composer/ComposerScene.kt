@@ -3,19 +3,16 @@ package com.email.scenes.composer
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.webkit.WebView
 import android.widget.*
 import com.email.db.models.Contact
 import com.email.R
-import com.email.scenes.composer.ui.ComposerUIObserver
-import com.email.scenes.composer.ui.ContactCompletionView
-import com.email.scenes.composer.ui.ContactsFilterAdapter
-import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.composer.data.ComposerTypes
-import com.email.scenes.composer.data.MailBody
-import com.email.scenes.composer.data.ReplyData
-import com.email.scenes.composer.ui.HTMLEditText
+import com.email.scenes.composer.data.*
+import com.email.scenes.composer.ui.*
+import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.utils.HTMLUtils
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
@@ -30,14 +27,20 @@ import jp.wasabeef.richeditor.RichEditor
 
 interface ComposerScene {
     var observer: ComposerUIObserver?
+    var attachmentsObserver: AttachmentViewObserver?
     fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                      composerInputData: ComposerInputData, replyData: ReplyData?)
+                      composerInputData: ComposerInputData, replyData: ReplyData?,
+                      attachments: ArrayList<ComposerAttachment>)
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
+    fun showAttachmentErrorDialog(filename: String)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
+    fun notifyAttachmentSetChanged()
+
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
+
 
         private val ctx = view.context
 
@@ -74,6 +77,9 @@ interface ComposerScene {
         private val attachmentButton: View by lazy {
             view.findViewById<View>(R.id.attachment_button)
         }
+        private val attachmentRecyclerView: RecyclerView by lazy {
+            view.findViewById<RecyclerView>(R.id.composer_attachment_recyclerview)
+        }
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
             override fun onTokenAdded(token: Contact?) {
@@ -91,9 +97,21 @@ interface ComposerScene {
 
         override var observer: ComposerUIObserver? = null
 
-        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                                   composerInputData: ComposerInputData, replyData: ReplyData?) {
+        override var attachmentsObserver: AttachmentViewObserver? = object : AttachmentViewObserver {
+            override fun onRemoveAttachmentClicked(position: Int) {
+                observer?.onAttachmentRemoveClicked(position)
+            }
+        }
 
+
+        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
+                                   composerInputData: ComposerInputData, replyData: ReplyData?,
+                                   attachments: ArrayList<ComposerAttachment>) {
+            val mLayoutManager = LinearLayoutManager(ctx)
+            val adapter = AttachmentListAdapter(ctx, attachments)
+            adapter.observer = attachmentsObserver
+            attachmentRecyclerView.layoutManager = mLayoutManager
+            attachmentRecyclerView.adapter = adapter
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {
@@ -124,6 +142,10 @@ interface ComposerScene {
                     ccContacts = composerInputData.cc, bccContacts = composerInputData.bcc)
 
             setListeners()
+        }
+
+        override fun notifyAttachmentSetChanged() {
+            attachmentRecyclerView.adapter.notifyDataSetChanged()
         }
 
         private fun setListeners() {
@@ -179,6 +201,12 @@ interface ComposerScene {
             builder.setMessage(ctx.resources.getString(R.string.you_wanna_save))
                     .setPositiveButton(ctx.resources.getString(R.string.yes), dialogClickListener)
                     .setNegativeButton(ctx.resources.getString(R.string.discard), dialogClickListener).show()
+        }
+
+        override fun showAttachmentErrorDialog(filename: String){
+            val builder = AlertDialog.Builder(ctx)
+            builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
+                    .show()
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,

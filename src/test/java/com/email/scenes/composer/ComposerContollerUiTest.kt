@@ -1,9 +1,11 @@
 package com.email.scenes.composer
 
 import com.email.db.models.*
+import com.email.scenes.ActivityMessage
 import com.email.scenes.composer.data.*
 import io.mockk.every
 import io.mockk.verify
+import org.amshove.kluent.`should be equal to`
 import org.junit.Before
 import org.junit.Test
 
@@ -44,6 +46,16 @@ class ComposerContollerUiTest: ComposerControllerTest() {
         clickSendButton()
 
         verify { scene.showError(any()) }
+    }
+
+    @Test
+    fun `On start if there is an AttachmentActivityMessage, attachment should be added to composer`(){
+        val activityMessage = ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)))
+
+        controller.onStart(activityMessage)
+
+        model.attachments.size `should be equal to` 1
+        verify { scene.notifyAttachmentSetChanged() }
     }
 
 

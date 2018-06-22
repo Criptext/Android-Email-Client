@@ -81,7 +81,8 @@ object EmailInsertionSetup {
     private fun createFullEmailToInsert(dao: EmailInsertionDao,
                                         metadataColumns: EmailMetadata.DBColumns,
                                         decryptedBody: String,
-                                        labels: List<Label>): FullEmail {
+                                        labels: List<Label>,
+                                        files: List<CRFile>): FullEmail {
         val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
@@ -92,7 +93,7 @@ object EmailInsertionSetup {
                 cc = ccContactsRows,
                 bcc = bccContactsRows,
                 labels = labels,
-                from = senderContactRow, files = emptyList())
+                from = senderContactRow, files = files)
     }
 
     private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes)
@@ -110,6 +111,12 @@ object EmailInsertionSetup {
                                           newEmailId: Long) {
         val labelRelations = fullEmail.labels.map(createEmailLabelRelation(newEmailId))
         dao.insertEmailLabelRelations(labelRelations)
+    }
+
+    private fun insertEmailFiles(dao: EmailInsertionDao,
+                                          fullEmail: FullEmail, emailId: Long) {
+        fullEmail.files.forEach { it.emailId = emailId }
+        dao.insertEmailFiles(fullEmail.files)
     }
 
     private fun insertEmailContactRelations(dao: EmailInsertionDao,
@@ -133,8 +140,9 @@ object EmailInsertionSetup {
     fun exec(dao: EmailInsertionDao,
              metadataColumns: EmailMetadata.DBColumns,
              decryptedBody: String,
-             labels: List<Label>): Long {
-        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels)
+             labels: List<Label>,
+             files: List<CRFile>): Long {
+        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels, files)
         return exec(dao, fullEmail)
     }
 
@@ -142,6 +150,7 @@ object EmailInsertionSetup {
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
+        insertEmailFiles(dao, fullEmail, newEmailId)
         return newEmailId
     }
 
@@ -177,7 +186,7 @@ object EmailInsertionSetup {
      * @param metadata metadata of the email to insert
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata) {
+                                       dao: EmailInsertionDao, metadata: EmailMetadata, files: List<CRFile>) {
         val labels = listOf(Label.defaultItems.inbox)
 
         val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null
@@ -189,7 +198,7 @@ object EmailInsertionSetup {
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
         dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels)
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels, files)
             })
     }
 }

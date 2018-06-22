@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import com.email.utils.file.FilenameUtils
+import com.email.utils.file.FileUtils
 
 /**
  * Created by hirobreak on 08/06/17.
@@ -23,8 +23,8 @@ class DownloadHelper {
             val request = DownloadManager.Request(uri)
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
             request.setTitle(filename)
-            request.setDescription("Criptext Secure File")
-            request.setMimeType(FilenameUtils.getMimeType(filename))
+            request.setDescription("Criptext Secure CRFile")
+            request.setMimeType(FileUtils.getMimeType(filename))
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
             return downloadManager.enqueue(request)

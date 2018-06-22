@@ -31,14 +31,18 @@ class UploadAttachmentWorker(private val filepath: String,
 
 
 
-    private fun uploadFile(file: File): (String) -> Result<Unit, Exception> = { fileToken ->
-            Result.of {
-                val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
-                    fileServiceAPIClient.uploadChunk(chunk = chunk, fileName = file.name,
-                            part = index, fileToken = fileToken)
-                }
-                ChunkFileReader.read(file, chunkSize, onNewChunkRead)
+    private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
+        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken))
+        Result.of {
+            val chunks = (file.length() / chunkSize).toInt() + 1
+            val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
+                reporter.report(ComposerResult.UploadFile.Progress(file.absolutePath,
+                        index * 100 / chunks))
+                fileServiceAPIClient.uploadChunk(chunk = chunk, fileName = file.name,
+                        part = index + 1, fileToken = fileToken)
             }
+            ChunkFileReader.read(file, chunkSize, onNewChunkRead)
+        }
     }
 
     private val getFileTokenFromJSONResponse: (String) -> Result<String, Exception> = { stringResponse ->
@@ -60,11 +64,10 @@ class UploadAttachmentWorker(private val filepath: String,
     override fun work(reporter: ProgressReporter<ComposerResult.UploadFile>)
             : ComposerResult.UploadFile? {
         val file = File(filepath)
-
         val result = registerFile(file)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap(getFileTokenFromJSONResponse)
-                .flatMap(uploadFile(file))
+                .flatMap(uploadFile(file, reporter))
 
 
         return when (result) {
@@ -90,7 +93,7 @@ class UploadAttachmentWorker(private val filepath: String,
         }
     }
     override fun cancel() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     companion object {

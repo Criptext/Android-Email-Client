@@ -7,6 +7,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.Email
+import com.email.db.models.CRFile
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.signal.SignalClient
 import com.email.utils.UIMessage
@@ -19,18 +20,19 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
                            private val emailInsertionApi: EmailInsertionAPIClient,
                            private val signalClient: SignalClient,
                            private val metadata: EmailMetadata,
+                           private val files: List<CRFile>,
                            override val publishFn: (EventResult.InsertNewEmail) -> Unit): BackgroundWorker<EventResult.InsertNewEmail> {
 
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): EventResult.InsertNewEmail {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
     private fun insertIncomingEmail() {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                         dao = emailInsertionDao, apiClient = emailInsertionApi,
-                        metadata = metadata)
+                        metadata = metadata, files = files)
     }
 
     private fun loadNewEmail(): Email? =
@@ -55,7 +57,7 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
     }
 
     override fun cancel() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
 }

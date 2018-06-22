@@ -8,6 +8,7 @@ sealed class ComposerRequest {
     class GetAllContacts : ComposerRequest()
     class SaveEmailAsDraft(val threadId: String?, val emailId: Long?,
                            val composerInputData: ComposerInputData,
-                           val onlySave: Boolean): ComposerRequest()
+                           val onlySave: Boolean, val attachments: List<ComposerAttachment>): ComposerRequest()
     class DeleteDraft(val emailId: Long): ComposerRequest()
+    class UploadAttachment(val filepath: String): ComposerRequest()
 }

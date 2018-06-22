@@ -1,6 +1,7 @@
 package com.email.utils
 
 import android.graphics.*
+import android.webkit.MimeTypeMap
 import com.email.R
 import com.email.db.AttachmentTypes
 import com.email.utils.ui.TextDrawable
@@ -62,24 +63,6 @@ class Utility {
                 color = md5.substring(1,7)
             }
             return Color.parseColor("#"+color)
-        }
-
-
-        fun getDrawableAttachmentFromType(type: AttachmentTypes) = when (type) {
-            AttachmentTypes.EXCEL ->
-                R.drawable.attachment_excel_eliminar
-
-            AttachmentTypes.WORD ->
-                R.drawable.attachment_word_eliminar
-
-            AttachmentTypes.PDF ->
-                R.drawable.attachment_pdf_eliminar
-
-            AttachmentTypes.PPT ->
-                R.drawable.attachment_ppt_eliminar
-
-            AttachmentTypes.IMAGE ->
-                R.drawable.attachment_image_eliminar
         }
     }
 }

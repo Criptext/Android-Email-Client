@@ -9,7 +9,8 @@ import org.json.JSONObject
  */
 
 class PostEmailBody(val threadId: String?, val subject: String,
-                    val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?): JSONData {
+                    val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?,
+                    val attachments: List<CriptextAttachment>): JSONData {
 
     enum class RecipientTypes { to, cc, bcc, peer }
 
@@ -20,8 +21,20 @@ class PostEmailBody(val threadId: String?, val subject: String,
         json.put("threadId", threadId)
         json.put("subject", subject)
         json.put("criptextEmails", criptextEmailsArray)
+        if(attachments.isNotEmpty()){
+            val attachmentsArray = attachments.toJSONArray()
+            json.put("files", attachmentsArray)
+        }
 
         return json
+    }
+
+    data class CriptextAttachment(val token: String): JSONData {
+        override fun toJSON(): JSONObject {
+            val json = JSONObject()
+            json.put("token", token)
+            return json
+        }
     }
 
     data class CriptextEmail(val recipientId: String, val deviceId: Int,

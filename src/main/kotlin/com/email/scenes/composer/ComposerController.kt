@@ -12,6 +12,8 @@ import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
+import com.email.utils.virtuallist.VirtualList
+import java.io.File
 
 /**
  * Created by gabriel on 2/26/18.
@@ -26,6 +28,11 @@ class ComposerController(private val model: ComposerModel,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+        override fun onAttachmentRemoveClicked(position: Int) {
+            model.attachments.removeAt(position)
+            scene.notifyAttachmentSetChanged()
+        }
+
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
             scene.toggleExtraFieldsVisibility(visible = userIsEditingRecipients)
         }
@@ -55,7 +62,40 @@ class ComposerController(private val model: ComposerModel,
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
             is ComposerResult.DeleteDraft -> host.finishScene()
+            is ComposerResult.UploadFile -> onUploadFile(result)
         }
+    }
+
+    private fun onUploadFile(result: ComposerResult.UploadFile){
+        when (result) {
+            is ComposerResult.UploadFile.Register -> {
+                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
+                composerAttachment.filetoken = result.filetoken
+            }
+            is ComposerResult.UploadFile.Progress -> {
+                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
+                composerAttachment.uploadProgress = result.percentage
+            }
+            is ComposerResult.UploadFile.Success -> {
+                val composerAttachment = getAttachmentByPath(result.filepath)
+                composerAttachment?.uploadProgress = 100
+                handleNextUpload()
+            }
+            is ComposerResult.UploadFile.Failure -> {
+                removeAttachmentByPath(result.filepath)
+                scene.showAttachmentErrorDialog(result.filepath)
+                handleNextUpload()
+            }
+        }
+        scene.notifyAttachmentSetChanged()
+    }
+
+    private fun getAttachmentByPath(filepath: String): ComposerAttachment? {
+        return model.attachments.firstOrNull{it.filepath == filepath}
+    }
+
+    private fun removeAttachmentByPath(filepath: String) {
+        model.attachments.removeAll{it.filepath == filepath}
     }
 
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {
@@ -68,7 +108,8 @@ class ComposerController(private val model: ComposerModel,
                     model.emailDetailActivity?.finishScene()
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
-                            composerInputData = result.composerInputData)
+                            composerInputData = result.composerInputData,
+                            attachments = result.attachments)
                     host.exitToScene(MailboxParams(), sendMailMessage)
                 }
             }
@@ -102,6 +143,10 @@ class ComposerController(private val model: ComposerModel,
 
     private fun isReadyForSending() = model.to.isNotEmpty()
 
+    private fun uploadSelectedFile(filepath: String){
+        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath))
+    }
+
     private fun onSendButtonClicked() {
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
@@ -116,7 +161,7 @@ class ComposerController(private val model: ComposerModel,
                         emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
                             model.fullEmail?.email?.id else null,
                         composerInputData = data,
-                        onlySave = false))
+                        onlySave = false, attachments = model.attachments))
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -125,16 +170,28 @@ class ComposerController(private val model: ComposerModel,
         get() = if (isReadyForSending()) R.menu.composer_menu_enabled
                               else R.menu.composer_menu_disabled
 
-    private fun addNewAttachments(filepaths: List<String>) {
-        filepaths.forEach {
-            if (! model.attachments.contains(it))
-                model.attachments[it] = ComposerAttachment(it)
+    private fun addNewAttachments(filesMetadata: List<Pair<String, Long>>) {
+        val isNewAttachment: (Pair<String, Long>) -> (Boolean) = { data ->
+            model.attachments.indexOfFirst { it.filepath == data.first  } < 0
         }
+        model.attachments.addAll(filesMetadata.filter(isNewAttachment).map {
+            ComposerAttachment(it.first, it.second)
+        })
+        scene.notifyAttachmentSetChanged()
+        handleNextUpload()
+    }
+
+    private fun handleNextUpload(){
+        if(model.attachments.indexOfFirst { it.uploadProgress in 0..99 } >= 0){
+            return
+        }
+        val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
+        uploadSelectedFile(attachmentToUpload.filepath)
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.AddAttachments) {
-            addNewAttachments(activityMessage.filepaths)
+            addNewAttachments(activityMessage.filesMetadata)
             return true
         }
         return false
@@ -147,7 +204,8 @@ class ComposerController(private val model: ComposerModel,
         scene.bindWithModel(firstTime = model.firstTime,
                 composerInputData = ComposerInputData.fromModel(model),
                 defaultRecipients = model.defaultRecipients,
-                replyData = if(model.fullEmail == null) null else ReplyData.FromModel(model))
+                replyData = if(model.fullEmail == null) null else ReplyData.FromModel(model),
+                attachments = model.attachments)
         dataSourceController.getAllContacts()
         scene.observer = observer
         model.firstTime = false
@@ -190,7 +248,7 @@ class ComposerController(private val model: ComposerModel,
                             emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
                                 model.fullEmail?.email?.id else null,
                             composerInputData = scene.getDataInputByUser(),
-                            onlySave = true))
+                            onlySave = true, attachments = model.attachments))
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
                     if(model.composerType == ComposerTypes.CONTINUE_DRAFT){

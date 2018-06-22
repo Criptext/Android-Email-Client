@@ -22,7 +22,7 @@ import com.email.db.typeConverters.*
  */
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
-                     , File::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
+                     , CRFile::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
         exportSchema = false)

@@ -24,7 +24,7 @@ class DownloadBlobInterface(val mContext: Context, val filename: String) {
         val intent = Intent()
         intent.action = android.content.Intent.ACTION_VIEW
         intent.setDataAndType(FileProvider.getUriForFile(mContext, BuildConfig.APPLICATION_ID +
-                ".provider", file), FilenameUtils.getMimeType(file.name))
+                ".provider", file), FileUtils.getMimeType(file.name))
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         //notificator.showNotificationFileDownloaded(file.name, intent)
 
