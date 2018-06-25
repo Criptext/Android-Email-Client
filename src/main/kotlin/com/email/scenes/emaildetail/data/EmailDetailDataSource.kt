@@ -18,7 +18,9 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                             private val emailDao: EmailDao,
                             private val httpClient: HttpClient,
                             private val activeAccount: ActiveAccount,
-                            private val emailDetailLocalDB: EmailDetailLocalDB)
+                            private val emailDetailLocalDB: EmailDetailLocalDB,
+                            private val filesHttpClient: httpClient
+                            private val fileServiceAuthToken: String)
     : BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>()
 {
 
@@ -98,8 +100,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.DownloadFile -> DownloadAttachmentWorker(
                     fileToken = params.fileToken,
                     emailId = params.emailId,
-                    httpClient = params.httpClient,
-                    fileServiceAuthToken = params.authToken,
+                    httpClient = filesHttpClient,
+                    fileServiceAuthToken = fileServiceAuthToken,
                     publishFn = { result ->
                         flushResults(result)
                     })

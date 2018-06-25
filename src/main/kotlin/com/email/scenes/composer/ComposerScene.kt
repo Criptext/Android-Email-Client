@@ -98,7 +98,7 @@ interface ComposerScene {
         override var observer: ComposerUIObserver? = null
 
         override var attachmentsObserver: AttachmentViewObserver? = object : AttachmentViewObserver {
-            override fun onViewClick(position: Int) {}
+            override fun onAttachmentViewClick(position: Int) {}
 
             override fun onRemoveAttachmentClicked(position: Int) {
                 observer?.onAttachmentRemoveClicked(position)

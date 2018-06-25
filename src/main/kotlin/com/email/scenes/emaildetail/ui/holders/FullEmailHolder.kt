@@ -22,7 +22,6 @@ import com.email.db.DeliveryTypes
 import com.email.db.models.CRFile
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
-import com.email.scenes.composer.ui.holders.AttachmentViewHolder
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
 import com.email.scenes.emaildetail.ui.*
@@ -216,8 +215,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val adapter = FileListAdapter(view.context, files)
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
-            override fun onViewClick(position: Int) {
-                emailListener?.onAttachmentSelect(adapterPosition, position)
+            override fun onAttachmentViewClick(position: Int) {
+                emailListener?.onAttachmentSelected(adapterPosition, position)
             }
             override fun onRemoveAttachmentClicked(position: Int) {}
         }

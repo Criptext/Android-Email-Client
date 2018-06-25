@@ -1,5 +1,6 @@
 package com.email.mocks
 
+import com.email.BaseActivity
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.scenes.ActivityMessage
@@ -41,7 +42,7 @@ class MockedIHostActivity: IHostActivity{
         return "test"
     }
 
-    override fun checkAndRequestPermission(permission: String): Boolean {
+    override fun checkAndRequestPermission(requestCode: Int, permission: String): Boolean {
         return true
     }
 

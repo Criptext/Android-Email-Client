@@ -52,8 +52,6 @@ sealed class EmailDetailRequest{
 
     data class DownloadFile(
             val fileToken: String,
-            val emailId: Long,
-            val httpClient: HttpClient,
-            val authToken: String
+            val emailId: Long
     ): EmailDetailRequest()
 }

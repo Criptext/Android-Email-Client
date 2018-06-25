@@ -88,7 +88,16 @@ open class EmailDetailControllerTest {
                         unread = false),
                     labels = emptyList(),
                     to = emptyList(),
-                    files = emptyList(),
+                    files = arrayListOf(CRFile(token = "efhgfdgdfsg$it",
+                            name = "test.pdf",
+                            size = 65346L,
+                            status = 1,
+                            date = DateUtils.getDateFromString(
+                                    "1992-05-23 20:12:58",
+                                    null),
+                            readOnly = false,
+                            emailId = it.toLong()
+                            )),
                     cc = emptyList(),
                     bcc = emptyList(),
                     from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"))

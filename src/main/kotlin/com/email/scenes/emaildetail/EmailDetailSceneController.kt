@@ -130,22 +130,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     private fun downloadFile(emailId: Long, fileToken: String){
         dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
-                emailId = emailId, httpClient = httpClient,
-                authToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="))
+                emailId = emailId))
     }
 
     private fun onDownloadedFile(result: EmailDetailResult){
         when(result){
             is EmailDetailResult.DownloadFile.Success -> {
-                val file = File(result.filepath)
-                val newIntent = Intent(Intent.ACTION_VIEW)
-                val mimeType = FileUtils.getMimeType(result.filepath)
-                newIntent.setDataAndType(Uri.fromFile(file), mimeType)
-                newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                (host as AppCompatActivity).startActivity(newIntent)
+                openFile(result.filepath)
             }
             is EmailDetailResult.DownloadFile.Failure -> {
-                Log.d("PRINT", "Failure")
+                scene.showError(UIMessage(R.string.error_downloading_file))
             }
             is EmailDetailResult.DownloadFile.Progress -> {
                 val emailIndex = model.fullEmailList.indexOfFirst { it.email.id == result.emailId }
@@ -156,6 +150,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.updateAttachmentProgress(emailIndex, attachmentIndex)
             }
         }
+    }
+
+    private fun openFile(filepath: String){
+        val file = File(filepath)
+        val newIntent = Intent(Intent.ACTION_VIEW)
+        val mimeType = FileUtils.getMimeType(filepath)
+        newIntent.setDataAndType(Uri.fromFile(file), mimeType)
+        newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        (host as AppCompatActivity).startActivity(newIntent)
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
@@ -181,7 +184,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
-        override fun onAttachmentSelect(emailPosition: Int, attachmentPosition: Int) {
+        override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
             if (!host.checkAndRequestPermission(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.READ_EXTERNAL_STORAGE)){
                 return

@@ -208,6 +208,9 @@
     <string name="you_wanna_save">Do you want to save this as draft?</string>
     <string name="unable_to_upload">Unable to upload %1$s. Please try again</string>
 
+    <!-- COMPOSER -->
+    <string name="error_downloading_file">Unable to download the file. Please try again</string>
+
     <!-- EXCEPTIONS SOCKET-->
     <string name="socket_insert_exception">Failed to store new e-mail: "%1$s"</string>
 
