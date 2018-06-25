@@ -31,6 +31,7 @@ class FileListAdapter(private val mContext: Context, private val attachmentsList
         val type = FileUtils.getAttachmentTypeFromPath(attachment.name)
         mView.setFields(name = attachment.name, size = attachment.size, type = type)
         mView.setProgress(attachment.progress)
+        mView.hideRemoveImage()
     }
 
 }

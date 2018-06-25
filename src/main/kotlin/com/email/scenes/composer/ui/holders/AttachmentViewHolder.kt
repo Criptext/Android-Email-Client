@@ -9,6 +9,7 @@ import com.email.utils.file.FileUtils
 
 class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?) : RecyclerView.ViewHolder(view) {
 
+    val removeImageView: ImageView = view.findViewById(R.id.attachment_remove_image)
     val progressBar : ProgressBar = view.findViewById(R.id.attachment_progress_bar)
     val filename: TextView = view.findViewById(R.id.attachment_filename)
     val filesize: TextView = view.findViewById(R.id.attachment_size)
@@ -52,6 +53,10 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
                 containerView.alpha = 0.6f
             }
         }
+    }
+
+    fun hideRemoveImage(){
+        removeImageView.visibility = View.GONE
     }
 
 }

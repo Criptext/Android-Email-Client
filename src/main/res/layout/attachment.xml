@@ -85,6 +85,7 @@
         android:progressBackgroundTint="#b7e0ff"/>
 
     <ImageView
+        android:id="@+id/attachment_remove_image"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_alignEnd="@id/attachment_container"
