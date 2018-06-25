@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail
 
+import android.Manifest
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.email.IHostActivity
@@ -27,8 +28,10 @@ import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
+import com.email.BaseActivity
 import com.email.utils.Utility
 import com.email.utils.file.FileUtils
 import java.io.File
@@ -179,6 +182,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
         override fun onAttachmentSelect(emailPosition: Int, attachmentPosition: Int) {
+            if (!host.checkAndRequestPermission(BaseActivity.RequestCode.writeAccess.ordinal,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)){
+                return
+            }
             val email = model.fullEmailList[emailPosition]
             val attachment = email.files[attachmentPosition]
             downloadFile(email.email.id, attachment.token)
@@ -370,7 +377,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>,
+                                         grantResults: IntArray) {
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
+        if (indexOfPermission < 0) {
+            return
+        }
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED)
+            scene.showError(UIMessage(R.string.permission_filepicker_rationale))
     }
 
     private fun showLabelsDialog() {

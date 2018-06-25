@@ -2,6 +2,7 @@ package com.email.scenes.composer.data
 
 import com.email.api.JSONData
 import com.email.signal.SignalEncryptedData
+import com.email.utils.file.FileUtils
 import org.json.JSONObject
 
 /**
@@ -29,10 +30,13 @@ class PostEmailBody(val threadId: String?, val subject: String,
         return json
     }
 
-    data class CriptextAttachment(val token: String): JSONData {
+    data class CriptextAttachment(val token: String, val name: String, val size: Long): JSONData {
         override fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("token", token)
+            json.put("name", name)
+            json.put("size", size)
+            json.put("mimeType", FileUtils.getMimeType(name))
             return json
         }
     }

@@ -48,4 +48,9 @@ class  EmailDetailActivity: BaseActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        controller.requestPermissionResult(requestCode, permissions, grantResults)
+    }
+
 }
