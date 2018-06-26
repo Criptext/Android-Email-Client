@@ -12,7 +12,7 @@ import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.MailboxResult
 import com.email.scenes.mailbox.data.MoveEmailThreadWorker
-import org.amshove.kluent.mock
+import io.mockk.mockk
 import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Rule
@@ -44,7 +44,8 @@ class MoveEmailThreadsWorkerTest{
                     subject = "Test #$it", unread = true)
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
-            EmailInsertionSetup.exec(db.emailInsertionDao(), metadata, decryptedBody, labels)
+            EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
+                    decryptedBody = decryptedBody, labels = labels, files = emptyList())
         }
     }
 
@@ -72,7 +73,7 @@ class MoveEmailThreadsWorkerTest{
                 currentLabel = Label.defaultItems.inbox,
                 selectedEmailThreads = emailThreads
         )
-        worker.work(mock()) as MailboxResult.MoveEmailThread.Success
+        worker.work(mockk()) as MailboxResult.MoveEmailThread.Success
 
         mailboxLocalDB.getThreadsFromMailboxLabel(
                 userEmail = "gabriel@jigl.com",
@@ -89,7 +90,7 @@ class MoveEmailThreadsWorkerTest{
                           currentLabel: Label): MoveEmailThreadWorker =
 
             MoveEmailThreadWorker(
-                    db = mock(),
+                    db = mailboxLocalDB,
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
                     selectedEmailThreads = selectedEmailThreads,
