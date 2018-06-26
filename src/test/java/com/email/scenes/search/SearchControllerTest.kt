@@ -8,7 +8,7 @@ import com.email.scenes.mailbox.MailboxTestUtils
 import com.email.scenes.search.data.SearchDataSource
 import com.email.scenes.search.data.SearchRequest
 import com.email.scenes.search.data.SearchResult
-import com.email.scenes.search.ui.SearchResultAdapter
+import com.email.scenes.search.ui.SearchHistoryAdapter
 import com.email.scenes.search.ui.SearchThreadAdapter
 import com.email.scenes.search.ui.SearchUIObserver
 import io.mockk.*
@@ -31,7 +31,7 @@ class SearchControllerTest{
     private lateinit var sentRequests: MutableList<SearchRequest>
 
     private val observerSlot = CapturingSlot<SearchUIObserver>()
-    private val searchListenerSlot = CapturingSlot<SearchResultAdapter.OnSearchEventListener>()
+    private val searchListenerSlot = CapturingSlot<SearchHistoryAdapter.OnSearchEventListener>()
     private val threadListenerSlot = CapturingSlot<SearchThreadAdapter.OnThreadEventListener>()
     private lateinit var listenerSlot: CapturingSlot<(SearchResult) -> Unit>
 
