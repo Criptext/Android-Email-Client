@@ -11,7 +11,7 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
-import org.amshove.kluent.mock
+import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
@@ -29,7 +29,7 @@ class SaveEmailWorkerTest {
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__")
 
-    private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mock()
+    private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 
     @Before
     fun setup() {
@@ -43,7 +43,7 @@ class SaveEmailWorkerTest {
                           inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
                     onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
-                    publishFn = {})
+                    publishFn = {}, attachments = emptyList())
 
     @Test
     fun test_should_save_new_composed_email_along_with_new_contacts() {

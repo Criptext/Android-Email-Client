@@ -92,7 +92,8 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:3.5.1'
 
     // test utils
-    testImplementation "io.mockk:mockk:1.7.15"
+    testImplementation "io.mockk:mockk:1.8.4"
+    androidTestImplementation "io.mockk:mockk-android:1.8.4"
     testImplementation 'com.github.GAumala:KotlinSnapshot:0.1'
 
     // Kluent

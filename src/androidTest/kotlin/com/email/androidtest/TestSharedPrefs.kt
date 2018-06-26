@@ -23,4 +23,16 @@ class TestSharedPrefs(ctx: Context): KeyValueStorage {
     override fun putString(key: KeyValueStorage.StringKey, value: String) {
         withApply { editor -> editor.putString("_test_" + key.stringKey, value) }
     }
+
+    override fun getStringSet(key: KeyValueStorage.StringKey): MutableSet<String>? {
+        return prefs.getStringSet("_test_" + key.stringKey, null)
+    }
+
+    override fun putStringSet(key: KeyValueStorage.StringKey, value: MutableSet<String>) {
+        withApply { editor -> editor.putStringSet("_test_" + key.stringKey, value) }
+    }
+
+    override fun clearAll() {
+        withApply { editor -> editor.clear() }
+    }
 }

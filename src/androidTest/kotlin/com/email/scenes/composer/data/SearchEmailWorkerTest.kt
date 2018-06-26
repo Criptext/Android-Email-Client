@@ -12,6 +12,7 @@ import com.email.db.models.*
 import com.email.scenes.mailbox.data.*
 import com.email.scenes.search.data.SearchEmailWorker
 import com.email.scenes.search.data.SearchResult
+import io.mockk.mockk
 import org.amshove.kluent.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Before
@@ -47,7 +48,8 @@ class SearchEmailWorkerTest{
                     subject = "Test #$it", unread = true)
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
-            EmailInsertionSetup.exec(db.emailInsertionDao(), metadata, decryptedBody, labels)
+            EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
+                    decryptedBody = decryptedBody, labels = labels, files = emptyList())
         }
 
         val anotherFromContact = Contact(2,"erika@jigl.com", "Erika Perugachi")
@@ -57,7 +59,8 @@ class SearchEmailWorkerTest{
                 subject = "Another Test #3", unread = true)
         val decryptedBody = "Hello again, this is message #3"
         val labels = listOf(Label.defaultItems.inbox)
-        EmailInsertionSetup.exec(db.emailInsertionDao(), metadata, decryptedBody, labels)
+        EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
+                decryptedBody = decryptedBody, labels = labels, files = emptyList())
     }
 
     @Test
@@ -68,7 +71,7 @@ class SearchEmailWorkerTest{
                 loadParams = LoadParams.Reset(20)
         )
 
-        worker.work(mock()) as SearchResult.SearchEmails.Success
+        worker.work(mockk()) as SearchResult.SearchEmails.Success
 
         searchLocalDB.searchMailsInDB(
                 queryText = queryText,
@@ -81,7 +84,7 @@ class SearchEmailWorkerTest{
 
     private fun newWorker(queryText: String, loadParams: LoadParams): SearchEmailWorker =
             SearchEmailWorker(
-                    db = mock(),
+                    db = searchLocalDB,
                     queryText = queryText,
                     loadParams = loadParams,
                     userEmail = userEmail,
