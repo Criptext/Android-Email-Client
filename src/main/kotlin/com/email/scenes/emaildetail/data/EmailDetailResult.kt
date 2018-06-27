@@ -35,6 +35,10 @@ sealed class EmailDetailResult {
         class Failure: UpdateUnreadStatus()
     }
 
+    sealed class ReadEmails: EmailDetailResult(){
+        class Success: ReadEmails()
+        class Failure: ReadEmails()
+    }
     sealed class UpdateEmailThreadsLabelsRelations: EmailDetailResult() {
         data class Success(val threadId: String, val selectedLabelIds: List<Long>): UpdateEmailThreadsLabelsRelations()
         data class Failure(

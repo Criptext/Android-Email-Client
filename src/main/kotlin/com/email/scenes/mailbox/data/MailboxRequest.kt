@@ -37,7 +37,10 @@ sealed class MailboxRequest{
             val userEmail: String
             ): MailboxRequest()
 
-    data class SendMail(val emailId: Long, val threadId: String?, val data: ComposerInputData, val attachments: List<ComposerAttachment>): MailboxRequest()
+    data class SendMail(val emailId: Long,
+                        val threadId: String?,
+                        val data: ComposerInputData,
+                        val attachments: List<ComposerAttachment>): MailboxRequest()
 
     class GetMenuInformation : MailboxRequest()
 

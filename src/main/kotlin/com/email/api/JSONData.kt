@@ -15,5 +15,12 @@ interface JSONData {
         this.forEach { jsonArray.put(it.toJSON()) }
         return jsonArray
     }
+
+
 }
 
+fun List<Long>.toJSONLongArray(): JSONArray {
+        val jsonArray = JSONArray()
+        this.forEach { jsonArray.put(it) }
+        return jsonArray
+    }

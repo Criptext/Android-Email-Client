@@ -10,5 +10,5 @@ import com.email.utils.virtuallist.VirtualList
  */
 
 class EmailDetailSceneModel(val threadId: String, val currentLabel: Label) : SceneModel {
-    lateinit var fullEmailList : VirtualList<FullEmail>
+    val emails = ArrayList<FullEmail>()
 }

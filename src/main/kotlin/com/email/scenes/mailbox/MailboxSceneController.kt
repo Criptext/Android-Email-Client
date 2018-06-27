@@ -117,8 +117,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                         emailDetailActivity = null
                 ), true)
             }
-            dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(
-                    listOf(emailThread), false, model.selectedLabel))
             host.goToScene(EmailDetailParams(emailThread.threadId, model.selectedLabel), true)
         }
 

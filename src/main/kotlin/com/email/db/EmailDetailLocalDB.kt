@@ -54,7 +54,8 @@ interface EmailDetailLocalDB {
                         to = contactsTO )
             }
 
-            fullEmails.last().viewOpen = true
+            fullEmails.lastOrNull()?.viewOpen = true
+
             return fullEmails
         }
 
