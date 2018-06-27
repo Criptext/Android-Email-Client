@@ -3,7 +3,7 @@ package com.email.scenes.search
 import com.email.scenes.search.data.SearchItem
 import com.email.utils.virtuallist.VirtualList
 
-class VirtualSearchResultList(private val model: SearchSceneModel)
+class VirtualSearchHistoryList(private val model: SearchSceneModel)
     :VirtualList<SearchItem>{
 
     override fun get(i: Int) = model.searchItems[i]

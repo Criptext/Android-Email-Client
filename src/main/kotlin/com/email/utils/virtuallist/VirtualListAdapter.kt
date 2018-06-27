@@ -2,8 +2,10 @@ package com.email.utils.virtuallist
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.email.R
+import com.email.utils.ui.EmptyViewHolder
 import com.email.utils.ui.ProgressViewHolder
 
 /**
@@ -29,8 +31,11 @@ abstract class VirtualListAdapter(private val items: VirtualList<*>)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == loadMoreViewType) createLoadMoreViewHolder(parent)
-        else onCreateActualViewHolder(parent, viewType)
+        return when (viewType) {
+            loadMoreViewType -> createLoadMoreViewHolder(parent)
+            emptyViewType -> createEmptyViewHolder(parent)
+            else -> onCreateActualViewHolder(parent, viewType)
+        }
     }
 
     open fun createLoadMoreViewHolder(parent: ViewGroup): ProgressViewHolder {
@@ -39,10 +44,18 @@ abstract class VirtualListAdapter(private val items: VirtualList<*>)
         return ProgressViewHolder(view)
     }
 
-    override fun getItemViewType(position: Int): Int =
-            if (position == items.size) loadMoreViewType else getActualItemViewType(position)
+    open fun createEmptyViewHolder(parent: ViewGroup): EmptyViewHolder {
+        val view = View(parent.context)
+        view.isClickable = false
+        return EmptyViewHolder(view)
+    }
 
-    override fun getItemCount(): Int = items.size + if(items.hasReachedEnd) 0 else 1
+    override fun getItemViewType(position: Int): Int =
+            if (items.size == 0 && items.hasReachedEnd) emptyViewType
+            else if (position == items.size) loadMoreViewType
+            else getActualItemViewType(position)
+
+    override fun getItemCount(): Int = Math.max(1, items.size + if(items.hasReachedEnd) 0 else 1)
 
     abstract fun onCreateActualViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
 
@@ -53,9 +66,12 @@ abstract class VirtualListAdapter(private val items: VirtualList<*>)
     abstract fun getActualItemId(position: Int): Long
 
     override fun getItemId(position: Int): Long =
-        if (position == items.size) -1L else getActualItemId(position)
+        if (items.size == 0 && items.hasReachedEnd) -2
+        else if (position == items.size) -1
+        else getActualItemId(position)
 
     companion object {
         private val loadMoreViewType = -1
+        protected val emptyViewType = -2
     }
 }

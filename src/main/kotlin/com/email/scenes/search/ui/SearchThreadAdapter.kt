@@ -2,12 +2,14 @@ package com.email.scenes.search.ui
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.search.VirtualSearchThreadList
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
+import com.email.utils.ui.EmptyViewHolder
 import com.email.utils.virtuallist.VirtualListAdapter
 
 /**
@@ -61,6 +63,13 @@ class SearchThreadAdapter(private val mContext : Context,
 
     private fun createMailItemView(): View {
         return View.inflate(mContext, R.layout.mail_item, null)
+    }
+
+    override fun createEmptyViewHolder(parent: ViewGroup): EmptyViewHolder {
+        val inflatedView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.layout_no_search_results, parent,
+                        false)
+        return EmptyViewHolder(inflatedView)
     }
 
     override fun onCreateActualViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

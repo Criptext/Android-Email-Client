@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import com.email.R
-import com.email.scenes.search.ui.SearchResultAdapter
+import com.email.scenes.search.ui.SearchHistoryAdapter
 import com.email.scenes.search.ui.SearchUIObserver
 import com.email.utils.virtuallist.VirtualListView
 import com.email.utils.virtuallist.VirtualRecyclerView
@@ -25,25 +25,22 @@ interface SearchScene{
     val searchListView: VirtualListView
     val threadsListView: VirtualListView
     val observer: SearchUIObserver?
-    fun attachView(searchResultList: VirtualSearchResultList,
+    fun attachView(searchHistoryList: VirtualSearchHistoryList,
                    threadsList: VirtualSearchThreadList,
-                   searchListener: SearchResultAdapter.OnSearchEventListener,
+                   searchListener: SearchHistoryAdapter.OnSearchEventListener,
                    threadListener: SearchThreadAdapter.OnThreadEventListener,
                    observer: SearchUIObserver)
-    fun toggleThreadListView(total: Int)
-    fun toggleSearchListView(total: Int)
     fun setSearchText(search: String)
-    fun hideAllListViews()
 
     class SearchSceneView(private val searchView: View,
                           private val keyboard: KeyboardManager): SearchScene{
 
         private val recyclerViewSearch: RecyclerView by lazy {
-            searchView.findViewById(R.id.recyclerViewSearchResults) as RecyclerView
+            searchView.findViewById<RecyclerView>(R.id.recyclerViewSearchResults)
         }
 
         private val recyclerViewThreads: RecyclerView by lazy {
-            searchView.findViewById(R.id.recyclerViewThreadsResults) as RecyclerView
+            searchView.findViewById<RecyclerView>(R.id.recyclerViewThreadsResults)
         }
 
         private val backButton: ImageView by lazy {
@@ -58,27 +55,19 @@ interface SearchScene{
             searchView.findViewById<EditText>(R.id.editTextSearch) as EditText
         }
 
-        private val noHistoryView: View by lazy {
-            searchView.findViewById<View>(R.id.viewNoHistory)
-        }
-
-        private val noMailsView: View by lazy {
-            searchView.findViewById<View>(R.id.viewNoMails)
-        }
-
         override val threadsListView = VirtualRecyclerView(recyclerViewThreads)
         override val searchListView = VirtualRecyclerView(recyclerViewSearch)
 
         override var observer: SearchUIObserver? = null
 
-        override fun attachView(searchResultList: VirtualSearchResultList,
+        override fun attachView(searchHistoryList: VirtualSearchHistoryList,
                                 threadsList: VirtualSearchThreadList,
-                                searchListener: SearchResultAdapter.OnSearchEventListener,
+                                searchListener: SearchHistoryAdapter.OnSearchEventListener,
                                 threadListener: SearchThreadAdapter.OnThreadEventListener,
                                 observer: SearchUIObserver) {
 
             this.observer = observer
-            searchListView.setAdapter(SearchResultAdapter(searchResultList, searchListener))
+            searchListView.setAdapter(SearchHistoryAdapter(searchHistoryList, searchListener))
             threadsListView.setAdapter(SearchThreadAdapter(recyclerViewThreads.context, threadListener, threadsList))
             setListeners()
         }
@@ -94,16 +83,20 @@ interface SearchScene{
             }
 
             editTextSearch.addTextChangedListener(object : TextWatcher{
-                override fun afterTextChanged(p0: Editable?) {
-                }
+                override fun afterTextChanged(p0: Editable?) { }
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    observer?.onInputTextChange(p0.toString())
-                    if(p0!!.isNotEmpty()){
+
+                override fun onTextChanged(textInputByUser: CharSequence, p1: Int, p2: Int, p3: Int) {
+                    observer?.onInputTextChange(textInputByUser.toString())
+                    if(textInputByUser.isNotEmpty()) {
                         clearButton.visibility = View.VISIBLE
+                        recyclerViewThreads.visibility = View.VISIBLE
+                        recyclerViewSearch.visibility = View.GONE
                     }
                     else{
                         clearButton.visibility = View.GONE
+                        recyclerViewThreads.visibility = View.GONE
+                        recyclerViewSearch.visibility = View.VISIBLE
                     }
                 }
             })
@@ -118,43 +111,6 @@ interface SearchScene{
                 }
                 false
             })
-        }
-
-        override fun toggleThreadListView(total: Int) {
-            if(total > 0){
-                recyclerViewThreads.visibility = View.VISIBLE
-                recyclerViewSearch.visibility = View.GONE
-                noMailsView.visibility = View.GONE
-                noHistoryView.visibility = View.GONE
-            }
-            else{
-                recyclerViewThreads.visibility = View.GONE
-                recyclerViewSearch.visibility = View.GONE
-                noMailsView.visibility = View.VISIBLE
-                noHistoryView.visibility = View.GONE
-            }
-        }
-
-        override fun toggleSearchListView(total: Int) {
-            if(total > 0){
-                recyclerViewThreads.visibility = View.GONE
-                recyclerViewSearch.visibility = View.VISIBLE
-                noMailsView.visibility = View.GONE
-                noHistoryView.visibility = View.GONE
-            }
-            else{
-                recyclerViewThreads.visibility = View.GONE
-                recyclerViewSearch.visibility = View.GONE
-                noMailsView.visibility = View.GONE
-                noHistoryView.visibility = View.VISIBLE
-            }
-        }
-
-        override fun hideAllListViews(){
-            recyclerViewThreads.visibility = View.GONE
-            recyclerViewSearch.visibility = View.GONE
-            noMailsView.visibility = View.GONE
-            noHistoryView.visibility = View.GONE
         }
 
         override fun setSearchText(search: String) {

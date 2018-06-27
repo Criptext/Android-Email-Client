@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/viewNoMails"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/envelope_opened"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/search"/>
+
+    <TextView
+        android:id="@+id/no_results_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/envelope_opened"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:text="@string/no_history"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="#9b9b9b"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/no_results_label"
+        android:text="@string/no_history_subtitle"
+        fontPath="fonts/NunitoSans-Italic.ttf"/>
+</RelativeLayout>

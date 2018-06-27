@@ -3,7 +3,6 @@ package com.email.scenes.search
 import com.email.IHostActivity
 import com.email.db.KeyValueStorage
 import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
@@ -17,7 +16,7 @@ import com.email.scenes.search.data.SearchDataSource
 import com.email.scenes.search.data.SearchItem
 import com.email.scenes.search.data.SearchRequest
 import com.email.scenes.search.data.SearchResult
-import com.email.scenes.search.ui.SearchResultAdapter
+import com.email.scenes.search.ui.SearchHistoryAdapter
 import com.email.scenes.search.ui.SearchThreadAdapter
 import com.email.scenes.search.ui.SearchUIObserver
 
@@ -53,11 +52,10 @@ class SearchSceneController(private val scene: SearchScene,
         }
     }
 
-    private val onSearchResultListController = object: SearchResultAdapter.OnSearchEventListener {
+    private val onSearchResultListController = object: SearchHistoryAdapter.OnSearchEventListener {
 
         override fun onSearchSelected(searchItem: SearchItem) {
             scene.setSearchText(searchItem.subject)
-            scene.hideAllListViews()
         }
 
         override fun onApproachingEnd() {
@@ -111,10 +109,6 @@ class SearchSceneController(private val scene: SearchScene,
                         loadParams = LoadParams.Reset(size = MailboxSceneController.threadsPerPage),
                         userEmail = activeAccount.userEmail)
                 dataSource.submitRequest(req)
-                scene.hideAllListViews()
-            }
-            else{
-                scene.toggleSearchListView(model.searchItems.size)
             }
         }
 
@@ -126,7 +120,7 @@ class SearchSceneController(private val scene: SearchScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         scene.attachView(
-                searchResultList = VirtualSearchResultList(model),
+                searchHistoryList = VirtualSearchHistoryList(model),
                 searchListener = onSearchResultListController,
                 threadsList = VirtualSearchThreadList(model),
                 threadListener = threadEventListener,
@@ -135,8 +129,6 @@ class SearchSceneController(private val scene: SearchScene,
 
         val results = getSearchHistory()
         searchListController.setHistorySearchList(results)
-
-        scene.toggleSearchListView(results.size)
 
         dataSource.listener = dataSourceListener
 
@@ -158,9 +150,10 @@ class SearchSceneController(private val scene: SearchScene,
                     val hasReachedEnd = result.emailThreads.size < MailboxSceneController.threadsPerPage
                     if (model.threads.isNotEmpty() && result.isReset)
                         searchListController.populateThreads(result.emailThreads)
-                    else
+                    else {
                         searchListController.appendAll(result.emailThreads, hasReachedEnd)
-                    scene.toggleThreadListView(result.emailThreads.size)
+                    }
+
                 }
             }
         }
