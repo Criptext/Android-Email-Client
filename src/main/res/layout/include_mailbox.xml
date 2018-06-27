@@ -100,39 +100,6 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <LinearLayout
-        android:id="@+id/viewNoMails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/envelope_opened"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:gravity="center_horizontal"
-            android:text="@string/no_mails"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#9b9b9b"
-            android:gravity="center_horizontal"
-            android:text="@string/no_mails_subtitle"
-            fontPath="fonts/NunitoSans-Italic.ttf"/>
-
-    </LinearLayout>
-
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:id="@+id/fab"
