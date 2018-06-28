@@ -1,30 +1,20 @@
-package com.email.scenes.emailDetail
+package com.email.scenes.emaildetail
 
 import com.email.db.DeliveryTypes
+import com.email.db.EmailDetailLocalDB
+import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.mocks.MockedWorkRunner
 import com.email.mocks.MockedIHostActivity
-import com.email.scenes.emailDetail.mocks.MockedEmailDetailLocalDB
-import com.email.scenes.emailDetail.mocks.MockedEmailDetailView
-import com.email.scenes.emailDetail.mocks.MockedMailboxLocalDB
-import com.email.scenes.emailDetail.mocks.MockedSignalProtocolStore
-import com.email.scenes.emaildetail.EmailDetailScene
-import com.email.scenes.emaildetail.EmailDetailSceneController
-import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
-import com.email.scenes.emaildetail.workers.LoadFullEmailsFromThreadWorker
-import com.email.signal.SignalClient
 import com.email.utils.DateUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import org.amshove.kluent.`should be`
-import org.amshove.kluent.`should not be`
-import org.junit.Before
-import org.junit.Test
+import org.whispersystems.libsignal.state.SignalProtocolStore
 import java.sql.Timestamp
 
 /**
@@ -36,25 +26,25 @@ open class EmailDetailControllerTest {
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene
-    protected lateinit var db: MockedEmailDetailLocalDB
-    protected lateinit var mailboxDb: MockedMailboxLocalDB
+    protected lateinit var db: EmailDetailLocalDB
+    protected lateinit var mailboxDb: MailboxLocalDB
     protected lateinit var runner: MockedWorkRunner
     protected lateinit var dataSource: EmailDetailDataSource
     protected lateinit var controller: EmailDetailSceneController
-    protected lateinit var protocolStore: MockedSignalProtocolStore
+    protected lateinit var protocolStore: SignalProtocolStore
     protected lateinit var activeAccount: ActiveAccount
     protected lateinit var emailInsertionDao: EmailInsertionDao
     protected lateinit var sentRequests: MutableList<EmailDetailRequest>
 
     open fun setUp() {
-        protocolStore = MockedSignalProtocolStore()
+        protocolStore = mockk()
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
         model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox)
         scene = mockk(relaxed = true)
         runner = MockedWorkRunner()
-        db = MockedEmailDetailLocalDB()
-        mailboxDb = MockedMailboxLocalDB()
+        db = mockk()
+        mailboxDb = mockk()
         emailInsertionDao = mockk()
 
         dataSource = mockk(relaxed = true)
@@ -72,10 +62,10 @@ open class EmailDetailControllerTest {
 
     }
 
-    private fun createEmailItemsInThread(size: Int): List<FullEmail> {
+    protected fun createEmailItemsInThread(size: Int): List<FullEmail> {
         return (1..size).map {
             FullEmail(
-            email = Email(id = 0,
+            email = Email(id = it.toLong(),
                         content = """
                              <!DOCTYPE html>
                                 <html>
@@ -94,6 +84,7 @@ open class EmailDetailControllerTest {
                         secure = true,
                         subject = "Subject $it",
                         threadId = mockedThreadId,
+                        metadataKey = it + 100L,
                         unread = false),
                     labels = emptyList(),
                     to = emptyList(),

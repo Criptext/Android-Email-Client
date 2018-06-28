@@ -1,4 +1,4 @@
-package com.email.scenes.emailDetail
+package com.email.scenes.emaildetail
 
 import com.email.R
 import com.email.scenes.emaildetail.data.EmailDetailRequest

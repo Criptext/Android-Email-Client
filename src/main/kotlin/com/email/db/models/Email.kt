@@ -44,6 +44,8 @@ data class Email(
         var delivered : DeliveryTypes,
 
         @ColumnInfo(name = "date")
-        var date : Date
+        var date : Date,
 
+        @ColumnInfo(name = "metadataKey")
+        var metadataKey : Long
 )

@@ -13,6 +13,7 @@ data class EmailMetadata(
         val senderDeviceId: Int?,
         val fromContact: Contact,
         val messageId: String,
+        val metadataKey: Long,
         val date: String,
         val messageType: SignalEncryptedData.Type?,
         val threadId: String,
@@ -20,7 +21,8 @@ data class EmailMetadata(
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
-                    subject = subject, date = date, fromContact = fromContact, unread = true)
+                    metadataKey = metadataKey, subject = subject, date = date,
+                    fromContact = fromContact, unread = true)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -42,6 +44,7 @@ data class EmailMetadata(
                     cc = emailData.getString("cc"),
                     bcc = emailData.getString("bcc"),
                     messageId = emailData.getString("messageId"),
+                    metadataKey = emailData.getLong("metadataKey"),
                     date = emailData.getString("date"),
                     threadId = emailData.getString("threadId"),
                     subject = emailData.getString("subject"),
@@ -62,6 +65,7 @@ data class EmailMetadata(
         val cc: String,
         val bcc: String,
         val messageId: String,
+        val metadataKey: Long,
         val date: String,
         val threadId: String,
         val fromContact: Contact,

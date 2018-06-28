@@ -2,10 +2,10 @@ package com.email.scenes.emaildetail
 
 import com.email.IHostActivity
 import com.email.R
+import com.email.bgworker.BackgroundWorkManager
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
@@ -33,12 +33,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
                                  activeAccount: ActiveAccount,
-                                 private val dataSource: EmailDetailDataSource,
+                                 private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val keyboard: KeyboardManager) : SceneController() {
-
-    val lastIndexElement: Int by lazy {
-        model.fullEmailList.size - 1
-    }
 
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
@@ -104,7 +100,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
-                model.fullEmailList[result.position].email.delivered = DeliveryTypes.UNSENT
+                model.emails[result.position].email.delivered = DeliveryTypes.UNSENT
                 scene.notifyFullEmailChanged(result.position)
             }
 
@@ -145,7 +141,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
         override fun onForwardBtnClicked() {
             host.goToScene(ComposerParams(
-                    fullEmail = model.fullEmailList[lastIndexElement],
+                    fullEmail = model.emails.last(),
                     composerType = ComposerTypes.FORWARD,
                     userEmail = activeAccount.userEmail,
                     emailDetailActivity = host), true)
@@ -153,7 +149,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun onReplyBtnClicked() {
             host.goToScene(ComposerParams(
-                    fullEmail = model.fullEmailList[lastIndexElement],
+                    fullEmail = model.emails.last(),
                     composerType = ComposerTypes.REPLY,
                     userEmail = activeAccount.userEmail,
                     emailDetailActivity = host), true)
@@ -161,7 +157,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun onReplyAllBtnClicked() {
             host.goToScene(ComposerParams(
-                    fullEmail = model.fullEmailList[lastIndexElement],
+                    fullEmail = model.emails.last(),
                     composerType = ComposerTypes.REPLY_ALL,
                     userEmail = activeAccount.userEmail,
                     emailDetailActivity = host), true)
@@ -223,16 +219,33 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
+    private fun readEmails(emails: List<FullEmail>) {
+        val unreadEmails = emails.filter { it.email.unread }
+        if (unreadEmails.isNotEmpty()) {
+             val emailIds = unreadEmails.map { it.email.id }
+            val metadataKeys = unreadEmails.map { it.email.metadataKey }
+
+            dataSource.submitRequest(EmailDetailRequest.ReadEmails(
+                    emailIds = emailIds,
+                    metadataKeys = metadataKeys
+            ))
+        }
+
+    }
+
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
 
+                model.emails.addAll(result.fullEmailList)
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
-                model.fullEmailList = fullEmailsList
 
                 scene.attachView(
                         fullEmailList = fullEmailsList,
                         fullEmailEventListener = emailHolderEventListener)
+
+                if (result.fullEmailList.isNotEmpty())
+                    readEmails(result.fullEmailList)
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
@@ -241,13 +254,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    override fun onStart(activityMessage: ActivityMessage?): Boolean {
-        dataSource.listener = dataSourceListener
-
+    private fun loadEmails() {
         val req = EmailDetailRequest.LoadFullEmailsFromThreadId(
                 threadId = model.threadId, currentLabel = model.currentLabel)
 
         dataSource.submitRequest(req)
+    }
+
+    override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        dataSource.listener = dataSourceListener
+
+        if (model.emails.isEmpty())
+            loadEmails()
+
         keyboard.hideKeyboard()
         return false
     }

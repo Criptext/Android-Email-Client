@@ -43,4 +43,10 @@ sealed class EmailDetailRequest{
             val emailId: Long,
             val currentLabel: Label
     ): EmailDetailRequest()
+
+    data class ReadEmails(
+            val emailIds: List<Long>,
+            val metadataKeys: List<Long>
+    ): EmailDetailRequest()
+
 }

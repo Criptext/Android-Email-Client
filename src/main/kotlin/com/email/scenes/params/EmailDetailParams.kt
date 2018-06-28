@@ -1,6 +1,6 @@
 package com.email.scenes.params
 
-import com.email.EmailDetailActivity
+import com.email.scenes.emaildetail.EmailDetailActivity
 import com.email.db.models.Label
 
 /**

@@ -1,9 +1,20 @@
 package com.email.scenes.emaildetail.data
 
+import com.email.api.HttpClient
+import com.email.api.toJSONLongArray
+import org.json.JSONObject
+
 /**
  * Created by sebas on 3/12/18.
  */
 
-interface EmailDetailAPIClient {
+class EmailDetailAPIClient(private val httpClient: HttpClient, private val authToken: String) {
+
+    fun postOpenEvent(metadataKeys: List<Long>): String {
+        val json = JSONObject()
+        json.put("metadataKeys", metadataKeys.toJSONLongArray())
+
+        return httpClient.post(path = "/event/open", authToken = authToken, body = json)
+    }
 
 }
