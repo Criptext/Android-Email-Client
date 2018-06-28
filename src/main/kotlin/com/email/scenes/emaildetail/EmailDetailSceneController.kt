@@ -2,7 +2,6 @@ package com.email.scenes.emaildetail
 
 import android.Manifest
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.email.IHostActivity
 import com.email.R
 import com.email.api.HttpClient
@@ -30,9 +29,8 @@ import com.email.utils.UIMessage
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.MediaStore
 import com.email.BaseActivity
-import com.email.utils.Utility
+import com.email.ExternalActivityParams
 import com.email.utils.file.FileUtils
 import java.io.File
 
@@ -153,12 +151,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun openFile(filepath: String){
-        val file = File(filepath)
-        val newIntent = Intent(Intent.ACTION_VIEW)
         val mimeType = FileUtils.getMimeType(filepath)
-        newIntent.setDataAndType(Uri.fromFile(file), mimeType)
-        newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        (host as AppCompatActivity).startActivity(newIntent)
+        val params = ExternalActivityParams.FilePresent(filepath, mimeType)
+        host.launchExternalActivityForResult(params)
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
@@ -185,7 +180,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
-            if (!host.checkAndRequestPermission(BaseActivity.RequestCode.writeAccess.ordinal,
+            if (!host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_EXTERNAL_STORAGE)){
                 return
             }
@@ -382,10 +377,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>,
                                          grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
-        if (indexOfPermission < 0) {
-            return
-        }
+        if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED)
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
     }

@@ -2,7 +2,6 @@ package com.email.scenes.composer
 
 import android.Manifest
 import android.content.DialogInterface
-import android.os.Build
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.R
@@ -12,15 +11,8 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
-import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
-import com.email.utils.virtuallist.VirtualList
-import java.io.File
-import android.Manifest.permission
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
-import android.support.v4.content.ContextCompat.checkSelfPermission
 import com.email.BaseActivity
 
 
@@ -53,7 +45,7 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
-            if(host.checkAndRequestPermission(BaseActivity.RequestCode.readAccess.ordinal,
+            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_EXTERNAL_STORAGE)){
                 host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
             }
@@ -302,10 +294,10 @@ class ComposerController(private val model: ComposerModel,
     }
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
+
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
-        if (indexOfPermission < 0) {
-            return
-        }
+        if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED){
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
             return

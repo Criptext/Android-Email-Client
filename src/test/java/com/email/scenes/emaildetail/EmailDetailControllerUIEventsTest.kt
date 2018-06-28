@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail
 
+import com.email.ExternalActivityParams
 import com.email.R
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.emaildetail.data.EmailDetailRequest
@@ -94,6 +95,15 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         model.fullEmailList[selectedIndex].files[selectedIndex].progress `should be equal to` 50
 
         verify { scene.updateAttachmentProgress(selectedIndex, selectedIndex) }
+    }
+
+    @Test
+    fun `download success should call launch activity`() {
+        controller.onStart(null)
+        sentRequests.clear()
+
+        simulateDownloadEvent(EmailDetailResult.DownloadFile.Success("/test.pdf"))
+        host.activityLaunched `should be equal to` true
     }
 
     @Test

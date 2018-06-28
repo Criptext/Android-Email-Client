@@ -24,6 +24,7 @@ import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileToken: String,
                                private val emailId: Long,
+                               private val downloadPath: String,
                              httpClient: HttpClient,
                              fileServiceAuthToken: String,
                              override val publishFn: (EmailDetailResult.DownloadFile) -> Unit)
@@ -32,7 +33,7 @@ class DownloadAttachmentWorker(private val fileToken: String,
     override val canBeParallelized = false
     var filepath = ""
 
-    val fileServiceAPIClient = FileServiceAPIClient(httpClient, fileServiceAuthToken)
+    private val fileServiceAPIClient = FileServiceAPIClient(httpClient, fileServiceAuthToken)
 
     override fun catchException(ex: Exception): EmailDetailResult.DownloadFile {
         return EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
@@ -59,9 +60,8 @@ class DownloadAttachmentWorker(private val fileToken: String,
     private fun downloadFile(reporter: ProgressReporter<EmailDetailResult.DownloadFile>)
             : (FileMetadata) -> Result<Unit, Exception> = { fileMetadata ->
         Result.of {
-            val file = AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
+            val file = File(downloadPath, fileMetadata.name)
             val fileStream = FileOutputStream(file)
-            filepath = file.absolutePath
             val onNewChunkDownload: (Int) -> Unit = { index ->
                 reporter.report( EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
                         index * 100 / fileMetadata.chunks))
@@ -71,10 +71,18 @@ class DownloadAttachmentWorker(private val fileToken: String,
                 channel.write(ByteBuffer.wrap(data))
                 if(index == fileMetadata.chunks - 1){
                     fileStream.close()
+                    moveFileToDownloads(file, fileMetadata)
                 }
             }
             iterateChunks(fileMetadata, onNewChunkDownload)
         }
+    }
+
+    private fun moveFileToDownloads(file: File, fileMetadata: FileMetadata){
+        val downloadFile = AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
+        downloadFile.writeBytes(file.readBytes())
+        file.delete()
+        filepath = downloadFile.absolutePath
     }
 
     private fun iterateChunks(fileMetadata: FileMetadata, onNewChunkDownload: (Int) -> Unit){

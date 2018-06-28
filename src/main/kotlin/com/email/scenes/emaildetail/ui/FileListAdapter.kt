@@ -26,7 +26,7 @@ class FileListAdapter(private val mContext: Context, private val attachmentsList
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-        val attachment = attachmentsList.get(position)
+        val attachment = attachmentsList[position]
         val mView = holder as AttachmentViewHolder
         val type = FileUtils.getAttachmentTypeFromPath(attachment.name)
         mView.setFields(name = attachment.name, size = attachment.size, type = type)

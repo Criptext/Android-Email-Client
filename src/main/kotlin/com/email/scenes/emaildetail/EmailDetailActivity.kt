@@ -1,11 +1,8 @@
 package com.email.scenes.emaildetail
 
-<<<<<<< HEAD:src/main/kotlin/com/email/scenes/emaildetail/EmailDetailActivity.kt
 import com.email.BaseActivity
 import com.email.R
-=======
 import com.email.api.Hosts
->>>>>>> tests for emaildetail download:src/main/kotlin/com/email/EmailDetailActivity.kt
 import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
@@ -14,6 +11,7 @@ import com.email.db.models.ActiveAccount
 import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.utils.KeyboardManager
+import com.email.utils.file.AndroidFs
 
 /**
  * Created by sebas on 3/12/18.
@@ -50,6 +48,7 @@ class  EmailDetailActivity: BaseActivity() {
                         emailDetailLocalDB = db,
                         filesHttpClient: filesHttpClient,
                         fileServiceAuthToken = Hosts.fileServiceAuthToken),
+                        downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath),
                 keyboard = KeyboardManager(this)
         )
 

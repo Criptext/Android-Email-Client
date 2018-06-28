@@ -1,6 +1,5 @@
 package com.email.api
 
-import android.util.Log
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,7 +25,6 @@ class ApiCall {
             if (!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.bytes()
         }
-
 
     }
 }

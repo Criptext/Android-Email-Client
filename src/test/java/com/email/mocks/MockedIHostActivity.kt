@@ -13,10 +13,11 @@ import com.email.utils.UIMessage
 
 class MockedIHostActivity: IHostActivity{
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
-        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
+        activityLaunched = true
     }
 
     var isFinished: Boolean = false
+    var activityLaunched: Boolean = false
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
         isFinished = true
@@ -42,7 +43,7 @@ class MockedIHostActivity: IHostActivity{
         return "test"
     }
 
-    override fun checkAndRequestPermission(requestCode: Int, permission: String): Boolean {
+    override fun checkPermissions(requestCode: Int, permission: String): Boolean {
         return true
     }
 

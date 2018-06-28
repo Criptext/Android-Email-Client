@@ -38,5 +38,5 @@ interface IHostActivity {
      */
     fun launchExternalActivityForResult(params: ExternalActivityParams)
 
-    fun checkAndRequestPermission(requestCode: Int, permission: String): Boolean
+    fun checkPermissions(requestCode: Int, permission: String): Boolean
 }
