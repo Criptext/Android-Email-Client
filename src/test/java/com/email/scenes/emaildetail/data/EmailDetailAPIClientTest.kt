@@ -1,9 +1,7 @@
-package com.email.scenes.emailDetail.data
+package com.email.scenes.emaildetail.data
 
 import com.email.api.HttpClient
-import com.email.scenes.emaildetail.data.EmailDetailAPIClient
 import com.gaumala.kotlinsnapshot.Camera
-import com.nhaarman.mockito_kotlin.capture
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk

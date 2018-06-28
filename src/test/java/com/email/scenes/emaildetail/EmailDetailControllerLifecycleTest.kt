@@ -1,9 +1,6 @@
-package com.email.scenes.emailDetail
+package com.email.scenes.emaildetail
 
-import com.email.db.models.Contact
-import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.data.EmailDetailRequest
-import com.email.scenes.mailbox.MailboxTestUtils
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be instance of`
 import org.junit.Before

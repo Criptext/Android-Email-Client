@@ -1,4 +1,4 @@
-package com.email.scenes.emailDetail
+package com.email.scenes.emaildetail
 
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
@@ -27,9 +27,15 @@ class EmailDetailControllerResultTest: EmailDetailControllerTest() {
     }
 
     @Test
-    fun `after successfully loading emails should send request to read them`() {
+    fun `after successfully loading emails should send request to read any unread emails`() {
+        val loadedEmails = createEmailItemsInThread(4)
+                .mapIndexed { index, fullEmail ->
+                    // only the latter half are unread
+                    if (index < 2) fullEmail.email.unread = true
+                    fullEmail
+                }
         val result = EmailDetailResult.LoadFullEmailsFromThreadId.Success(
-                fullEmailList = createEmailItemsInThread(2)
+                fullEmailList = loadedEmails
         )
 
         controller.onStart(null)
@@ -40,8 +46,8 @@ class EmailDetailControllerResultTest: EmailDetailControllerTest() {
 
 
         sentRequests.size `should be` 1
-        sentRequests.first() `should equal` EmailDetailRequest.ReadEmails(emailIds = listOf(2, 1),
-                metadataKeys = listOf(2, 1))
+        sentRequests.first() `should equal` EmailDetailRequest.ReadEmails(emailIds = listOf(4, 3),
+                metadataKeys = listOf(104L, 103L))
 
     }
 }

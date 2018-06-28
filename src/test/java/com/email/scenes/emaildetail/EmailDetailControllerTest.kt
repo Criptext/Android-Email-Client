@@ -1,4 +1,4 @@
-package com.email.scenes.emailDetail
+package com.email.scenes.emaildetail
 
 import com.email.db.DeliveryTypes
 import com.email.db.EmailDetailLocalDB
@@ -7,9 +7,6 @@ import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.mocks.MockedWorkRunner
 import com.email.mocks.MockedIHostActivity
-import com.email.scenes.emaildetail.EmailDetailScene
-import com.email.scenes.emaildetail.EmailDetailSceneController
-import com.email.scenes.emaildetail.EmailDetailSceneModel
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.utils.DateUtils
@@ -87,6 +84,7 @@ open class EmailDetailControllerTest {
                         secure = true,
                         subject = "Subject $it",
                         threadId = mockedThreadId,
+                        metadataKey = it + 100L,
                         unread = false),
                     labels = emptyList(),
                     to = emptyList(),

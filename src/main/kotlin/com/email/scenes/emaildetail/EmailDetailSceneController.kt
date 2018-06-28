@@ -220,13 +220,17 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun readEmails(emails: List<FullEmail>) {
-        val emailIds = emails.map { it.email.id }
-        val metadataKeys = emails.map { it.email.id } //TODO use the REAL metadata key
+        val unreadEmails = emails.filter { it.email.unread }
+        if (unreadEmails.isNotEmpty()) {
+             val emailIds = unreadEmails.map { it.email.id }
+            val metadataKeys = unreadEmails.map { it.email.metadataKey }
 
-        dataSource.submitRequest(EmailDetailRequest.ReadEmails(
-                emailIds = emailIds,
-                metadataKeys = metadataKeys
-        ))
+            dataSource.submitRequest(EmailDetailRequest.ReadEmails(
+                    emailIds = emailIds,
+                    metadataKeys = metadataKeys
+            ))
+        }
+
     }
 
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
