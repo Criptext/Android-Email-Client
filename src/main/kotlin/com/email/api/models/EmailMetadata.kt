@@ -5,6 +5,10 @@ import com.email.db.models.Contact
 import com.email.signal.SignalEncryptedData
 import org.json.JSONObject
 
+/**
+ * data class for email metadata. This is received as params of a "new email" event (1).
+ *
+ */
 data class EmailMetadata(
         val to: String,
         val cc: String,

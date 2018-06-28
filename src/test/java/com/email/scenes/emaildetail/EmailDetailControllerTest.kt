@@ -86,7 +86,7 @@ open class EmailDetailControllerTest {
                         date = DateUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null),
-                        delivered = DeliveryTypes.OPENED,
+                        delivered = DeliveryTypes.READ,
                         messageId = "key",
                         preview = "preview $it" ,
                         secure = true,

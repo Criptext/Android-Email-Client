@@ -125,6 +125,12 @@ import java.util.*
             where id=:id""")
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
+    @Query("""UPDATE email
+            SET delivered=:deliveryType
+            where id in (:ids)""")
+    fun changeDeliveryType(ids: List<Long>, deliveryType: DeliveryTypes)
+
+
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,

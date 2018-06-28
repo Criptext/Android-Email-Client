@@ -106,6 +106,7 @@ class MailboxActivity : BaseActivity() {
                 signalClient = signalClient,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
+                emailDao = appDB.emailDao(),
                 rawSessionDao = appDB.rawSessionDao(),
                     httpClient = HttpClient.Default(),
                 emailInsertionDao = appDB.emailInsertionDao(),

@@ -107,7 +107,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
-                model.emails[result.position].email.delivered = DeliveryTypes.UNSENT
+                model.emails[result.position].email.delivered = DeliveryTypes.UNSEND
                 scene.notifyFullEmailChanged(result.position)
             }
 
@@ -300,8 +300,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                         fullEmailEventListener = emailHolderEventListener,
                         fileDetailList = model.fileDetails)
 
-                if (result.fullEmailList.isNotEmpty())
-                    readEmails(result.fullEmailList)
+                readEmails(result.fullEmailList)
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
