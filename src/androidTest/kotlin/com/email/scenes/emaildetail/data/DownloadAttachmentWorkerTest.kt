@@ -15,7 +15,6 @@ import com.email.utils.*
 import com.email.utils.file.AndroidFs
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.mock
 import org.amshove.kluent.shouldEqualTo
 import org.json.JSONArray
 import org.json.JSONObject
@@ -41,6 +40,18 @@ class DownloadAttachmentWorkerTest {
                             Charset.forName("UTF-8")
                     )
             )
+    private var filetoken = ""
+    private val reporter: ProgressReporter<ComposerResult.UploadFile> =
+            if(Config.mockCriptextHTTPRequests) mockk(relaxed = true)
+            else object: ProgressReporter<ComposerResult.UploadFile> {
+                override fun report(progressPercentage: ComposerResult.UploadFile) {
+                    when (progressPercentage) {
+                        is ComposerResult.UploadFile.Register -> {
+                            filetoken = progressPercentage.filetoken
+                        }
+                    }
+                }
+            }
 
     private lateinit var httpClient: HttpClient
 
@@ -95,37 +106,40 @@ class DownloadAttachmentWorkerTest {
 
         val fileToUpload = AndroidFs.getFileFromImageCache(mActivityRule.activity,
                 testBinaryFileName)
-        var filetoken = ""
 
-        val reporter = object: ProgressReporter<ComposerResult.UploadFile> {
-            override fun report(progressPercentage: ComposerResult.UploadFile) {
-                when(progressPercentage){
-                    is ComposerResult.UploadFile.Register -> {
-                        filetoken = progressPercentage.filetoken
-                    }
-                }
-            }
+        if (Config.mockCriptextHTTPRequests) {
+            mockWebServer.enqueueSuccessfulResponses(listOf(
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"file": {"token": "dsfdsfsda", "name": "test.pdf", "chunk_size": 512000, "chunks": 2}}""",
+                    """{"filetoken":"__FILETOKEN__"}""",
+                    """{"filetoken":"__FILETOKEN__"}"""
+            ))
         }
 
         try {
             FileDownloader.download(testBinaryFileURL, fileToUpload)
 
             val worker = newWorker(fileToUpload.absolutePath)
+            worker.work(reporter)
+                    as ComposerResult.UploadFile.Success
 
-            worker.work(reporter) as ComposerResult.UploadFile.Success
 
-            sendPermanentRequest(filetoken)
-
-            Thread.sleep(3000)
+            if(!Config.mockCriptextHTTPRequests) {
+                sendPermanentRequest(filetoken)
+                Thread.sleep(10000)
+            }
 
             val downloadWorker = newDownloadWorker(filetoken)
 
             val result = downloadWorker.work(mockk(relaxed = true)) as EmailDetailResult.DownloadFile.Success
 
-            val uploadedFile = File(fileToUpload.absolutePath)
-            val downloadedFile = File(result.filepath)
-
-            downloadedFile.length() shouldEqualTo uploadedFile.length()
+            if (!Config.mockCriptextHTTPRequests) {
+                val downloadedFile = File(result.filepath)
+                downloadedFile.length() shouldEqualTo fileToUpload.length()
+                downloadedFile.delete()
+            }
         } finally {
             fileToUpload.delete()
         }
