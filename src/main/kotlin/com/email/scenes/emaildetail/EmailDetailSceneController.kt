@@ -31,6 +31,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import com.email.BaseActivity
 import com.email.ExternalActivityParams
+import com.email.bgworker.BackgroundWorkManager
 import com.email.utils.file.FileUtils
 import java.io.File
 
@@ -45,13 +46,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  activeAccount: ActiveAccount,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val keyboard: KeyboardManager) : SceneController() {
-
-    val lastIndexElement: Int by lazy {
-        model.fullEmailList.size - 1
-    }
-
-    private val httpClient = HttpClient.Default("https://services.criptext.com", HttpClient.AuthScheme.basic, 14000L, 7000L)
-
+    
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
@@ -140,11 +135,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.showError(UIMessage(R.string.error_downloading_file))
             }
             is EmailDetailResult.DownloadFile.Progress -> {
-                val emailIndex = model.fullEmailList.indexOfFirst { it.email.id == result.emailId }
+                val emailIndex = model.emails.indexOfFirst { it.email.id == result.emailId }
                 if (emailIndex < 0) return
-                val attachmentIndex = model.fullEmailList[emailIndex].files.indexOfFirst { it.token == result.filetoken }
+                val attachmentIndex = model.emails[emailIndex].files.indexOfFirst { it.token == result.filetoken }
                 if (attachmentIndex < 0) return
-                model.fullEmailList[emailIndex].files[attachmentIndex].progress = result.progress
+                model.emails[emailIndex].files[attachmentIndex].progress = result.progress
                 scene.updateAttachmentProgress(emailIndex, attachmentIndex)
             }
         }
@@ -184,7 +179,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                             Manifest.permission.READ_EXTERNAL_STORAGE)){
                 return
             }
-            val email = model.fullEmailList[emailPosition]
+            val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
             downloadFile(email.email.id, attachment.token)
         }

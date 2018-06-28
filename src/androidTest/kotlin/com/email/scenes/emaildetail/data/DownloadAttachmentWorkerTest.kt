@@ -13,8 +13,10 @@ import com.email.scenes.emaildetail.workers.DownloadAttachmentWorker
 import com.email.signal.Encoding
 import com.email.utils.*
 import com.email.utils.file.AndroidFs
+import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.mock
+import org.amshove.kluent.shouldEqualTo
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.After
@@ -22,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 import java.nio.charset.Charset
 
 @RunWith(AndroidJUnit4::class)
@@ -72,7 +75,8 @@ class DownloadAttachmentWorkerTest {
                     httpClient = httpClient, publishFn = {})
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
-            DownloadAttachmentWorker(fileToken = filetoken, emailId = 0, downloadPath = "",
+            DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
+                    downloadPath = mActivityRule.activity.cacheDir.absolutePath,
                     httpClient = httpClient, fileServiceAuthToken = fileServiceAuthToken,
                     publishFn = {})
 
@@ -112,9 +116,16 @@ class DownloadAttachmentWorkerTest {
 
             sendPermanentRequest(filetoken)
 
+            Thread.sleep(3000)
+
             val downloadWorker = newDownloadWorker(filetoken)
 
-            downloadWorker.work(mock()) as EmailDetailResult.DownloadFile.Success
+            val result = downloadWorker.work(mockk(relaxed = true)) as EmailDetailResult.DownloadFile.Success
+
+            val uploadedFile = File(fileToUpload.absolutePath)
+            val downloadedFile = File(result.filepath)
+
+            downloadedFile.length() shouldEqualTo uploadedFile.length()
         } finally {
             fileToUpload.delete()
         }

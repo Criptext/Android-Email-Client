@@ -19,7 +19,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                             private val httpClient: HttpClient,
                             private val activeAccount: ActiveAccount,
                             private val emailDetailLocalDB: EmailDetailLocalDB,
-                            private val filesHttpClient: httpClient,
+                            private val filesHttpClient: HttpClient,
                             private val fileServiceAuthToken: String,
                             private val downloadDir: String)
     : BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>()

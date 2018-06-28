@@ -46,8 +46,8 @@ class  EmailDetailActivity: BaseActivity() {
                         httpClient = httpClient,
                         activeAccount = activeAccount,
                         emailDetailLocalDB = db,
-                        filesHttpClient: filesHttpClient,
-                        fileServiceAuthToken = Hosts.fileServiceAuthToken),
+                        filesHttpClient= filesHttpClient,
+                        fileServiceAuthToken = Hosts.fileServiceAuthToken,
                         downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath),
                 keyboard = KeyboardManager(this)
         )
