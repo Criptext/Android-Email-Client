@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.email.R
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 
@@ -25,7 +26,7 @@ abstract class ParentEmailHolder(val view: View) : RecyclerView.ViewHolder(view)
     }
 
     abstract fun bindFullMail(fullEmail: FullEmail)
-    abstract fun setListeners(fullEmail: FullEmail,
+    abstract fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                               adapter: FullEmailListAdapter, position: Int)
 }

@@ -25,8 +25,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
         val event = Event.fromJSON(text)
         if (event.cmd == Event.Cmd.newEmail) {
             val emailMetadata = EmailMetadata.fromJSON(event.params)
-            val files = CRFile.listFromJSON(event.params)
-            eventDataSource.submitRequest(EventRequest.InsertNewEmail(emailMetadata, files))
+            eventDataSource.submitRequest(EventRequest.InsertNewEmail(emailMetadata))
         }
     }
 

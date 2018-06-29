@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.db.MailFolders
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.LabelChooserDialog
@@ -32,7 +33,7 @@ interface EmailDetailScene {
 
     fun attachView(
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
-            fullEmailList : VirtualList<FullEmail>)
+            fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>)
 
     fun showError(message : UIMessage)
     fun notifyFullEmailListChanged()
@@ -79,7 +80,7 @@ interface EmailDetailScene {
 
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
-                fullEmailList : VirtualList<FullEmail>){
+                fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>){
 
             textViewSubject.text = if (fullEmailList[0].email.subject.isEmpty())
                 textViewSubject.context.getString(R.string.nosubject)
@@ -90,7 +91,9 @@ interface EmailDetailScene {
             fullEmailsRecyclerView = FullEmailRecyclerView(
                     recyclerView,
                     fullEmailEventListener,
-                    fullEmailList)
+                    fullEmailList,
+                    fileDetailList
+                    )
 
             fullEmailsRecyclerView.scrollToLast()
 

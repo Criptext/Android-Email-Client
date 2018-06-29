@@ -1,5 +1,7 @@
 package com.email.scenes.emaildetail
 
+import android.Manifest
+import com.email.BaseActivity
 import com.email.db.DeliveryTypes
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
@@ -26,7 +28,7 @@ open class EmailDetailControllerTest {
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene
-    protected lateinit var host: MockedIHostActivity
+    protected lateinit var host: EmailDetailActivity
     protected lateinit var db: EmailDetailLocalDB
     protected lateinit var mailboxDb: MailboxLocalDB
     protected lateinit var runner: MockedWorkRunner
@@ -47,7 +49,11 @@ open class EmailDetailControllerTest {
         db = mockk()
         mailboxDb = mockk()
         emailInsertionDao = mockk()
-        host = MockedIHostActivity()
+        host = mockk(relaxed = true)
+
+        every {
+            host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal, Manifest.permission.READ_EXTERNAL_STORAGE)
+        } returns true
 
         dataSource = mockk(relaxed = true)
 

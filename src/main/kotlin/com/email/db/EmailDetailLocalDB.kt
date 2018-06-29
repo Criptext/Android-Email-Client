@@ -2,6 +2,7 @@ package com.email.db
 
 import android.content.Context
 import com.email.db.models.EmailLabel
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.mailbox.data.EmailThread

@@ -3,6 +3,7 @@ package com.email.scenes.emaildetail.ui
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.utils.virtuallist.VirtualList
 
@@ -13,13 +14,15 @@ import com.email.utils.virtuallist.VirtualList
 class FullEmailRecyclerView(
         val recyclerView: RecyclerView,
         fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
-        val fullEmailList: VirtualList<FullEmail>) {
+        val fullEmailList: VirtualList<FullEmail>,
+        val fileDetailList: Map<Long, List<FileDetail>>) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
             mContext = ctx,
             fullEmails = fullEmailList,
-            fullEmailListener = fullEmailEventListener)
+            fullEmailListener = fullEmailEventListener,
+            fileDetails = fileDetailList)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)

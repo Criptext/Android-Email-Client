@@ -7,5 +7,5 @@ import com.email.db.models.CRFile
  * Created by gabriel on 5/1/18.
  */
 sealed class EventRequest {
-    data class InsertNewEmail(val emailMetadata: EmailMetadata, val files: List<CRFile>): EventRequest()
+    data class InsertNewEmail(val emailMetadata: EmailMetadata): EventRequest()
 }

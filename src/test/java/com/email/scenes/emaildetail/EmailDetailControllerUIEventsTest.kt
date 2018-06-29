@@ -2,6 +2,7 @@ package com.email.scenes.emaildetail
 
 import com.email.ExternalActivityParams
 import com.email.R
+import com.email.db.models.FileDetail
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
@@ -24,8 +25,8 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     override fun setUp() {
         super.setUp()
         every {
-            scene.attachView(capture(fullEmailEventListener), any())
-        }just Runs
+            scene.attachView(capture(fullEmailEventListener), any(), any())
+        } just Runs
 
         listenerSlot = CapturingSlot()
         every {
@@ -67,7 +68,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         sentRequests.clear()
         simulateLoadOfEmails(2)
 
-        model.fullEmailList.size `should be equal to` 2
+        model.emails.size `should be equal to` 2
     }
 
     @Test
@@ -77,7 +78,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         simulateLoadOfEmails(2)
 
         val selectedIndex = 0
-        val selectedFile = model.fullEmailList[selectedIndex].files[selectedIndex]
+        val selectedFile = model.emails[selectedIndex].files[selectedIndex]
         fullEmailEventListener.captured.onAttachmentSelected(0, 0)
 
         verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(selectedFile.token, selectedFile.emailId)) }
@@ -89,10 +90,11 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         sentRequests.clear()
         simulateLoadOfEmails(2)
         val selectedIndex = 0
-        val selectedFile = model.fullEmailList[selectedIndex].files[selectedIndex]
+        val selectedEmail = model.emails[selectedIndex]
+        val selectedFile = model.emails[selectedIndex].files[selectedIndex]
 
         simulateDownloadEvent(EmailDetailResult.DownloadFile.Progress(selectedFile.emailId, selectedFile.token, 50))
-        model.fullEmailList[selectedIndex].files[selectedIndex].progress `should be equal to` 50
+        model.fileDetails[selectedEmail.email.id]!![selectedIndex].progress `should be equal to` 50
 
         verify { scene.updateAttachmentProgress(selectedIndex, selectedIndex) }
     }
@@ -102,8 +104,9 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         controller.onStart(null)
         sentRequests.clear()
 
-        simulateDownloadEvent(EmailDetailResult.DownloadFile.Success("/test.pdf"))
-        host.activityLaunched `should be equal to` true
+        simulateDownloadEvent(EmailDetailResult.DownloadFile.Success(1L,
+                "__FILE_TOKEN__", "/test.pdf"))
+        verify { host.launchExternalActivityForResult(any()) }
     }
 
     @Test
@@ -112,7 +115,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         sentRequests.clear()
         simulateLoadOfEmails(2)
         val selectedIndex = 0
-        val selectedFile = model.fullEmailList[selectedIndex].files[selectedIndex]
+        val selectedFile = model.emails[selectedIndex].files[selectedIndex]
 
         simulateDownloadEvent(EmailDetailResult.DownloadFile.Failure(selectedFile.token, UIMessage(R.string.error_downloading_file)))
         verify { scene.showError(UIMessage(R.string.error_downloading_file)) }

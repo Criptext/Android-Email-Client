@@ -107,6 +107,10 @@ class DownloadAttachmentWorkerTest {
         val fileToUpload = AndroidFs.getFileFromImageCache(mActivityRule.activity,
                 testBinaryFileName)
 
+        /*
+        * If server responses are mocked, I can respond with a file token everytime but the fourth
+        * request which is a request to obtain the file metadata
+        */
         if (Config.mockCriptextHTTPRequests) {
             mockWebServer.enqueueSuccessfulResponses(listOf(
                     """{"filetoken":"__FILETOKEN__"}""",
@@ -125,7 +129,11 @@ class DownloadAttachmentWorkerTest {
             worker.work(reporter)
                     as ComposerResult.UploadFile.Success
 
-
+            /*
+            * If server responses are not mocked, I need to finish the upload process of the
+            * file server and wait around 10 seconds to download the file
+            * File server needs time to process the uploaded file before it can be downloaded
+            */
             if(!Config.mockCriptextHTTPRequests) {
                 sendPermanentRequest(filetoken)
                 Thread.sleep(10000)
@@ -135,6 +143,10 @@ class DownloadAttachmentWorkerTest {
 
             val result = downloadWorker.work(mockk(relaxed = true)) as EmailDetailResult.DownloadFile.Success
 
+            /*
+            * If server responses are not mocked, I can check the downloaded file size against the
+            * uploaded file size
+            */
             if (!Config.mockCriptextHTTPRequests) {
                 val downloadedFile = File(result.filepath)
                 downloadedFile.length() shouldEqualTo fileToUpload.length()

@@ -47,13 +47,7 @@ class DownloadAttachmentWorker(private val fileToken: String,
 
     private val getMetaDataFromJSONResponse: (String) -> Result<FileMetadata, Exception> = { stringResponse ->
         Result.of {
-            val jsonObject = JSONObject(stringResponse)
-            val fileObject = jsonObject.getJSONObject("file")
-            val token = fileObject.getString("token")
-            val name = fileObject.getString("name")
-            val chunkSize = fileObject.getLong("chunk_size")
-            val chunks = fileObject.getInt("chunks")
-            FileMetadata(token, name, chunkSize, chunks)
+            FileMetadata.fromJSON(stringResponse)
         }
     }
 
@@ -100,7 +94,7 @@ class DownloadAttachmentWorker(private val fileToken: String,
                 .flatMap(downloadFile(reporter))
 
         return when (result) {
-            is Result.Success -> EmailDetailResult.DownloadFile.Success(filepath)
+            is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
             is Result.Failure -> EmailDetailResult.DownloadFile.Failure(fileToken,
                     createErrorMessage(result.error))
         }
@@ -126,5 +120,17 @@ class DownloadAttachmentWorker(private val fileToken: String,
     }
 
 
-    inner class FileMetadata(val fileToken: String, val name: String, val chunkSize: Long, val chunks: Int)
+    data class FileMetadata(val fileToken: String, val name: String, val chunkSize: Long, val chunks: Int){
+        companion object {
+            fun fromJSON(metadataJsonString: String): FileMetadata {
+                val jsonObject = JSONObject(metadataJsonString)
+                val fileObject = jsonObject.getJSONObject("file")
+                val token = fileObject.getString("token")
+                val name = fileObject.getString("name")
+                val chunkSize = fileObject.getLong("chunk_size")
+                val chunks = fileObject.getInt("chunks")
+                return FileMetadata(token, name, chunkSize, chunks)
+            }
+        }
+    }
 }

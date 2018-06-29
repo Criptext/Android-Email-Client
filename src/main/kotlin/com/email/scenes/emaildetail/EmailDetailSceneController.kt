@@ -1,10 +1,8 @@
 package com.email.scenes.emaildetail
 
 import android.Manifest
-import android.support.v7.app.AppCompatActivity
 import com.email.IHostActivity
 import com.email.R
-import com.email.api.HttpClient
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
@@ -13,7 +11,6 @@ import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerTypes
-import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
@@ -26,14 +23,12 @@ import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import com.email.BaseActivity
 import com.email.ExternalActivityParams
 import com.email.bgworker.BackgroundWorkManager
+import com.email.db.models.FileDetail
 import com.email.utils.file.FileUtils
-import java.io.File
 
 
 /**
@@ -129,20 +124,25 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onDownloadedFile(result: EmailDetailResult){
         when(result){
             is EmailDetailResult.DownloadFile.Success -> {
+                updateAttachmentProgress(result.emailId, result.filetoken, 100)
                 openFile(result.filepath)
             }
             is EmailDetailResult.DownloadFile.Failure -> {
                 scene.showError(UIMessage(R.string.error_downloading_file))
             }
             is EmailDetailResult.DownloadFile.Progress -> {
-                val emailIndex = model.emails.indexOfFirst { it.email.id == result.emailId }
-                if (emailIndex < 0) return
-                val attachmentIndex = model.emails[emailIndex].files.indexOfFirst { it.token == result.filetoken }
-                if (attachmentIndex < 0) return
-                model.emails[emailIndex].files[attachmentIndex].progress = result.progress
-                scene.updateAttachmentProgress(emailIndex, attachmentIndex)
+                updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
             }
         }
+    }
+
+    private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
+        val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
+        if (emailIndex < 0) return
+        val attachmentIndex = model.emails[emailIndex].files.indexOfFirst { it.token == filetoken }
+        if (attachmentIndex < 0) return
+        model.fileDetails[emailId]!![attachmentIndex].progress = progress
+        scene.updateAttachmentProgress(emailIndex, attachmentIndex)
     }
 
     private fun openFile(filepath: String){
@@ -291,10 +291,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
                 model.emails.addAll(result.fullEmailList)
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
+                result.fullEmailList.forEach { fullEmail ->
+                    model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                }
 
                 scene.attachView(
                         fullEmailList = fullEmailsList,
-                        fullEmailEventListener = emailHolderEventListener)
+                        fullEmailEventListener = emailHolderEventListener,
+                        fileDetailList = model.fileDetails)
 
                 if (result.fullEmailList.isNotEmpty())
                     readEmails(result.fullEmailList)

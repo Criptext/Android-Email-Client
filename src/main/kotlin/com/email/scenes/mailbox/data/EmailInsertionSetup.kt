@@ -187,7 +187,7 @@ object EmailInsertionSetup {
      * @param metadata metadata of the email to insert
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata, files: List<CRFile>) {
+                                       dao: EmailInsertionDao, metadata: EmailMetadata) {
         val labels = listOf(Label.defaultItems.inbox)
 
         val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null
@@ -199,7 +199,7 @@ object EmailInsertionSetup {
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
         dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels, files)
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels, metadata.files)
             })
     }
 }

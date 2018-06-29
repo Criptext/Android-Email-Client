@@ -20,6 +20,7 @@ import com.email.R
 import com.email.SecureEmail
 import com.email.db.DeliveryTypes
 import com.email.db.models.CRFile
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
@@ -61,7 +62,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val webViewLoader: ProgressBar
     private val attachmentsRecyclerView: RecyclerView
 
-    override fun setListeners(fullEmail: FullEmail,
+    override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
         view.setOnClickListener {
@@ -106,7 +107,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position)
         }
 
-        setAttachments(fullEmail.files, emailListener)
+        setAttachments(fileDetails, emailListener)
     }
     private fun toggleUnsendProgress(isShown: Boolean) {
         if(isShown)  {
@@ -211,7 +212,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setIcons(fullEmail.email.delivered)
     }
 
-    private fun setAttachments(files: List<CRFile>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
+    private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
         val adapter = FileListAdapter(view.context, files)
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
@@ -275,7 +276,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             }
         }
 
-        //TODO validate if has attachments
+        //TODO validate if has fileDetails
         attachmentView.visibility = View.GONE
     }
 
