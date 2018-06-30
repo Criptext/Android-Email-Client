@@ -17,9 +17,7 @@ import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
-import java.io.RandomAccessFile
+import java.io.*
 import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileToken: String,
@@ -74,7 +72,17 @@ class DownloadAttachmentWorker(private val fileToken: String,
 
     private fun moveFileToDownloads(file: File, fileMetadata: FileMetadata){
         val downloadFile = AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
-        downloadFile.writeBytes(file.readBytes())
+        val fileStream = FileInputStream(file)
+        val downloadStream = FileOutputStream(downloadFile)
+
+        fileStream.use { input ->
+            downloadStream.use { fileOut ->
+                input.copyTo(fileOut)
+            }
+        }
+
+        fileStream.close()
+        downloadStream.close()
         file.delete()
         filepath = downloadFile.absolutePath
     }

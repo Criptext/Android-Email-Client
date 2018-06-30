@@ -135,7 +135,7 @@ class UpdateMailboxWorker(
 
     private fun processNewEmails(events: List<Event>): Int {
         val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
-        val toIdAndMetadataTriple: (Event) -> Pair<Long, EmailMetadata> =
+        val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
                 { Pair( it.rowid, EmailMetadata.fromJSON(it.params)) }
         val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
             { (_, metadata) ->
@@ -157,7 +157,7 @@ class UpdateMailboxWorker(
 
         val eventIdsToAcknowledge = events
             .filter(isNewEmailEvent)
-            .map(toIdAndMetadataTriple)
+            .map(toIdAndMetadataPair)
             .filter(emailInsertedSuccessfully)
             .map(toEventId)
 
