@@ -100,10 +100,11 @@ import java.util.*
     @Query("""UPDATE email
             SET threadId=:threadId,
             messageId=:messageId,
+            metadataKey=:metadataKey,
             date=:date,
             delivered=:status
             where id=:id""")
-    fun updateEmail(id: Long, threadId: String, messageId: String, date: Date, status: DeliveryTypes)
+    fun updateEmail(id: Long, threadId: String, messageId: String, metadataKey: Long, date: Date, status: DeliveryTypes)
 
     @Update
     fun update(emails: List<Email>)
@@ -122,14 +123,23 @@ import java.util.*
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
-            where id=:id""")
+            WHERE id=:id""")
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
-            where id in (:ids)""")
+            WHERE id in (:ids)""")
     fun changeDeliveryType(ids: List<Long>, deliveryType: DeliveryTypes)
 
+    @Query("""UPDATE email
+            SET delivered=:deliveryType
+            WHERE metadataKey in (:keys)""")
+    fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes)
+
+    @Query("""SELECT *
+            FROM email
+            WHERE metadataKey=:key""")
+    fun findEmailByMetadataKey(key: Long): Email?
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,

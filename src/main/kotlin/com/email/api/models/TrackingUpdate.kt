@@ -4,6 +4,7 @@ import com.email.db.DeliveryTypes
 import org.json.JSONObject
 
 /**
+ * * data class for tracking updates. This is received as params of a "tracking update" event (2).
  * Created by gabriel on 6/28/18.
  */
 

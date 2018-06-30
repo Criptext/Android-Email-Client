@@ -33,7 +33,8 @@ interface MailboxLocalDB {
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
     fun getLabelFromLabelType(labelTextType: MailFolders): Label
-    fun updateEmailAndAddLabelSent(id: Long, threadId : String, key : String, date: Date, status: DeliveryTypes)
+    fun updateEmailAndAddLabelSent(id: Long, threadId : String, messageId: String,
+                                   metadataKey: Long, date: Date, status: DeliveryTypes)
     fun getExistingAccount(): Account
     fun getUnreadCounterLabel(labelId: Long): Int
     fun getTotalCounterLabel(labelId: Long): Int
@@ -191,13 +192,17 @@ interface MailboxLocalDB {
             db.emailLabelDao().deleteRelationByLabelAndEmailIds(labelId, emailIds)
         }
 
-        fun updateEmail(id: Long, threadId: String, key : String, date: Date, status: DeliveryTypes){
-            db.emailDao().updateEmail(id, threadId, key, date, status)
+        private fun updateEmail(id: Long, threadId: String, messageId : String, metadataKey: Long,
+                        date: Date, status: DeliveryTypes) {
+            db.emailDao().updateEmail(id = id, threadId = threadId, messageId = messageId,
+                    metadataKey = metadataKey, date = date, status = status)
         }
 
-        override fun updateEmailAndAddLabelSent(id: Long, threadId : String, key : String, date: Date, status: DeliveryTypes){
+        override fun updateEmailAndAddLabelSent(id: Long, threadId: String, messageId: String,
+                                                metadataKey: Long, date: Date, status: DeliveryTypes) {
             db.runInTransaction({
-                updateEmail(id, threadId, key, date, status)
+                updateEmail(id = id, threadId = threadId, messageId = messageId,
+                        metadataKey = metadataKey, date = date, status = status)
                 deleteRelationByEmailIds(arrayListOf(id))
                 createLabelEmailSent(id)
             })

@@ -4,6 +4,7 @@ import com.email.api.EmailInsertionAPIClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
+import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.signal.SignalClient
 
@@ -12,6 +13,7 @@ import com.email.signal.SignalClient
  */
 
 class EventDataSource(override val runner: WorkRunner,
+                      private val emailDao: EmailDao,
                       private val emailInsertionDao: EmailInsertionDao,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
                       private val signalClient: SignalClient): BackgroundWorkManager<EventRequest, EventResult>() {
@@ -22,6 +24,9 @@ class EventDataSource(override val runner: WorkRunner,
                     emailInsertionDao = emailInsertionDao, signalClient = signalClient,
                     emailInsertionApi = emailInsertionAPIClient, metadata = params.emailMetadata,
                     publishFn = flushResults)
+            is EventRequest.UpdateDeliveryStatus -> UpdateDeliveryStatusWorker(
+                    dao = emailDao, trackingUpdate = params.trackingUpdate, publishFn = flushResults
+                    )
         }
     }
 }

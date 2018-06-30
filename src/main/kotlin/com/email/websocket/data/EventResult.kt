@@ -1,5 +1,6 @@
 package com.email.websocket.data
 
+import com.email.api.models.TrackingUpdate
 import com.email.db.models.Email
 import com.email.utils.UIMessage
 
@@ -10,6 +11,10 @@ sealed class EventResult {
     sealed class InsertNewEmail: EventResult()  {
         data class Success(val newEmail: Email): InsertNewEmail()
         class Failure(val message: UIMessage): InsertNewEmail()
+    }
+    sealed class UpdateDeliveryStatus: EventResult()  {
+        data class Success(val update: TrackingUpdate?): UpdateDeliveryStatus()
+        class Failure(val message: UIMessage): UpdateDeliveryStatus()
     }
 
 }

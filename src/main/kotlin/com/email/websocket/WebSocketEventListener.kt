@@ -1,5 +1,6 @@
 package com.email.websocket
 
+import com.email.api.models.TrackingUpdate
 import com.email.db.models.Email
 import com.email.utils.UIMessage
 
@@ -16,6 +17,13 @@ interface WebSocketEventListener{
      * @param message the message that should be shown in the UI.
      */
     fun onNewEmail(email: Email)
+
+    /**
+     * Invoked when a new tracking update been received. Subscribers should try to add the update
+     * to the list of notifications in the UI.
+     * @param update the received update
+     */
+    fun onNewTrackingUpdate(update: TrackingUpdate)
 
     /**
      * Called when something went wrong processing the event. Subscribers may want to display an

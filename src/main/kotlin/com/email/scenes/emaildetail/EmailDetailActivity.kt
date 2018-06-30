@@ -12,6 +12,7 @@ import com.email.scenes.SceneController
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.utils.KeyboardManager
 import com.email.utils.file.AndroidFs
+import com.email.websocket.WebSocketSingleton
 
 /**
  * Created by sebas on 3/12/18.
@@ -35,21 +36,28 @@ class  EmailDetailActivity: BaseActivity() {
                 findViewById(R.id.include_emails_detail), this)
 
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val webSocketEvents = WebSocketSingleton.getInstance(
+                activeAccount = activeAccount,
+                context = this)
+        val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
+
         return EmailDetailSceneController(
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,
                 activeAccount = activeAccount,
+                websocketEvents = webSocketEvents,
+                keyboard = KeyboardManager(this),
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
                         httpClient = httpClient,
                         activeAccount = activeAccount,
-                        emailDetailLocalDB = db,
                         filesHttpClient= filesHttpClient,
+                        emailDetailLocalDB = db,
                         fileServiceAuthToken = Hosts.fileServiceAuthToken,
-                        downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath),
-                keyboard = KeyboardManager(this)
+                        downloadDir = downloadDir
+                )
         )
 
     }

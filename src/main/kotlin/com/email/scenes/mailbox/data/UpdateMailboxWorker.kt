@@ -131,7 +131,6 @@ class UpdateMailboxWorker(
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
         try {
-            Log.d("Update", "ack $eventIdsToAcknowledge")
             apiClient.acknowledgeEvents(eventIdsToAcknowledge)
         } catch (ex: IOException) {
             // if this request fails, just ignore it, we can acknowledge again later
@@ -139,9 +138,8 @@ class UpdateMailboxWorker(
     }
 
     private fun markEmailsAsOpened(eventIds: List<Long>, metadataKeys: List<Long>): Boolean {
-        Log.d("Update", "markEmailsAsOpened ${metadataKeys.isNotEmpty()}")
         if (metadataKeys.isNotEmpty()) {
-            emailDao.changeDeliveryType(metadataKeys, DeliveryTypes.READ)
+            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, DeliveryTypes.READ)
             acknowledgeEventsIgnoringErrors(eventIds)
             return true
         }

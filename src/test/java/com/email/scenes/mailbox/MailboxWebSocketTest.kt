@@ -82,7 +82,7 @@ class MailboxWebSocketTest {
         // capture web socket event listener
         webSocketListenerSlot = CapturingSlot()
         webSocketEvents = mockk(relaxed = true)
-        every { webSocketEvents::listener.set(capture(webSocketListenerSlot)) } just Runs
+        every { webSocketEvents.setListener(capture(webSocketListenerSlot)) } just Runs
 
         controller = MailboxSceneController(
                 model =  model,

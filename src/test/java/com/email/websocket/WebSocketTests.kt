@@ -2,6 +2,7 @@ package com.email.websocket
 
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
+import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
@@ -27,6 +28,7 @@ class WebSocketTests {
     private lateinit var signal: SignalClient
     private lateinit var httpClient: HttpClient
     private lateinit var dao: EmailInsertionDao
+    private lateinit var emailDao: EmailDao
     private lateinit var api: EmailInsertionAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: EventDataSource
@@ -39,6 +41,7 @@ class WebSocketTests {
     @Before
     fun setUp() {
         dao = mockk(relaxed = true)
+        emailDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
         every { dao.runTransaction(capture(lambdaSlot)) } answers {
             lambdaSlot.captured()
@@ -51,7 +54,7 @@ class WebSocketTests {
 
         runner = MockedWorkRunner()
 
-        dataSource = EventDataSource(runner = runner, emailInsertionDao = dao,
+        dataSource = EventDataSource(runner = runner, emailInsertionDao = dao, emailDao = emailDao,
                 emailInsertionAPIClient = api, signalClient = signal)
 
         webSocket = mockk()
@@ -103,7 +106,7 @@ class WebSocketTests {
             httpClient.get(path = "/email/body/<15221916.12518@jigl.com>", authToken = "__JWT_TOKEN__")
         } returns "__ENCRYPTED_TEXT__"
 
-        controller.listener = mockedListener
+        controller.currentListener = mockedListener
 
         val onMessageReceived = onMessageReceivedSlot.captured
         onMessageReceived(MockedJSONData.sampleNewEmailEvent) // trigger new message event
@@ -152,7 +155,7 @@ class WebSocketTests {
             httpClient.get(path = "/email/body/<15221916.12520@jigl.com>", authToken = "__JWT_TOKEN__")
         } returns "__PLAIN_TEXT_FROM_SERVER__"
 
-        controller.listener = mockedListener
+        controller.currentListener = mockedListener
 
         val onMessageReceived = onMessageReceivedSlot.captured
         onMessageReceived(MockedJSONData.sampleNewEmailEventPlainText) // trigger new message event

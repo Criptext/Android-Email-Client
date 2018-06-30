@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.HttpClient
@@ -81,6 +82,7 @@ class UpdateMailboxWorkerTest {
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
         db.emailDao().insertAll(localEmails)
+        Log.d("DeliveryStatus", "insert local emails $localEmails")
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
@@ -89,6 +91,7 @@ class UpdateMailboxWorkerTest {
         // assert that emails got updated correctly in DB
         val updatedEmails = db.emailDao().getAll()
         updatedEmails.size `shouldBe` 2
+        Log.d("DeliveryStatus", "updatedEmails = ${updatedEmails.map { it.delivered }}")
         updatedEmails.all(hasDeliveryTypeRead).shouldBeTrue()
     }
 
