@@ -543,6 +543,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     val shouldSync: Boolean
             get() = System.currentTimeMillis() - model.lastSync > minimumIntervalBetweenSyncs
 
+
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    }
+
     companion object {
         val threadsPerPage = 20
         val minimumIntervalBetweenSyncs = 60000L

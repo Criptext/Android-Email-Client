@@ -29,7 +29,8 @@ class SearchSceneController(private val scene: SearchScene,
                             private val host: IHostActivity,
                             private val activeAccount: ActiveAccount,
                             private val storage: KeyValueStorage,
-                            private val dataSource: SearchDataSource): SceneController(){
+                            private val dataSource: SearchDataSource)
+    : SceneController(){
 
     private val searchListController = SearchResultListController(
             model, scene.searchListView, scene.threadsListView)
@@ -191,4 +192,6 @@ class SearchSceneController(private val scene: SearchScene,
         })
     }
 
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    }
 }

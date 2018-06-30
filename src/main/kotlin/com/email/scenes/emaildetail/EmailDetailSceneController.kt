@@ -1,8 +1,8 @@
 package com.email.scenes.emaildetail
 
+import android.Manifest
 import com.email.IHostActivity
 import com.email.R
-import com.email.bgworker.BackgroundWorkManager
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
@@ -11,7 +11,6 @@ import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerTypes
-import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
@@ -24,6 +23,13 @@ import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
+import android.content.pm.PackageManager
+import com.email.BaseActivity
+import com.email.ExternalActivityParams
+import com.email.bgworker.BackgroundWorkManager
+import com.email.db.models.FileDetail
+import com.email.utils.file.FileUtils
+
 
 /**
  * Created by sebas on 3/12/18.
@@ -35,7 +41,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  activeAccount: ActiveAccount,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val keyboard: KeyboardManager) : SceneController() {
-
+    
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
@@ -44,6 +50,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations -> onUpdatedLabels(result)
             is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
+            is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
         }
     }
 
@@ -109,6 +116,41 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
+    private fun downloadFile(emailId: Long, fileToken: String){
+        dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
+                emailId = emailId))
+    }
+
+    private fun onDownloadedFile(result: EmailDetailResult){
+        when(result){
+            is EmailDetailResult.DownloadFile.Success -> {
+                updateAttachmentProgress(result.emailId, result.filetoken, 100)
+                openFile(result.filepath)
+            }
+            is EmailDetailResult.DownloadFile.Failure -> {
+                scene.showError(UIMessage(R.string.error_downloading_file))
+            }
+            is EmailDetailResult.DownloadFile.Progress -> {
+                updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
+            }
+        }
+    }
+
+    private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
+        val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
+        if (emailIndex < 0) return
+        val attachmentIndex = model.emails[emailIndex].files.indexOfFirst { it.token == filetoken }
+        if (attachmentIndex < 0) return
+        model.fileDetails[emailId]!![attachmentIndex].progress = progress
+        scene.updateAttachmentProgress(emailIndex, attachmentIndex)
+    }
+
+    private fun openFile(filepath: String){
+        val mimeType = FileUtils.getMimeType(filepath)
+        val params = ExternalActivityParams.FilePresent(filepath, mimeType)
+        host.launchExternalActivityForResult(params)
+    }
+
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
@@ -131,6 +173,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+
+        override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
+            if (!host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)){
+                return
+            }
+            val email = model.emails[emailPosition]
+            val attachment = email.files[attachmentPosition]
+            downloadFile(email.email.id, attachment.token)
+        }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
             val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
@@ -239,10 +291,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
                 model.emails.addAll(result.fullEmailList)
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
+                result.fullEmailList.forEach { fullEmail ->
+                    model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                }
 
                 scene.attachView(
                         fullEmailList = fullEmailsList,
-                        fullEmailEventListener = emailHolderEventListener)
+                        fullEmailEventListener = emailHolderEventListener,
+                        fileDetailList = model.fileDetails)
 
                 if (result.fullEmailList.isNotEmpty())
                     readEmails(result.fullEmailList)
@@ -316,6 +372,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 showLabelsDialog()
             }
         }
+    }
+
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>,
+                                         grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
+        if (indexOfPermission < 0) return
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED)
+            scene.showError(UIMessage(R.string.permission_filepicker_rationale))
     }
 
     private fun showLabelsDialog() {

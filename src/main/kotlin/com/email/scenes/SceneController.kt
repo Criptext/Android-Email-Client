@@ -41,5 +41,8 @@ abstract class SceneController {
      */
     abstract fun onOptionsItemSelected(itemId: Int)
 
-
+    /**
+     * Called during the host activity's onRequestPermissionResult.
+     */
+    abstract fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
 }

@@ -1,5 +1,7 @@
 package com.email.scenes.emaildetail
 
+import android.Manifest
+import com.email.BaseActivity
 import com.email.db.DeliveryTypes
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
@@ -26,6 +28,7 @@ open class EmailDetailControllerTest {
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene
+    protected lateinit var host: EmailDetailActivity
     protected lateinit var db: EmailDetailLocalDB
     protected lateinit var mailboxDb: MailboxLocalDB
     protected lateinit var runner: MockedWorkRunner
@@ -46,13 +49,18 @@ open class EmailDetailControllerTest {
         db = mockk()
         mailboxDb = mockk()
         emailInsertionDao = mockk()
+        host = mockk(relaxed = true)
+
+        every {
+            host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal, Manifest.permission.READ_EXTERNAL_STORAGE)
+        } returns true
 
         dataSource = mockk(relaxed = true)
 
         controller = EmailDetailSceneController(
                 scene = scene,
                 dataSource = dataSource,
-                host = MockedIHostActivity(),
+                host = host,
                 model = model,
                 activeAccount = activeAccount,
                 keyboard = mockk(relaxed = true))
@@ -88,7 +96,16 @@ open class EmailDetailControllerTest {
                         unread = false),
                     labels = emptyList(),
                     to = emptyList(),
-                    files = emptyList(),
+                    files = arrayListOf(CRFile(token = "efhgfdgdfsg$it",
+                            name = "test.pdf",
+                            size = 65346L,
+                            status = 1,
+                            date = DateUtils.getDateFromString(
+                                    "1992-05-23 20:12:58",
+                                    null),
+                            readOnly = false,
+                            emailId = it.toLong()
+                            )),
                     cc = emptyList(),
                     bcc = emptyList(),
                     from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"))

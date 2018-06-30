@@ -4,6 +4,7 @@ import com.email.api.Hosts
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
 import com.email.db.models.ActiveAccount
+import com.email.db.models.CRFile
 import com.email.websocket.data.EventDataSource
 import com.email.websocket.data.EventRequest
 import com.email.websocket.data.EventResult

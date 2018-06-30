@@ -20,6 +20,11 @@ class ApiCall {
             return response.body()!!.string()
         }
 
+        fun executeFileRequest(client: OkHttpClient, req: Request): ByteArray {
+            val response = client.newCall(req).execute()
+            if (!response.isSuccessful) throw(ServerErrorException(response.code()))
+            return response.body()!!.bytes()
+        }
 
     }
 }

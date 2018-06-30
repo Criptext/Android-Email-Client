@@ -202,7 +202,14 @@
                 android:layout_marginBottom="70dip"
                 android:text="@string/full_mail_item_open_default" />
 
-            <!--<include layout="@layout/open_full_mail_attachment"/>-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/attachments_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_marginStart="-20dp"
+                android:layout_marginEnd="-21dp"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 

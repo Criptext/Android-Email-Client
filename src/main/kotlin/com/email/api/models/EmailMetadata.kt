@@ -1,5 +1,6 @@
 package com.email.api.models
 
+import com.email.db.models.CRFile
 import com.email.db.models.Contact
 import com.email.signal.SignalEncryptedData
 import org.json.JSONObject
@@ -17,7 +18,8 @@ data class EmailMetadata(
         val date: String,
         val messageType: SignalEncryptedData.Type?,
         val threadId: String,
-        val subject: String) {
+        val subject: String,
+        val files: List<CRFile>) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
@@ -35,6 +37,7 @@ data class EmailMetadata(
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
             val messageType = emailData.optInt("messageType")
             val senderDeviceId = emailData.optInt("senderDeviceId")
+            val files = CRFile.listFromJSON(metadataJsonString)
             return EmailMetadata(
                     from = from,
                     senderRecipientId = fromRecipientId,
@@ -48,8 +51,8 @@ data class EmailMetadata(
                     date = emailData.getString("date"),
                     threadId = emailData.getString("threadId"),
                     subject = emailData.getString("subject"),
-                    messageType = SignalEncryptedData.Type.fromInt(messageType)
-
+                    messageType = SignalEncryptedData.Type.fromInt(messageType),
+                    files = files
             )
 
         }

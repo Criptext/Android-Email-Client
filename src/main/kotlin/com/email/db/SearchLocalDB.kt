@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.email.SecureEmail
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import com.email.db.models.FullEmail
-import com.email.db.models.Label
+import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.EmailThreadValidator
 import java.util.ArrayList

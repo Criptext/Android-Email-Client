@@ -1,5 +1,6 @@
 package com.email.scenes.composer
 
+import android.Manifest
 import android.content.DialogInterface
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
@@ -10,10 +11,10 @@ import com.email.scenes.SceneController
 import com.email.scenes.composer.data.*
 import com.email.scenes.composer.ui.ComposerUIObserver
 import com.email.scenes.params.MailboxParams
-import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
-import com.email.utils.virtuallist.VirtualList
-import java.io.File
+import android.content.pm.PackageManager
+import com.email.BaseActivity
+
 
 /**
  * Created by gabriel on 2/26/18.
@@ -44,7 +45,10 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onAttachmentButtonClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)){
+                host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            }
         }
 
         override fun onBackButtonClicked() {
@@ -289,4 +293,15 @@ class ComposerController(private val model: ComposerModel,
 
     }
 
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
+
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_EXTERNAL_STORAGE }
+        if (indexOfPermission < 0) return
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED){
+            scene.showError(UIMessage(R.string.permission_filepicker_rationale))
+            return
+        }
+        host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+    }
 }

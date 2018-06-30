@@ -26,4 +26,12 @@ class FileServiceAPIClient(private val client: HttpClient, private val authToken
         return client.post(path = "/file/chunk", authToken = authToken, body = formBody)
     }
 
+    fun getFileMetadata(fileToken: String): String {
+        return client.get(path = "/file/$fileToken", authToken = authToken)
+    }
+
+    fun downloadChunk(fileToken: String, part: Int): ByteArray {
+        return client.getFile(path = "/file/$fileToken/chunk/$part", authToken = authToken)
+    }
+
 }

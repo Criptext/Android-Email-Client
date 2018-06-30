@@ -16,6 +16,7 @@ class AndroidFs {
 
     companion object {
         private val IMAGE_DIR_NAME = "images"
+        private val DOWNLOAD_DIR_NAME = "downloads"
 
         fun getFileFromDownloadsDir(filename: String): File {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -42,6 +43,9 @@ class AndroidFs {
 
         fun getImagesCacheDir(ctx: Context): File = getSubdirectory(ctx.cacheDir,
                 "/$IMAGE_DIR_NAME")
+
+        fun getDownloadsCacheDir(ctx: Context): File = getSubdirectory(ctx.cacheDir,
+                "/$DOWNLOAD_DIR_NAME")
 
         fun getFileFromImageCache(ctx: Context, filename: String):File {
             val dir = getImagesCacheDir(ctx)

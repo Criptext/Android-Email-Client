@@ -20,7 +20,6 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
                            private val emailInsertionApi: EmailInsertionAPIClient,
                            private val signalClient: SignalClient,
                            private val metadata: EmailMetadata,
-                           private val files: List<CRFile>,
                            override val publishFn: (EventResult.InsertNewEmail) -> Unit): BackgroundWorker<EventResult.InsertNewEmail> {
 
     override val canBeParallelized = false
@@ -32,7 +31,7 @@ class InsertNewEmailWorker(private val emailInsertionDao: EmailInsertionDao,
     private fun insertIncomingEmail() {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                         dao = emailInsertionDao, apiClient = emailInsertionApi,
-                        metadata = metadata, files = files)
+                        metadata = metadata)
     }
 
     private fun loadNewEmail(): Email? =

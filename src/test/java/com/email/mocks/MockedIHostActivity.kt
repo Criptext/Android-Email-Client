@@ -1,5 +1,6 @@
 package com.email.mocks
 
+import com.email.BaseActivity
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
 import com.email.scenes.ActivityMessage
@@ -12,10 +13,11 @@ import com.email.utils.UIMessage
 
 class MockedIHostActivity: IHostActivity{
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
-        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
+        activityLaunched = true
     }
 
     var isFinished: Boolean = false
+    var activityLaunched: Boolean = false
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
         isFinished = true
@@ -39,6 +41,10 @@ class MockedIHostActivity: IHostActivity{
 
     override fun getLocalizedString(message: UIMessage): String {
         return "test"
+    }
+
+    override fun checkPermissions(requestCode: Int, permission: String): Boolean {
+        return true
     }
 
 }

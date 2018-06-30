@@ -37,4 +37,6 @@ interface IHostActivity {
      * @param params Object with the necessary data to launch the correct activity.
      */
     fun launchExternalActivityForResult(params: ExternalActivityParams)
+
+    fun checkPermissions(requestCode: Int, permission: String): Boolean
 }

@@ -9,6 +9,7 @@ import com.email.utils.file.FileUtils
 
 class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?) : RecyclerView.ViewHolder(view) {
 
+    val removeImageView: ImageView = view.findViewById(R.id.attachment_remove_image)
     val progressBar : ProgressBar = view.findViewById(R.id.attachment_progress_bar)
     val filename: TextView = view.findViewById(R.id.attachment_filename)
     val filesize: TextView = view.findViewById(R.id.attachment_size)
@@ -19,6 +20,9 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     init {
         statusView.visibility = View.GONE
+        view.setOnClickListener {
+            observer?.onAttachmentViewClick(adapterPosition)
+        }
         removeButton.setOnClickListener {
             observer?.onRemoveAttachmentClicked(adapterPosition)
         }
@@ -32,15 +36,27 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     fun setProgress(progress: Int){
         progressBar.progress = progress
-        if (progress == 100){
-            progressBar.visibility = View.GONE
-            statusView.visibility = View.VISIBLE
-            containerView.alpha = 1f
-        } else {
-            progressBar.visibility = View.VISIBLE
-            statusView.visibility = View.GONE
-            containerView.alpha = 0.6f
+        when {
+            progress < 0 -> {
+                progressBar.visibility = View.GONE
+                statusView.visibility = View.GONE
+                containerView.alpha = 1f
+            }
+            progress == 100 -> {
+                progressBar.visibility = View.GONE
+                statusView.visibility = View.VISIBLE
+                containerView.alpha = 1f
+            }
+            else -> {
+                progressBar.visibility = View.VISIBLE
+                statusView.visibility = View.GONE
+                containerView.alpha = 0.6f
+            }
         }
+    }
+
+    fun hideRemoveImage(){
+        removeImageView.visibility = View.GONE
     }
 
 }

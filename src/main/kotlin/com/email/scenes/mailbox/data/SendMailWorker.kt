@@ -23,6 +23,7 @@ import com.email.utils.DateUtils
 import com.email.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
 import com.email.utils.EmailAddressUtils.isFromCriptextDomain
 import com.email.utils.UIMessage
+import com.email.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -130,7 +131,8 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private fun createCriptextAttachment(attachments: List<ComposerAttachment>)
             : List<PostEmailBody.CriptextAttachment> = attachments.map { attachment ->
-        PostEmailBody.CriptextAttachment(token = attachment.filetoken)
+        PostEmailBody.CriptextAttachment(token = attachment.filetoken,
+                name = FileUtils.getName(attachment.filepath), size = attachment.size)
     }
 
     private val sendEmailOperation

@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
+import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.ui.holders.FooterViewHolder
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.holders.ParentEmailHolder
@@ -20,7 +22,8 @@ import com.email.utils.virtuallist.VirtualList
 
 class FullEmailListAdapter(private val mContext : Context,
                            var fullEmailListener : OnFullEmailEventListener?,
-                           private val fullEmails: VirtualList<FullEmail>)
+                           private val fullEmails: VirtualList<FullEmail>,
+                           private val fileDetails: Map<Long, List<FileDetail>>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private fun isPositionFooter(position: Int): Boolean {
@@ -53,7 +56,8 @@ class FullEmailListAdapter(private val mContext : Context,
                         fullEmail = fullEmail,
                         adapter = this,
                         emailListener = fullEmailListener,
-                        position = position)
+                        position = position,
+                        fileDetails = fileDetails[fullEmail.email.id] ?: emptyList())
             }
             is FooterViewHolder -> {
                 holder.setListeners(emailListener = fullEmailListener)
@@ -113,6 +117,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onContinueDraftOptionSelected(fullEmail: FullEmail)
+        fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int)
     }
 
     private enum class EmailViewTypes {

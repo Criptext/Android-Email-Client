@@ -308,6 +308,9 @@ class SignUpSceneController(
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    }
+
     interface SignUpUIObserver {
         fun onCreateAccountClick()
         fun onPasswordChangedListener(text: String)

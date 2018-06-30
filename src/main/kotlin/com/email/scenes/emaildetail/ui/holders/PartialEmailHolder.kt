@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import com.email.R
 import com.email.SecureEmail
 import com.email.db.DeliveryTypes
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.DateUtils
@@ -28,7 +29,8 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     private val attachment: ImageView
     private val leftImageView: CircleImageView
 
-    override fun setListeners(fullEmail: FullEmail, emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {
+    override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
+                              emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {
         view.setOnClickListener {
             emailListener?.ontoggleViewOpen(
                     fullEmail = fullEmail,
@@ -95,7 +97,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             }
         }
 
-        //TODO validate if has attachments
+        //TODO validate if has fileDetails
         attachment.visibility = View.GONE
     }
 

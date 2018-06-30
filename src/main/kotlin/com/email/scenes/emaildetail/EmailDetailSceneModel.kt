@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail
 
+import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.SceneModel
@@ -11,4 +12,5 @@ import com.email.utils.virtuallist.VirtualList
 
 class EmailDetailSceneModel(val threadId: String, val currentLabel: Label) : SceneModel {
     val emails = ArrayList<FullEmail>()
+    val fileDetails = HashMap<Long, List<FileDetail>>()
 }

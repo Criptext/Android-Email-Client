@@ -123,7 +123,7 @@ class UpdateMailboxWorker(
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
             EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
-                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata, files = emptyList())
+                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata)
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
         try {
@@ -136,7 +136,7 @@ class UpdateMailboxWorker(
     private fun processNewEmails(events: List<Event>): Int {
         val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
         val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
-                { Pair( it.rowid,  EmailMetadata.fromJSON(it.params)) }
+                { Pair( it.rowid, EmailMetadata.fromJSON(it.params)) }
         val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
             { (_, metadata) ->
                 try {

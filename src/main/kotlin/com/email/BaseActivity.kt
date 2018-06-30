@@ -1,9 +1,15 @@
 package com.email
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -24,8 +30,10 @@ import com.email.scenes.signin.SignInSceneModel
 import com.email.scenes.signup.SignUpActivity
 import com.email.scenes.signup.SignUpSceneModel
 import com.email.utils.UIMessage
+import com.email.utils.compat.PermissionUtilsCompat
 import com.email.utils.dialog.SingletonProgressDialog
 import droidninja.filepicker.FilePickerBuilder
+import java.io.File
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -168,12 +176,31 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
-        // Currently the only external activity is file picker so just launch that
-        FilePickerBuilder.getInstance()
-            .setMaxCount(5)
-            .setActivityTheme(R.style.LibAppTheme)
-            .pickFile(this)
+        when(params){
+            is ExternalActivityParams.FilePicker -> {
+                FilePickerBuilder.getInstance()
+                        .setMaxCount(5)
+                        .setActivityTheme(R.style.LibAppTheme)
+                        .pickFile(this)
+            }
+            is ExternalActivityParams.FilePresent -> {
+                val file = File(params.filepath)
+                val newIntent = Intent(Intent.ACTION_VIEW)
+                newIntent.setDataAndType(Uri.fromFile(file), params.mimeType)
+                newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(newIntent)
+            }
+        }
     }
+
+    override fun checkPermissions(requestCode: Int, permission: String): Boolean =
+        if (PermissionUtilsCompat.checkPermission(applicationContext, permission)) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+            false
+        }
+
 
     protected fun setActivityMessage(message: ActivityMessage?) {
         activityMessage = message
@@ -194,7 +221,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         fun setCachedModel(clazz: Class<*>, model: Any) {
             cachedModels[clazz] = model
         }
+    }
 
+    enum class RequestCode {
+        readAccess
     }
 
 }

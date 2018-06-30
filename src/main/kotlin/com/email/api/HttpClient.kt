@@ -14,6 +14,7 @@ interface HttpClient {
     fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
     fun post(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
+    fun getFile(path: String, authToken: String?): ByteArray
 
     enum class AuthScheme { basic, jwt }
     class Default(private val baseUrl: String,
@@ -107,6 +108,11 @@ interface HttpClient {
         override fun get(path: String, authToken: String?): String {
             val request = getUrl(url = baseUrl + path, authToken = authToken)
             return ApiCall.executeRequest(client, request)
+        }
+
+        override fun getFile(path: String, authToken: String?): ByteArray {
+            val request = getUrl(url = baseUrl + path, authToken = authToken)
+            return ApiCall.executeFileRequest(client, request)
         }
     }
 

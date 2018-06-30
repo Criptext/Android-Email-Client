@@ -214,6 +214,9 @@ class SignInSceneController(
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
+    override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    }
+
     interface SignInUIObserver {
         fun onSubmitButtonClicked()
         fun toggleUsernameFocusState(isFocused: Boolean)
