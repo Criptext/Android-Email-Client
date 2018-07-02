@@ -112,13 +112,13 @@ class DownloadAttachmentWorkerTest {
         * request which is a request to obtain the file metadata
         */
         if (Config.mockCriptextHTTPRequests) {
-            mockWebServer.enqueueSuccessfulResponses(listOf(
-                    """{"filetoken":"__FILETOKEN__"}""",
-                    """{"filetoken":"__FILETOKEN__"}""",
-                    """{"filetoken":"__FILETOKEN__"}""",
-                    """{"file": {"token": "dsfdsfsda", "name": "test.pdf", "chunk_size": 512000, "chunks": 2}}""",
-                    """{"filetoken":"__FILETOKEN__"}""",
-                    """{"filetoken":"__FILETOKEN__"}"""
+            mockWebServer.enqueueResponses(listOf(
+                    MockedResponse.Ok("""{"filetoken":"__FILETOKEN__"}"""),
+                    MockedResponse.Ok("""{"filetoken":"__FILETOKEN__"}"""),
+                    MockedResponse.Ok("""{"filetoken":"__FILETOKEN__"}"""),
+                    MockedResponse.Ok("""{"file": {"token": "dsfdsfsda", "name": "test.pdf", "chunk_size": 512000, "chunks": 2}}"""),
+                    MockedResponse.Ok("""{"filetoken":"__FILETOKEN__"}"""),
+                    MockedResponse.Ok("""{"filetoken":"__FILETOKEN__"}""")
             ))
         }
 

@@ -18,6 +18,7 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
     class Cmd {
         companion object {
             val newEmail = 1
+            val trackingUpdate = 2
         }
     }
 }

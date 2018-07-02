@@ -41,7 +41,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
 
     override fun bindFullMail(fullEmail: FullEmail) {
 
-        if(fullEmail.email.delivered == DeliveryTypes.UNSENT) {
+        if(fullEmail.email.delivered == DeliveryTypes.UNSEND) {
             bodyView.alpha = 0.5.toFloat()
             bodyView.text = bodyView.resources.getString(R.string.unsent)
             bodyView.setTextColor(ContextCompat.getColor(
@@ -86,10 +86,10 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
             }
-            DeliveryTypes.OPENED -> {
+            DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
             }
-            DeliveryTypes.UNSENT -> {
+            DeliveryTypes.UNSEND -> {
 
             }
             DeliveryTypes.NONE -> {

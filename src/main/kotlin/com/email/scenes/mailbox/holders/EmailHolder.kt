@@ -111,10 +111,10 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
             }
-            DeliveryTypes.OPENED -> {
+            DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
             }
-            DeliveryTypes.UNSENT -> {
+            DeliveryTypes.UNSEND -> {
                 setIconAndColor(R.drawable.un_sent, R.color.unsendBtn)
             }
             DeliveryTypes.NONE -> {

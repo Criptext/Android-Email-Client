@@ -12,6 +12,7 @@ import com.email.mocks.MockedIHostActivity
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.utils.DateUtils
+import com.email.websocket.WebSocketEventPublisher
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -38,6 +39,7 @@ open class EmailDetailControllerTest {
     protected lateinit var activeAccount: ActiveAccount
     protected lateinit var emailInsertionDao: EmailInsertionDao
     protected lateinit var sentRequests: MutableList<EmailDetailRequest>
+    protected lateinit var websocketEvents: WebSocketEventPublisher
 
     open fun setUp() {
         protocolStore = mockk()
@@ -54,6 +56,7 @@ open class EmailDetailControllerTest {
         every {
             host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal, Manifest.permission.READ_EXTERNAL_STORAGE)
         } returns true
+        websocketEvents = mockk(relaxed = true)
 
         dataSource = mockk(relaxed = true)
 
@@ -63,7 +66,8 @@ open class EmailDetailControllerTest {
                 host = host,
                 model = model,
                 activeAccount = activeAccount,
-                keyboard = mockk(relaxed = true))
+                keyboard = mockk(relaxed = true),
+                websocketEvents = websocketEvents)
 
         sentRequests = mutableListOf()
         every { dataSource.submitRequest(capture(sentRequests)) } just Runs
@@ -86,7 +90,7 @@ open class EmailDetailControllerTest {
                         date = DateUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null),
-                        delivered = DeliveryTypes.OPENED,
+                        delivered = DeliveryTypes.READ,
                         messageId = "key",
                         preview = "preview $it" ,
                         secure = true,

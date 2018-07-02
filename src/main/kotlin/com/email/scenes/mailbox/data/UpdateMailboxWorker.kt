@@ -1,14 +1,17 @@
 package com.email.scenes.mailbox.data
 
+import android.util.Log
 import com.email.R
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
+import com.email.api.models.TrackingUpdate
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.*
+import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.signal.SignalClient
@@ -27,6 +30,7 @@ import java.io.IOException
 class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
+        private val emailDao: EmailDao,
         private val dao: EmailInsertionDao,
         private val activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
@@ -112,8 +116,8 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun reloadMailbox(newEmailCount: Int): List<EmailThread> {
-        return if (newEmailCount > 0)
+    private fun reloadMailbox(shouldReload: Boolean): List<EmailThread> {
+        return if (shouldReload)
             db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
                     limit = Math.max(20, loadedThreadsCount),
                     rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
@@ -133,7 +137,34 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun processNewEmails(events: List<Event>): Int {
+    private fun markEmailsAsOpened(eventIds: List<Long>, metadataKeys: List<Long>): Boolean {
+        if (metadataKeys.isNotEmpty()) {
+            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, DeliveryTypes.READ)
+            acknowledgeEventsIgnoringErrors(eventIds)
+            return true
+        }
+        return false
+    }
+
+    private fun processTrackingUpdates(events: List<Event>): Boolean {
+        val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
+        val toIdAndTrackingUpdatePair: (Event) -> Pair<Long, TrackingUpdate> = {
+            Pair(it.rowid, TrackingUpdate.fromJSON(it.params))
+        }
+
+        val trackingUpdates = events.filter(isTrackingUpdateEvent)
+                .map(toIdAndTrackingUpdatePair)
+
+        // assume all tracking updates are open updates for now
+        val openUpdates = trackingUpdates
+        val metadataKeysOfReadEmails = openUpdates.map { (_, open) -> open.metadataKey }
+        val eventIdsToAcknowledge = openUpdates.map { it.first }
+
+        return markEmailsAsOpened(eventIds = eventIdsToAcknowledge,
+                           metadataKeys = metadataKeysOfReadEmails)
+    }
+
+    private fun processNewEmails(events: List<Event>): Boolean {
         val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
         val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
                 { Pair( it.rowid, EmailMetadata.fromJSON(it.params)) }
@@ -164,15 +195,16 @@ class UpdateMailboxWorker(
         if (eventIdsToAcknowledge.isNotEmpty())
             acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
 
-        return eventIdsToAcknowledge.size
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
 
 
     private val processEvents: (List<Event>) -> Result<List<EmailThread>, Exception> = { events ->
         Result.of {
-            val newEmailCount = processNewEmails(events)
-            reloadMailbox(newEmailCount)
+            val shouldReload = processTrackingUpdates(events)
+                            || processNewEmails(events)
+            reloadMailbox(shouldReload)
         }
     }
 

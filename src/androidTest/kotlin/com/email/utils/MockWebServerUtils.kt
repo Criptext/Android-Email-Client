@@ -15,9 +15,23 @@ import org.amshove.kluent.shouldEqual
 data class ExpectedRequest(val expectedAuthScheme: ExpectedAuthScheme, val method: String, val path: String,
                            val assertBodyFn: ((String) -> Unit)?)
 
-fun MockWebServer.enqueueSuccessfulResponses(responses: List<String>) {
-    responses.forEach { resBody ->
-        this.enqueue(MockResponse().setResponseCode(200).setBody(resBody))
+sealed class MockedResponse {
+    class Ok(val body: String): MockedResponse()
+    class ServerError: MockedResponse()
+    class Timeout: MockedResponse()
+
+}
+
+fun MockWebServer.enqueueResponses(responses: List<MockedResponse>) {
+    responses.forEach { res ->
+        when (res) {
+            is MockedResponse.Ok ->
+                this.enqueue(MockResponse().setResponseCode(200).setBody(res.body))
+            is MockedResponse.ServerError ->
+                this.enqueue(MockResponse().setResponseCode(500).setBody("simulated server crash"))
+            is MockedResponse.Timeout ->
+                this.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
+        }
     }
 }
 

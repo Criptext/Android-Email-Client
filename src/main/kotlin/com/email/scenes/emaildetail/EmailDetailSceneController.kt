@@ -3,9 +3,11 @@ package com.email.scenes.emaildetail
 import android.Manifest
 import com.email.IHostActivity
 import com.email.R
+import com.email.api.models.TrackingUpdate
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Email
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
@@ -30,6 +32,8 @@ import com.email.bgworker.BackgroundWorkManager
 import com.email.db.models.FileDetail
 import com.email.utils.file.FileUtils
 
+import com.email.websocket.WebSocketEventListener
+import com.email.websocket.WebSocketEventPublisher
 
 /**
  * Created by sebas on 3/12/18.
@@ -40,6 +44,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val host: IHostActivity,
                                  activeAccount: ActiveAccount,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
+                                 private val websocketEvents: WebSocketEventPublisher,
                                  private val keyboard: KeyboardManager) : SceneController() {
     
     private val dataSourceListener = { result: EmailDetailResult ->
@@ -107,7 +112,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
-                model.emails[result.position].email.delivered = DeliveryTypes.UNSENT
+                model.emails[result.position].email.delivered = DeliveryTypes.UNSEND
                 scene.notifyFullEmailChanged(result.position)
             }
 
@@ -300,8 +305,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                         fullEmailEventListener = emailHolderEventListener,
                         fileDetailList = model.fileDetails)
 
-                if (result.fullEmailList.isNotEmpty())
-                    readEmails(result.fullEmailList)
+                readEmails(result.fullEmailList)
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
@@ -319,6 +323,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
 
         if (model.emails.isEmpty())
             loadEmails()
@@ -329,6 +334,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun onStop() {
         dataSource.listener = null
+        websocketEvents.clearListener(webSocketEventListener)
     }
 
     override fun onBackPressed(): Boolean {
@@ -432,4 +438,27 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             model.currentLabel.id < 0 -> R.menu.mailbox_menu_multi_mode_read_allmail
             else -> R.menu.mailbox_menu_multi_mode_read
         }
+
+    private fun findEmailPositionByMetadataKey(metadataKey: Long): Int {
+        return model.emails.indexOfFirst { it.email.metadataKey == metadataKey }
+    }
+
+    private val webSocketEventListener = object : WebSocketEventListener {
+
+        override fun onNewEmail(email: Email) {
+        }
+
+        override fun onNewTrackingUpdate(update: TrackingUpdate) {
+            val position = findEmailPositionByMetadataKey(update.metadataKey)
+            if (position > -1) {
+                val fullEmail = model.emails[position]
+                fullEmail.email.delivered = DeliveryTypes.READ
+                scene.notifyFullEmailChanged(position)
+            }
+        }
+
+        override fun onError(uiMessage: UIMessage) {
+            scene.showError(uiMessage)
+        }
+    }
 }

@@ -7,5 +7,13 @@ package com.email.websocket
  */
 
 interface WebSocketEventPublisher {
-    var listener: WebSocketEventListener?
+    fun setListener(listener: WebSocketEventListener)
+
+    /**
+     * Clear the current listener reference if it is the same as the provided reference.
+     * @param listener the reference to compare with. If it is the same as the one currently held
+     * it is released.
+     */
+    fun clearListener(listener: WebSocketEventListener)
+
 }

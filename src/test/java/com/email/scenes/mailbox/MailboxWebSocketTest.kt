@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
@@ -29,6 +30,7 @@ class MailboxWebSocketTest {
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
     private lateinit var httpClient: HttpClient
+    private lateinit var emailDao: EmailDao
     private lateinit var rawSessionDao: RawSessionDao
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var runner: MockedWorkRunner
@@ -48,6 +50,7 @@ class MailboxWebSocketTest {
         runner = MockedWorkRunner()
         db = mockk(relaxed = true)
         rawSessionDao = mockk()
+        emailDao = mockk()
 
         emailInsertionDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -69,6 +72,7 @@ class MailboxWebSocketTest {
                 httpClient = httpClient,
                 mailboxLocalDB = db,
                 activeAccount = activeAccount,
+                emailDao = emailDao,
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )
@@ -78,7 +82,7 @@ class MailboxWebSocketTest {
         // capture web socket event listener
         webSocketListenerSlot = CapturingSlot()
         webSocketEvents = mockk(relaxed = true)
-        every { webSocketEvents::listener.set(capture(webSocketListenerSlot)) } just Runs
+        every { webSocketEvents.setListener(capture(webSocketListenerSlot)) } just Runs
 
         controller = MailboxSceneController(
                 model =  model,

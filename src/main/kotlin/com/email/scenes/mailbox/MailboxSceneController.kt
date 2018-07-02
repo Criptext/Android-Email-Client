@@ -2,6 +2,7 @@ package com.email.scenes.mailbox
 
 import com.email.IHostActivity
 import com.email.R
+import com.email.api.models.TrackingUpdate
 import com.email.bgworker.BackgroundWorkManager
 import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
@@ -252,13 +253,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
         feedController.onStart()
 
-        websocketEvents.listener =  webSocketEventListener
+        websocketEvents.setListener(webSocketEventListener)
 
         return handleActivityMessage(activityMessage)
     }
 
     override fun onStop() {
-        websocketEvents.listener = null
+        websocketEvents.clearListener(webSocketEventListener)
         feedController.onStop()
     }
 
@@ -524,6 +525,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+
         override fun onNewEmail(email: Email) {
             if (model.selectedLabel == Label.defaultItems.inbox) {
                 // just reset mailbox
@@ -533,6 +535,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                         userEmail = activeAccount.userEmail)
                 dataSource.submitRequest(req)
             }
+        }
+
+        override fun onNewTrackingUpdate(update: TrackingUpdate) {
         }
 
         override fun onError(uiMessage: UIMessage) {

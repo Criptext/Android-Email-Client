@@ -154,7 +154,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                Result.of {
                    val sentMailData = SentMailData.fromJSON(JSONObject(response))
                    db.updateEmailAndAddLabelSent(id = emailId, threadId = sentMailData.threadId,
-                       key = sentMailData.metadataKey.toString(), status = DeliveryTypes.SENT,
+                       messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
+                       status = DeliveryTypes.SENT,
                        date = DateUtils.getDateFromString(sentMailData.date, null)
                    )
                }

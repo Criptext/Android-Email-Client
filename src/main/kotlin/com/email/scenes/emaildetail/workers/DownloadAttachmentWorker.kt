@@ -103,8 +103,11 @@ class DownloadAttachmentWorker(private val fileToken: String,
 
         return when (result) {
             is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
-            is Result.Failure -> EmailDetailResult.DownloadFile.Failure(fileToken,
-                    createErrorMessage(result.error))
+            is Result.Failure -> {
+                throw result.error
+                EmailDetailResult.DownloadFile.Failure(fileToken,
+                        createErrorMessage(result.error))
+            }
         }
     }
 

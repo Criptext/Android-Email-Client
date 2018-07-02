@@ -13,8 +13,8 @@ import java.util.Date
 
 @Entity(tableName = "email",
         indices = [
-                Index(value = "subject", name = "subject"),
-                Index(value = "messageId", name = "messageId", unique = true)])
+                Index(value = "metadataKey", name = "email_metadataKey_index", unique = true),
+                Index(value = "messageId", name = "email_messageId_index", unique = true)])
 data class Email(
         @PrimaryKey(autoGenerate = true)
         var id: Long,

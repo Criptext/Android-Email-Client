@@ -180,7 +180,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         toggleUnsendProgress(isShown = false)
 
-        if(fullEmail.email.delivered != DeliveryTypes.UNSENT) {
+        if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
             setDefaultBackgroundColors()
@@ -267,7 +267,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 setIconAndColor(R.drawable.read, R.color.sent)
                 readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
             }
-            DeliveryTypes.OPENED -> {
+            DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
                 readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_read)
             }

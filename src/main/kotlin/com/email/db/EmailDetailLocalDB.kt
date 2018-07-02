@@ -31,7 +31,7 @@ interface EmailDetailLocalDB {
         private val db = AppDatabase.getAppDatabase(applicationContext)
 
         override fun unsendEmail(emailId: Long) {
-            db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSENT)
+            db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)
         }
 
         override fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail> {

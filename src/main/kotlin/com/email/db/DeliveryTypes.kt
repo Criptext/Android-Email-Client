@@ -5,5 +5,16 @@ package com.email.db
  */
 
 enum class DeliveryTypes {
-    NONE, SENT, UNSENT, OPENED, DELIVERED
+    UNSEND, FAIL, NONE, SENDING, SENT, DELIVERED, READ;
+
+    companion object {
+        fun fromInt(int: Int): DeliveryTypes {
+            val values = values()
+            val index = int - 1
+            return if (index > -1 && index < values.size)
+                values[index]
+            else
+                NONE
+        }
+    }
 }

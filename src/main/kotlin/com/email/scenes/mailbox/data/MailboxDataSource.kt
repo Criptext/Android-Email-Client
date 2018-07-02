@@ -5,6 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
@@ -18,6 +19,7 @@ class MailboxDataSource(
         private val signalClient: SignalClient,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
+        private val emailDao: EmailDao,
         private val rawSessionDao: RawSessionDao,
         private val emailInsertionDao: EmailInsertionDao,
         private val httpClient: HttpClient,
@@ -36,6 +38,7 @@ class MailboxDataSource(
                     })
 
             is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
+                    emailDao = emailDao,
                     dao = emailInsertionDao,
                     signalClient = signalClient,
                     db = mailboxLocalDB,
