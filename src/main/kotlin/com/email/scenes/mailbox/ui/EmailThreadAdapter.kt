@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
+import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.mailbox.VirtualEmailThreadList
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
 import com.email.utils.ui.EmptyViewHolder
 import com.email.utils.virtuallist.VirtualListAdapter
@@ -17,23 +18,24 @@ import com.email.utils.virtuallist.VirtualListAdapter
  */
 
 class EmailThreadAdapter(private val mContext : Context,
-                         private val threadListener : OnThreadEventListener,
-                         private val threadList: VirtualEmailThreadList)
+                          private val threadListener : OnThreadEventListener,
+                          private val sentByMe: Boolean,
+                          private val threadList: VirtualEmailThreadList)
     : VirtualListAdapter(threadList) {
 
-    private fun toggleThreadSelection(mailThread: EmailThread, position: Int) {
+    private fun toggleThreadSelection(mailThread: EmailPreview, position: Int) {
         threadListener.onToggleThreadSelection(mailThread, position)
     }
 
-    private fun goToMail(emailThread: EmailThread) {
-        threadListener.onGoToMail(emailThread = emailThread)
+    private fun goToMail(emailPreview: EmailPreview) {
+        threadListener.onGoToMail(emailPreview)
     }
 
     override fun onApproachingEnd() {
         threadListener.onApproachingEnd()
     }
 
-    private fun setEmailHolderListeners(holder: EmailHolder, position: Int, mail: EmailThread) {
+    private fun setEmailHolderListeners(holder: EmailHolder, position: Int, mail: EmailPreview) {
         val itemClickListener = {
             toggleThreadSelection(mail, position)
         }
@@ -41,7 +43,7 @@ class EmailThreadAdapter(private val mContext : Context,
         holder.setOnIconBackClickedListener(itemClickListener)
 
         holder.itemView.setOnClickListener {
-            if (! threadList.isInMultiSelectMode) goToMail(emailThread = mail)
+            if (! threadList.isInMultiSelectMode) goToMail(emailPreview = mail)
             else toggleThreadSelection(mail, position)
         }
 
@@ -63,7 +65,7 @@ class EmailThreadAdapter(private val mContext : Context,
             is EmailHolder? -> {
                 if (holder?.itemView == null) return
                 val mail = threadList[position]
-                holder.bindEmailThread(mail)
+                holder.bindEmailPreview(mail, sentByMe)
                 setEmailHolderListeners(holder, position, mail)
             }
         }
@@ -83,12 +85,12 @@ class EmailThreadAdapter(private val mContext : Context,
     }
 
     interface OnThreadEventListener {
-        fun onToggleThreadSelection(thread: EmailThread, position: Int)
-        fun onGoToMail(emailThread: EmailThread)
+        fun onToggleThreadSelection(thread: EmailPreview, position: Int)
+        fun onGoToMail(emailPreview: EmailPreview)
         fun onApproachingEnd()
     }
 
     override fun getActualItemId(position: Int): Long {
-        return threadList[position].id
+        return threadList[position].emailId
     }
 }

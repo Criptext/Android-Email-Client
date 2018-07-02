@@ -68,7 +68,8 @@ interface SearchScene{
 
             this.observer = observer
             searchListView.setAdapter(SearchHistoryAdapter(searchHistoryList, searchListener))
-            threadsListView.setAdapter(SearchThreadAdapter(recyclerViewThreads.context, threadListener, threadsList))
+            threadsListView.setAdapter(SearchThreadAdapter(recyclerViewThreads.context,
+                    threadListener, threadsList))
             setListeners()
         }
 

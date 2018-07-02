@@ -72,10 +72,10 @@ class MailboxDataSource(
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(
                     db = mailboxLocalDB,
-                    selectedEmailThreads = params.selectedEmailThreads,
+                    selectedThreadIds = params.selectedThreadIds,
                     selectedLabels = params.selectedLabels,
                     currentLabel = params.currentLabel,
-                    removeCurrentLabel = params.removeCurrentLabel,
+                    shouldRemoveCurrentLabel = params.shouldRemoveCurrentLabel,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -83,7 +83,7 @@ class MailboxDataSource(
             is MailboxRequest.MoveEmailThread -> MoveEmailThreadWorker(
                     chosenLabel = params.chosenLabel,
                     db = mailboxLocalDB,
-                    selectedEmailThreads = params.selectedEmailThreads,
+                    selectedThreadIds = params.selectedThreadIds,
                     currentLabel = params.currentLabel,
                     publishFn = { result ->
                         flushResults(result)
@@ -97,7 +97,7 @@ class MailboxDataSource(
             )
             is MailboxRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
                     db = mailboxLocalDB,
-                    emailThreads = params.emailThreads,
+                    threadIds = params.threadIds,
                     updateUnreadStatus = params.updateUnreadStatus,
                     currentLabel = params.currentLabel,
                     publishFn = { result ->

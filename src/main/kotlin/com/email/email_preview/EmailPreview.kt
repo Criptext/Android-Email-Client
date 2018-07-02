@@ -1,0 +1,30 @@
+package com.email.email_preview
+
+import com.email.db.DeliveryTypes
+import com.email.scenes.mailbox.data.EmailThread
+import java.util.*
+
+/**
+ * Created by gabriel on 6/30/18.
+ */
+
+data class EmailPreview(val subject: String, val topText: String, val bodyPreview: String,
+                        val senderName: String, val deliveryStatus: DeliveryTypes,
+                        val unread: Boolean, val count: Int, val timestamp: Date,
+                        val emailId: Long, val threadId: String, var isSelected: Boolean) {
+
+    companion object {
+        private fun getSenderNameFromEmailThread(e: EmailThread): String {
+            val name = e.latestEmail.from.name
+            return if (name.isEmpty()) "Empty" else name
+        }
+
+        fun fromEmailThread(e: EmailThread): EmailPreview {
+            return EmailPreview(subject = e.subject, bodyPreview = e.preview,
+                    topText = e.headerPreview, senderName = getSenderNameFromEmailThread(e),
+                    emailId = e.id, deliveryStatus = e.status, unread = e.unread,
+                    count = e.totalEmails, timestamp = e.timestamp, threadId = e.threadId,
+                    isSelected = false)
+        }
+    }
+}

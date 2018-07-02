@@ -13,4 +13,5 @@ import com.email.utils.virtuallist.VirtualList
 class EmailDetailSceneModel(val threadId: String, val currentLabel: Label) : SceneModel {
     val emails = ArrayList<FullEmail>()
     val fileDetails = HashMap<Long, List<FileDetail>>()
+    var updatedThreadReadStatus = false
 }

@@ -6,6 +6,7 @@ import com.email.bgworker.ProgressReporter
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.utils.UIMessage
 
 /**
@@ -21,7 +22,7 @@ class LoadEmailThreadsWorker(
                 MailboxResult.LoadEmailThreads) -> Unit)
     : BackgroundWorker<MailboxResult.LoadEmailThreads> {
 
-    override val canBeParallelized = false
+    override val canBeParallelized = true
 
     override fun catchException(ex: Exception): MailboxResult.LoadEmailThreads {
 
@@ -35,13 +36,13 @@ class LoadEmailThreadsWorker(
     private fun loadThreadsWithParams(): List<EmailThread> = when (loadParams) {
         is LoadParams.NewPage -> db.getThreadsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
-            oldestEmailThread = loadParams.oldestEmailThread,
+            startDate = loadParams.startDate,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
             limit = loadParams.size,
             userEmail = userEmail)
         is LoadParams.Reset -> db.getThreadsFromMailboxLabel(
             labelTextTypes = labelTextTypes,
-            oldestEmailThread = null,
+            startDate = null,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelTextTypes),
             limit = loadParams.size,
             userEmail = userEmail)
@@ -50,9 +51,10 @@ class LoadEmailThreadsWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.LoadEmailThreads>)
             : MailboxResult.LoadEmailThreads? {
         val emailThreads = loadThreadsWithParams()
+        val emailPreviews = emailThreads.map { EmailPreview.fromEmailThread(it) }
 
         return MailboxResult.LoadEmailThreads.Success(
-                emailThreads = emailThreads,
+                emailPreviews = emailPreviews,
                 mailboxLabel = labelTextTypes,
                 isReset = loadParams is LoadParams.Reset)
     }

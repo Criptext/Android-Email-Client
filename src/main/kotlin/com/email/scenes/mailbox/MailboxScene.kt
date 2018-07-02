@@ -45,7 +45,8 @@ interface MailboxScene{
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
-            threadList: VirtualEmailThreadList)
+            threadList: VirtualEmailThreadList,
+            sentByMe: Boolean)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -129,11 +130,15 @@ interface MailboxScene{
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
-                threadList: VirtualEmailThreadList) {
+                threadList: VirtualEmailThreadList,
+                sentByMe: Boolean) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
-            virtualListView.setAdapter(EmailThreadAdapter(context, threadEventListener, threadList))
+            val adapter = EmailThreadAdapter(mContext = context,
+                                            threadListener = threadEventListener,
+                                            sentByMe = sentByMe, threadList = threadList)
+            virtualListView.setAdapter(adapter)
             this.observer = observer
             this.threadEventListener = threadEventListener
             openComposerButton.setOnClickListener {

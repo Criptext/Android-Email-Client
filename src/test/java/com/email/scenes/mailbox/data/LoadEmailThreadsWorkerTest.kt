@@ -5,6 +5,7 @@ import com.email.scenes.mailbox.MailboxTestUtils
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
+import org.amshove.kluent.`should equal`
 import org.junit.Test
 
 /**
@@ -21,7 +22,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         // prepare db mock
         every {
             db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = null, rejectedLabels = any(), userEmail = userEmail)
+                startDate = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
@@ -33,7 +34,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         result.isReset `should be` false
         result.mailboxLabel `should be` selectedFolder
-        result.emailThreads `should be` expectedThreads
+        result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }
 
     @Test
@@ -46,11 +47,13 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         // prepare db mock
         every {
             db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = currentThreads.last(), rejectedLabels = any(), userEmail = userEmail)
+                startDate = currentThreads.last().timestamp, rejectedLabels = any(),
+                    userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.NewPage(20, currentThreads.last()), userEmail = userEmail))
+                loadParams = LoadParams.NewPage(20, currentThreads.last().timestamp),
+                userEmail = userEmail))
 
         runner._work(mockk()) // execute worker
 
@@ -58,7 +61,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         result.isReset `should be` false
         result.mailboxLabel `should be` selectedFolder
-        result.emailThreads `should be` expectedThreads
+        result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }
 
     @Test
@@ -69,7 +72,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         // prepare db mock
         every {
             db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
-                oldestEmailThread = null, rejectedLabels = any(), userEmail = userEmail)
+                startDate = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
@@ -81,6 +84,6 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         result.isReset `should be` true
         result.mailboxLabel `should be` selectedFolder
-        result.emailThreads `should be` expectedThreads
+        result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }
 }

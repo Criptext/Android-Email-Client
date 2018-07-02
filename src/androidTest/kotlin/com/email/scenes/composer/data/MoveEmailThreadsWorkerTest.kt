@@ -56,7 +56,7 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         ).size shouldBe 0
 
@@ -64,14 +64,14 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
                 labelTextTypes = Label.defaultItems.inbox.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         )
 
         val worker = newWorker(
                 chosenLabel = Label.defaultItems.spam.text,
                 currentLabel = Label.defaultItems.inbox,
-                selectedEmailThreads = emailThreads
+                selectedThreadIds = emailThreads.map { it.threadId }
         )
         worker.work(mockk()) as MailboxResult.MoveEmailThread.Success
 
@@ -79,21 +79,21 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         ).size shouldBe 2
 
     }
 
     private fun newWorker(chosenLabel: MailFolders?,
-                          selectedEmailThreads: List<EmailThread>,
+                          selectedThreadIds: List<String>,
                           currentLabel: Label): MoveEmailThreadWorker =
 
             MoveEmailThreadWorker(
                     db = mailboxLocalDB,
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
-                    selectedEmailThreads = selectedEmailThreads,
+                    selectedThreadIds = selectedThreadIds,
                     publishFn = {})
 
 }

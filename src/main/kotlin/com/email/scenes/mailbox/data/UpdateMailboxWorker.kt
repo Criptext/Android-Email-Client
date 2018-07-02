@@ -14,6 +14,7 @@ import com.email.db.*
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
+import com.email.email_preview.EmailPreview
 import com.email.signal.SignalClient
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -55,7 +56,7 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun processFailure(failure: Result.Failure<List<EmailThread>, Exception>): MailboxResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): MailboxResult.UpdateMailbox {
         return if (failure.error is NothingNewException)
             MailboxResult.UpdateMailbox.Success(
                     mailboxLabel = label,
@@ -116,12 +117,15 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun reloadMailbox(shouldReload: Boolean): List<EmailThread> {
+    private fun reloadMailbox(shouldReload: Boolean): List<EmailPreview> {
         return if (shouldReload)
-            db.getThreadsFromMailboxLabel(labelTextTypes = label.text, oldestEmailThread = null,
+            db.getThreadsFromMailboxLabel(
+                    labelTextTypes = label.text,
+                    startDate = null,
                     limit = Math.max(20, loadedThreadsCount),
                     rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
                     userEmail = activeAccount.userEmail)
+                    .map { EmailPreview.fromEmailThread(it) }
         else throw NothingNewException()
     }
 
@@ -200,7 +204,7 @@ class UpdateMailboxWorker(
 
 
 
-    private val processEvents: (List<Event>) -> Result<List<EmailThread>, Exception> = { events ->
+    private val processEvents: (List<Event>) -> Result<List<EmailPreview>, Exception> = { events ->
         Result.of {
             val shouldReload = processTrackingUpdates(events)
                             || processNewEmails(events)

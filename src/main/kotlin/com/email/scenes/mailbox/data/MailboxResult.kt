@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.db.MailFolders
 import com.email.db.models.Account
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.utils.UIMessage
 import org.json.JSONObject
 
@@ -37,7 +38,7 @@ sealed class MailboxResult {
     sealed class LoadEmailThreads : MailboxResult() {
         abstract fun getDestinationMailbox(): MailFolders
         class Success(
-                val emailThreads: List<EmailThread>,
+                val emailPreviews: List<EmailPreview>,
                 val isReset: Boolean,
                 val mailboxLabel: MailFolders): LoadEmailThreads() {
 
@@ -61,7 +62,7 @@ sealed class MailboxResult {
         abstract fun getDestinationMailbox(): Label
         data class Success(
                 val mailboxLabel: Label,
-                val mailboxThreads: List<EmailThread>?,
+                val mailboxThreads: List<EmailPreview>?,
                 val isManual: Boolean): UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {

@@ -26,12 +26,12 @@ class SearchEmailWorker(
     private fun loadThreadsWithParams(): List<EmailThread> = when (loadParams) {
         is LoadParams.NewPage -> db.searchMailsInDB(
                 queryText = queryText,
-                oldestEmailThread = loadParams.oldestEmailThread,
+                startDate = loadParams.startDate,
                 limit = loadParams.size,
                 userEmail = userEmail)
         is LoadParams.Reset -> db.searchMailsInDB(
                 queryText = queryText,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = loadParams.size,
                 userEmail = userEmail)
     }

@@ -1,11 +1,11 @@
 package com.email.scenes.mailbox
 
-import com.email.scenes.mailbox.data.EmailThread
+import com.email.email_preview.EmailPreview
 import com.email.utils.removeWithDiscrimination
 import java.util.*
 
 class SelectedThreads {
-    private val selectedItems: LinkedList<EmailThread> = LinkedList()
+    private val selectedItems: LinkedList<EmailPreview> = LinkedList()
 
     private var selectedUnreadItemCount = 0
 
@@ -16,14 +16,14 @@ class SelectedThreads {
     val hasUnreadThreads: Boolean
         get() = selectedUnreadItemCount > 0
 
-    fun add(item: EmailThread) {
+    fun add(item: EmailPreview) {
         selectedItems.add(item)
         if(!item.isSelected)
             item.isSelected  = true
         if (item.unread) selectedUnreadItemCount += 1
     }
 
-    fun remove(item: EmailThread) {
+    fun remove(item: EmailPreview) {
         item.isSelected = false
         selectedItems.removeWithDiscrimination { it.threadId.equals(item.threadId) }
         if (item.unread) selectedUnreadItemCount -= 1

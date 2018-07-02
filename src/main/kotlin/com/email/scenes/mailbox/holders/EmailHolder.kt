@@ -11,8 +11,8 @@ import android.widget.TextView
 import com.email.R
 import com.email.db.DeliveryTypes
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.MailItemHolder
-import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.DateUtils
 import com.email.utils.Utility
 import com.squareup.picasso.Callback
@@ -45,32 +45,31 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    fun bindEmailThread(emailThread: EmailThread) {
-        subjectView.text = if (emailThread.subject.isEmpty())
+    fun bindEmailPreview(emailPreview: EmailPreview, sentByMe: Boolean) {
+        subjectView.text = if (emailPreview.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
-        else emailThread.subject
+        else emailPreview.subject
 
-        previewView.text = if(emailThread.preview.isEmpty())
+        previewView.text = if(emailPreview.bodyPreview.isEmpty())
             subjectView.context.getString(R.string.nocontent)
         else
-            emailThread.preview
+            emailPreview.bodyPreview
 
-        headerView.text = when (emailThread.currentLabel) {
-            Label.defaultItems.sent.text ->
-                "${headerView.context.resources.getString(R.string.to_popup)} ${emailThread.headerPreview}"
-            else -> emailThread.headerPreview
-        }
+        headerView.text = if (sentByMe)
+            "${headerView.context.resources.getString(R.string.to_popup)} ${emailPreview.topText}"
+        else
+            emailPreview.topText
 
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
-                        emailThread.latestEmail.from.name ?:"Empty",
-                        emailThread.latestEmail.from.name[0].toString().toUpperCase() ?: "E",
+                        emailPreview.senderName,
+                        emailPreview.senderName[0].toString().toUpperCase(),
                         250,
                         250))
 
-        dateView.text = DateUtils.getFormattedDate(emailThread.timestamp.time)
+        dateView.text = DateUtils.getFormattedDate(emailPreview.timestamp.time)
 
-        if(emailThread.unread) {
+        if(emailPreview.unread) {
             dateView.typeface = TypefaceUtils.load(
                     view.resources.assets,
                     "fonts/NunitoSans-Bold.ttf")
@@ -88,16 +87,16 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         }
 
 
-        if(emailThread.totalEmails > 1){
+        if(emailPreview.count > 1){
             countView.visibility = View.VISIBLE
-            countView.text = "${emailThread.totalEmails}"
+            countView.text = emailPreview.count.toString()
         }
         else{
             countView.visibility = View.GONE
         }
 
-        setIcons(emailThread.status)
-        toggleStatus(emailThread.isSelected, emailThread.unread)
+        setIcons(emailPreview.deliveryStatus)
+        toggleStatus(emailPreview.isSelected, emailPreview.unread)
     }
 
     private fun setIcons(deliveryType: DeliveryTypes){

@@ -3,6 +3,7 @@ package com.email.db
 import com.email.SecureEmail
 import com.email.db.models.*
 import com.email.db.typeConverters.LabelTextConverter
+import com.email.email_preview.EmailPreview
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.EmailThreadValidator
 import com.github.kittinunf.result.Result
@@ -15,7 +16,7 @@ import java.util.*
 interface MailboxLocalDB {
 
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
-    fun updateUnreadStatus(emailThreads: List<EmailThread>,
+    fun updateUnreadStatus(emailThreads: List<String>,
                            updateUnreadStatus: Boolean,
                            rejectedLabels: List<Long>)
     fun getCustomLabels(): List<Label>
@@ -25,7 +26,7 @@ interface MailboxLocalDB {
     fun getThreadsFromMailboxLabel(
             userEmail: String,
             labelTextTypes: MailFolders,
-            oldestEmailThread: EmailThread?,
+            startDate: Date?,
             limit: Int,
             rejectedLabels: List<Label>): List<EmailThread>
 
@@ -76,14 +77,12 @@ interface MailboxLocalDB {
                     emailId = emailId))
         }
 
-        override fun updateUnreadStatus(emailThreads: List<EmailThread>,
+        override fun updateUnreadStatus(threadIds: List<String>,
                                         updateUnreadStatus: Boolean,
                                         rejectedLabels: List<Long>) {
-            emailThreads.forEach {
-                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId, rejectedLabels)
-                        .map {
-                    it.id
-                }
+            threadIds.forEach {
+                val emailsIds = db.emailDao().getEmailsFromThreadId(it, rejectedLabels)
+                        .map { email -> email.id }
                 db.emailDao().toggleRead(ids = emailsIds, unread = updateUnreadStatus)
             }
         }
@@ -139,7 +138,7 @@ interface MailboxLocalDB {
         }
 
         override fun getThreadsFromMailboxLabel(userEmail: String, labelTextTypes: MailFolders,
-                                                oldestEmailThread: EmailThread?, limit: Int,
+                                                startDate: Date?, limit: Int,
                                                 rejectedLabels: List<Label>): List<EmailThread> {
 
             val labels = db.labelDao().getAll()
@@ -152,9 +151,9 @@ interface MailboxLocalDB {
             }.map {
                 it.id
             }
-            val emails = if(oldestEmailThread != null)
+            val emails = if(startDate != null)
                 db.emailDao().getEmailThreadsFromMailboxLabel(
-                        starterDate = oldestEmailThread.timestamp,
+                        startDate = startDate,
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel,
                         limit = limit )

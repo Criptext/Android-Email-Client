@@ -92,7 +92,7 @@ open class EmailDetailControllerTest {
                                 null),
                         delivered = DeliveryTypes.READ,
                         messageId = "key",
-                        preview = "preview $it" ,
+                        preview = "bodyPreview $it" ,
                         secure = true,
                         subject = "Subject $it",
                         threadId = mockedThreadId,

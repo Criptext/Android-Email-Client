@@ -6,7 +6,7 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
-import com.email.scenes.composer.data.ComposerTypes
+import com.email.scenes.composer.data.ComposerType
 import com.email.scenes.mailbox.MailboxSceneController
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.data.LoadParams
@@ -70,7 +70,7 @@ class SearchSceneController(private val scene: SearchScene,
             val req = SearchRequest.SearchEmails(
                     queryText = model.queryText,
                     loadParams = LoadParams.NewPage(size = MailboxSceneController.threadsPerPage,
-                    oldestEmailThread = model.threads.lastOrNull()),
+                    startDate = model.threads.lastOrNull()?.timestamp),
                     userEmail = activeAccount.userEmail)
             dataSource.submitRequest(req)
         }
@@ -78,13 +78,9 @@ class SearchSceneController(private val scene: SearchScene,
         override fun onGoToMail(emailThread: EmailThread) {
 
             if(emailThread.totalEmails == 1 &&
-                    emailThread.latestEmail.labels.contains(Label.defaultItems.draft)){
-                return host.goToScene(ComposerParams(
-                        fullEmail = emailThread.latestEmail,
-                        composerType = ComposerTypes.CONTINUE_DRAFT,
-                        userEmail = activeAccount.userEmail,
-                        emailDetailActivity = null
-                ), true)
+                    emailThread.latestEmail.labels.contains(Label.defaultItems.draft)) {
+                val type = ComposerType.Draft(draftId = emailThread.latestEmail.email.id)
+                return host.goToScene(ComposerParams(type), true)
             }
             dataSource.submitRequest(SearchRequest.UpdateUnreadStatus(
                     listOf(emailThread), false, Label.defaultItems.inbox))

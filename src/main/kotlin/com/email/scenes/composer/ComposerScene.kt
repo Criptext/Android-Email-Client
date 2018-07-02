@@ -115,6 +115,7 @@ interface ComposerScene {
             attachmentRecyclerView.layoutManager = mLayoutManager
             attachmentRecyclerView.adapter = adapter
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
+            /*
             when(replyData?.composerType) {
                 ComposerTypes.FORWARD -> {
                     bodyEditText.text = MailBody.createNewForwardMessageBody(
@@ -137,7 +138,7 @@ interface ComposerScene {
                 else -> {
                     bodyEditText.setMinHeight()
                 }
-            }
+            }*/
 
             setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
                     toContacts = composerInputData.to,

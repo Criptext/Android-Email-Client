@@ -5,6 +5,7 @@ import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.mailbox.data.EmailThread
 import java.util.*
 
@@ -34,4 +35,7 @@ object MailboxTestUtils {
                     EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0)
                 }
     }
+
+    fun createEmailPreviews(size: Int) = createEmailThreads(size)
+                                           .map { EmailPreview.fromEmailThread(it )}
 }
