@@ -67,6 +67,21 @@ class ComposerController(private val model: ComposerModel,
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
             is ComposerResult.DeleteDraft -> host.finishScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
+            is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
+        }
+    }
+
+    private fun onLoadedInitialData(result: ComposerResult.LoadInitialData) {
+        when (result) {
+            is ComposerResult.LoadInitialData.Success -> {
+                updateModelWithInputData(result.initialData)
+                bindWithModel(result.initialData)
+                model.initialized = true
+            }
+
+            is ComposerResult.LoadInitialData.Failure -> {
+                scene.showError(result.message)
+            }
         }
     }
 
@@ -210,20 +225,35 @@ class ComposerController(private val model: ComposerModel,
         return false
     }
 
+    private fun loadInitialData() {
+        val type = model.type
+        val request = when (type) {
+            is ComposerType.Reply -> ComposerRequest.LoadInitialData(type, type.originalId)
+            is ComposerType.ReplyAll -> ComposerRequest.LoadInitialData(type, type.originalId)
+            is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
+            else -> null
+        }
+
+        if (request != null) dataSource.submitRequest(request)
+    }
+
+    private fun bindWithModel(composerInputData: ComposerInputData) {
+        scene.bindWithModel(firstTime = model.firstTime,
+                composerInputData = composerInputData,
+                attachments = model.attachments)
+        model.firstTime = false
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
 
-        /*
-        scene.bindWithModel(firstTime = model.firstTime,
-                composerInputData = ComposerInputData.fromModel(model),
-                defaultRecipients = model.defaultRecipients,
-                replyData = if(model.fullEmail == null) null else ReplyData.FromModel(model),
-                attachments = model.attachments)
-                */
+        if (model.initialized)
+            bindWithModel(ComposerInputData.fromModel(model))
+        else
+            loadInitialData()
         dataSourceController.getAllContacts()
         scene.observer = observer
-        model.firstTime = false
 
         return handleActivityMessage(activityMessage)
     }
@@ -287,10 +317,6 @@ class ComposerController(private val model: ComposerModel,
 
         fun setDataSourceListener() {
             dataSource.listener = dataSourceListener
-        }
-
-        fun clearDataSourceListener() {
-            dataSource.listener = null
         }
 
         fun getAllContacts(){

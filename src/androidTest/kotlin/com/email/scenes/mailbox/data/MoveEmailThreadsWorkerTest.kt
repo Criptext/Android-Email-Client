@@ -1,4 +1,4 @@
-package com.email.scenes.composer.data
+package com.email.scenes.mailbox.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -8,10 +8,6 @@ import com.email.api.models.EmailMetadata
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.*
-import com.email.scenes.mailbox.data.EmailInsertionSetup
-import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.MailboxResult
-import com.email.scenes.mailbox.data.MoveEmailThreadWorker
 import io.mockk.mockk
 import org.amshove.kluent.shouldBe
 import org.junit.Before
@@ -35,6 +31,10 @@ class MoveEmailThreadsWorkerTest{
         db.labelDao().insertAll(Label.DefaultItems().toList())
         mailboxLocalDB = MailboxLocalDB.Default(db)
 
+        insertEmailsNeededForTests()
+    }
+
+    private fun insertEmailsNeededForTests() {
         val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
         (1..2).forEach {
             val seconds = if (it < 10) "0$it" else it.toString()

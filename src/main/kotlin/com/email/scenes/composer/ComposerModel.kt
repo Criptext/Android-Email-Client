@@ -24,7 +24,7 @@ class ComposerModel(val type: ComposerType) {
     val bcc = LinkedList<Contact>()
 
     var firstTime = true
-    var initialized = false
+    var initialized = type is ComposerType.Empty
     var defaultRecipients: List<Contact> = emptyList()
     var subject = ""
     var body = ""

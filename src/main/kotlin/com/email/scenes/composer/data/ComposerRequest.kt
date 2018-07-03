@@ -11,4 +11,5 @@ sealed class ComposerRequest {
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>): ComposerRequest()
     class DeleteDraft(val emailId: Long): ComposerRequest()
     class UploadAttachment(val filepath: String): ComposerRequest()
+    class LoadInitialData(val composerType: ComposerType, val emailId: Long): ComposerRequest()
 }

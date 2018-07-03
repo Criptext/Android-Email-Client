@@ -141,6 +141,11 @@ import java.util.*
             WHERE metadataKey=:key""")
     fun findEmailByMetadataKey(key: Long): Email?
 
+    @Query("""SELECT *
+            FROM email
+            WHERE id=:id""")
+    fun findEmailById(id: Long): Email?
+
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
