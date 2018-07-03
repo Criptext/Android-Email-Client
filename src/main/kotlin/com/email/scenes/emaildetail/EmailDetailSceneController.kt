@@ -56,12 +56,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
             is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
-            is EmailDetailResult.ReadEmails -> onReadEmails(result)
-        }
-    }
-
-    private fun onReadEmails(result: EmailDetailResult.ReadEmails) {
-        when (result) {
         }
     }
 
@@ -203,7 +197,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             dataSource.submitRequest(req)
         }
         override fun onForwardBtnClicked() {
-            val type = ComposerType.Forward(originalId = model.emails.last().email.id)
+            val type = ComposerType.Forward(originalId = model.emails.last().email.id,
+                                          threadId = model.emails.last().email.threadId)
             host.goToScene(ComposerParams(type), true)
         }
 
@@ -237,7 +232,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            val type = ComposerType.Forward(originalId = fullEmail.email.id)
+            val type = ComposerType.Forward(originalId = fullEmail.email.id,
+                                             threadId = fullEmail.email.threadId)
             host.goToScene(ComposerParams(type), true)
         }
 
@@ -325,6 +321,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     override fun onBackPressed(): Boolean {
+        host.exitToScene(
+                params = MailboxParams(),
+                activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview)
+        )
         return true
     }
 
@@ -426,18 +426,18 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             else -> R.menu.mailbox_menu_multi_mode_read
         }
 
-    private fun findEmailPositionByMetadataKey(metadataKey: Long): Int {
-        return model.emails.indexOfFirst { it.email.metadataKey == metadataKey }
+    private fun findEmailPositionByEmailId(emailId: Long): Int {
+        return model.emails.indexOfFirst { it.email.id == emailId }
     }
 
     private fun markEmailAtPositionAsOpened(position: Int) {
         val fullEmail = model.emails[position]
-                fullEmail.email.delivered = DeliveryTypes.READ
-                scene.notifyFullEmailChanged(position)
+        fullEmail.email.delivered = DeliveryTypes.READ
+        scene.notifyFullEmailChanged(position)
 
-                val latestEmailWasUpdated = position == model.emails.size - 1
-                if (latestEmailWasUpdated)
-                    model.updatedThreadReadStatus = true
+        val latestEmailWasUpdated = position == model.emails.size - 1
+        if (latestEmailWasUpdated)
+            model.threadPreview = model.threadPreview.copy(deliveryStatus = DeliveryTypes.READ)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
@@ -445,8 +445,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onNewEmail(email: Email) {
         }
 
-        override fun onNewTrackingUpdate(update: TrackingUpdate) {
-            val position = findEmailPositionByMetadataKey(update.metadataKey)
+        override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
+            val position = findEmailPositionByEmailId(emailId)
             if (position > -1)
                 markEmailAtPositionAsOpened(position)
         }

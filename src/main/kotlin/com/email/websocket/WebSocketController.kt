@@ -71,10 +71,11 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     private fun publishNewTrackingUpdate(eventResult: EventResult.UpdateDeliveryStatus) {
 
         when (eventResult) {
-            is EventResult.UpdateDeliveryStatus.Success ->
-                if (eventResult.update != null) {
-                    currentListener?.onNewTrackingUpdate(eventResult.update)
-                    }
+            is EventResult.UpdateDeliveryStatus.Success -> {
+                val update = eventResult.update
+                if (update != null)
+                    currentListener?.onNewTrackingUpdate(update.emailId, update.trackingUpdate)
+            }
 
             is EventResult.UpdateDeliveryStatus.Failure ->
                 currentListener?.onError(eventResult.message)

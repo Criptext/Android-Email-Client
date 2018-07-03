@@ -4,6 +4,7 @@ import com.email.IHostActivity
 import com.email.db.KeyValueStorage
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerType
@@ -84,7 +85,10 @@ class SearchSceneController(private val scene: SearchScene,
             }
             dataSource.submitRequest(SearchRequest.UpdateUnreadStatus(
                     listOf(emailThread), false, Label.defaultItems.inbox))
-            host.goToScene(EmailDetailParams(emailThread.threadId, Label.defaultItems.inbox), true)
+            val params = EmailDetailParams(threadId = emailThread.threadId,
+                    currentLabel = Label.defaultItems.inbox,
+                    threadPreview = EmailPreview.fromEmailThread(emailThread))
+            host.goToScene(params, true)
         }
 
         override fun onToggleThreadSelection(thread: EmailThread, position: Int) {

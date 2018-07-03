@@ -1,7 +1,6 @@
 package com.email.scenes.composer
 
 import com.email.db.models.Contact
-import com.email.db.models.FullEmail
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerType
 import java.util.*
@@ -14,6 +13,7 @@ class ComposerModel(val type: ComposerType) {
     val threadId = when (type) {
         is ComposerType.Reply -> type.threadId
         is ComposerType.ReplyAll -> type.threadId
+        is ComposerType.Forward -> type.threadId
         else -> null
     }
 

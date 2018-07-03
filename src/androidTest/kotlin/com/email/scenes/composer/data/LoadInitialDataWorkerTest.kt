@@ -117,7 +117,8 @@ class LoadInitialDataWorkerTest {
                 fromContact = mayerContact, subject = "Hello",
                 decryptedBody = "This is something you should forward.", isDraft = false)
 
-        val worker = newWorker(emailId = emailId, type = ComposerType.Forward(originalId = emailId))
+        val worker = newWorker(emailId = emailId, type = ComposerType.Forward(originalId = emailId,
+                threadId = "__THREAD_ID__"))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "FW: Hello"

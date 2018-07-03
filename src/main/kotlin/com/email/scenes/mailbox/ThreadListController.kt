@@ -1,5 +1,6 @@
 package com.email.scenes.mailbox
 
+import com.email.db.DeliveryTypes
 import com.email.email_preview.EmailPreview
 import com.email.utils.virtuallist.VirtualListView
 
@@ -76,5 +77,22 @@ class ThreadListController(private val model : MailboxSceneModel,
 
     fun reRenderAll() {
         virtualListView?.notifyDataSetChanged()
+    }
+
+    fun replaceThread(thread: EmailPreview) {
+        val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
+        if (position > -1) {
+            model.threads[position] = thread
+            virtualListView?.notifyItemChanged(position)
+        }
+    }
+
+    fun markThreadAsOpened(emailId: Long) {
+        val position = model.threads.indexOfFirst { it.emailId == emailId }
+        if (position > -1) {
+            model.threads[position] =
+                    model.threads[position].copy(deliveryStatus = DeliveryTypes.READ)
+            virtualListView?.notifyItemChanged(position)
+        }
     }
 }

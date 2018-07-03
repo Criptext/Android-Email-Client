@@ -11,5 +11,5 @@ sealed class ComposerType {
     data class Draft(val draftId: Long): ComposerType()
     data class Reply(val originalId: Long, val threadId: String): ComposerType()
     data class ReplyAll(val originalId: Long, val threadId: String): ComposerType()
-    data class Forward(val originalId: Long): ComposerType()
+    data class Forward(val originalId: Long, val threadId: String): ComposerType()
 }

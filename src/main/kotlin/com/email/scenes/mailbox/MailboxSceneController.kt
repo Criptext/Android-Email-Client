@@ -115,7 +115,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val params = ComposerParams(ComposerType.Draft(draftId = emailPreview.emailId))
                 return host.goToScene(params, true)
             }
-            host.goToScene(EmailDetailParams(emailPreview.threadId, model.selectedLabel), true)
+            host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
+                    currentLabel = model.selectedLabel, threadPreview = emailPreview), true)
         }
 
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
@@ -228,6 +229,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             is ActivityMessage.UpdateLabelsThread -> {
                 reloadMailboxThreads()
+                true
+            }
+            is ActivityMessage.UpdateThreadPreview -> {
+                threadListController.replaceThread(activityMessage.threadPreview)
                 true
             }
             else -> false
@@ -536,7 +541,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        override fun onNewTrackingUpdate(update: TrackingUpdate) {
+        override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
+            threadListController.markThreadAsOpened(emailId)
         }
 
         override fun onError(uiMessage: UIMessage) {

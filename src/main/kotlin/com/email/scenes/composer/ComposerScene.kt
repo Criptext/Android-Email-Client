@@ -113,8 +113,10 @@ interface ComposerScene {
             adapter.observer = attachmentsObserver
             attachmentRecyclerView.layoutManager = mLayoutManager
             attachmentRecyclerView.adapter = adapter
+
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
             bodyEditText.text = composerInputData.body
+            bodyEditText.setMinHeight()
 
             setupAutoCompletion(firstTime = firstTime,
                     toContacts = composerInputData.to,
