@@ -26,10 +26,10 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         controller.onStart(null)
         clearMocks(virtualListView)
 
-        val loadedThreads = MailboxTestUtils.createEmailThreads(20)
+        val loadedThreads = MailboxTestUtils.createEmailPreviews(20)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailThreads = loadedThreads,
+        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
                 isReset = false,
                 mailboxLabel = model.selectedLabel.text))
 
@@ -41,10 +41,10 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
     fun `after loading threads, should try to fetch pending events with UpdateMailbox request`() {
         controller.onStart(null)
 
-        val loadedThreads = MailboxTestUtils.createEmailThreads(20)
+        val loadedThreads = MailboxTestUtils.createEmailPreviews(20)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailThreads = loadedThreads,
+        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
                 isReset = false,
                 mailboxLabel = model.selectedLabel.text))
 
@@ -60,13 +60,13 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         model.lastSync = System.currentTimeMillis() // pretend it was updated recently
         controller.onStart(null)
 
-        val loadedThreads = MailboxTestUtils.createEmailThreads(20)
+        val loadedThreads = MailboxTestUtils.createEmailPreviews(20)
 
         // clear all calls to data source up to this point
         clearMocks(dataSource)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailThreads = loadedThreads,
+        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
                 isReset = false,
                 mailboxLabel = model.selectedLabel.text))
 
@@ -82,12 +82,13 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         clearMocks(virtualListView)
 
         // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
-        val threadsFromUpdate = MailboxTestUtils.createEmailThreads(20)
+        val threadsFromUpdate = MailboxTestUtils.createEmailPreviews(20)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailThreads = threadsFromUpdate,
+        listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(
+                emailPreviews = threadsFromUpdate,
                 isReset = true,
                 mailboxLabel = model.selectedLabel.text))
 
@@ -102,13 +103,15 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         clearMocks(virtualListView)
 
         // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
-        val threadsFromUpdate = MailboxTestUtils.createEmailThreads(20)
+        val threadsFromUpdate = MailboxTestUtils.createEmailPreviews(20)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.UpdateMailbox.Success(mailboxThreads = threadsFromUpdate,
-                mailboxLabel = model.selectedLabel, isManual = false))
+        listenerSlot.captured(MailboxResult.UpdateMailbox.Success(
+                mailboxThreads = threadsFromUpdate,
+                mailboxLabel = model.selectedLabel,
+                isManual = false))
 
         model.threads.size `should be` 20
         verify { virtualListView.notifyDataSetChanged() }
@@ -121,7 +124,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         clearMocks(virtualListView)
 
         // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
         listenerSlot.captured(MailboxResult.UpdateMailbox.Success(mailboxThreads = null,
@@ -138,7 +141,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         clearMocks(scene)
 
         // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
         listenerSlot.captured(MailboxResult.UpdateMailbox.Success(mailboxThreads = null,

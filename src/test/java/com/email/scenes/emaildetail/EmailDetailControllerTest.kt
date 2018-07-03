@@ -7,6 +7,7 @@ import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
+import com.email.email_preview.EmailPreview
 import com.email.mocks.MockedWorkRunner
 import com.email.mocks.MockedIHostActivity
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
@@ -18,6 +19,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import org.whispersystems.libsignal.state.SignalProtocolStore
+import java.sql.Date
 import java.sql.Timestamp
 
 /**
@@ -27,6 +29,11 @@ import java.sql.Timestamp
 open class EmailDetailControllerTest {
 
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
+    private val mockedEmailPreview = EmailPreview(threadId = mockedThreadId, subject = "",
+            count = 0, bodyPreview = "", topText = "", timestamp = Date(System.currentTimeMillis()),
+            deliveryStatus = DeliveryTypes.DELIVERED, emailId = 1L, isSelected = false,
+            senderName = "", unread = false)
+
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene
     protected lateinit var host: EmailDetailActivity
@@ -45,7 +52,7 @@ open class EmailDetailControllerTest {
         protocolStore = mockk()
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
-        model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox)
+        model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox, mockedEmailPreview)
         scene = mockk(relaxed = true)
         runner = MockedWorkRunner()
         db = mockk()
@@ -92,7 +99,7 @@ open class EmailDetailControllerTest {
                                 null),
                         delivered = DeliveryTypes.READ,
                         messageId = "key",
-                        preview = "preview $it" ,
+                        preview = "bodyPreview $it" ,
                         secure = true,
                         subject = "Subject $it",
                         threadId = mockedThreadId,

@@ -40,7 +40,7 @@ import java.util.*
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
-        and date < :starterDate
+        and date < :startDate
         where not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
@@ -48,7 +48,7 @@ import java.util.*
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
-            starterDate: Date,
+            startDate: Date,
             rejectedLabels: List<Long>,
             selectedLabel: String,
             limit: Int ): List<Email>
@@ -68,7 +68,7 @@ import java.util.*
         group by uniqueId
         having contactNames like :queryText
         or contactEmails like :queryText
-        or preview like :queryText
+        or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
         order by date DESC limit :limit
@@ -141,6 +141,11 @@ import java.util.*
             WHERE metadataKey=:key""")
     fun findEmailByMetadataKey(key: Long): Email?
 
+    @Query("""SELECT *
+            FROM email
+            WHERE id=:id""")
+    fun findEmailById(id: Long): Email?
+
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         group_concat(email_label.labelId) as allLabels,
@@ -172,7 +177,7 @@ import java.util.*
         group by uniqueId
         having contactNames like :queryText
         or contactEmails like :queryText
-        or preview like :queryText
+        or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
         order by date DESC limit :limit

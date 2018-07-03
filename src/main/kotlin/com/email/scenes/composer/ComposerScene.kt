@@ -13,7 +13,6 @@ import com.email.R
 import com.email.scenes.composer.data.*
 import com.email.scenes.composer.ui.*
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
-import com.email.utils.HTMLUtils
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
@@ -28,8 +27,8 @@ import jp.wasabeef.richeditor.RichEditor
 interface ComposerScene {
     var observer: ComposerUIObserver?
     var attachmentsObserver: AttachmentViewObserver?
-    fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                      composerInputData: ComposerInputData, replyData: ReplyData?,
+    fun bindWithModel(firstTime: Boolean,
+                      composerInputData: ComposerInputData,
                       attachments: ArrayList<ComposerAttachment>)
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
@@ -106,40 +105,20 @@ interface ComposerScene {
         }
 
 
-        override fun bindWithModel(firstTime: Boolean, defaultRecipients: List<Contact>,
-                                   composerInputData: ComposerInputData, replyData: ReplyData?,
+        override fun bindWithModel(firstTime: Boolean,
+                                   composerInputData: ComposerInputData,
                                    attachments: ArrayList<ComposerAttachment>) {
             val mLayoutManager = LinearLayoutManager(ctx)
             val adapter = AttachmentListAdapter(ctx, attachments)
             adapter.observer = attachmentsObserver
             attachmentRecyclerView.layoutManager = mLayoutManager
             attachmentRecyclerView.adapter = adapter
-            subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
-            when(replyData?.composerType) {
-                ComposerTypes.FORWARD -> {
-                    bodyEditText.text = MailBody.createNewForwardMessageBody(
-                            composerInputData.body, "")
-                }
-                ComposerTypes.REPLY, ComposerTypes.REPLY_ALL -> {
-                    bodyEditText.setFocus()
-                    keyboard.showKeyboardWithDelay(bodyEditText.view)
-                    bodyEditText.text = MailBody.createNewReplyMessageBody(
-                            originMessageHtml = composerInputData.body,
-                            date = System.currentTimeMillis(),
-                            senderName = replyData.fullEmail.from.name,
-                            signature = "")
-                }
-                ComposerTypes.CONTINUE_DRAFT -> {
-                    bodyEditText.setFocus()
-                    keyboard.showKeyboardWithDelay(bodyEditText.view)
-                    bodyEditText.text = composerInputData.body
-                }
-                else -> {
-                    bodyEditText.setMinHeight()
-                }
-            }
 
-            setupAutoCompletion(firstTime = firstTime, defaultRecipients = defaultRecipients,
+            subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
+            bodyEditText.text = composerInputData.body
+            bodyEditText.setMinHeight()
+
+            setupAutoCompletion(firstTime = firstTime,
                     toContacts = composerInputData.to,
                     ccContacts = composerInputData.cc, bccContacts = composerInputData.bcc)
 
@@ -211,9 +190,8 @@ interface ComposerScene {
                     .show()
         }
 
-        private fun setupAutoCompletion(firstTime: Boolean, defaultRecipients: List<Contact>,
-                                        toContacts: List<Contact>, ccContacts: List<Contact>,
-                                        bccContacts: List<Contact>) {
+        private fun setupAutoCompletion(firstTime: Boolean, toContacts: List<Contact>,
+                                        ccContacts: List<Contact>, bccContacts: List<Contact>) {
 
             toInput.allowDuplicates(false)
             toInput.setTokenListener(onTokenChanged)
@@ -226,7 +204,6 @@ interface ComposerScene {
                 toInput.setPrefix("To:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
                 ccInput.setPrefix("Cc:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
                 bccInput.setPrefix("Bcc: ",ContextCompat.getColor(toInput.context, R.color.inputHint))
-                defaultRecipients.forEach { toInput.addObject(it) }
                 fillRecipients(toContacts, bccContacts, ccContacts)
             }
 

@@ -18,12 +18,13 @@ import com.email.utils.UIMessage
 class MoveEmailThreadWorker(
         private val db: MailboxLocalDB,
         private val chosenLabel: MailFolders?,
-        private val selectedEmailThreads: List<EmailThread>,
+        private val selectedThreadIds: List<String>,
         private val currentLabel: Label,
         override val publishFn: (
                 MailboxResult.MoveEmailThread) -> Unit)
     : BackgroundWorker<MailboxResult.MoveEmailThread> {
 
+    private val defaultItems = Label.DefaultItems()
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.MoveEmailThread {
@@ -34,39 +35,40 @@ class MoveEmailThreadWorker(
                 exception = ex)
     }
 
-    override fun work(reporter: ProgressReporter<MailboxResult.MoveEmailThread>): MailboxResult.MoveEmailThread? {
+    private fun getLabelEmailRelationsFromEmailIds(emailIds: List<Long>, label: MailFolders): List<EmailLabel> {
+        val selectedLabels = SelectedLabels()
+        selectedLabels.add(LabelWrapper(db.getLabelFromLabelType(label)))
 
-        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = selectedEmailThreads.flatMap {
-            db.getEmailsByThreadId(it.threadId, rejectedLabels).map {
-                it.id
+
+        return emailIds.flatMap{ emailId ->
+                selectedLabels.toIDs().map{ labelId ->
+                    EmailLabel(emailId = emailId, labelId = labelId)
+                }
             }
-        }
+    }
+
+    override fun work(reporter: ProgressReporter<MailboxResult.MoveEmailThread>)
+            : MailboxResult.MoveEmailThread? {
 
         if(chosenLabel == null){
             //It means the threads will be deleted permanently
-            db.deleteThreads(threadIds = selectedEmailThreads.map { it.threadId })
+            db.deleteThreads(threadIds = selectedThreadIds)
             return MailboxResult.MoveEmailThread.Success()
+        }
+
+        val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val emailIds = selectedThreadIds.flatMap { threadId ->
+            db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
         }
 
         if(currentLabel == Label.defaultItems.trash && chosenLabel == MailFolders.SPAM){
             //Mark as spam from trash
-            db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
+            db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
                                                 emailIds = emailIds)
         }
 
-        val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelFromLabelType(chosenLabel)))
-
-        val emailLabels = arrayListOf<EmailLabel>()
-        emailIds.flatMap{ emailId ->
-            selectedLabels.toIDs().map{ labelId ->
-                emailLabels.add(EmailLabel(
-                        emailId = emailId,
-                        labelId = labelId))
-            }
-        }
-        db.createLabelEmailRelations(emailLabels)
+        val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
+        db.createLabelEmailRelations(labelEmails)
 
         return MailboxResult.MoveEmailThread.Success()
     }

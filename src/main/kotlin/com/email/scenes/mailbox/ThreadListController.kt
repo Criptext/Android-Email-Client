@@ -1,7 +1,8 @@
 package com.email.scenes.mailbox
 
+import com.email.db.DeliveryTypes
+import com.email.email_preview.EmailPreview
 import com.email.utils.virtuallist.VirtualListView
-import com.email.scenes.mailbox.data.EmailThread
 
 /**
  * Created by sebas on 1/31/18.
@@ -10,39 +11,40 @@ import com.email.scenes.mailbox.data.EmailThread
 class ThreadListController(private val model : MailboxSceneModel,
                            private val virtualListView: VirtualListView?) {
 
-    private fun reset(emails : List<EmailThread>) {
+    private fun reset(emails : List<EmailPreview>) {
         model.threads.clear()
         model.threads.addAll(emails)
     }
 
-    fun addNew(newThread: EmailThread) {
+    fun addNew(newThread: EmailPreview) {
         model.threads.add(0, newThread)
         virtualListView?.notifyDataSetChanged()
     }
 
-    fun appendAll(loadedThreads : List<EmailThread>, hasReachedEnd: Boolean) {
+    fun appendAll(loadedThreads : List<EmailPreview>, hasReachedEnd: Boolean) {
         model.threads.addAll(loadedThreads)
 
         model.hasReachedEnd = hasReachedEnd
         virtualListView?.notifyDataSetChanged()
     }
 
-    fun select(thread: EmailThread, position: Int) {
+    fun select(thread: EmailPreview, position: Int) {
         model.selectedThreads.add(thread)
         virtualListView?.notifyItemChanged(position)
     }
 
-    fun unselect(thread: EmailThread, position: Int) {
+    fun unselect(thread: EmailPreview, position: Int) {
         model.selectedThreads.remove(thread)
         virtualListView?.notifyItemChanged(position)
     }
 
     fun updateUnreadStatusAndNotifyItem(threadId: String, unread: Boolean){
         val threadPosition = model.threads.indexOfFirst { thread ->
-            thread.latestEmail.email.unread = unread
             thread.threadId == threadId
         }
+
         if (threadPosition > -1){
+            model.threads[threadPosition] = model.threads[threadPosition].copy(unread = unread)
             virtualListView?.notifyItemChanged(threadPosition)
         }
     }
@@ -55,7 +57,7 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
-    fun populateThreads(mailboxThreads: List<EmailThread>) {
+    fun populateThreads(mailboxThreads: List<EmailPreview>) {
         reset(mailboxThreads)
         virtualListView?.notifyDataSetChanged()
     }
@@ -75,5 +77,22 @@ class ThreadListController(private val model : MailboxSceneModel,
 
     fun reRenderAll() {
         virtualListView?.notifyDataSetChanged()
+    }
+
+    fun replaceThread(thread: EmailPreview) {
+        val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
+        if (position > -1) {
+            model.threads[position] = thread
+            virtualListView?.notifyItemChanged(position)
+        }
+    }
+
+    fun markThreadAsOpened(emailId: Long) {
+        val position = model.threads.indexOfFirst { it.emailId == emailId }
+        if (position > -1) {
+            model.threads[position] =
+                    model.threads[position].copy(deliveryStatus = DeliveryTypes.READ)
+            virtualListView?.notifyItemChanged(position)
+        }
     }
 }

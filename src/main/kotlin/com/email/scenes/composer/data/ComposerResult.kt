@@ -13,6 +13,11 @@ sealed class ComposerResult {
         data class Failure(val message: String): GetAllContacts()
     }
 
+    sealed class LoadInitialData : ComposerResult() {
+        data class Success(val initialData: ComposerInputData) : LoadInitialData()
+        data class Failure(val message: UIMessage) : LoadInitialData()
+    }
+
     sealed class SaveEmail : ComposerResult() {
         data class Success(val emailId: Long, val threadId: String,
                            val composerInputData: ComposerInputData,

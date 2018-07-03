@@ -1,20 +1,15 @@
 package com.email
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import com.email.db.models.ActiveAccount
 import com.email.scenes.ActivityMessage
 import com.email.scenes.ModelFactory
 import com.email.scenes.SceneController
@@ -134,9 +129,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignUpParams -> SignUpSceneModel()
             is SignInParams -> SignInSceneModel()
             is MailboxParams -> MailboxSceneModel()
-            is  EmailDetailParams -> EmailDetailSceneModel(params.threadId, params.currentLabel)
-            is ComposerParams -> ModelFactory.createComposerModel(params.fullEmail,
-                    params.composerType, params.userEmail, params.emailDetailActivity)
+            is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
+                    params.currentLabel, params.threadPreview)
+            is ComposerParams -> ComposerModel(params.type)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

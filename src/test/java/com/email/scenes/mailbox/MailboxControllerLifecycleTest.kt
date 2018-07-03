@@ -55,7 +55,7 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
         // set as already synced
         model.lastSync = System.currentTimeMillis()
         // set as not empty
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(20))
 
         controller.onStart(null)
 

@@ -1,4 +1,4 @@
-package com.email.scenes.composer.data
+package com.email.scenes.mailbox.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -8,10 +8,6 @@ import com.email.api.models.EmailMetadata
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.*
-import com.email.scenes.mailbox.data.EmailInsertionSetup
-import com.email.scenes.mailbox.data.EmailThread
-import com.email.scenes.mailbox.data.MailboxResult
-import com.email.scenes.mailbox.data.MoveEmailThreadWorker
 import io.mockk.mockk
 import org.amshove.kluent.shouldBe
 import org.junit.Before
@@ -35,6 +31,10 @@ class MoveEmailThreadsWorkerTest{
         db.labelDao().insertAll(Label.DefaultItems().toList())
         mailboxLocalDB = MailboxLocalDB.Default(db)
 
+        insertEmailsNeededForTests()
+    }
+
+    private fun insertEmailsNeededForTests() {
         val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
         (1..2).forEach {
             val seconds = if (it < 10) "0$it" else it.toString()
@@ -56,7 +56,7 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         ).size shouldBe 0
 
@@ -64,14 +64,14 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
                 labelTextTypes = Label.defaultItems.inbox.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         )
 
         val worker = newWorker(
                 chosenLabel = Label.defaultItems.spam.text,
                 currentLabel = Label.defaultItems.inbox,
-                selectedEmailThreads = emailThreads
+                selectedThreadIds = emailThreads.map { it.threadId }
         )
         worker.work(mockk()) as MailboxResult.MoveEmailThread.Success
 
@@ -79,21 +79,21 @@ class MoveEmailThreadsWorkerTest{
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelTextTypes = Label.defaultItems.spam.text,
-                oldestEmailThread = null,
+                startDate = null,
                 limit = 20
         ).size shouldBe 2
 
     }
 
     private fun newWorker(chosenLabel: MailFolders?,
-                          selectedEmailThreads: List<EmailThread>,
+                          selectedThreadIds: List<String>,
                           currentLabel: Label): MoveEmailThreadWorker =
 
             MoveEmailThreadWorker(
                     db = mailboxLocalDB,
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
-                    selectedEmailThreads = selectedEmailThreads,
+                    selectedThreadIds = selectedThreadIds,
                     publishFn = {})
 
 }

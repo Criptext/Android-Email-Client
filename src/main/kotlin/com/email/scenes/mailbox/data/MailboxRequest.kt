@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import com.email.db.MailFolders
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.label_chooser.SelectedLabels
@@ -20,14 +21,14 @@ sealed class MailboxRequest{
 
     data class UpdateEmailThreadsLabelsRelations(
             val selectedLabels: SelectedLabels,
-            val selectedEmailThreads: List<EmailThread>,
+            val selectedThreadIds: List<String>,
             val currentLabel: Label,
-            val removeCurrentLabel: Boolean
+            val shouldRemoveCurrentLabel: Boolean
             ): MailboxRequest()
 
     data class MoveEmailThread(
             val chosenLabel: MailFolders?,
-            val selectedEmailThreads: List<EmailThread>,
+            val selectedThreadIds: List<String>,
             val currentLabel: Label
     ): MailboxRequest()
 
@@ -44,7 +45,7 @@ sealed class MailboxRequest{
 
     class GetMenuInformation : MailboxRequest()
 
-    data class UpdateUnreadStatus(val emailThreads: List<EmailThread>,
+    data class UpdateUnreadStatus(val threadIds: List<String>,
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
 

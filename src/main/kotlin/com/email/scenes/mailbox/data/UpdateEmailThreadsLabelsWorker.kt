@@ -16,13 +16,14 @@ import com.email.utils.UIMessage
 class UpdateEmailThreadsLabelsWorker(
         private val db: MailboxLocalDB,
         private val selectedLabels: SelectedLabels,
-        private val selectedEmailThreads: List<EmailThread>,
+        private val selectedThreadIds: List<String>,
         private val currentLabel: Label,
-        private val removeCurrentLabel: Boolean,
+        private val shouldRemoveCurrentLabel: Boolean,
         override val publishFn: (
                 MailboxResult.UpdateEmailThreadsLabelsRelations) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateEmailThreadsLabelsRelations> {
 
+    private val defaultItems = Label.DefaultItems()
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations {
@@ -33,39 +34,39 @@ class UpdateEmailThreadsLabelsWorker(
                 exception = ex)
     }
 
+    private fun removeCurrentLabelFromEmails(emailIds: List<Long>) {
+        if(currentLabel == defaultItems.starred
+          || currentLabel == defaultItems.important
+          || currentLabel == defaultItems.sent)
+            db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
+        else
+            db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
+    }
+
+    private fun updateLabelEmailRelations(emailIds: List<Long>) {
+        db.deleteRelationByEmailIds(emailIds = emailIds)
+
+        val emailLabels =
+                emailIds.flatMap { emailId ->
+                    selectedLabels.toIDs().map { labelId ->
+                        EmailLabel(emailId = emailId, labelId = labelId)
+                    }
+                }
+        db.createLabelEmailRelations(emailLabels)
+    }
+
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
 
-        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = selectedEmailThreads.flatMap {
-            db.getEmailsByThreadId(it.threadId, rejectedLabels).map {
-                it.id
-            }
+        val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val emailIds = selectedThreadIds.flatMap { threadId ->
+            db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
         }
 
-        if(removeCurrentLabel){
-            if(currentLabel == Label.defaultItems.starred
-                    || currentLabel == Label.defaultItems.important
-                    || currentLabel == Label.defaultItems.sent){
-                db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
-            }
-            else{
-                db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
-            }
-        }
-        else{
-            db.deleteRelationByEmailIds(emailIds = emailIds)
-
-            val emailLabels = arrayListOf<EmailLabel>()
-            emailIds.flatMap{ emailId ->
-                selectedLabels.toIDs().map{ labelId ->
-                    emailLabels.add(EmailLabel(
-                            emailId = emailId,
-                            labelId = labelId))
-                }
-            }
-            db.createLabelEmailRelations(emailLabels)
-        }
+        if(shouldRemoveCurrentLabel)
+            removeCurrentLabelFromEmails(emailIds)
+        else
+            updateLabelEmailRelations(emailIds)
 
         return MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
     }

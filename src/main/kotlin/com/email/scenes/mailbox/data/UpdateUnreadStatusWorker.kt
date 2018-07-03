@@ -11,7 +11,7 @@ import com.email.db.models.Label
 
 class UpdateUnreadStatusWorker(
         private val db: MailboxLocalDB,
-        private val emailThreads: List<EmailThread>,
+        private val threadIds: List<String>,
         private val updateUnreadStatus: Boolean,
         private val currentLabel: Label,
         override val publishFn: (MailboxResult.UpdateUnreadStatus) -> Unit)
@@ -23,9 +23,11 @@ class UpdateUnreadStatusWorker(
         return MailboxResult.UpdateUnreadStatus.Failure()
     }
 
-    override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>): MailboxResult.UpdateUnreadStatus? {
-        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        db.updateUnreadStatus(emailThreads, updateUnreadStatus, rejectedLabels)
+    override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>)
+            : MailboxResult.UpdateUnreadStatus? {
+        val defaultLabels = Label.DefaultItems()
+        val rejectedLabels = defaultLabels.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        db.updateUnreadStatus(threadIds, updateUnreadStatus, rejectedLabels)
         return MailboxResult.UpdateUnreadStatus.Success()
     }
 

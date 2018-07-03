@@ -27,7 +27,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         super.setUp()
         every {
             scene.attachView(any(), capture(onThreadEventListenerSlot),
-                    capture(onDrawerMenuEventListenerSlot), capture(observerSlot), any())
+                    capture(onDrawerMenuEventListenerSlot), capture(observerSlot), any(), any())
         } just Runs
     }
 
@@ -41,7 +41,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         val listener = onThreadEventListenerSlot.captured
 
         // add threads to select
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(20))
 
 
         //Select 3 threads
@@ -69,7 +69,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         val listener = onThreadEventListenerSlot.captured
 
         // add threads to select
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(20))
 
         //Mark 3 threads as selected
         val initialEmailThreads = model.threads.toList()
@@ -107,7 +107,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         } just Runs
 
         // set 2 selected threads
-        val threads = MailboxTestUtils.createEmailThreads(20)
+        val threads = MailboxTestUtils.createEmailPreviews(20)
         model.threads.addAll(threads)
         model.selectedThreads.add(threads[0])
         model.selectedThreads.add(threads[2])
@@ -128,7 +128,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         sentRequests.clear()
 
         // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(20))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(20))
 
         observerSlot.captured.onRefreshMails() // trigger pull down to refresh
 

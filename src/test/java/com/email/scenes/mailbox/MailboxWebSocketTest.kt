@@ -113,7 +113,7 @@ class MailboxWebSocketTest {
         } returns null
 
         // set 2 pages of threads
-        model.threads.addAll(MailboxTestUtils.createEmailThreads(40))
+        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // create new email to "send" through web socket
         val newEmail = MailboxTestUtils.createEmailThreads(1).first().latestEmail.email

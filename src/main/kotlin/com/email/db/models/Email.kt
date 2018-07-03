@@ -34,7 +34,7 @@ data class Email(
         @ColumnInfo(name = "content")
         var content : String,
 
-        @ColumnInfo(name = "preview")
+        @ColumnInfo(name = "bodyPreview")
         var preview : String,
 
         @ColumnInfo(name = "subject")

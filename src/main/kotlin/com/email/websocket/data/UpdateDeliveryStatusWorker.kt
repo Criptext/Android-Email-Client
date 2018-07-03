@@ -25,9 +25,10 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
             : EventResult.UpdateDeliveryStatus? {
         val existingEmail = dao.findEmailByMetadataKey(trackingUpdate.metadataKey)
 
-        if (existingEmail?.delivered != DeliveryTypes.READ) {
+        if (existingEmail != null && existingEmail.delivered != DeliveryTypes.READ) {
             dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), DeliveryTypes.READ)
-            return EventResult.UpdateDeliveryStatus.Success(trackingUpdate)
+            val update = EmailDeliveryStatusUpdate(existingEmail.id, trackingUpdate)
+            return EventResult.UpdateDeliveryStatus.Success(update)
         }
 
         // nothing was updated so return null.

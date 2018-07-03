@@ -7,7 +7,7 @@ import com.email.SecureEmail
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.utils.EmailThreadValidator
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by danieltigse on 2/5/18.
@@ -18,7 +18,7 @@ interface SearchLocalDB{
     fun searchMailsInDB(
             userEmail: String,
             queryText: String,
-            oldestEmailThread: EmailThread?,
+            startDate: Date?,
             limit: Int): List<EmailThread>
     fun updateUnreadStatus(emailThreads: List<EmailThread>,
                            updateUnreadStatus: Boolean,
@@ -27,12 +27,12 @@ interface SearchLocalDB{
     class Default(private val db: AppDatabase): SearchLocalDB{
 
         override fun searchMailsInDB(userEmail: String, queryText: String,
-                                     oldestEmailThread: EmailThread?,
+                                     startDate: Date?,
                                      limit: Int): List<EmailThread> {
 
-            val emails = if(oldestEmailThread != null)
+            val emails = if(startDate != null)
                 db.emailDao().searchEmailThreads(
-                        starterDate = oldestEmailThread.timestamp,
+                        starterDate = startDate,
                         queryText = "%$queryText%",
                         rejectedLabels = listOf(Label.defaultItems.spam, Label.defaultItems.trash).map { it.id },
                         limit = limit )

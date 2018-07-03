@@ -28,8 +28,10 @@ class ComposerActivity : BaseActivity() {
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
         val scene = ComposerScene.Default(view, KeyboardManager(this))
-        val db = ComposerLocalDB(appDB.contactDao(), appDB.emailDao(), appDB.labelDao(),
-                appDB.emailLabelDao(), appDB.emailContactDao(), appDB.accountDao())
+        val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),
+                emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
+                labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
+                fileDao = appDB.fileDao())
         val dataSource = ComposerDataSource(
                 httpClient = httpClient,
                 composerLocalDB = db,

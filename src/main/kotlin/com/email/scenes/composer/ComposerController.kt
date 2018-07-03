@@ -67,6 +67,21 @@ class ComposerController(private val model: ComposerModel,
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
             is ComposerResult.DeleteDraft -> host.finishScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
+            is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
+        }
+    }
+
+    private fun onLoadedInitialData(result: ComposerResult.LoadInitialData) {
+        when (result) {
+            is ComposerResult.LoadInitialData.Success -> {
+                updateModelWithInputData(result.initialData)
+                bindWithModel(result.initialData)
+                model.initialized = true
+            }
+
+            is ComposerResult.LoadInitialData.Failure -> {
+                scene.showError(result.message)
+            }
         }
     }
 
@@ -109,7 +124,6 @@ class ComposerController(private val model: ComposerModel,
                     host.finishScene()
                 }
                 else {
-                    model.emailDetailActivity?.finishScene()
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
@@ -151,6 +165,18 @@ class ComposerController(private val model: ComposerModel,
         dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath))
     }
 
+    private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean) {
+        val draftId = when (model.type) {
+            is ComposerType.Draft -> model.type.draftId
+            else -> null
+        }
+        dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
+                threadId =  model.threadId,
+                emailId = draftId,
+                composerInputData = composerInputData,
+                onlySave = onlySave, attachments = model.attachments))
+    }
+
     private fun onSendButtonClicked() {
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
@@ -160,12 +186,10 @@ class ComposerController(private val model: ComposerModel,
             if (validationError != null)
                 scene.showError(validationError.toUIMessage())
             else
-                dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
-                        threadId =  model.fullEmail?.email?.threadId,
-                        emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
-                            model.fullEmail?.email?.id else null,
-                        composerInputData = data,
-                        onlySave = false, attachments = model.attachments))
+                saveEmailAsDraft(data, onlySave = false)
+
+
+
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -201,18 +225,35 @@ class ComposerController(private val model: ComposerModel,
         return false
     }
 
+    private fun loadInitialData() {
+        val type = model.type
+        val request = when (type) {
+            is ComposerType.Reply -> ComposerRequest.LoadInitialData(type, type.originalId)
+            is ComposerType.ReplyAll -> ComposerRequest.LoadInitialData(type, type.originalId)
+            is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
+            else -> null
+        }
+
+        if (request != null) dataSource.submitRequest(request)
+    }
+
+    private fun bindWithModel(composerInputData: ComposerInputData) {
+        scene.bindWithModel(firstTime = model.firstTime,
+                composerInputData = composerInputData,
+                attachments = model.attachments)
+        model.firstTime = false
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
 
-        scene.bindWithModel(firstTime = model.firstTime,
-                composerInputData = ComposerInputData.fromModel(model),
-                defaultRecipients = model.defaultRecipients,
-                replyData = if(model.fullEmail == null) null else ReplyData.FromModel(model),
-                attachments = model.attachments)
+        if (model.initialized)
+            bindWithModel(ComposerInputData.fromModel(model))
+        else
+            loadInitialData()
         dataSourceController.getAllContacts()
         scene.observer = observer
-        model.firstTime = false
 
         return handleActivityMessage(activityMessage)
     }
@@ -243,29 +284,25 @@ class ComposerController(private val model: ComposerModel,
         return !Validator.mailHasMoreThanSignature(data, "")
     }
 
+    private fun exitDeletingDraft() {
+        val draftType = model.type as? ComposerType.Draft
+        if (draftType != null)
+            dataSource.submitRequest(ComposerRequest.DeleteDraft(draftType.draftId))
+        else
+            host.finishScene()
+    }
+
     private fun showDraftDialog(){
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
-                DialogInterface.BUTTON_POSITIVE -> {
-                    dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
-                            threadId = model.fullEmail?.email?.threadId,
-                            emailId = if(model.composerType == ComposerTypes.CONTINUE_DRAFT)
-                                model.fullEmail?.email?.id else null,
-                            composerInputData = scene.getDataInputByUser(),
-                            onlySave = true, attachments = model.attachments))
-                }
-                DialogInterface.BUTTON_NEGATIVE -> {
-                    if(model.composerType == ComposerTypes.CONTINUE_DRAFT){
-                        dataSource.submitRequest(ComposerRequest.DeleteDraft(
-                                emailId = model.fullEmail?.email?.id!!
-                        ))
-                    }
-                    else {
-                        host.finishScene()
-                    }
-                }
+                DialogInterface.BUTTON_POSITIVE ->
+                    saveEmailAsDraft(composerInputData = scene.getDataInputByUser(), onlySave = true)
+
+                DialogInterface.BUTTON_NEGATIVE ->
+                    exitDeletingDraft()
             }
         }
+
         scene.showDraftDialog(dialogClickListener)
     }
 
@@ -280,10 +317,6 @@ class ComposerController(private val model: ComposerModel,
 
         fun setDataSourceListener() {
             dataSource.listener = dataSourceListener
-        }
-
-        fun clearDataSourceListener() {
-            dataSource.listener = null
         }
 
         fun getAllContacts(){

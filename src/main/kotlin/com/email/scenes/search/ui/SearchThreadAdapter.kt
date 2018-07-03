@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.email.R
+import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.search.VirtualSearchThreadList
 import com.email.scenes.mailbox.data.EmailThread
 import com.email.scenes.mailbox.holders.EmailHolder
@@ -55,7 +57,8 @@ class SearchThreadAdapter(private val mContext : Context,
             is EmailHolder -> {
                 if (holder.itemView == null) return
                 val mail = threadList[position]
-                holder.bindEmailThread(mail)
+                // TODO use email preview virtual list
+                holder.bindEmailPreview(EmailPreview.fromEmailThread(mail), sentByMe = false)
                 setEmailHolderListeners(holder, position, mail)
             }
         }

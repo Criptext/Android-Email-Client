@@ -12,7 +12,6 @@ import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
-import com.email.scenes.composer.data.ComposerTypes
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
@@ -30,6 +29,7 @@ import com.email.BaseActivity
 import com.email.ExternalActivityParams
 import com.email.bgworker.BackgroundWorkManager
 import com.email.db.models.FileDetail
+import com.email.scenes.composer.data.ComposerType
 import com.email.utils.file.FileUtils
 
 import com.email.websocket.WebSocketEventListener
@@ -197,59 +197,44 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             dataSource.submitRequest(req)
         }
         override fun onForwardBtnClicked() {
-            host.goToScene(ComposerParams(
-                    fullEmail = model.emails.last(),
-                    composerType = ComposerTypes.FORWARD,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.Forward(originalId = model.emails.last().email.id,
+                                          threadId = model.emails.last().email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun onReplyBtnClicked() {
-            host.goToScene(ComposerParams(
-                    fullEmail = model.emails.last(),
-                    composerType = ComposerTypes.REPLY,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.Reply(originalId = model.emails.last().email.id,
+                                          threadId = model.emails.last().email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun onReplyAllBtnClicked() {
-            host.goToScene(ComposerParams(
-                    fullEmail = model.emails.last(),
-                    composerType = ComposerTypes.REPLY_ALL,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.ReplyAll(originalId = model.emails.last().email.id,
+                                             threadId = model.emails.last().email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
             fullEmail.viewOpen = viewOpen
-            if(viewOpen) {
-            }
-
             scene.notifyFullEmailChanged(position)
         }
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(
-                    fullEmail = fullEmail,
-                    composerType = ComposerTypes.REPLY,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.Reply(originalId = fullEmail.email.id,
+                                          threadId = fullEmail.email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(
-                    fullEmail = fullEmail,
-                    composerType = ComposerTypes.REPLY_ALL,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.ReplyAll(originalId = fullEmail.email.id,
+                                             threadId = fullEmail.email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
-            host.goToScene(ComposerParams(
-                    fullEmail = fullEmail,
-                    composerType = ComposerTypes.FORWARD,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.Forward(originalId = fullEmail.email.id,
+                                             threadId = fullEmail.email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
@@ -268,11 +253,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
-            host.goToScene(ComposerParams(
-                    fullEmail = fullEmail,
-                    composerType = ComposerTypes.CONTINUE_DRAFT,
-                    userEmail = activeAccount.userEmail,
-                    emailDetailActivity = host), true)
+            val type = ComposerType.Reply(originalId = fullEmail.email.id,
+                                          threadId = fullEmail.email.threadId)
+            host.goToScene(ComposerParams(type), true)
         }
     }
 
@@ -338,6 +321,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     override fun onBackPressed(): Boolean {
+        host.exitToScene(
+                params = MailboxParams(),
+                activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview)
+        )
         return true
     }
 
@@ -439,8 +426,18 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             else -> R.menu.mailbox_menu_multi_mode_read
         }
 
-    private fun findEmailPositionByMetadataKey(metadataKey: Long): Int {
-        return model.emails.indexOfFirst { it.email.metadataKey == metadataKey }
+    private fun findEmailPositionByEmailId(emailId: Long): Int {
+        return model.emails.indexOfFirst { it.email.id == emailId }
+    }
+
+    private fun markEmailAtPositionAsOpened(position: Int) {
+        val fullEmail = model.emails[position]
+        fullEmail.email.delivered = DeliveryTypes.READ
+        scene.notifyFullEmailChanged(position)
+
+        val latestEmailWasUpdated = position == model.emails.size - 1
+        if (latestEmailWasUpdated)
+            model.threadPreview = model.threadPreview.copy(deliveryStatus = DeliveryTypes.READ)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
@@ -448,13 +445,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onNewEmail(email: Email) {
         }
 
-        override fun onNewTrackingUpdate(update: TrackingUpdate) {
-            val position = findEmailPositionByMetadataKey(update.metadataKey)
-            if (position > -1) {
-                val fullEmail = model.emails[position]
-                fullEmail.email.delivered = DeliveryTypes.READ
-                scene.notifyFullEmailChanged(position)
-            }
+        override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
+            val position = findEmailPositionByEmailId(emailId)
+            if (position > -1)
+                markEmailAtPositionAsOpened(position)
         }
 
         override fun onError(uiMessage: UIMessage) {
