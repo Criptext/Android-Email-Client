@@ -46,6 +46,7 @@
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
+
     <LinearLayout
         android:id="@+id/container_recyclers"
         android:orientation="vertical"
@@ -53,29 +54,47 @@
         android:layout_height="match_parent" >
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textViewSubject"
+            <LinearLayout
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                fontPath="fonts/NunitoSans-Bold.ttf" />
+                android:orientation="vertical"
+                android:layout_marginStart="20dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" >
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/labels_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/textViewSubject"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    fontPath="fonts/NunitoSans-Bold.ttf" />
 
-            </android.support.v7.widget.RecyclerView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/labels_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+            
+            <ImageView
+                android:id="@+id/starred"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="14dp"
+                android:tint="#b9b9b9"
+                android:src="@drawable/starred_empty"/>
+            
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -90,4 +109,5 @@
         </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
+
 </LinearLayout>

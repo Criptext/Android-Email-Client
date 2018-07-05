@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:paddingTop="8dp"
     android:paddingBottom="10dp"
-    android:paddingStart="4dp"
+    android:paddingStart="5dp"
     android:paddingEnd="15dp"
     android:animateLayoutChanges="true">
 
@@ -19,11 +19,10 @@
         android:layout_width="5dp"
         android:layout_height="wrap_content"/>
 
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
+        android:orientation="vertical"
         android:id="@+id/mail_info">
 
         <LinearLayout
@@ -35,7 +34,7 @@
 
             <TextView
                 android:id="@+id/email_header"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -46,23 +45,10 @@
                 android:layout_weight="1"
                 android:text="Lorem Ipsum"/>
 
-            <TextView
-                android:id="@+id/email_count"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:text="20"
-                android:layout_marginEnd="10dp"
-                android:gravity="center"
-                android:textColor="#fff"
-                fontPath="fonts/NunitoSans-SemiBold.ttf"
-                android:textSize="10sp"
-                android:background="@drawable/square_round_corners_gray" />
-
             <ImageView
                 android:id="@+id/email_has_attachments"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:layout_marginEnd="5dp"
                 android:gravity="end"
                 android:src="@drawable/attachment"
                 android:tint="@color/attachmentGray"
@@ -73,7 +59,6 @@
                 android:id="@+id/email_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="75dp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_gravity="end"
@@ -86,60 +71,80 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_below="@id/container_header"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:id="@+id/linearLayout">
+            android:id="@+id/container_subheader"
+            android:gravity="center_vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/email_subject"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:id="@+id/container_subheader">
+                android:maxWidth="200dp"
+                android:text="Lorem ipsum dolor sit ametas das da sd asd as"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_marginEnd="10dp"
+                android:textSize="14sp"
+                android:textColor="@color/colorSubject"/>
 
-                <TextView
-                    android:id="@+id/email_subject"
-                    android:layout_width="205dp"
-                    android:layout_height="wrap_content"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:layout_marginBottom="0dp"
-                    android:layout_marginEnd="3dp"
-                    android:textSize="14sp"
-                    android:textColor="@color/colorSubject"/>
-
-                <LinearLayout
-                    android:layout_width="205dp"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/check"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="top"
-                        android:layout_marginEnd="1dp"
-                        android:layout_marginStart="-3dp"
-                        android:src="@drawable/mail_sent"/>
-
-                    <TextView
-                        android:id="@+id/email_preview"
-                        android:layout_width="185dp"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:textSize="14sp"
-                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                        android:textColor="#6a707e"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/email_count"
+                android:layout_width="18dp"
+                android:layout_height="14dp"
+                android:text="4"
+                android:layout_marginEnd="15dp"
+                android:gravity="center"
+                android:textColor="#fff"
+                fontPath="fonts/NunitoSans-SemiBold.ttf"
+                android:textSize="10sp"
+                android:background="@drawable/square_round_corners_gray" />
 
         </LinearLayout>
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/check"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top"
+                android:layout_marginEnd="1dp"
+                android:layout_marginStart="-3dp"
+                android:src="@drawable/mail_sent"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:id="@+id/email_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="180dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:layout_marginEnd="10dp"
+                android:layout_toEndOf="@+id/check"
+                android:layout_centerVertical="true"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                android:textColor="#6a707e"/>
+
+            <ImageView
+                android:id="@+id/starred"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top"
+                android:layout_marginEnd="10dp"
+                android:padding="4dp"
+                android:tint="@color/starred"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/starred"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -27,7 +27,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         super.setUp()
         every {
             scene.attachView(any(), capture(onThreadEventListenerSlot),
-                    capture(onDrawerMenuEventListenerSlot), capture(observerSlot), any(), any())
+                    capture(onDrawerMenuEventListenerSlot), capture(observerSlot), any())
         } just Runs
     }
 

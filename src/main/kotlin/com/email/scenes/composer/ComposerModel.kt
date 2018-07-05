@@ -1,6 +1,8 @@
 package com.email.scenes.composer
 
 import com.email.db.models.Contact
+import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerType
 import java.util.*
@@ -10,12 +12,6 @@ import java.util.*
  */
 
 class ComposerModel(val type: ComposerType) {
-    val threadId = when (type) {
-        is ComposerType.Reply -> type.threadId
-        is ComposerType.ReplyAll -> type.threadId
-        is ComposerType.Forward -> type.threadId
-        else -> null
-    }
 
     val isReplyOrDraft: Boolean = type is ComposerType.Reply
             || type is ComposerType.ReplyAll || type is ComposerType.Draft
@@ -28,7 +24,6 @@ class ComposerModel(val type: ComposerType) {
 
     var firstTime = true
     var initialized = type is ComposerType.Empty
-    var defaultRecipients: List<Contact> = emptyList()
     var subject = ""
     var body = ""
 }

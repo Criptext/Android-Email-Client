@@ -10,7 +10,9 @@
     <application
         android:name=".DeckardApplication"
         android:theme="@style/AppTheme"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        tools:replace="android:allowBackup">
         <activity
             android:name=".scenes.mailbox.MailboxActivity"
             android:launchMode="singleTop">

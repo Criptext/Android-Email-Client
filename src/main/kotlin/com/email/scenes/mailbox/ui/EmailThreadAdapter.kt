@@ -17,10 +17,8 @@ import com.email.utils.virtuallist.VirtualListAdapter
  * Created by sebas on 1/23/18.
  */
 
-class EmailThreadAdapter(private val mContext : Context,
-                          private val threadListener : OnThreadEventListener,
-                          private val sentByMe: Boolean,
-                          private val threadList: VirtualEmailThreadList)
+class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
+                         private val threadList: VirtualEmailThreadList)
     : VirtualListAdapter(threadList) {
 
     private fun toggleThreadSelection(mailThread: EmailPreview, position: Int) {
@@ -65,18 +63,18 @@ class EmailThreadAdapter(private val mContext : Context,
             is EmailHolder -> {
                 if (holder.itemView == null) return
                 val mail = threadList[position]
-                holder.bindEmailPreview(mail, sentByMe)
+                holder.bindEmailPreview(mail)
                 setEmailHolderListeners(holder, position, mail)
             }
         }
     }
 
-    private fun createMailItemView(): View {
-        return View.inflate(mContext, R.layout.mail_item, null)
+    private fun createMailItemView(parent: ViewGroup): View {
+        return LayoutInflater.from(parent.context).inflate(R.layout.mail_item, parent, false)
     }
 
     override fun onCreateActualViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val itemView: View = createMailItemView()
+        val itemView: View = createMailItemView(parent)
         return EmailHolder(itemView)
     }
 

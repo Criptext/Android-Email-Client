@@ -2,6 +2,7 @@ package com.email.scenes.composer.ui
 
 import android.view.View
 import com.email.R
+import com.email.utils.WebViewUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat

@@ -301,7 +301,10 @@ class SignUpSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        host.exitToScene(SignInParams(), null)
+        host.exitToScene(
+                params = SignInParams(),
+                activityMessage = null,
+                forceAnimation = false)
         return false
     }
 

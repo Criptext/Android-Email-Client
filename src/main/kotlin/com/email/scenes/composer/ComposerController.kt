@@ -15,6 +15,7 @@ import com.email.scenes.params.MailboxParams
 import com.email.utils.UIMessage
 import android.content.pm.PackageManager
 import com.email.BaseActivity
+import com.email.scenes.params.EmailDetailParams
 
 
 /**
@@ -55,7 +56,7 @@ class ComposerController(private val model: ComposerModel,
 
         override fun onBackButtonClicked() {
             if(shouldGoBackWithoutSave()){
-                host.finishScene()
+                exitToEmailDetailScene()
             }
             else{
                 showDraftDialog()
@@ -67,7 +68,7 @@ class ComposerController(private val model: ComposerModel,
         when(result) {
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
-            is ComposerResult.DeleteDraft -> host.finishScene()
+            is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
         }
@@ -123,14 +124,14 @@ class ComposerController(private val model: ComposerModel,
         when (result) {
             is ComposerResult.SaveEmail.Success -> {
                 if(result.onlySave) {
-                    host.finishScene()
+                    exitToEmailDetailScene()
                 }
                 else {
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
                             attachments = result.attachments)
-                    host.exitToScene(MailboxParams(), sendMailMessage)
+                    host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
             is ComposerResult.SaveEmail.Failure -> {
@@ -172,11 +173,19 @@ class ComposerController(private val model: ComposerModel,
             is ComposerType.Draft -> model.type.draftId
             else -> null
         }
+        val threadPreview =  when (model.type) {
+            is ComposerType.Reply -> model.type.threadPreview
+            is ComposerType.ReplyAll -> model.type.threadPreview
+            is ComposerType.Forward -> model.type.threadPreview
+            is ComposerType.Draft -> model.type.threadPreview
+            else -> null
+        }
         dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
-                threadId =  model.threadId,
+                threadId = threadPreview?.threadId,
                 emailId = draftId,
                 composerInputData = composerInputData,
                 onlySave = onlySave, attachments = model.attachments))
+
     }
 
     private fun onSendButtonClicked() {
@@ -277,13 +286,38 @@ class ComposerController(private val model: ComposerModel,
 
     override fun onBackPressed(): Boolean {
 
-        return if(shouldGoBackWithoutSave()) {
-            true
+        if(shouldGoBackWithoutSave()) {
+            exitToEmailDetailScene()
         }
         else {
             showDraftDialog()
-            false
+
         }
+
+        return false
+    }
+
+    private fun exitToEmailDetailScene(){
+        val threadPreview =  when (model.type) {
+            is ComposerType.Reply -> model.type.threadPreview
+            is ComposerType.ReplyAll -> model.type.threadPreview
+            is ComposerType.Forward -> model.type.threadPreview
+            is ComposerType.Draft -> model.type.threadPreview
+            else -> null
+        }
+        val currentLabel = when (model.type) {
+            is ComposerType.Reply -> model.type.currentLabel
+            is ComposerType.ReplyAll -> model.type.currentLabel
+            is ComposerType.Forward -> model.type.currentLabel
+            is ComposerType.Draft -> model.type.currentLabel
+            else -> null
+        }
+        if(model.type is ComposerType.Empty || threadPreview == null || currentLabel == null){
+            return host.finishScene()
+        }
+        val params = EmailDetailParams(threadId = threadPreview.threadId,
+                currentLabel = currentLabel, threadPreview = threadPreview)
+        host.exitToScene(params, null, true)
     }
 
     private fun shouldGoBackWithoutSave(): Boolean{
@@ -297,7 +331,7 @@ class ComposerController(private val model: ComposerModel,
         if (draftType != null)
             dataSource.submitRequest(ComposerRequest.DeleteDraft(draftType.draftId))
         else
-            host.finishScene()
+            exitToEmailDetailScene()
     }
 
     private fun showDraftDialog(){

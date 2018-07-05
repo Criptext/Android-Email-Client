@@ -23,8 +23,9 @@ interface IHostActivity {
      * it will be reused.
      * @param activityMessage an object to pass to the activity that will take the foreground. This
      * is useful when you want to return to an activity that already exists so params won't work.
+     * @param forceAnimation a boolean to determinate if you want to force the slide_out_right animation.
      */
-    fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?)
+    fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean)
     /**
      * Finishes the current activity.
      */

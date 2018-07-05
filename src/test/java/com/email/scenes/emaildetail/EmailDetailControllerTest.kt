@@ -31,7 +31,7 @@ open class EmailDetailControllerTest {
     private val mockedEmailPreview = EmailPreview(threadId = mockedThreadId, subject = "",
             count = 0, bodyPreview = "", topText = "", timestamp = Date(System.currentTimeMillis()),
             deliveryStatus = DeliveryTypes.DELIVERED, emailId = 1L, isSelected = false,
-            senderName = "", unread = false)
+            senderName = "", unread = false, hasFiles = false, isStarred = false)
 
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene

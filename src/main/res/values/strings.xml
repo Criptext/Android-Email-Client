@@ -44,7 +44,7 @@
     <string name="forward">Forward</string>
     <string name="mailbox_add_labels">Add labels</string>
     <string name="mailbox_not_spam">Report not spam</string>
-    <string name="mailbox_not_trash">Remove from trash</string>
+    <string name="mailbox_not_trash">Move to Inbox</string>
     <string name="mailbox_move_to">Move to</string>
     <string name="reply_all">Reply All</string>
 
@@ -180,6 +180,7 @@
     <string name="accept">Accept</string>
     <string name="trash">Trash</string>
     <string name="more">More Options</string>
+    <string name="only_more">more</string>
     <string name="criptext_com">\@criptext.com</string>
     <string name="sign_up">Sign Up</string>
     <string name="not_registered">Not registered?</string>
@@ -294,8 +295,8 @@
 
     <string name="no_history">No search history</string>
     <string name="no_history_subtitle">Make your first search</string>
-    <string name="no_mails">There are no emails</string>
-    <string name="no_mails_subtitle">Have fun</string>
+    <string name="no_mails">You have no emails yet</string>
+    <string name="no_mails_subtitle">Send an email to get started</string>
     <string name="no_search_results">No search results</string>
     <string name="no_search_subtitle">Trash &amp; Spam emails are not displayed</string>
     <string name="draft">Draft</string>

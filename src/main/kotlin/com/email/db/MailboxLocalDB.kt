@@ -101,6 +101,7 @@ interface MailboxLocalDB {
                     .replace("^(Fw|FW): ".toRegex(), "")
 
             val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+            var totalFiles = 0
             val participants = emails.flatMap {
                 val contacts = mutableListOf<Contact>()
                 if(selectedLabel == Label.defaultItems.sent.text){
@@ -119,6 +120,7 @@ interface MailboxLocalDB {
                         contact.name = "me"
                     }
                 }
+                totalFiles += db.fileDao().getAttachmentsFromEmail(it.id).size
                 contacts
             }
 
@@ -133,7 +135,8 @@ interface MailboxLocalDB {
                             files = files,
                             labels = labels,
                             to = contactsTO ),
-                    totalEmails = emails.size
+                    totalEmails = emails.size,
+                    hasFiles = totalFiles > 0
             )
         }
 

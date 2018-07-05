@@ -157,9 +157,12 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         if (! keep) finish()
     }
 
-    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean) {
         BaseActivity.activityMessage = activityMessage
         finish()
+        if(forceAnimation) {
+            overridePendingTransition(0, R.anim.slide_out_right)
+        }
         goToScene(params, false)
     }
 
