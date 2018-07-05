@@ -23,7 +23,8 @@ object WebSocketSingleton {
         val dataSource = EventDataSource(runner = AsyncTaskWorkRunner(),
                 emailInsertionDao = appDB.emailInsertionDao(), emailDao = appDB.emailDao(),
                 emailInsertionAPIClient = EmailInsertionAPIClient(HttpClient.Default(), activeAccount.jwt),
-                signalClient = SignalClient.Default(SignalStoreCriptext(appDB)))
+                signalClient = SignalClient.Default(SignalStoreCriptext(appDB)),
+                activeAccount = activeAccount)
 
         INSTANCE = WebSocketController(
                 NVWebSocketClient(), activeAccount, dataSource)

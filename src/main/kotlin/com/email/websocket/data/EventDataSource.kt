@@ -6,6 +6,7 @@ import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.models.ActiveAccount
 import com.email.signal.SignalClient
 
 /**
@@ -16,13 +17,15 @@ class EventDataSource(override val runner: WorkRunner,
                       private val emailDao: EmailDao,
                       private val emailInsertionDao: EmailInsertionDao,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
-                      private val signalClient: SignalClient): BackgroundWorkManager<EventRequest, EventResult>() {
+                      private val signalClient: SignalClient,
+                      private val activeAccount: ActiveAccount): BackgroundWorkManager<EventRequest, EventResult>() {
 
     override fun createWorkerFromParams(params: EventRequest, flushResults: (EventResult) -> Unit): BackgroundWorker<*> {
         return when (params) {
             is EventRequest.InsertNewEmail -> InsertNewEmailWorker(
                     emailInsertionDao = emailInsertionDao, signalClient = signalClient,
                     emailInsertionApi = emailInsertionAPIClient, metadata = params.emailMetadata,
+                    activeAccount = activeAccount,
                     publishFn = flushResults)
             is EventRequest.UpdateDeliveryStatus -> UpdateDeliveryStatusWorker(
                     dao = emailDao, trackingUpdate = params.trackingUpdate, publishFn = flushResults

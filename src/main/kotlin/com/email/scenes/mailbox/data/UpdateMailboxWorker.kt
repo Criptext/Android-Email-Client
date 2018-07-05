@@ -131,7 +131,12 @@ class UpdateMailboxWorker(
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
             EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
-                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata)
+                            dao = dao, apiClient = emailInsertionApiClient, metadata = metadata,
+                    activeAccount = activeAccount)
+
+    private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
+            ExistingEmailUpdateSetup.updateExistingEmailTransaction(metadata = metadata, dao = dao,
+                    activeAccount = activeAccount)
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
         try {
@@ -184,7 +189,10 @@ class UpdateMailboxWorker(
                 }
                 catch (ex: Exception) {
                     // Unknown exception, probably network related, skip acknowledge
-                    false
+                    if(ex is DuplicateMessageException){
+                        updateExistingEmailTransaction(metadata)
+                    }
+                    ex is DuplicateMessageException
                 }
             }
         val toEventId: (Pair<Long, EmailMetadata>) -> Long =

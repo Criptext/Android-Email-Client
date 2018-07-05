@@ -187,8 +187,16 @@ object EmailInsertionSetup {
      * @param metadata metadata of the email to insert
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata) {
-        val labels = listOf(Label.defaultItems.inbox)
+                                       dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount) {
+        val meAsSender = metadata.senderRecipientId == activeAccount.recipientId
+        val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
+                || metadata.cc.contains(activeAccount.userEmail)
+                || metadata.to.contains(activeAccount.userEmail)
+        val labels = when {
+            meAsSender && meAsRecipient -> listOf(Label.defaultItems.sent, Label.defaultItems.inbox)
+            meAsSender -> listOf(Label.defaultItems.sent)
+            else -> listOf(Label.defaultItems.inbox)
+        }
 
         val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null
         if (emailAlreadyExists)
