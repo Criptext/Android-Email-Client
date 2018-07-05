@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.email">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.email">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".DeckardApplication"
@@ -44,12 +46,32 @@
             android:label="@string/title_activity_composer"
             android:theme="@style/AppTheme">
         </activity>
+        <activity
+            android:name=".scenes.settings.SettingsActivity"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
+        <activity
+            android:name=".scenes.settings.signature.SignatureActivity"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
         <activity android:name=".androidtest.TestActivity"
             android:exported="false"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3b4ddc55293ff0e9bf22a8927dc076a5ac0b17ec" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.email.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
     </application>
 
 </manifest>

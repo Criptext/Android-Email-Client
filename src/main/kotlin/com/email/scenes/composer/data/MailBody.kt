@@ -14,6 +14,15 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
         private const val replyBodyContainerTagStart = """<div id="criptext55tu7s3"></div>"""
         private const val replyBodyContainerTagEnd = """<div id="criptexth8h5h8f"></div>"""
 
+        fun createNewTemplateMessageBody(template: String, signature: String): String {
+            val builder = StringBuilder(template)
+            if(signature.isNotEmpty()) {
+                builder.append("<div></div><br>")
+                builder.append(signature)
+            }
+            return builder.toString()
+        }
+
         fun createNewForwardMessageBody(originMessageHtml: String, signature: String): String {
             val blockQuoteStart = """<blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">"""
             val blockQuoteEnd = "</blockquote>"
@@ -23,6 +32,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteStart)
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
+            builder.append("<div></div><br>")
             builder.append(signature)
             builder.append(replyBodyContainerTagEnd)
 
@@ -41,6 +51,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteStart)
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
+            builder.append("<div></div><br>")
             builder.append(signature)
             builder.append(replyBodyContainerTagEnd)
 

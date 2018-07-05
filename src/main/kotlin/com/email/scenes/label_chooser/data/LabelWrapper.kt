@@ -1,5 +1,6 @@
 package com.email.scenes.label_chooser.data
 
+import com.email.db.LabelTypes
 import com.email.db.models.Label
 import com.email.db.typeConverters.LabelTextConverter
 
@@ -8,25 +9,15 @@ import com.email.db.typeConverters.LabelTextConverter
  */
 
 data class LabelWrapper(val label: Label) {
-     val color : String
-          get() = label.color
-     val text : String
-          get() = LabelTextConverter().parseLabelTextType(label.text)
-     val id : Long
-          get() = label.id
 
-     var isSelected = false
+    val color : String
+        get() = label.color
+    val text : String
+        get() = LabelTextConverter().parseLabelTextType(label.text)
+    val id : Long
+        get() = label.id
+    val type : LabelTypes
+        get() = label.type
 
-     override fun equals(other: Any?): Boolean {
-          other as LabelWrapper
-          if (id != other.id) return false
-          if (color != other.color) return false
-          if (text != other.text) return false
-
-          return true
-     }
-
-     override fun hashCode(): Int {
-          return id.toInt()
-     }
+    var isSelected = false
 }

@@ -3,6 +3,7 @@ package com.email.scenes.composer
 import com.email.IHostActivity
 import com.email.R
 import com.email.bgworker.BackgroundWorkManager
+import com.email.db.models.ActiveAccount
 import com.email.scenes.composer.data.ComposerRequest
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.ComposerType
@@ -15,14 +16,17 @@ open class ComposerControllerTest {
     protected lateinit var controller: ComposerController
     protected lateinit var dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>
     protected lateinit var host: IHostActivity
+    protected lateinit var activeAccount: ActiveAccount
 
     open fun setUp() {
         model = ComposerModel(ComposerType.Empty())
         scene = mockk(relaxed = true)
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
-
-        controller = ComposerController(model, scene, host, dataSource)
+        activeAccount = ActiveAccount.fromJSONString(
+                """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1
+                    |, "signature":""} """.trimMargin())
+        controller = ComposerController(model, scene, host, activeAccount, dataSource)
     }
 
     protected fun clickSendButton() {

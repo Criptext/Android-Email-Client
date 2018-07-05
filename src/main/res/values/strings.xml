@@ -69,6 +69,22 @@
     <string name="slider_logout">Logout</string>
     <string name="slider_version">Criptext Email v.</string>
 
+    <!-- SETITINGS -->
+    <string name="title_swipe">Swipe Options</string>
+    <string name="title_profile_name">Profile Name</string>
+    <string name="title_profile_photo">Profile Photo</string>
+    <string name="title_change_password">Change Password</string>
+    <string name="title_recovery_email">Recovery Email</string>
+    <string name="title_signature">Signature</string>
+    <string name="title_signature_cap">SIGNATURE</string>
+    <string name="title_allow_notifications">Allow Notifications</string>
+    <string name="title_badges">Badge App Icon</string>
+    <string name="title_sounds">Sounds</string>
+    <string name="separator_account">ACCOUNT</string>
+    <string name="separator_notifications">NOTIFICATIONS</string>
+    <string name="status_not_confirmed">Not Confirmed</string>
+    <string name="criptext_version">Criptext System Version 0.1</string>
+
     <!-- PERMISSIONS -->
     <string name="read_contacts_perm">Easily access your contacts\' emails</string>
     <string name="read_sd_perm">Acces to your external storage</string>
@@ -157,8 +173,10 @@
     <string name="email_will_expire_in">Email will expire in:</string>
     <string name="no_emails_found">No emails found</string>
     <string name="titulo_mailbox">INBOX</string>
+    <string name="title_settings">SETTINGS</string>
     <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
     <string name="accept">Accept</string>
     <string name="trash">Trash</string>
     <string name="more">More Options</string>
@@ -201,6 +219,8 @@
     <string name="error_getting_counters">Error getting label counters. Please try again</string>
     <string name="error_getting_email">Error getting email. Please try again</string>
     <string name="error_getting_account">Error getting user account. Please try again</string>
+    <string name="error_updating_account">Error updating user account. Please try again</string>
+    <string name="error_updating_signature">Error updating user signature. Please try again</string>
     <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_getting_contacts">Error getting contacts. Please try again</string>
     <string name="error_saving_as_draft">Error saving email. Please try again</string>
@@ -272,11 +292,23 @@
     <string name="reply_popup">Reply To:</string>
     <string name="date_popup">Date:</string>
 
-    <string name="no_history">There is not search history</string>
+    <string name="no_history">No search history</string>
     <string name="no_history_subtitle">Make your first search</string>
     <string name="no_mails">There are no emails</string>
     <string name="no_mails_subtitle">Have fun</string>
     <string name="no_search_results">No search results</string>
     <string name="no_search_subtitle">Trash &amp; Spam emails are not displayed</string>
     <string name="draft">Draft</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="write_signature">Write your signature here...</string>
+
+    <string name="profile_name_updated">Profile name updated</string>
+    <string name="signature_updated">Signature updated</string>
+    <string name="show_label_in_list">Show in label list</string>
+    <string name="new_label">Create new label</string>
+    <string name="current_device">CURRENT DEVICE</string>
+    <string name="general">General</string>
+    <string name="labels">Labels</string>
+    <string name="devices">Devices</string>
 </resources>

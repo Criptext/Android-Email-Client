@@ -17,7 +17,7 @@ class FileListAdapter(private val mContext: Context, private val attachmentsList
 
     var observer: AttachmentViewObserver? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val mView = LayoutInflater.from(mContext).inflate(R.layout.attachment, parent, false)
         val attachmentViewHolder = AttachmentViewHolder(mView, observer)
         attachmentViewHolder.hideRemoveImage()
@@ -28,7 +28,7 @@ class FileListAdapter(private val mContext: Context, private val attachmentsList
         return attachmentsList.size
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val attachment = attachmentsList[position]
         val mView = holder as AttachmentViewHolder
         mView.setFields(name = attachment.name, size = attachment.size, type = attachment.type)

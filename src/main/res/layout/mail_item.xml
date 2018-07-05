@@ -54,7 +54,7 @@
                 android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:textColor="#fff"
-                android:textStyle="bold"
+                fontPath="fonts/NunitoSans-SemiBold.ttf"
                 android:textSize="10sp"
                 android:background="@drawable/square_round_corners_gray" />
 

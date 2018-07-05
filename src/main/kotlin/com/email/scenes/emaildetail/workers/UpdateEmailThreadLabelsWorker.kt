@@ -44,7 +44,6 @@ class UpdateEmailThreadLabelsWorker(
 
         if(removeCurrentLabel){
             if(currentLabel == Label.defaultItems.starred
-                    || currentLabel == Label.defaultItems.important
                     || currentLabel == Label.defaultItems.sent){
                 db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
             }

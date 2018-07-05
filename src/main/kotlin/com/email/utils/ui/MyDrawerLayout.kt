@@ -8,7 +8,7 @@ import android.util.AttributeSet
  * Created by danieltigse on 1/31/18.
  */
 
-class MyDrawerLayout(context: Context?, attrs: AttributeSet?) : DrawerLayout(context, attrs) {
+class MyDrawerLayout(context: Context, attrs: AttributeSet?) : DrawerLayout(context, attrs) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthMeasureSpec2 = MeasureSpec.makeMeasureSpec(

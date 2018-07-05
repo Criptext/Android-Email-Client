@@ -67,7 +67,8 @@ class AuthenticateUserWorker(
             val privateBundle = registrationBundles.privateBundle
             val account = Account(recipientId = username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
-                    identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token)
+                    identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
+                    signature = "")
             Pair(registrationBundles, account)
         }
     }

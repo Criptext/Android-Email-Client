@@ -33,7 +33,6 @@ class DrawerMenuView(navigationView: NavigationView,
     private val sliderSent : LinearLayout
     private val sliderDrafts : LinearLayout
     private val sliderStarred : LinearLayout
-    private val sliderImportant : LinearLayout
     private val sliderSpam : LinearLayout
     private val sliderTrash : LinearLayout
     private val sliderAllMail : LinearLayout
@@ -46,7 +45,6 @@ class DrawerMenuView(navigationView: NavigationView,
     private val textViewTitleSent: TextView
     private val textViewTitleDraft: TextView
     private val textViewTitleStarred: TextView
-    private val textViewTitleImportant: TextView
     private val textViewTitleSpam: TextView
     private val textViewTitleTrash: TextView
     private val textViewTitleAllMail: TextView
@@ -56,7 +54,6 @@ class DrawerMenuView(navigationView: NavigationView,
     private val imageViewSent: ImageView
     private val imageViewDraft: ImageView
     private val imageViewStarred: ImageView
-    private val imageViewImportant: ImageView
     private val imageViewSpam: ImageView
     private val imageViewTrash: ImageView
     private val imageViewAllMail: ImageView
@@ -91,12 +88,6 @@ class DrawerMenuView(navigationView: NavigationView,
                     navigationMenuOptions = NavigationMenuOptions.STARRED)
         }
 
-        sliderImportant.setOnClickListener {
-            setActiveLabel(NavigationMenuOptions.IMPORTANT)
-            drawerMenuItemListener.onNavigationItemClick(
-                    navigationMenuOptions = NavigationMenuOptions.IMPORTANT)
-        }
-
         sliderSpam.setOnClickListener {
             setActiveLabel(NavigationMenuOptions.SPAM)
             drawerMenuItemListener.onNavigationItemClick(
@@ -114,6 +105,10 @@ class DrawerMenuView(navigationView: NavigationView,
             drawerMenuItemListener.onNavigationItemClick(
                     navigationMenuOptions = NavigationMenuOptions.ALL_MAIL)
         }
+
+        sliderSettings.setOnClickListener {
+            drawerMenuItemListener.onSettingsOptionClicked()
+        }
     }
 
     init {
@@ -125,7 +120,6 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderSent = navigationView.findViewById(R.id.slider_sent)
         sliderDrafts = navigationView.findViewById(R.id.slider_drafts)
         sliderStarred = navigationView.findViewById(R.id.slider_starred)
-        sliderImportant = navigationView.findViewById(R.id.slider_important)
         sliderSpam = navigationView.findViewById(R.id.slider_spam)
         sliderTrash = navigationView.findViewById(R.id.slider_trash)
         sliderAllMail = navigationView.findViewById(R.id.slider_all_mail)
@@ -141,7 +135,6 @@ class DrawerMenuView(navigationView: NavigationView,
         textViewTitleSent = navigationView.findViewById(R.id.textViewTitleSent)
         textViewTitleDraft = navigationView.findViewById(R.id.textViewTitleDraft)
         textViewTitleStarred = navigationView.findViewById(R.id.textViewTitleStarred)
-        textViewTitleImportant = navigationView.findViewById(R.id.textViewTitleImportant)
         textViewTitleSpam = navigationView.findViewById(R.id.textViewTitleSpam)
         textViewTitleTrash = navigationView.findViewById(R.id.textViewTitleTrash)
         textViewTitleAllMail = navigationView.findViewById(R.id.textViewTitleAllMail)
@@ -150,7 +143,6 @@ class DrawerMenuView(navigationView: NavigationView,
         imageViewSent = navigationView.findViewById(R.id.imageViewSent)
         imageViewDraft = navigationView.findViewById(R.id.imageViewDraft)
         imageViewStarred = navigationView.findViewById(R.id.imageViewStarred)
-        imageViewImportant = navigationView.findViewById(R.id.imageViewImportant)
         imageViewSpam = navigationView.findViewById(R.id.imageViewSpam)
         imageViewTrash = navigationView.findViewById(R.id.imageViewTrash)
         imageViewAllMail = navigationView.findViewById(R.id.imageViewAllMail)
@@ -181,9 +173,6 @@ class DrawerMenuView(navigationView: NavigationView,
             }
             NavigationMenuOptions.STARRED -> {
                 setResourcesSelected(sliderStarred, textViewTitleStarred, imageViewStarred)
-            }
-            NavigationMenuOptions.IMPORTANT -> {
-                setResourcesSelected(sliderImportant, textViewTitleImportant, imageViewImportant)
             }
             NavigationMenuOptions.SPAM -> {
                 setResourcesSelected(sliderSpam, textViewTitleSpam, imageViewSpam)
@@ -229,7 +218,6 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderSpam.setBackgroundColor(Color.TRANSPARENT)
         sliderTrash.setBackgroundColor(Color.TRANSPARENT)
         sliderStarred.setBackgroundColor(Color.TRANSPARENT)
-        sliderImportant.setBackgroundColor(Color.TRANSPARENT)
         sliderAllMail.setBackgroundColor(Color.TRANSPARENT)
         textViewTitleInbox.typeface = TypefaceUtils.load(textViewTitleInbox.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
@@ -238,8 +226,6 @@ class DrawerMenuView(navigationView: NavigationView,
         textViewTitleDraft.typeface = TypefaceUtils.load(textViewTitleDraft.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
         textViewTitleStarred.typeface = TypefaceUtils.load(textViewTitleStarred.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleImportant.typeface = TypefaceUtils.load(textViewTitleImportant.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
         textViewTitleSpam.typeface = TypefaceUtils.load(textViewTitleSpam.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
@@ -255,8 +241,6 @@ class DrawerMenuView(navigationView: NavigationView,
                 ContextCompat.getColor(imageViewDraft.context, R.color.drawer_icon_unselected))
         DrawableCompat.setTint(imageViewStarred.drawable,
                 ContextCompat.getColor(imageViewStarred.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewImportant.drawable,
-                ContextCompat.getColor(imageViewImportant.context, R.color.drawer_icon_unselected))
         DrawableCompat.setTint(imageViewSpam.drawable,
                 ContextCompat.getColor(imageViewSpam.context, R.color.drawer_icon_unselected))
         DrawableCompat.setTint(imageViewTrash.drawable,

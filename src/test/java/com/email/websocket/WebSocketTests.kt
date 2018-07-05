@@ -61,7 +61,7 @@ class WebSocketTests {
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
 
         val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
-                jwt = "__JWT_TOKEN__")
+                jwt = "__JWT_TOKEN__", signature = "")
 
         controller = WebSocketController(wsClient = webSocket, activeAccount = account,
                 eventDataSource = dataSource)

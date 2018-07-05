@@ -1,48 +1,82 @@
 package com.email.scenes.composer.ui
 
-import android.content.Context
-import android.graphics.Color
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.ScrollView
 import com.email.R
-import jp.wasabeef.richeditor.RichEditor
+import org.wordpress.aztec.Aztec
+import org.wordpress.aztec.AztecText
+import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.source.SourceViewEditText
+import org.wordpress.aztec.toolbar.AztecToolbar
+import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 /**
  * Created by gabriel on 5/23/17.
  */
 
-class HTMLEditText(private val richEditor: RichEditor, scrollView: ScrollView) {
+class HTMLEditText(private val visualEditor: AztecText,
+                   private val sourceEditor: SourceViewEditText?,
+                   private val toolbar: AztecToolbar, hint: String): IAztecToolbarClickListener {
 
     var text: String
     set(value) {
-        richEditor.html = "<div>$value</div>"
+        visualEditor.fromHtml(value)
+        sourceEditor?.setText(value)
     }
-    get() = if(richEditor.html != null) richEditor.html else ""
+    get() = visualEditor.toPlainHtml(false).replace("<br><br>", "<br>")
+    //I have to do this replace because the library gives me two br on each new line.
 
-    val view: View = richEditor
+    val view: View = visualEditor
 
     var onFocusChangeListener: View.OnFocusChangeListener?
-        set(value) { richEditor.onFocusChangeListener = value }
-        get() = richEditor.onFocusChangeListener
+        set(value) { visualEditor.onFocusChangeListener = value }
+        get() = visualEditor.onFocusChangeListener
 
     init {
-        richEditor.setEditorBackgroundColor(Color.TRANSPARENT)
-        richEditor.settings.allowFileAccess = true
-        richEditor.setPlaceholder(view.context.resources.getString(R.string.message))
-        richEditor.viewTreeObserver.addOnScrollChangedListener {
-            scrollView.post {
-                scrollView.scrollTo(0, scrollView.bottom);
-            }
+        visualEditor.hint = hint
+        if(sourceEditor != null) {
+            Aztec.with(
+                    sourceEditor = sourceEditor,
+                    visualEditor = visualEditor,
+                    toolbar = toolbar,
+                    toolbarClickListener = this)
+        }
+        else{
+            Aztec.with(
+                    visualEditor = visualEditor,
+                    toolbar = toolbar,
+                    toolbarClickListener = this)
         }
     }
 
     fun setMinHeight(){
-        richEditor.setEditorHeight(150)
+        visualEditor.minHeight = 150
     }
 
     fun setFocus(){
-        richEditor.focusEditor()
+        visualEditor.requestFocus()
+    }
+
+    override fun onToolbarCollapseButtonClicked() {
+    }
+
+    override fun onToolbarExpandButtonClicked() {
+    }
+
+    override fun onToolbarFormatButtonClicked(format: ITextFormat, isKeyboardShortcut: Boolean) {
+    }
+
+    override fun onToolbarHeadingButtonClicked() {
+    }
+
+    override fun onToolbarHtmlButtonClicked() {
+        toolbar.toggleEditorMode()
+    }
+
+    override fun onToolbarListButtonClicked() {
+    }
+
+    override fun onToolbarMediaButtonClicked(): Boolean {
+        return false
     }
 
 }

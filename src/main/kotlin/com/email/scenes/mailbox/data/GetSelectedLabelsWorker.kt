@@ -31,7 +31,6 @@ class GetSelectedLabelsWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.GetSelectedLabels>): MailboxResult.GetSelectedLabels? {
         val labels = db.getCustomLabels() as ArrayList<Label>
         labels.add(Label.defaultItems.starred)
-        labels.add(Label.defaultItems.important)
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)
 

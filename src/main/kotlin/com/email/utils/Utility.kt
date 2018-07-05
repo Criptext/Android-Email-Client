@@ -1,12 +1,17 @@
 package com.email.utils
 
 import android.graphics.*
+import android.os.Build
 import android.webkit.MimeTypeMap
 import com.email.R
 import com.email.db.AttachmentTypes
 import com.email.utils.ui.TextDrawable
 import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
+import android.os.Build.MODEL
+import android.os.Build.MANUFACTURER
+
+
 
 /**
  * Created by hirobreak on 06/04/17.
@@ -64,5 +69,6 @@ class Utility {
             }
             return Color.parseColor("#"+color)
         }
+
     }
 }

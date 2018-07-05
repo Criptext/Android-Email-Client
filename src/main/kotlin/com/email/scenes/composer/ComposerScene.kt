@@ -18,7 +18,9 @@ import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
-import jp.wasabeef.richeditor.RichEditor
+import org.wordpress.aztec.AztecText
+import org.wordpress.aztec.source.SourceViewEditText
+import org.wordpress.aztec.toolbar.AztecToolbar
 
 /**
  * Created by gabriel on 2/26/18.
@@ -29,7 +31,9 @@ interface ComposerScene {
     var attachmentsObserver: AttachmentViewObserver?
     fun bindWithModel(firstTime: Boolean,
                       composerInputData: ComposerInputData,
-                      attachments: ArrayList<ComposerAttachment>)
+                      attachments: ArrayList<ComposerAttachment>,
+                      signature: String)
+    fun setFocusToComposer()
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: Array<Contact>)
@@ -56,16 +60,17 @@ interface ComposerScene {
             view.findViewById<EditText>(INPUT_SUBJECT_ID)
         })
         private val bodyEditText: HTMLEditText by lazy({
-            HTMLEditText(view.findViewById<RichEditor>(INPUT_BODY_ID), scrollView)
+            HTMLEditText(
+                    visualEditor = view.findViewById<AztecText>(INPUT_BODY_ID),
+                    sourceEditor = null,
+                    toolbar = view.findViewById<AztecToolbar>(R.id.formatting_toolbar),
+                    hint = ctx.resources.getString(R.string.message))
         })
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.backButton) as ImageView
         }
         private val imageViewArrow: ImageView by lazy {
             view.findViewById<ImageView>(R.id.imageViewArrow) as ImageView
-        }
-        private val scrollView: ScrollView by lazy {
-            view.findViewById<ScrollView>(R.id.scrollViewCompose) as ScrollView
         }
         private val responseBody: WebView by lazy {
             view.findViewById<WebView>(R.id.responseBody) as WebView
@@ -107,7 +112,9 @@ interface ComposerScene {
 
         override fun bindWithModel(firstTime: Boolean,
                                    composerInputData: ComposerInputData,
-                                   attachments: ArrayList<ComposerAttachment>) {
+                                   attachments: ArrayList<ComposerAttachment>,
+                                   signature: String) {
+
             val mLayoutManager = LinearLayoutManager(ctx)
             val adapter = AttachmentListAdapter(ctx, attachments)
             adapter.observer = attachmentsObserver
@@ -115,7 +122,9 @@ interface ComposerScene {
             attachmentRecyclerView.adapter = adapter
 
             subjectEditText.setText(composerInputData.subject, TextView.BufferType.NORMAL)
-            bodyEditText.text = composerInputData.body
+            bodyEditText.text = if(composerInputData.body.isEmpty())
+                MailBody.createNewTemplateMessageBody(composerInputData.body, signature)
+            else composerInputData.body
             bodyEditText.setMinHeight()
 
             setupAutoCompletion(firstTime = firstTime,
@@ -149,6 +158,10 @@ interface ComposerScene {
             attachmentButton.setOnClickListener {
                 observer?.onAttachmentButtonClicked()
             }
+        }
+
+        override fun setFocusToComposer() {
+            bodyEditText.setFocus()
         }
 
         override fun getDataInputByUser(): ComposerInputData {

@@ -1,36 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="10dp">
+    android:paddingTop="15dp">
 
     <ImageView
         android:id="@+id/label_color"
         android:layout_width="10dp"
         android:layout_height="10dp"
-        android:layout_marginStart="20dp"
-        android:src="@drawable/mini_circle"/>
+        android:layout_marginStart="25dp"
+        android:src="@drawable/mini_circle"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:id="@+id/label_name"
-        android:layout_width="100dp"
-        android:layout_weight="0.5"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="end"
         android:textSize="14sp"
         android:text="INBOX"
+        android:layout_toEndOf="@+id/label_color"
+        android:layout_toStartOf="@+id/label_checkbox"
         android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"
         android:textColor="@color/label_buttons_text"/>
 
     <CheckBox
         android:id="@+id/label_checkbox"
         android:layout_gravity="end"
-        android:layout_width="50dp"
-        android:layout_weight="0.5"
-        android:layout_marginLeft ="50dp"
-        android:buttonTint="@color/colorOpen"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"/>
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginBottom="15dp"
+        android:background="#d8d8d8"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"/>
+
+</RelativeLayout>

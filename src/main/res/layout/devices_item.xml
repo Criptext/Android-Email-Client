@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewDeviceType"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="15dp"
+        android:src="@drawable/device_m"/>
+
+    <TextView
+        android:id="@+id/textViewDeviceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_toEndOf="@+id/imageViewDeviceType"
+        android:layout_toStartOf="@+id/textViewCurrentDevice"
+        android:text="MacBook Pro"/>
+
+    <TextView
+        android:id="@+id/textViewCurrentDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="#61b900"
+        android:text="@string/current_device"
+        android:layout_margin="18dp"
+        android:layout_alignParentEnd="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#d8d8d8"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"/>
+
+</RelativeLayout>

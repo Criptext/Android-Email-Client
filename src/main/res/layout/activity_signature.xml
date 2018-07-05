@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    xmlns:aztec="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mailbox_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <LinearLayout
+            android:layout_toEndOf="@id/mailbox_nav_button"
+            android:layout_width="match_parent"
+            android:id="@+id/mailbox_title_layout"
+            android:layout_marginStart="-10dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:visibility="visible"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/mailbox_back_button"
+                android:src="@drawable/back"
+                android:gravity="center"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:padding="10dp"
+                android:layout_height="70dp"
+                android:layout_width="70dp" />
+
+            <TextView
+                android:id="@+id/mailbox_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_height="match_parent"
+                android:text="@string/title_signature_cap"
+                android:gravity="left|center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp">
+
+        <TextView
+            android:id="@+id/textview_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/off"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"/>
+
+        <Switch
+            android:id="@+id/switch_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#d8d8d8"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/view_signature"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <org.wordpress.aztec.source.SourceViewEditText
+            android:id="@+id/source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:inputType="textNoSuggestions|textMultiLine"
+            android:scrollbars="vertical"
+            android:imeOptions="flagNoExtractUi"
+            android:visibility="gone"
+            aztec:codeBackgroundColor="@android:color/white"
+            aztec:codeTextColor="@android:color/black" />
+
+        <org.wordpress.aztec.AztecText
+            android:id="@+id/visual"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine"
+            android:scrollbars="vertical"
+            android:imeOptions="flagNoExtractUi"
+            aztec:blockVerticalPadding="1dp"
+            aztec:textColor="@android:color/black"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#d8d8d8"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"/>
+
+        <org.wordpress.aztec.toolbar.AztecToolbar
+            android:id="@+id/formatting_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_margin="18dp"
+            aztec:mediaToolbarAvailable="false"/>
+
+    </LinearLayout>
+
+</LinearLayout>

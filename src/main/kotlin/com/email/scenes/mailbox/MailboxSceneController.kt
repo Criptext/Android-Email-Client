@@ -23,6 +23,7 @@ import com.email.scenes.mailbox.ui.MailboxUIObserver
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
 import com.email.scenes.params.SearchParams
+import com.email.scenes.params.SettingsParams
 import com.email.utils.UIMessage
 import com.email.websocket.WebSocketEventListener
 import com.email.websocket.WebSocketEventPublisher
@@ -140,6 +141,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
+
+        override fun onSettingsOptionClicked() {
+            host.goToScene(SettingsParams(), true)
+        }
+
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
             scene.hideDrawer()
 
@@ -148,7 +154,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.SENT,
                 NavigationMenuOptions.DRAFT,
                 NavigationMenuOptions.STARRED,
-                NavigationMenuOptions.IMPORTANT,
                 NavigationMenuOptions.SPAM,
                 NavigationMenuOptions.TRASH,
                 NavigationMenuOptions.ALL_MAIL -> {

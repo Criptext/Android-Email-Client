@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import com.email.R
 import com.email.db.models.Label
@@ -16,7 +17,7 @@ import com.email.utils.virtuallist.VirtualList
  * Created by sebas on 2/1/18.
  */
 
-class LabelChooserDialog(private val context: Context) {
+class LabelChooserDialog(private val context: Context, private val rootView: View) {
     private var labelChooserDialog : AlertDialog? = null
     private lateinit var controller: LabelChooserSceneController
 
@@ -48,7 +49,7 @@ class LabelChooserDialog(private val context: Context) {
     fun showDialogLabelsChooser(dataHandler: LabelDataHandler) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, null)
+        val dialogView = inflater.inflate(R.layout.mailbox_labels_chooser, rootView as ViewGroup, false)
         dialogBuilder.setView(dialogView)
 
         controller = createController(dialogView, dataHandler)

@@ -17,6 +17,9 @@ class ComposerModel(val type: ComposerType) {
         else -> null
     }
 
+    val isReplyOrDraft: Boolean = type is ComposerType.Reply
+            || type is ComposerType.ReplyAll || type is ComposerType.Draft
+
     var attachments: ArrayList<ComposerAttachment> = ArrayList()
 
     val to = LinkedList<Contact>()

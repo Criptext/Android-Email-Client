@@ -47,7 +47,8 @@ class SearchControllerTest{
         dataSource = mockk(relaxed = true)
         storage = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
-                """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1} """)
+                """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
+                    |, "signature":""} """.trimMargin())
         controller = SearchSceneController(
                 scene = scene,
                 model = model,

@@ -183,41 +183,6 @@
         android:paddingBottom="8dp"
         android:paddingLeft="28dp"
         android:layout_marginTop="5dp"
-        android:id="@+id/slider_important"
-        android:clickable="true"
-        android:foreground="?attr/selectableItemBackground">
-
-        <ImageView
-            android:id="@+id/imageViewImportant"
-            android:layout_width="@dimen/square_icon"
-            android:layout_height="@dimen/square_icon"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/important_f"
-            android:tint="@color/drawer_icon_unselected"
-            android:padding="3dp"
-            android:layout_marginRight="15dp"/>
-
-        <TextView
-            android:id="@+id/textViewTitleImportant"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/slider_important"
-            android:textSize="@dimen/drawer_text_item"
-            android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/menu_item_height"
-        android:layout_gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingLeft="28dp"
-        android:layout_marginTop="5dp"
         android:id="@+id/slider_spam"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground">

@@ -9,7 +9,6 @@ import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.*
 import com.email.email_preview.EmailPreview
 import com.email.mocks.MockedWorkRunner
-import com.email.mocks.MockedIHostActivity
 import com.email.scenes.emaildetail.data.EmailDetailDataSource
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.utils.DateUtils
@@ -51,7 +50,8 @@ open class EmailDetailControllerTest {
     open fun setUp() {
         protocolStore = mockk()
         activeAccount = ActiveAccount.fromJSONString(
-                """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1} """)
+                """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1
+                    |, "signature":""} """.trimMargin())
         model = EmailDetailSceneModel(mockedThreadId, Label.defaultItems.inbox, mockedEmailPreview)
         scene = mockk(relaxed = true)
         runner = MockedWorkRunner()
@@ -61,7 +61,7 @@ open class EmailDetailControllerTest {
         host = mockk(relaxed = true)
 
         every {
-            host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal, Manifest.permission.READ_EXTERNAL_STORAGE)
+            host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } returns true
         websocketEvents = mockk(relaxed = true)
 

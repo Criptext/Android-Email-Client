@@ -22,8 +22,8 @@ class LabelWrapperAdapter(private val mContext : Context,
         labelWrapperListener?.onToggleLabelSelection(labelWrapper, position)
     }
 
-    override fun onBindViewHolder(holder: LabelHolder?, position: Int) {
-        if(holder?.itemView == null) return
+    override fun onBindViewHolder(holder: LabelHolder, position: Int) {
+        if(holder.itemView == null) return
         val labelThread = labelList[position]
         holder.bindLabel(labelThread)
 

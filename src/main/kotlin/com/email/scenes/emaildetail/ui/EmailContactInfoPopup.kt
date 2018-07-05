@@ -83,7 +83,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
     class ContactsToListAdapter(private val mContext: Context,
                                       private val contacts: VirtualList<Contact>
     ) : RecyclerView.Adapter<ContactHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ContactHolder{
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactHolder{
             val mView = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null)
             return ContactHolder(mView)
         }
@@ -92,9 +92,9 @@ class EmailContactInfoPopup(private val anchorView: View) {
             return contacts.size
         }
 
-        override fun onBindViewHolder(holder: ContactHolder?, position: Int) {
+        override fun onBindViewHolder(holder: ContactHolder, position: Int) {
             val contact = contacts[position]
-            holder?.bindContact(contact)
+            holder.bindContact(contact)
         }
     }
 

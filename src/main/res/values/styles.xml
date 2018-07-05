@@ -85,4 +85,10 @@
     <item name="android:dropDownVerticalOffset">4dp</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="CriptextTabText" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:fontFamily">@font/nunito_sans_bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

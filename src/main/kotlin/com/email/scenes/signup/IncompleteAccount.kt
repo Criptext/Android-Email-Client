@@ -20,6 +20,7 @@ data class IncompleteAccount(
                         name = this.name,
                         recipientId = this.username,
                         deviceId = this.deviceId,
+                        signature = "",
                         jwt = jwt,
                         registrationId = privateBundle.registrationId,
                         identityKeyPairB64 = privateBundle.identityKeyPair

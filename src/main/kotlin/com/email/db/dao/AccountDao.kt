@@ -29,4 +29,9 @@ interface AccountDao {
     @Delete
     fun deleteAll(accounts: List<Account>)
 
+    @Query("""UPDATE account
+            SET name=:name
+            where recipientId=:recipientId""")
+    fun updateProfileName(name: String, recipientId: String)
+
 }
