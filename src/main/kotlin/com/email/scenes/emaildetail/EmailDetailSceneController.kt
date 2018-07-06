@@ -367,6 +367,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         return true
     }
 
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
+
     private fun removeCurrentLabelThread() {
         val req = EmailDetailRequest.UpdateEmailThreadsLabelsRelations(
                 threadId = model.threadId,

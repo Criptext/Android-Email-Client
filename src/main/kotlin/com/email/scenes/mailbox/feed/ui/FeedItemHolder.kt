@@ -9,8 +9,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.email.R
+import com.email.db.FeedType
+import com.email.db.models.Email
 import com.email.scenes.mailbox.feed.data.ActivityFeedItem
+import com.email.utils.DateUtils
 import com.squareup.picasso.Picasso
+import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
 /**
  * Created by danieltigse on 2/7/18.
@@ -48,35 +52,68 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
 
     }
 
-    fun bindFeed(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedClickListener?) {
+    fun bindFeed(lastTimeFeedOpened: Long, activityFeedItem: ActivityFeedItem,
+                 position: Int, listener: FeedEventListener?) {
 
-        textViewTitle.text = activityFeedItem.title
-        textViewDetail.text = activityFeedItem.subtitle
+        textViewTitle.text = "${activityFeedItem.contactName} ${getTitle(activityFeedItem.type)}"
+        textViewDetail.text = getSubtitle(activityFeedItem)
+        textViewDate.text = DateUtils.getFormattedDate(activityFeedItem.date.time)
 
-        checkIsNew(activityFeedItem)
+        checkIsNew(lastTimeFeedOpened, position, activityFeedItem)
         checkFeedType(activityFeedItem)
         checkIsMuted(activityFeedItem)
         setListeners(activityFeedItem, position, listener)
+
     }
 
-    private fun checkIsNew(activityFeedItem: ActivityFeedItem){
+    private fun getSubtitle(activityFeedItem: ActivityFeedItem): String{
+        return when(activityFeedItem.type){
+            FeedType.OPEN_EMAIL -> activityFeedItem.emailSubject
+            else -> activityFeedItem.fileName
+        }
+    }
 
-        if(activityFeedItem.isNew){
-            containerView.setBackgroundColor(ContextCompat.getColor(containerView.context,
-                    R.color.menu_selected))
+    private fun getTitle(feedType: FeedType): String{
+        return when(feedType){
+            FeedType.DOWNLOAD_FILE -> containerView.context.resources.getString(R.string.feed_downloaded)
+            else -> containerView.context.resources.getString(R.string.feed_opened)
+        }
+    }
+
+    private fun checkIsNew(lastTimeFeedOpened: Long, position: Int,
+                           activityFeedItem: ActivityFeedItem){
+
+        if(activityFeedItem.date.time > lastTimeFeedOpened){
+            setViewAsNew()
         }
         else{
-            containerView.setBackgroundColor(Color.WHITE)
+            setViewAsOlder()
         }
+
+    }
+
+    private fun setViewAsNew(){
+        containerView.setBackgroundColor(ContextCompat.getColor(containerView.context,
+                R.color.menu_selected))
+        textViewDate.typeface = TypefaceUtils.load(textViewDate.resources.assets,
+                "fonts/NunitoSans-Bold.ttf")
+        textViewTitle.typeface = TypefaceUtils.load(textViewTitle.resources.assets,
+                "fonts/NunitoSans-Bold.ttf")
+    }
+
+    private fun setViewAsOlder(){
+        containerView.setBackgroundColor(Color.WHITE)
+        textViewDate.typeface = TypefaceUtils.load(textViewDate.resources.assets,
+                "fonts/NunitoSans-Regular.ttf")
+        textViewTitle.typeface = TypefaceUtils.load(textViewTitle.resources.assets,
+                "fonts/NunitoSans-Regular.ttf")
     }
 
     private fun checkFeedType(activityFeedItem: ActivityFeedItem){
 
-        if(activityFeedItem.type == ActivityFeedItem.FeedItemTypes.Mail.ordinal){
-            Picasso.with(swipeView.context).load(R.drawable.read).into(imageViewTypeFeed)
-        }
-        else if(activityFeedItem.type == ActivityFeedItem.FeedItemTypes.File.ordinal){
-            Picasso.with(swipeView.context).load(R.drawable.attachment).into(imageViewTypeFeed)
+        when(activityFeedItem.type){
+            FeedType.OPEN_EMAIL -> Picasso.with(swipeView.context).load(R.drawable.read).into(imageViewTypeFeed)
+            else -> Picasso.with(swipeView.context).load(R.drawable.attachment).into(imageViewTypeFeed)
         }
     }
 
@@ -94,21 +131,26 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
         }
     }
 
-    private fun setListeners(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedClickListener?){
+    private fun setListeners(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedEventListener?){
 
         viewMute.setOnClickListener {
-            listener?.onMuteFeedItemClicked(activityFeedItem.id!!, position, !activityFeedItem.isMuted)
+            listener?.onMuteFeedItemClicked(activityFeedItem.id, position, !activityFeedItem.isMuted)
             swipeView.close(true)
         }
 
         viewDelete.setOnClickListener {
-            listener?.onDeleteFeedItemClicked(activityFeedItem.id!!, position)
+            listener?.onDeleteFeedItemClicked(activityFeedItem.id, position)
             swipeView.close(true)
         }
 
         viewDate.setOnClickListener({
             swipeView.close(true)
         })
+
+        containerView.setOnClickListener {
+            containerView.setBackgroundColor(Color.WHITE)
+            listener?.onFeedItemClicked(activityFeedItem.email)
+        }
 
         swipeView.setSwipeListener(this)
     }
@@ -129,9 +171,11 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
 
     }
 
-    interface FeedClickListener{
-        fun onMuteFeedItemClicked(feedId: Int, position: Int, isMuted: Boolean)
-        fun onDeleteFeedItemClicked(feedId: Int, position: Int)
+    interface FeedEventListener{
+        fun onFeedItemClicked(email: Email)
+        fun onMuteFeedItemClicked(feedId: Long, position: Int, isMuted: Boolean)
+        fun onDeleteFeedItemClicked(feedId: Long, position: Int)
+        fun onApproachingEnd()
     }
 
 }

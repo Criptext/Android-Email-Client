@@ -64,8 +64,8 @@ class SearchThreadAdapter(private val mContext : Context,
         }
     }
 
-    private fun createMailItemView(): View {
-        return View.inflate(mContext, R.layout.mail_item, null)
+    private fun createMailItemView(parent: ViewGroup): View {
+        return LayoutInflater.from(parent.context).inflate(R.layout.mail_item, parent, false)
     }
 
     override fun createEmptyViewHolder(parent: ViewGroup): EmptyViewHolder {
@@ -76,7 +76,7 @@ class SearchThreadAdapter(private val mContext : Context,
     }
 
     override fun onCreateActualViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val itemView: View = createMailItemView()
+        val itemView: View = createMailItemView(parent)
         return EmailHolder(itemView)
     }
 

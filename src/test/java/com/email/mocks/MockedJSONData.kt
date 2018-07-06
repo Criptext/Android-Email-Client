@@ -31,4 +31,12 @@ object MockedJSONData {
                 "{\"threadId\":\"<15221916.12519@jigl.com>\",\"subject\":\"hello again\",\"from\":\"Gianni Carlo <gianni@jigl.com>\",\"to\":\"gabriel@jigl.com\",\"cc\":\"\",\"bcc\":\"\",\"messageId\":\"<15221916.12519@jigl.com>\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":82,\"messageType\":3,\"senderDeviceId\":1}"
 }
 ]"""
+    val sampleNewTrackingUpdateEvent = """
+            {
+                "rowid":39820,
+                "cmd":2,
+                "params":
+                    "{\"type\":7,\"from\":\"lmiguel\",\"date\":\"2018-07-12T04:19:43.623Z\",\"metadataKey\":1937}"
+            }
+            """
 }

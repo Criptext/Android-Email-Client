@@ -35,4 +35,7 @@
     <dimen name="password_login_dialog_height">400dp</dimen>
     <dimen name="profile_name_dialog_height">300dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="indicator_margin_left">20dp</dimen>
+    <dimen name="indicator_margin_top">20dp</dimen>
 </resources>

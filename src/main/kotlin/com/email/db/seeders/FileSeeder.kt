@@ -28,7 +28,7 @@ class FileSeeder {
         private fun fillFile(iteration: Int): CRFile {
             lateinit var file: CRFile
             when (iteration) {
-                1 -> file = CRFile( token = "XXXXXXXXXX2312XXXXX1",
+                1 -> file = CRFile( id = 0, token = "XXXXXXXXXX2312XXXXX1",
                         name = "attachment 1" ,
                         size = 10,
                         status = 1,
@@ -37,7 +37,7 @@ class FileSeeder {
                         readOnly = false
                 )
 
-                2 -> file = CRFile( token = "XXXXXXXXXX2312XXXXX2",
+                2 -> file = CRFile( id = 0, token = "XXXXXXXXXX2312XXXXX2",
                         name = "attachment 2" ,
                         size = 10,
                         status = 1,

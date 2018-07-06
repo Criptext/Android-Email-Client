@@ -1,5 +1,7 @@
 package com.email
 
+import android.view.Menu
+import android.view.MenuItem
 import com.email.scenes.ActivityMessage
 import com.email.scenes.params.SceneParams
 import com.email.utils.UIMessage
@@ -40,4 +42,8 @@ interface IHostActivity {
     fun launchExternalActivityForResult(params: ExternalActivityParams)
 
     fun checkPermissions(requestCode: Int, permission: String): Boolean
+
+    interface IActivityMenu {
+        fun findItemById(id: Int): MenuItem?
+    }
 }

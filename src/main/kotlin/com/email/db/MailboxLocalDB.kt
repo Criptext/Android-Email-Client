@@ -41,6 +41,8 @@ interface MailboxLocalDB {
     fun getTotalCounterLabel(labelId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
     fun deleteThreads(threadIds: List<String>)
+    fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
+                                         rejectedLabels: List<Long>, userEmail: String): EmailThread
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
         override fun createLabelsForEmailInbox(insertedEmailId: Long) {
@@ -87,7 +89,7 @@ interface MailboxLocalDB {
             }
         }
 
-        private fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
+        override fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
                                             rejectedLabels: List<Long>, userEmail: String): EmailThread {
 
             val id = email.id

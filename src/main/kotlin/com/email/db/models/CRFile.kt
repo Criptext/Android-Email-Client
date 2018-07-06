@@ -20,7 +20,10 @@ import kotlin.collections.ArrayList
                                           childColumns = ["emailId"])])
 class CRFile(
 
-        @PrimaryKey
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "id")
+        var id: Long,
+
         var token: String,
 
         @ColumnInfo(name = "name")
@@ -62,6 +65,7 @@ class CRFile(
             for (i in 0 until jsonFiles.length()) {
                 val file = jsonFiles.getJSONObject(i)
                 files.add(CRFile(
+                        0,
                         file.getString("token"),
                         file.getString("name"),
                         file.getLong("size"),

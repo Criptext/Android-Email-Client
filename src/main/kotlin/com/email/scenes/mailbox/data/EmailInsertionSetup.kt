@@ -34,7 +34,8 @@ object EmailInsertionSetup {
             messageId = metadata.messageId,
             delivered = DeliveryTypes.NONE,
             content = decryptedBody,
-            metadataKey = metadata.metadataKey
+            metadataKey = metadata.metadataKey,
+            isMuted = false
         )
     }
 

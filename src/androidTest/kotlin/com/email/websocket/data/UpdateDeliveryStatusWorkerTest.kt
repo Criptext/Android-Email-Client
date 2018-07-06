@@ -6,6 +6,8 @@ import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.models.TrackingUpdate
 import com.email.db.DeliveryTypes
+import com.email.db.FeedType
+import com.email.db.models.Contact
 import com.email.db.models.Label
 import com.email.mocks.MockEmailData
 import io.mockk.mockk
@@ -36,7 +38,8 @@ class UpdateDeliveryStatusWorkerTest {
     }
 
     private fun newWorker(trackingUpdate: TrackingUpdate): UpdateDeliveryStatusWorker =
-            UpdateDeliveryStatusWorker(dao = db.emailDao(), publishFn = {},
+            UpdateDeliveryStatusWorker(dao = db.emailDao(), feedDao = db.feedDao(),
+                    contactDao = db.contactDao(), publishFn = {},
                     trackingUpdate = trackingUpdate)
 
 
@@ -47,9 +50,10 @@ class UpdateDeliveryStatusWorkerTest {
         existingEmail.metadataKey = 121
         existingEmail.delivered = DeliveryTypes.SENT
         db.emailDao().insert(existingEmail)
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
 
         val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
-                from = "mayer@jigl.com"))
+                from = "mayer"))
 
         val result = worker.work(mockk(relaxed = true)) as EventResult.UpdateDeliveryStatus.Success
 
@@ -75,4 +79,46 @@ class UpdateDeliveryStatusWorkerTest {
 
         result.update `shouldBe` null
     }
+
+    @Test
+    fun should_create_feed_and_return_the_tracking_update_if_email_was_not_already_read() {
+        // insert email that has not been read already
+        val existingEmail = MockEmailData.createNewEmail(1)
+        existingEmail.metadataKey = 121
+        existingEmail.delivered = DeliveryTypes.SENT
+        db.emailDao().insert(existingEmail)
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
+
+        var feeds = db.feedDao().getAllFeedItems()
+        feeds.size shouldBe 0
+
+        val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
+                from = "mayer"))
+
+        worker.work(mockk(relaxed = true)) as EventResult.UpdateDeliveryStatus.Success
+
+        feeds = db.feedDao().getAllFeedItems()
+        feeds.size shouldBe 1
+
+        feeds[0].feedType shouldBe FeedType.OPEN_EMAIL
+    }
+
+    @Test
+    fun if_email_is_already_read_should_not_create_feed_and_return_null() {
+        // insert email that has been read already
+        val existingEmail = MockEmailData.createNewEmail(1)
+        existingEmail.metadataKey = 121
+        existingEmail.delivered = DeliveryTypes.READ
+        db.emailDao().insert(existingEmail)
+
+        val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
+                from = "mayer@jigl.com"))
+
+        val result = worker.work(mockk(relaxed = true)) as EventResult.UpdateDeliveryStatus.Success
+
+        db.feedDao().getAllFeedItems().size shouldBe 0
+
+        result.update shouldBe null
+    }
+
 }

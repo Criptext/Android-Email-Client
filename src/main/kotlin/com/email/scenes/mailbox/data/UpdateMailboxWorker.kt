@@ -1,6 +1,5 @@
 package com.email.scenes.mailbox.data
 
-import android.util.Log
 import com.email.R
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
@@ -11,8 +10,10 @@ import com.email.api.models.TrackingUpdate
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.*
+import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FeedItemDao
 import com.email.db.models.*
 import com.email.email_preview.EmailPreview
 import com.email.signal.SignalClient
@@ -23,6 +24,7 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.IOException
+import java.util.*
 
 /**
  * Created by sebas on 3/22/18.
@@ -32,6 +34,8 @@ class UpdateMailboxWorker(
         private val signalClient: SignalClient,
         private val db: MailboxLocalDB,
         private val emailDao: EmailDao,
+        private val contactDao: ContactDao,
+        private val feedItemDao: FeedItemDao,
         private val dao: EmailInsertionDao,
         private val activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
@@ -155,6 +159,28 @@ class UpdateMailboxWorker(
         return false
     }
 
+    private fun createFeedItems(trackingUpdates: List<TrackingUpdate>){
+
+        val feeds = mutableListOf<FeedItem>()
+        trackingUpdates.forEach {
+            val existingEmail = emailDao.findEmailByMetadataKey(it.metadataKey)
+            if(existingEmail != null && existingEmail.delivered != DeliveryTypes.READ){
+                feeds.add(FeedItem(
+                        id = 0,
+                        date = Date(),
+                        feedType = FeedType.OPEN_EMAIL,
+                        location = "",
+                        seen = false,
+                        emailId = existingEmail.id,
+                        contactId = contactDao.getContact("${it.from}@${Contact.mainDomain}")!!.id,
+                        fileId = null
+                ))
+            }
+        }
+
+        feedItemDao.insertFeedItems(feeds)
+    }
+
     private fun processTrackingUpdates(events: List<Event>): Boolean {
         val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
         val isAnEventGeneratedByMe: (Pair<Long, TrackingUpdate>) -> Boolean = { it.second.from != activeAccount.recipientId }
@@ -169,6 +195,7 @@ class UpdateMailboxWorker(
         val openUpdates = trackingUpdates
         val metadataKeysOfReadEmails = openUpdates.map { (_, open) -> open.metadataKey }
         val eventIdsToAcknowledge = openUpdates.map { it.first }
+        createFeedItems(openUpdates.map { it.second })
 
         return markEmailsAsOpened(eventIds = eventIdsToAcknowledge,
                            metadataKeys = metadataKeysOfReadEmails)

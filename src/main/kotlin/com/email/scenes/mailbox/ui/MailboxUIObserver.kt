@@ -8,4 +8,5 @@ interface MailboxUIObserver {
     fun onOpenComposerButtonClicked()
     fun onRefreshMails()
     fun onBackButtonPressed()
+    fun onFeedDrawerClosed()
 }

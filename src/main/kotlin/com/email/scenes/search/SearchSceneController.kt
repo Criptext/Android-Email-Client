@@ -145,6 +145,8 @@ class SearchSceneController(private val scene: SearchScene,
         return true
     }
 
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
+
     private fun onSearchEmails(result: SearchResult.SearchEmails){
         when(result) {
             is SearchResult.SearchEmails.Success -> {

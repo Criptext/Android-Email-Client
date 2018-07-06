@@ -1,5 +1,8 @@
 package com.email.scenes.mailbox
 
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.TextView
 import com.email.IHostActivity
 import com.email.R
 import com.email.api.models.TrackingUpdate
@@ -91,7 +94,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun reloadMailboxThreads() {
-        threadListController.clear()
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
                 loadParams = LoadParams.Reset(size = threadsPerPage),
@@ -160,7 +162,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.ALL_MAIL -> {
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
-                    threadListController.clear()
                     reloadMailboxThreads()
                 }
                 else -> { /* do nothing */ }
@@ -171,6 +172,11 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+
+        override fun onFeedDrawerClosed() {
+            feedController.lastTimeFeedOpened = System.currentTimeMillis()
+            feedController.reloadFeeds()
+        }
 
         override fun onBackButtonPressed() {
             if(model.isInMultiSelect){
@@ -309,6 +315,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             return false
         }
         return scene.onBackPressed()
+    }
+
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {
+        feedController.onMenuChanged(menu)
     }
 
     private fun toggleMultiModeBar() {
@@ -547,6 +557,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
             threadListController.markThreadAsOpened(emailId)
+            feedController.reloadFeeds()
         }
 
         override fun onError(uiMessage: UIMessage) {
@@ -563,7 +574,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     companion object {
         val threadsPerPage = 20
-        val minimumIntervalBetweenSyncs = 60000L
+        val minimumIntervalBetweenSyncs = 1000L
     }
 
 }

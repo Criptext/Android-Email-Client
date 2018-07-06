@@ -22,6 +22,9 @@ interface ContactDao {
     @Query("SELECT * FROM contact where email=:email")
     fun getContact(email : String) : Contact?
 
+    @Query("SELECT * FROM contact where id=:id")
+    fun getContactById(id : Long) : Contact?
+
     @Delete
     fun deleteAll(contacts: List<Contact>)
 

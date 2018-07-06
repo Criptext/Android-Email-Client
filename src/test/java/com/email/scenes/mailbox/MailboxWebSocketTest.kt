@@ -4,8 +4,10 @@ import com.email.IHostActivity
 import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FeedItemDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
@@ -31,6 +33,8 @@ class MailboxWebSocketTest {
     private lateinit var db: MailboxLocalDB
     private lateinit var httpClient: HttpClient
     private lateinit var emailDao: EmailDao
+    private lateinit var feedItemDao: FeedItemDao
+    private lateinit var contactDao: ContactDao
     private lateinit var rawSessionDao: RawSessionDao
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var runner: MockedWorkRunner
@@ -51,6 +55,8 @@ class MailboxWebSocketTest {
         db = mockk(relaxed = true)
         rawSessionDao = mockk()
         emailDao = mockk()
+        feedItemDao = mockk()
+        contactDao = mockk()
 
         emailInsertionDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -73,6 +79,8 @@ class MailboxWebSocketTest {
                 mailboxLocalDB = db,
                 activeAccount = activeAccount,
                 emailDao = emailDao,
+                contactDao = contactDao,
+                feedItemDao = feedItemDao,
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao
         )

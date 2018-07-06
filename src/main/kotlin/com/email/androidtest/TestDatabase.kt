@@ -27,7 +27,8 @@ import com.email.db.typeConverters.*
         LabelTypeConverter::class,
         LabelTextConverter::class,
         ContactTypeConverter::class,
-        EmailDeliveryConverter::class)
+        EmailDeliveryConverter::class,
+        FeedTypeConverter::class)
 abstract class TestDatabase: AppDatabase() {
     abstract fun resetDao(): ResetDao
 

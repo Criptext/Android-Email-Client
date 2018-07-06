@@ -9,12 +9,21 @@ import com.email.db.KeyValueStorage
  * Created by gabriel on 5/24/18.
  */
 class TestSharedPrefs(ctx: Context): KeyValueStorage {
+
     private val prefs = PreferenceManager.getDefaultSharedPreferences(ctx.applicationContext)
 
     private fun withApply(edit: (SharedPreferences.Editor) -> Unit) {
         val editor = prefs.edit()
         edit(editor)
         editor.apply()
+    }
+
+    override fun getLong(key: KeyValueStorage.StringKey, default: Long): Long {
+        return prefs.getLong("_test_" + key.stringKey, default)
+    }
+
+    override fun putLong(key: KeyValueStorage.StringKey, value: Long) {
+        withApply { editor -> editor.putLong("_test_" + key.stringKey, value) }
     }
 
     override fun getString(key: KeyValueStorage.StringKey, default: String): String =

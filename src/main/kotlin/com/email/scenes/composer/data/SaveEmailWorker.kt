@@ -67,6 +67,7 @@ class SaveEmailWorker(
     private fun createFilesData(): List<CRFile> =
         attachments.map {
             CRFile(
+                    id = 0,
                     token = it.filetoken,
                     name = FileUtils.getName(it.filepath),
                     size = it.size,

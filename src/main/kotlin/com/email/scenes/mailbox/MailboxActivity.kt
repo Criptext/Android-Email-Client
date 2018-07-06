@@ -11,6 +11,7 @@ import com.email.api.models.EmailMetadata
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
+import com.email.db.KeyValueStorage
 import com.email.db.models.*
 import com.email.scenes.SceneController
 import com.email.scenes.mailbox.data.EmailInsertionSetup
@@ -19,9 +20,8 @@ import com.email.scenes.mailbox.feed.data.FeedDataSource
 import com.email.scenes.mailbox.data.MailboxDataSource
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.feed.FeedModel
-import com.email.scenes.mailbox.feed.ui.FeedView
+import com.email.scenes.mailbox.feed.ui.FeedScene
 import com.email.signal.SignalClient
-import com.email.signal.SignalEncryptedData
 import com.email.signal.SignalStoreCriptext
 import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocketSingleton
@@ -80,21 +80,27 @@ class MailboxActivity : BaseActivity() {
     }
 
     companion object {
-        private fun initFeedController(appDB: AppDatabase, activity: Activity,
-                                       feedModel: FeedModel): FeedController {
-            val feedView = FeedView.Default(
-                    feedItemsList = VirtualList.Map(feedModel.feedItems,
-                            { t: FeedItem -> ActivityFeedItem(t)}),
-                    container = activity.findViewById(R.id.nav_right_view)
-            )
-            return FeedController(feedModel, feedView, FeedDataSource(AsyncTaskWorkRunner(),
-                    appDB.feedDao()))
+
+        private fun initFeedController(appDB: AppDatabase, activity: Activity, mailboxLocalDB: MailboxLocalDB,
+                                       feedModel: FeedModel, hostActivity: IHostActivity,
+                                       account: ActiveAccount): FeedController {
+
+            val feedView = FeedScene.Default(activity.findViewById(R.id.nav_right_view))
+            return FeedController(
+                    model = feedModel,
+                    scene = feedView,
+                    host = hostActivity,
+                    activeAccount = account,
+                    storage = KeyValueStorage.SharedPrefs(activity),
+                    feedDataSource = FeedDataSource(AsyncTaskWorkRunner(), mailboxLocalDB,
+                    appDB.feedDao(), appDB.emailDao(), appDB.contactDao(), appDB.fileDao()))
         }
 
         fun initController(appDB: AppDatabase,
                            activity: Activity,
                            hostActivity: IHostActivity,
                            model: MailboxSceneModel): MailboxSceneController {
+
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
@@ -107,8 +113,10 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 emailDao = appDB.emailDao(),
+                feedItemDao = appDB.feedDao(),
+                contactDao = appDB.contactDao(),
                 rawSessionDao = appDB.rawSessionDao(),
-                    httpClient = HttpClient.Default(),
+                httpClient = HttpClient.Default(),
                 emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db)
 
@@ -126,7 +134,8 @@ class MailboxActivity : BaseActivity() {
                     activeAccount = activeAccount,
                     dataSource = mailboxDataSource,
                     websocketEvents = webSocketEvents,
-                    feedController = initFeedController(appDB, activity, model.feedModel)
+                    feedController = initFeedController(appDB, activity, db,
+                            model.feedModel, hostActivity, activeAccount)
             )
         }
     }

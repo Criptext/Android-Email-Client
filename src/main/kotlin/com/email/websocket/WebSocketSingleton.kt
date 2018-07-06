@@ -22,6 +22,7 @@ object WebSocketSingleton {
         val appDB = AppDatabase.getAppDatabase(context.applicationContext)
         val dataSource = EventDataSource(runner = AsyncTaskWorkRunner(),
                 emailInsertionDao = appDB.emailInsertionDao(), emailDao = appDB.emailDao(),
+                contactDao = appDB.contactDao(), feedItemDao = appDB.feedDao(),
                 emailInsertionAPIClient = EmailInsertionAPIClient(HttpClient.Default(), activeAccount.jwt),
                 signalClient = SignalClient.Default(SignalStoreCriptext(appDB)),
                 activeAccount = activeAccount)

@@ -2,8 +2,12 @@ package com.email.websocket
 
 import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
+import com.email.api.models.TrackingUpdate
+import com.email.db.DeliveryTypes
+import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FeedItemDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
@@ -11,8 +15,9 @@ import com.email.mocks.MockedJSONData
 import com.email.mocks.MockedWorkRunner
 import com.email.signal.SignalClient
 import com.email.signal.SignalEncryptedData
-import com.email.websocket.data.EventDataSource
-import com.email.websocket.data.InsertNewEmailWorker
+import com.email.websocket.data.*
+import com.facebook.stetho.inspector.protocol.module.Network
+import com.nhaarman.mockito_kotlin.capture
 import io.mockk.*
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
@@ -29,6 +34,8 @@ class WebSocketTests {
     private lateinit var httpClient: HttpClient
     private lateinit var dao: EmailInsertionDao
     private lateinit var emailDao: EmailDao
+    private lateinit var contactDao: ContactDao
+    private lateinit var feedItemDao: FeedItemDao
     private lateinit var api: EmailInsertionAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: EventDataSource
@@ -42,6 +49,8 @@ class WebSocketTests {
     fun setUp() {
         dao = mockk(relaxed = true)
         emailDao = mockk(relaxed = true)
+        contactDao = mockk(relaxed = true)
+        feedItemDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
         every { dao.runTransaction(capture(lambdaSlot)) } answers {
             lambdaSlot.captured()
@@ -58,7 +67,8 @@ class WebSocketTests {
                 jwt = "__JWT_TOKEN__", signature = "")
 
         dataSource = EventDataSource(runner = runner, emailInsertionDao = dao, emailDao = emailDao,
-                emailInsertionAPIClient = api, signalClient = signal, activeAccount = account)
+                emailInsertionAPIClient = api, signalClient = signal, activeAccount = account,
+                contactDao = contactDao, feedItemDao = feedItemDao)
 
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
@@ -172,4 +182,5 @@ class WebSocketTests {
         newEmailReceivedByListener `should be` newInsertedEmail
         newEmailReceivedByListener.content `should equal` "__PLAIN_TEXT_FROM_SERVER__"
     }
+    
 }

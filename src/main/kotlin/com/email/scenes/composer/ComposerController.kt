@@ -297,6 +297,8 @@ class ComposerController(private val model: ComposerModel,
         return false
     }
 
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
+
     private fun exitToEmailDetailScene(){
         val threadPreview =  when (model.type) {
             is ComposerType.Reply -> model.type.threadPreview
