@@ -135,7 +135,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
     }
 
     @Test
-    fun `after updating mailbox, if isManual is true, should try to clear "refreshing" animation`() {
+    fun `after updating mailbox, if isManual is true, should try to clear ~refreshing~ animation`() {
         controller.onStart(null)
         clearMocks(virtualListView)
         clearMocks(scene)

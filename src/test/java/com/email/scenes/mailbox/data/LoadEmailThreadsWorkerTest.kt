@@ -65,7 +65,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
     }
 
     @Test
-    fun `should load inbox threads from beginning with the "Reset" parameter`() {
+    fun `should load inbox threads from beginning with the ~Reset~ parameter`() {
         val selectedFolder = Label.defaultItems.inbox.text
         val expectedThreads = MailboxTestUtils.createEmailThreads(20)
 
