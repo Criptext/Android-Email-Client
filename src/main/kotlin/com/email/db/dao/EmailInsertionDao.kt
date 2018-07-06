@@ -36,6 +36,10 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmailLabelRelations(emailLabelRelations: List<EmailLabel>)
 
+    @Query("""DELETE FROM email_label
+        WHERE labelId= :labelId AND emailId=:emailId""")
+    fun deleteByEmailLabelIds(labelId: Long, emailId: Long)
+
     @Insert
     fun insertEmailContactRelations(emailContactRelations: List<EmailContact>)
 

@@ -54,14 +54,14 @@ class WebSocketTests {
 
         runner = MockedWorkRunner()
 
+        val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
+                jwt = "__JWT_TOKEN__", signature = "")
+
         dataSource = EventDataSource(runner = runner, emailInsertionDao = dao, emailDao = emailDao,
-                emailInsertionAPIClient = api, signalClient = signal)
+                emailInsertionAPIClient = api, signalClient = signal, activeAccount = account)
 
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
-
-        val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
-                jwt = "__JWT_TOKEN__", signature = "")
 
         controller = WebSocketController(wsClient = webSocket, activeAccount = account,
                 eventDataSource = dataSource)

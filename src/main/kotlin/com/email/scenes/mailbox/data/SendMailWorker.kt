@@ -39,7 +39,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      private val db: MailboxLocalDB,
                      httpClient: HttpClient,
-                     activeAccount: ActiveAccount,
+                     private val activeAccount: ActiveAccount,
                      private val emailId: Long,
                      private val threadId: String?,
                      private val composerInputData: ComposerInputData,
@@ -63,7 +63,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                                       .map(extractRecipientIdFromCriptextAddress)
 
         return MailRecipients(toCriptext = toCriptext, ccCriptext = ccCriptext,
-                bccCriptext = bccCriptext)
+                bccCriptext = bccCriptext, peerCriptext = listOf(activeAccount.recipientId))
     }
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
@@ -113,7 +113,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                 knownCriptextAddresses, PostEmailBody.RecipientTypes.cc)
         val criptextBccEmails = encryptForCriptextRecipients(mailRecipients.bccCriptext,
                 knownCriptextAddresses, PostEmailBody.RecipientTypes.bcc)
-        return listOf(criptextToEmails, criptextCcEmails, criptextBccEmails).flatten()
+        val criptextPeerEmails = encryptForCriptextRecipients(mailRecipients.peerCriptext,
+                knownCriptextAddresses, PostEmailBody.RecipientTypes.peer)
+        return listOf(criptextToEmails, criptextCcEmails, criptextBccEmails, criptextPeerEmails).flatten()
     }
 
     override fun catchException(ex: Exception): MailboxResult.SendMail {
@@ -194,8 +196,8 @@ class SendMailWorker(private val signalClient: SignalClient,
     }
 
     private class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,
-                                 val bccCriptext: List<String>) {
-        val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext).flatten()
+                                 val bccCriptext: List<String>, val peerCriptext: List<String>) {
+        val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext, peerCriptext).flatten()
     }
 
 }
