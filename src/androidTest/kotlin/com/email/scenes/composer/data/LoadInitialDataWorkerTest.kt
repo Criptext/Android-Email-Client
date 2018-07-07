@@ -32,7 +32,7 @@ class LoadInitialDataWorkerTest {
     private lateinit var db: TestDatabase
     private lateinit var composerLocalDB: ComposerLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
     private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1)
     private val mayerContact = Contact(email = "mayer@jigl.com", name = "Mayer", id = 2)
     private val danielContact = Contact(email = "daniel@jigl.com", name = "Daniel", id = 3)
@@ -53,7 +53,8 @@ class LoadInitialDataWorkerTest {
 
     private fun newWorker(emailId: Long, type: ComposerType): LoadInitialDataWorker =
             LoadInitialDataWorker(db = composerLocalDB, emailId = emailId, composerType = type,
-                    userEmailAddress = activeAccount.userEmail, publishFn = {})
+                    userEmailAddress = activeAccount.userEmail, signature = activeAccount.signature,
+                    publishFn = {})
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean): Long {
