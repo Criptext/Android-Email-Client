@@ -46,7 +46,7 @@ class SendEmailWorkerTest {
 
     private val keyGenerator = SignalKeyGenerator.Default()
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
     @Before
     fun setup() {

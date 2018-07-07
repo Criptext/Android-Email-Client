@@ -43,7 +43,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
     @Before
     fun setup() {
