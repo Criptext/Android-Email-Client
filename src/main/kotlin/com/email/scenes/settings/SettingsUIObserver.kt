@@ -11,6 +11,7 @@ interface SettingsUIObserver {
     fun onSignatureOptionClicked()
     fun onProfileNameClicked()
     fun onProfileNameChanged(fullName: String)
+    fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()
     fun onToggleLabelSelection(label: LabelWrapper)
 }

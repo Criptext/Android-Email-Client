@@ -1,7 +1,6 @@
 package com.email.db.dao
 
 import android.arch.persistence.room.*
-import com.email.db.MailFolders
 import com.email.db.models.Label
 
 /**
@@ -10,6 +9,10 @@ import com.email.db.models.Label
 
 @Dao
 interface LabelDao {
+
+    @Insert
+    fun insert(label: Label): Long
+
     @Insert
     fun insertAll(labels : List<Label>)
 
@@ -19,20 +22,30 @@ interface LabelDao {
     @Query("SELECT * FROM label where type = 'CUSTOM'")
     fun getAllCustomLabels() : List<Label>
 
+    @Query("SELECT * FROM label where type = 'CUSTOM' AND visible = 1")
+    fun getCustomAndVisibleLabels() : List<Label>
+
+    @Query("SELECT * FROM label where id = :id")
+    fun getLabelById(id: Long) : Label
+
     @Delete
     fun deleteMultipleLabels(labels: List<Label>)
 
     @Delete
     fun delete(label: Label)
 
-
     @Query("""SELECT * FROM label
-            WHERE text=:labelTextType
+            WHERE text=:labelName
             LIMIT 1""")
-    fun get(labelTextType: MailFolders): Label
+    fun get(labelName: String): Label
 
     @Query("""SELECT * FROM label
-            WHERE text in (:labelTextTypes)""")
-    fun get(labelTextTypes: List<String>): List<Label>
+            WHERE text in (:labelNames)""")
+    fun get(labelNames: List<String>): List<Label>
+
+    @Query("""UPDATE label
+            SET visible=:visibility
+            where id=:id""")
+    fun updateVisibility(id: Long, visibility: Boolean)
 
 }

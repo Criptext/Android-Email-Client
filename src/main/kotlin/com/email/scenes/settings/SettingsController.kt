@@ -12,6 +12,7 @@ import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.scenes.params.SignatureParams
 import com.email.scenes.settings.data.SettingsRequest
 import com.email.scenes.settings.devices.DeviceItem
+import com.email.scenes.settings.labels.LabelWrapperListController
 import com.email.utils.DeviceUtils
 import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
@@ -28,14 +29,22 @@ class SettingsController(
 
     override val menuResourceId: Int? = null
 
+    private val labelWrapperListController = LabelWrapperListController(model, scene.getLabelListView())
+
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
             is SettingsResult.ChangeContactName -> onContactNameChanged(result)
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
+            is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+
+        override fun onCustomLabelNameAdded(labelName: String) {
+            dataSource.submitRequest(SettingsRequest.CreateCustomLabel(labelName))
+            keyboardManager.hideKeyboard()
+        }
 
         override fun onProfileNameClicked() {
             scene.showProfileNameDialog(model.fullName)
@@ -50,11 +59,11 @@ class SettingsController(
         }
 
         override fun onToggleLabelSelection(label: LabelWrapper) {
-
+            dataSource.submitRequest(SettingsRequest.ChangeVisibilityLabel(label.id, label.isSelected))
         }
 
         override fun onCreateLabelClicked() {
-            scene.showMessage(UIMessage(R.string.not_implemented))
+            scene.showCreateLabelDialog()
         }
 
         override fun onProfileNameChanged(fullName: String) {
@@ -107,10 +116,28 @@ class SettingsController(
         }
     }
 
+    private fun onCreateCustomLabels(result: SettingsResult.CreateCustomLabel){
+        when(result) {
+            is SettingsResult.CreateCustomLabel.Success -> {
+                val labelWrapper = LabelWrapper(result.label)
+                labelWrapper.isSelected = true
+                labelWrapperListController.addNew(labelWrapper)
+            }
+            is SettingsResult.CreateCustomLabel.Failure -> {
+                scene.showMessage(UIMessage(R.string.error_creating_labels))
+                host.finishScene()
+            }
+        }
+    }
+
     private fun onGetCustomLabels(result: SettingsResult.GetCustomLabels){
         when(result) {
             is SettingsResult.GetCustomLabels.Success -> {
-                model.labels.addAll(result.labels.map { LabelWrapper(it) })
+                model.labels.addAll(result.labels.map {
+                    val labelWrapper = LabelWrapper(it)
+                    labelWrapper.isSelected = it.visible
+                    labelWrapper
+                })
                 //This is done until we get devices from server
                 model.devices.add(DeviceItem(activeAccount.deviceId.toLong(), DeviceUtils.getDeviceName()))
                 scene.attachView(

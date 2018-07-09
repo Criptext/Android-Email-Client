@@ -21,7 +21,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+            db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
                 startDate = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 
@@ -46,7 +46,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+            db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
                 startDate = currentThreads.last().timestamp, rejectedLabels = any(),
                     userEmail = userEmail)
         } returns expectedThreads
@@ -71,7 +71,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         // prepare db mock
         every {
-            db.getThreadsFromMailboxLabel(labelTextTypes = selectedFolder, limit = 20,
+            db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
                 startDate = null, rejectedLabels = any(), userEmail = userEmail)
         } returns expectedThreads
 

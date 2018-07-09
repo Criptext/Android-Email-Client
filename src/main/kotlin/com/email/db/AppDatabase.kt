@@ -29,7 +29,6 @@ import com.email.db.typeConverters.*
 @TypeConverters(
         DateConverter::class,
         BooleanConverter::class,
-        LabelTextConverter::class,
         LabelTypeConverter::class,
         ContactTypeConverter::class,
         EmailDeliveryConverter::class,

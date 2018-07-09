@@ -4,13 +4,6 @@ import com.email.R
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.ComposerLocalDB
-import com.email.db.EmailDetailLocalDB
-import com.email.db.MailFolders
-import com.email.db.models.EmailLabel
-import com.email.db.models.Label
-import com.email.scenes.emaildetail.data.EmailDetailResult
-import com.email.scenes.label_chooser.SelectedLabels
-import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.UIMessage
 
 /**

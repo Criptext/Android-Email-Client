@@ -2,11 +2,8 @@ package com.email.db
 
 import android.content.Context
 import com.email.db.models.EmailLabel
-import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
-import com.email.scenes.mailbox.data.EmailThread
-import java.util.HashSet
 
 /**
  * Created by sebas on 3/12/18.
@@ -18,7 +15,7 @@ interface EmailDetailLocalDB {
     fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail>
     fun unsendEmail(emailId: Long)
     fun deleteRelationByEmailIds(emailIds: List<Long>)
-    fun getLabelFromLabelType(labelTextType: MailFolders): Label
+    fun getLabelByName(labelName: String): Label
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean)
     fun deleteThread(threadId: String)
@@ -68,8 +65,8 @@ interface EmailDetailLocalDB {
             db.emailLabelDao().deleteRelationByEmailIds(emailIds)
         }
 
-        override fun getLabelFromLabelType(labelTextType: MailFolders): Label {
-            return db.labelDao().get(labelTextType)
+        override fun getLabelByName(labelName: String): Label {
+            return db.labelDao().get(labelName)
         }
 
         override fun createLabelEmailRelations(emailLabels: List<EmailLabel>){

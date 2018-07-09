@@ -25,5 +25,9 @@ class LabelSettingsView(view: View, title: String): TabView(view, title){
     fun initView(virtualLabelWrapperList: VirtualLabelWrapperList, settingsUIObserver: SettingsUIObserver?){
         labelListView.setAdapter(LabelWrapperAdapter(view.context, settingsUIObserver, virtualLabelWrapperList))
     }
+
+    fun getListView(): VirtualListView{
+        return labelListView
+    }
     
 }

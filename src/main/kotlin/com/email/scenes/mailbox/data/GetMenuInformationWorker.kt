@@ -2,7 +2,6 @@ package com.email.scenes.mailbox.data
 
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
-import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Label
 
@@ -27,7 +26,8 @@ class GetMenuInformationWorker(
                 account = db.getExistingAccount(),
                 totalInbox = db.getUnreadCounterLabel(Label.defaultItems.inbox.id),
                 totalSpam = db.getUnreadCounterLabel(Label.defaultItems.spam.id),
-                totalDraft = db.getTotalCounterLabel(Label.defaultItems.draft.id))
+                totalDraft = db.getTotalCounterLabel(Label.defaultItems.draft.id),
+                labels = db.getCustomAndVisibleLabels())
     }
 
     override fun cancel() {

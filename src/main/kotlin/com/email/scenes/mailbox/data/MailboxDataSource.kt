@@ -60,7 +60,7 @@ class MailboxDataSource(
             is MailboxRequest.LoadEmailThreads -> LoadEmailThreadsWorker(
                     db = mailboxLocalDB,
                     loadParams = params.loadParams,
-                    labelTextTypes = params.label,
+                    labelNames = params.label,
                     userEmail = params.userEmail,
                     publishFn = { result ->
                         flushResults(result)

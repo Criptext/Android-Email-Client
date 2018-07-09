@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.Label
-import com.email.db.typeConverters.LabelTextConverter
 
 /**
  * Created by sebas on 3/14/18.
@@ -22,8 +21,7 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
     private val labelView: TextView
 
     fun bindLabel(label: Label){
-        labelView.text = LabelTextConverter().
-                parseLabelTextType(label.text)
+        labelView.text = label.text
         setDrawableBackground(Color.parseColor("#${label.color}"))
     }
 

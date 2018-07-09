@@ -124,7 +124,7 @@ class UpdateMailboxWorker(
     private fun reloadMailbox(shouldReload: Boolean): List<EmailPreview> {
         return if (shouldReload)
             db.getThreadsFromMailboxLabel(
-                    labelTextTypes = label.text,
+                    labelName = label.text,
                     startDate = null,
                     limit = Math.max(20, loadedThreadsCount),
                     rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),

@@ -21,7 +21,7 @@ class SettingsActivity: BaseActivity(){
         val model = receivedModel as SettingsModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)
-        val scene = SettingsScene.Default(view, supportFragmentManager)
+        val scene = SettingsScene.Default(view)
         val db = SettingsLocalDB(appDB.labelDao(), appDB.accountDao(), appDB.contactDao())
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,

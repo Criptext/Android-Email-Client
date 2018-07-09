@@ -1,6 +1,5 @@
 package com.email.scenes.emaildetail
 
-import android.media.Image
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -11,7 +10,6 @@ import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.SecureEmail
-import com.email.db.MailFolders
 import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
@@ -171,7 +169,7 @@ interface EmailDetailScene {
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener,
-                    currentFolder = MailFolders.ALL_MAIL)
+                    currentFolder = SecureEmail.LABEL_ALL_MAIL)
         }
 
         override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {

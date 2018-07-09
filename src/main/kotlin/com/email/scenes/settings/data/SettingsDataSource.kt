@@ -24,6 +24,17 @@ class SettingsDataSource(
                     db = settingsLocalDB,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.CreateCustomLabel -> CreateCustomLabelWorker(
+                    labelName = params.labelName,
+                    settingsLocalDB = settingsLocalDB,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is SettingsRequest.ChangeVisibilityLabel -> ChangeVisibilityLabelWorker(
+                    db = settingsLocalDB,
+                    isVisible = params.isVisible,
+                    labelId = params.labelId,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

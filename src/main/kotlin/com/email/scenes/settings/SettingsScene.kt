@@ -15,16 +15,19 @@ import com.email.scenes.settings.labels.VirtualLabelWrapperList
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 import com.email.utils.ui.ViewPagerAdapter
+import com.email.utils.virtuallist.VirtualListView
 
 interface SettingsScene{
 
     fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
+    fun showCreateLabelDialog()
+    fun getLabelListView(): VirtualListView
 
     var settingsUIObserver: SettingsUIObserver?
 
-    class Default(private val view: View, private val fragmentManager: FragmentManager): SettingsScene{
+    class Default(private val view: View): SettingsScene{
 
         private val context = view.context
 
@@ -40,7 +43,13 @@ interface SettingsScene{
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
+        private val labelView: LabelSettingsView by lazy {
+            LabelSettingsView(view.findViewById(R.id.viewSettingsLabels),
+                    context.getString(R.string.labels))
+        }
+
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
+        private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -67,6 +76,14 @@ interface SettingsScene{
             settingsProfileNameDialog.showProfileNameDialog(fullName, settingsUIObserver)
         }
 
+        override fun showCreateLabelDialog() {
+            settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver)
+        }
+
+        override fun getLabelListView(): VirtualListView {
+            return labelView.getListView()
+        }
+
         private fun loadTabs(name: String, model: SettingsModel) {
             setupViewPager(mViewPager, name, model)
             tabs.setupWithViewPager(mViewPager)
@@ -80,8 +97,6 @@ interface SettingsScene{
             generalView.setExternalListeners(settingsUIObserver)
             adapter.addView(generalView)
 
-            val labelView = LabelSettingsView(view.findViewById(R.id.viewSettingsLabels),
-                    context.getString(R.string.labels))
             labelView.initView(VirtualLabelWrapperList(model), settingsUIObserver)
             adapter.addView(labelView)
 

@@ -51,7 +51,7 @@ interface SearchLocalDB{
 
         }
 
-        private fun getEmailThreadFromEmail(email: Email, selectedLabel: MailFolders,
+        private fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
                                             rejectedLabels: List<Long>, userEmail: String): EmailThread {
 
             val id = email.id

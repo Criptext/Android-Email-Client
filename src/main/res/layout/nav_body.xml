@@ -313,7 +313,7 @@
         android:id="@+id/slider_labels"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:layout_width="@dimen/square_icon"
@@ -333,7 +333,25 @@
             android:textColor="@color/drawer_text"
             android:layout_weight="1"/>
 
+        <ImageView
+            android:id="@+id/imageViewArrow"
+            android:layout_width="40dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:padding="12dp"
+            android:tint="#d8d8d8"
+            android:src="@drawable/arrow_down"/>
+
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewLabels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="45dp"
+        android:visibility="gone"/>
 
     <View
         android:layout_width="match_parent"
@@ -343,7 +361,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
         android:layout_marginRight="25dp"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
     <LinearLayout
         android:layout_width="match_parent"

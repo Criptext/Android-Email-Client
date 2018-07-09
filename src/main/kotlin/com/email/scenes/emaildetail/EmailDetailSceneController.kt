@@ -1,11 +1,8 @@
 package com.email.scenes.emaildetail
 
 import android.Manifest
-import com.email.IHostActivity
-import com.email.R
 import com.email.api.models.TrackingUpdate
 import com.email.db.DeliveryTypes
-import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.db.models.FullEmail
@@ -25,8 +22,7 @@ import com.email.utils.KeyboardManager
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
 import android.content.pm.PackageManager
-import com.email.BaseActivity
-import com.email.ExternalActivityParams
+import com.email.*
 import com.email.bgworker.BackgroundWorkManager
 import com.email.db.models.FileDetail
 import com.email.scenes.composer.data.ComposerType
@@ -195,15 +191,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
-            moveEmailThread(MailFolders.INBOX)
+            moveEmailThread(SecureEmail.LABEL_INBOX)
         }
 
         override fun onMoveToSpamClicked() {
-            moveEmailThread(MailFolders.SPAM)
+            moveEmailThread(SecureEmail.LABEL_SPAM)
         }
 
         override fun onMoveToTrashClicked() {
-            moveEmailThread(MailFolders.TRASH)
+            moveEmailThread(SecureEmail.LABEL_TRASH)
         }
     }
 
@@ -281,11 +277,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
-            moveEmail(fullEmail, MailFolders.TRASH)
+            moveEmail(fullEmail, SecureEmail.LABEL_TRASH)
         }
 
         override fun onSpamOptionSelected(fullEmail: FullEmail, position: Int) {
-            moveEmail(fullEmail, MailFolders.SPAM)
+            moveEmail(fullEmail, SecureEmail.LABEL_SPAM)
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
@@ -380,7 +376,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun deleteThread() {
-        moveEmailThread(MailFolders.TRASH)
+        moveEmailThread(SecureEmail.LABEL_TRASH)
     }
 
     private fun updateUnreadStatusThread(){
@@ -397,7 +393,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
             R.id.mailbox_not_spam -> removeCurrentLabelThread()
             R.id.mailbox_not_trash -> removeCurrentLabelThread()
-            R.id.mailbox_spam -> moveEmailThread(MailFolders.SPAM)
+            R.id.mailbox_spam -> moveEmailThread(SecureEmail.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
                 scene.showDialogMoveTo(onMoveThreadsListener)
@@ -423,7 +419,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
 
-    fun moveEmail(fullEmail: FullEmail, chosenLabel: MailFolders){
+    fun moveEmail(fullEmail: FullEmail, chosenLabel: String){
 
         val req = EmailDetailRequest.MoveEmail(
                 emailId = fullEmail.email.id,
@@ -445,7 +441,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     }
 
-    private fun moveEmailThread(chosenLabel: MailFolders?) {
+    private fun moveEmailThread(chosenLabel: String?) {
         val req = EmailDetailRequest.MoveEmailThread(
                 threadId = model.threadId,
                 chosenLabel = chosenLabel,

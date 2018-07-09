@@ -72,6 +72,8 @@
     <!-- SETITINGS -->
     <string name="title_swipe">Swipe Options</string>
     <string name="title_profile_name">Profile Name</string>
+    <string name="title_custom_dialog">New Label</string>
+    <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
     <string name="title_change_password">Change Password</string>
     <string name="title_recovery_email">Recovery Email</string>
@@ -231,6 +233,7 @@
     <string name="error_updating_account">Error updating user account. Please try again</string>
     <string name="error_updating_signature">Error updating user signature. Please try again</string>
     <string name="error_getting_labels">Error getting labels. Please try again</string>
+    <string name="error_creating_labels">Error creating a label. Please try again</string>
     <string name="error_getting_contacts">Error getting contacts. Please try again</string>
     <string name="error_saving_as_draft">Error saving email. Please try again</string>
     <string name="error_checking_availability">Error checking username availability</string>

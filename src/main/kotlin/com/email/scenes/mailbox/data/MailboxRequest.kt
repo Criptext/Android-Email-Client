@@ -1,8 +1,6 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.MailFolders
 import com.email.db.models.Label
-import com.email.email_preview.EmailPreview
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.label_chooser.SelectedLabels
@@ -29,13 +27,13 @@ sealed class MailboxRequest{
     class LinkDevice: MailboxRequest()
 
     data class MoveEmailThread(
-            val chosenLabel: MailFolders?,
+            val chosenLabel: String?,
             val selectedThreadIds: List<String>,
             val currentLabel: Label
     ): MailboxRequest()
 
     data class LoadEmailThreads(
-            val label: MailFolders,
+            val label: String,
             val loadParams: LoadParams,
             val userEmail: String
             ): MailboxRequest()

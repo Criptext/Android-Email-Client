@@ -5,7 +5,6 @@ import android.support.test.runner.AndroidJUnit4
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.models.EmailMetadata
-import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.*
 import io.mockk.mockk
@@ -55,7 +54,7 @@ class MoveEmailThreadsWorkerTest{
         mailboxLocalDB.getThreadsFromMailboxLabel(
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
-                labelTextTypes = Label.defaultItems.spam.text,
+                labelName = Label.defaultItems.spam.text,
                 startDate = null,
                 limit = 20
         ).size shouldBe 0
@@ -63,7 +62,7 @@ class MoveEmailThreadsWorkerTest{
         val emailThreads = mailboxLocalDB.getThreadsFromMailboxLabel(
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
-                labelTextTypes = Label.defaultItems.inbox.text,
+                labelName = Label.defaultItems.inbox.text,
                 startDate = null,
                 limit = 20
         )
@@ -78,14 +77,14 @@ class MoveEmailThreadsWorkerTest{
         mailboxLocalDB.getThreadsFromMailboxLabel(
                 userEmail = "gabriel@jigl.com",
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
-                labelTextTypes = Label.defaultItems.spam.text,
+                labelName = Label.defaultItems.spam.text,
                 startDate = null,
                 limit = 20
         ).size shouldBe 2
 
     }
 
-    private fun newWorker(chosenLabel: MailFolders?,
+    private fun newWorker(chosenLabel: String?,
                           selectedThreadIds: List<String>,
                           currentLabel: Label): MoveEmailThreadWorker =
 

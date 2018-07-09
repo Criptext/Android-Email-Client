@@ -82,4 +82,19 @@ class SettingsControllerTest{
 
     }
 
+    @Test
+    fun `on custom label added, should send CreateCustomLabel request`() {
+
+        controller.onStart(null)
+
+        listenerSlot.captured(SettingsResult.GetCustomLabels.Success(labels = listOf()))
+
+        val observer = observerSlot.captured
+        observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")
+
+        val sentRequest = sentRequests.last()
+        sentRequest `should be instance of` SettingsRequest.CreateCustomLabel::class.java
+
+    }
+
 }
