@@ -102,6 +102,7 @@ class SendEmailWorkerTest {
     fun should_correctly_encrypt_an_email_and_send_it_to_an_inmemory_user() {
         // create in memory user that will receive and decrypt the email
         val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
+        val myself = InMemoryUser(keyGenerator, "tester", 1).setup()
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
@@ -111,7 +112,8 @@ class SendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val keyBundleFromMe = myself.fetchAPreKeyBundle()
+        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}, ${keyBundleFromMe.toJSON()}]"
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
@@ -133,6 +135,7 @@ class SendEmailWorkerTest {
     fun should_update_the_email_in_db_with_the_result_of_the_http_request() {
         // create in memory user that will receive and decrypt the email
         val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
+        val myself = InMemoryUser(keyGenerator, "tester", 1).setup()
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
@@ -142,7 +145,8 @@ class SendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val keyBundleFromMe = myself.fetchAPreKeyBundle()
+        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}, ${keyBundleFromMe.toJSON()}]"
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
