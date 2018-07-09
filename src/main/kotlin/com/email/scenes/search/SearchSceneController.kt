@@ -29,9 +29,11 @@ class SearchSceneController(private val scene: SearchScene,
                             private val model: SearchSceneModel,
                             private val host: IHostActivity,
                             private val activeAccount: ActiveAccount,
-                            private val storage: KeyValueStorage,
+                            storage: KeyValueStorage,
                             private val dataSource: SearchDataSource)
     : SceneController(){
+
+    private val searchHistoryManager = SearchHistoryManager(storage)
 
     private val searchListController = SearchResultListController(
             model, scene.searchListView, scene.threadsListView)
@@ -114,7 +116,7 @@ class SearchSceneController(private val scene: SearchScene,
         }
 
         override fun onSearchButtonClicked(text: String) {
-            saveSearchHistory(text)
+            searchHistoryManager.saveSearchHistory(text)
         }
 
     }
@@ -128,7 +130,7 @@ class SearchSceneController(private val scene: SearchScene,
                 observer = observer
         )
 
-        val results = getSearchHistory()
+        val results = searchHistoryManager.getSearchHistory()
         searchListController.setHistorySearchList(results)
 
         dataSource.listener = dataSourceListener
@@ -158,38 +160,6 @@ class SearchSceneController(private val scene: SearchScene,
                 }
             }
         }
-    }
-
-    private fun saveSearchHistory(value: String) {
-
-        val searchHistory = getSearchHistory().toMutableList()
-        if(searchHistory.size == MAXIMUM_SEARCH_HISTORY){
-            searchHistory.removeAt(searchHistory.size - 1)
-        }
-        val newSearchItem = SearchItem(searchHistory.size, value, "")
-        newSearchItem.timestampCreated = System.currentTimeMillis()
-        searchHistory.add(newSearchItem)
-
-        storage.putStringSet(KeyValueStorage.StringKey.SearchHistory,
-                searchHistory.map { "${it.subject}$SEPARATOR${it.timestampCreated}" }.toMutableSet())
-
-    }
-
-    private fun getSearchHistory(): List<SearchItem> {
-
-        val setHistory = storage.getStringSet(KeyValueStorage.StringKey.SearchHistory) ?: return listOf()
-        val searchHistory =  setHistory.mapIndexed { index, s ->
-            val searchItem = SearchItem(index, s.split(SEPARATOR)[0], "")
-            searchItem.timestampCreated = s.split(SEPARATOR)[1].toLong()
-            searchItem
-        }
-        return searchHistory.sortedWith(Comparator { p0, p1 ->
-            when {
-                p0.timestampCreated!! > p1.timestampCreated!! -> -1
-                p0.timestampCreated!! == p1.timestampCreated!! -> 0
-                else -> 1
-            }
-        })
     }
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
