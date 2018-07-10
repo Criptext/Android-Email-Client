@@ -19,7 +19,7 @@ class MockedIHostActivity: IHostActivity{
     var isFinished: Boolean = false
     var activityLaunched: Boolean = false
 
-    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?) {
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean) {
         isFinished = true
     }
 

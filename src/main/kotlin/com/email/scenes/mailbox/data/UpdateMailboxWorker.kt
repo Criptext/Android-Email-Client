@@ -157,12 +157,13 @@ class UpdateMailboxWorker(
 
     private fun processTrackingUpdates(events: List<Event>): Boolean {
         val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
+        val isAnEventGeneratedByMe: (Pair<Long, TrackingUpdate>) -> Boolean = { it.second.from != activeAccount.recipientId }
         val toIdAndTrackingUpdatePair: (Event) -> Pair<Long, TrackingUpdate> = {
             Pair(it.rowid, TrackingUpdate.fromJSON(it.params))
         }
 
         val trackingUpdates = events.filter(isTrackingUpdateEvent)
-                .map(toIdAndTrackingUpdatePair)
+                .map(toIdAndTrackingUpdatePair).filter(isAnEventGeneratedByMe)
 
         // assume all tracking updates are open updates for now
         val openUpdates = trackingUpdates

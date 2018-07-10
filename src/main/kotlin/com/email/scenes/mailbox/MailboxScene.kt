@@ -45,8 +45,7 @@ interface MailboxScene{
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
-            threadList: VirtualEmailThreadList,
-            sentByMe: Boolean)
+            threadList: VirtualEmailThreadList)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -76,6 +75,8 @@ interface MailboxScene{
         }
 
         private val context = mailboxView.context
+
+        private lateinit var adapter: EmailThreadAdapter
 
         override var observer: MailboxUIObserver? = null
 
@@ -130,14 +131,12 @@ interface MailboxScene{
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
-                threadList: VirtualEmailThreadList,
-                sentByMe: Boolean) {
+                threadList: VirtualEmailThreadList) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
-            val adapter = EmailThreadAdapter(mContext = context,
-                                            threadListener = threadEventListener,
-                                            sentByMe = sentByMe, threadList = threadList)
+            adapter = EmailThreadAdapter(threadListener = threadEventListener,
+                                         threadList = threadList)
             virtualListView.setAdapter(adapter)
             this.observer = observer
             this.threadEventListener = threadEventListener
@@ -256,5 +255,6 @@ interface MailboxScene{
         override fun setCounterLabel(menu: NavigationMenuOptions, total: Int) {
             drawerMenuView.setCounterLabel(menu, total)
         }
+
     }
 }

@@ -5,7 +5,7 @@
     <item
         android:id="@+id/mailbox_delete_selected_messages_4ever"
         app:showAsAction="always"
-        android:icon="@drawable/trash"
+        android:icon="@drawable/trash_forever"
         android:title="@string/delete"/>
 
     <item

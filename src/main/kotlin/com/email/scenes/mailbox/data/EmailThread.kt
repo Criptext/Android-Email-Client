@@ -1,10 +1,12 @@
 package com.email.scenes.mailbox.data
 
+import com.email.SecureEmail
 import com.email.db.DeliveryTypes
 import com.email.db.MailFolders
 import com.email.db.models.Contact
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.utils.EmailThreadValidator
 import java.util.*
 
 /**
@@ -14,7 +16,8 @@ import java.util.*
 class EmailThread(val latestEmail: FullEmail,
                   val participants: List<Contact>,
                   val currentLabel: MailFolders,
-                  val totalEmails: Int) {
+                  val totalEmails: Int,
+                  val hasFiles: Boolean) {
 
     val unread :Boolean
         get() = latestEmail.email.unread
@@ -32,4 +35,7 @@ class EmailThread(val latestEmail: FullEmail,
 
     val status: DeliveryTypes
         get() = latestEmail.email.delivered
+
+    val isStarred: Boolean
+        get() = EmailThreadValidator.isLabelInList(latestEmail.labels, SecureEmail.LABEL_STARRED)
 }

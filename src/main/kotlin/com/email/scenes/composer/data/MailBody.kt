@@ -11,8 +11,8 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
 
     companion object {
 
-        private const val replyBodyContainerTagStart = """<div id="criptext55tu7s3"></div>"""
-        private const val replyBodyContainerTagEnd = """<div id="criptexth8h5h8f"></div>"""
+        private const val replyBodyContainerTagStart = """<div></div><br><div id="criptext_quote">"""
+        private const val replyBodyContainerTagEnd = "</div>"
 
         fun createNewTemplateMessageBody(template: String, signature: String): String {
             val builder = StringBuilder(template)
@@ -32,9 +32,9 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteStart)
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
+            builder.append(replyBodyContainerTagEnd)
             builder.append("<div></div><br>")
             builder.append(signature)
-            builder.append(replyBodyContainerTagEnd)
 
             return builder.toString()
         }
@@ -51,9 +51,9 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteStart)
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
+            builder.append(replyBodyContainerTagEnd)
             builder.append("<div></div><br>")
             builder.append(signature)
-            builder.append(replyBodyContainerTagEnd)
 
             return builder.toString()
         }

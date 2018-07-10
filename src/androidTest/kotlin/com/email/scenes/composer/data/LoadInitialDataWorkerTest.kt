@@ -6,10 +6,12 @@ import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.models.EmailMetadata
 import com.email.db.ComposerLocalDB
+import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Label
+import com.email.email_preview.EmailPreview
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import io.mockk.mockk
 import org.amshove.kluent.shouldContain
@@ -18,6 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 /**
  * Created by gabriel on 7/2/18.
@@ -36,6 +39,9 @@ class LoadInitialDataWorkerTest {
     private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1)
     private val mayerContact = Contact(email = "mayer@jigl.com", name = "Mayer", id = 2)
     private val danielContact = Contact(email = "daniel@jigl.com", name = "Daniel", id = 3)
+    private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
+            senderName = "Mayer", deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
+            emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false)
 
     @Before
     fun setup() {
@@ -75,7 +81,8 @@ class LoadInitialDataWorkerTest {
         val emailId = insertEmailToLoad(to = listOf(mayerContact), fromContact = testerContact,
                 subject = "Draft Test", decryptedBody = "Hello this is a draft", isDraft = true)
 
-        val worker = newWorker(emailId = emailId, type = ComposerType.Draft(draftId = emailId))
+        val worker = newWorker(emailId = emailId, type = ComposerType.Draft(draftId = emailId,
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "Draft Test"
@@ -89,7 +96,7 @@ class LoadInitialDataWorkerTest {
                 subject = "Hello", decryptedBody = "Please reply to me.", isDraft = false)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Reply(originalId = emailId,
-                threadId = "__MESSAGE_ID__"))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "RE: Hello"
@@ -104,7 +111,7 @@ class LoadInitialDataWorkerTest {
                 decryptedBody = "Please reply to all.", isDraft = false)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.ReplyAll(originalId = emailId,
-                threadId = "__MESSAGE_ID__"))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "RE: Hello"
@@ -119,7 +126,7 @@ class LoadInitialDataWorkerTest {
                 decryptedBody = "This is something you should forward.", isDraft = false)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Forward(originalId = emailId,
-                threadId = "__THREAD_ID__"))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "FW: Hello"

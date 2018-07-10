@@ -12,7 +12,7 @@ class WebViewUtils {
 
     companion object {
 
-        private const val imageUri = "file:///android_asset/showmore.png"
+        const val imageUri = "file:///android_asset/showmore.png"
 
         fun collapseScript() : String{
             val sb = StringBuilder()
@@ -47,7 +47,7 @@ class WebViewUtils {
             sb.append("return '<a href=\"' + trueUrl + '\" target=\"_blank\">' + url + '</a>';")
             sb.append("});")
 
-            sb.append("var replybody = document.getElementsByTagName(\"blockquote\")[0];")
+            sb.append("var replybody = document.getElementById(\"criptext_quote\") || document.getElementsByTagName(\"blockquote\")[0];")
             sb.append("var newNode = document.createElement(\"img\");")
             sb.append("newNode.src = \"$imageUri\";")
             sb.append("newNode.width = 30;")

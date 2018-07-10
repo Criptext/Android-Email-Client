@@ -64,7 +64,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                 (it as ActivityMessage.SendMail).emailId == 1L
             }
 
-            verify { host.exitToScene(MailboxParams(), match(sendMailMessageWithExpectedEmailId) ) }
+            verify { host.exitToScene(MailboxParams(), match(sendMailMessageWithExpectedEmailId), false ) }
 
         }
     }

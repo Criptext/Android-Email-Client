@@ -113,7 +113,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             if(emailPreview.count == 1 &&
                     model.selectedLabel == Label.defaultItems.draft){
-                val params = ComposerParams(ComposerType.Draft(draftId = emailPreview.emailId))
+                val params = ComposerParams(ComposerType.Draft(draftId = emailPreview.emailId,
+                        threadPreview = emailPreview, currentLabel = model.selectedLabel))
                 return host.goToScene(params, true)
             }
             host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
@@ -246,13 +247,11 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
-        val sentByMe = model.selectedLabel == Label.defaultItems.sent
         scene.attachView(
                 mailboxLabel = model.selectedLabel.text,
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
-                observer = observer, sentByMe = sentByMe,
-                threadList = VirtualEmailThreadList(model))
+                observer = observer, threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
 
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())

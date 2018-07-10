@@ -3,21 +3,26 @@ package com.email.scenes.emaildetail
 import com.email.ExternalActivityParams
 import com.email.R
 import com.email.db.models.FileDetail
+import com.email.db.models.Label
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
+import com.email.scenes.emaildetail.ui.EmailDetailUIObserver
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.utils.UIMessage
 import com.email.utils.virtuallist.VirtualList
 import io.mockk.*
+import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.`should contain`
 import org.junit.Before
 import org.junit.Test
 
 class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
 
+    private val emailDetailUIObserverSlot = CapturingSlot<EmailDetailUIObserver>()
     private val fullEmailEventListener = CapturingSlot<FullEmailListAdapter.OnFullEmailEventListener>()
     private lateinit var listenerSlot: CapturingSlot<(EmailDetailResult) -> Unit>
 
@@ -25,7 +30,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     override fun setUp() {
         super.setUp()
         every {
-            scene.attachView(capture(fullEmailEventListener), any(), any())
+            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot))
         } just Runs
 
         listenerSlot = CapturingSlot()
@@ -121,5 +126,33 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         verify { scene.showError(UIMessage(R.string.error_downloading_file)) }
     }
 
+    @Test
+    fun `after clicking star icon (ON), should send UpdateEmailThreadsLabelsRelations request`() {
 
+        controller.onStart(null)
+        sentRequests.clear()
+        simulateLoadOfEmails(2)
+
+        //The actual value of starred icon is ON
+        emailDetailUIObserverSlot.captured.onStarredButtonPressed(isStarred = true)
+
+        val sentRequest = sentRequests.last() as EmailDetailRequest.UpdateEmailThreadsLabelsRelations
+
+        sentRequest.selectedLabels.toIDs() `should contain` Label.defaultItems.starred.id
+    }
+
+    @Test
+    fun `after clicking star icon (OFF), should send UpdateEmailThreadsLabelsRelations request`() {
+
+        controller.onStart(null)
+        sentRequests.clear()
+        simulateLoadOfEmails(2)
+
+        //The actual value of starred icon is ON
+        emailDetailUIObserverSlot.captured.onStarredButtonPressed(isStarred = false)
+
+        val sentRequest = sentRequests.last() as EmailDetailRequest.UpdateEmailThreadsLabelsRelations
+
+        sentRequest.selectedLabels.toIDs().`should be empty`()
+    }
 }

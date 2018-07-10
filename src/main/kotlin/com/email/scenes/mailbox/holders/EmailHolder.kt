@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.DeliveryTypes
-import com.email.db.models.Label
 import com.email.email_preview.EmailPreview
 import com.email.scenes.MailItemHolder
 import com.email.utils.DateUtils
@@ -37,6 +36,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val avatarView: CircleImageView
     private val iconBack: ImageView
     private val check: ImageView
+    private val starIcon: ImageView
 
     init {
         view.setOnClickListener(this)
@@ -45,7 +45,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    fun bindEmailPreview(emailPreview: EmailPreview, sentByMe: Boolean) {
+    fun bindEmailPreview(emailPreview: EmailPreview) {
         subjectView.text = if (emailPreview.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
         else emailPreview.subject
@@ -55,10 +55,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         else
             emailPreview.bodyPreview
 
-        headerView.text = if (sentByMe)
-            "${headerView.context.resources.getString(R.string.to_popup)} ${emailPreview.topText}"
-        else
-            emailPreview.topText
+        headerView.text = emailPreview.topText
 
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
@@ -95,11 +92,12 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             countView.visibility = View.GONE
         }
 
-        setIcons(emailPreview.deliveryStatus)
+        setIcons(emailPreview.deliveryStatus, emailPreview.isStarred, emailPreview.hasFiles)
         toggleStatus(emailPreview.isSelected, emailPreview.unread)
+
     }
 
-    private fun setIcons(deliveryType: DeliveryTypes){
+    private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, hasFiles: Boolean){
 
         check.visibility = View.VISIBLE
 
@@ -113,16 +111,13 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
             }
-            DeliveryTypes.UNSEND -> {
-                setIconAndColor(R.drawable.un_sent, R.color.unsendBtn)
-            }
             DeliveryTypes.NONE -> {
                 check.visibility = View.GONE
             }
         }
 
-        //TODO validate if has attachments
-        attachment.visibility = View.GONE
+        starIcon.visibility = if(isStarred) View.VISIBLE else View.GONE
+        attachment.visibility = if(hasFiles) View.VISIBLE else View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
@@ -186,6 +181,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         iconBack = view.findViewById(R.id.icon_back)
         layout = view.findViewById(R.id.mail_item_layout)
         attachment = view.findViewById(R.id.email_has_attachments)
+        starIcon = view.findViewById(R.id.starred)
         context = view.context
     }
 

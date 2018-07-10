@@ -40,7 +40,9 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
             }
             Event.Cmd.trackingUpdate -> {
                 val trackingUpdate = TrackingUpdate.fromJSON(event.params)
-                eventDataSource.submitRequest(EventRequest.UpdateDeliveryStatus(trackingUpdate))
+                if(trackingUpdate.from != activeAccount.recipientId) {
+                    eventDataSource.submitRequest(EventRequest.UpdateDeliveryStatus(trackingUpdate))
+                }
             }
         }
     }

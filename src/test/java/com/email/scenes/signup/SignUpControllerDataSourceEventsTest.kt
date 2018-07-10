@@ -34,7 +34,7 @@ class SignUpControllerDataSourceEventsTest: SignUpControllerTest() {
         listenerSlot.captured(SignUpResult.RegisterUser.Failure(errorMessage, IOException()))
 
         verify { scene.showError(errorMessage) }
-        verify(inverse = true) { host.exitToScene(any(), any()) }
+        verify(inverse = true) { host.exitToScene(any(), any(), false) }
     }
 
     @Test

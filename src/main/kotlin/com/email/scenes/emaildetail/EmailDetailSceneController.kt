@@ -30,6 +30,8 @@ import com.email.ExternalActivityParams
 import com.email.bgworker.BackgroundWorkManager
 import com.email.db.models.FileDetail
 import com.email.scenes.composer.data.ComposerType
+import com.email.scenes.emaildetail.ui.EmailDetailUIObserver
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.file.FileUtils
 
 import com.email.websocket.WebSocketEventListener
@@ -59,6 +61,31 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
+    private val emailDetailUIObserver = object: EmailDetailUIObserver{
+
+        override fun onStarredButtonPressed(isStarred: Boolean) {
+            val selectedLabels = SelectedLabels()
+            val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
+            val labels = if(isStarred){
+                labelsWithoutFilter.add(Label.defaultItems.starred)
+                labelsWithoutFilter
+            }
+            else{
+                labelsWithoutFilter.filter { it.id != Label.defaultItems.starred.id }
+            }
+            selectedLabels.addMultipleSelected(labels.toSet().map { LabelWrapper(it) })
+            updateThreadLabelsRelation(selectedLabels)
+        }
+
+        override fun onBackButtonPressed() {
+            host.exitToScene(
+                    params = MailboxParams(),
+                    activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                    forceAnimation = false
+            )
+        }
+    }
+
     private fun onSelectedLabelsLoaded(result: EmailDetailResult.GetSelectedLabels) {
         when (result) {
             is EmailDetailResult.GetSelectedLabels.Success -> {
@@ -80,7 +107,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                         threadId = result.threadId,
                         selectedLabelIds = result.selectedLabelIds
                 )
-                host.exitToScene(MailboxParams(), message)
+                host.exitToScene(
+                        params = MailboxParams(),
+                        activityMessage = message,
+                        forceAnimation = false)
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_labels))
             }
@@ -91,7 +121,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when(result) {
             is EmailDetailResult.UpdateUnreadStatus.Success ->  {
                 val message = ActivityMessage.UpdateUnreadStatusThread(result.threadId, result.unread)
-                host.exitToScene(MailboxParams(), message)
+                host.exitToScene(
+                        params = MailboxParams(),
+                        activityMessage = message,
+                        forceAnimation = false)
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_status))
             }
@@ -102,7 +135,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when(result) {
             is EmailDetailResult.MoveEmailThread.Success ->  {
                 val message = ActivityMessage.MoveThread(result.threadId)
-                host.exitToScene(MailboxParams(), message)
+                host.exitToScene(
+                        params = MailboxParams(),
+                        activityMessage = message,
+                        forceAnimation = false)
             } else -> {
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
@@ -198,20 +234,20 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
         override fun onForwardBtnClicked() {
             val type = ComposerType.Forward(originalId = model.emails.last().email.id,
-                                          threadId = model.emails.last().email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyBtnClicked() {
             val type = ComposerType.Reply(originalId = model.emails.last().email.id,
-                                          threadId = model.emails.last().email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyAllBtnClicked() {
             val type = ComposerType.ReplyAll(originalId = model.emails.last().email.id,
-                                             threadId = model.emails.last().email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -221,20 +257,20 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Reply(originalId = fullEmail.email.id,
-                                          threadId = fullEmail.email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.ReplyAll(originalId = fullEmail.email.id,
-                                             threadId = fullEmail.email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Forward(originalId = fullEmail.email.id,
-                                             threadId = fullEmail.email.threadId)
-            host.goToScene(ComposerParams(type), true)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+            host.goToScene(ComposerParams(type), false)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
@@ -253,7 +289,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
-            val type = ComposerType.Draft(draftId = fullEmail.email.id)
+            val type = ComposerType.Draft(draftId = fullEmail.email.id,
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
             host.goToScene(ComposerParams(type), true)
         }
     }
@@ -276,6 +313,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
 
+                model.threadPreview = model.threadPreview.copy(unread = false)
                 model.emails.addAll(result.fullEmailList)
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
                 result.fullEmailList.forEach { fullEmail ->
@@ -285,7 +323,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.attachView(
                         fullEmailList = fullEmailsList,
                         fullEmailEventListener = emailHolderEventListener,
-                        fileDetailList = model.fileDetails)
+                        fileDetailList = model.fileDetails,
+                        observer = emailDetailUIObserver)
 
                 readEmails(result.fullEmailList)
             }
@@ -322,7 +361,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     override fun onBackPressed(): Boolean {
         host.exitToScene(
                 params = MailboxParams(),
-                activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview)
+                activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                forceAnimation = false
         )
         return true
     }
@@ -436,7 +476,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         val latestEmailWasUpdated = position == model.emails.size - 1
         if (latestEmailWasUpdated)
-            model.threadPreview = model.threadPreview.copy(deliveryStatus = DeliveryTypes.READ)
+            model.threadPreview = model.threadPreview.copy(
+                    deliveryStatus = DeliveryTypes.READ)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {

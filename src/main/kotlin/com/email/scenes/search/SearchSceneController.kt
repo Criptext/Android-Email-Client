@@ -82,15 +82,17 @@ class SearchSceneController(private val scene: SearchScene,
 
             if(emailThread.totalEmails == 1 &&
                     emailThread.latestEmail.labels.contains(Label.defaultItems.draft)) {
-                val type = ComposerType.Draft(draftId = emailThread.latestEmail.email.id)
-                return host.goToScene(ComposerParams(type), true)
+                val type = ComposerType.Draft(draftId = emailThread.latestEmail.email.id,
+                        threadPreview = EmailPreview.fromEmailThread(emailThread),
+                        currentLabel = Label.defaultItems.inbox)
+                return host.goToScene(ComposerParams(type), false)
             }
             dataSource.submitRequest(SearchRequest.UpdateUnreadStatus(
                     listOf(emailThread), false, Label.defaultItems.inbox))
             val params = EmailDetailParams(threadId = emailThread.threadId,
                     currentLabel = Label.defaultItems.inbox,
                     threadPreview = EmailPreview.fromEmailThread(emailThread))
-            host.goToScene(params, true)
+            host.goToScene(params, false)
         }
 
         override fun onToggleThreadSelection(thread: EmailThread, position: Int) {

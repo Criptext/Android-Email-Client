@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
@@ -19,21 +18,18 @@ import android.widget.*
 import com.email.R
 import com.email.SecureEmail
 import com.email.db.DeliveryTypes
-import com.email.db.models.CRFile
 import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
 import com.email.scenes.emaildetail.ui.*
-import com.email.utils.DateUtils
-import com.email.utils.EmailThreadValidator
-import com.email.utils.HTMLUtils
+import com.email.utils.*
 import com.email.utils.ui.ZoomLayout
-import com.email.utils.WebViewUtils
 import com.github.ybq.android.spinkit.SpinKitView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 
 /**
  * Created by sebas on 3/12/18.
@@ -45,22 +41,18 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val layout : FrameLayout
     private val continueDraftView: ImageView
     private val replyView: ImageView
-    private val moreView: ImageView
+    private val threePointsView: ImageView
+    private val moreButton: TextView
     private val toView: TextView
-    private val attachmentView: ImageView
     private val readView: ImageView
-    private val unsendView: AppCompatImageView
-    private val email_options: View
     private val contactInfoPopUp: EmailContactInfoPopup
-    private val readHistoryPopUp: ReadHistoryPopUp
-    private val attachmentHistoryPopUp: AttachmentHistoryPopUp
     private val bodyWebView: WebView
     private val zoomLayout: ZoomLayout
     private val horizontalScrollView: HorizontalScrollView
-    private val progressBarUnsend: SpinKitView
     private val bodyContainer : LinearLayout
     private val webViewLoader: ProgressBar
     private val attachmentsRecyclerView: RecyclerView
+    private val leftImageView: CircleImageView
 
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -72,21 +64,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position,
                     viewOpen = false)
         }
-        moreView.setOnClickListener({
+        threePointsView.setOnClickListener({
             displayPopMenu(emailListener, fullEmail, adapter, position)
         })
 
-        readView.setOnClickListener({
-            readHistoryPopUp.createPopup(fullEmail, null)
-        })
-
-        toView.setOnClickListener({
+        moreButton.setOnClickListener({
             contactInfoPopUp.createPopup(fullEmail, null)
         })
-
-        attachmentView.setOnClickListener {
-            attachmentHistoryPopUp.createPopup(fullEmail, null)
-        }
 
         continueDraftView.setOnClickListener{
             emailListener?.onContinueDraftOptionSelected(fullEmail)
@@ -99,25 +83,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     all = false)
         }
 
-        unsendView.setOnClickListener {
-            toggleUnsendProgress(isShown = true)
-            deactivateElementsForUnsend()
-            emailListener?.onUnsendEmail(
-                    fullEmail = fullEmail,
-                    position = position)
-        }
-
         setAttachments(fileDetails, emailListener)
     }
-    private fun toggleUnsendProgress(isShown: Boolean) {
-        if(isShown)  {
-            progressBarUnsend.visibility = View.VISIBLE
-            unsendView.visibility = View.GONE
-        } else {
-            progressBarUnsend.visibility = View.GONE
-            unsendView.visibility = View.VISIBLE
-        }
-    }
+
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
                                adapter: FullEmailListAdapter, position: Int){
         val popupMenu = createPopupMenu(fullEmail)
@@ -164,7 +132,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private fun createPopupMenu(fullEmail: FullEmail): PopupMenu {
         val wrapper = ContextThemeWrapper(context, R.style.email_detail_popup_menu)
-        val popupMenu = PopupMenu(wrapper , moreView)
+        val popupMenu = PopupMenu(wrapper , threePointsView)
 
     val popuplayout =
             if (fullEmail.email.unread)
@@ -178,8 +146,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     override fun bindFullMail(fullEmail: FullEmail) {
 
-        toggleUnsendProgress(isShown = false)
-
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
@@ -189,9 +155,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml("This content was unsent"), "text/html", "utf-8", "")
             deactivateElementsForUnsend()
-            DrawableCompat.setTint(unsendView.drawable,
-                    ContextCompat.getColor(unsendView.context, R.color.unsend_button_red))
-            unsendView.background = ContextCompat.getDrawable(unsendView.context, R.drawable.circle_unsent)
         }
 
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
@@ -204,8 +167,14 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.textColorPrimary))
                     fullEmail.from.name
                 }
-        email_options.visibility = if(fullEmail.email.delivered != DeliveryTypes.NONE)
-            View.VISIBLE else View.INVISIBLE
+
+        if(fullEmail.email.delivered != DeliveryTypes.NONE) {
+            //TODO add unsend option in menu
+        }
+
+        leftImageView.setImageBitmap(Utility.getBitmapFromText(
+                fullEmail.from.name,
+                fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
 
         setToText(fullEmail)
         setDraftIcon(fullEmail)
@@ -229,12 +198,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         if(fullEmail.labels.contains(Label.defaultItems.draft)){
             continueDraftView.visibility = View.VISIBLE
             replyView.visibility = View.GONE
-            moreView.visibility = View.GONE
+            threePointsView.visibility = View.GONE
         }
         else{
             continueDraftView.visibility = View.GONE
             replyView.visibility = View.VISIBLE
-            moreView.visibility = View.VISIBLE
+            threePointsView.visibility = View.VISIBLE
         }
     }
 
@@ -243,12 +212,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val isFromMe = (fullEmail.email.delivered != DeliveryTypes.NONE
                 || EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT))
         toView.text = when {
-            isFromMe && numberContacts == 1 ->
-                "${toView.resources.getString(R.string.to)} ${fullEmail.to[0].name}"
-            isFromMe && numberContacts > 1 ->
-                toView.resources.getString(R.string.to_contacts, numberContacts)
-            numberContacts > 1 ->
-                toView.resources.getString(R.string.to_me_and, numberContacts  - 1)
+            isFromMe ->
+                "${toView.resources.getString(R.string.to)} ${fullEmail.to.joinToString { it.name }}"
+            numberContacts == 2 ->
+                "${toView.resources.getString(R.string.to_me)} and ${fullEmail.to.joinToString { it.name }}"
+            numberContacts > 2 ->
+                "${toView.resources.getString(R.string.to_me)}, ${fullEmail.to.joinToString { it.name }}"
             else ->
                 toView.resources.getString(R.string.to_me)
         }
@@ -261,23 +230,17 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         when(deliveryType){
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
-                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
             }
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
-                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_sent)
             }
             DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
-                readView.background = ContextCompat.getDrawable(readView.context, R.drawable.circle_read)
             }
             DeliveryTypes.NONE -> {
                 readView.visibility = View.GONE
             }
         }
-
-        //TODO validate if has fileDetails
-        attachmentView.visibility = View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
@@ -360,27 +323,20 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)
         toView = view.findViewById(R.id.to)
-        moreView = view.findViewById(R.id.more)
+        threePointsView = view.findViewById(R.id.more)
+        moreButton = view.findViewById(R.id.more_text)
         replyView = view.findViewById(R.id.reply)
         continueDraftView = view.findViewById(R.id.continue_draft)
-        attachmentView =  view.findViewById(R.id.attachment)
-        readView =  view.findViewById(R.id.read)
-        unsendView =  view.findViewById(R.id.unsend)
-        email_options = view.findViewById(R.id.container_my_email_options)
-
-        contactInfoPopUp = EmailContactInfoPopup(toView)
-        readHistoryPopUp = ReadHistoryPopUp(readView)
-        attachmentHistoryPopUp = AttachmentHistoryPopUp(attachmentView)
+        readView =  view.findViewById(R.id.check)
+        contactInfoPopUp = EmailContactInfoPopup(moreButton)
         bodyWebView = view.findViewById(R.id.email_body)
-
         bodyWebView.webChromeClient = WebChromeClient()
         zoomLayout = view.findViewById(R.id.full_mail_zoom)
         horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
-        progressBarUnsend = view.findViewById(R.id.spin_kit_unsend)
         bodyContainer = view.findViewById(R.id.body_container)
         webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
-
         attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
+        leftImageView = view.findViewById(R.id.mail_item_left_name)
 
         setupWebview()
         horizontalScrollView.isHorizontalScrollBarEnabled = false
