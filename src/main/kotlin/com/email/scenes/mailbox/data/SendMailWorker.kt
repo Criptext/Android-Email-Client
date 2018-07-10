@@ -94,9 +94,14 @@ class SendMailWorker(private val signalClient: SignalClient,
             : List<PostEmailBody.CriptextEmail> {
         return criptextRecipients.map { recipientId ->
             val devices = availableAddresses[recipientId]
-            if (devices == null || devices.isEmpty())
+            if (devices == null || devices.isEmpty()) {
+                if (type == PostEmailBody.RecipientTypes.peer)
+                    return emptyList()
                 throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
-            devices.map { deviceId ->
+            }
+            devices.filter { deviceId ->
+                type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
+            }.map { deviceId ->
                 val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedData.encryptedB64,
