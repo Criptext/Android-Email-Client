@@ -14,7 +14,6 @@ import com.email.scenes.mailbox.data.LoadParams
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.EmailDetailParams
 import com.email.scenes.search.data.SearchDataSource
-import com.email.scenes.search.data.SearchItem
 import com.email.scenes.search.data.SearchRequest
 import com.email.scenes.search.data.SearchResult
 import com.email.scenes.search.ui.SearchHistoryAdapter
@@ -58,8 +57,8 @@ class SearchSceneController(private val scene: SearchScene,
 
     private val onSearchResultListController = object: SearchHistoryAdapter.OnSearchEventListener {
 
-        override fun onSearchSelected(searchItem: SearchItem) {
-            scene.setSearchText(searchItem.subject)
+        override fun onSearchSelected(searchItem: String) {
+            scene.setSearchText(searchItem)
         }
 
         override fun onApproachingEnd() {
@@ -119,21 +118,19 @@ class SearchSceneController(private val scene: SearchScene,
 
         override fun onSearchButtonClicked(text: String) {
             searchHistoryManager.saveSearchHistory(text)
+            searchListController.updateHistorySearchList()
         }
 
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         scene.attachView(
-                searchHistoryList = VirtualSearchHistoryList(model),
+                searchHistoryList = VirtualSearchHistoryList(model, searchHistoryManager),
                 searchListener = onSearchResultListController,
                 threadsList = VirtualSearchThreadList(model),
                 threadListener = threadEventListener,
                 observer = observer
         )
-
-        val results = searchHistoryManager.getSearchHistory()
-        searchListController.setHistorySearchList(results)
 
         dataSource.listener = dataSourceListener
 

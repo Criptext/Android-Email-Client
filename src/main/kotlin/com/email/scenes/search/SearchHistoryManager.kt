@@ -1,41 +1,42 @@
 package com.email.scenes.search
 
 import com.email.db.KeyValueStorage
-import com.email.scenes.search.data.SearchItem
+import org.json.JSONArray
+
 
 
 class SearchHistoryManager(private val storage: KeyValueStorage) {
 
+    private val historyList by lazy { getHistoryFromStorage().toMutableList() }
+
+    val historySize get() = historyList.size
+
     fun saveSearchHistory(value: String) {
-
-        val searchHistory = getSearchHistory().toMutableList()
-        if(searchHistory.size == SearchSceneController.MAXIMUM_SEARCH_HISTORY){
-            searchHistory.removeAt(searchHistory.size - 1)
+        if(historyList.size == SearchSceneController.MAXIMUM_SEARCH_HISTORY){
+            historyList.removeAt(historyList.size - 1)
         }
-        val newSearchItem = SearchItem(searchHistory.size, value, "")
-        newSearchItem.timestampCreated = System.currentTimeMillis()
-        searchHistory.add(newSearchItem)
-
-        storage.putStringSet(KeyValueStorage.StringKey.SearchHistory,
-                searchHistory.map { "${it.subject}${SearchSceneController.SEPARATOR}${it.timestampCreated}" }.toMutableSet())
-
+        historyList.add(0, value)
+        storage.putString(KeyValueStorage.StringKey.SearchHistory, JSONArray(historyList).toString())
     }
 
-    fun getSearchHistory(): List<SearchItem> {
+    fun getSearchHistory(): List<String> {
+        return historyList
+    }
 
-        val setHistory = storage.getStringSet(KeyValueStorage.StringKey.SearchHistory) ?: return listOf()
-        val searchHistory =  setHistory.mapIndexed { index, s ->
-            val searchItem = SearchItem(index, s.split(SearchSceneController.SEPARATOR)[0], "")
-            searchItem.timestampCreated = s.split(SearchSceneController.SEPARATOR)[1].toLong()
-            searchItem
-        }
-        return searchHistory.sortedWith(Comparator { p0, p1 ->
-            when {
-                p0.timestampCreated!! > p1.timestampCreated!! -> -1
-                p0.timestampCreated!! == p1.timestampCreated!! -> 0
-                else -> 1
+    fun getSearchHistoryItem(index: Int): String {
+        return historyList[index]
+    }
+
+    private fun getHistoryFromStorage(): List<String>{
+        val storageString = storage.getString(KeyValueStorage.StringKey.SearchHistory, "")
+        val list = mutableListOf<String>()
+        if(!storageString.isEmpty()) {
+            val storageHistory = JSONArray(storageString)
+            for (i in 0..(storageHistory.length() - 1)) {
+                val item = storageHistory[i]
+                list.add(item.toString())
             }
-        })
+        }
+        return list
     }
-
 }
