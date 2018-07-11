@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.models.EmailMetadata
+import com.email.db.DeliveryTypes
 import com.email.db.SearchLocalDB
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.*
@@ -33,7 +34,8 @@ class SearchEmailWorkerTest{
        return EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
                     fromContact = fromContact, messageId = "gabriel/1/$id",
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$id",
-                    subject = "Test #$id", unread = true, metadataKey = id + 100L)
+                    subject = "Test #$id", unread = true, metadataKey = id + 100L,
+                    status = DeliveryTypes.NONE)
     }
     @Before
     fun setup() {

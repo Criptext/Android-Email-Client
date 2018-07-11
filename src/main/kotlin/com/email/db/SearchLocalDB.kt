@@ -62,7 +62,7 @@ interface SearchLocalDB{
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
-                    .replace("^(Fw|FW): ".toRegex(), "")
+                    .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
 
             val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
             var totalFiles = 0

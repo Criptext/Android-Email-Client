@@ -68,7 +68,8 @@ class LoadInitialDataWorkerTest {
         val metadata = EmailMetadata.DBColumns(to = toCSV,  cc = "", bcc = "",
                     fromContact = fromContact, messageId = "__MESSAGE_ID__",
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
-                    subject = subject, unread = true, metadataKey = 100L)
+                    subject = subject, unread = true, metadataKey = 100L,
+                    status = DeliveryTypes.NONE)
             val labels = if (isDraft) listOf(Label.defaultItems.inbox)
                         else listOf(Label.defaultItems.draft)
 

@@ -5,7 +5,7 @@ package com.email.db
  */
 
 enum class DeliveryTypes {
-    UNSEND, FAIL, NONE, SENDING, SENT, DELIVERED, READ;
+    FAIL, UNSEND, NONE, SENDING, SENT, DELIVERED, READ;
 
     companion object {
         fun fromInt(int: Int): DeliveryTypes {

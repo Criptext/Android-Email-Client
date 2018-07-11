@@ -3,9 +3,12 @@ package com.email.scenes.composer.ui
 import android.view.View
 import com.email.R
 import com.email.utils.WebViewUtils
+import kotlinx.android.synthetic.main.activity_composer.view.*
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.glideloader.GlideImageLoader
+import org.wordpress.aztec.picassoloader.PicassoImageLoader
 import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.toolbar.AztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
@@ -22,6 +25,7 @@ class HTMLEditText(private val visualEditor: AztecText,
     set(value) {
         visualEditor.fromHtml(value)
         sourceEditor?.setText(value)
+        toolbar.toggleEditorMode()
     }
     get() = visualEditor.toPlainHtml(false).replace("<br><br>", "<br>")
     //I have to do this replace because the library gives me two br on each new line.
@@ -40,6 +44,7 @@ class HTMLEditText(private val visualEditor: AztecText,
                     visualEditor = visualEditor,
                     toolbar = toolbar,
                     toolbarClickListener = this)
+                    .setImageGetter(PicassoImageLoader(view.context, visualEditor))
         }
         else{
             Aztec.with(

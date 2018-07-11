@@ -28,7 +28,7 @@ interface EmailLabelDao {
         email_label.emailId IN (select id FROM email WHERE threadId=:threadId) """)
     fun getLabelsFromEmailThreadId(threadId: String) : List<Label>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(emailLabels : List<EmailLabel>)
 
     @Query("SELECT * FROM email_label")

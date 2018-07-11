@@ -80,6 +80,9 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         check.visibility = View.VISIBLE
 
         when(deliveryType){
+            DeliveryTypes.SENDING -> {
+                setIconAndColor(R.drawable.clock, R.color.sent)
+            }
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
             }
@@ -97,8 +100,6 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             }
         }
 
-        //TODO validate if has fileDetails
-        attachment.visibility = View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){

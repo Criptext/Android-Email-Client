@@ -11,6 +11,7 @@ import com.email.api.models.EmailMetadata
 import com.email.db.MailboxLocalDB
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
+import com.email.db.DeliveryTypes
 import com.email.db.KeyValueStorage
 import com.email.db.models.*
 import com.email.scenes.SceneController
@@ -46,7 +47,8 @@ class MailboxActivity : BaseActivity() {
               val metadata = EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
                       fromContact = fromContact, messageId = "gabriel/1/$it",
                       date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
-                      subject = "Test #$it", unread = true, metadataKey = 1 + 100)
+                      subject = "Test #$it", unread = true, metadataKey = 1 + 100,
+                      status = DeliveryTypes.NONE)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction({
