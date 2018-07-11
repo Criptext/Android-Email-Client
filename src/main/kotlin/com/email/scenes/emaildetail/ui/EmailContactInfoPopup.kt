@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
 import com.email.db.models.Contact
@@ -29,9 +30,16 @@ class EmailContactInfoPopup(private val anchorView: View) {
                 Context.LAYOUT_INFLATER_SERVICE ) as LayoutInflater
         val layout = inflater.inflate( R.layout.email_contact_info_popup, anchorView.parent as ViewGroup, false)
         val recyclerView = layout.findViewById<RecyclerView>(R.id.contacts_to_recycler)
-
         val contactsTo = VirtualList.Map(fullEmail.to, { t -> t})
-        ContactsToRecyclerView(recyclerView, contactsTo)
+        ContactsRecyclerView(recyclerView, contactsTo)
+
+        val recyclerViewCC = layout.findViewById<RecyclerView>(R.id.contacts_cc_recycler)
+        val contactsCC = VirtualList.Map(fullEmail.cc, { t -> t})
+        ContactsRecyclerView(recyclerViewCC, contactsCC)
+
+        val recyclerViewBCC = layout.findViewById<RecyclerView>(R.id.contacts_bcc_recycler)
+        val contactsBCC = VirtualList.Map(fullEmail.bcc, { t -> t})
+        ContactsRecyclerView(recyclerViewBCC, contactsBCC)
 
         PopupUtils.createPopUpWindow(
                 context = context,
@@ -50,29 +58,32 @@ class EmailContactInfoPopup(private val anchorView: View) {
 
         val viewFromName = view.findViewById<TextView>(R.id.from_name)
         val viewFromEmail = view.findViewById<TextView>(R.id.from_mail)
-        val viewReplyName = view.findViewById<TextView>(R.id.reply_name)
-        val viewReplyEmail = view.findViewById<TextView>(R.id.reply_mail)
-        val recycler = view.findViewById<RecyclerView>(R.id.contacts_to_recycler)
+        val containerCC = view.findViewById<LinearLayout>(R.id.cc_container)
+        val containerBCC = view.findViewById<LinearLayout>(R.id.bcc_container)
         val date = view.findViewById<TextView>(R.id.date)
 
         viewFromName.text = fullEmail.from.name
         viewFromEmail.text = fullEmail.from.email
 
-        if(fullEmail.to.isEmpty()) {
-            recycler.visibility = View.GONE
+        if(fullEmail.cc.isEmpty()) {
+            containerCC.visibility = View.GONE
+        }
+
+        if(fullEmail.bcc.isEmpty()) {
+            containerBCC.visibility = View.GONE
         }
 
         date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
     }
 
-    class ContactsToRecyclerView(val recyclerView: RecyclerView,
-                                       contactsToList: VirtualList<Contact>
+    class ContactsRecyclerView(val recyclerView: RecyclerView,
+                               contactsList: VirtualList<Contact>
     ) {
 
         val ctx: Context = recyclerView.context
-        private val contactsListAdapter = ContactsToListAdapter(
+        private val contactsListAdapter = ContactsListAdapter(
                 mContext = ctx,
-                contacts = contactsToList)
+                contacts = contactsList)
 
         init {
             recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -80,8 +91,8 @@ class EmailContactInfoPopup(private val anchorView: View) {
         }
     }
 
-    class ContactsToListAdapter(private val mContext: Context,
-                                      private val contacts: VirtualList<Contact>
+    class ContactsListAdapter(private val mContext: Context,
+                              private val contacts: VirtualList<Contact>
     ) : RecyclerView.Adapter<ContactHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactHolder{
             val mView = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null)
