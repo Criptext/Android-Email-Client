@@ -13,9 +13,7 @@ class SearchResultListController(
         private var searchListView: VirtualListView?,
         private var threadsListView: VirtualListView?) {
 
-    fun setHistorySearchList(searchItems: List<SearchItem>) {
-        model.searchItems.clear()
-        model.searchItems.addAll(searchItems)
+    fun updateHistorySearchList() {
         searchListView?.notifyDataSetChanged()
     }
 

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.email.R
 import com.email.scenes.search.VirtualSearchHistoryList
-import com.email.scenes.search.data.SearchItem
 import com.email.scenes.search.holders.SearchHolder
 import com.email.utils.ui.EmptyViewHolder
 import com.email.utils.virtuallist.VirtualListAdapter
@@ -53,11 +52,11 @@ class SearchHistoryAdapter(private val searchHistoryList: VirtualSearchHistoryLi
     }
 
     override fun getActualItemId(position: Int): Long {
-        return searchHistoryList[position].id.toLong()
+        return searchHistoryList[position].hashCode().toLong()
     }
 
     interface OnSearchEventListener {
-        fun onSearchSelected(searchItem: SearchItem)
+        fun onSearchSelected(searchItem: String)
         fun onApproachingEnd()
     }
 

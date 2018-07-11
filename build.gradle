@@ -167,7 +167,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     //Rich Editor
-    implementation 'com.github.danieltigse:AztecEditor-Android:develop-SNAPSHOT'
+    implementation 'com.github.danieltigse:AztecEditor-Android:1.3.7' 
 
     //neovisionaries
     implementation 'com.neovisionaries:nv-websocket-client:1.31'
