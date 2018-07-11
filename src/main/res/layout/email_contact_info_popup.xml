@@ -126,6 +126,60 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/cc_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.20"
+                android:gravity="center_vertical"
+                android:text="@string/cc_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/contacts_cc_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="49dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bcc_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.20"
+                android:gravity="center_vertical"
+                android:text="@string/bcc_popup"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/contacts_bcc_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="49dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/date_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

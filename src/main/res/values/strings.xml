@@ -290,6 +290,8 @@
     <string name="email_sent">Email Sent Successfully</string>
     <string name="from_popup">From:</string>
     <string name="to_popup">To:</string>
+    <string name="cc_popup">CC:</string>
+    <string name="bcc_popup">BCC:</string>
     <string name="reply_popup">Reply To:</string>
     <string name="date_popup">Date:</string>
 
