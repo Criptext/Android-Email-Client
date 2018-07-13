@@ -51,6 +51,8 @@ class SignatureController(
         return true
     }
 
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
+
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId){
             R.id.ac_done -> {

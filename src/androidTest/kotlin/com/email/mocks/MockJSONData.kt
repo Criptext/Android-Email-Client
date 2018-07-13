@@ -39,12 +39,12 @@ object MockJSONData {
             "rowid": 1,
             "cmd": 2,
             "params":
-                "{\"type\":7,\"metadataKey\":101,\"from\":\"mayer@jigl.com\",\"date\":\"1522191612518\"}"
+                "{\"type\":7,\"metadataKey\":101,\"from\":\"mayer\",\"date\":\"1522191612518\"}"
 },{
             "rowid": 2,
             "cmd": 2,
             "params":
-                "{\"type\":7,\"metadataKey\":102,\"from\":\"mayer@jigl.com\",\"date\":\"1522191612519\"}"
+                "{\"type\":7,\"metadataKey\":102,\"from\":\"mayer\",\"date\":\"1522191612519\"}"
 }
 ]"""
 }

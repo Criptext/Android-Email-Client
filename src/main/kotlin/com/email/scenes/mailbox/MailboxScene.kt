@@ -111,6 +111,10 @@ interface MailboxScene{
             mailboxView.findViewById<NavigationView>(R.id.nav_left_view)
         }
 
+        private val rightNavigationView: NavigationView by lazy {
+            mailboxView.findViewById<NavigationView>(R.id.nav_right_view)
+        }
+
         private val navButton: ImageView by lazy {
             mailboxView.findViewById<ImageView>(R.id.mailbox_nav_button)
         }
@@ -140,17 +144,8 @@ interface MailboxScene{
             virtualListView.setAdapter(adapter)
             this.observer = observer
             this.threadEventListener = threadEventListener
-            openComposerButton.setOnClickListener {
-                observer.onOpenComposerButtonClicked()
-            }
+            setListeners(observer)
 
-            refreshLayout.setOnRefreshListener {
-                observer.onRefreshMails()
-            }
-
-            backButton.setOnClickListener {
-                observer.onBackButtonPressed()
-            }
         }
 
         override fun initDrawerLayout() {
@@ -254,6 +249,32 @@ interface MailboxScene{
 
         override fun setCounterLabel(menu: NavigationMenuOptions, total: Int) {
             drawerMenuView.setCounterLabel(menu, total)
+        }
+
+        private fun setListeners(observer: MailboxUIObserver){
+
+            openComposerButton.setOnClickListener {
+                observer.onOpenComposerButtonClicked()
+            }
+
+            refreshLayout.setOnRefreshListener {
+                observer.onRefreshMails()
+            }
+
+            backButton.setOnClickListener {
+                observer.onBackButtonPressed()
+            }
+
+            drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
+                override fun onDrawerStateChanged(newState: Int) {}
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+                override fun onDrawerClosed(drawerView: View) {
+                    if(drawerView == rightNavigationView){
+                        observer.onFeedDrawerClosed()
+                    }
+                }
+                override fun onDrawerOpened(drawerView: View) {}
+            })
         }
 
     }

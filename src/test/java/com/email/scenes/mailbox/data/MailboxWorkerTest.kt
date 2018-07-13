@@ -2,8 +2,10 @@ package com.email.scenes.mailbox.data
 
 import com.email.api.HttpClient
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FeedItemDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.mocks.MockedWorkRunner
@@ -21,6 +23,8 @@ open class MailboxWorkerTest {
     protected lateinit var signalClient: SignalClient
     protected lateinit var httpClient: HttpClient
     protected lateinit var emailDao: EmailDao
+    private lateinit var feedItemDao: FeedItemDao
+    private lateinit var contactDao: ContactDao
     protected lateinit var rawSessionDao: RawSessionDao
     protected lateinit var db: MailboxLocalDB
     protected lateinit var dao: EmailInsertionDao
@@ -38,6 +42,8 @@ open class MailboxWorkerTest {
         signalClient = mockk()
         db = mockk()
         emailDao = mockk()
+        feedItemDao = mockk()
+        contactDao = mockk()
         dao = mockk(relaxed = true)
         dao.runTransactionsAsTheyAreInvoked()
 
@@ -46,7 +52,8 @@ open class MailboxWorkerTest {
         rawSessionDao = mockk()
         dataSource = MailboxDataSource(signalClient = signalClient, httpClient = httpClient,
                 activeAccount = activeAccount, mailboxLocalDB = db, emailDao = emailDao,
-                emailInsertionDao = dao, rawSessionDao = rawSessionDao, runner = runner)
+                emailInsertionDao = dao, rawSessionDao = rawSessionDao, runner = runner,
+                feedItemDao = feedItemDao, contactDao = contactDao)
         dataSource.listener = { result -> lastResult = result }
     }
 

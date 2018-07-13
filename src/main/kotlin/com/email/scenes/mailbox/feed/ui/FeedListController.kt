@@ -1,52 +1,55 @@
 package com.email.scenes.mailbox.feed.ui
 
-import com.email.db.models.FeedItem
+import com.email.scenes.mailbox.feed.FeedModel
+import com.email.scenes.mailbox.feed.data.ActivityFeedItem
 import com.email.utils.addWhere
 import com.email.utils.findFromPosition
+import com.email.utils.virtuallist.VirtualListView
 
 /**
  * Created by danieltigse on 02/14/18.
  */
 
-class FeedListController(private val feedItems: ArrayList<FeedItem>,
-                         private val scene: FeedView) {
+class FeedListController(private val model: FeedModel,
+                         private val virtualListView: VirtualListView?) {
 
-    fun refreshFeedItems(feedItems: List<FeedItem>) {
+    fun clear(){
+        model.feedItems.clear()
+        virtualListView?.notifyDataSetChanged()
+    }
+
+    fun populateFeeds(feedItems: List<ActivityFeedItem>){
+        model.feedItems.clear()
+        model.feedItems.addAll(feedItems)
+    }
+
+    fun refreshFeedItems(feedItems: List<ActivityFeedItem>) {
         if (feedItems.isNotEmpty()) {
-            this.feedItems.clear()
-            this.feedItems.addAll(feedItems)
-            scene.notifyDataSetChanged()
+            model.feedItems.clear()
+            model.feedItems.addAll(feedItems)
+            virtualListView?.notifyDataSetChanged()
         }
-        toggleNoFeedItemsView()
     }
 
-    fun toggleMutedFeedItem(id: Int, lastPosition: Int, isMuted: Boolean) {
-        val index = feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
+    fun toggleMutedFeedItem(id: Long, lastPosition: Int) {
+        val index = model.feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
         if (index > -1) {
-            val feedItem = feedItems[index]
-            feedItem.isMuted = isMuted
-            scene.notifyItemChanged(index)
+            virtualListView?.notifyItemChanged(index)
         }
     }
 
-    fun insertFeedItem(newItem: FeedItem) {
-        val pos = feedItems.addWhere(newItem, { existingItem ->
-            newItem.feedDate > existingItem.feedDate
+    fun insertFeedItem(newItem: ActivityFeedItem) {
+        val pos = model.feedItems.addWhere(newItem, { existingItem ->
+            newItem.date > existingItem.date
         })
-        scene.notifyItemInserted(pos)
-        toggleNoFeedItemsView()
+        virtualListView?.notifyItemRangeInserted(pos, model.feedItems.size)
     }
 
-    private fun toggleNoFeedItemsView() {
-        scene.toggleNoFeedsView(visible = feedItems.isEmpty())
-    }
-
-    fun deleteFeedItem(id: Int, lastPosition: Int): FeedItem? {
-        val index = feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
+    fun deleteFeedItem(id: Long, lastPosition: Int): ActivityFeedItem? {
+        val index = model.feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
         return if (index > -1) {
-            val deleted = feedItems.removeAt(index)
-            scene.notifyItemRemoved(index)
-            toggleNoFeedItemsView()
+            val deleted = model.feedItems.removeAt(index)
+            virtualListView?.notifyItemRemoved(index)
             deleted
         } else null
     }

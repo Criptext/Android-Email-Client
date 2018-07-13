@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.chauthai.swipereveallayout.SwipeRevealLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeView"
     android:foreground="?attr/selectableItemBackground"
     app:mode="same_level"
@@ -21,6 +21,7 @@
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:gravity="center"
+            android:visibility="gone"
             android:background="#9b9b9b"
             android:orientation="vertical">
 
@@ -52,9 +53,9 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:src="@drawable/trash"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/trash_black"
                 android:tint="@android:color/white"/>
 
             <TextView
@@ -62,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/delete"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:textColor="@android:color/white"/>
 
         </LinearLayout>
@@ -84,6 +85,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.18"
             android:padding="12dp"
+            android:layout_marginStart="2dp"
             android:src="@drawable/attachment"/>
 
         <LinearLayout
@@ -146,7 +148,7 @@
                 android:ellipsize="end"
                 android:gravity="right"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="14dp"/>
+                android:layout_marginBottom="20dp"/>
 
         </LinearLayout>
 

@@ -8,22 +8,21 @@ import com.email.db.models.FeedItem
  */
 
 @Dao
-interface FeedDao {
+interface FeedItemDao {
+
+    @Insert
+    fun insertFeedItem(feedItem: FeedItem)
+
     @Insert
     fun insertFeedItems(feedItems: List<FeedItem>)
 
-    @Query("SELECT * FROM feedItem")
+    @Query("SELECT * FROM feedItem ORDER BY date DESC")
     fun getAllFeedItems() : List<FeedItem>
 
     @Delete
     fun deleteFeedItems(feedItems: List<FeedItem>)
 
-    @Query("""UPDATE feedItem
-            SET isMuted = :isMuted
-            WHERE id=:id""")
-    fun toggleMuteFeedItem(id: Int, isMuted: Boolean)
-
     @Query("""DELETE FROM feedItem
            WHERE id=:id""")
-    fun deleteFeedItemById(id: Int)
+    fun deleteFeedItemById(id: Long)
 }

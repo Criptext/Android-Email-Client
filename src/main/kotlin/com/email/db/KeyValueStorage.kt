@@ -14,14 +14,17 @@ interface KeyValueStorage {
     fun putString(key: StringKey, value: String)
     fun getStringSet(key: StringKey): MutableSet<String>?
     fun putStringSet(key: StringKey, value: MutableSet<String>)
+    fun getLong(key: StringKey, default: Long): Long
+    fun putLong(key: StringKey, value: Long)
     fun clearAll()
 
     enum class StringKey(val stringKey: String) {
         ActiveAccount("ActiveAccount"), SignInSession("SignInSession"),
-        SearchHistory("searchHistory")
+        SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {
+
         private val prefs = PreferenceManager.getDefaultSharedPreferences(ctx.applicationContext)
 
         private fun withApply(edit: (SharedPreferences.Editor) -> Unit) {
@@ -43,6 +46,14 @@ interface KeyValueStorage {
 
         override fun putStringSet(key: StringKey, value: MutableSet<String>) {
             withApply { editor -> editor.putStringSet(key.stringKey, value) }
+        }
+
+        override fun getLong(key: StringKey, default: Long): Long {
+            return prefs.getLong(key.stringKey, default)
+        }
+
+        override fun putLong(key: StringKey, value: Long) {
+            withApply { editor -> editor.putLong(key.stringKey, value) }
         }
 
         override fun clearAll() {

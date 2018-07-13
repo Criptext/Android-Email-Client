@@ -30,6 +30,7 @@ import com.email.utils.UIMessage
 import com.email.utils.compat.PermissionUtilsCompat
 import com.email.utils.dialog.SingletonProgressDialog
 import com.email.utils.file.IntentUtils
+import com.email.utils.ui.ActivityMenu
 import droidninja.filepicker.FilePickerBuilder
 import java.io.File
 
@@ -119,6 +120,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val activeSceneMenu = controller.menuResourceId
         if(activeSceneMenu != null) menuInflater.inflate(activeSceneMenu, menu)
+        controller.onMenuChanged(ActivityMenu(menu))
         return true
     }
 
@@ -201,7 +203,6 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
             false
         }
-
 
     protected fun setActivityMessage(message: ActivityMessage?) {
         activityMessage = message

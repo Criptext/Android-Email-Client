@@ -1,14 +1,22 @@
 package com.email.scenes.mailbox.feed
 
+import com.email.IHostActivity
+import com.email.db.DeliveryTypes
+import com.email.db.FeedType
+import com.email.db.KeyValueStorage
+import com.email.db.MailboxLocalDB
+import com.email.db.dao.ContactDao
+import com.email.db.dao.EmailDao
+import com.email.db.dao.FeedItemDao
+import com.email.db.dao.FileDao
+import com.email.db.models.ActiveAccount
+import com.email.db.models.Contact
+import com.email.db.models.Email
 import com.email.db.models.FeedItem
-import com.email.mocks.MockedWorkRunner
-import com.email.scenes.mailbox.feed.data.DeleteFeedItemWorker
-import com.email.scenes.mailbox.feed.data.FeedDataSource
-import com.email.scenes.mailbox.feed.data.LoadFeedsWorker
-import com.email.scenes.mailbox.feed.data.MuteFeedItemWorker
-import com.email.scenes.mailbox.feed.mocks.MockedFeedDao
-import com.email.scenes.mailbox.feed.mocks.MockedFeedView
-import io.mockk.mockk
+import com.email.scenes.mailbox.feed.data.*
+import com.email.scenes.mailbox.feed.ui.FeedItemHolder
+import com.email.scenes.mailbox.feed.ui.FeedScene
+import io.mockk.*
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -21,155 +29,128 @@ import java.util.*
 class FeedControllerTest {
 
     private lateinit var model: FeedModel
-    private lateinit var scene: MockedFeedView
-    private lateinit var db: MockedFeedDao
-    private lateinit var runner: MockedWorkRunner
+    private lateinit var scene: FeedScene
+    private lateinit var db: FeedItemDao
+    private lateinit var mailboxLocalDB: MailboxLocalDB
+    private lateinit var emailDao: EmailDao
+    private lateinit var contactDao: ContactDao
+    private lateinit var fileDao: FileDao
     private lateinit var dataSource: FeedDataSource
     private lateinit var controller: FeedController
+    protected lateinit var host: IHostActivity
+    protected lateinit var activeAccount: ActiveAccount
+    protected lateinit var storage: KeyValueStorage
+    protected lateinit var sentRequests: MutableList<FeedRequest>
+    protected lateinit var listenerSlot: CapturingSlot<(FeedResult) -> Unit>
+    private val feedEventListenerSlot = CapturingSlot<FeedItemHolder.FeedEventListener>()
 
     @Before
     fun setUp() {
         model = FeedModel()
-        scene = MockedFeedView()
-        runner = MockedWorkRunner()
-        db = MockedFeedDao()
-        dataSource = FeedDataSource(runner, db)
-        controller = FeedController(model, scene, dataSource)
+        scene = mockk(relaxed = true)
+        db = mockk(relaxed = true)
+        mailboxLocalDB = mockk(relaxed = true)
+        emailDao = mockk(relaxed = true)
+        contactDao = mockk(relaxed = true)
+        fileDao = mockk(relaxed = true)
+        storage = mockk(relaxed = true)
+        host = mockk(relaxed = true)
+        dataSource = mockk(relaxed = true)
+        activeAccount = ActiveAccount.fromJSONString(
+                """ { "name":"John","jwt":"_JWT_","recipientId":"gabriel","deviceId":1,
+                    |"signature":""} """.trimMargin())
+        controller = FeedController(model, scene, host, activeAccount, storage, dataSource)
+
+        every {
+            scene.setAdapter(any(), 0, 0, capture(feedEventListenerSlot))
+        } just Runs
+
+        sentRequests = mutableListOf()
+        every { dataSource.submitRequest(capture(sentRequests)) } just Runs
+
+        listenerSlot = CapturingSlot()
+        every {
+            dataSource::listener.set(capture(listenerSlot))
+        } just Runs
     }
 
-    private fun createFeedItems(size: Int): List<FeedItem> {
+    private val testEmail = Email(
+            id = 1, isMuted = false, date = Date(), subject = "This is a subject",
+            unread = false, threadId = "__THREAD_ID__", content = "Bla",
+            delivered = DeliveryTypes.NONE, messageId = "__THREAD_ID__",
+            metadataKey = 1, preview = "__PREVIEW__", secure = false)
+
+    private fun createFeedItems(size: Int): List<ActivityFeedItem> {
         return (1..size).map {
-            Thread.sleep(5) // delay between dates
-            FeedItem(id = it, feedType = 0, feedTitle = "notification #$it",
-                    feedSubtitle = "subtitle #$it", feedDate = Date(), isNew = true, isMuted = false)
+            ActivityFeedItem(
+                    feedItem = FeedItem(id = it.toLong(), feedType = FeedType.OPEN_FILE, emailId = 1,
+                        contactId = 1, date = Date(), seen = false, location = "", fileId = null),
+                    email = testEmail,
+                    file = null,
+                    contact = Contact(id = 1, email = "daniel@jigl.com", name = "Daniel"))
+
         }.reversed()
     }
 
-    @Test
-    fun `onStart should set listeners to the view and data source and onStop should clear them`() {
-        controller.onStart()
-
-        dataSource.listener `should not be` null
-        scene.feedClickListener `should not be` null
-
-        controller.onStop()
-
-        dataSource.listener `should be` null
-        scene.feedClickListener `should be` null
+    private fun simulateLoadOfFeeds(size: Int) {
+        listenerSlot.captured(FeedResult.LoadFeed.Success(createFeedItems(size), 0))
     }
 
     @Test
-    fun `on a cold start, should show 'empty view' and load feed`() {
+    fun `on a cold start, should try to load feeds from DB`() {
+
         controller.onStart()
 
-        scene.isNoFeedsViewVisible `should be` true
-        model.feedItems.`should be empty`()
+        val request = sentRequests.first()
 
-        runner.assertPendingWork(listOf(LoadFeedsWorker::class.java))
+        request `should be instance of` FeedRequest.LoadFeed::class.java
 
-        db.nextLoadedFeedItems = createFeedItems(5)
-        scene.notifiedDataSetChanged = false
+        simulateLoadOfFeeds(2)
 
-        runner._work(mockk())
-
-        model.feedItems.size `should be` 5
-        scene.isNoFeedsViewVisible `should be` false
-        scene.notifiedDataSetChanged `should be` true
-    }
-
-    private fun muteItemAt(position: Int, exception: Exception?) {
-        // init
-        controller.onStart()
-        runner._work(mockk())
-
-
-        val mutedItem = model.feedItems[position]
-        mutedItem.isMuted `should be` false
-
-        scene.lastNotifiedChangedPosition = -1
-
-        // fire click event
-        scene.feedClickListener!!.onMuteFeedItemClicked(feedId = mutedItem.id!!, position = position,
-                isMuted = true)
-
-        mutedItem.isMuted `should be` true
-
-        db.nextMuteFeedItemException = exception
-        scene.lastNotifiedChangedPosition `should be` position
-        scene.lastNotifiedChangedPosition = -1
-
-        // complete task and run callbacks
-        runner.assertPendingWork(listOf(MuteFeedItemWorker::class.java))
-        runner._work(mockk())
-    }
-
-
-    @Test
-    fun `when the mute button is clicked, on abscene of errors, should update the row, and update the db`() {
-        db.nextLoadedFeedItems = createFeedItems(5)
-        muteItemAt(3, null)
-
-        val mutedItem = model.feedItems[3]
-
-        mutedItem.isMuted `should be` true
-        scene.lastNotifiedChangedPosition `should be` -1 // don't notify changed again
-        scene.shownError `should be` null
-    }
-
-    @Test
-    fun `when the mute button is clicked, if error occurs, reverts the mute update and shows error message`() {
-        db.nextLoadedFeedItems = createFeedItems(5)
-        muteItemAt(3, Exception("Database Error")) // throw db error
-
-        val mutedItem = model.feedItems[3]
-
-        mutedItem.isMuted `should be` false
-        scene.lastNotifiedChangedPosition `should be` 3
-        scene.shownError!! `should end with`  "Database Error"
-    }
-
-    private fun deleteItemAt(position: Int, exception: Exception?) {
-        // init
-        controller.onStart()
-        runner._work(mockk())
-
-        val deletedItem = model.feedItems[position]
-        scene.lastNotifiedChangedPosition = -1
-        val expectedCountAfterDeletion = model.feedItems.size - 1
-
-        // fire click event
-        scene.feedClickListener!!.onDeleteFeedItemClicked(feedId = deletedItem.id!!, position = position)
-
-        model.feedItems.size `should be` expectedCountAfterDeletion
-
-        db.nextDeleteFeedItemException = exception
-        scene.lastNotifiedRemovedPosition `should be` position
-        scene.lastNotifiedRemovedPosition = -1
-        scene.lastNotifiedInsertedPosition = -1
-
-        // complete task and run callbacks
-        runner.assertPendingWork(listOf(DeleteFeedItemWorker::class.java))
-        runner._work(mockk())
+        model.feedItems.size `should be equal to` 2
     }
 
     @Test
     fun `when the delete button is clicked, on abscene of errors, should delete the row, and update the db`() {
-        db.nextLoadedFeedItems = createFeedItems(5)
-        deleteItemAt(3, null)
+        // init
+        controller.onStart()
 
-        model.feedItems.size `should be` 4
-        scene.lastNotifiedRemovedPosition `should be` -1 // don't notify removed again
-        scene.shownError `should be` null
+        simulateLoadOfFeeds(2)
+
+        val deletedItem = model.feedItems[0]
+
+        // fire click event
+        scene.feedEventListener?.onDeleteFeedItemClicked(feedId = deletedItem.id, position = 0)
+
+        feedEventListenerSlot.captured.onDeleteFeedItemClicked(deletedItem.id, 0)
+
+        model.feedItems.size `should be equal to` 1
+
+        val request = sentRequests.last()
+
+        request `should be instance of` FeedRequest.DeleteFeedItem::class.java
+
     }
 
     @Test
-    fun `when the delete button is clicked, if error occurs, reverts the deletion and shows error message`() {
-        db.nextLoadedFeedItems = createFeedItems(5)
+    fun `when a feed item is clicked, we get the email preview and show the emailDetailScene`() {
+        // init
+        controller.onStart()
 
-        deleteItemAt(3, Exception("Database Error")) // throw db error
+        simulateLoadOfFeeds(2)
 
-        model.feedItems.size `should be` 5
-        scene.lastNotifiedInsertedPosition `should equal` 3 // should insertIgnoringConflicts back item
-        scene.shownError!! `should end with`  "Database Error"
+        scene.feedEventListener?.onFeedItemClicked(email = testEmail)
+
+        feedEventListenerSlot.captured.onFeedItemClicked(email = testEmail)
+
+        val request = sentRequests.last()
+
+        request `should be instance of` FeedRequest.GetEmailPreview::class.java
+
+        listenerSlot.captured(FeedResult.GetEmailPreview.Success(mockk(relaxed = true)))
+
+        verify { host.goToScene(any(), any()) }
+
     }
+
 }

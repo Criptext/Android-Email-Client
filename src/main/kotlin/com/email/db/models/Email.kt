@@ -47,5 +47,8 @@ data class Email(
         var date : Date,
 
         @ColumnInfo(name = "metadataKey")
-        var metadataKey : Long
+        var metadataKey : Long,
+
+        @ColumnInfo(name = "isMuted")
+        var isMuted: Boolean
 )

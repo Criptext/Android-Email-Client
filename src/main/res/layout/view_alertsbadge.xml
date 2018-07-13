@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="32dp"
+    android:layout_width="48dp"
     android:layout_height="32dp"
     android:clickable="false"
     android:layout_gravity="center">
@@ -17,13 +17,13 @@
 
     <FrameLayout
         android:id="@+id/view_alert_red_circle"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:layout_gravity="top|end"
         android:background="@drawable/circle_red"
         android:clickable="false"
         android:visibility="gone"
-        android:layout_marginEnd="6dp">
+        android:layout_marginEnd="14dp">
 
         <TextView
             android:id="@+id/view_alert_count_textview"
@@ -33,7 +33,7 @@
             android:textColor="@color/colorBackground"
             android:clickable="false"
             android:textSize="10sp"
-            android:text="2"/>
+            android:text="1"/>
 
     </FrameLayout>
 

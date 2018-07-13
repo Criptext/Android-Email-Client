@@ -22,6 +22,8 @@ interface FileDao {
     @Query("SELECT * FROM file")
     fun getAll() : List<CRFile>
 
+    @Query("SELECT * FROM file where id=:id")
+    fun getFileById(id : Long) : CRFile?
 
     @Query("""SELECT * FROM file
             WHERE file.emailId=:emailId""")

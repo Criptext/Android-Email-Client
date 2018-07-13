@@ -10,6 +10,7 @@ import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
+import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
 import com.email.mocks.MockEmailData
@@ -66,12 +67,13 @@ class UpdateMailboxWorkerTest {
             UpdateMailboxWorker(signalClient = signalClient, db = mailboxLocalDB,
                     emailDao = db.emailDao(), dao = emailInsertionDao, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
-                    publishFn = {}, httpClient = httpClient)
+                    publishFn = {}, httpClient = httpClient, contactDao = db.contactDao(),
+                    feedItemDao = db.feedDao())
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
     @Test
-    fun when_processing_tracking_updates_should_mark_emails_as_read_in_the_db() {
+    fun when_processing_tracking_updates_should_mark_emails_as_read_in_the_db_and_create_feeds() {
         mockWebServer.enqueueResponses(listOf(
             MockedResponse.Ok(MockJSONData.sample2TrackingUpdateEvents), /* /event */
             MockedResponse.Ok("OK") /* /event/ack */
@@ -84,6 +86,9 @@ class UpdateMailboxWorkerTest {
         db.emailDao().insertAll(localEmails)
         Log.d("DeliveryStatus", "insert local emails $localEmails")
 
+        var totalFeeds = db.feedDao().getAllFeedItems().size
+        totalFeeds `shouldBe` 0
+
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
         worker.work(mockk()) as MailboxResult.UpdateMailbox.Success
@@ -93,6 +98,9 @@ class UpdateMailboxWorkerTest {
         updatedEmails.size `shouldBe` 2
         Log.d("DeliveryStatus", "updatedEmails = ${updatedEmails.map { it.delivered }}")
         updatedEmails.all(hasDeliveryTypeRead).shouldBeTrue()
+
+        totalFeeds = db.feedDao().getAllFeedItems().size
+        totalFeeds `shouldBe` 2
     }
 
     @Test
@@ -107,6 +115,7 @@ class UpdateMailboxWorkerTest {
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
         db.emailDao().insertAll(localEmails)
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)

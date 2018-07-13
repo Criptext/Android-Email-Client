@@ -32,7 +32,8 @@ import com.email.db.typeConverters.*
         LabelTextConverter::class,
         LabelTypeConverter::class,
         ContactTypeConverter::class,
-        EmailDeliveryConverter::class)
+        EmailDeliveryConverter::class,
+        FeedTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun contactDao(): ContactDao
@@ -40,7 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailLabelDao(): EmailLabelDao
     abstract fun fileDao(): FileDao
     abstract fun emailContactDao() : EmailContactJoinDao
-    abstract fun feedDao(): FeedDao
+    abstract fun feedDao(): FeedItemDao
     abstract fun labelDao(): LabelDao
     abstract fun emailInsertionDao(): EmailInsertionDao
     abstract fun rawIdentityKeyDao(): RawIdentityKeyDao

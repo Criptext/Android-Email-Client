@@ -1,5 +1,7 @@
 package com.email.scenes
 
+import com.email.IHostActivity
+
 /**
  * Base class for all the main controllers.
  * Created by sebas on 1/30/18.
@@ -45,4 +47,9 @@ abstract class SceneController {
      * Called during the host activity's onRequestPermissionResult.
      */
     abstract fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
+
+    /**
+     * Called during the host activity's onCreateOptionsMenu.
+     */
+    abstract fun onMenuChanged(menu: IHostActivity.IActivityMenu)
 }

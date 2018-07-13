@@ -1,5 +1,6 @@
 package com.email.mocks
 
+import android.view.Menu
 import com.email.BaseActivity
 import com.email.ExternalActivityParams
 import com.email.IHostActivity
@@ -12,6 +13,7 @@ import com.email.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
         activityLaunched = true
     }

@@ -33,39 +33,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/viewNoActivity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="78dp"
-            android:layout_height="86dp"
-            android:src="@drawable/campanita"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:gravity="center_horizontal"
-            android:text="@string/noactivity"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#9b9b9b"
-            android:gravity="center_horizontal"
-            android:text="@string/enjoy_your_day"
-            fontPath="fonts/NunitoSans-Italic.ttf"/>
-
-    </LinearLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewFeed"
         android:layout_width="match_parent"

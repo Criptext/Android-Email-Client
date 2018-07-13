@@ -4,9 +4,11 @@ import com.email.api.EmailInsertionAPIClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
+import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.EmailInsertionDao
 import com.email.db.models.ActiveAccount
+import com.email.db.dao.FeedItemDao
 import com.email.signal.SignalClient
 
 /**
@@ -14,7 +16,9 @@ import com.email.signal.SignalClient
  */
 
 class EventDataSource(override val runner: WorkRunner,
+                      private val feedItemDao: FeedItemDao,
                       private val emailDao: EmailDao,
+                      private val contactDao: ContactDao,
                       private val emailInsertionDao: EmailInsertionDao,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
                       private val signalClient: SignalClient,
@@ -28,8 +32,8 @@ class EventDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount,
                     publishFn = flushResults)
             is EventRequest.UpdateDeliveryStatus -> UpdateDeliveryStatusWorker(
-                    dao = emailDao, trackingUpdate = params.trackingUpdate, publishFn = flushResults
-                    )
+                    dao = emailDao, trackingUpdate = params.trackingUpdate,
+                    feedDao = feedItemDao, contactDao = contactDao, publishFn = flushResults)
         }
     }
 }

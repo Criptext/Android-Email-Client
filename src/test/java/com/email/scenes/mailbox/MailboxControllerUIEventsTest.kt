@@ -151,11 +151,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
 
         // should change selected label
         model.selectedLabel `should equal` Label.defaultItems.trash
-
-        // should clear threads
-        model.threads.`should be empty`()
-        verify { virtualListView.notifyDataSetChanged() }
-
+        
         // should send load request
         val sentRequest = sentRequests.first()
         sentRequest `should equal` MailboxRequest.LoadEmailThreads(

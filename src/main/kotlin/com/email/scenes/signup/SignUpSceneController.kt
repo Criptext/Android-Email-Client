@@ -308,6 +308,8 @@ class SignUpSceneController(
         return false
     }
 
+    override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
+
     override fun onOptionsItemSelected(itemId: Int) {
     }
 
