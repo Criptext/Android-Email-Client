@@ -16,6 +16,7 @@ import com.email.utils.UIMessage
 import android.content.pm.PackageManager
 import com.email.BaseActivity
 import com.email.scenes.params.EmailDetailParams
+import com.email.validation.FormInputState
 
 
 /**
@@ -29,9 +30,28 @@ class ComposerController(private val model: ComposerModel,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
+    val arePasswordsMatching: Boolean
+        get() = model.passwordText == model.confirmPasswordText
+
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+
+        override fun setOnCheckedChangeListener(isChecked: Boolean) {
+            if(isChecked)
+                checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
+        }
+
+        override fun onConfirmPasswordChangedListener(text: String) {
+            model.confirmPasswordText = text
+            checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
+        }
+
+        override fun onPasswordChangedListener(text: String) {
+            model.passwordText = text
+            checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
+        }
+
         override fun onAttachmentRemoveClicked(position: Int) {
             model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
@@ -61,6 +81,33 @@ class ComposerController(private val model: ComposerModel,
             else{
                 showDraftDialog()
             }
+        }
+    }
+
+    private fun checkPasswords(passwords: Pair<String, String>) {
+        if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
+            scene.setPasswordError(null)
+            scene.togglePasswordSuccess(show = true)
+            model.passwordState = FormInputState.Valid()
+            if (model.passwordState is FormInputState.Valid)
+                scene.enableSendButtonOnDialog()
+        } else if (arePasswordsMatching && passwords.first.isEmpty()) {
+            scene.setPasswordError(null)
+            scene.togglePasswordSuccess(show = false)
+            model.passwordState = FormInputState.Unknown()
+            scene.disableSendButtonOnDialog()
+        } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
+            scene.togglePasswordSuccess(show = false)
+            val errorMessage = UIMessage(R.string.password_length_error)
+            model.passwordState = FormInputState.Error(errorMessage)
+            scene.setPasswordError(errorMessage)
+            scene.disableSendButtonOnDialog()
+        } else {
+            val errorMessage = UIMessage(R.string.password_mismatch_error)
+            model.passwordState = FormInputState.Error(errorMessage)
+            scene.setPasswordError(errorMessage)
+            scene.togglePasswordSuccess(show = false)
+            scene.disableSendButtonOnDialog()
         }
     }
 
@@ -197,10 +244,10 @@ class ComposerController(private val model: ComposerModel,
             if (validationError != null)
                 scene.showError(validationError.toUIMessage())
             else
-                saveEmailAsDraft(data, onlySave = false)
-
-
-
+                if(Validator.criptextOnlyContacts(data))
+                    saveEmailAsDraft(data, onlySave = false)
+                else
+                    scene.showNonCriptextEmailSendDialog(observer)
         } else
             scene.showError(UIMessage(R.string.no_recipients_error))
     }
@@ -380,5 +427,9 @@ class ComposerController(private val model: ComposerModel,
             return
         }
         host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+    }
+
+    companion object {
+        val minimumPasswordLength = 8
     }
 }

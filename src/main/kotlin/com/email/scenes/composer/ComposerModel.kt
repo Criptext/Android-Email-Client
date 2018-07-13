@@ -5,6 +5,7 @@ import com.email.db.models.Label
 import com.email.email_preview.EmailPreview
 import com.email.scenes.composer.data.ComposerAttachment
 import com.email.scenes.composer.data.ComposerType
+import com.email.validation.FormInputState
 import java.util.*
 
 /**
@@ -26,4 +27,8 @@ class ComposerModel(val type: ComposerType) {
     var initialized = type is ComposerType.Empty
     var subject = ""
     var body = ""
+
+    var passwordText: String = ""
+    var confirmPasswordText: String = ""
+    var passwordState: FormInputState = FormInputState.Unknown()
 }

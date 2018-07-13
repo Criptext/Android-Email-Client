@@ -47,6 +47,10 @@
     <color name="black_transparent">#80000000</color>
     <color name="gray">#626262</color>
     <color name="signup_hint_color">#90ffffff</color>
+    <color name="non_criptext_email_send_text_line">#cdcdcd</color>
+    <color name="non_criptext_email_send_text_line_focus">#0091ff</color>
+    <color name="non_criptext_email_send_eye">#dcdcdc</color>
+    <color name="non_criptext_email_send_detail_text">#8d8d8d</color>
     <color name="bell">#FF3366</color>
     <color name="attachmentGray">#cecece</color>
     <color name="full_mail_cc">#0091ff</color>

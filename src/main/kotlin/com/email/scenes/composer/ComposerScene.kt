@@ -19,7 +19,6 @@ import com.email.utils.getLocalizedUIMessage
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
 import org.wordpress.aztec.AztecText
-import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.toolbar.AztecToolbar
 
 /**
@@ -40,12 +39,17 @@ interface ComposerScene {
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showAttachmentErrorDialog(filename: String)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
+    fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun notifyAttachmentSetChanged()
+    fun disableSendButtonOnDialog()
+    fun enableSendButtonOnDialog()
+    fun setPasswordError(message: UIMessage?)
+    fun togglePasswordSuccess(show: Boolean)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
-
         private val ctx = view.context
+        private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
 
         private val toInput: ContactCompletionView by lazy({
             view.findViewById<ContactCompletionView>(INPUT_TO_ID)
@@ -197,6 +201,10 @@ interface ComposerScene {
                     .setNegativeButton(ctx.resources.getString(R.string.discard), dialogClickListener).show()
         }
 
+        override fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?) {
+            nonCriptextEmailSendDialog.showNonCriptextEmailSendDialog(observer)
+        }
+
         override fun showAttachmentErrorDialog(filename: String){
             val builder = AlertDialog.Builder(ctx)
             builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
@@ -240,7 +248,25 @@ interface ComposerScene {
                 ccInput.addObject(contact)
             }
         }
+
+        override fun disableSendButtonOnDialog() {
+            nonCriptextEmailSendDialog.disableSendEmailButton()
+        }
+
+        override fun enableSendButtonOnDialog() {
+            nonCriptextEmailSendDialog.enableSendEmailButton()
+        }
+
+        override fun setPasswordError(message: UIMessage?) {
+            nonCriptextEmailSendDialog.setPasswordError(message)
+        }
+
+        override fun togglePasswordSuccess(show: Boolean) {
+            nonCriptextEmailSendDialog.togglePasswordSuccess(show)
+        }
     }
+
+
 
     companion object {
         val INPUT_TO_ID = R.id.input_to
