@@ -34,6 +34,8 @@
     <dimen name="password_login_dialog_width">250dp</dimen>
     <dimen name="password_login_dialog_height">400dp</dimen>
     <dimen name="profile_name_dialog_height">300dp</dimen>
+    <dimen name="non_criptext_email_send_dialog_height">500dp</dimen>
+    <dimen name="non_criptext_email_send_dialog_width">300dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="indicator_margin_left">20dp</dimen>

@@ -27,6 +27,20 @@ object Validator {
         return null
     }
 
+    fun criptextOnlyContacts(data: ComposerInputData): Boolean {
+        val atSubstring = "@jigle.com"
+        for(toContact in data.to){
+            if(!toContact.email.contains(atSubstring)) return false
+        }
+        for(ccContact in data.cc){
+            if(!ccContact.email.contains(atSubstring)) return false
+        }
+        for(bccContact in data.bcc){
+            if(!bccContact.email.contains(atSubstring)) return false
+        }
+        return true
+    }
+
     fun mailHasMoreThanSignature(data: ComposerInputData, rawSignature: String) : Boolean{
 
         val subject = data.subject

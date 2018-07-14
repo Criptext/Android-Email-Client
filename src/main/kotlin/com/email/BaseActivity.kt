@@ -2,7 +2,6 @@ package com.email
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
@@ -11,7 +10,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.email.scenes.ActivityMessage
-import com.email.scenes.ModelFactory
 import com.email.scenes.SceneController
 import com.email.scenes.composer.ComposerModel
 import com.email.scenes.emaildetail.EmailDetailSceneModel
@@ -185,7 +183,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is ExternalActivityParams.FilePicker -> {
                 FilePickerBuilder.getInstance()
                         .setMaxCount(5)
-                        .setActivityTheme(R.style.LibAppTheme)
+                        .setActivityTheme(R.style.PickerTheme)
                         .pickFile(this)
             }
             is ExternalActivityParams.FilePresent -> {
