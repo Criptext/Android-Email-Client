@@ -95,4 +95,9 @@ sealed class MailboxResult {
         class Success: UpdateUnreadStatus()
         class Failure: UpdateUnreadStatus()
     }
+
+    sealed class LinkDevice: MailboxResult() {
+        class Success(filePath: String): LinkDevice()
+        data class Failure(val message: UIMessage): LinkDevice()
+    }
 }

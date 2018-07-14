@@ -5,10 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
-import com.email.db.dao.ContactDao
-import com.email.db.dao.EmailDao
-import com.email.db.dao.EmailInsertionDao
-import com.email.db.dao.FeedItemDao
+import com.email.db.dao.*
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.signal.SignalClient
@@ -22,7 +19,11 @@ class MailboxDataSource(
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
         private val emailDao: EmailDao,
+        private val fileDao: FileDao,
+        private val labelDao: LabelDao,
         private val contactDao: ContactDao,
+        private val emailLabelDao: EmailLabelDao,
+        private val emailContactJoinDao: EmailContactJoinDao,
         private val feedItemDao: FeedItemDao,
         private val rawSessionDao: RawSessionDao,
         private val emailInsertionDao: EmailInsertionDao,
@@ -110,6 +111,20 @@ class MailboxDataSource(
                         flushResults(result)
                     }
             )
+
+            is MailboxRequest.LinkDevice -> LinkDevicesWorker(
+                    emailDao = emailDao,
+                    contactDao = contactDao,
+                    fileDao = fileDao,
+                    labelDao = labelDao,
+                    emailLabelDao = emailLabelDao,
+                    emailContactJoinDao = emailContactJoinDao,
+                    signalClient = signalClient,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+            })
         }
     }
 
