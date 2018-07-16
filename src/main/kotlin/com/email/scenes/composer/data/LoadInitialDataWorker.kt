@@ -49,7 +49,7 @@ class LoadInitialDataWorker(
         val body = MailBody.createNewForwardMessageBody(
                             originMessageHtml = fullEmail.email.content,
                             signature = signature)
-        val subject = (if(fullEmail.email.subject.matches("^(Fw|FW): .*\$".toRegex())) "" else "FW: ") +
+        val subject = (if(fullEmail.email.subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())) "" else "FW: ") +
                 fullEmail.email.subject
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
                 body = body, subject = subject)

@@ -31,7 +31,7 @@
 
                 <ImageView
                     android:layout_width="110dp"
-                    android:layout_height="28dp"
+                    android:layout_height="35dp"
                     android:src="@drawable/logo"
                     android:layout_gravity="center_vertical|right"
                     android:layout_marginTop="5dp"

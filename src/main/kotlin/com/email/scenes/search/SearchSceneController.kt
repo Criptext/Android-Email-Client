@@ -92,6 +92,7 @@ class SearchSceneController(private val scene: SearchScene,
                     currentLabel = Label.defaultItems.inbox,
                     threadPreview = EmailPreview.fromEmailThread(emailThread))
             host.goToScene(params, false)
+            searchHistoryManager.saveSearchHistory(model.queryText)
         }
 
         override fun onToggleThreadSelection(thread: EmailThread, position: Int) {

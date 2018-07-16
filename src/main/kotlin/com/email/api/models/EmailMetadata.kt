@@ -1,5 +1,6 @@
 package com.email.api.models
 
+import com.email.db.DeliveryTypes
 import com.email.db.models.CRFile
 import com.email.db.models.Contact
 import com.email.signal.SignalEncryptedData
@@ -28,7 +29,7 @@ data class EmailMetadata(
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date,
-                    fromContact = fromContact, unread = true)
+                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -77,5 +78,6 @@ data class EmailMetadata(
         val threadId: String,
         val fromContact: Contact,
         val subject: String,
-        val unread: Boolean)
+        val unread: Boolean,
+        val status: DeliveryTypes)
 }

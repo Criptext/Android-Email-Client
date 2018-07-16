@@ -194,7 +194,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onRefreshMails() {
-            scene.showRefresh()
             dataSourceController.updateMailbox(
                     mailboxLabel = model.selectedLabel)
         }
@@ -225,6 +224,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return when (activityMessage) {
             is ActivityMessage.SendMail -> {
+                reloadMailboxThreads()
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
                         activityMessage.composerInputData, attachments = activityMessage.attachments)
                 dataSource.submitRequest(newRequest)
@@ -253,6 +253,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             is ActivityMessage.UpdateThreadPreview -> {
                 threadListController.replaceThread(activityMessage.threadPreview)
+                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 true
             }
             else -> false
@@ -429,6 +430,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         fun updateMailbox(mailboxLabel: Label) {
             scene.hideDrawer()
+            scene.showRefresh()
             val req = MailboxRequest.UpdateMailbox(
                     label = mailboxLabel,
                     loadedThreadsCount = model.threads.size

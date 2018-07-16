@@ -102,6 +102,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         check.visibility = View.VISIBLE
 
         when(deliveryType){
+            DeliveryTypes.SENDING -> {
+                setIconAndColor(R.drawable.clock, R.color.sent)
+            }
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
             }

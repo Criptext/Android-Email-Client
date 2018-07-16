@@ -113,7 +113,9 @@
             android:scrollbars="vertical"
             android:imeOptions="flagNoExtractUi"
             aztec:blockVerticalPadding="1dp"
-            aztec:textColor="@android:color/black"/>
+            aztec:textColor="@android:color/black"
+            aztec:drawableFailed="@drawable/pixel"
+            aztec:drawableLoading="@drawable/pixel"/>
 
     </FrameLayout>
 

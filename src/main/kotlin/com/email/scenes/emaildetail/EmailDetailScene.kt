@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.email.IHostActivity
 import com.email.R
 import com.email.SecureEmail
+import com.email.db.LabelTypes
 import com.email.db.models.FileDetail
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
@@ -144,7 +145,7 @@ interface EmailDetailScene {
             for (i in 0 until emails.size) {
                 labelSet.addAll(emails[i].labels)
             }
-            val labelsList = ArrayList(labelSet)
+            val labelsList = ArrayList(labelSet).filter { it.type != LabelTypes.SYSTEM}
             return VirtualList.Map(labelsList, { t->t })
         }
 

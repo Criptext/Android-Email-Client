@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/envelope_opened"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/search"/>
+        android:layout_width="78dp"
+        android:layout_height="77dp"
+        android:src="@drawable/search_happy"/>
 
     <TextView
         android:id="@+id/no_results_label"
