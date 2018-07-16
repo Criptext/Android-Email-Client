@@ -214,6 +214,7 @@
                 android:layout_width="12.9dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
+                android:tint="#6e6e6e"
                 android:src="@drawable/attachment_copy"/>
 
         </FrameLayout>

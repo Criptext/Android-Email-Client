@@ -275,19 +275,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 WebViewUtils.openUrl(bodyWebView.context!!, url)
-                zoomLayout.visibility = View.GONE
-                webViewLoader.visibility = View.VISIBLE
                 return true
             }
             @TargetApi(Build.VERSION_CODES.N)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
-                zoomLayout.visibility = View.GONE
-                webViewLoader.visibility = View.VISIBLE
                 return true
             }
-
-
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 zoomLayout.visibility = View.VISIBLE
@@ -295,7 +289,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 view?.evaluateJavascript("""window.scrollTo(0,0);""") { }
 
                 val treeObserver = horizontalScrollView.viewTreeObserver
-
                 treeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                          horizontalScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)

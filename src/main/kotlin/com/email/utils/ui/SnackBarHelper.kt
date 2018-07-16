@@ -9,7 +9,7 @@ class SnackBarHelper{
     companion object {
         fun show(view: View, message: String){
             val sb = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-            sb.view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.colorAccent))
+            sb.view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snackBarColor))
             sb.show()
         }
     }

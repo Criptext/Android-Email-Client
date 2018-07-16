@@ -78,8 +78,13 @@ open class FeedController(private val model: FeedModel,
     private fun onGetEmailPreview(result: FeedResult.GetEmailPreview){
         when(result){
             is FeedResult.GetEmailPreview.Success -> {
+                val currentLabel = when {
+                    result.isTrash -> Label.defaultItems.trash
+                    result.isSpam -> Label.defaultItems.spam
+                    else -> Label.defaultItems.inbox
+                }
                 host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
-                      currentLabel = Label.defaultItems.inbox, threadPreview = result.emailPreview), true)
+                      currentLabel = currentLabel, threadPreview = result.emailPreview), true)
             }
             is FeedResult.GetEmailPreview.Failure -> {
                 scene.showError(result.message)

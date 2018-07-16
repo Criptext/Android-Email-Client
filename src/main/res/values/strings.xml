@@ -301,7 +301,7 @@
     <string name="to_me">To me</string>
     <string name="label_as">Label as</string>
     <string name="not_implemented">Not Implemented</string>
-    <string name="email_sent">Email Sent Successfully</string>
+    <string name="email_sent">Email Sent</string>
     <string name="from_popup">From:</string>
     <string name="to_popup">To:</string>
     <string name="cc_popup">CC:</string>

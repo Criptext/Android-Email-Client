@@ -9,7 +9,8 @@ import com.email.email_preview.EmailPreview
 sealed class FeedResult {
 
     sealed class GetEmailPreview: FeedResult() {
-        data class Success(val emailPreview: EmailPreview): GetEmailPreview()
+        data class Success(val emailPreview: EmailPreview,
+                           val isTrash: Boolean, val isSpam: Boolean): GetEmailPreview()
         data class Failure(val message: String): GetEmailPreview()
     }
 

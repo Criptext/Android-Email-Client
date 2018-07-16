@@ -94,7 +94,7 @@ class WebViewActivity : AppCompatActivity() {
     private fun setupActionBar() {
         supportActionBar?.title = ""
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.close_eliminar_esto)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.exit)
     }
 
     private fun tryToRestoreState(savedInstanceState: Bundle?) {

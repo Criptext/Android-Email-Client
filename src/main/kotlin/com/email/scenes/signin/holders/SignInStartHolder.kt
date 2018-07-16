@@ -51,6 +51,10 @@ class SignInStartHolder(
             rootLayout.visibility = View.INVISIBLE
             addGlobalLayout()
         }
+
+        if(initialUsername.isNotEmpty()){
+            setSubmitButtonState(ProgressButtonState.enabled)
+        }
     }
 
     private fun addGlobalLayout(){

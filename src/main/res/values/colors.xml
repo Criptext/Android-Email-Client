@@ -64,6 +64,7 @@
     <color name="inputHint">#a6a6a6</color>
     <color name="starred">#ffc729</color>
     <color name="grayFeed">#899dad</color>
+    <color name="snackBarColor">#1c1d22</color>
     <!-- TOOLBAR -->
     <color name="format_bar_background">@color/white</color>
     <color name="format_bar_divider_horizontal">@color/white</color>

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.email.R
+import com.email.utils.KeyboardManager
 
 /**
  * Created by sebas on 3/8/18.
@@ -21,7 +22,7 @@ class SettingsCustomLabelDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private lateinit var editTextLabelName: EditText
 
-    fun showCustomLabelDialog(observer: SettingsUIObserver?) {
+    fun showCustomLabelDialog(observer: SettingsUIObserver?, keyboardManager: KeyboardManager) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -29,11 +30,12 @@ class SettingsCustomLabelDialog(val context: Context) {
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer)
+        dialog = createDialog(dialogView, dialogBuilder, observer, keyboardManager)
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?): AlertDialog {
+                             observer: SettingsUIObserver?,
+                             keyboardManager: KeyboardManager): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newPasswordLoginDialog = dialogBuilder.create()
@@ -45,14 +47,16 @@ class SettingsCustomLabelDialog(val context: Context) {
                 R.drawable.dialog_label_chooser_shape)
         newPasswordLoginDialog.window.setBackgroundDrawable(drawableBackground)
 
-        assignButtonEvents(dialogView, newPasswordLoginDialog, observer)
+        assignButtonEvents(dialogView, newPasswordLoginDialog, observer, keyboardManager)
         editTextLabelName = dialogView.findViewById(R.id.edit_text_custom_dialog)
+        keyboardManager.showKeyboardWithDelay(editTextLabelName)
 
         return newPasswordLoginDialog
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?) {
+                                   observer: SettingsUIObserver?,
+                                   keyboardManager: KeyboardManager) {
 
         val btn_yes = view.findViewById(R.id.settings_label_ok) as Button
         val btn_no = view.findViewById(R.id.settings_label_no) as Button
@@ -66,6 +70,7 @@ class SettingsCustomLabelDialog(val context: Context) {
 
         btn_no.setOnClickListener {
             dialog.dismiss()
+            keyboardManager.hideKeyboard()
         }
     }
 }
