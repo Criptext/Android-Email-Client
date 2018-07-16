@@ -2,10 +2,8 @@ package com.email.scenes.mailbox.data
 
 import com.email.SecureEmail
 import com.email.db.DeliveryTypes
-import com.email.db.MailFolders
 import com.email.db.models.Contact
 import com.email.db.models.FullEmail
-import com.email.db.models.Label
 import com.email.utils.EmailThreadValidator
 import java.util.*
 
@@ -15,7 +13,7 @@ import java.util.*
 
 class EmailThread(val latestEmail: FullEmail,
                   val participants: List<Contact>,
-                  val currentLabel: MailFolders,
+                  val currentLabel: String,
                   val totalEmails: Int,
                   val hasFiles: Boolean) {
 

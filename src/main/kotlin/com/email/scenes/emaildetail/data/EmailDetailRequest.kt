@@ -1,7 +1,5 @@
 package com.email.scenes.emaildetail.data
 
-import com.email.api.HttpClient
-import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.SelectedLabels
 
@@ -34,13 +32,13 @@ sealed class EmailDetailRequest{
     ): EmailDetailRequest()
 
     data class MoveEmailThread(
-            val chosenLabel: MailFolders?,
+            val chosenLabel: String?,
             val threadId: String,
             val currentLabel: Label
     ): EmailDetailRequest()
 
     data class MoveEmail(
-            val chosenLabel: MailFolders?,
+            val chosenLabel: String?,
             val emailId: Long,
             val currentLabel: Label
     ): EmailDetailRequest()

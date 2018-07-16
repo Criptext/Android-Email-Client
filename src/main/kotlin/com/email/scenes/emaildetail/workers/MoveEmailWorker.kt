@@ -1,10 +1,10 @@
 package com.email.scenes.emaildetail.workers
 
 import com.email.R
+import com.email.SecureEmail
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.EmailDetailLocalDB
-import com.email.db.MailFolders
 import com.email.db.models.EmailLabel
 import com.email.db.models.Label
 import com.email.scenes.emaildetail.data.EmailDetailResult
@@ -18,7 +18,7 @@ import com.email.utils.UIMessage
 
 class MoveEmailWorker(
         private val db: EmailDetailLocalDB,
-        private val chosenLabel: MailFolders?,
+        private val chosenLabel: String?,
         private val emailId: Long,
         private val currentLabel: Label,
         override val publishFn: (
@@ -45,14 +45,14 @@ class MoveEmailWorker(
             return EmailDetailResult.MoveEmailThread.Success(null)
         }
 
-        if(currentLabel == Label.defaultItems.trash && chosenLabel == MailFolders.SPAM){
+        if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
             //Mark as spam from trash
             db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
                                                 emailIds = emailIds)
         }
 
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelFromLabelType(chosenLabel)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
 
         val emailLabels = arrayListOf<EmailLabel>()
         emailIds.flatMap{ emailId ->

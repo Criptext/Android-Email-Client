@@ -24,7 +24,7 @@ class GetCustomLabelsWorker(
     override fun work(reporter: ProgressReporter<SettingsResult.GetCustomLabels>): SettingsResult.GetCustomLabels? {
         val labels = db.labelDao.getAllCustomLabels().toMutableList()
         //We threat starred label as a custom label
-        labels.add(Label.defaultItems.starred)
+        labels.add(0, Label.defaultItems.starred)
         return SettingsResult.GetCustomLabels.Success(labels)
     }
 

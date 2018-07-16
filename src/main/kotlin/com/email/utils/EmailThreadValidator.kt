@@ -10,7 +10,7 @@ class EmailThreadValidator {
 
    companion object {
       fun isLabelInList (labels: List<Label>, textLabel: String): Boolean{
-           return labels.find { it.text.name == textLabel } != null
+           return labels.find { it.text == textLabel } != null
       }
    }
 }

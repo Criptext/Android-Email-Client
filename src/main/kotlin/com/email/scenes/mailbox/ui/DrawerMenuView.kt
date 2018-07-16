@@ -4,14 +4,19 @@ import android.graphics.Color
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.email.R
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.scenes.mailbox.DrawerMenuItemListener
 import com.email.scenes.mailbox.NavigationMenuOptions
 import com.email.utils.Utility
+import com.email.utils.virtuallist.VirtualList
+import com.email.utils.virtuallist.VirtualRecyclerView
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
@@ -39,6 +44,9 @@ class DrawerMenuView(navigationView: NavigationView,
     private val sliderLabels : LinearLayout
     private val sliderSettings : LinearLayout
     private val sliderSupport : LinearLayout
+
+    private val recyclerViewLabels : RecyclerView
+    private val imageViewArrow: ImageView
 
     //MENU TITLES
     private val textViewTitleInbox: TextView
@@ -106,6 +114,14 @@ class DrawerMenuView(navigationView: NavigationView,
                     navigationMenuOptions = NavigationMenuOptions.ALL_MAIL)
         }
 
+        sliderLabels.setOnClickListener {
+            val visible = recyclerViewLabels.visibility == View.VISIBLE
+            recyclerViewLabels.visibility = if (visible) View.GONE else View.VISIBLE
+            Picasso.with(imageViewArrow.context).load(
+                    if(visible) R.drawable.arrow_down else
+                        R.drawable.arrow_up).into(imageViewArrow)
+        }
+
         sliderSettings.setOnClickListener {
             drawerMenuItemListener.onSettingsOptionClicked()
         }
@@ -126,6 +142,9 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderLabels = navigationView.findViewById(R.id.slider_labels)
         sliderSettings = navigationView.findViewById(R.id.slider_settings)
         sliderSupport = navigationView.findViewById(R.id.slider_support)
+
+        imageViewArrow = navigationView.findViewById(R.id.imageViewArrow)
+        recyclerViewLabels = navigationView.findViewById(R.id.recyclerViewLabels)
 
         textViewCounterInbox = navigationView.findViewById(R.id.count_inbox)
         textViewCounterDraft = navigationView.findViewById(R.id.count_drafts)
@@ -211,7 +230,13 @@ class DrawerMenuView(navigationView: NavigationView,
         }
     }
 
-    private fun clearActiveLabel(){
+    fun setLabelAdapter(label: List<LabelWrapper>){
+        val labelListView = VirtualRecyclerView(recyclerViewLabels)
+        labelListView.setAdapter(LabelWrapperAdapter(recyclerViewLabels.context,
+                drawerMenuItemListener, VirtualLabelWrapperList(label)))
+    }
+
+    fun clearActiveLabel(){
         sliderInbox.setBackgroundColor(Color.TRANSPARENT)
         sliderDrafts.setBackgroundColor(Color.TRANSPARENT)
         sliderSent.setBackgroundColor(Color.TRANSPARENT)
@@ -248,4 +273,18 @@ class DrawerMenuView(navigationView: NavigationView,
         DrawableCompat.setTint(imageViewAllMail.drawable,
                 ContextCompat.getColor(imageViewAllMail.context, R.color.drawer_icon_unselected))
     }
+
+    inner class VirtualLabelWrapperList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper>{
+
+        override fun get(i: Int): LabelWrapper {
+            return labels[i]
+        }
+
+        override val size: Int
+            get() = labels.size
+
+        override val hasReachedEnd = true
+
+    }
+
 }

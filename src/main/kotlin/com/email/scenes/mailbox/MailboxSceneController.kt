@@ -5,20 +5,20 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.email.IHostActivity
 import com.email.R
+import com.email.SecureEmail
 import com.email.api.models.TrackingUpdate
 import com.email.bgworker.BackgroundWorkManager
-import com.email.db.MailFolders
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
 import com.email.db.models.Label
-import com.email.db.typeConverters.LabelTextConverter
 import com.email.email_preview.EmailPreview
 import com.email.scenes.ActivityMessage
 import com.email.scenes.label_chooser.LabelDataHandler
 import com.email.scenes.label_chooser.SelectedLabels
 import com.email.scenes.SceneController
 import com.email.scenes.composer.data.ComposerType
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.scenes.mailbox.data.*
 import com.email.scenes.mailbox.feed.FeedController
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
@@ -57,7 +57,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun getTitleForMailbox() : String{
-        return LabelTextConverter().parseLabelTextType(model.selectedLabel.text)
+        return model.selectedLabel.text
     }
 
     private val toolbarTitle: String
@@ -144,6 +144,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
+
+        override fun onCustomLabelClicked(label: Label) {
+            scene.clearMenuActiveLabel()
+            scene.hideDrawer()
+            scene.showRefresh()
+            model.selectedLabel = label
+            reloadMailboxThreads()
+        }
 
         override fun onSettingsOptionClicked() {
             host.goToScene(SettingsParams(), true)
@@ -254,7 +262,6 @@ class MailboxSceneController(private val scene: MailboxScene,
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
         scene.attachView(
-                mailboxLabel = model.selectedLabel.text,
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model))
@@ -284,7 +291,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun deleteSelectedEmailThreads() {
-        dataSourceController.moveEmailThread(chosenLabel = MailFolders.TRASH)
+        dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_TRASH)
     }
 
     private fun deleteSelectedEmailThreads4Ever() {
@@ -337,7 +344,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
             R.id.mailbox_not_spam -> removeCurrentLabelSelectedEmailThreads()
             R.id.mailbox_not_trash -> removeCurrentLabelSelectedEmailThreads()
-            R.id.mailbox_spam -> dataSourceController.moveEmailThread(chosenLabel = MailFolders.SPAM)
+            R.id.mailbox_spam -> dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> {
                 val unreadStatus = model.isInUnreadMode
                 toggleReadSelectedEmailThreads(unreadStatus = unreadStatus)
@@ -371,15 +378,15 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = MailFolders.INBOX)
+            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_INBOX)
         }
 
         override fun onMoveToSpamClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = MailFolders.SPAM)
+            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_SPAM)
         }
 
         override fun onMoveToTrashClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = MailFolders.TRASH)
+            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_TRASH)
         }
 
     }
@@ -411,7 +418,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return true
             }
 
-        fun moveEmailThread(chosenLabel: MailFolders?) {
+        fun moveEmailThread(chosenLabel: String?) {
             val req = MailboxRequest.MoveEmailThread(
                     selectedThreadIds = model.selectedThreads.toList().map { it.threadId },
                     chosenLabel = chosenLabel,
@@ -523,6 +530,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.setCounterLabel(NavigationMenuOptions.INBOX, result.totalInbox)
                     scene.setCounterLabel(NavigationMenuOptions.DRAFT, result.totalDraft)
                     scene.setCounterLabel(NavigationMenuOptions.SPAM, result.totalSpam)
+                    scene.setMenuLabels(result.labels.map { LabelWrapper(it) })
                 }
                 is MailboxResult.GetMenuInformation.Failure -> {
                     scene.showMessage(UIMessage(R.string.error_getting_counters))

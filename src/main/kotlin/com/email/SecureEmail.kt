@@ -30,7 +30,7 @@ class SecureEmail {
         val LABEL_SENT = "SENT"
         val LABEL_INBOX = "INBOX"
         val LABEL_TRASH = "TRASH"
-        val LABEL_ALL_MAIL = ""
+        val LABEL_ALL_MAIL = "ALL MAIL"
         val LABEL_CATEGORY_PROMOTIONS = "CATEGORY_PROMOTIONS"
         val LABEL_DRAFT = "DRAFT"
         val LABEL_SPAM = "SPAM"

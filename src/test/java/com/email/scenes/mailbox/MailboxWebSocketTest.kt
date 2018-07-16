@@ -1,8 +1,8 @@
 package com.email.scenes.mailbox
 
 import com.email.IHostActivity
+import com.email.SecureEmail
 import com.email.api.HttpClient
-import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.*
 import com.email.db.dao.signal.RawSessionDao
@@ -123,7 +123,7 @@ class MailboxWebSocketTest {
         // mock database result
         every {
             db.getThreadsFromMailboxLabel("gabriel@jigl.com",
-                    MailFolders.INBOX, null, 20, any())
+                    SecureEmail.LABEL_INBOX, null, 20, any())
         } returns MailboxTestUtils.createEmailThreads(20)
         every {
             emailInsertionDao.findEmailByMessageId(any())

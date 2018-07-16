@@ -1,11 +1,9 @@
 package com.email.scenes.mailbox.data
 
-import com.email.db.MailFolders
 import com.email.db.models.Account
 import com.email.db.models.Label
 import com.email.email_preview.EmailPreview
 import com.email.utils.UIMessage
-import org.json.JSONObject
 
 /**
  * Created by sebas on 3/20/18.
@@ -36,23 +34,23 @@ sealed class MailboxResult {
     }
 
     sealed class LoadEmailThreads : MailboxResult() {
-        abstract fun getDestinationMailbox(): MailFolders
+        abstract fun getDestinationMailbox(): String
         class Success(
                 val emailPreviews: List<EmailPreview>,
                 val isReset: Boolean,
-                val mailboxLabel: MailFolders): LoadEmailThreads() {
+                val mailboxLabel: String): LoadEmailThreads() {
 
-            override fun getDestinationMailbox(): MailFolders {
+            override fun getDestinationMailbox(): String {
                 return mailboxLabel
             }
         }
 
         data class Failure(
-                val mailboxLabel: MailFolders,
+                val mailboxLabel: String,
                 val message: UIMessage,
                 val exception: Exception) : LoadEmailThreads() {
 
-            override fun getDestinationMailbox(): MailFolders {
+            override fun getDestinationMailbox(): String {
                 return mailboxLabel
             }
         }
@@ -87,7 +85,7 @@ sealed class MailboxResult {
 
     sealed class GetMenuInformation : MailboxResult() {
         data class Success(val account: Account, val totalInbox: Int, val totalDraft: Int,
-                           val totalSpam: Int): GetMenuInformation()
+                           val totalSpam: Int, val labels: List<Label>): GetMenuInformation()
         class Failure: GetMenuInformation()
     }
 

@@ -1,9 +1,9 @@
 package com.email.scenes.mailbox.data
 
 import com.email.R
+import com.email.SecureEmail
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
-import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
 import com.email.db.models.EmailLabel
 import com.email.db.models.Label
@@ -17,7 +17,7 @@ import com.email.utils.UIMessage
 
 class MoveEmailThreadWorker(
         private val db: MailboxLocalDB,
-        private val chosenLabel: MailFolders?,
+        private val chosenLabel: String?,
         private val selectedThreadIds: List<String>,
         private val currentLabel: Label,
         override val publishFn: (
@@ -35,9 +35,9 @@ class MoveEmailThreadWorker(
                 exception = ex)
     }
 
-    private fun getLabelEmailRelationsFromEmailIds(emailIds: List<Long>, label: MailFolders): List<EmailLabel> {
+    private fun getLabelEmailRelationsFromEmailIds(emailIds: List<Long>, label: String): List<EmailLabel> {
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelFromLabelType(label)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(label)))
 
 
         return emailIds.flatMap{ emailId ->
@@ -61,7 +61,7 @@ class MoveEmailThreadWorker(
             db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
         }
 
-        if(currentLabel == Label.defaultItems.trash && chosenLabel == MailFolders.SPAM){
+        if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
             //Mark as spam from trash
             db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
                                                 emailIds = emailIds)

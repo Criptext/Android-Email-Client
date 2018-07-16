@@ -84,6 +84,11 @@ class UpdateMailboxWorkerTest {
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
         db.emailDao().insertAll(localEmails)
+        db.contactDao().insertIgnoringConflicts(Contact(
+                id = 0,
+                email = "mayer@jigl.com",
+                name = "Mayer"
+        ))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
 
         var totalFeeds = db.feedDao().getAllFeedItems().size

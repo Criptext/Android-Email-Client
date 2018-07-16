@@ -32,6 +32,7 @@ class LabelWrapperAdapter(private val mContext : Context,
                 val labelThread = labelList[position]
                 holder.bindLabel(labelThread)
                 holder.setOnCheckboxClickedListener({
+                    labelThread.isSelected = !labelThread.isSelected
                     settingsUIObserver?.onToggleLabelSelection(labelThread)
                 })
             }

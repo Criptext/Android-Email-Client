@@ -14,10 +14,10 @@ import com.email.IHostActivity
 import com.email.R
 import com.email.utils.virtuallist.VirtualListView
 import com.email.utils.virtuallist.VirtualRecyclerView
-import com.email.db.MailFolders
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.LabelChooserDialog
 import com.email.scenes.label_chooser.LabelDataHandler
+import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.scenes.mailbox.holders.ToolbarHolder
 import com.email.scenes.mailbox.ui.DrawerMenuView
 import com.email.scenes.mailbox.ui.EmailThreadAdapter
@@ -41,7 +41,6 @@ interface MailboxScene{
     fun initNavHeader(fullName: String, email: String)
     fun onBackPressed(): Boolean
     fun attachView(
-            mailboxLabel: MailFolders,
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
@@ -51,7 +50,7 @@ interface MailboxScene{
     fun hideMultiModeBar()
     fun updateToolbarTitle(title: String)
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
-    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: MailFolders)
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: String)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
@@ -63,6 +62,8 @@ interface MailboxScene{
     fun showRefresh()
     fun scrollTop()
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
+    fun setMenuLabels(labels: List<LabelWrapper>)
+    fun clearMenuActiveLabel()
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -131,7 +132,6 @@ interface MailboxScene{
 
 
         override fun attachView(
-                mailboxLabel: MailFolders,
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
@@ -202,7 +202,7 @@ interface MailboxScene{
         }
 
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener,
-                                      currentFolder: MailFolders) {
+                                      currentFolder: String) {
             this.onMoveThreadsListener = onMoveThreadsListener
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener,
@@ -275,6 +275,14 @@ interface MailboxScene{
                 }
                 override fun onDrawerOpened(drawerView: View) {}
             })
+        }
+
+        override fun setMenuLabels(labels: List<LabelWrapper>) {
+            drawerMenuView.setLabelAdapter(labels)
+        }
+
+        override fun clearMenuActiveLabel() {
+            drawerMenuView.clearActiveLabel()
         }
 
     }

@@ -15,26 +15,25 @@ import com.email.R
  * Created by sebas on 3/8/18.
  */
 
-class SettingsProfileNameDialog(val context: Context) {
+class SettingsCustomLabelDialog(val context: Context) {
 
-    private var dialog: AlertDialog? = null
     private val res = context.resources
-    private lateinit var editTextFullName: EditText
+    private var dialog: AlertDialog? = null
+    private lateinit var editTextLabelName: EditText
 
-    fun showProfileNameDialog(fullName: String, observer: SettingsUIObserver?) {
+    fun showCustomLabelDialog(observer: SettingsUIObserver?) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.settings_profile_name_dialog, null)
+        val dialogView = inflater.inflate(R.layout.settings_custom_label_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer, fullName)
+        dialog = createDialog(dialogView, dialogBuilder, observer)
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?,
-                             fullName: String): AlertDialog {
+                             observer: SettingsUIObserver?): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newPasswordLoginDialog = dialogBuilder.create()
@@ -47,8 +46,7 @@ class SettingsProfileNameDialog(val context: Context) {
         newPasswordLoginDialog.window.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView, newPasswordLoginDialog, observer)
-        editTextFullName = dialogView.findViewById(R.id.edit_text_profile_name)
-        editTextFullName.setText(fullName)
+        editTextLabelName = dialogView.findViewById(R.id.edit_text_custom_dialog)
 
         return newPasswordLoginDialog
     }
@@ -56,12 +54,12 @@ class SettingsProfileNameDialog(val context: Context) {
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
                                    observer: SettingsUIObserver?) {
 
-        val btn_yes = view.findViewById(R.id.settgins_profile_ok) as Button
-        val btn_no = view.findViewById(R.id.settgins_profile_no) as Button
+        val btn_yes = view.findViewById(R.id.settings_label_ok) as Button
+        val btn_no = view.findViewById(R.id.settings_label_no) as Button
 
         btn_yes.setOnClickListener {
-            if(editTextFullName.text.toString().isNotEmpty()) {
-                observer?.onProfileNameChanged(editTextFullName.text.toString())
+            if(editTextLabelName.text.toString().isNotEmpty()) {
+                observer?.onCustomLabelNameAdded(editTextLabelName.text.toString())
                 dialog.dismiss()
             }
         }
