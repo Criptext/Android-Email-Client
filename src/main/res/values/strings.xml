@@ -286,6 +286,9 @@
     <string name="updating_mailbox">Updating mailbox...</string>
     <string name="email_already_decrypted">Mailbox is already updated!</string>
 
+    <!--Exception Link Device-->
+    <string name="failed_to_create_link_device_file">Link Device process failed, try again later!</string>
+
     <string name="nosubject">(No Subject)</string>
     <string name="nocontent">(No Content)</string>
     <string name="unknown">Unknown</string>

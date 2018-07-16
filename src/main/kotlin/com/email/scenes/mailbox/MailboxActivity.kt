@@ -118,7 +118,11 @@ class MailboxActivity : BaseActivity() {
                 rawSessionDao = appDB.rawSessionDao(),
                 httpClient = HttpClient.Default(),
                 emailInsertionDao = appDB.emailInsertionDao(),
-                mailboxLocalDB = db)
+                mailboxLocalDB = db,
+                fileDao = appDB.fileDao(),
+                labelDao = appDB.labelDao(),
+                emailLabelDao = appDB.emailLabelDao(),
+                emailContactJoinDao = appDB.emailContactDao())
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
 

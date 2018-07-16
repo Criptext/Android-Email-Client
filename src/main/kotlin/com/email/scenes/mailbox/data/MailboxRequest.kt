@@ -26,6 +26,8 @@ sealed class MailboxRequest{
             val shouldRemoveCurrentLabel: Boolean
             ): MailboxRequest()
 
+    class LinkDevice: MailboxRequest()
+
     data class MoveEmailThread(
             val chosenLabel: MailFolders?,
             val selectedThreadIds: List<String>,
@@ -48,5 +50,7 @@ sealed class MailboxRequest{
     data class UpdateUnreadStatus(val threadIds: List<String>,
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
+
+
 
 }

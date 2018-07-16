@@ -4,10 +4,7 @@ import com.email.IHostActivity
 import com.email.api.HttpClient
 import com.email.db.MailFolders
 import com.email.db.MailboxLocalDB
-import com.email.db.dao.ContactDao
-import com.email.db.dao.EmailDao
-import com.email.db.dao.EmailInsertionDao
-import com.email.db.dao.FeedItemDao
+import com.email.db.dao.*
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
@@ -35,6 +32,10 @@ class MailboxWebSocketTest {
     private lateinit var emailDao: EmailDao
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var contactDao: ContactDao
+    private lateinit var fileDao: FileDao
+    private lateinit var labelDao: LabelDao
+    private lateinit var emailLabelDao: EmailLabelDao
+    private lateinit var emailCOntactDao: EmailContactJoinDao
     private lateinit var rawSessionDao: RawSessionDao
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var runner: MockedWorkRunner
@@ -57,6 +58,10 @@ class MailboxWebSocketTest {
         emailDao = mockk()
         feedItemDao = mockk()
         contactDao = mockk()
+        fileDao = mockk()
+        labelDao = mockk()
+        emailLabelDao = mockk()
+        emailCOntactDao = mockk()
 
         emailInsertionDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -82,7 +87,11 @@ class MailboxWebSocketTest {
                 contactDao = contactDao,
                 feedItemDao = feedItemDao,
                 rawSessionDao = rawSessionDao,
-                emailInsertionDao = emailInsertionDao
+                emailInsertionDao = emailInsertionDao,
+                fileDao = fileDao,
+                labelDao = labelDao,
+                emailLabelDao = emailLabelDao,
+                emailContactJoinDao = emailCOntactDao
         )
 
         feedController = mockk(relaxed = true)
