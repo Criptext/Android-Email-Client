@@ -1,8 +1,5 @@
 package com.email.scenes.mailbox
 
-import android.view.View
-import android.widget.FrameLayout
-import android.widget.TextView
 import com.email.IHostActivity
 import com.email.R
 import com.email.SecureEmail
@@ -573,7 +570,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
-            threadListController.markThreadAsOpened(emailId)
+            threadListController.changeThreadStatus(emailId, update.type)
             feedController.reloadFeeds()
         }
 

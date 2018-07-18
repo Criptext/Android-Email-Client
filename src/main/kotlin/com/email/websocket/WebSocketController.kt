@@ -55,9 +55,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     }
 
     init {
-        val url = createCriptextSocketServerURL(
-                recipientId = activeAccount.recipientId,
-                deviceId = activeAccount.deviceId)
+        val url = createCriptextSocketServerURL(activeAccount.jwt)
 
         eventDataSource.listener = dataSourceListener
         wsClient.connect(url, onMessageReceived)
@@ -93,8 +91,8 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     }
 
     companion object {
-        private fun createCriptextSocketServerURL(recipientId: String, deviceId: Int): String {
-            return """${Hosts.webSocketBaseUrl}?recipientId=$recipientId&deviceId=$deviceId"""
+        private fun createCriptextSocketServerURL(jwt: String): String {
+            return """${Hosts.webSocketBaseUrl}?token=$jwt"""
         }
     }
 

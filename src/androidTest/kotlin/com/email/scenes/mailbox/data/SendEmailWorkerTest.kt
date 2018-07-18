@@ -16,6 +16,7 @@ import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.SaveEmailWorker
 import com.email.signal.*
+import com.email.utils.DeviceUtils
 import com.email.utils.MockedResponse
 import com.email.utils.enqueueResponses
 import io.mockk.mockk
@@ -44,7 +45,7 @@ class SendEmailWorkerTest {
     private lateinit var httpClient: HttpClient
     private lateinit var tester: TestUser
 
-    private val keyGenerator = SignalKeyGenerator.Default()
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)

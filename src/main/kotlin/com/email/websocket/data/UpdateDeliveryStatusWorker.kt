@@ -10,6 +10,7 @@ import com.email.db.dao.EmailDao
 import com.email.db.dao.FeedItemDao
 import com.email.db.models.Contact
 import com.email.db.models.FeedItem
+import com.email.db.typeConverters.EmailDeliveryConverter
 import java.util.*
 
 /**
@@ -33,21 +34,23 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
             : EventResult.UpdateDeliveryStatus? {
         val existingEmail = dao.findEmailByMetadataKey(trackingUpdate.metadataKey)
 
-        if (existingEmail != null && existingEmail.delivered != DeliveryTypes.READ) {
+        if (existingEmail != null) {
 
-            dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), DeliveryTypes.READ)
+            dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), trackingUpdate.type)
             val update = EmailDeliveryStatusUpdate(existingEmail.id, trackingUpdate)
 
-            feedDao.insertFeedItem(FeedItem(
-                    id = 0,
-                    date = Date(),
-                    feedType = FeedType.OPEN_EMAIL,
-                    location = "",
-                    seen = false,
-                    emailId = existingEmail.id,
-                    contactId = contactDao.getContact("${trackingUpdate.from}@${Contact.mainDomain}")!!.id,
-                    fileId = null
-            ))
+            if(trackingUpdate.type == DeliveryTypes.READ) {
+                feedDao.insertFeedItem(FeedItem(
+                        id = 0,
+                        date = Date(),
+                        feedType = FeedType.OPEN_EMAIL,
+                        location = "",
+                        seen = false,
+                        emailId = existingEmail.id,
+                        contactId = contactDao.getContact("${trackingUpdate.from}@${Contact.mainDomain}")!!.id,
+                        fileId = null
+                ))
+            }
 
             return EventResult.UpdateDeliveryStatus.Success(update)
         }

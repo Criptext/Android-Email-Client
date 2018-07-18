@@ -1,6 +1,7 @@
 package com.email.signal
 
 import com.email.db.models.signal.CRPreKey
+import com.email.utils.DeviceUtils
 import org.amshove.kluent.`should equal`
 import org.json.JSONObject
 import org.junit.Test

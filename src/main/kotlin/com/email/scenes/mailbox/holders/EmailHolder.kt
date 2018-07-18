@@ -106,7 +106,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                 setIconAndColor(R.drawable.clock, R.color.sent)
             }
             DeliveryTypes.SENT -> {
-                setIconAndColor(R.drawable.read, R.color.sent)
+                setIconAndColor(R.drawable.mail_sent, R.color.sent)
             }
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)

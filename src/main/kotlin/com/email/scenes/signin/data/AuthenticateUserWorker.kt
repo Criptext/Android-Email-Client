@@ -78,7 +78,7 @@ class AuthenticateUserWorker(
         (registrationBundles, account) ->
         Result.of {
             val postKeyBundleStep = Runnable {
-                apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
+                account.jwt = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
             }
 

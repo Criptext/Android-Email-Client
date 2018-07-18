@@ -10,6 +10,7 @@ import com.email.db.SignInLocalDB
 import com.email.scenes.SceneController
 import com.email.scenes.signin.data.SignInDataSource
 import com.email.signal.SignalKeyGenerator
+import com.email.utils.DeviceUtils
 import com.email.utils.KeyboardManager
 
 /**
@@ -33,7 +34,7 @@ class SignInActivity : BaseActivity() {
                 host = this,
                 dataSource = SignInDataSource(
                         runner = AsyncTaskWorkRunner(),
-                        keyGenerator = SignalKeyGenerator.Default(),
+                        keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType(appCtx)),
                         httpClient = HttpClient.Default(),
                         signUpDao = appDB.signUpDao(),
                         keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),

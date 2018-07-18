@@ -8,6 +8,7 @@ import com.email.androidtest.TestDatabase
 import com.email.db.*
 import com.email.db.models.*
 import com.email.signal.*
+import com.email.utils.DeviceUtils
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
@@ -23,7 +24,7 @@ class UserDataWriterTest {
 
     private lateinit var db: TestDatabase
 
-    private val keyGenerator = SignalKeyGenerator.Default()
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
 
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@jigl.com", name = "Joe", id = 2)

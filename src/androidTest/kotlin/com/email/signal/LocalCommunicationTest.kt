@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import com.email.androidtest.TestActivity
 import com.email.splash.SplashActivity
+import com.email.utils.DeviceUtils
 import org.amshove.kluent.shouldEqual
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +19,7 @@ class LocalCommunicationTest {
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
-    private val generator = SignalKeyGenerator.Default()
+    private val generator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
 
     @Test
     @Throws(InterruptedException::class)

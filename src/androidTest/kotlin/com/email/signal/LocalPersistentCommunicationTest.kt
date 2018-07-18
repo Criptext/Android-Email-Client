@@ -8,6 +8,7 @@ import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
 import com.email.db.dao.SignUpDao
 import com.email.splash.SplashActivity
+import com.email.utils.DeviceUtils
 import org.amshove.kluent.shouldEqual
 import org.junit.After
 import org.junit.Before
@@ -22,7 +23,7 @@ class LocalPersistentCommunicationTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
-    private val keyGenerator = SignalKeyGenerator.Default()
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
     private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var signUpDao: SignUpDao

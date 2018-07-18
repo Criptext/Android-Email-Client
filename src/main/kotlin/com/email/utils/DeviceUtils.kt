@@ -1,8 +1,13 @@
 package com.email.utils
 
+import android.content.Context
 import android.os.Build
+import com.email.R
 
 class DeviceUtils{
+
+    enum class DeviceType { Pc, Phone, Tablet}
+
     companion object {
         fun getDeviceName(): String {
             val manufacturer = Build.MANUFACTURER
@@ -23,6 +28,10 @@ class DeviceUtils{
             } else {
                 Character.toUpperCase(first) + s.substring(1)
             }
+        }
+        fun getDeviceType(context: Context): DeviceType {
+            return if(context.resources.getBoolean(R.bool.isTablet)) DeviceType.Tablet
+            else DeviceType.Phone
         }
     }
 }

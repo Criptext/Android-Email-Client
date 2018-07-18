@@ -56,7 +56,7 @@ class AuthenticateUserWorkerTest {
         } returns mockedAuthResponse
         every {
             httpClient.post("/keybundle", "__JWTOKEN__", capture(postKeyBundleRequestSlot))
-        } returns "OK"
+        } returns "__JWTOKEN__"
 
 
         every {
@@ -144,7 +144,7 @@ class AuthenticateUserWorkerTest {
 
         every {
             httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
-        } returns "OK"
+        } returns "__JWTOKEN__"
 
 
         every {
