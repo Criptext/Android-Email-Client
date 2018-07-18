@@ -65,4 +65,22 @@ class SearchHistoryManagerTest {
 
         manager.getSearchHistory() `should equal`  expectedList
     }
+
+    @Test
+    fun `SearchHistoryManager should not store duplicated values`() {
+
+        every { storage.getString(KeyValueStorage.StringKey.SearchHistory, "") } returns ""
+
+        val expectedList = mutableListOf("UnitTest")
+
+        every {
+            storage.putString(KeyValueStorage.StringKey.SearchHistory,
+                    JSONArray(expectedList).toString())
+        } just runs
+
+        manager.saveSearchHistory("UnitTest")
+        manager.saveSearchHistory("UnitTest")
+
+        manager.getSearchHistory() `should equal` expectedList
+    }
 }

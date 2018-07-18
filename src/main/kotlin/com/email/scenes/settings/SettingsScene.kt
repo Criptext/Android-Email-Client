@@ -12,6 +12,7 @@ import com.email.scenes.settings.views.DevicesSettingsView
 import com.email.scenes.settings.views.GeneralSettingsView
 import com.email.scenes.settings.views.LabelSettingsView
 import com.email.scenes.settings.labels.VirtualLabelWrapperList
+import com.email.utils.KeyboardManager
 import com.email.utils.UIMessage
 import com.email.utils.getLocalizedUIMessage
 import com.email.utils.ui.ViewPagerAdapter
@@ -22,7 +23,7 @@ interface SettingsScene{
     fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
-    fun showCreateLabelDialog()
+    fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun getLabelListView(): VirtualListView
 
     var settingsUIObserver: SettingsUIObserver?
@@ -76,8 +77,8 @@ interface SettingsScene{
             settingsProfileNameDialog.showProfileNameDialog(fullName, settingsUIObserver)
         }
 
-        override fun showCreateLabelDialog() {
-            settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver)
+        override fun showCreateLabelDialog(keyboardManager: KeyboardManager) {
+            settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver, keyboardManager)
         }
 
         override fun getLabelListView(): VirtualListView {

@@ -63,7 +63,7 @@ class SettingsController(
         }
 
         override fun onCreateLabelClicked() {
-            scene.showCreateLabelDialog()
+            scene.showCreateLabelDialog(keyboardManager)
         }
 
         override fun onProfileNameChanged(fullName: String) {

@@ -199,6 +199,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onOpenComposerButtonClicked() {
+            if(model.isInMultiSelect){
+                changeMode(multiSelectON = false, silent = false)
+                threadListController.reRenderAll()
+            }
             val params = ComposerParams(ComposerType.Empty())
             host.goToScene(params, true)
         }
@@ -445,6 +449,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 scene.updateToolbarTitle(toolbarTitle)
                 dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                feedController.reloadFeeds()
             }
         }
 
@@ -496,6 +501,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result) {
                 is MailboxResult.MoveEmailThread.Success ->  {
                     reloadMailboxThreads()
+                    feedController.reloadFeeds()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 } else -> {
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
@@ -506,6 +512,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
                 is MailboxResult.SendMail.Success -> {
+                    scene.showMessage(UIMessage(R.string.email_sent))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     reloadMailboxThreads()
                 }

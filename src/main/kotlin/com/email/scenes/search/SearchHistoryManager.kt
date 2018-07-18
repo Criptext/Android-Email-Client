@@ -15,8 +15,10 @@ class SearchHistoryManager(private val storage: KeyValueStorage) {
         if(historyList.size == SearchSceneController.MAXIMUM_SEARCH_HISTORY){
             historyList.removeAt(historyList.size - 1)
         }
-        historyList.add(0, value)
-        storage.putString(KeyValueStorage.StringKey.SearchHistory, JSONArray(historyList).toString())
+        if(!historyList.contains(value)) {
+            historyList.add(0, value)
+            storage.putString(KeyValueStorage.StringKey.SearchHistory, JSONArray(historyList).toString())
+        }
     }
 
     fun getSearchHistory(): List<String> {

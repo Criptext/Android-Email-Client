@@ -147,7 +147,10 @@ class FeedControllerTest {
 
         request `should be instance of` FeedRequest.GetEmailPreview::class.java
 
-        listenerSlot.captured(FeedResult.GetEmailPreview.Success(mockk(relaxed = true)))
+        listenerSlot.captured(FeedResult.GetEmailPreview.Success(
+                emailPreview = mockk(relaxed = true),
+                isTrash = false,
+                isSpam = false))
 
         verify { host.goToScene(any(), any()) }
 

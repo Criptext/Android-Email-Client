@@ -2,6 +2,8 @@ package com.email.scenes.composer
 
 import com.email.db.models.Contact
 import com.email.scenes.composer.data.ComposerInputData
+import com.email.utils.EmailAddressUtils
+import com.email.utils.EmailAddressUtils.isFromCriptextDomain
 import com.email.utils.compat.HtmlCompat
 
 /**
@@ -28,15 +30,14 @@ object Validator {
     }
 
     fun criptextOnlyContacts(data: ComposerInputData): Boolean {
-        val atSubstring = "@jigle.com"
         for(toContact in data.to){
-            if(!toContact.email.contains(atSubstring)) return false
+            if(!isFromCriptextDomain(toContact.email)) return false
         }
         for(ccContact in data.cc){
-            if(!ccContact.email.contains(atSubstring)) return false
+            if(!isFromCriptextDomain(ccContact.email)) return false
         }
         for(bccContact in data.bcc){
-            if(!bccContact.email.contains(atSubstring)) return false
+            if(!isFromCriptextDomain(bccContact.email)) return false
         }
         return true
     }

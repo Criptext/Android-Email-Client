@@ -11,6 +11,16 @@
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
     </style>
 
+    <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="textColorError"> @color/colorUnsent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+    </style>
+
     <style name="Splash.Criptext" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="colorPrimaryDark">@color/colorSplashStart</item>

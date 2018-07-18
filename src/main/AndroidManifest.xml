@@ -15,16 +15,19 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".scenes.mailbox.MailboxActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".scenes.search.SearchActivity"
-            android:windowSoftInputMode="stateVisible">
+            android:windowSoftInputMode="stateVisible"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".splash.SplashActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Splash.Criptext">
+            android:theme="@style/Splash.Criptext"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -33,32 +36,42 @@
         <activity
             android:name="com.email.scenes.signin.SignInActivity"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.email.scenes.signup.SignUpActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.email.scenes.emaildetail.EmailDetailActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".scenes.composer.ComposerActivity"
             android:label="@string/title_activity_composer"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".scenes.settings.SettingsActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".scenes.settings.signature.SignatureActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".androidtest.TestActivity"
             android:exported="false"/>
-
+        <activity
+            android:name=".scenes.WebViewActivity"
+            android:theme="@style/AppThemeWithActionBar"
+            android:configChanges="orientation|screenSize">
+        </activity>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3b4ddc55293ff0e9bf22a8927dc076a5ac0b17ec" />
