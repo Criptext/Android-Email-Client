@@ -2,6 +2,7 @@ package com.email.signal
 
 import com.email.db.models.signal.CRPreKey
 import org.whispersystems.libsignal.state.SignalProtocolStore
+import java.io.File
 
 /**
  * Created by gabriel on 3/17/18.
@@ -37,5 +38,8 @@ abstract class TestUser(generator: SignalKeyGenerator, recipientId: String, devi
 
     fun decrypt(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData) =
             client.decryptMessage(recipientId, deviceId, encryptedData)
+
+    fun decryptFileByChunks(fileToDecrypt: File, recipientId: String, deviceId: Int) =
+            client.decryptFileByChunks(fileToDecrypt, recipientId, deviceId)
 
 }

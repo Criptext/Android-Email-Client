@@ -1,5 +1,6 @@
 package com.email.signal
 
+import com.email.utils.file.ChunkFileReader
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.SessionBuilder
 import org.whispersystems.libsignal.SessionCipher
@@ -9,6 +10,7 @@ import org.whispersystems.libsignal.protocol.PreKeySignalMessage
 import org.whispersystems.libsignal.protocol.SignalMessage
 import org.whispersystems.libsignal.state.PreKeyBundle
 import org.whispersystems.libsignal.state.SignalProtocolStore
+import java.io.File
 import java.nio.charset.Charset
 
 /**
@@ -30,6 +32,11 @@ interface SignalClient {
      * the encryption type (preKey or normal)
      */
     fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): SignalEncryptedData
+
+    fun encryptBytes(recipientId: String, deviceId: Int, byteArray: ByteArray): SignalEncryptedData
+
+    fun encryptFileByChunks(fileToEncrypt: File, recipientId: String, deviceId: Int, chunkSize: Int, outputFileName: String = "encrypted_user_data"): String
+    fun decryptFileByChunks(fileToDecrypt: File, recipientId: String, deviceId: Int,  outputFileName: String = "decrypted_user_data"): String
 
     /**
      * decrypts a message using Signal.
@@ -97,6 +104,32 @@ interface SignalClient {
                                      SignalEncryptedData.Type.normal
 
             return SignalEncryptedData(encryptedB64, encryptionType)
+        }
+
+        override fun encryptBytes(recipientId: String, deviceId: Int, byteArray: ByteArray): SignalEncryptedData {
+            val cipher = SessionCipher(store, SignalProtocolAddress(recipientId, deviceId))
+            val cipherText = cipher.encrypt(byteArray)
+            cipherText.type
+            val encryptedB64 = Encoding.byteArrayToString(cipherText.serialize())
+            val encryptionType = if (cipherText is PreKeySignalMessage)
+                SignalEncryptedData.Type.preKey
+            else
+                SignalEncryptedData.Type.normal
+
+            return SignalEncryptedData(encryptedB64, encryptionType)
+        }
+
+        override fun encryptFileByChunks(fileToEncrypt: File, recipientId: String, deviceId: Int, chunkSize: Int, outputFileName: String): String {
+            val encryptedFile = createTempFile(outputFileName)
+            val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index -> encryptedFile.appendText(encryptBytes(recipientId, deviceId,chunk).encryptedB64.plus("\n")) }
+            ChunkFileReader.read(fileToEncrypt, chunkSize, onNewChunkRead)
+            return encryptedFile.absolutePath
+        }
+
+        override fun decryptFileByChunks(fileToDecrypt: File, recipientId: String, deviceId: Int, outputFileName: String): String {
+            val decryptedFile = createTempFile(outputFileName)
+            fileToDecrypt.forEachLine {decryptedFile.appendText(decryptMessage(recipientId, deviceId,SignalEncryptedData(it,SignalEncryptedData.Type.preKey))) }
+            return decryptedFile.absolutePath
         }
 
         override fun decryptMessage(recipientId: String, deviceId: Int,
