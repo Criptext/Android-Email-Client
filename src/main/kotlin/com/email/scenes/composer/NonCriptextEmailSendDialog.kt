@@ -202,6 +202,7 @@ class NonCriptextEmailSendDialog(val context: Context) {
                                    observer: ComposerUIObserver?) {
 
         btnSend.setOnClickListener {
+                uiObserver?.sendDialogButtonPressed()
                 dialog.dismiss()
         }
 

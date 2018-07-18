@@ -37,13 +37,27 @@ class ComposerController(private val model: ComposerModel,
 
     private val observer = object: ComposerUIObserver {
 
+        override fun sendDialogButtonPressed() {
+            val data = scene.getDataInputByUser()
+            updateModelWithInputData(data)
+
+            if(isReadyForSending())
+                saveEmailAsDraft(data, onlySave = false)
+        }
+
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
             if(isChecked)
                 checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
+            else {
+                val data = scene.getDataInputByUser()
+                data.passwordForNonCriptextUsers = null
+            }
         }
 
         override fun onConfirmPasswordChangedListener(text: String) {
             model.confirmPasswordText = text
+            val data = scene.getDataInputByUser()
+            data.passwordForNonCriptextUsers = text
             checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
         }
 

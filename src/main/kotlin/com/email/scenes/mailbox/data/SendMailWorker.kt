@@ -13,10 +13,7 @@ import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.KnownAddress
-import com.email.scenes.composer.data.ComposerAPIClient
-import com.email.scenes.composer.data.ComposerAttachment
-import com.email.scenes.composer.data.ComposerInputData
-import com.email.scenes.composer.data.PostEmailBody
+import com.email.scenes.composer.data.*
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalClient
 import com.email.utils.DateUtils
@@ -50,6 +47,8 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
 
+    private var guestEmails: PostEmailBody.GuestEmail? = null
+
     private fun getMailRecipients(): MailRecipients {
         val toAddresses = composerInputData.to.map(Contact.toAddress)
         val ccAddresses = composerInputData.cc.map(Contact.toAddress)
@@ -64,6 +63,19 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         return MailRecipients(toCriptext = toCriptext, ccCriptext = ccCriptext,
                 bccCriptext = bccCriptext, peerCriptext = listOf(activeAccount.recipientId))
+    }
+
+    private fun getMailRecipientsNonCriptext(): MailRecipients {
+        val toAddresses = composerInputData.to.map(Contact.toAddress)
+        val ccAddresses = composerInputData.cc.map(Contact.toAddress)
+        val bccAddresses = composerInputData.bcc.map(Contact.toAddress)
+
+        val toNonCriptext = toAddresses.filterNot(isFromCriptextDomain)
+        val ccNonCriptext = ccAddresses.filterNot(isFromCriptextDomain)
+        val bccNonCriptext = bccAddresses.filterNot(isFromCriptextDomain)
+
+        return MailRecipients(toCriptext = toNonCriptext, ccCriptext = ccNonCriptext,
+                bccCriptext = bccNonCriptext, peerCriptext = listOf(activeAccount.recipientId))
     }
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
@@ -150,7 +162,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                             threadId = threadId,
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
-                            guestEmail = null,
+                            guestEmail = guestEmails,
                             attachments = createCriptextAttachment(this.attachments))
                     apiClient.postEmail(requestBody)
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
@@ -171,6 +183,14 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
         val mailRecipients = getMailRecipients()
+        val mailRecipientsNonCriptext = getMailRecipientsNonCriptext()
+        guestEmails = if(!mailRecipientsNonCriptext.isEmpty) {
+            PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
+                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
+                    composerInputData.body, null)
+        }else{
+            null
+        }
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }
                 .flatMap(sendEmailOperation)
@@ -203,6 +223,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     private class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,
                                  val bccCriptext: List<String>, val peerCriptext: List<String>) {
         val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext, peerCriptext).flatten()
+        val isEmpty = toCriptext.isEmpty() && ccCriptext.isEmpty() && bccCriptext.isEmpty()
     }
 
 }
