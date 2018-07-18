@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import com.email.SecureEmail
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.db.*
@@ -27,8 +28,8 @@ class UserDataWriterTest {
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@jigl.com", name = "Joe", id = 2)
 
-    private val labelOne = Label(id = 1, color = "red", text = MailFolders.ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
-    private val labelTwo = Label(id = 2, color = "blue", text = MailFolders.INBOX, type = LabelTypes.SYSTEM, visible = true)
+    private val labelOne = Label(id = 1, color = "red", text = SecureEmail.LABEL_ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
+    private val labelTwo = Label(id = 2, color = "blue", text = SecureEmail.LABEL_INBOX, type = LabelTypes.SYSTEM, visible = true)
 
     private val emailOne = Email(id = 1, content = "contents 1", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
@@ -83,7 +84,7 @@ class UserDataWriterTest {
         val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(),db.labelDao(),db.emailLabelDao(), db.emailContactDao())
         val result = dataWriter.createFile()
 
-        val lines: List<String> = File(result.second).readLines()
+        val lines: List<String> = File(result).readLines()
         lines `shouldEqual` deviceLinkFileExpectedContent
     }
 }

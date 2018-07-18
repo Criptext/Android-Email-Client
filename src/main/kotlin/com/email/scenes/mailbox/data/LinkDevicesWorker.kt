@@ -8,6 +8,7 @@ import com.email.db.dao.*
 import com.email.db.models.ActiveAccount
 import com.email.signal.SignalClient
 import com.email.utils.UIMessage
+import java.io.File
 
 
 class LinkDevicesWorker(
@@ -42,7 +43,8 @@ class LinkDevicesWorker(
         val getFileResult = dataWriter.createFile()
         return if(getFileResult != null){
             filePath = getFileResult
-            MailboxResult.LinkDevice.Success(filePath)
+            val fileByChunks = signalClient.encryptFileByChunks(File(filePath), activeAccount.recipientId, activeAccount.deviceId,512000)
+            MailboxResult.LinkDevice.Success(fileByChunks)
         }else
             MailboxResult.LinkDevice.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
 
