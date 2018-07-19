@@ -1,5 +1,6 @@
 package com.email.signal
 
+import com.email.utils.DeviceUtils
 import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.state.PreKeyRecord
 import org.whispersystems.libsignal.state.SignedPreKeyRecord
@@ -13,7 +14,7 @@ import java.util.*
 interface SignalKeyGenerator {
     fun  register(recipientId: String, deviceId: Int) : RegistrationBundles
 
-    class Default : SignalKeyGenerator {
+    class Default(private val deviceType: DeviceUtils.DeviceType) : SignalKeyGenerator {
 
         private fun serializePreKeyPairs(preKeys: List<PreKeyRecord>): Map<Int, String> {
             return preKeys.map { preKey ->
@@ -53,9 +54,11 @@ interface SignalKeyGenerator {
                                 registrationData.signedPreKey.signature)
                         )
 
-
             return PreKeyBundleShareData.UploadBundle(shareData = shareData,
-                    preKeys = serializePreKeyPublicKeys(registrationData.preKeys))
+                    preKeys = serializePreKeyPublicKeys(registrationData.preKeys),
+                    deviceType = deviceType,
+                    deviceName = DeviceUtils.getDeviceName(),
+                    deviceFriendlyName = DeviceUtils.getDeviceName())
 
         }
 

@@ -2,6 +2,7 @@ package com.email.scenes.signup.data
 
 import com.email.signal.PreKeyBundleShareData
 import com.email.signal.SignalKeyGenerator
+import com.email.utils.DeviceUtils
 
 /**
  * Created by gabriel on 5/18/18.
@@ -21,7 +22,9 @@ object RegisterUserTestUtils {
                                 signedPreKeyPublic = "__SIGNED_PRE_KEY_PUBLIC__",
                                 signedPreKeySignature = "__SIGNED_PRE_KEY_SIGNATURE__",
                                 identityPublicKey = "__IDENTITY_PUBLIC_KEY__",
-                                registrationId = registrationId), preKeys = preKeys)
+                                registrationId = registrationId), preKeys = preKeys,
+                                deviceName = "__TEST__", deviceFriendlyName = "__TEST__",
+                                deviceType = DeviceUtils.DeviceType.Phone)
         )
     }
 }

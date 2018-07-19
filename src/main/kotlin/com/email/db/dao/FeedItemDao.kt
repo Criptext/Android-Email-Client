@@ -10,10 +10,10 @@ import com.email.db.models.FeedItem
 @Dao
 interface FeedItemDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertFeedItem(feedItem: FeedItem)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertFeedItems(feedItems: List<FeedItem>)
 
     @Query("SELECT * FROM feedItem ORDER BY date DESC")

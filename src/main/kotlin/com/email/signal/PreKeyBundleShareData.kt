@@ -1,6 +1,7 @@
 package com.email.signal
 
 import com.email.db.models.signal.CRPreKey
+import com.email.utils.DeviceUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -80,7 +81,10 @@ data class PreKeyBundleShareData(val recipientId: String,
 }
 
     data class UploadBundle(val shareData: PreKeyBundleShareData,
-                            val preKeys: Map<Int, String>
+                            val preKeys: Map<Int, String>,
+                            val deviceType: DeviceUtils.DeviceType,
+                            val deviceFriendlyName: String,
+                            val deviceName: String
     ) {
         fun toJSON(): JSONObject {
             val preKeyArray = JSONArray()
@@ -98,6 +102,9 @@ data class PreKeyBundleShareData(val recipientId: String,
             keyBundle.put("signedPreKeySignature",
                     shareData.signedPreKeySignature)
             keyBundle.put("preKeys", preKeyArray)
+            keyBundle.put("deviceName", deviceName)
+            keyBundle.put("deviceFriendlyName", deviceFriendlyName)
+            keyBundle.put("deviceType", deviceType.ordinal)
 
             return keyBundle
         }

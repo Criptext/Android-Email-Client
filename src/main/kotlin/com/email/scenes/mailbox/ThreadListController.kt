@@ -87,11 +87,11 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
-    fun markThreadAsOpened(emailId: Long) {
+    fun changeThreadStatus(emailId: Long, deliveryType: DeliveryTypes) {
         val position = model.threads.indexOfFirst { it.emailId == emailId }
         if (position > -1) {
             model.threads[position] =
-                    model.threads[position].copy(deliveryStatus = DeliveryTypes.READ)
+                    model.threads[position].copy(deliveryStatus = deliveryType)
             virtualListView?.notifyItemChanged(position)
         }
     }

@@ -1,10 +1,7 @@
 package com.email.db.models
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
-import android.arch.persistence.room.PrimaryKey
 import com.email.db.FeedType
 import java.util.*
 
@@ -13,6 +10,7 @@ import java.util.*
  */
 
 @Entity(tableName = "feedItem",
+        indices = [ (Index(value = ["emailId", "contactId"], unique = true)) ],
         foreignKeys = [
             ForeignKey(entity = Email::class,
                     parentColumns = ["id"],

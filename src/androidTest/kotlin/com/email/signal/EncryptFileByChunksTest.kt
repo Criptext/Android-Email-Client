@@ -7,6 +7,7 @@ import com.email.androidtest.TestDatabase
 import com.email.androidtest.TestSharedPrefs
 import com.email.db.MailboxLocalDB
 import com.email.db.models.Contact
+import com.email.utils.DeviceUtils
 import com.email.utils.FileDownloader
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -26,7 +27,7 @@ class EncryptFileByChunksTest {
     private lateinit var signalClient: SignalClient
     private lateinit var tester: TestUser
 
-    private val keyGenerator = SignalKeyGenerator.Default()
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@jigl.com", name = "Joe", id = 2)
 

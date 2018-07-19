@@ -1,4 +1,5 @@
 {
+    "deviceType": 1,
     "signedPreKeyId": 1,
     "preKeys": [
         {
@@ -17,5 +18,7 @@
     "signedPreKeySignature": "__SIGNED_PRE_KEY_SIGNATURE__",
     "registrationId": 54378,
     "signedPreKeyPublic": "__SIGNED_PRE_KEY_PUBLIC__",
+    "deviceFriendlyName": "__TEST__",
+    "deviceName": "__TEST__",
     "identityPublicKey": "__IDENTITY_PUBLIC_KEY__"
 }

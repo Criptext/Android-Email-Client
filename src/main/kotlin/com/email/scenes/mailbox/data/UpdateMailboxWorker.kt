@@ -150,13 +150,10 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun markEmailsAsOpened(eventIds: List<Long>, metadataKeys: List<Long>): Boolean {
+    private fun changeDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes) {
         if (metadataKeys.isNotEmpty()) {
-            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, DeliveryTypes.READ)
-            acknowledgeEventsIgnoringErrors(eventIds)
-            return true
+            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType)
         }
-        return false
     }
 
     private fun createFeedItems(trackingUpdates: List<TrackingUpdate>){
@@ -164,7 +161,7 @@ class UpdateMailboxWorker(
         val feeds = mutableListOf<FeedItem>()
         trackingUpdates.forEach {
             val existingEmail = emailDao.findEmailByMetadataKey(it.metadataKey)
-            if(existingEmail != null && existingEmail.delivered != DeliveryTypes.READ){
+            if(existingEmail != null && it.type == DeliveryTypes.READ){
                 feeds.add(FeedItem(
                         id = 0,
                         date = Date(),
@@ -188,17 +185,28 @@ class UpdateMailboxWorker(
             Pair(it.rowid, TrackingUpdate.fromJSON(it.params))
         }
 
-        val trackingUpdates = events.filter(isTrackingUpdateEvent)
+        val trackingUpdatesPair = events.filter(isTrackingUpdateEvent)
                 .map(toIdAndTrackingUpdatePair).filter(isAnEventGeneratedByMe)
+        val eventIdsToAcknowledge = trackingUpdatesPair.map { it.first }
+        val trackingUpdates = trackingUpdatesPair.map { it.second }
 
-        // assume all tracking updates are open updates for now
-        val openUpdates = trackingUpdates
-        val metadataKeysOfReadEmails = openUpdates.map { (_, open) -> open.metadataKey }
-        val eventIdsToAcknowledge = openUpdates.map { it.first }
-        createFeedItems(openUpdates.map { it.second })
+        createFeedItems(trackingUpdates)
+        changeDeliveryTypes(trackingUpdates)
+        acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
 
-        return markEmailsAsOpened(eventIds = eventIdsToAcknowledge,
-                           metadataKeys = metadataKeysOfReadEmails)
+        return eventIdsToAcknowledge.isNotEmpty()
+    }
+
+    private fun changeDeliveryTypes(trackingUpdates: List<TrackingUpdate>){
+        changeDeliveryTypeByMetadataKey(
+                metadataKeys = trackingUpdates.filter { it.type == DeliveryTypes.DELIVERED }.map { it.metadataKey },
+                deliveryType = DeliveryTypes.DELIVERED)
+        changeDeliveryTypeByMetadataKey(
+                metadataKeys = trackingUpdates.filter { it.type == DeliveryTypes.READ }.map { it.metadataKey },
+                deliveryType = DeliveryTypes.READ)
+        changeDeliveryTypeByMetadataKey(
+                metadataKeys = trackingUpdates.filter { it.type == DeliveryTypes.UNSEND }.map { it.metadataKey },
+                deliveryType = DeliveryTypes.UNSEND)
     }
 
     private fun processNewEmails(events: List<Event>): Boolean {
