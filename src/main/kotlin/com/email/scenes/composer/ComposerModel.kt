@@ -31,4 +31,6 @@ class ComposerModel(val type: ComposerType) {
     var passwordText: String = ""
     var confirmPasswordText: String = ""
     var passwordState: FormInputState = FormInputState.Unknown()
+
+    var fileKey: String? = null
 }

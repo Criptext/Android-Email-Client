@@ -50,7 +50,7 @@ class SearchEmailWorkerTest{
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    decryptedBody = decryptedBody, labels = labels, files = emptyList())
+                    decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
         }
 
         val anotherFromContact = Contact(2,"erika@jigl.com", "Erika Perugachi")
@@ -58,7 +58,7 @@ class SearchEmailWorkerTest{
         val decryptedBody = "Hello again, this is message #3"
         val labels = listOf(Label.defaultItems.inbox)
         EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                decryptedBody = decryptedBody, labels = labels, files = emptyList())
+                decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
     }
 
     @Test

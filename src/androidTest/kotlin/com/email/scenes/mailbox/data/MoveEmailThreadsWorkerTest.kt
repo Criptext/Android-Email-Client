@@ -46,7 +46,7 @@ class MoveEmailThreadsWorkerTest{
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    decryptedBody = decryptedBody, labels = labels, files = emptyList())
+                    decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
         }
     }
 

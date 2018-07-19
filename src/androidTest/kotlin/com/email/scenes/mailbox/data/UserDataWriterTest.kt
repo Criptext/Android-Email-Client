@@ -50,9 +50,12 @@ class UserDataWriterTest {
     private val emailContact1 = EmailContact(id = 1, emailId = 1, contactId = 1, type = ContactTypes.TO)
     private val emailContact2 = EmailContact(id = 2, emailId = 2, contactId = 2, type = ContactTypes.FROM)
 
+    private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
+    private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
+
     private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@jigl.com\",\"name\":\"Bob\"}}",
     "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@jigl.com\",\"name\":\"Joe\"}}",
-    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"SPAM\",\"type\":\"SYSTEM\",\"visible\":true}}",
+    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"ALL MAIL\",\"type\":\"SYSTEM\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"INBOX\",\"type\":\"SYSTEM\",\"visible\":true}}",
     "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":1}}",
     "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":2}}",
@@ -61,7 +64,9 @@ class UserDataWriterTest {
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"TO\"}}",
-    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"FROM\"}}")
+    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"FROM\"}}",
+    "{\"table\":\"file_key\",\"object\":{\"id\":1,\"key\":\"test_key_16bytes:test_iv_16_bytes\",\"emailId\":1}}",
+    "{\"table\":\"file_key\",\"object\":{\"id\":2,\"key\":\"test_key_16bytes:test_iv_16_bytes\",\"emailId\":2}}")
 
     @Before
     fun setup() {
@@ -78,11 +83,14 @@ class UserDataWriterTest {
         db.emailLabelDao().insert(emailLabel2)
         db.emailContactDao().insert(emailContact1)
         db.emailContactDao().insert(emailContact2)
+        db.fileKeyDao().insert(fileKey1)
+        db.fileKeyDao().insert(fileKey2)
     }
 
     @Test
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
-        val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(),db.labelDao(),db.emailLabelDao(), db.emailContactDao())
+        val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(),db.labelDao(),
+                db.emailLabelDao(), db.emailContactDao(), db.fileKeyDao())
         val result = dataWriter.createFile()
 
         val lines: List<String> = File(result).readLines()

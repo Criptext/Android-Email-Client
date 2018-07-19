@@ -1,5 +1,6 @@
 package com.email.signal
 
+import com.email.utils.Encoding
 import com.email.utils.file.ChunkFileReader
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.SessionBuilder

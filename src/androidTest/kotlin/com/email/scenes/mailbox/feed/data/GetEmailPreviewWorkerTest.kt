@@ -45,7 +45,7 @@ class GetEmailPreviewWorkerTest{
         val decryptedBody = "Hello, this is message"
         val labels = listOf(Label.defaultItems.inbox)
         val emailId = EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                decryptedBody = decryptedBody, labels = labels, files = emptyList())
+                decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
         return db.emailDao().findEmailById(emailId)!!
     }
 

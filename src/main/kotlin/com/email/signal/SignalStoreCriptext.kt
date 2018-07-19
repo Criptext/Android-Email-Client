@@ -11,6 +11,7 @@ import com.email.db.models.signal.CRIdentityKey
 import com.email.db.models.signal.CRPreKey
 import com.email.db.models.signal.CRSessionRecord
 import com.email.db.models.signal.CRSignedPreKey
+import com.email.utils.Encoding
 import org.whispersystems.libsignal.IdentityKey
 import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.InvalidKeyIdException

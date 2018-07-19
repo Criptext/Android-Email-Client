@@ -23,6 +23,7 @@ open class MailboxWorkerTest {
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var contactDao: ContactDao
     private lateinit var fileDao: FileDao
+    private lateinit var fileKeyDao: FileKeyDao
     private lateinit var labelDao: LabelDao
     private lateinit var emailLabelDao: EmailLabelDao
     private lateinit var emailContactDao: EmailContactJoinDao
@@ -46,6 +47,7 @@ open class MailboxWorkerTest {
         feedItemDao = mockk()
         contactDao = mockk()
         fileDao = mockk()
+        fileKeyDao = mockk()
         labelDao = mockk()
         emailLabelDao = mockk()
         emailContactDao = mockk()
@@ -59,7 +61,8 @@ open class MailboxWorkerTest {
                 activeAccount = activeAccount, mailboxLocalDB = db, emailDao = emailDao,
                 emailInsertionDao = dao, rawSessionDao = rawSessionDao, runner = runner,
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
-                labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao)
+                labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
+                fileKeyDao = fileKeyDao)
         dataSource.listener = { result -> lastResult = result }
     }
 

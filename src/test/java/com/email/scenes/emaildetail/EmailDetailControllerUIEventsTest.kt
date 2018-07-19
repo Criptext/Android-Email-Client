@@ -86,7 +86,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         val selectedFile = model.emails[selectedIndex].files[selectedIndex]
         fullEmailEventListener.captured.onAttachmentSelected(0, 0)
 
-        verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(selectedFile.token, selectedFile.emailId)) }
+        verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(selectedFile.token, selectedFile.emailId, null)) }
     }
 
     @Test

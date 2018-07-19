@@ -32,7 +32,7 @@ object MailboxTestUtils {
                     val fullEmail = FullEmail(email, labels = listOf(Label.defaultItems.inbox),
                             to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
-                            from = Contact(2, "mayer@criptext.com", name = "Mayer"))
+                            from = Contact(2, "mayer@criptext.com", name = "Mayer"), fileKey = null)
                     EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0, false)
                 }
     }

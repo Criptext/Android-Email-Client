@@ -227,7 +227,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is ActivityMessage.SendMail -> {
                 reloadMailboxThreads()
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
-                        activityMessage.composerInputData, attachments = activityMessage.attachments)
+                        activityMessage.composerInputData, attachments = activityMessage.attachments, fileKey = activityMessage.fileKey)
                 dataSource.submitRequest(newRequest)
                 scene.showMessage(UIMessage(R.string.sending_email))
                 true

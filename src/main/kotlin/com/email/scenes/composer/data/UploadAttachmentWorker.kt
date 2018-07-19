@@ -2,6 +2,7 @@ package com.email.scenes.composer.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.aes.AESUtil
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
@@ -19,6 +20,7 @@ import java.io.File
 class UploadAttachmentWorker(private val filepath: String,
                              httpClient: HttpClient,
                              fileServiceAuthToken: String,
+                             val fileKey: String?,
                              override val publishFn: (ComposerResult.UploadFile) -> Unit)
     : BackgroundWorker<ComposerResult.UploadFile> {
     override val canBeParallelized = false
@@ -34,11 +36,16 @@ class UploadAttachmentWorker(private val filepath: String,
     private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
         reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken))
         Result.of {
+
             val chunks = (file.length() / chunkSize).toInt() + 1
             val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
                 reporter.report(ComposerResult.UploadFile.Progress(file.absolutePath,
                         index * 100 / chunks))
-                fileServiceAPIClient.uploadChunk(chunk = chunk, fileName = file.name,
+                fileServiceAPIClient.uploadChunk(chunk = if(fileKey != null)
+                                                            AESUtil(fileKey).encrypt(chunk)
+                                                        else
+                                                            chunk,
+                        fileName = file.name,
                         part = index + 1, fileToken = fileToken)
             }
             ChunkFileReader.read(file, chunkSize, onNewChunkRead)

@@ -45,7 +45,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
 
     data class CriptextEmail(val recipientId: String, val deviceId: Int,
                              val messageType: SignalEncryptedData.Type,
-                             val type: RecipientTypes, val body: String): JSONData {
+                             val type: RecipientTypes, val body: String, val fileKey: String?): JSONData {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
@@ -54,6 +54,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("type", type.toString())
             json.put("body", body)
             json.put("messageType", messageType.toInt())
+            json.put("fileKey", fileKey)
             return json
         }
     }

@@ -12,7 +12,7 @@ sealed class ActivityMessage {
     data class SendMail(val emailId: Long,
                         val threadId: String?,
                         val composerInputData: ComposerInputData,
-                        val attachments: List<ComposerAttachment>): ActivityMessage()
+                        val attachments: List<ComposerAttachment>, val fileKey: String?): ActivityMessage()
     data class AddAttachments(val filesMetadata: List<Pair<String, Long>>): ActivityMessage()
     data class UpdateUnreadStatusThread(val threadId: String, val unread: Boolean): ActivityMessage()
     data class UpdateLabelsThread(val threadId: String, val selectedLabelIds: List<Long>): ActivityMessage()

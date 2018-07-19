@@ -20,6 +20,7 @@ class MailboxDataSource(
         private val activeAccount: ActiveAccount,
         private val emailDao: EmailDao,
         private val fileDao: FileDao,
+        private val fileKeyDao: FileKeyDao,
         private val labelDao: LabelDao,
         private val contactDao: ContactDao,
         private val emailLabelDao: EmailLabelDao,
@@ -75,6 +76,7 @@ class MailboxDataSource(
                     threadId = params.threadId,
                     composerInputData = params.data,
                     attachments = params.attachments,
+                    fileKey = params.fileKey,
                     publishFn = { res -> flushResults(res) })
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(
@@ -116,6 +118,7 @@ class MailboxDataSource(
                     emailDao = emailDao,
                     contactDao = contactDao,
                     fileDao = fileDao,
+                    fileKeyDao = fileKeyDao,
                     labelDao = labelDao,
                     emailLabelDao = emailLabelDao,
                     emailContactJoinDao = emailContactJoinDao,
