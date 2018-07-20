@@ -7,11 +7,9 @@ import com.email.androidtest.TestDatabase
 import com.email.androidtest.TestSharedPrefs
 import com.email.api.HttpClient
 import com.email.db.DeliveryTypes
-import com.email.db.KeyValueStorage
 import com.email.db.MailboxLocalDB
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
-import com.email.db.models.Label
 import com.email.scenes.composer.data.ComposerInputData
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.SaveEmailWorker
@@ -75,13 +73,17 @@ class SendEmailWorkerTest {
         SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                 rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                 composerInputData = inputData, activeAccount = activeAccount,
-                attachments = emptyList(), publishFn = {})
+                attachments = emptyList(),
+                nonCriptextInputData = null,
+                publishFn = {})
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),  publishFn = {})
+                    dao = db.emailInsertionDao(),
+                    nonCriptextInputData = null,
+                    publishFn = {})
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: TestUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

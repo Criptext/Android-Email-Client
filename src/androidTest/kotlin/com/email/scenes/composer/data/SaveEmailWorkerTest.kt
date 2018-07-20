@@ -43,7 +43,8 @@ class SaveEmailWorkerTest {
                           inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
                     onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
-                    publishFn = {}, attachments = emptyList())
+                    publishFn = {}, nonCriptextInputData = null,
+                    attachments = emptyList())
 
     @Test
     fun test_should_save_new_composed_email_along_with_new_contacts() {

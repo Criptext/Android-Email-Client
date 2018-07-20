@@ -3,6 +3,7 @@ package com.email.scenes.composer.data
 import com.email.api.JSONData
 import com.email.signal.SignalEncryptedData
 import com.email.utils.file.FileUtils
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -22,6 +23,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
         json.put("threadId", threadId)
         json.put("subject", subject)
         json.put("criptextEmails", criptextEmailsArray)
+        json.put("guestEmail", guestEmail?.toJSON())
         if(attachments.isNotEmpty()){
             val attachmentsArray = attachments.toJSONArray()
             json.put("files", attachmentsArray)
@@ -57,6 +59,16 @@ class PostEmailBody(val threadId: String?, val subject: String,
     }
 
     data class GuestEmail(val to: List<String>, val cc: List<String>, val bcc: List<String>,
-                          val body: String, val session: String)
+                          val body: String, val session: String?):JSONData{
+        override fun toJSON(): JSONObject {
+            val json = JSONObject()
+            json.put("to", JSONArray(to))
+            json.put("cc", JSONArray(cc))
+            json.put("bcc", JSONArray(bcc))
+            json.put("body", body)
+            json.put("session", session)
+            return json
+        }
+    }
 
 }

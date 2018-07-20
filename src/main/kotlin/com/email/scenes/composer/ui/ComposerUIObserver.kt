@@ -13,4 +13,5 @@ interface ComposerUIObserver {
     fun onConfirmPasswordChangedListener(text: String)
     fun onPasswordChangedListener(text: String)
     fun setOnCheckedChangeListener(isChecked: Boolean)
+    fun sendDialogButtonPressed()
 }
