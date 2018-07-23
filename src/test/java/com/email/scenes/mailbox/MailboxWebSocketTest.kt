@@ -33,6 +33,7 @@ class MailboxWebSocketTest {
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var contactDao: ContactDao
     private lateinit var fileDao: FileDao
+    private lateinit var fileKeyDao: FileKeyDao
     private lateinit var labelDao: LabelDao
     private lateinit var emailLabelDao: EmailLabelDao
     private lateinit var emailCOntactDao: EmailContactJoinDao
@@ -59,6 +60,7 @@ class MailboxWebSocketTest {
         feedItemDao = mockk()
         contactDao = mockk()
         fileDao = mockk()
+        fileKeyDao = mockk()
         labelDao = mockk()
         emailLabelDao = mockk()
         emailCOntactDao = mockk()
@@ -89,6 +91,7 @@ class MailboxWebSocketTest {
                 rawSessionDao = rawSessionDao,
                 emailInsertionDao = emailInsertionDao,
                 fileDao = fileDao,
+                fileKeyDao = fileKeyDao,
                 labelDao = labelDao,
                 emailLabelDao = emailLabelDao,
                 emailContactJoinDao = emailCOntactDao

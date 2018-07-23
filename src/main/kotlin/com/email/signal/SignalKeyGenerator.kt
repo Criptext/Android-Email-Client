@@ -1,6 +1,7 @@
 package com.email.signal
 
 import com.email.utils.DeviceUtils
+import com.email.utils.Encoding
 import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.state.PreKeyRecord
 import org.whispersystems.libsignal.state.SignedPreKeyRecord

@@ -31,7 +31,7 @@ class ComposerActivity : BaseActivity() {
         val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
-                fileDao = appDB.fileDao())
+                fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao())
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val dataSource = ComposerDataSource(
                 httpClient = httpClient,

@@ -16,6 +16,7 @@ class LinkDevicesWorker(
         private val emailDao: EmailDao,
         private val contactDao: ContactDao,
         private val fileDao: FileDao,
+        private val fileKeyDao: FileKeyDao,
         private val labelDao: LabelDao,
         private val emailLabelDao: EmailLabelDao,
         private val emailContactJoinDao: EmailContactJoinDao,
@@ -39,7 +40,7 @@ class LinkDevicesWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.LinkDevice>)
             : MailboxResult.LinkDevice? {
-        val dataWriter = UserDataWriter(emailDao,contactDao,fileDao,labelDao, emailLabelDao, emailContactJoinDao)
+        val dataWriter = UserDataWriter(emailDao,contactDao,fileDao,labelDao, emailLabelDao, emailContactJoinDao, fileKeyDao)
         val getFileResult = dataWriter.createFile()
         return if(getFileResult != null){
             filePath = getFileResult

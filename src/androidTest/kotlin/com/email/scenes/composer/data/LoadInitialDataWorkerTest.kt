@@ -53,7 +53,8 @@ class LoadInitialDataWorkerTest {
 
         composerLocalDB = ComposerLocalDB(contactDao = db.contactDao(), emailDao = db.emailDao(),
                 emailContactDao = db.emailContactDao(), emailLabelDao = db.emailLabelDao(),
-                labelDao = db.labelDao(), fileDao = db.fileDao(), accountDao = db.accountDao())
+                labelDao = db.labelDao(), fileDao = db.fileDao(), accountDao = db.accountDao(),
+                fileKeyDao = db.fileKeyDao())
 
     }
 
@@ -63,7 +64,7 @@ class LoadInitialDataWorkerTest {
                     publishFn = {})
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
-                                  decryptedBody: String, isDraft: Boolean): Long {
+                                  decryptedBody: String, isDraft: Boolean, fileKey: String?): Long {
         val toCSV = to.map {it.email}.joinToString(separator = ",")
         val metadata = EmailMetadata.DBColumns(to = toCSV,  cc = "", bcc = "",
                     fromContact = fromContact, messageId = "__MESSAGE_ID__",
@@ -74,13 +75,13 @@ class LoadInitialDataWorkerTest {
                         else listOf(Label.defaultItems.draft)
 
             return EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    decryptedBody = decryptedBody, labels = labels, files = emptyList())
+                    decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = fileKey)
     }
 
     @Test
     fun should_load_a_draft_correctly() {
         val emailId = insertEmailToLoad(to = listOf(mayerContact), fromContact = testerContact,
-                subject = "Draft Test", decryptedBody = "Hello this is a draft", isDraft = true)
+                subject = "Draft Test", decryptedBody = "Hello this is a draft", isDraft = true, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Draft(draftId = emailId,
                 currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
@@ -94,7 +95,7 @@ class LoadInitialDataWorkerTest {
     @Test
     fun should_load_an_email_to_reply_correctly() {
         val emailId = insertEmailToLoad(to = listOf(testerContact), fromContact = mayerContact,
-                subject = "Hello", decryptedBody = "Please reply to me.", isDraft = false)
+                subject = "Hello", decryptedBody = "Please reply to me.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Reply(originalId = emailId,
                 currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
@@ -109,7 +110,7 @@ class LoadInitialDataWorkerTest {
     fun should_load_an_email_to_reply_to_all_correctly() {
         val emailId = insertEmailToLoad(to = listOf(testerContact, danielContact),
                 fromContact = mayerContact, subject = "Hello",
-                decryptedBody = "Please reply to all.", isDraft = false)
+                decryptedBody = "Please reply to all.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.ReplyAll(originalId = emailId,
                 currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
@@ -124,7 +125,7 @@ class LoadInitialDataWorkerTest {
     fun should_load_an_email_to_forward_correctly() {
         val emailId = insertEmailToLoad(to = listOf(testerContact),
                 fromContact = mayerContact, subject = "Hello",
-                decryptedBody = "This is something you should forward.", isDraft = false)
+                decryptedBody = "This is something you should forward.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Forward(originalId = emailId,
                 currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))

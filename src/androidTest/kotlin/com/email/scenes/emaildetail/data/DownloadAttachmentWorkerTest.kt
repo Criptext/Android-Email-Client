@@ -10,7 +10,7 @@ import com.email.bgworker.ProgressReporter
 import com.email.scenes.composer.data.ComposerResult
 import com.email.scenes.composer.data.UploadAttachmentWorker
 import com.email.scenes.emaildetail.workers.DownloadAttachmentWorker
-import com.email.signal.Encoding
+import com.email.utils.Encoding
 import com.email.utils.*
 import com.email.utils.file.AndroidFs
 import io.mockk.mockk
@@ -83,13 +83,13 @@ class DownloadAttachmentWorkerTest {
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, fileServiceAuthToken = fileServiceAuthToken,
-                    httpClient = httpClient, publishFn = {})
+                    httpClient = httpClient, publishFn = {}, fileKey = null)
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
                     downloadPath = mActivityRule.activity.cacheDir.absolutePath,
                     httpClient = httpClient, fileServiceAuthToken = fileServiceAuthToken,
-                    publishFn = {})
+                    publishFn = {}, fileKey = null)
 
     private fun sendPermanentRequest(filetoken: String){
         val filejson = JSONObject()

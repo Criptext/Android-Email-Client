@@ -1,5 +1,6 @@
 package com.email.scenes.emaildetail.data
 
+import com.email.db.models.FileKey
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.SelectedLabels
 
@@ -50,6 +51,7 @@ sealed class EmailDetailRequest{
 
     data class DownloadFile(
             val fileToken: String,
-            val emailId: Long
+            val emailId: Long,
+            val fileKey: String?
     ): EmailDetailRequest()
 }

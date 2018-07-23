@@ -5,6 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FileKeyDao
 import com.email.db.models.*
 import com.email.scenes.mailbox.data.EmailInsertionSetup
 import com.email.utils.DateUtils
@@ -20,6 +21,7 @@ class SaveEmailWorker(
         private val composerInputData: ComposerInputData,
         private val account: ActiveAccount,
         private val dao: EmailInsertionDao,
+        private val fileKey: String?,
         private val onlySave: Boolean,
         private val attachments: List<ComposerAttachment>,
         override val publishFn: (ComposerResult.SaveEmail) -> Unit)
@@ -35,7 +37,8 @@ class SaveEmailWorker(
             : ComposerResult.SaveEmail? {
         val (newEmailId, savedMailThreadId) = saveEmail()
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
-                onlySave = onlySave, composerInputData = composerInputData, attachments = attachments)
+                onlySave = onlySave, composerInputData = composerInputData, attachments = attachments,
+                fileKey = fileKey)
     }
 
     override fun cancel() {
@@ -87,9 +90,12 @@ class SaveEmailWorker(
         val files = createFilesData()
         val newEmailId = dao.runTransaction({
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
+
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
-                    decryptedBody = composerInputData.body, labels = labels, files = files)
+                    decryptedBody = composerInputData.body, labels = labels, files = files, fileKey = fileKey)
+
         })
+
         return Pair(newEmailId, metadataColumns.threadId)
     }
 }

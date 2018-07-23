@@ -1,4 +1,4 @@
-package com.email.signal
+package com.email.utils
 
 import android.util.Base64
 

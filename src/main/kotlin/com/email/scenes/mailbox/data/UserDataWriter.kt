@@ -10,7 +10,8 @@ class UserDataWriter(private val emailDao: EmailDao,
                      private val fileDao: FileDao,
                      private val labelDao: LabelDao,
                      private val emailLabelDao: EmailLabelDao,
-                     private val emailContactDao: EmailContactJoinDao)
+                     private val emailContactDao: EmailContactJoinDao,
+                     private val fileKeyDao: FileKeyDao)
 {
 
     fun createFile():String? {
@@ -25,6 +26,7 @@ class UserDataWriter(private val emailDao: EmailDao,
             addMailsToFile(emailDao.getAll(), tmpFileLinkData)
             addMailsAndLabelsRelationToFile(emailLabelDao.getAll(), tmpFileLinkData)
             addMailsAndContactsRelationToFile(emailContactDao.getAll(), tmpFileLinkData)
+            addMailsFileKey(fileKeyDao.getAll(), tmpFileLinkData)
 
 
             return tmpFileLinkData.absolutePath
@@ -124,6 +126,19 @@ class UserDataWriter(private val emailDao: EmailDao,
             jsonObject.put("type", mail_contact.type)
             jsonArrayAllMails.add(jsonObject.toString())
             tmpFile.appendText("${JSONObject("{table: email_contact, object: $jsonObject}")}\n")
+        }
+    }
+
+    private fun addMailsFileKey(allFileKeys: List<FileKey>, tmpFile: File)
+    {
+        val jsonArrayAllMails = mutableListOf<String>()
+        for (file_key in allFileKeys){
+            val jsonObject = JSONObject()
+            jsonObject.put("id", file_key.id)
+            jsonObject.put("key", file_key.key)
+            jsonObject.put("emailId", file_key.emailId)
+            jsonArrayAllMails.add(jsonObject.toString())
+            tmpFile.appendText("${JSONObject("{table: file_key, object: $jsonObject}")}\n")
         }
     }
 }

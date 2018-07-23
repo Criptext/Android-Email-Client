@@ -22,7 +22,7 @@ import com.email.db.typeConverters.*
  */
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
-                     , CRFile::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
+                     , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
         version = 1,
         exportSchema = false)
@@ -39,6 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailDao(): EmailDao
     abstract fun emailLabelDao(): EmailLabelDao
     abstract fun fileDao(): FileDao
+    abstract fun fileKeyDao(): FileKeyDao
     abstract fun emailContactDao() : EmailContactJoinDao
     abstract fun feedDao(): FeedItemDao
     abstract fun labelDao(): LabelDao

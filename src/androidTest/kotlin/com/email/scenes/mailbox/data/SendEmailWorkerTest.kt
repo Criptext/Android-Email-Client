@@ -73,17 +73,15 @@ class SendEmailWorkerTest {
         SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                 rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                 composerInputData = inputData, activeAccount = activeAccount,
-                attachments = emptyList(),
-                nonCriptextInputData = null,
-                publishFn = {})
+                attachments = emptyList(), publishFn = {}, fileKey = null)
+
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),
-                    nonCriptextInputData = null,
-                    publishFn = {})
+                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null)
+
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: TestUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

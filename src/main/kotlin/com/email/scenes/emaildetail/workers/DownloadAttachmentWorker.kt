@@ -3,6 +3,7 @@ package com.email.scenes.emaildetail.workers
 import android.accounts.NetworkErrorException
 import android.util.Log
 import com.email.R
+import com.email.aes.AESUtil
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
@@ -22,6 +23,7 @@ import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileToken: String,
                                private val emailId: Long,
+                               private val fileKey: String?,
                                private val downloadPath: String,
                              httpClient: HttpClient,
                              fileServiceAuthToken: String,
@@ -57,7 +59,13 @@ class DownloadAttachmentWorker(private val fileToken: String,
             val onNewChunkDownload: (Int) -> Unit = { index ->
                 reporter.report( EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
                         index * 100 / fileMetadata.chunks))
-                val data = fileServiceAPIClient.downloadChunk(fileMetadata.fileToken, index + 1)
+
+                val data = if(fileKey != null)
+                                        AESUtil(fileKey).decrypt(fileServiceAPIClient
+                                                .downloadChunk(fileMetadata.fileToken, index + 1))
+                                    else
+                                        fileServiceAPIClient.downloadChunk(fileMetadata.fileToken, index + 1)
+
                 val channel = fileStream.channel
                 channel.position(index * fileMetadata.chunkSize)
                 channel.write(ByteBuffer.wrap(data))

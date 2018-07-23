@@ -41,6 +41,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val threadId: String?,
                      private val composerInputData: ComposerInputData,
                      private val attachments: List<ComposerAttachment>,
+                     private val fileKey: String?,
                      override val publishFn: (MailboxResult.SendMail) -> Unit)
     : BackgroundWorker<MailboxResult.SendMail> {
     override val canBeParallelized = false
@@ -117,7 +118,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                 val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedData.encryptedB64,
-                        messageType = encryptedData.type)
+                        messageType = encryptedData.type, fileKey = if(fileKey != null)
+                                signalClient.encryptMessage(recipientId, deviceId, fileKey).encryptedB64
+                                else null)
             }
         }.flatten()
     }

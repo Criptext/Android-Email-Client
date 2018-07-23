@@ -21,8 +21,9 @@ sealed class ComposerResult {
     sealed class SaveEmail : ComposerResult() {
         data class Success(val emailId: Long, val threadId: String,
                            val composerInputData: ComposerInputData,
-                           val onlySave: Boolean,
-                           val attachments: List<ComposerAttachment>) : SaveEmail()
+                           val onlySave: Boolean, val attachments: List<ComposerAttachment>,
+                           val fileKey: String?) : SaveEmail()
+
         class Failure: SaveEmail()
     }
 

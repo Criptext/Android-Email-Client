@@ -53,7 +53,7 @@ class MailboxActivity : BaseActivity() {
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction({
                   EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody,
-                          labels, emptyList())
+                          labels, emptyList(), null)
               })
           }
 
@@ -122,6 +122,7 @@ class MailboxActivity : BaseActivity() {
                 emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db,
                 fileDao = appDB.fileDao(),
+                fileKeyDao = appDB.fileKeyDao(),
                 labelDao = appDB.labelDao(),
                 emailLabelDao = appDB.emailLabelDao(),
                 emailContactJoinDao = appDB.emailContactDao())

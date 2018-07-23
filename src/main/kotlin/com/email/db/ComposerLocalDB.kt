@@ -12,7 +12,7 @@ import java.util.*
  */
 
 class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fileDao: FileDao,
-                      val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
+                      val fileKeyDao: FileKeyDao, val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
                       val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao) {
 
     fun loadFullEmail(id: Long): FullEmail? {
@@ -23,6 +23,7 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
         val contactsFROM = emailContactDao.getContactsFromEmail(id, ContactTypes.FROM)
         val contactsTO = emailContactDao.getContactsFromEmail(id, ContactTypes.TO)
         val files = fileDao.getAttachmentsFromEmail(id)
+        val fileKey = fileKeyDao.getAttachmentKeyFromEmail(id)
 
         return FullEmail(
                 email = email,
@@ -31,6 +32,7 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                 from = contactsFROM[0],
                 files = files,
                 labels = labels,
-                to = contactsTO )
+                to = contactsTO,
+                fileKey = fileKey.key)
     }
 }

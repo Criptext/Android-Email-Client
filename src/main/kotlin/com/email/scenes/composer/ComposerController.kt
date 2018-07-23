@@ -15,8 +15,12 @@ import com.email.scenes.params.MailboxParams
 import com.email.utils.UIMessage
 import android.content.pm.PackageManager
 import com.email.BaseActivity
+import com.email.aes.AESUtil
+import android.util.Base64
 import com.email.scenes.params.EmailDetailParams
 import com.email.validation.FormInputState
+import java.nio.charset.Charset
+import java.util.*
 
 
 /**
@@ -191,7 +195,7 @@ class ComposerController(private val model: ComposerModel,
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
-                            attachments = result.attachments)
+                            attachments = result.attachments, fileKey = model.fileKey)
                     host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
@@ -226,7 +230,7 @@ class ComposerController(private val model: ComposerModel,
     private fun isReadyForSending() = model.to.isNotEmpty()
 
     private fun uploadSelectedFile(filepath: String){
-        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath))
+        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath, fileKey = model.fileKey))
     }
 
     private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean) {
@@ -245,7 +249,7 @@ class ComposerController(private val model: ComposerModel,
                 threadId = threadPreview?.threadId,
                 emailId = draftId,
                 composerInputData = composerInputData,
-                onlySave = onlySave, attachments = model.attachments))
+                onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey))
 
     }
 
@@ -291,10 +295,21 @@ class ComposerController(private val model: ComposerModel,
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.AddAttachments) {
+            generateEmailFileKey()
             addNewAttachments(activityMessage.filesMetadata)
             return true
         }
         return false
+    }
+
+    private fun generateEmailFileKey(){
+        if(model.fileKey != null)  return
+        model.fileKey = if(model.type is ComposerType.Empty) {
+            val aesKey = AESUtil.generateSalt()
+            val aesIV = AESUtil.generateSalt()
+
+            aesKey.plus(":".plus(aesIV))
+        } else null
     }
 
     private fun loadInitialData() {

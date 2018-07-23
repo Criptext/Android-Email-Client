@@ -7,10 +7,7 @@ import com.email.androidtest.TestDatabase
 import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Contact
-import com.email.db.models.Email
-import com.email.db.models.Label
+import com.email.db.models.*
 import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -40,11 +37,11 @@ class SaveEmailWorkerTest {
     }
 
     private fun newWorker(emailId: Long?, threadId: String?, onlySave: Boolean,
-                          inputData: ComposerInputData): SaveEmailWorker =
+                          inputData: ComposerInputData, fileKey: String?): SaveEmailWorker =
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
                     onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
-                    publishFn = {}, nonCriptextInputData = null,
-                    attachments = emptyList())
+                    publishFn = {}, attachments = emptyList(), fileKey = fileKey)
+
 
     @Test
     fun test_should_save_new_composed_email_along_with_new_contacts() {
@@ -59,7 +56,7 @@ class SaveEmailWorkerTest {
                 subject = "Test Email", body = "Hello, this is a test email")
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
-                inputData = inputData)
+                inputData = inputData, fileKey = null)
 
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
@@ -95,7 +92,7 @@ class SaveEmailWorkerTest {
                 subject = "Test Finished Draft", body = "Hello, I have finished my draft")
 
         val worker = newWorker(emailId = draftId, threadId = "__MESSAGE_ID__", onlySave = false,
-                inputData = inputData)
+                inputData = inputData, fileKey = null)
 
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
@@ -126,7 +123,7 @@ class SaveEmailWorkerTest {
                 subject = "Test Email", body = "Hello, this is a test email")
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
-                inputData = inputData)
+                inputData = inputData, fileKey = null)
 
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 

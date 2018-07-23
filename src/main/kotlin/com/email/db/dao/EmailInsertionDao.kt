@@ -46,6 +46,9 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmailFiles(emailFiles: List<CRFile>)
 
+    @Insert
+    fun insertEmailFileKey(emailFileKey: FileKey)
+
     @Transaction
     fun runTransaction(insertFn: () -> Long): Long {
         return insertFn()

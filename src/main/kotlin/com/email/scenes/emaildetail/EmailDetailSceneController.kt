@@ -153,9 +153,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private fun downloadFile(emailId: Long, fileToken: String){
+    private fun downloadFile(emailId: Long, fileToken: String, fileKey: String?){
         dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
-                emailId = emailId))
+                emailId = emailId, fileKey = fileKey))
     }
 
     private fun onDownloadedFile(result: EmailDetailResult){
@@ -218,7 +218,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
-            downloadFile(email.email.id, attachment.token)
+            downloadFile(email.email.id, attachment.token, email.fileKey)
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {

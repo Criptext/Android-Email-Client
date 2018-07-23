@@ -6,7 +6,7 @@ import com.email.Config
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
 import com.email.api.HttpClient
-import com.email.signal.Encoding
+import com.email.utils.Encoding
 import com.email.utils.*
 import com.email.utils.file.AndroidFs
 import io.mockk.mockk
@@ -60,7 +60,7 @@ class UploadAttachmentWorkerTest {
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, fileServiceAuthToken = fileServiceAuthToken,
-                    httpClient = httpClient, publishFn = {})
+                    httpClient = httpClient, publishFn = {}, fileKey = null)
 
     @Test
     fun should_upload_file_without_errors() {

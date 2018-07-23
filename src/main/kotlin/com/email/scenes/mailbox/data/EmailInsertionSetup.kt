@@ -5,6 +5,7 @@ import com.email.api.models.EmailMetadata
 import com.email.db.ContactTypes
 import com.email.db.DeliveryTypes
 import com.email.db.dao.EmailInsertionDao
+import com.email.db.dao.FileKeyDao
 import com.email.db.models.*
 import com.email.signal.SignalClient
 import com.email.signal.SignalEncryptedData
@@ -84,7 +85,7 @@ object EmailInsertionSetup {
                                         metadataColumns: EmailMetadata.DBColumns,
                                         decryptedBody: String,
                                         labels: List<Label>,
-                                        files: List<CRFile>): FullEmail {
+                                        files: List<CRFile>, fileKey: String?): FullEmail {
         val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
@@ -95,7 +96,7 @@ object EmailInsertionSetup {
                 cc = ccContactsRows,
                 bcc = bccContactsRows,
                 labels = labels,
-                from = senderContactRow, files = files)
+                from = senderContactRow, files = files, fileKey = fileKey)
     }
 
     private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes)
@@ -113,6 +114,10 @@ object EmailInsertionSetup {
                                           newEmailId: Long) {
         val labelRelations = fullEmail.labels.map(createEmailLabelRelation(newEmailId))
         dao.insertEmailLabelRelations(labelRelations)
+    }
+
+    private fun insertEmailFileKey(dao: EmailInsertionDao, fileKey: String?, emailId: Long) {
+        dao.insertEmailFileKey(FileKey(0, fileKey, emailId))
     }
 
     private fun insertEmailFiles(dao: EmailInsertionDao,
@@ -143,8 +148,9 @@ object EmailInsertionSetup {
              metadataColumns: EmailMetadata.DBColumns,
              decryptedBody: String,
              labels: List<Label>,
-             files: List<CRFile>): Long {
-        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels, files)
+             files: List<CRFile>, fileKey: String?): Long {
+        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels,
+                files, fileKey)
         return exec(dao, fullEmail)
     }
 
@@ -153,6 +159,7 @@ object EmailInsertionSetup {
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
         insertEmailFiles(dao, fullEmail, newEmailId)
+        insertEmailFileKey(dao, fullEmail.fileKey, newEmailId)
         return newEmailId
     }
 
@@ -181,6 +188,19 @@ object EmailInsertionSetup {
                     encryptedData = encryptedData)
         } else body
 
+    private fun getDecryptedFileKey(signalClient: SignalClient,
+                                      metadata: EmailMetadata) =
+            if (metadata.messageType != null && metadata.senderDeviceId != null && metadata.fileKey != null) {
+                val encryptedData = SignalEncryptedData(
+                        encryptedB64 = metadata.fileKey,
+                        type = metadata.messageType)
+
+                decryptMessage(signalClient = signalClient,
+                        recipientId = metadata.senderRecipientId, deviceId = metadata.senderDeviceId,
+                        encryptedData = encryptedData)
+            } else null
+
+
     /**
      * Inserts all the rows and relations needed for a new email in a single transaction
      * @param apiClient Abstraction for the network calls needed
@@ -207,8 +227,11 @@ object EmailInsertionSetup {
 
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
+        val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
+
         dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels, metadata.files)
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels,
+                        metadata.files, decryptedFileKey)
             })
     }
 }

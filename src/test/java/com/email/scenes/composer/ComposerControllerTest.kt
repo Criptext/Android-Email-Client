@@ -20,6 +20,7 @@ open class ComposerControllerTest {
 
     open fun setUp() {
         model = ComposerModel(ComposerType.Empty())
+        model.fileKey = "test_key_16bytes:test_iv_16_bytes"
         scene = mockk(relaxed = true)
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)

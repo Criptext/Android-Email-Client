@@ -120,7 +120,8 @@ open class EmailDetailControllerTest {
                             )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"))
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
+                    fileKey = null)
         }.reversed()
     }
 
