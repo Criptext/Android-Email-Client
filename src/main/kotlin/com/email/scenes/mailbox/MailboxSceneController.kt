@@ -257,6 +257,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                 true
             }
+            is ActivityMessage.DraftSaved -> {
+                scene.showMessage(UIMessage(R.string.draft_saved))
+                true
+            }
             else -> false
         }
     }
@@ -548,6 +552,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             when (result) {
                 is MailboxResult.UpdateUnreadStatus.Success -> {
                     reloadMailboxThreads()
+                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {
                     scene.showMessage(UIMessage(R.string.error_updating_status))

@@ -6,6 +6,7 @@ import com.email.validation.FormInputState
 import com.email.utils.UIMessage
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.`should be`
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
@@ -44,7 +45,7 @@ class SignUpControllerDataSourceEventsTest: SignUpControllerTest() {
 
         // no errors!
         verify(inverse = true) { scene.showError(any()) }
-        verify { scene.showSuccess() }
+        model.signUpSucceed `should be` true
     }
 
     @Test

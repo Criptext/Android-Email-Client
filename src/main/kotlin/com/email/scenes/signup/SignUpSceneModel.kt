@@ -19,4 +19,5 @@ class SignUpSceneModel : SceneModel {
 
     var recoveryEmail: TextInput = TextInput.blank()
     var checkTermsAndConditions : Boolean = false
+    var signUpSucceed: Boolean = false
 }

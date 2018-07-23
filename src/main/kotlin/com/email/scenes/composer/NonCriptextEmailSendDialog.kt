@@ -29,6 +29,7 @@ class NonCriptextEmailSendDialog(val context: Context) {
     private lateinit var editTextPasswordLayout: RelativeLayout
     private lateinit var editTextPasswordRepeatLayout: RelativeLayout
     private lateinit var switchOffMessage: TextView
+    private lateinit var switchOnMessage: TextView
 
     private lateinit var password: AppCompatEditText
     private lateinit var passwordInput: TextInputLayout
@@ -85,12 +86,14 @@ class NonCriptextEmailSendDialog(val context: Context) {
                 editTextPasswordLayout.visibility = View.VISIBLE
                 editTextPasswordRepeatLayout.visibility = View.VISIBLE
                 switchOffMessage.visibility = View.GONE
+                switchOnMessage.visibility = View.VISIBLE
             }
             else{
                 if(!btnSend.isEnabled) enableSendEmailButton()
                 editTextPasswordLayout.visibility = View.GONE
                 editTextPasswordRepeatLayout.visibility = View.GONE
                 switchOffMessage.visibility = View.VISIBLE
+                switchOnMessage.visibility = View.GONE
             }
         }
 
@@ -105,6 +108,7 @@ class NonCriptextEmailSendDialog(val context: Context) {
         editTextPasswordRepeatLayout = view.findViewById(R.id.edit_text_password_repeat_layout)
 
         switchOffMessage = view.findViewById(R.id.switch_off_message)
+        switchOnMessage = view.findViewById(R.id.switch_on_message)
 
         password = view.findViewById(R.id.password)
         passwordInput = view.findViewById(R.id.password_input)

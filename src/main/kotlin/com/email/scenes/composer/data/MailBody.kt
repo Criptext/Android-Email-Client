@@ -33,9 +33,10 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
             builder.append(replyBodyContainerTagEnd)
-            builder.append("<div></div><br>")
-            builder.append(signature)
-
+            if(signature.isNotEmpty()) {
+                builder.append("<div></div><br>")
+                builder.append(signature)
+            }
             return builder.toString()
         }
 
@@ -52,9 +53,10 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(originMessageHtml)
             builder.append(blockQuoteEnd)
             builder.append(replyBodyContainerTagEnd)
-            builder.append("<div></div><br>")
-            builder.append(signature)
-
+            if(signature.isNotEmpty()) {
+                builder.append("<div></div><br>")
+                builder.append(signature)
+            }
             return builder.toString()
         }
 

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:paddingBottom="20dp"
+        android:paddingBottom="30dp"
         android:paddingTop="15dp"
         android:text="@string/title_non_criptext_mail_dialog"
         android:textColor="@color/textColorPrimary"
@@ -29,13 +29,11 @@
 
     <TextView
         fontPath="fonts/NunitoSans-SemiBold.ttf"
-        android:layout_width="match_parent"
+        android:layout_width="206dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
         android:text="@string/set_pass_detail_non_criptext_mail_dialog"
         android:textColor="@color/non_criptext_email_send_detail_text"
         android:textSize="14sp" />
@@ -164,18 +162,27 @@
 
     <TextView
         fontPath="fonts/NunitoSans-SemiBold.ttf"
-        android:id="@+id/switch_off_message"
-        android:layout_width="match_parent"
+        android:id="@+id/switch_on_message"
+        android:layout_width="206dp"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
         android:paddingBottom="20dp"
-        android:paddingTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
-        android:text="@string/switch_off_non_criptext_email_dialog"
-        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/subtitle_expiration_dialog"
         android:textColor="@color/textColorPrimary"
-        android:textSize="17sp"
+        android:textSize="14sp"/>
+
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/switch_off_message"
+        android:layout_width="206dp"
+        android:layout_height="match_parent"
+        android:paddingBottom="133dp"
+        android:paddingTop="30dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/switch_off_non_criptext_email_dialog"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="14sp"
         android:visibility="gone"/>
 
     <LinearLayout

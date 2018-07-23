@@ -197,7 +197,7 @@ interface ComposerScene {
         override fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener) {
             val builder = AlertDialog.Builder(ctx)
             builder.setMessage(ctx.resources.getString(R.string.you_wanna_save))
-                    .setPositiveButton(ctx.resources.getString(R.string.yes), dialogClickListener)
+                    .setPositiveButton(ctx.resources.getString(R.string.save), dialogClickListener)
                     .setNegativeButton(ctx.resources.getString(R.string.discard), dialogClickListener).show()
         }
 

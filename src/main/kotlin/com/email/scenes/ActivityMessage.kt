@@ -18,4 +18,5 @@ sealed class ActivityMessage {
     data class UpdateLabelsThread(val threadId: String, val selectedLabelIds: List<Long>): ActivityMessage()
     data class UpdateThreadPreview(val threadPreview: EmailPreview): ActivityMessage()
     data class MoveThread(val threadId: String?): ActivityMessage()
+    class DraftSaved: ActivityMessage()
 }

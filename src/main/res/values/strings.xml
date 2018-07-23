@@ -43,8 +43,8 @@
     <string name="delete">Delete</string>
     <string name="forward">Forward</string>
     <string name="mailbox_add_labels">Add labels</string>
-    <string name="mailbox_not_spam">Report not spam</string>
-    <string name="mailbox_not_trash">Move to Inbox</string>
+    <string name="mailbox_not_spam">Not spam</string>
+    <string name="mailbox_not_trash">Recover from trash</string>
     <string name="mailbox_move_to">Move to</string>
     <string name="reply_all">Reply All</string>
 
@@ -89,12 +89,13 @@
 
     <!-- NON CRIPTEXT SEND EMAIL DIALOG -->
     <string name="title_non_criptext_mail_dialog">Non-Criptext Recipient</string>
-    <string name="set_pass_non_criptext_mail_dialog">Set a Password</string>
-    <string name="set_pass_detail_non_criptext_mail_dialog">This is so non-Criptext users can read your encrypted email</string>
+    <string name="set_pass_non_criptext_mail_dialog">Send Encrypted</string>
+    <string name="set_pass_detail_non_criptext_mail_dialog">Passwords enable non-Criptext users to read your encrypted email</string>
     <string name="pass_hint_non_criptext_email_dialog">Password</string>
     <string name="pass_repeat_hint_non_criptext_email_dialog">Password Repeat</string>
     <string name="switch_off_non_criptext_email_dialog"><b>Note:</b> This email will be sent as a normal, unencrypted email only to non-Criptext email addresses.</string>
-
+    <string name="subtitle_expiration_dialog">Encrypted emails to non-Criptext recipients will expire in 10 days</string>
+    
     <!-- PERMISSIONS -->
     <string name="read_contacts_perm">Easily access your contacts\' emails</string>
     <string name="read_sd_perm">Acces to your external storage</string>
@@ -319,6 +320,7 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="write_signature">Write your signature here...</string>
+    <string name="draft_saved">Draft saved</string>
 
     <string name="profile_name_updated">Profile name updated</string>
     <string name="signature_updated">Signature updated</string>

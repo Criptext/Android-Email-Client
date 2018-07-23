@@ -31,9 +31,22 @@ class LoadInitialDataWorker(
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
-        val to = if (replyToAll) fullEmail.to.filter { it.email != userEmailAddress }
-                                             .plus(fullEmail.from)
-                 else listOf(fullEmail.from)
+        val to = if (replyToAll) {
+            if(fullEmail.from.email == userEmailAddress)
+                fullEmail.to
+            else
+                fullEmail.to.filter { it.email != userEmailAddress }
+                    .plus(fullEmail.from)
+        }
+        else {
+            if(fullEmail.from.email == userEmailAddress)
+                fullEmail.to
+            else
+                listOf(fullEmail.from)
+        }
+
+        val cc = if (replyToAll) fullEmail.cc else emptyList()
+
         val subject = (if(fullEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
                                 fullEmail.email.subject
         val body = MailBody.createNewReplyMessageBody(
@@ -41,7 +54,7 @@ class LoadInitialDataWorker(
                             date = System.currentTimeMillis(),
                             senderName = fullEmail.from.name,
                             signature = signature)
-        return ComposerInputData(to = to, cc = emptyList(), bcc = emptyList(),
+        return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
                 body = body, subject = subject)
     }
 
