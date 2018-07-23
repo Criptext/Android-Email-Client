@@ -3,8 +3,10 @@ package com.email.scenes.mailbox
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import com.email.BaseActivity
 import com.email.R
 import com.email.SecureEmail
@@ -35,10 +37,12 @@ class MoveToDialog(val context: Context) {
                              currentFolder: String
     ): AlertDialog {
         val width = res.getDimension(R.dimen.alert_dialog_moveto_width).toInt()
-        val height = res.getDimension(R.dimen.alert_dialog_moveto_height).toInt()
         val newMovetoDialog = dialogBuilder.create()
         newMovetoDialog.show()
-        newMovetoDialog.window.setLayout(width, height)
+
+        val window = newMovetoDialog.window
+        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(dialogView.context, R.drawable.dialog_label_chooser_shape)
         newMovetoDialog.window.setBackgroundDrawable(drawableBackground)

@@ -1,5 +1,8 @@
 package com.email.scenes.signup
 
+import android.app.Activity
+import android.content.Intent
+import com.email.BaseActivity
 import com.email.IHostActivity
 import com.email.R
 import com.email.api.ServerErrorException
@@ -7,6 +10,7 @@ import com.email.bgworker.RunnableThrottler
 import com.email.bgworker.BackgroundWorkManager
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
+import com.email.scenes.WebViewActivity
 import com.email.scenes.params.MailboxParams
 import com.email.scenes.params.SignInParams
 import com.email.validation.AccountDataValidator
@@ -141,11 +145,13 @@ class SignUpSceneController(
             }
         }
 
-
         override fun onTermsAndConditionsClick(){
-            TODO("READ TERMS AND CONDITIONS.")
+            val context = (host as BaseActivity)
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url", "https://criptext.com/terms")
+            context.startActivity(intent)
+            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
-
 
         private fun checkPasswords(passwords: Pair<String, String>) {
             if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
@@ -196,12 +202,14 @@ class SignUpSceneController(
             }
         }
 
-        override fun onRegisterUserSuccess(){
-            host.goToScene(MailboxParams(), false)
-        }
-
         override fun onBackPressed() {
             this@SignUpSceneController.onBackPressed()
+        }
+
+        override fun onProgressHolderFinish() {
+            if(model.signUpSucceed){
+                host.goToScene(MailboxParams(), false)
+            }
         }
     }
 
@@ -241,7 +249,7 @@ class SignUpSceneController(
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
-                scene.showSuccess()
+                model.signUpSucceed = true
             }
             is SignUpResult.RegisterUser.Failure -> handleRegisterUserFailure(result)
         }
@@ -326,7 +334,7 @@ class SignUpSceneController(
         fun onCheckedOptionChanged(state: Boolean)
         fun onTermsAndConditionsClick()
         fun onBackPressed()
-        fun onRegisterUserSuccess()
+        fun onProgressHolderFinish()
     }
 
     companion object {

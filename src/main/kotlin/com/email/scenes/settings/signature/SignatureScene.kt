@@ -99,7 +99,7 @@ interface SignatureScene{
         }
 
         override fun getSignature(): String {
-            return bodyEditText.text
+            return if(swicthStatus.isChecked) bodyEditText.text else ""
         }
 
     }

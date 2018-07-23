@@ -16,6 +16,7 @@ import com.email.utils.getLocalizedUIMessage
  */
 
 interface SignUpScene {
+
     fun isPasswordErrorShown() : Boolean
     fun isUsernameErrorShown() : Boolean
 
@@ -52,7 +53,6 @@ interface SignUpScene {
     fun showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener: OnRecoveryEmailWarningListener)
     fun initListeners(uiObserver: SignUpSceneController.SignUpUIObserver)
     fun showError(message : UIMessage)
-    fun showSuccess()
     fun showKeyGenerationHolder()
     fun showFormHolder()
     fun resetSceneWidgetsFromModel(
@@ -64,6 +64,7 @@ interface SignUpScene {
             isChecked: Boolean)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver?
+    val signUpSucceed: Boolean?
 
     class SignUpSceneView(private val view: View): SignUpScene {
 
@@ -168,6 +169,8 @@ interface SignUpScene {
             signUpFormHolder = SignUpFormHolder(formLayout)
         }
 
+        override val signUpSucceed: Boolean? = false
+
         private fun assignCreateAccountClickListener() {
             signUpFormHolder?.assignCreateAccountClickListener()
         }
@@ -213,21 +216,9 @@ interface SignUpScene {
             ->
             if(progress >= 100) {
                 keyGenerationHolder?.stopTimer()
+                uiObserver?.onProgressHolderFinish()
             }
             Unit
-        }
-        override fun showSuccess() {
-            keyGenerationHolder?.updateProgress(100)
-            keyGenerationHolder?.stopTimer()
-
-            val duration = Toast.LENGTH_LONG
-            val toast = Toast.makeText(
-                    view.context,
-                    "Success",
-                    duration)
-            toast.show()
-
-            uiObserver?.onRegisterUserSuccess()
         }
 
         private fun removeAllViews() {

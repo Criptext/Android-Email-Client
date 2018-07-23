@@ -10,6 +10,6 @@ import com.email.IHostActivity
 
 class ActivityMenu(val menu: Menu): IHostActivity.IActivityMenu {
 
-    override fun findItemById(id: Int): MenuItem = menu.findItem(id)
+    override fun findItemById(id: Int): MenuItem? = menu.findItem(id)
 
 }

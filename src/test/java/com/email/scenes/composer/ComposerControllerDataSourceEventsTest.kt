@@ -79,7 +79,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                     onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList(),
                     fileKey = null))
 
-            verify { host.finishScene() }
+            verify { host.exitToScene(any(), any(), any()) }
         }
     }
 

@@ -80,7 +80,8 @@ interface FeedScene {
         }
 
         override fun updateFeedBadge(totalNewFeeds: Int) {
-            val actionView = menu?.findItemById(R.id.mailbox_bell_container)?.actionView
+            val menuItem = menu?.findItemById(R.id.mailbox_bell_container)
+            val actionView = menuItem?.actionView
             if(actionView != null && actionView is FrameLayout) {
                 actionView.findViewById<FrameLayout>(R.id.view_alert_red_circle)?.visibility = if (totalNewFeeds > 0) View.VISIBLE else View.GONE
                 actionView.findViewById<TextView>(R.id.view_alert_count_textview)?.text = totalNewFeeds.toString()

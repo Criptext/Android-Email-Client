@@ -189,7 +189,7 @@ class ComposerController(private val model: ComposerModel,
         when (result) {
             is ComposerResult.SaveEmail.Success -> {
                 if(result.onlySave) {
-                    exitToEmailDetailScene()
+                    host.exitToScene(MailboxParams(), ActivityMessage.DraftSaved(), false)
                 }
                 else {
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,

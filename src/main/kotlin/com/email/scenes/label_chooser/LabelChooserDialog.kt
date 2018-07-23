@@ -4,9 +4,11 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import com.email.R
 import com.email.db.models.Label
 import com.email.scenes.label_chooser.data.LabelWrapper
@@ -22,11 +24,14 @@ class LabelChooserDialog(private val context: Context, private val rootView: Vie
     private lateinit var controller: LabelChooserSceneController
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
-        val height = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_height).toInt()
         val width = context.resources.getDimension(R.dimen.alert_dialog_label_chooser_width).toInt()
         val newLabelChooserDialog = dialogBuilder.create()
         newLabelChooserDialog.show()
-        newLabelChooserDialog.window.setLayout(width, height)
+
+        val window = newLabelChooserDialog.window
+        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window.setGravity(Gravity.CENTER_VERTICAL)
+
         val drawableBackground = ContextCompat.getDrawable(context, R.drawable.dialog_label_chooser_shape)
         newLabelChooserDialog.window.setBackgroundDrawable(drawableBackground)
         assignButtonEvents(dialogView, newLabelChooserDialog, controller.dialogLabelsListener)

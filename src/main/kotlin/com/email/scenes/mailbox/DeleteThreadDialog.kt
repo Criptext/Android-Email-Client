@@ -4,8 +4,10 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import com.email.R
 
 /**
@@ -33,10 +35,12 @@ class DeleteThreadDialog(val context: Context) {
                              onDeleteThreadListener: OnDeleteThreadListener
     ): AlertDialog {
         val width = res.getDimension(R.dimen.delete_thread_warning_width).toInt()
-        val height = res.getDimension(R.dimen.delete_thread_warning_height).toInt()
         val newRecoveryEmailWarningDialog = dialogBuilder.create()
         newRecoveryEmailWarningDialog.show()
-        newRecoveryEmailWarningDialog.window.setLayout(width, height)
+
+        val window = newRecoveryEmailWarningDialog.window
+        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)

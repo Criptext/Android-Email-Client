@@ -25,7 +25,6 @@ class HTMLEditText(private val visualEditor: AztecText,
     set(value) {
         visualEditor.fromHtml(value)
         sourceEditor?.setText(value)
-        toolbar.toggleEditorMode()
     }
     get() = visualEditor.toPlainHtml(false).replace("<br><br>", "<br>")
     //I have to do this replace because the library gives me two br on each new line.
