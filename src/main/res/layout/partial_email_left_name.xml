@@ -8,11 +8,28 @@
     android:layout_gravity="top"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_gravity="center_vertical"
-        android:id="@+id/mail_item_left_name"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:visibility="visible" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/mail_item_left_name"
+            android:layout_width="38dp"
+            android:layout_centerInParent="true"
+            android:layout_height="38dp"
+            android:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/loadingPanel"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_centerInParent="true"
+            android:indeterminateDrawable="@drawable/progress_unsend"
+            android:indeterminate="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+
 
 </LinearLayout>
+

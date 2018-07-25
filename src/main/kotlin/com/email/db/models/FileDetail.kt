@@ -9,6 +9,8 @@ data class FileDetail(val file: CRFile){
         get() = file.name
     val token: String
         get() = file.token
+    val status: Int
+        get() = file.status
     val size: Long
         get() = file.size
     val type = FileUtils.getAttachmentTypeFromPath(file.name)

@@ -42,6 +42,7 @@
     <string name="archive">Archive</string>
     <string name="delete">Delete</string>
     <string name="forward">Forward</string>
+    <string name="unsend">Unsend</string>
     <string name="mailbox_add_labels">Add labels</string>
     <string name="mailbox_not_spam">Not spam</string>
     <string name="mailbox_not_trash">Recover from trash</string>

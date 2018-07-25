@@ -5,6 +5,7 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.EmailDetailLocalDB
+import com.email.db.dao.EmailContactJoinDao
 import com.email.db.dao.EmailDao
 import com.email.db.models.ActiveAccount
 import com.email.scenes.emaildetail.workers.*
@@ -16,6 +17,7 @@ import com.email.signal.SignalClient
 
 class EmailDetailDataSource(override val runner: WorkRunner,
                             private val emailDao: EmailDao,
+                            private val emailContactDao: EmailContactJoinDao,
                             private val httpClient: HttpClient,
                             private val activeAccount: ActiveAccount,
                             private val emailDetailLocalDB: EmailDetailLocalDB,
@@ -39,8 +41,12 @@ class EmailDetailDataSource(override val runner: WorkRunner,
 
             is EmailDetailRequest.UnsendFullEmailFromEmailId -> UnsendFullEmailWorker(
                     db = emailDetailLocalDB,
+                    emailDao = emailDao,
+                    emailContactDao = emailContactDao,
                     emailId = params.emailId,
                     position = params.position,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })

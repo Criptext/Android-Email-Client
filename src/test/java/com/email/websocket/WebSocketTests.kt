@@ -4,10 +4,7 @@ import com.email.api.EmailInsertionAPIClient
 import com.email.api.HttpClient
 import com.email.api.models.TrackingUpdate
 import com.email.db.DeliveryTypes
-import com.email.db.dao.ContactDao
-import com.email.db.dao.EmailDao
-import com.email.db.dao.EmailInsertionDao
-import com.email.db.dao.FeedItemDao
+import com.email.db.dao.*
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
@@ -36,6 +33,7 @@ class WebSocketTests {
     private lateinit var emailDao: EmailDao
     private lateinit var contactDao: ContactDao
     private lateinit var feedItemDao: FeedItemDao
+    private lateinit var fileDao: FileDao
     private lateinit var api: EmailInsertionAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: EventDataSource
@@ -50,6 +48,7 @@ class WebSocketTests {
         dao = mockk(relaxed = true)
         emailDao = mockk(relaxed = true)
         contactDao = mockk(relaxed = true)
+        fileDao = mockk(relaxed = true)
         feedItemDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
         every { dao.runTransaction(capture(lambdaSlot)) } answers {
@@ -68,7 +67,7 @@ class WebSocketTests {
 
         dataSource = EventDataSource(runner = runner, emailInsertionDao = dao, emailDao = emailDao,
                 emailInsertionAPIClient = api, signalClient = signal, activeAccount = account,
-                contactDao = contactDao, feedItemDao = feedItemDao)
+                contactDao = contactDao, feedItemDao = feedItemDao, fileDao = fileDao)
 
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs

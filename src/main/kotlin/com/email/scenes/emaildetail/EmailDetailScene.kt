@@ -56,6 +56,7 @@ interface EmailDetailScene {
 
     fun onDecryptedBody(decryptedText: String)
     fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
+    fun onUnsendProgressEnd(emailPosition: Int)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -179,6 +180,12 @@ interface EmailDetailScene {
 
         override fun onDecryptedBody(decryptedText: String) {
             
+        }
+
+        override fun onUnsendProgressEnd(emailPosition: Int) {
+            val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
+                    as? FullEmailHolder ?: return
+            holder.onUnsendProgressEnd()
         }
 
         override fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int) {

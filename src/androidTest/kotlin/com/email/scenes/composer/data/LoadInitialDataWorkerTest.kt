@@ -41,7 +41,7 @@ class LoadInitialDataWorkerTest {
     private val danielContact = Contact(email = "daniel@jigl.com", name = "Daniel", id = 3)
     private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
             senderName = "Mayer", deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
-            emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false)
+            emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false, latestEmailUnsentDate = Date())
 
     @Before
     fun setup() {
@@ -70,7 +70,7 @@ class LoadInitialDataWorkerTest {
                     fromContact = fromContact, messageId = "__MESSAGE_ID__",
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
                     subject = subject, unread = true, metadataKey = 100L,
-                    status = DeliveryTypes.NONE)
+                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:00")
             val labels = if (isDraft) listOf(Label.defaultItems.inbox)
                         else listOf(Label.defaultItems.draft)
 

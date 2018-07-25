@@ -4,6 +4,11 @@ import android.content.Context
 import com.email.db.models.EmailLabel
 import com.email.db.models.FullEmail
 import com.email.db.models.Label
+import com.email.utils.DateUtils
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.util.*
 
 /**
  * Created by sebas on 3/12/18.
@@ -29,6 +34,9 @@ interface EmailDetailLocalDB {
 
         override fun unsendEmail(emailId: Long) {
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)
+            db.emailDao().unsendEmailById(emailId, "", "",
+                    DateUtils.getDateFromString(DateUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
+            db.fileDao().changeFileStatusByEmailid(emailId, 0)
         }
 
         override fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail> {

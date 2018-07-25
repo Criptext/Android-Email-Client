@@ -3,7 +3,9 @@ package com.email.db.dao
 import android.arch.persistence.room.*
 import com.email.db.DeliveryTypes
 import com.email.db.models.Email
+import com.email.email_preview.EmailPreview
 import java.util.*
+import javax.security.auth.Subject
 
 /**
  * Created by sebas on 1/24/18.
@@ -125,6 +127,14 @@ import java.util.*
             SET delivered=:deliveryType
             WHERE id=:id""")
     fun changeDeliveryType(id: Long, deliveryType: DeliveryTypes)
+
+    @Query("""UPDATE email
+            SET content=:content,
+            bodyPreview=:preview,
+            unsentDate=:unsentDate
+            WHERE id=:id""")
+    fun unsendEmailById(id: Long, content: String, preview: String, unsentDate: Date)
+
 
     @Query("""UPDATE email
             SET delivered=:deliveryType

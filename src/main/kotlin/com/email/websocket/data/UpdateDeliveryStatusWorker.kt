@@ -8,9 +8,12 @@ import com.email.db.FeedType
 import com.email.db.dao.ContactDao
 import com.email.db.dao.EmailDao
 import com.email.db.dao.FeedItemDao
+import com.email.db.dao.FileDao
 import com.email.db.models.Contact
 import com.email.db.models.FeedItem
 import com.email.db.typeConverters.EmailDeliveryConverter
+import com.email.utils.DateUtils
+import java.io.File
 import java.util.*
 
 /**
@@ -19,6 +22,7 @@ import java.util.*
 
 class UpdateDeliveryStatusWorker(private val dao: EmailDao,
                                  private val feedDao: FeedItemDao,
+                                 private val fileDao: FileDao,
                                  private val contactDao: ContactDao,
                                  override val publishFn: (EventResult.UpdateDeliveryStatus) -> Unit,
                                  private val trackingUpdate: TrackingUpdate)
@@ -50,6 +54,13 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
                         contactId = contactDao.getContact("${trackingUpdate.from}@${Contact.mainDomain}")!!.id,
                         fileId = null
                 ))
+            }
+
+            if(trackingUpdate.type == DeliveryTypes.UNSEND) {
+                dao.changeDeliveryType(existingEmail.id, DeliveryTypes.UNSEND)
+                dao.unsendEmailById(existingEmail.id, "", "",
+                        DateUtils.getDateFromString(DateUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
+                fileDao.changeFileStatusByEmailid(existingEmail.id, 0)
             }
 
             return EventResult.UpdateDeliveryStatus.Success(update)

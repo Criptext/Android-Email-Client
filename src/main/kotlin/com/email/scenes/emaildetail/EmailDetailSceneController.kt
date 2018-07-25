@@ -144,12 +144,31 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
-                model.emails[result.position].email.delivered = DeliveryTypes.UNSEND
-                scene.notifyFullEmailChanged(result.position)
+                setEmailAtPositionAsUnsend(result.position)
+                scene.onUnsendProgressEnd(result.position)
             }
 
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
+                scene.showError(result.message)
+                scene.onUnsendProgressEnd(result.position)
             }
+        }
+
+    }
+
+    private fun setEmailAtPositionAsUnsend(position: Int) {
+        val fullEmail = model.emails[position]
+        fullEmail.email.delivered = DeliveryTypes.UNSEND
+        for(file in fullEmail.files){
+            file.status = 0
+        }
+        scene.notifyFullEmailChanged(position)
+
+        val latestEmailWasUpdated = position == model.emails.size - 1
+        if (latestEmailWasUpdated) {
+
+            model.threadPreview = model.threadPreview.copy(
+                    deliveryStatus = DeliveryTypes.UNSEND)
         }
     }
 
@@ -218,7 +237,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
-            downloadFile(email.email.id, attachment.token, email.fileKey)
+            if(attachment.status != 0) {
+                downloadFile(email.email.id, attachment.token, email.fileKey)
+            }
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {

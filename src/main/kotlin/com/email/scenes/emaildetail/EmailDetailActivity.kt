@@ -51,6 +51,7 @@ class  EmailDetailActivity: BaseActivity() {
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
+                        emailContactDao = appDB.emailContactDao(),
                         httpClient = httpClient,
                         activeAccount = activeAccount,
                         filesHttpClient= filesHttpClient,

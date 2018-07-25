@@ -28,6 +28,9 @@ object EmailInsertionSetup {
             date = DateUtils.getDateFromString(
                     metadata.date,
                     null),
+            unsentDate =  DateUtils.getDateFromString(
+                    metadata.date,
+                    null),
             threadId = metadata.threadId,
             subject = metadata.subject,
             secure = true,
@@ -223,7 +226,7 @@ object EmailInsertionSetup {
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
-        val body = apiClient.getBodyFromEmail(metadata.messageId)
+        val body = apiClient.getBodyFromEmail(metadata.metadataKey)
 
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 

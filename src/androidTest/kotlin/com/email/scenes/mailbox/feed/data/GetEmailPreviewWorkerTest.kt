@@ -41,7 +41,8 @@ class GetEmailPreviewWorkerTest{
         val metadata = EmailMetadata.DBColumns(to = userEmail,  cc = "", bcc = "",
                 fromContact = fromContact, messageId = "daniel/1/1",
                 date = "2018-02-21 14:00:00", threadId = "thread#1",
-                subject = "__SUBJECT__", unread = true, metadataKey = 100L, status = DeliveryTypes.NONE)
+                subject = "__SUBJECT__", unread = true, metadataKey = 100L, status = DeliveryTypes.NONE,
+                unsentDate = "2018-02-21 14:00:00")
         val decryptedBody = "Hello, this is message"
         val labels = listOf(Label.defaultItems.inbox)
         val emailId = EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,

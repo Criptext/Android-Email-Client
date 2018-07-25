@@ -3,6 +3,7 @@ package com.email.websocket
 import com.email.api.Hosts
 import com.email.api.models.EmailMetadata
 import com.email.api.models.Event
+import com.email.api.models.PeerEmailStatusUpdate
 import com.email.api.models.TrackingUpdate
 import com.email.db.models.ActiveAccount
 import com.email.db.models.CRFile
@@ -43,6 +44,10 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
                 if(trackingUpdate.from != activeAccount.recipientId) {
                     eventDataSource.submitRequest(EventRequest.UpdateDeliveryStatus(trackingUpdate))
                 }
+            }
+            Event.Cmd.peerEmailStatusUpdate -> {
+                val peerEmailStatusUpdate = PeerEmailStatusUpdate.fromJSON(event.params)
+                eventDataSource.submitRequest(EventRequest.UpdatePeerEmailStatus(peerEmailStatusUpdate))
             }
         }
     }
