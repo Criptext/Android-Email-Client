@@ -25,7 +25,7 @@ class EncryptFileByChunksTest {
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var signalClient: SignalClient
-    private lateinit var tester: TestUser
+    private lateinit var tester: DummyUser
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)

@@ -60,7 +60,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
     }
 
     data class GuestEmail(val to: List<String>, val cc: List<String>, val bcc: List<String>,
-                          val body: String, val session: String?):JSONData{
+                          val body: String, val salt: String? , val iv: String?,
+                          val session: String?):JSONData{
         override fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("to", JSONArray(to))
@@ -68,6 +69,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("bcc", JSONArray(bcc))
             json.put("body", body)
             json.put("session", session)
+            json.put("salt", salt)
+            json.put("iv", iv)
             return json
         }
     }

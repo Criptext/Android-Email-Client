@@ -47,6 +47,7 @@ class LocalPersistentCommunicationTest {
     fun should_create_user_in_db_and_send_e2e_message_to_inmemory_user() {
         val alice = newPersistedUser("alice", 1).setup()
         val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
+        
 
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
         alice.buildSession(keyBundleFromBob)

@@ -47,7 +47,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
         ComposerInputData(
             to = listOf(Contact(id = 0, email = "mayer@jigl.com", name = "Mayer Mizrachi")),
                 cc = emptyList(), bcc = emptyList(), subject = "test email",
-                body = "this is a test")
+                body = "this is a test", passwordForNonCriptextUsers = null)
 
     private val mockedAttachmentActivityMessage =
             ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)))

@@ -8,13 +8,13 @@ import java.io.File
  * Created by gabriel on 3/17/18.
  */
 
-abstract class TestUser(generator: SignalKeyGenerator, recipientId: String, deviceId: Int) {
+abstract class DummyUser(generator: SignalKeyGenerator, recipientId: String, deviceId: Int) {
 
     val registrationBundles = generator.register(recipientId, deviceId)
     abstract val store: SignalProtocolStore
     private lateinit var client: SignalClient
 
-    fun setup(): TestUser {
+    fun setup(): DummyUser {
         client = SignalClient.Default(store)
         return this
     }

@@ -5,6 +5,7 @@ import com.email.SecureEmail
 import com.email.api.HttpClient
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.*
+import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
@@ -38,6 +39,7 @@ class MailboxWebSocketTest {
     private lateinit var emailLabelDao: EmailLabelDao
     private lateinit var emailCOntactDao: EmailContactJoinDao
     private lateinit var rawSessionDao: RawSessionDao
+    private lateinit var rawIdentityKeyDao: RawIdentityKeyDao
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: MailboxDataSource
@@ -56,6 +58,7 @@ class MailboxWebSocketTest {
         runner = MockedWorkRunner()
         db = mockk(relaxed = true)
         rawSessionDao = mockk()
+        rawIdentityKeyDao = mockk()
         emailDao = mockk()
         feedItemDao = mockk()
         contactDao = mockk()
@@ -89,6 +92,7 @@ class MailboxWebSocketTest {
                 contactDao = contactDao,
                 feedItemDao = feedItemDao,
                 rawSessionDao = rawSessionDao,
+                rawIdentityKeyDao = rawIdentityKeyDao,
                 emailInsertionDao = emailInsertionDao,
                 fileDao = fileDao,
                 fileKeyDao = fileKeyDao,

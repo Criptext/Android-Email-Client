@@ -41,7 +41,7 @@ class SendEmailWorkerTest {
     private lateinit var signalClient: SignalClient
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
-    private lateinit var tester: TestUser
+    private lateinit var tester: DummyUser
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
@@ -73,7 +73,7 @@ class SendEmailWorkerTest {
         SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                 rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                 composerInputData = inputData, activeAccount = activeAccount,
-                attachments = emptyList(), publishFn = {}, fileKey = null)
+                attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao())
 
 
 
@@ -83,7 +83,7 @@ class SendEmailWorkerTest {
                     dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null)
 
 
-    private fun getDecryptedBodyPostEmailRequestBody(recipient: TestUser): String {
+    private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
         val req = mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
         val bodyString = req.body.readUtf8()
@@ -106,7 +106,7 @@ class SendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!")
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
@@ -137,7 +137,7 @@ class SendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!")
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 

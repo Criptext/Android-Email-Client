@@ -4,7 +4,9 @@ import com.email.utils.Encoding
 import java.security.SecureRandom
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
-import javax.crypto.*
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.SecretKeyFactory
+import javax.crypto.Cipher
 
 
 class AESUtil(keyAndIV: String) {
@@ -42,11 +44,48 @@ class AESUtil(keyAndIV: String) {
     }
 
     companion object {
-        fun generateSalt(size: Int = 16): String {
+        fun generateSecureRandomBytes(size: Int = 16): String {
             val random = SecureRandom()
             val bytes = ByteArray(size)
             random.nextBytes(bytes)
             return Encoding.byteArrayToString(bytes)
+        }
+
+        fun encryptWithPassword(password: String, dataToEncrypt: ByteArray): Triple<String, String, String>{
+            val salt = ByteArray(8)
+            val srandom = SecureRandom()
+            srandom.nextBytes(salt)
+            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val spec = PBEKeySpec(password.toCharArray(), salt, 10000, 128)
+            val tmp = factory.generateSecret(spec)
+            val skey = SecretKeySpec(tmp.encoded, "AES")
+
+            val iv = ByteArray(128 / 8)
+            srandom.nextBytes(iv)
+            val ivspec = IvParameterSpec(iv)
+
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.ENCRYPT_MODE, skey, ivspec)
+
+            return Triple(Encoding.byteArrayToString(salt), Encoding.byteArrayToString(iv),
+                    Encoding.byteArrayToString(ci.doFinal(dataToEncrypt)))
+        }
+
+        fun decryptWithPassword(password: String, salt: String, iv: String, dataToDecrypt: ByteArray): String{
+
+
+            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val spec = PBEKeySpec(password.toCharArray(), Encoding.stringToByteArray(salt),
+                    10000, 128)
+            val tmp = factory.generateSecret(spec)
+            val skey = SecretKeySpec(tmp.encoded, "AES")
+
+            val ivspec = IvParameterSpec(Encoding.stringToByteArray(iv))
+
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.DECRYPT_MODE, skey, ivspec)
+
+            return Encoding.byteArrayToString(ci.doFinal(dataToDecrypt))
         }
     }
 }

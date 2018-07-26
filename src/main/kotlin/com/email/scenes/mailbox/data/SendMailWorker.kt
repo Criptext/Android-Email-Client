@@ -2,6 +2,7 @@ package com.email.scenes.mailbox.data
 
 import android.accounts.NetworkErrorException
 import com.email.R
+import com.email.aes.AESUtil
 import com.email.api.HttpClient
 import com.email.api.HttpErrorHandlingHelper
 import com.email.api.ServerErrorException
@@ -9,16 +10,18 @@ import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.MailboxLocalDB
+import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.KnownAddress
 import com.email.scenes.composer.data.*
-import com.email.signal.PreKeyBundleShareData
-import com.email.signal.SignalClient
+import com.email.signal.*
 import com.email.utils.DateUtils
+import com.email.utils.DeviceUtils
 import com.email.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
 import com.email.utils.EmailAddressUtils.isFromCriptextDomain
+import com.email.utils.Encoding
 import com.email.utils.UIMessage
 import com.email.utils.file.FileUtils
 import com.github.kittinunf.result.Result
@@ -27,6 +30,8 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.whispersystems.libsignal.SignalProtocolAddress
+
 
 /**
  * Created by gabriel on 2/26/18.
@@ -34,6 +39,7 @@ import org.json.JSONObject
 
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
+                     private val rawIdentityKeyDao: RawIdentityKeyDao,
                      private val db: MailboxLocalDB,
                      httpClient: HttpClient,
                      private val activeAccount: ActiveAccount,
@@ -187,13 +193,10 @@ class SendMailWorker(private val signalClient: SignalClient,
     override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
         val mailRecipients = getMailRecipients()
         val mailRecipientsNonCriptext = getMailRecipientsNonCriptext()
-        guestEmails = if(!mailRecipientsNonCriptext.isEmpty) {
-            PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
-                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    composerInputData.body, null)
-        }else{
+        guestEmails = if(!mailRecipientsNonCriptext.isEmpty)
+            getGuestEmails(mailRecipientsNonCriptext)
+        else
             null
-        }
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }
                 .flatMap(sendEmailOperation)
@@ -209,6 +212,64 @@ class SendMailWorker(private val signalClient: SignalClient,
             }
         }
     }
+
+    private fun getGuestEmails(mailRecipientsNonCriptext: MailRecipients) : PostEmailBody.GuestEmail?{
+        val postGuestEmailBody: PostEmailBody.GuestEmail?
+        if(composerInputData.passwordForNonCriptextUsers == null) {
+            postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
+                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
+                    composerInputData.body, null, null, null)
+        }else {
+            val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
+            val sessionToEncrypt = getSignalSessionJSON(tempSignalUser, tempSignalUser.fetchAPreKeyBundle()).toString().toByteArray()
+            val (salt, iv, encryptedSession) =
+                    AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
+            val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
+                    1,composerInputData.body).encryptedB64
+            postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
+                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
+                    encryptedBody, salt, iv, encryptedSession)
+            tempSignalUser.store.deleteAllSessions(composerInputData.passwordForNonCriptextUsers)
+            rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
+            rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
+
+        }
+        return postGuestEmailBody
+    }
+
+    private fun getDummySignalSession(recipientId: String): DummyUser{
+        val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+        val tempUser = InMemoryUser(keyGenerator, recipientId, 1).setup()
+        val keyBundleFromTempUser = tempUser.fetchAPreKeyBundle()
+
+        signalClient.createSessionsFromBundles(listOf(keyBundleFromTempUser))
+        return tempUser
+    }
+
+    private fun getSignalSessionJSON(tempUser: DummyUser, keyBundleFromTempUser: PreKeyBundleShareData.DownloadBundle):JSONObject{
+        val signedPreKey = tempUser.store.loadSignedPreKey(keyBundleFromTempUser.shareData.signedPreKeyId)
+
+        val jsonReturn = JSONObject()
+        val jsonIdentityKey = JSONObject()
+        val jsonPreKey = JSONObject()
+        val jsonSignedPreKey = JSONObject()
+        jsonIdentityKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.identityKeyPair.publicKey.serialize()))
+        jsonIdentityKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.identityKeyPair.privateKey.serialize()))
+        jsonReturn.put("identityKey", jsonIdentityKey)
+        jsonReturn.put("registrationId", tempUser.store.localRegistrationId)
+        jsonPreKey.put("keyId", keyBundleFromTempUser.preKey?.id)
+        jsonPreKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey!!.id).keyPair.publicKey.serialize()))
+        jsonPreKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey.id).keyPair.privateKey.serialize()))
+        jsonReturn.put("preKey", jsonPreKey)
+        jsonSignedPreKey.put("keyId", keyBundleFromTempUser.shareData.signedPreKeyId)
+        jsonSignedPreKey.put("publicKey", Encoding.byteArrayToString(signedPreKey.keyPair.publicKey.serialize()))
+        jsonSignedPreKey.put("privateKey", Encoding.byteArrayToString(signedPreKey.keyPair.privateKey.serialize()))
+        jsonReturn.put("signedPreKey", jsonSignedPreKey)
+        jsonReturn.put("fileKey", fileKey)
+        println(jsonReturn.toString())
+        return jsonReturn
+    }
+
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
             is JSONException -> UIMessage(resId = R.string.send_json_error)

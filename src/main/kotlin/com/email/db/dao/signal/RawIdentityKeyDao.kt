@@ -20,4 +20,8 @@ interface RawIdentityKeyDao {
               WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
     fun find(recipientId: String, deviceId: Int): CRIdentityKey?
 
+    @Query("""DELETE FROM raw_identitykey
+              WHERE recipientId = :recipientId""")
+    fun deleteByRecipientId(recipientId: String)
+
 }

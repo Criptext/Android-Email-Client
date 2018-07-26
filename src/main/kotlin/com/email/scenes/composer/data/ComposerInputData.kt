@@ -10,15 +10,14 @@ import com.email.scenes.composer.ComposerModel
 
 data class ComposerInputData(val to: List<Contact>, val cc: List<Contact>,
                              val bcc: List<Contact>, val subject: String,
-                             val body: String) {
+                             val body: String, val passwordForNonCriptextUsers: String?) {
 
     val hasAtLeastOneRecipient: Boolean
         get () = to.isNotEmpty() || cc.isNotEmpty() || bcc.isNotEmpty()
 
-    var passwordForNonCriptextUsers: String? = null
-
     companion object {
         fun fromModel(model: ComposerModel): ComposerInputData = ComposerInputData(to = model.to,
-                cc = model.cc, bcc = model.bcc, subject = model.subject, body = model.body)
+                cc = model.cc, bcc = model.bcc, subject = model.subject, body = model.body,
+                passwordForNonCriptextUsers = model.passwordForNonCriptextUsers)
     }
 }

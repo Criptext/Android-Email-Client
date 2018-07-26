@@ -3,6 +3,7 @@ package com.email.scenes.mailbox.data
 import com.email.api.HttpClient
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.*
+import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.mocks.MockedWorkRunner
@@ -28,6 +29,7 @@ open class MailboxWorkerTest {
     private lateinit var emailLabelDao: EmailLabelDao
     private lateinit var emailContactDao: EmailContactJoinDao
     protected lateinit var rawSessionDao: RawSessionDao
+    protected lateinit var rawIdentityKeyDao: RawIdentityKeyDao
     protected lateinit var db: MailboxLocalDB
     protected lateinit var dao: EmailInsertionDao
     protected lateinit var activeAccount: ActiveAccount
@@ -57,12 +59,13 @@ open class MailboxWorkerTest {
         httpClient = mockk()
         runner = MockedWorkRunner()
         rawSessionDao = mockk()
+        rawIdentityKeyDao = mockk()
         dataSource = MailboxDataSource(signalClient = signalClient, httpClient = httpClient,
                 activeAccount = activeAccount, mailboxLocalDB = db, emailDao = emailDao,
                 emailInsertionDao = dao, rawSessionDao = rawSessionDao, runner = runner,
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
-                fileKeyDao = fileKeyDao)
+                fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao)
         dataSource.listener = { result -> lastResult = result }
     }
 
