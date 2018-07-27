@@ -19,6 +19,7 @@ class MailboxDataSource(
         private val signalClient: SignalClient,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
+        private val accountDao: AccountDao,
         private val emailDao: EmailDao,
         private val fileDao: FileDao,
         private val fileKeyDao: FileKeyDao,
@@ -48,7 +49,11 @@ class MailboxDataSource(
             is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
                     emailDao = emailDao,
                     dao = emailInsertionDao,
+                    accountDao = accountDao,
+                    emailLabelDao = emailLabelDao,
+                    labelDao = labelDao,
                     feedItemDao = feedItemDao,
+                    fileDao = fileDao,
                     contactDao = contactDao,
                     signalClient = signalClient,
                     db = mailboxLocalDB,
@@ -97,6 +102,8 @@ class MailboxDataSource(
                     db = mailboxLocalDB,
                     selectedThreadIds = params.selectedThreadIds,
                     currentLabel = params.currentLabel,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -112,6 +119,8 @@ class MailboxDataSource(
                     threadIds = params.threadIds,
                     updateUnreadStatus = params.updateUnreadStatus,
                     currentLabel = params.currentLabel,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     }

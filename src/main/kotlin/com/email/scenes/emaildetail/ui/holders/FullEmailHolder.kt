@@ -2,7 +2,6 @@ package com.email.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.opengl.Visibility
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -24,10 +23,11 @@ import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
-import com.email.scenes.emaildetail.ui.*
+import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
+import com.email.scenes.emaildetail.ui.FileListAdapter
+import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.*
 import com.email.utils.ui.ZoomLayout
-import com.github.ybq.android.spinkit.SpinKitView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
@@ -117,12 +117,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                             markAsRead = item.itemId == R.id.mark_read)
                 }
                 R.id.unsend -> {
-                    if (fullEmail.email.delivered != DeliveryTypes.UNSEND) {
-                        emailListener?.onUnsendEmail(
+                    emailListener?.onUnsendEmail(
                                 fullEmail = fullEmail,
                                 position = position)
-                    }
-                    unsendProgressBar.visibility = View.VISIBLE
                 }
                 R.id.delete ->
                     emailListener?.onDeleteOptionSelected(
@@ -146,18 +143,31 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val wrapper = ContextThemeWrapper(context, R.style.email_detail_popup_menu)
         val popupMenu = PopupMenu(wrapper , threePointsView)
 
-    val popuplayout = if(fullEmail.email.delivered == DeliveryTypes.NONE || fullEmail.email.delivered == DeliveryTypes.UNSEND) {
-        if (fullEmail.email.unread)
-            R.menu.mail_options_unread_menu
-        else
-            R.menu.mail_options_read_menu
-    }else{
-        if (fullEmail.email.unread)
-            R.menu.mail_options_unread_menu_sent
-        else
-            R.menu.mail_options_read_menu_sent
-    }
-
+        val popuplayout = if(fullEmail.email.delivered == DeliveryTypes.NONE || fullEmail.email.delivered == DeliveryTypes.UNSEND) {
+                    if (fullEmail.email.unread) {
+                        if (fullEmail.labels.contains(Label.defaultItems.trash))
+                            R.menu.mail_options_unread_menu_in_trash
+                        else
+                            R.menu.mail_options_unread_menu
+                    }else {
+                        if (fullEmail.labels.contains(Label.defaultItems.trash))
+                            R.menu.mail_options_read_menu_in_trash
+                        else
+                            R.menu.mail_options_read_menu
+                     }
+        }else{
+            if (fullEmail.email.unread) {
+                if (fullEmail.labels.contains(Label.defaultItems.trash))
+                    R.menu.mail_options_unread_menu_sent_in_trash
+                else
+                    R.menu.mail_options_unread_menu_sent
+            }else {
+                if (fullEmail.labels.contains(Label.defaultItems.trash))
+                    R.menu.mail_options_read_menu_sent_in_trash
+                else
+                    R.menu.mail_options_read_menu_sent
+            }
+        }
 
         popupMenu.inflate(popuplayout)
         return popupMenu
@@ -190,9 +200,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     fullEmail.from.name
                 }
 
-        if(fullEmail.email.delivered != DeliveryTypes.NONE) {
-            //TODO add unsend option in menu
-        }
+        if(fullEmail.isUnsending)
+            unsendProgressBar.visibility = View.VISIBLE
+        else
+            unsendProgressBar.visibility = View.INVISIBLE
 
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
                 fullEmail.from.name,
@@ -326,8 +337,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private fun deactivateElementsForUnsend() {
         bodyContainer.alpha = 0.4.toFloat()
-        //bodyContainer.isEnabled = false
-
     }
 
     private fun setDefaultBackgroundColors() {
@@ -338,10 +347,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     fun updateAttachmentProgress(attachmentPosition: Int){
         attachmentsRecyclerView.adapter?.notifyItemChanged(attachmentPosition)
-    }
-
-    fun onUnsendProgressEnd(){
-        unsendProgressBar.visibility = View.INVISIBLE
     }
 
     init {

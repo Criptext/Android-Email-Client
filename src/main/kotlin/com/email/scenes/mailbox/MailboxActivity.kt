@@ -115,6 +115,7 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 emailDao = appDB.emailDao(),
+                accountDao = appDB.accountDao(),
                 feedItemDao = appDB.feedDao(),
                 contactDao = appDB.contactDao(),
                 rawSessionDao = appDB.rawSessionDao(),

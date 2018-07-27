@@ -1,13 +1,17 @@
 package com.email.scenes.emaildetail.workers
 
+import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.ProgressReporter
 import com.email.db.DeliveryTypes
 import com.email.db.EmailDetailLocalDB
 import com.email.db.MailboxLocalDB
+import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
+import com.email.scenes.emaildetail.data.EmailDetailAPIClient
 import com.email.scenes.emaildetail.data.EmailDetailResult
 import com.email.utils.DateUtils
+import com.github.kittinunf.result.Result
 import org.json.JSONObject
 
 /**

@@ -23,6 +23,8 @@ class MoveEmailThreadsWorkerTest{
 
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
     @Before
     fun setup() {
@@ -95,6 +97,8 @@ class MoveEmailThreadsWorkerTest{
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
                     selectedThreadIds = selectedThreadIds,
+                    httpClient = mockk(),
+                    activeAccount = activeAccount,
                     publishFn = {})
 
 }

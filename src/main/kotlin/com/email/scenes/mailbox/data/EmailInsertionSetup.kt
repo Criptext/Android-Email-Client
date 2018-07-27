@@ -89,8 +89,8 @@ object EmailInsertionSetup {
                                         decryptedBody: String,
                                         labels: List<Label>,
                                         files: List<CRFile>, fileKey: String?): FullEmail {
-        val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
+        val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
         val ccContactsRows = createContactRows(dao, metadataColumns.cc)
         val bccContactsRows = createContactRows(dao, metadataColumns.bcc)
@@ -233,7 +233,9 @@ object EmailInsertionSetup {
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
         dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels,
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
+                if(meAsSender) false else metadata.extractDBColumns().unread, status =
+                if(meAsSender) DeliveryTypes.SENT else metadata.extractDBColumns().status), decryptedBody, labels,
                         metadata.files, decryptedFileKey)
             })
     }

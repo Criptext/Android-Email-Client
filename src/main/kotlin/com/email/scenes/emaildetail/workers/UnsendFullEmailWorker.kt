@@ -13,10 +13,12 @@ import com.email.db.models.ActiveAccount
 import com.email.db.models.Email
 import com.email.scenes.emaildetail.data.EmailDetailAPIClient
 import com.email.scenes.emaildetail.data.EmailDetailResult
+import com.email.utils.DateUtils
 import com.email.utils.EmailAddressUtils
 import com.email.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
+import java.util.*
 
 /**
  * Created by sebas on 3/22/18.
@@ -51,7 +53,8 @@ class UnsendFullEmailWorker(
 
         val unsentEmail = emailDao.findEmailById(emailId)
         val result = Result.of {
-            apiClient.postUnsendEvent(unsentEmail!!.metadataKey, getMailRecipients(unsentEmail))
+            apiClient.postUnsendEvent(unsentEmail!!.metadataKey,
+                    getMailRecipients(unsentEmail))
         }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
         return when (result) {

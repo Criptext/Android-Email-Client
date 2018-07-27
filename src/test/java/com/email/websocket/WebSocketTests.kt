@@ -34,6 +34,9 @@ class WebSocketTests {
     private lateinit var contactDao: ContactDao
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var fileDao: FileDao
+    private lateinit var accountDao: AccountDao
+    private lateinit var labelDao: LabelDao
+    private lateinit var emailLabelDao: EmailLabelDao
     private lateinit var api: EmailInsertionAPIClient
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: EventDataSource
@@ -48,6 +51,9 @@ class WebSocketTests {
         dao = mockk(relaxed = true)
         emailDao = mockk(relaxed = true)
         contactDao = mockk(relaxed = true)
+        accountDao = mockk(relaxed = true)
+        labelDao = mockk(relaxed = true)
+        emailLabelDao = mockk(relaxed = true)
         fileDao = mockk(relaxed = true)
         feedItemDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -65,9 +71,11 @@ class WebSocketTests {
         val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
                 jwt = "__JWT_TOKEN__", signature = "")
 
-        dataSource = EventDataSource(runner = runner, emailInsertionDao = dao, emailDao = emailDao,
+        dataSource = EventDataSource(runner = runner , emailInsertionDao = dao, emailDao = emailDao,
                 emailInsertionAPIClient = api, signalClient = signal, activeAccount = account,
-                contactDao = contactDao, feedItemDao = feedItemDao, fileDao = fileDao)
+                contactDao = contactDao, feedItemDao = feedItemDao, fileDao = fileDao,
+                accountDao = accountDao, labelDao = labelDao, emailLabelDao = emailLabelDao,
+                httpClient = httpClient)
 
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs
@@ -112,7 +120,7 @@ class WebSocketTests {
         } just Runs
 
         every {
-            httpClient.get(path = "/email/body/<15221916.12518@jigl.com>", authToken = "__JWT_TOKEN__")
+            httpClient.get(path = "/email/body/81", authToken = "__JWT_TOKEN__")
         } returns "__ENCRYPTED_TEXT__"
 
         controller.currentListener = mockedListener
@@ -161,7 +169,7 @@ class WebSocketTests {
         } just Runs
 
         every {
-            httpClient.get(path = "/email/body/<15221916.12520@jigl.com>", authToken = "__JWT_TOKEN__")
+            httpClient.get(path = "/email/body/81", authToken = "__JWT_TOKEN__")
         } returns "__PLAIN_TEXT_FROM_SERVER__"
 
         controller.currentListener = mockedListener

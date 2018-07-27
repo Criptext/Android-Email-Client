@@ -31,6 +31,52 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.post(authToken = token, path = "/keybundle", body = jsonObject)
     }
 
+
+    fun postEmailReadChangedEvent(metadataKeys: List<Long>, unread: Boolean): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", 301)
+        json.put("metadataKeys", JSONArray(metadataKeys))
+        json.put("unread", if(unread) 1 else 0)
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
+    }
+
+    fun postThreadReadChangedEvent(threadIds: List<String>, unread: Boolean): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", 302)
+        json.put("threadIds", JSONArray(threadIds))
+        json.put("unread", if(unread) 1 else 0)
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
+    }
+
+    fun postThreadDeletedPermanentlyEvent(threadIds: List<String>): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", 306)
+        json.put("threadIds", JSONArray(threadIds))
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
+    }
+
+    fun postThreadLabelChangedEvent(threadIds: List<String>, labelsRemoved: List<String>,
+                                    labelsAdded: List<String>): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", 304)
+        json.put("threadIds", JSONArray(threadIds))
+        json.put("labelsRemoved", JSONArray(labelsRemoved))
+        json.put("labelsAdded", JSONArray(labelsAdded))
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
+    }
+
     fun postEmail(postEmailBody: PostEmailBody): String {
         return httpClient.post(authToken = token, path = "/email", body = postEmailBody.toJSON())
     }

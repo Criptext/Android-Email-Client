@@ -1,6 +1,7 @@
 package com.email.websocket.data
 
 import com.email.api.EmailInsertionAPIClient
+import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
@@ -16,11 +17,15 @@ class EventDataSource(override val runner: WorkRunner,
                       private val feedItemDao: FeedItemDao,
                       private val fileDao: FileDao,
                       private val emailDao: EmailDao,
+                      private val emailLabelDao: EmailLabelDao,
+                      private val labelDao: LabelDao,
                       private val contactDao: ContactDao,
+                      private val accountDao: AccountDao,
                       private val emailInsertionDao: EmailInsertionDao,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
                       private val signalClient: SignalClient,
-                      private val activeAccount: ActiveAccount): BackgroundWorkManager<EventRequest, EventResult>() {
+                      private val activeAccount: ActiveAccount,
+                      private val httpClient: HttpClient): BackgroundWorkManager<EventRequest, EventResult>() {
 
     override fun createWorkerFromParams(params: EventRequest, flushResults: (EventResult) -> Unit): BackgroundWorker<*> {
         return when (params) {
@@ -32,9 +37,43 @@ class EventDataSource(override val runner: WorkRunner,
             is EventRequest.UpdateDeliveryStatus -> UpdateDeliveryStatusWorker(
                     dao = emailDao, fileDao = fileDao, trackingUpdate = params.trackingUpdate,
                     feedDao = feedItemDao, contactDao = contactDao, publishFn = flushResults)
-            is EventRequest.UpdatePeerEmailStatus -> UpdatePeerUnsendEmailStatusWorker(
-                    dao = emailDao, peerEmailStatusUpdate = params.peerEmailStatusUpdate,
-                    fileDao = fileDao, publishFn = flushResults)
+            is EventRequest.UpdatePeerUnsendEmailStatus -> UpdatePeerUnsendEmailStatusWorker(
+                    dao = emailDao, peerUnsendEmailStatusUpdate = params.peerUnsendEmailStatusUpdate,
+                    fileDao = fileDao, publishFn = flushResults, activeAccount = activeAccount,
+                    httpClient = httpClient, eventId = params.eventId)
+            is EventRequest.UpdatePeerReadEmailStatus -> UpdatePeerReadStatusWorker(
+                    dao = emailDao, peerReadEmailStatusUpdate = params.peerReadEmailStatusUpdate,
+                    publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
+                    activeAccount = activeAccount)
+            is EventRequest.UpdatePeerReadThreadStatus -> UpdatePeerReadThreadStatusWorker(
+                    dao = emailDao, peerReadThreadStatusUpdate = params.peerReadThreadStatusUpdate,
+                    publishFn = flushResults, activeAccount = activeAccount, httpClient = httpClient,
+                    eventId = params.eventId)
+            is EventRequest.UpdatePeerEmailDeletedStatus -> UpdatePeerEmailDeletedStatusWorker(
+                    dao = emailDao, peerEmailDeletedStatusUpdate = params.peerEmailDeleted,
+                    publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
+                    activeAccount = activeAccount)
+            is EventRequest.UpdatePeerThreadDeletedStatus -> UpdatePeerThreadDeletedStatusWorker(
+                    dao = emailDao, peerThreadDeletedStatusUpdate = params.peerThreadDeleted,
+                    publishFn = flushResults, activeAccount = activeAccount, httpClient = httpClient,
+                    eventId = params.eventId)
+            is EventRequest.UpdatePeerEmailLabelsChangedStatus -> UpdatePeerEmailLabelsChangedStatusWorker(
+                    dao = emailDao, peerEmailLabelsChangedStatusUpdate = params.peerEmailLabelsChanged,
+                    emailLabelDao = emailLabelDao, labelDao = labelDao,
+                    publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
+                    activeAccount = activeAccount)
+            is EventRequest.UpdatePeerThreadLabelsChangedStatus -> UpdatePeerThreadLabelsChangedStatusWorker(
+                    dao = emailDao, peerThreadLabelsChangedStatusUpdate = params.peerThreadsLabelChanged,
+                    publishFn = flushResults, labelDao = labelDao, emailLabelDao = emailLabelDao,
+                    activeAccount = activeAccount, httpClient = httpClient, eventId = params.eventId)
+            is EventRequest.UpdatePeerLabelCreatedStatus -> UpdatePeerLabelCreatedStatusWorker(
+                    labelDao = labelDao, peerLabelCreatedStatusUpdate = params.peerLabelCreated,
+                    publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
+                    activeAccount = activeAccount)
+            is EventRequest.UpdatePeerUsernameChangedStatus -> UpdatePeerUsernameChangedStatusWorker(
+                    contactDao = contactDao, peerUsernameChangedStatusUpdate = params.peerUsernameChanged,
+                    publishFn = flushResults, accountDao = accountDao, activeAccount = activeAccount,
+                    httpClient = httpClient, eventId = params.eventId)
         }
     }
 }

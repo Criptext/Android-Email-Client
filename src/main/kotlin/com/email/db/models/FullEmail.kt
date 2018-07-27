@@ -15,5 +15,6 @@ data class FullEmail(
         val fileKey: String?) {
 
     var viewOpen = false
+    var isUnsending = false
 
 }

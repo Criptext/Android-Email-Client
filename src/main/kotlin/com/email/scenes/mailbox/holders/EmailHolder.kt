@@ -61,6 +61,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             previewView.text = previewText
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.unsent_content))
         }else {
+            previewView.setTextColor(ContextCompat.getColor(view.context, R.color.black))
             previewView.text = emailPreview.bodyPreview
         }
 

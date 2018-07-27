@@ -25,7 +25,8 @@ object WebSocketSingleton {
                 contactDao = appDB.contactDao(), feedItemDao = appDB.feedDao(), fileDao = appDB.fileDao(),
                 emailInsertionAPIClient = EmailInsertionAPIClient(HttpClient.Default(), activeAccount.jwt),
                 signalClient = SignalClient.Default(SignalStoreCriptext(appDB)),
-                activeAccount = activeAccount)
+                activeAccount = activeAccount, emailLabelDao = appDB.emailLabelDao(), labelDao = appDB.labelDao(),
+                accountDao = appDB.accountDao(), httpClient = HttpClient.Default())
 
         INSTANCE = WebSocketController(
                 NVWebSocketClient(), activeAccount, dataSource)

@@ -1,0 +1,5 @@
+package com.email.websocket.data
+
+import com.email.api.models.PeerEmailLabelsChangedStatusUpdate
+
+data class EmailChangedLabelsPeerStatusUpdate(val peerEmailLabelsChangedStatusUpdate: PeerEmailLabelsChangedStatusUpdate)

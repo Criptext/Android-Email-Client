@@ -1,35 +1,31 @@
 package com.email.scenes.emaildetail
 
 import android.Manifest
-import com.email.api.models.TrackingUpdate
+import android.content.pm.PackageManager
+import com.email.*
+import com.email.api.models.*
+import com.email.bgworker.BackgroundWorkManager
 import com.email.db.DeliveryTypes
-import com.email.db.models.ActiveAccount
-import com.email.db.models.Email
-import com.email.db.models.FullEmail
-import com.email.db.models.Label
+import com.email.db.models.*
 import com.email.scenes.ActivityMessage
 import com.email.scenes.SceneController
+import com.email.scenes.composer.data.ComposerType
 import com.email.scenes.emaildetail.data.EmailDetailRequest
 import com.email.scenes.emaildetail.data.EmailDetailResult
+import com.email.scenes.emaildetail.ui.EmailDetailUIObserver
 import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.scenes.label_chooser.LabelDataHandler
 import com.email.scenes.label_chooser.SelectedLabels
+import com.email.scenes.label_chooser.data.LabelWrapper
+import com.email.scenes.mailbox.OnDeleteEmailListener
 import com.email.scenes.mailbox.OnDeleteThreadListener
 import com.email.scenes.mailbox.OnMoveThreadsListener
 import com.email.scenes.params.ComposerParams
 import com.email.scenes.params.MailboxParams
 import com.email.utils.KeyboardManager
-import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
-import android.content.pm.PackageManager
-import com.email.*
-import com.email.bgworker.BackgroundWorkManager
-import com.email.db.models.FileDetail
-import com.email.scenes.composer.data.ComposerType
-import com.email.scenes.emaildetail.ui.EmailDetailUIObserver
-import com.email.scenes.label_chooser.data.LabelWrapper
 import com.email.utils.file.FileUtils
-
+import com.email.utils.virtuallist.VirtualList
 import com.email.websocket.WebSocketEventListener
 import com.email.websocket.WebSocketEventPublisher
 
@@ -144,16 +140,21 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onUnsendEmail(result: EmailDetailResult.UnsendFullEmailFromEmailId) {
         when (result) {
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
+                if(result.position > -1){
+                    model.emails[result.position].isUnsending = false
+                    scene.notifyFullEmailChanged(result.position)
+                }
                 setEmailAtPositionAsUnsend(result.position)
-                scene.onUnsendProgressEnd(result.position)
             }
 
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
+                if(result.position > -1){
+                    model.emails[result.position].isUnsending = false
+                    scene.notifyFullEmailChanged(result.position)
+                }
                 scene.showError(result.message)
-                scene.onUnsendProgressEnd(result.position)
             }
         }
-
     }
 
     private fun setEmailAtPositionAsUnsend(position: Int) {
@@ -228,6 +229,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
+    private val onDeleteEmailListener = object : OnDeleteEmailListener {
+        override fun onDeleteConfirmed(fullEmail: FullEmail) {
+            moveEmail(fullEmail, null)
+        }
+    }
+
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
 
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
@@ -246,7 +253,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
                     position = position,
                     emailId = fullEmail.email.id)
-
+            fullEmail.isUnsending = true
+            scene.notifyFullEmailChanged(position)
             dataSource.submitRequest(req)
         }
         override fun onForwardBtnClicked() {
@@ -298,7 +306,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
-            moveEmail(fullEmail, SecureEmail.LABEL_TRASH)
+            if(!fullEmail.labels.contains(Label.defaultItems.trash))
+                moveEmail(fullEmail, SecureEmail.LABEL_TRASH)
+            else
+                deleteSelectedEmail4Ever(fullEmail)
         }
 
         override fun onSpamOptionSelected(fullEmail: FullEmail, position: Int) {
@@ -440,7 +451,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
 
-    fun moveEmail(fullEmail: FullEmail, chosenLabel: String){
+    fun moveEmail(fullEmail: FullEmail, chosenLabel: String?){
 
         val req = EmailDetailRequest.MoveEmail(
                 emailId = fullEmail.email.id,
@@ -475,6 +486,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         scene.showDialogDeleteThread(onDeleteThreadListener)
     }
 
+    private fun deleteSelectedEmail4Ever(fullEmail: FullEmail) {
+        scene.showDialogDeleteEmail(onDeleteEmailListener, fullEmail)
+    }
+
     override val menuResourceId: Int?
         get() = when {
             model.currentLabel == Label.defaultItems.draft -> R.menu.mailbox_menu_multi_mode_read_draft
@@ -500,8 +515,37 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
+
+        }
+
+        override fun onNewPeerEmailLabelsChangedUpdate(update: PeerEmailLabelsChangedStatusUpdate) {
+            scene.notifyFullEmailListChanged()
+        }
+
+        override fun onNewPeerThreadLabelsChangedUpdate(update: PeerThreadLabelsChangedStatusUpdate) {
+            scene.notifyFullEmailListChanged()
+        }
+
+        override fun onNewPeerUsernameChangedUpdate(update: PeerUsernameChangedStatusUpdate) {
+
+        }
+
+        override fun onNewPeerThreadDeletedUpdate(update: PeerThreadDeletedStatusUpdate) {
+            scene.notifyFullEmailListChanged()
+        }
+
+        override fun onNewPeerUnsendEmailUpdate(emailId: Long, update: PeerUnsendEmailStatusUpdate) {
+            val position = findEmailPositionByEmailId(emailId)
+            scene.notifyFullEmailChanged(position)
+        }
+
+        override fun onNewPeerEmailDeletedUpdate(emailIds: List<Long>, update: PeerEmailDeletedStatusUpdate) {
+            scene.notifyFullEmailListChanged()
+        }
 
         override fun onNewEmail(email: Email) {
+
         }
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
@@ -512,6 +556,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun onError(uiMessage: UIMessage) {
             scene.showError(uiMessage)
+        }
+
+        override fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate) {
+            scene.notifyFullEmailListChanged()
+        }
+
+        override fun onNewPeerReadThreadUpdate(update: PeerReadThreadStatusUpdate) {
+            scene.notifyFullEmailListChanged()
         }
     }
 }

@@ -41,6 +41,7 @@
     <string name="edit">Edit</string>
     <string name="archive">Archive</string>
     <string name="delete">Delete</string>
+    <string name="delete_permanent">Delete Permanently</string>
     <string name="forward">Forward</string>
     <string name="unsend">Unsend</string>
     <string name="mailbox_add_labels">Add labels</string>
@@ -198,6 +199,7 @@
     <string name="not_registered">Not registered?</string>
     <string name="recover_email_warning_content_start">You did not set a Recovery Email\nso account recovery is impossible\nif you forget your password</string>
     <string name="delete_thread_warning">Are you sure you want to delete the selected thread(s) PERMANENTLY?</string>
+    <string name="delete_email_warning">Are you sure you want to delete this email PERMANENTLY?</string>
     <string name="recover_email_warning_content_end">Proceed without recovery email?</string>
     <string name="sign_up_terms_and_conditions_start">I have read and agreed with the</string>
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>

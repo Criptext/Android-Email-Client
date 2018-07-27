@@ -21,10 +21,7 @@ import com.email.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.email.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.email.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.email.scenes.label_chooser.LabelDataHandler
-import com.email.scenes.mailbox.DeleteThreadDialog
-import com.email.scenes.mailbox.MoveToDialog
-import com.email.scenes.mailbox.OnDeleteThreadListener
-import com.email.scenes.mailbox.OnMoveThreadsListener
+import com.email.scenes.mailbox.*
 import com.email.utils.EmailThreadValidator
 import com.email.utils.virtuallist.VirtualList
 import com.email.utils.UIMessage
@@ -50,13 +47,13 @@ interface EmailDetailScene {
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
+    fun showDialogDeleteEmail(onDeleteEmailListener: OnDeleteEmailListener, fullEmail: FullEmail)
     fun onFetchedSelectedLabels(
             selectedLabels: List<Label>,
             allLabels: List<Label>)
 
     fun onDecryptedBody(decryptedText: String)
     fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
-    fun onUnsendProgressEnd(emailPosition: Int)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -70,7 +67,8 @@ interface EmailDetailScene {
 
         private val labelChooserDialog = LabelChooserDialog(context, emailDetailView)
         private val moveToDialog = MoveToDialog(context)
-        private val deleteDialog = DeleteThreadDialog(context)
+        private val deleteThreadDialog = DeleteThreadDialog(context)
+        private val deleteEmailDialog = DeleteEmailDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -175,18 +173,17 @@ interface EmailDetailScene {
         }
 
         override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {
-            deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
+            deleteThreadDialog.showDeleteThreadDialog(onDeleteThreadListener)
+        }
+
+        override fun showDialogDeleteEmail(onDeleteEmailListener: OnDeleteEmailListener, fullEmail: FullEmail) {
+            deleteEmailDialog.showDeleteEmailDialog(onDeleteEmailListener, fullEmail)
         }
 
         override fun onDecryptedBody(decryptedText: String) {
             
         }
 
-        override fun onUnsendProgressEnd(emailPosition: Int) {
-            val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
-                    as? FullEmailHolder ?: return
-            holder.onUnsendProgressEnd()
-        }
 
         override fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int) {
             val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)

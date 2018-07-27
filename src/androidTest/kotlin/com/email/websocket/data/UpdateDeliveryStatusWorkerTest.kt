@@ -40,7 +40,7 @@ class UpdateDeliveryStatusWorkerTest {
     private fun newWorker(trackingUpdate: TrackingUpdate): UpdateDeliveryStatusWorker =
             UpdateDeliveryStatusWorker(dao = db.emailDao(), feedDao = db.feedDao(),
                     contactDao = db.contactDao(), publishFn = {},
-                    trackingUpdate = trackingUpdate)
+                    trackingUpdate = trackingUpdate, fileDao = db.fileDao())
 
 
     @Test

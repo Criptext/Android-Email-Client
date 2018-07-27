@@ -3,6 +3,7 @@ package com.email.scenes.settings.signature
 import android.view.ViewGroup
 import com.email.BaseActivity
 import com.email.R
+import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
@@ -25,6 +26,8 @@ class SignatureActivity: BaseActivity(){
         val db = SettingsLocalDB(appDB.labelDao(), appDB.accountDao(), appDB.contactDao())
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
+                httpClient = HttpClient.Default(),
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 runner = AsyncTaskWorkRunner())
         return SignatureController(
                 model = model,

@@ -3,6 +3,7 @@ package com.email.scenes.settings
 import android.view.ViewGroup
 import com.email.BaseActivity
 import com.email.R
+import com.email.api.HttpClient
 import com.email.bgworker.AsyncTaskWorkRunner
 import com.email.db.AppDatabase
 import com.email.db.KeyValueStorage
@@ -25,6 +26,8 @@ class SettingsActivity: BaseActivity(){
         val db = SettingsLocalDB(appDB.labelDao(), appDB.accountDao(), appDB.contactDao())
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                httpClient = HttpClient.Default(),
                 runner = AsyncTaskWorkRunner())
         return SettingsController(
                 model = model,

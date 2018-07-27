@@ -1,12 +1,16 @@
 package com.email.scenes.settings.data
 
+import com.email.api.HttpClient
 import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.BackgroundWorker
 import com.email.bgworker.WorkRunner
 import com.email.db.SettingsLocalDB
+import com.email.db.models.ActiveAccount
 
 class SettingsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
+        private val activeAccount: ActiveAccount,
+        private val httpClient: HttpClient,
         override val runner: WorkRunner)
     : BackgroundWorkManager<SettingsRequest, SettingsResult>(){
 
@@ -18,6 +22,8 @@ class SettingsDataSource(
                     fullName = params.fullName,
                     recipientId = params.recipientId,
                     settingsLocalDB = settingsLocalDB,
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.GetCustomLabels -> GetCustomLabelsWorker(
@@ -27,6 +33,8 @@ class SettingsDataSource(
             is SettingsRequest.CreateCustomLabel -> CreateCustomLabelWorker(
                     labelName = params.labelName,
                     settingsLocalDB = settingsLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.ChangeVisibilityLabel -> ChangeVisibilityLabelWorker(

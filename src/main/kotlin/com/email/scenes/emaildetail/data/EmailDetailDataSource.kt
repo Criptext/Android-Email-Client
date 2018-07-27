@@ -82,6 +82,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
                     currentLabel = params.currentLabel,
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -91,6 +93,9 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     db = emailDetailLocalDB,
                     emailId = params.emailId,
                     currentLabel = params.currentLabel,
+                    activeAccount = activeAccount,
+                    emailDao = emailDao,
+                    httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result)
                     })

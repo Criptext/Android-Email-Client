@@ -68,7 +68,8 @@ class UpdateMailboxWorkerTest {
                     emailDao = db.emailDao(), dao = emailInsertionDao, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, contactDao = db.contactDao(),
-                    feedItemDao = db.feedDao())
+                    feedItemDao = db.feedDao(), fileDao = db.fileDao(), emailLabelDao = db.emailLabelDao(),
+                    accountDao = db.accountDao(), labelDao = db.labelDao())
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
