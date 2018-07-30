@@ -53,7 +53,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@jigl.com")
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email")
+                subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)
@@ -89,7 +89,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@jigl.com")
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Finished Draft", body = "Hello, I have finished my draft")
+                subject = "Test Finished Draft", body = "Hello, I have finished my draft", passwordForNonCriptextUsers = null)
 
         val worker = newWorker(emailId = draftId, threadId = "__MESSAGE_ID__", onlySave = false,
                 inputData = inputData, fileKey = null)
@@ -120,7 +120,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@jigl.com")
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email")
+                subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)

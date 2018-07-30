@@ -6,6 +6,7 @@ import com.email.bgworker.BackgroundWorkManager
 import com.email.bgworker.WorkRunner
 import com.email.db.MailboxLocalDB
 import com.email.db.dao.*
+import com.email.db.dao.signal.RawIdentityKeyDao
 import com.email.db.dao.signal.RawSessionDao
 import com.email.db.models.ActiveAccount
 import com.email.signal.SignalClient
@@ -27,6 +28,7 @@ class MailboxDataSource(
         private val emailContactJoinDao: EmailContactJoinDao,
         private val feedItemDao: FeedItemDao,
         private val rawSessionDao: RawSessionDao,
+        private val rawIdentityKeyDao: RawIdentityKeyDao,
         private val emailInsertionDao: EmailInsertionDao,
         private val httpClient: HttpClient,
         private val mailboxLocalDB: MailboxLocalDB )
@@ -70,6 +72,7 @@ class MailboxDataSource(
                     signalClient = signalClient,
                     activeAccount = activeAccount,
                     rawSessionDao = rawSessionDao,
+                    rawIdentityKeyDao = rawIdentityKeyDao,
                     db = mailboxLocalDB,
                     httpClient = httpClient,
                     emailId = params.emailId,

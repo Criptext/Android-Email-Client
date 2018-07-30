@@ -16,11 +16,8 @@ import com.email.utils.UIMessage
 import android.content.pm.PackageManager
 import com.email.BaseActivity
 import com.email.aes.AESUtil
-import android.util.Base64
 import com.email.scenes.params.EmailDetailParams
 import com.email.validation.FormInputState
-import java.nio.charset.Charset
-import java.util.*
 
 
 /**
@@ -53,15 +50,15 @@ class ComposerController(private val model: ComposerModel,
             if(isChecked)
                 checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
             else {
-                val data = scene.getDataInputByUser()
-                data.passwordForNonCriptextUsers = null
+                model.passwordForNonCriptextUsers = null
+                scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
             }
         }
 
         override fun onConfirmPasswordChangedListener(text: String) {
             model.confirmPasswordText = text
-            val data = scene.getDataInputByUser()
-            data.passwordForNonCriptextUsers = text
+            model.passwordForNonCriptextUsers = text
+            scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
             checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
         }
 
@@ -305,8 +302,8 @@ class ComposerController(private val model: ComposerModel,
     private fun generateEmailFileKey(){
         if(model.fileKey != null)  return
         model.fileKey = if(model.type is ComposerType.Empty) {
-            val aesKey = AESUtil.generateSalt()
-            val aesIV = AESUtil.generateSalt()
+            val aesKey = AESUtil.generateSecureRandomBytes()
+            val aesIV = AESUtil.generateSecureRandomBytes()
 
             aesKey.plus(":".plus(aesIV))
         } else null

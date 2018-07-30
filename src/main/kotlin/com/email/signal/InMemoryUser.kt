@@ -11,7 +11,7 @@ import org.whispersystems.libsignal.state.impl.InMemorySignalProtocolStore
  * Created by gabriel on 3/17/18.
  */
 class InMemoryUser(generator: SignalKeyGenerator, recipientId: String, deviceId: Int)
-    : TestUser(generator, recipientId, deviceId) {
+    : DummyUser(generator, recipientId, deviceId) {
 
     override val store: SignalProtocolStore =
         createStoreFromRegistrationBundle(registrationBundles)

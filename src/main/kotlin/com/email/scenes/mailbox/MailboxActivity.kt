@@ -118,6 +118,7 @@ class MailboxActivity : BaseActivity() {
                 feedItemDao = appDB.feedDao(),
                 contactDao = appDB.contactDao(),
                 rawSessionDao = appDB.rawSessionDao(),
+                rawIdentityKeyDao = appDB.rawIdentityKeyDao(),
                 httpClient = HttpClient.Default(),
                 emailInsertionDao = appDB.emailInsertionDao(),
                 mailboxLocalDB = db,

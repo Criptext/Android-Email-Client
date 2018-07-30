@@ -27,7 +27,7 @@ class LoadInitialDataWorker(
 
     private fun convertDraftToInputData(fullEmail: FullEmail): ComposerInputData {
         return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
-                body = fullEmail.email.content, subject = fullEmail.email.subject)
+                body = fullEmail.email.content, subject = fullEmail.email.subject, passwordForNonCriptextUsers = null)
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
@@ -55,7 +55,7 @@ class LoadInitialDataWorker(
                             senderName = fullEmail.from.name,
                             signature = signature)
         return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
-                body = body, subject = subject)
+                body = body, subject = subject, passwordForNonCriptextUsers = null)
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
@@ -65,7 +65,7 @@ class LoadInitialDataWorker(
         val subject = (if(fullEmail.email.subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())) "" else "FW: ") +
                 fullEmail.email.subject
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
-                body = body, subject = subject)
+                body = body, subject = subject, passwordForNonCriptextUsers = null)
 
     }
 

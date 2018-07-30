@@ -19,8 +19,8 @@ class EncryptBinaryFileWithAESTest {
 
     @Before
     fun setup() {
-        val key = AESUtil.generateSalt()
-        val iv = AESUtil.generateSalt()
+        val key = AESUtil.generateSecureRandomBytes()
+        val iv = AESUtil.generateSecureRandomBytes()
         aesClient = AESUtil(key.plus(":".plus(iv)))
     }
 

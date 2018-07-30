@@ -45,11 +45,14 @@ interface ComposerScene {
     fun enableSendButtonOnDialog()
     fun setPasswordError(message: UIMessage?)
     fun togglePasswordSuccess(show: Boolean)
+    fun setPasswordForNonCriptextFromDialog(password: String?)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
         private val ctx = view.context
         private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
+
+        private var passwordForNonCriptextUsersFromDialog: String? = null
 
         private val toInput: ContactCompletionView by lazy({
             view.findViewById<ContactCompletionView>(INPUT_TO_ID)
@@ -171,7 +174,7 @@ interface ComposerScene {
         override fun getDataInputByUser(): ComposerInputData {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects,
                     bcc = bccInput.objects, subject = subjectEditText.text.toString(),
-                    body = bodyEditText.text)
+                    body = bodyEditText.text, passwordForNonCriptextUsers = passwordForNonCriptextUsersFromDialog)
         }
 
         override fun showError(message: UIMessage) {
@@ -263,6 +266,10 @@ interface ComposerScene {
 
         override fun togglePasswordSuccess(show: Boolean) {
             nonCriptextEmailSendDialog.togglePasswordSuccess(show)
+        }
+
+        override fun setPasswordForNonCriptextFromDialog(password: String?) {
+            passwordForNonCriptextUsersFromDialog = password
         }
     }
 
