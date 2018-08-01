@@ -4,7 +4,9 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.email.androidtest.TestActivity
 import com.email.androidtest.TestDatabase
+import com.email.api.HttpClient
 import com.email.db.SettingsLocalDB
+import com.email.db.models.ActiveAccount
 import com.email.db.models.Label
 import io.mockk.mockk
 import org.amshove.kluent.shouldBe
@@ -23,6 +25,8 @@ class CreateCustomLabelWorkerTest{
 
     private lateinit var db: TestDatabase
     private lateinit var settingsLocalDB: SettingsLocalDB
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
     @Before
     fun setup() {
@@ -48,6 +52,8 @@ class CreateCustomLabelWorkerTest{
             CreateCustomLabelWorker(
                     labelName = labelName,
                     settingsLocalDB = settingsLocalDB,
+                    activeAccount = activeAccount,
+                    httpClient = mockk(),
                     publishFn = {})
 
 }

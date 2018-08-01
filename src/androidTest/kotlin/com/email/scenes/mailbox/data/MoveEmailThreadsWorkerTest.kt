@@ -23,6 +23,8 @@ class MoveEmailThreadsWorkerTest{
 
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
     @Before
     fun setup() {
@@ -42,7 +44,7 @@ class MoveEmailThreadsWorkerTest{
                     fromContact = fromContact, messageId = "gabriel/1/$it",
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                     subject = "Test #$it", unread = true, metadataKey = it + 100L,
-                    status = DeliveryTypes.NONE)
+                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds")
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
@@ -95,6 +97,8 @@ class MoveEmailThreadsWorkerTest{
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
                     selectedThreadIds = selectedThreadIds,
+                    httpClient = mockk(),
+                    activeAccount = activeAccount,
                     publishFn = {})
 
 }

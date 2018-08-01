@@ -91,7 +91,7 @@ sealed class MailboxResult {
 
     sealed class UpdateUnreadStatus: MailboxResult(){
         class Success: UpdateUnreadStatus()
-        class Failure: UpdateUnreadStatus()
+        class Failure(val message: UIMessage): UpdateUnreadStatus()
     }
 
     sealed class LinkDevice: MailboxResult() {

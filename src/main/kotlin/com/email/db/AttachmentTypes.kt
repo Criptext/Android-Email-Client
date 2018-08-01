@@ -8,7 +8,7 @@ import com.email.R
 
 
 enum class AttachmentTypes {
-    EXCEL, WORD, PDF, PPT, IMAGE, DEFAULT;
+    EXCEL, WORD, PDF, PPT, IMAGE, UNSEND, DEFAULT;
 
     fun getDrawableImage(): Int{
         return when(this){
@@ -17,6 +17,7 @@ enum class AttachmentTypes {
             PDF -> R.drawable.pdf
             PPT -> R.drawable.ppt
             IMAGE -> R.drawable.img
+            UNSEND -> R.drawable.unsent
             DEFAULT -> R.drawable.generic
         }
     }

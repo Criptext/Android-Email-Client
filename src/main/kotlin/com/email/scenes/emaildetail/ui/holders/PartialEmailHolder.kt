@@ -47,7 +47,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             bodyView.setTextColor(ContextCompat.getColor(
                     view.context, R.color.unsent_content))
             rootView.background = ContextCompat.getDrawable(
-                    view.context, R.drawable.background_cardview_unsend)
+                    view.context, R.drawable.background_cardview_unsend_partial)
         }
         else {
             bodyView.alpha = 1.toFloat()

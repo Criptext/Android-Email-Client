@@ -60,6 +60,7 @@ class SaveEmailWorker(
                 cc = composerInputData.cc.toCSVEmails(),
                 bcc = composerInputData.bcc.toCSVEmails(),
                 date = DateUtils.printDateWithServerFormat(Date()),
+                unsentDate = DateUtils.printDateWithServerFormat(Date()),
                 metadataKey = System.currentTimeMillis(), // ugly hack because we don't have draft table
                 fromContact = sender,
                 unread = false,

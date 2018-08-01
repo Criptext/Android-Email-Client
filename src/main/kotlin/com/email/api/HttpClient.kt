@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit
 
 interface HttpClient {
     fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
+    fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
     fun post(path: String, authToken: String?, body: JSONObject): String
+    fun put(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
     fun getFile(path: String, authToken: String?): ByteArray
 
@@ -47,6 +49,15 @@ interface HttpClient {
                     .addAuthorizationHeader(authToken)
                     .url(url)
                     .post(body)
+                    .build()
+        }
+
+        private fun putJSON(url: String, authToken: String?, json: JSONObject): Request {
+            val body = RequestBody.create(JSON, json.toString())
+            return Request.Builder()
+                    .addAuthorizationHeader(authToken)
+                    .url(url)
+                    .put(body)
                     .build()
         }
 
@@ -87,6 +98,27 @@ interface HttpClient {
                     .build()
         }
 
+        private fun putMultipartFormData(url: String, authToken: String?,
+                                          body: Map<String, MultipartFormItem>): Request {
+            val multipartBody =
+                    body.toList().fold(MultipartBody.Builder(), { builder, (name, item) ->
+                        when (item) {
+                            is MultipartFormItem.StringItem ->
+                                builder.addFormDataPart(name, item.value)
+                            is MultipartFormItem.ByteArrayItem ->
+                                builder.addByteItem(name, item)
+                            is MultipartFormItem.FileItem ->
+                                builder.addFileItem(name, item)
+                        }
+                    }).build()
+
+            return Request.Builder()
+                    .addAuthorizationHeader(authToken)
+                    .url(url)
+                    .put(multipartBody)
+                    .build()
+        }
+
         private fun getUrl(url: String, authToken: String?): Request {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
@@ -100,8 +132,18 @@ interface HttpClient {
             return ApiCall.executeRequest(client, request)
         }
 
+        override fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String {
+            val request = postMultipartFormData(baseUrl + path, authToken, body)
+            return ApiCall.executeRequest(client, request)
+        }
+
         override fun post(path: String, authToken: String?, body: JSONObject): String {
             val request = postJSON(baseUrl + path, authToken, body)
+            return ApiCall.executeRequest(client, request)
+        }
+
+        override fun put(path: String, authToken: String?, body: JSONObject): String {
+            val request = putJSON(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 

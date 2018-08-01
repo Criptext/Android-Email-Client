@@ -1,0 +1,5 @@
+package com.email.websocket.data
+
+import com.email.api.models.PeerUsernameChangedStatusUpdate
+
+data class UsernameChangedPeerStatusUpdate(val peerUsernameChangedStatusUpdate: PeerUsernameChangedStatusUpdate)

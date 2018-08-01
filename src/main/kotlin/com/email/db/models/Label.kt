@@ -2,6 +2,7 @@ package com.email.db.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.email.SecureEmail
 import com.email.db.LabelTypes
@@ -10,7 +11,8 @@ import com.email.db.LabelTypes
  * Created by sebas on 1/24/18.
  */
 
-@Entity(tableName = "label")
+@Entity(tableName = "label",
+        indices = [(Index(value = "text", unique = true))])
 data class Label (
         @PrimaryKey(autoGenerate = true)
         var id: Long,

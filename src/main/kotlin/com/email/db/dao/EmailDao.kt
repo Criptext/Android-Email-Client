@@ -17,6 +17,18 @@ import java.util.*
     @Query("SELECT * FROM email")
     fun getAll() : List<Email>
 
+    @Query("""SELECT * FROM email
+                WHERE metadataKey in (:metadataKeys)""")
+    fun getAllEmailsByMetadataKey(metadataKeys: List<Long>) : List<Email>
+
+    @Query("""SELECT * FROM email
+                WHERE metadataKey in (:metadataKey)""")
+    fun getEmailByMetadataKey(metadataKey: Long) : Email
+
+    @Query("""SELECT * FROM email
+                WHERE id in (:emailIds)""")
+    fun getAllEmailsbyId(emailIds: List<Long>) : List<Email>
+
     @Query("""SELECT * from email e
             WHERE date=(SELECT MAX(date) FROM email d
             WHERE d.threadId=e.threadId) GROUP BY threadId
@@ -98,6 +110,11 @@ import java.util.*
     fun toggleRead(ids: List<Long>, unread: Boolean)
 
     @Query("""UPDATE email
+            SET unread=:unread
+            where threadId in (:threadIds)""")
+    fun toggleReadByThreadId(threadIds: List<String>, unread: Boolean)
+
+    @Query("""UPDATE email
             SET threadId=:threadId,
             messageId=:messageId,
             metadataKey=:metadataKey,
@@ -118,6 +135,10 @@ import java.util.*
             ORDER BY date ASC""")
     fun getEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
 
+    @Query("""SELECT * FROM email
+            WHERE threadId in (:threadIds)""")
+    fun getEmailsFromThreadIds(threadIds: List<String>): List<Email>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(email: Email): Long
 
@@ -128,12 +149,32 @@ import java.util.*
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
+            WHERE metadataKey=:metadataKey""")
+    fun changeDeliveryTypeByMetadataKey(metadataKey: Long, deliveryType: DeliveryTypes)
+
+    @Query("""UPDATE email
+            SET content=:content,
+            bodyPreview=:preview,
+            unsentDate=:unsentDate
+            WHERE id=:id""")
+    fun unsendEmailById(id: Long, content: String, preview: String, unsentDate: Date)
+
+    @Query("""UPDATE email
+            SET content=:content,
+            bodyPreview=:preview,
+            unsentDate=:unsentDate
+            WHERE metadataKey=:metadataKey""")
+    fun unsendEmailByMetadataKey(metadataKey: Long, content: String, preview: String, unsentDate: Date)
+
+
+    @Query("""UPDATE email
+            SET delivered=:deliveryType
             WHERE id in (:ids)""")
     fun changeDeliveryType(ids: List<Long>, deliveryType: DeliveryTypes)
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
-            WHERE metadataKey in (:keys)""")
+            WHERE metadataKey in (:keys) AND delivered != 2""")
     fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes)
 
     @Query("""SELECT *

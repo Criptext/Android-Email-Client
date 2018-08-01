@@ -33,6 +33,7 @@ class MailboxWebSocketTest {
     private lateinit var emailDao: EmailDao
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var contactDao: ContactDao
+    private lateinit var accountDao: AccountDao
     private lateinit var fileDao: FileDao
     private lateinit var fileKeyDao: FileKeyDao
     private lateinit var labelDao: LabelDao
@@ -67,6 +68,7 @@ class MailboxWebSocketTest {
         labelDao = mockk()
         emailLabelDao = mockk()
         emailCOntactDao = mockk()
+        accountDao = mockk()
 
         emailInsertionDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -98,7 +100,8 @@ class MailboxWebSocketTest {
                 fileKeyDao = fileKeyDao,
                 labelDao = labelDao,
                 emailLabelDao = emailLabelDao,
-                emailContactJoinDao = emailCOntactDao
+                emailContactJoinDao = emailCOntactDao,
+                accountDao = accountDao
         )
 
         feedController = mockk(relaxed = true)
@@ -160,24 +163,4 @@ class MailboxWebSocketTest {
         model.threads.size `should be` 20
     }
 
-    @Test
-    fun `When new email arrives, do nothing if mailbox is NOT on inbox`() {
-        controller.onStart(null)
-
-        // skip all initialization
-        runner.discardPendingWork()
-
-        // change folder
-        model.selectedLabel = Label.defaultItems.sent
-
-        // create new email to "send" through web socket
-        val newEmail = MailboxTestUtils.createEmailThreads(1).first().latestEmail.email
-
-        // trigger socket event
-        webSocketListenerSlot.captured.onNewEmail(newEmail)
-
-
-        // assert that there is nothing left  to do
-        runner.assertPendingWork(emptyList())
-    }
 }

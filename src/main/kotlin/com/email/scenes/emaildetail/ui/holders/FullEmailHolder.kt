@@ -23,10 +23,11 @@ import com.email.db.models.FullEmail
 import com.email.db.models.Label
 import com.email.scenes.composer.ui.holders.AttachmentViewObserver
 import com.email.scenes.emaildetail.WebviewJavascriptInterface
-import com.email.scenes.emaildetail.ui.*
+import com.email.scenes.emaildetail.ui.EmailContactInfoPopup
+import com.email.scenes.emaildetail.ui.FileListAdapter
+import com.email.scenes.emaildetail.ui.FullEmailListAdapter
 import com.email.utils.*
 import com.email.utils.ui.ZoomLayout
-import com.github.ybq.android.spinkit.SpinKitView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
@@ -39,6 +40,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private val context = view.context
     private val layout : FrameLayout
+    private val rootView : LinearLayout
     private val continueDraftView: ImageView
     private val replyView: ImageView
     private val threePointsView: ImageView
@@ -53,6 +55,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val webViewLoader: ProgressBar
     private val attachmentsRecyclerView: RecyclerView
     private val leftImageView: CircleImageView
+    private val unsendProgressBar: ProgressBar
 
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -84,6 +87,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
 
         setAttachments(fileDetails, emailListener)
+
     }
 
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
@@ -112,6 +116,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                             position = position,
                             markAsRead = item.itemId == R.id.mark_read)
                 }
+                R.id.unsend -> {
+                    emailListener?.onUnsendEmail(
+                                fullEmail = fullEmail,
+                                position = position)
+                }
                 R.id.delete ->
                     emailListener?.onDeleteOptionSelected(
                             fullEmail = fullEmail,
@@ -134,11 +143,31 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val wrapper = ContextThemeWrapper(context, R.style.email_detail_popup_menu)
         val popupMenu = PopupMenu(wrapper , threePointsView)
 
-    val popuplayout =
-            if (fullEmail.email.unread)
-                R.menu.mail_options_unread_menu
-            else
-                R.menu.mail_options_read_menu
+        val popuplayout = if(fullEmail.email.delivered == DeliveryTypes.NONE || fullEmail.email.delivered == DeliveryTypes.UNSEND) {
+                    if (fullEmail.email.unread) {
+                        if (fullEmail.labels.contains(Label.defaultItems.trash))
+                            R.menu.mail_options_unread_menu_in_trash
+                        else
+                            R.menu.mail_options_unread_menu
+                    }else {
+                        if (fullEmail.labels.contains(Label.defaultItems.trash))
+                            R.menu.mail_options_read_menu_in_trash
+                        else
+                            R.menu.mail_options_read_menu
+                     }
+        }else{
+            if (fullEmail.email.unread) {
+                if (fullEmail.labels.contains(Label.defaultItems.trash))
+                    R.menu.mail_options_unread_menu_sent_in_trash
+                else
+                    R.menu.mail_options_unread_menu_sent
+            }else {
+                if (fullEmail.labels.contains(Label.defaultItems.trash))
+                    R.menu.mail_options_read_menu_sent_in_trash
+                else
+                    R.menu.mail_options_read_menu_sent
+            }
+        }
 
         popupMenu.inflate(popuplayout)
         return popupMenu
@@ -152,8 +181,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             setDefaultBackgroundColors()
         }
         else {
+            rootView.background = ContextCompat.getDrawable(
+                    view.context, R.drawable.background_cardview_unsend)
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml("This content was unsent"), "text/html", "utf-8", "")
+                    changedHeaderHtml("Unsent: " + fullEmail.email.unsentDate.toString()),
+                    "text/html", "utf-8", "")
             deactivateElementsForUnsend()
         }
 
@@ -168,9 +200,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     fullEmail.from.name
                 }
 
-        if(fullEmail.email.delivered != DeliveryTypes.NONE) {
-            //TODO add unsend option in menu
-        }
+        if(fullEmail.isUnsending)
+            unsendProgressBar.visibility = View.VISIBLE
+        else
+            unsendProgressBar.visibility = View.INVISIBLE
 
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
                 fullEmail.from.name,
@@ -304,12 +337,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private fun deactivateElementsForUnsend() {
         bodyContainer.alpha = 0.4.toFloat()
-        bodyContainer.isEnabled = false
     }
 
     private fun setDefaultBackgroundColors() {
         bodyContainer.alpha = 1.toFloat()
         bodyContainer.isEnabled = true
+
     }
 
     fun updateAttachmentProgress(attachmentPosition: Int){
@@ -330,9 +363,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         zoomLayout = view.findViewById(R.id.full_mail_zoom)
         horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
         bodyContainer = view.findViewById(R.id.body_container)
+        rootView = view.findViewById(R.id.cardview)
         webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
         attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
+        unsendProgressBar = view.findViewById(R.id.loadingPanel)
 
         setupWebview()
         horizontalScrollView.isHorizontalScrollBarEnabled = false

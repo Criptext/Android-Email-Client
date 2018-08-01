@@ -39,6 +39,9 @@ interface LabelDao {
             LIMIT 1""")
     fun get(labelName: String): Label
 
+    @Query("""select CAST(COUNT(*) AS BIT) FROM label WHERE text=:labelName""")
+    fun alreadyExists(labelName: String): Boolean
+
     @Query("""SELECT * FROM label
             WHERE text in (:labelNames)""")
     fun get(labelNames: List<String>): List<Label>

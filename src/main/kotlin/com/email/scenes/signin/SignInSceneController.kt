@@ -52,8 +52,10 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
-                    model.state = SignInLayoutState.LoginValidation(username = result.username)
-                    scene.initLayout(model.state, uiObserver)
+                    //This is for when we implement Link Devices.
+//                    model.state = SignInLayoutState.LoginValidation(username = result.username)
+//                    scene.initLayout(model.state, uiObserver)
+                    onAcceptPasswordLogin(result.username)
                 }
                 else{
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))

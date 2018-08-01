@@ -30,7 +30,7 @@ data class EmailMetadata(
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
-                    metadataKey = metadataKey, subject = subject, date = date,
+                    metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
                     fromContact = fromContact, unread = true, status = DeliveryTypes.NONE)
 
     companion object {
@@ -79,6 +79,7 @@ data class EmailMetadata(
         val messageId: String,
         val metadataKey: Long,
         val date: String,
+        val unsentDate: String?,
         val threadId: String,
         val fromContact: Contact,
         val subject: String,

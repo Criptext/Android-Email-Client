@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
+import android.support.annotation.Nullable
 import com.email.db.DeliveryTypes
 import java.util.Date
 
@@ -42,6 +43,10 @@ data class Email(
 
         @ColumnInfo(name = "delivered")
         var delivered : DeliveryTypes,
+
+        @ColumnInfo(name = "unsentDate")
+        @Nullable
+        var unsentDate : Date?,
 
         @ColumnInfo(name = "date")
         var date : Date,

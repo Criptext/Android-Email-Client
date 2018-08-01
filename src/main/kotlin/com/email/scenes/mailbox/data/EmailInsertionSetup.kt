@@ -28,6 +28,9 @@ object EmailInsertionSetup {
             date = DateUtils.getDateFromString(
                     metadata.date,
                     null),
+            unsentDate =  DateUtils.getDateFromString(
+                    metadata.date,
+                    null),
             threadId = metadata.threadId,
             subject = metadata.subject,
             secure = true,
@@ -86,8 +89,8 @@ object EmailInsertionSetup {
                                         decryptedBody: String,
                                         labels: List<Label>,
                                         files: List<CRFile>, fileKey: String?): FullEmail {
-        val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
+        val emailRow = createEmailRow(metadataColumns, decryptedBody)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
         val ccContactsRows = createContactRows(dao, metadataColumns.cc)
         val bccContactsRows = createContactRows(dao, metadataColumns.bcc)
@@ -223,14 +226,16 @@ object EmailInsertionSetup {
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
-        val body = apiClient.getBodyFromEmail(metadata.messageId)
+        val body = apiClient.getBodyFromEmail(metadata.metadataKey)
 
         val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
 
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
         dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns(), decryptedBody, labels,
+                EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
+                if(meAsSender) false else metadata.extractDBColumns().unread, status =
+                if(meAsSender) DeliveryTypes.SENT else metadata.extractDBColumns().status), decryptedBody, labels,
                         metadata.files, decryptedFileKey)
             })
     }

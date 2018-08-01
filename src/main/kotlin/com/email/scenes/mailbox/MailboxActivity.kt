@@ -46,7 +46,7 @@ class MailboxActivity : BaseActivity() {
               val seconds = if (it < 10) "0$it" else it.toString()
               val metadata = EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
                       fromContact = fromContact, messageId = "gabriel/1/$it",
-                      date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
+                      date = "2018-02-21 14:00:$seconds",unsentDate = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                       subject = "Test #$it", unread = true, metadataKey = 1 + 100,
                       status = DeliveryTypes.NONE)
               val decryptedBody = "Hello, this is message #$it"
@@ -115,6 +115,7 @@ class MailboxActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 emailDao = appDB.emailDao(),
+                accountDao = appDB.accountDao(),
                 feedItemDao = appDB.feedDao(),
                 contactDao = appDB.contactDao(),
                 rawSessionDao = appDB.rawSessionDao(),

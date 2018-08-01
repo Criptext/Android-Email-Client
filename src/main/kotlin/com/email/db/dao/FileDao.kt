@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
+import com.email.db.DeliveryTypes
 import com.email.db.models.CRFile
 
 /**
@@ -28,6 +29,11 @@ interface FileDao {
     @Query("""SELECT * FROM file
             WHERE file.emailId=:emailId""")
     fun getAttachmentsFromEmail(emailId: Long) : List<CRFile>
+
+    @Query("""UPDATE file
+            SET status=:status
+            WHERE file.emailId=:emailId""")
+    fun changeFileStatusByEmailid(emailId: Long, status: Int)
 
     @Delete
     fun deleteAll(files: List<CRFile>)

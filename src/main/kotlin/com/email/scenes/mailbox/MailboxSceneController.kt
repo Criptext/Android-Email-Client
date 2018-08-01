@@ -3,8 +3,9 @@ package com.email.scenes.mailbox
 import com.email.IHostActivity
 import com.email.R
 import com.email.SecureEmail
-import com.email.api.models.TrackingUpdate
+import com.email.api.models.*
 import com.email.bgworker.BackgroundWorkManager
+import com.email.db.DeliveryTypes
 import com.email.db.models.ActiveAccount
 import com.email.db.models.Contact
 import com.email.db.models.Email
@@ -562,16 +563,59 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerUsernameChangedUpdate(update: PeerUsernameChangedStatusUpdate) {
+            dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+        }
+
+        override fun onNewPeerEmailLabelsChangedUpdate(update: PeerEmailLabelsChangedStatusUpdate) {
+            updateEmailThreadsLabelsRelations(SelectedLabels())
+            dataSourceController.updateMailbox(model.selectedLabel)
+            observer.onRefreshMails()
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerThreadLabelsChangedUpdate(update: PeerThreadLabelsChangedStatusUpdate) {
+            updateEmailThreadsLabelsRelations(SelectedLabels())
+            dataSourceController.updateMailbox(model.selectedLabel)
+            observer.onRefreshMails()
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerThreadDeletedUpdate(update: PeerThreadDeletedStatusUpdate) {
+            threadListController.removeThreadsById(update.threadIds)
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerUnsendEmailUpdate(emailId: Long, update: PeerUnsendEmailStatusUpdate) {
+            threadListController.changeThreadStatusUnsend(emailId, DeliveryTypes.UNSEND)
+            reloadViewAfterSocketEvent()
+        }
 
         override fun onNewEmail(email: Email) {
-            if (model.selectedLabel == Label.defaultItems.inbox) {
-                // just reset mailbox
-                val req = MailboxRequest.LoadEmailThreads(
-                        label = model.selectedLabel.text,
-                        loadParams = LoadParams.Reset(size = threadsPerPage),
-                        userEmail = activeAccount.userEmail)
-                dataSource.submitRequest(req)
-            }
+            // just reset mailbox
+            val req = MailboxRequest.LoadEmailThreads(
+                    label = model.selectedLabel.text,
+                    loadParams = LoadParams.Reset(size = threadsPerPage),
+                    userEmail = activeAccount.userEmail)
+            dataSource.submitRequest(req)
+
+        }
+
+        override fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate) {
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerEmailDeletedUpdate(emailIds: List<Long>, update: PeerEmailDeletedStatusUpdate) {
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onNewPeerReadThreadUpdate(update: PeerReadThreadStatusUpdate) {
+            threadListController.changeThreadReadStatus(update.threadIds, update.unread)
+            reloadViewAfterSocketEvent()
         }
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
@@ -581,6 +625,12 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onError(uiMessage: UIMessage) {
             scene.showMessage(uiMessage)
+        }
+
+        private fun reloadViewAfterSocketEvent(){
+            reloadMailboxThreads()
+            feedController.reloadFeeds()
+            dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         }
     }
 

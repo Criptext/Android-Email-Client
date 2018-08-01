@@ -49,6 +49,10 @@ interface EmailLabelDao {
         WHERE labelId= :labelId AND emailId in (:emailIds)""")
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
 
+    @Query("""DELETE FROM email_label
+        WHERE labelId in (:labelIds) AND emailId in (:emailIds)""")
+    fun deleteRelationByLabelsAndEmailIds(labelIds: List<Long>, emailIds: List<Long>)
+
     @Query("DELETE from email_label WHERE emailId = :id")
     fun deleteByEmailId(id: Long)
 }
