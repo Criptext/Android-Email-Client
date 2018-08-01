@@ -5,6 +5,16 @@ dependencies:
   cache_directories:
     - ~/.android
   pre:
+    - >    
+       sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
+    - >
+       echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json    
+    - >
+       echo $GSERVICES | base64 --decode > google-services.json
+    - >   
+       sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - >   
+       sudo /opt/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
     - >
       if [[ ! -d "$ANDROID_HOME/sources/android-25" ]]; then
       echo y |
@@ -30,3 +40,4 @@ dependencies:
       echo y |
       android update sdk --all --no-ui
       --filter extra-android-m2repository
+

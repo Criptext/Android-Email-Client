@@ -43,6 +43,7 @@ open class MailboxControllerTest {
 
         virtualListView = mockk(relaxed = true)
         every { scene::virtualListView.get() } returns virtualListView
+        every { host.getIntentExtras()} returns null
 
         controller = MailboxSceneController(
                 model =  model,

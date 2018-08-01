@@ -13,10 +13,12 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
+import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import com.google.firebase.iid.FirebaseInstanceId
 import org.json.JSONException
 
 /**
@@ -32,6 +34,7 @@ class RegisterUserWorker(
         httpClient: HttpClient,
         private val signalKeyGenerator: SignalKeyGenerator,
         private val incompleteAccount: IncompleteAccount,
+        private val messagingInstance: MessagingInstance,
         override val publishFn: (RegisterUser) -> Unit)
     : BackgroundWorker<RegisterUser> {
 
@@ -56,6 +59,8 @@ class RegisterUserWorker(
         return { jwtoken: String ->
             Result.of {
                 val newAccount = incompleteAccount.complete(keyBundle, jwtoken)
+                if(messagingInstance.token != null)
+                    apiClient.putFirebaseToken(messagingInstance.token ?: "", jwtoken)
                 storeAccountTransaction.run(account = newAccount, keyBundle = keyBundle)
             }
 

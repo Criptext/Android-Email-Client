@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
+import android.os.Bundle
 import android.view.Menu
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
@@ -8,11 +9,8 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.EmailMetadata
-import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
-import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
@@ -26,6 +24,9 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.websocket.WebSocketSingleton
+import android.content.Intent
+import com.criptext.mail.push.data.IntentExtrasData
+
 
 /**
  * Created by sebas on 1/30/18.
@@ -81,6 +82,11 @@ class MailboxActivity : BaseActivity() {
         return true
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
     companion object {
 
         private fun initFeedController(appDB: AppDatabase, activity: Activity, mailboxLocalDB: MailboxLocalDB,
@@ -127,7 +133,8 @@ class MailboxActivity : BaseActivity() {
                 fileKeyDao = appDB.fileKeyDao(),
                 labelDao = appDB.labelDao(),
                 emailLabelDao = appDB.emailLabelDao(),
-                emailContactJoinDao = appDB.emailContactDao())
+                emailContactJoinDao = appDB.emailContactDao(),
+                eventLocalDB = EventLocalDB(appDB))
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
 

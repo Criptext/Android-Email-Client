@@ -49,6 +49,11 @@ data class ActiveAccount(val name: String, val recipientId: String,
                     jwt = jwt, signature = signature)
         }
 
+        fun loadFromDB(account: Account): ActiveAccount? {
+            return ActiveAccount(name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
+                    jwt = account.jwt, signature = account.signature)
+        }
+
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {
             val jsonString = storage.getString(KeyValueStorage.StringKey.ActiveAccount, "")
             if (jsonString.isEmpty())

@@ -4,12 +4,18 @@ import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
+import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.services.data.MessagingServiceController
+import com.criptext.mail.services.data.MessagingServiceDataSource
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -24,10 +30,12 @@ import org.json.JSONObject
 class AuthenticateUserWorker(
         db: SignUpDao,
         httpClient: HttpClient,
+        private val accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
         private val keyGenerator: SignalKeyGenerator,
         private val username: String,
         private val password: String,
+        private val messagingInstance: MessagingInstance,
         override val publishFn: (SignInResult.AuthenticateUser) -> Unit)
     : BackgroundWorker<SignInResult.AuthenticateUser> {
 
@@ -80,6 +88,9 @@ class AuthenticateUserWorker(
             val postKeyBundleStep = Runnable {
                 account.jwt = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
+                if(messagingInstance.token != null)
+                    apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
+                accountDao.updateJwt(username, account.jwt)
             }
 
             storeAccountTransaction.run(account = account,

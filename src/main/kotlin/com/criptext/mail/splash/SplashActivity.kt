@@ -8,9 +8,8 @@ import com.crashlytics.android.Crashlytics
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
-import java.lang.ref.WeakReference
-import com.squareup.picasso.Picasso.with
 import io.fabric.sdk.android.Fabric
+import java.lang.ref.WeakReference
 
 
 /**
@@ -36,8 +35,10 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
 
     override fun onTimeout() {
         finish()
+
         if(hasActiveAccount()){
-            startActivity(Intent(this, MailboxActivity::class.java))
+            val mailBoxIntent = Intent(this, MailboxActivity::class.java)
+            startActivity(mailBoxIntent)
             overridePendingTransition(0, 0)
         }
         else{

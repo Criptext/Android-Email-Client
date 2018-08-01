@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.SignUpDao
+import com.criptext.mail.services.MessagingInstance
 
 /**
  * Created by sebas on 2/15/18.
@@ -28,6 +29,7 @@ class SignUpDataSource(override val runner: WorkRunner,
                     incompleteAccount = params.account,
                     signalKeyGenerator = signalKeyGenerator,
                     keyValueStorage = keyValueStorage,
+                    messagingInstance = MessagingInstance.Default(),
                     publishFn = { result ->
                 flushResults(result)
             })

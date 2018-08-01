@@ -38,7 +38,7 @@ class SignInActivity : BaseActivity() {
                         httpClient = HttpClient.Default(),
                         signUpDao = appDB.signUpDao(),
                         keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),
-                        signInLocalDB = db),
+                        signInLocalDB = db, accountDao = appDB.accountDao()),
                 keyboard = KeyboardManager(this)
         )
     }

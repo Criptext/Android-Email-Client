@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
@@ -90,6 +91,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun onStart() {
         super.onStart()
+
         if (controller.onStart(activityMessage))
             activityMessage = null
     }
@@ -164,6 +166,19 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             overridePendingTransition(0, R.anim.slide_out_right)
         }
         goToScene(params, false)
+    }
+
+    override fun getIntentExtras(): IntentExtrasData? {
+        if(intent.extras != null && !intent.extras.isEmpty) {
+            val threadId = intent.extras.get(SecureEmail.THREAD_ID).toString()
+            if(intent.extras != null) {
+                for (key in intent.extras.keySet()){
+                    intent.removeExtra(key)
+                }
+            }
+            return IntentExtrasData(threadId)
+        }
+        return null
     }
 
     override fun finishScene() {

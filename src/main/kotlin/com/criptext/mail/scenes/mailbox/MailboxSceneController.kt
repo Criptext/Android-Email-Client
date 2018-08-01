@@ -51,6 +51,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.MoveEmailThread -> dataSourceController.onMoveEmailThread(result)
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
+            is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
         }
     }
 
@@ -283,6 +284,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         feedController.onStart()
 
         websocketEvents.setListener(webSocketEventListener)
+        val extras = host.getIntentExtras()
+
+        if(extras != null) {
+            dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extras.threadId,
+                    userEmail = activeAccount.userEmail))
+        }
+
+
 
         return handleActivityMessage(activityMessage)
     }
@@ -558,6 +567,20 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {
                     scene.showMessage(UIMessage(R.string.error_updating_status))
+                }
+            }
+        }
+
+        fun onGetEmailPreview(result: MailboxResult){
+            when (result) {
+                is MailboxResult.GetEmailPreview.Success -> {
+                    reloadMailboxThreads()
+                    feedController.reloadFeeds()
+                    host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
+                            currentLabel = model.selectedLabel, threadPreview = result.emailPreview), true)
+                }
+                is MailboxResult.GetEmailPreview.Failure -> {
+                    dataSourceController.updateMailbox(model.selectedLabel)
                 }
             }
         }

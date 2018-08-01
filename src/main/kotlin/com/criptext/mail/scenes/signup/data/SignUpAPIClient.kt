@@ -29,4 +29,11 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
     fun isUsernameAvailable(username: String): String {
         return httpClient.get("/user/available?username=$username", null)
     }
+
+    fun putFirebaseToken(pushToken: String, jwt: String): String {
+        val jsonPut = JSONObject()
+        jsonPut.put("devicePushToken", pushToken)
+
+        return httpClient.put(path = "/keybundle/pushtoken", authToken = jwt, body = jsonPut)
+    }
 }

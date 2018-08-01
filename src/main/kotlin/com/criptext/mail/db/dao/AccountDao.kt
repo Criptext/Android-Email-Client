@@ -34,4 +34,9 @@ interface AccountDao {
             where recipientId=:recipientId""")
     fun updateProfileName(name: String, recipientId: String)
 
+    @Query("""UPDATE account
+            SET jwt=:jwt
+            where recipientId=:recipientId""")
+    fun updateJwt(recipientId: String, jwt: String)
+
 }

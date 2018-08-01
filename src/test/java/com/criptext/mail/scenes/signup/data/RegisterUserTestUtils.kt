@@ -24,7 +24,7 @@ object RegisterUserTestUtils {
                                 identityPublicKey = "__IDENTITY_PUBLIC_KEY__",
                                 registrationId = registrationId), preKeys = preKeys,
                                 deviceName = "__TEST__", deviceFriendlyName = "__TEST__",
-                                deviceType = DeviceUtils.DeviceType.Phone)
+                                deviceType = DeviceUtils.DeviceType.Android)
         )
     }
 }

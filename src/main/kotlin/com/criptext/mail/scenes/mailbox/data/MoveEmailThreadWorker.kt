@@ -62,7 +62,8 @@ class MoveEmailThreadWorker(
         if(chosenLabel == null){
             //It means the threads will be deleted permanently
             val result = Result.of {
-                apiClient.postThreadDeletedPermanentlyEvent(selectedThreadIds).contains("OK") }
+                apiClient.postThreadDeletedPermanentlyEvent(selectedThreadIds) }
+                    .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             return when (result) {
                 is Result.Success -> {
                     db.deleteThreads(threadIds = selectedThreadIds)

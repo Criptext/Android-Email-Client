@@ -72,9 +72,27 @@
             android:theme="@style/AppThemeWithActionBar"
             android:configChanges="orientation|screenSize">
         </activity>
+
+        <service
+            android:name=".services.InstanceIdService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3b4ddc55293ff0e9bf22a8927dc076a5ac0b17ec" />
+
 
         <provider
             android:name="android.support.v4.content.FileProvider"

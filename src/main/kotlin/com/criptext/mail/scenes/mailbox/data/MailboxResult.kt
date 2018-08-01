@@ -98,4 +98,10 @@ sealed class MailboxResult {
         class Success(filePath: String): LinkDevice()
         data class Failure(val message: UIMessage): LinkDevice()
     }
+
+    sealed class GetEmailPreview: MailboxResult() {
+        data class Success(val emailPreview: EmailPreview,
+                           val isTrash: Boolean, val isSpam: Boolean): GetEmailPreview()
+        data class Failure(val message: String): GetEmailPreview()
+    }
 }

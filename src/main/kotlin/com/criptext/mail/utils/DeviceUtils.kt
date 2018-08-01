@@ -6,7 +6,7 @@ import com.criptext.mail.R
 
 class DeviceUtils{
 
-    enum class DeviceType { Pc, Phone, Tablet}
+    enum class DeviceType { NONE, PC, iOS, Android}
 
     companion object {
         fun getDeviceName(): String {
@@ -30,8 +30,7 @@ class DeviceUtils{
             }
         }
         fun getDeviceType(context: Context): DeviceType {
-            return if(context.resources.getBoolean(R.bool.isTablet)) DeviceType.Tablet
-            else DeviceType.Phone
+            return DeviceType.Android
         }
     }
 }
