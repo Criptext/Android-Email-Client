@@ -1,0 +1,9 @@
+package com.criptext.mail.db
+
+/**
+ * Created by danieltigse on 5/28/18.
+ */
+
+enum class LabelTypes{
+    SYSTEM, CUSTOM
+}

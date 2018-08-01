@@ -1,5 +1,0 @@
-package com.email.websocket.data
-
-import com.email.api.models.PeerThreadDeletedStatusUpdate
-
-data class ThreadDeletedPeerStatusUpdate(val peerThreadDeletedStatusUpdate: PeerThreadDeletedStatusUpdate)
