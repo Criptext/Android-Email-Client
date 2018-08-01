@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.email">
+          package="com.criptext.mail">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,18 +34,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.email.scenes.signin.SignInActivity"
+            android:name="com.criptext.mail.scenes.signin.SignInActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.email.scenes.signup.SignUpActivity"
+            android:name="com.criptext.mail.scenes.signup.SignUpActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.email.scenes.emaildetail.EmailDetailActivity"
+            android:name="com.criptext.mail.scenes.emaildetail.EmailDetailActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait">
         </activity>
@@ -78,7 +78,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.email.fileProvider"
+            android:authorities="com.criptext.mail.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true"
             tools:replace="android:authorities">

@@ -1,0 +1,38 @@
+package com.criptext.mail.scenes.composer
+
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.Label
+import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.composer.data.ComposerAttachment
+import com.criptext.mail.scenes.composer.data.ComposerType
+import com.criptext.mail.validation.FormInputState
+import java.util.*
+
+/**
+ * Created by gabriel on 2/26/18.
+ */
+
+class ComposerModel(val type: ComposerType) {
+
+    val isReplyOrDraft: Boolean = type is ComposerType.Reply
+            || type is ComposerType.ReplyAll || type is ComposerType.Draft
+
+    var attachments: ArrayList<ComposerAttachment> = ArrayList()
+
+    val to = LinkedList<Contact>()
+    val cc = LinkedList<Contact>()
+    val bcc = LinkedList<Contact>()
+
+    var firstTime = true
+    var initialized = type is ComposerType.Empty
+    var subject = ""
+    var body = ""
+
+    var passwordText: String = ""
+    var confirmPasswordText: String = ""
+    var passwordState: FormInputState = FormInputState.Unknown()
+
+    var passwordForNonCriptextUsers: String? = null
+
+    var fileKey: String? = null
+}

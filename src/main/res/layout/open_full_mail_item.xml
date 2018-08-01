@@ -177,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
-                    <com.email.utils.ui.ZoomLayout
+                    <com.criptext.mail.utils.ui.ZoomLayout
                         android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -189,7 +189,7 @@
                             android:id="@+id/email_body"
                             android:scrollbars="none"/>
 
-                    </com.email.utils.ui.ZoomLayout>
+                    </com.criptext.mail.utils.ui.ZoomLayout>
 
                 </LinearLayout>
 

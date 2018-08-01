@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.email.scenes.composer.ComposerActivity">
+    tools:context="com.criptext.mail.scenes.composer.ComposerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp">
 
-                <com.email.scenes.composer.ui.ContactCompletionView
+                <com.criptext.mail.scenes.composer.ui.ContactCompletionView
                     android:id="@+id/input_to"
                     android:paddingLeft="12dp"
                     android:layout_marginRight="55dp"
@@ -91,7 +91,7 @@
 
             </RelativeLayout>
 
-            <com.email.scenes.composer.ui.ContactCompletionView
+            <com.criptext.mail.scenes.composer.ui.ContactCompletionView
                 android:id="@+id/input_cc"
                 android:visibility="gone"
                 android:background="@android:color/transparent"
@@ -105,7 +105,7 @@
                 android:minHeight="32dp"
                 android:inputType="textEmailAddress|textMultiLine"/>
 
-            <com.email.scenes.composer.ui.ContactCompletionView
+            <com.criptext.mail.scenes.composer.ui.ContactCompletionView
                 android:id="@+id/input_bcc"
                 android:visibility="gone"
                 android:background="@android:color/transparent"
