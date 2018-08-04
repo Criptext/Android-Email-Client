@@ -55,7 +55,8 @@ data class Label (
             when (label) {
             sent,
             inbox,
-            starred -> listOf(spam, trash)
+            starred,
+            draft -> listOf(spam, trash)
             spam -> listOf(trash)
             trash -> listOf(spam)
             else -> emptyList()
