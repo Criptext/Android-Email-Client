@@ -9,6 +9,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
 
     private lateinit var settingsProfileName: View
     private lateinit var settingsSignature: View
+    private lateinit var settingsLogout: View
 
     private var settingsUIObserver: SettingsUIObserver? = null
 
@@ -16,6 +17,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
 
         settingsProfileName = view.findViewById(R.id.settings_profile_name)
         settingsSignature = view.findViewById(R.id.settings_signature)
+        settingsLogout = view.findViewById(R.id.settings_logout)
 
         setButtonListeners()
     }
@@ -30,6 +32,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
         settingsSignature.setOnClickListener {
             settingsUIObserver?.onSignatureOptionClicked()
+        }
+        settingsLogout.setOnClickListener {
+            settingsUIObserver?.onLogoutClicked()
         }
     }
 

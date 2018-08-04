@@ -1,5 +1,6 @@
 package com.criptext.mail.api
 
+import android.webkit.URLUtil
 import com.criptext.mail.api.models.MultipartFormItem
 import com.criptext.mail.utils.file.FileUtils
 import okhttp3.*
@@ -16,6 +17,7 @@ interface HttpClient {
     fun post(path: String, authToken: String?, body: JSONObject): String
     fun put(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
+    fun delete(path: String, authToken: String?, param: Pair<String, String>): String
     fun getFile(path: String, authToken: String?): ByteArray
 
     enum class AuthScheme { basic, jwt }
@@ -42,6 +44,17 @@ interface HttpClient {
                 AuthScheme.basic -> this.addHeader("Authorization", "Basic $authToken")
                 AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
             }
+
+        private fun deleteWithParams(url: String, authToken: String?, params: Pair<String, String>): Request {
+            val newUrl = HttpUrl.parse(url)!!.newBuilder()
+            newUrl.addQueryParameter(params.first, params.second)
+            val url = newUrl.build()
+            return Request.Builder()
+                    .addAuthorizationHeader(authToken)
+                    .url(url)
+                    .delete()
+                    .build()
+        }
 
         private fun postJSON(url: String, authToken: String?, json: JSONObject): Request {
             val body = RequestBody.create(JSON, json.toString())
@@ -149,6 +162,11 @@ interface HttpClient {
 
         override fun get(path: String, authToken: String?): String {
             val request = getUrl(url = baseUrl + path, authToken = authToken)
+            return ApiCall.executeRequest(client, request)
+        }
+
+        override fun delete(path: String, authToken: String?, param: Pair<String, String>): String {
+            val request = deleteWithParams(url = baseUrl + path, authToken = authToken, params = param)
             return ApiCall.executeRequest(client, request)
         }
 

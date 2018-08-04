@@ -9,6 +9,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.SignatureParams
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
@@ -36,6 +37,7 @@ class SettingsController(
             is SettingsResult.ChangeContactName -> onContactNameChanged(result)
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
+            is SettingsResult.Logout -> onLogout(result)
         }
     }
 
@@ -50,6 +52,14 @@ class SettingsController(
             scene.showProfileNameDialog(model.fullName)
         }
 
+        override fun onLogoutClicked() {
+            scene.showLogoutDialog()
+        }
+
+        override fun onLogoutConfirmedClicked() {
+            scene.showLoginOutDialog()
+            dataSource.submitRequest(SettingsRequest.Logout())
+        }
         override fun onBackButtonPressed() {
             host.finishScene()
         }
@@ -148,6 +158,17 @@ class SettingsController(
             is SettingsResult.GetCustomLabels.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_getting_labels))
                 host.finishScene()
+            }
+        }
+    }
+
+    private fun onLogout(result: SettingsResult.Logout){
+        when(result) {
+            is SettingsResult.Logout.Success -> {
+                host.goToScene(SignInParams(), false)
+            }
+            is SettingsResult.Logout.Failure -> {
+                scene.showMessage(UIMessage(R.string.error_login_out))
             }
         }
     }

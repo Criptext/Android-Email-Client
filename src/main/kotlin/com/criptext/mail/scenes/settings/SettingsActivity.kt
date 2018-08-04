@@ -23,12 +23,13 @@ class SettingsActivity: BaseActivity(){
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)
         val scene = SettingsScene.Default(view)
-        val db = SettingsLocalDB(appDB.labelDao(), appDB.accountDao(), appDB.contactDao())
+        val db = SettingsLocalDB.Default(appDB)
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 httpClient = HttpClient.Default(),
-                runner = AsyncTaskWorkRunner())
+                runner = AsyncTaskWorkRunner(),
+                storage = KeyValueStorage.SharedPrefs(this))
         return SettingsController(
                 model = model,
                 scene = scene,

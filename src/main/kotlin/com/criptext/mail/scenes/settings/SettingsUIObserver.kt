@@ -10,6 +10,8 @@ interface SettingsUIObserver {
     fun onBackButtonPressed()
     fun onSignatureOptionClicked()
     fun onProfileNameClicked()
+    fun onLogoutClicked()
+    fun onLogoutConfirmedClicked()
     fun onProfileNameChanged(fullName: String)
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()

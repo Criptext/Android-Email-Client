@@ -23,12 +23,13 @@ class SignatureActivity: BaseActivity(){
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)
         val scene = SignatureScene.Default(view)
-        val db = SettingsLocalDB(appDB.labelDao(), appDB.accountDao(), appDB.contactDao())
+        val db = SettingsLocalDB.Default(appDB)
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
                 httpClient = HttpClient.Default(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
-                runner = AsyncTaskWorkRunner())
+                runner = AsyncTaskWorkRunner(),
+                storage = KeyValueStorage.SharedPrefs(this))
         return SignatureController(
                 model = model,
                 scene = scene,

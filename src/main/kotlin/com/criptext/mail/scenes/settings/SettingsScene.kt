@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.settings
 
 import android.support.design.widget.TabLayout
-import android.support.v4.app.FragmentManager
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.widget.ImageView
@@ -23,6 +22,8 @@ interface SettingsScene{
     fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
+    fun showLogoutDialog()
+    fun showLoginOutDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun getLabelListView(): VirtualListView
 
@@ -51,6 +52,8 @@ interface SettingsScene{
 
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
+        private val settingLogoutDialog = SettingsLogoutDialog(context)
+        private val settingLoginOutDialog = SettingsLoginOutDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -79,6 +82,14 @@ interface SettingsScene{
 
         override fun showCreateLabelDialog(keyboardManager: KeyboardManager) {
             settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver, keyboardManager)
+        }
+
+        override fun showLogoutDialog() {
+            settingLogoutDialog.showLogoutDialog(settingsUIObserver)
+        }
+
+        override fun showLoginOutDialog() {
+            settingLoginOutDialog.showLoginOutDialog(settingsUIObserver)
         }
 
         override fun getLabelListView(): VirtualListView {
