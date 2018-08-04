@@ -319,7 +319,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
             val type = ComposerType.Draft(draftId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel)
-            host.goToScene(ComposerParams(type), true)
+            host.goToScene(ComposerParams(type), false)
         }
     }
 
@@ -340,8 +340,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
-
-                model.threadPreview = model.threadPreview.copy(unread = false)
+                val lastEmail = result.fullEmailList.last().email
+                model.threadPreview = model.threadPreview.copy(
+                        unread = false,
+                        count = result.fullEmailList.size,
+                        bodyPreview = lastEmail.preview,
+                        deliveryStatus = lastEmail.delivered)
                 model.emails.addAll(result.fullEmailList)
                 val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
                 result.fullEmailList.forEach { fullEmail ->

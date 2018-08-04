@@ -259,6 +259,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 true
             }
             is ActivityMessage.DraftSaved -> {
+                reloadMailboxThreads()
                 scene.showMessage(UIMessage(R.string.draft_saved))
                 true
             }
