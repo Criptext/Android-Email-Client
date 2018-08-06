@@ -156,6 +156,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             host.goToScene(SettingsParams(), true)
         }
 
+        override fun onSupportOptionClicked() {
+            host.goToScene(ComposerParams(type = ComposerType.Support()), true)
+        }
+
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
             scene.hideDrawer()
 

@@ -166,6 +166,13 @@ import java.util.*
             WHERE metadataKey=:metadataKey""")
     fun unsendEmailByMetadataKey(metadataKey: Long, content: String, preview: String, unsentDate: Date)
 
+    @Query("""UPDATE email
+            SET content=:content,
+            bodyPreview=:preview,
+            unsentDate=:unsentDate
+            WHERE metadataKey in (:metadataKeys)""")
+    fun unsendEmailsByMetadataKey(metadataKeys: List<Long>, content: String, preview: String, unsentDate: Date)
+
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
@@ -174,8 +181,8 @@ import java.util.*
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
-            WHERE metadataKey in (:keys) AND delivered != 2""")
-    fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes)
+            WHERE metadataKey in (:keys) AND delivered != (:unsendDeliveryTypes)""")
+    fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes, unsendDeliveryTypes: DeliveryTypes)
 
     @Query("""SELECT *
             FROM email

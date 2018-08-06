@@ -6,4 +6,5 @@ interface DrawerMenuItemListener {
     fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions)
     fun onCustomLabelClicked(label: Label)
     fun onSettingsOptionClicked()
+    fun onSupportOptionClicked()
 }

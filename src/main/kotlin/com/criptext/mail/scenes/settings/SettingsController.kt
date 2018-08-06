@@ -1,5 +1,7 @@
 package com.criptext.mail.scenes.settings
 
+import android.content.Intent
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
@@ -8,6 +10,7 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
+import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.SignatureParams
@@ -52,6 +55,24 @@ class SettingsController(
             scene.showProfileNameDialog(model.fullName)
         }
 
+        override fun onPrivacyPoliciesClicked() {
+            val context = (host as BaseActivity)
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url", "https://criptext.com/privacy")
+            context.startActivity(intent)
+        }
+        override fun onTermsOfServiceClicked() {
+            val context = (host as BaseActivity)
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url", "https://criptext.com/terms")
+            context.startActivity(intent)
+        }
+        override fun onOpenSourceLibrariesClicked() {
+            val context = (host as BaseActivity)
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url", "https://criptext.com/open-source-libraries-android")
+            context.startActivity(intent)
+        }
         override fun onLogoutClicked() {
             scene.showLogoutDialog()
         }

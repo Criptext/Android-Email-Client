@@ -125,6 +125,10 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderSettings.setOnClickListener {
             drawerMenuItemListener.onSettingsOptionClicked()
         }
+
+        sliderSupport.setOnClickListener {
+            drawerMenuItemListener.onSupportOptionClicked()
+        }
     }
 
     init {

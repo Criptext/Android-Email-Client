@@ -83,17 +83,14 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.SENDING -> {
                 setIconAndColor(R.drawable.clock, R.color.sent)
             }
-            DeliveryTypes.SENT -> {
-                setIconAndColor(R.drawable.mail_sent, R.color.sent)
+            DeliveryTypes.READ -> {
+                setIconAndColor(R.drawable.read, R.color.azure)
             }
             DeliveryTypes.DELIVERED -> {
                 setIconAndColor(R.drawable.read, R.color.sent)
             }
-            DeliveryTypes.READ -> {
-                setIconAndColor(R.drawable.read, R.color.azure)
-            }
-            DeliveryTypes.UNSEND -> {
-
+            DeliveryTypes.SENT -> {
+                setIconAndColor(R.drawable.mail_sent, R.color.sent)
             }
             DeliveryTypes.NONE -> {
                 check.visibility = View.GONE

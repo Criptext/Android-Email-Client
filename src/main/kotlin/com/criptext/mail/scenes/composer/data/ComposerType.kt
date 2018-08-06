@@ -19,4 +19,5 @@ sealed class ComposerType {
                         val threadPreview: EmailPreview): ComposerType()
     data class Forward(val originalId: Long, val currentLabel: Label,
                        val threadPreview: EmailPreview): ComposerType()
+    class Support: ComposerType()
 }
