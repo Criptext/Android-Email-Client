@@ -14,4 +14,18 @@ import java.util.*
  * Created by danieltigse on 6/14/18.
  */
 
-class SettingsLocalDB(val labelDao: LabelDao, val accountDao: AccountDao, val contactDao: ContactDao)
+interface SettingsLocalDB{
+    val labelDao:LabelDao
+    val accountDao:AccountDao
+    val contactDao:ContactDao
+    fun logoutNukeDB()
+    class Default(private val db: AppDatabase): SettingsLocalDB {
+        override val labelDao: LabelDao = db.labelDao()
+        override val accountDao: AccountDao = db.accountDao()
+        override val contactDao: ContactDao = db.contactDao()
+        override fun logoutNukeDB() {
+            db.clearAllTables()
+        }
+    }
+}
+
