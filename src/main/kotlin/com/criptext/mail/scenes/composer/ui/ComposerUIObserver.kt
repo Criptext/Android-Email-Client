@@ -6,6 +6,9 @@ package com.criptext.mail.scenes.composer.ui
 
 interface ComposerUIObserver {
     fun onAttachmentButtonClicked()
+    fun onNewCamAttachmentRequested()
+    fun onNewFileAttachmentRequested()
+    fun onNewGalleryAttachmentRequested()
     fun onAttachmentRemoveClicked(position: Int)
     fun onRecipientListChanged()
     fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean)

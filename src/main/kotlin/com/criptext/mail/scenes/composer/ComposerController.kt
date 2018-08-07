@@ -2,21 +2,21 @@ package com.criptext.mail.scenes.composer
 
 import android.Manifest
 import android.content.DialogInterface
+import android.content.pm.PackageManager
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
+import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.utils.UIMessage
-import android.content.pm.PackageManager
-import com.criptext.mail.BaseActivity
-import com.criptext.mail.aes.AESUtil
-import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.validation.FormInputState
 
 
@@ -37,6 +37,17 @@ class ComposerController(private val model: ComposerModel,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+        override fun onNewCamAttachmentRequested() {
+            host.launchExternalActivityForResult(ExternalActivityParams.Camera())
+        }
+
+        override fun onNewFileAttachmentRequested() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+        }
+
+        override fun onNewGalleryAttachmentRequested() {
+            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker())
+        }
 
         override fun sendDialogButtonPressed() {
             val data = scene.getDataInputByUser()
@@ -85,7 +96,7 @@ class ComposerController(private val model: ComposerModel,
         override fun onAttachmentButtonClicked() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+                scene.showAttachmentsBottomDialog(this)
             }
         }
 
