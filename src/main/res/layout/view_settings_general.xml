@@ -322,6 +322,102 @@
                 android:paddingStart="17dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
+                android:id="@+id/settings_privacy_policy"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_privacy_policies"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/settings_terms_of_service"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_terms_of_service"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/settings_open_source_libraries"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_open_source_libraries"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
                 android:id="@+id/settings_logout"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">

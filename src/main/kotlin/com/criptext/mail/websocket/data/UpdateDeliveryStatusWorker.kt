@@ -40,7 +40,7 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
 
         if (existingEmail != null) {
 
-            dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), trackingUpdate.type)
+            dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), trackingUpdate.type, DeliveryTypes.UNSEND)
             val update = EmailDeliveryStatusUpdate(existingEmail.id, trackingUpdate)
 
             if(trackingUpdate.type == DeliveryTypes.READ) {

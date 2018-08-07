@@ -28,6 +28,7 @@
     <item
         android:id="@+id/print"
         app:showAsAction="collapseActionView"
-        android:title="@string/print"/>
+        android:title="@string/print"
+        android:visible="false"/>
 </menu>
 

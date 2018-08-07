@@ -33,7 +33,7 @@ class UpdatePeerUnsendEmailStatusWorker(private val eventId:Long,
 
         if (existingEmail != null) {
 
-            dao.changeDeliveryTypeByMetadataKey(listOf(peerUnsendEmailStatusUpdate.metadataKey), DeliveryTypes.UNSEND)
+            dao.changeDeliveryTypeByMetadataKey(listOf(peerUnsendEmailStatusUpdate.metadataKey), DeliveryTypes.UNSEND, DeliveryTypes.UNSEND)
             val update = UnsendEmailPeerStatusUpdate(existingEmail.id, peerUnsendEmailStatusUpdate)
 
             dao.changeDeliveryType(existingEmail.id, DeliveryTypes.UNSEND)

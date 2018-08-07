@@ -198,7 +198,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         if (emailIndex < 0) return
         val attachmentIndex = model.emails[emailIndex].files.indexOfFirst { it.token == filetoken }
         if (attachmentIndex < 0) return
-        model.fileDetails[emailId]!![attachmentIndex].progress = progress
+        if(model.fileDetails[emailId]!![attachmentIndex].progress != 100)
+            model.fileDetails[emailId]!![attachmentIndex].progress = progress
         scene.updateAttachmentProgress(emailIndex, attachmentIndex)
     }
 

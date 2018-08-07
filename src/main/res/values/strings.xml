@@ -71,9 +71,12 @@
     <string name="slider_logout">Logout</string>
     <string name="slider_version">Criptext Email v.</string>
 
-    <!-- SETITINGS -->
+    <!-- SETTINGS -->
     <string name="title_swipe">Swipe Options</string>
     <string name="title_profile_name">Profile Name</string>
+    <string name="title_privacy_policies">Privacy Policies</string>
+    <string name="title_terms_of_service">Terms of Service</string>
+    <string name="title_open_source_libraries">Open Source Libraries</string>
     <string name="title_logout">Logout</string>
     <string name="title_custom_dialog">New Label</string>
     <string name="hint_custom_dialog">Enter the name</string>

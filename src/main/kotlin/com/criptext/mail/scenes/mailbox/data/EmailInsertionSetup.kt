@@ -61,7 +61,12 @@ object EmailInsertionSetup {
     private fun createContactRows(dao: EmailInsertionDao, addressesCSV: String): List<Contact> {
         if (addressesCSV.isEmpty()) return emptyList()
 
-        val toAddresses = addressesCSV.split(",")
+        val toAddresses = addressesCSV.split(",").map {
+            if(it.contains("<") && it.contains(">"))
+                it.substring(it.indexOf("<"), it.indexOf(">"))
+            else
+                it
+        }
         val toAddressesNotDuplicated = toAddresses.toSet().toList()
         val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)
 

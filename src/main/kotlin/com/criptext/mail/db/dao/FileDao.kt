@@ -35,6 +35,11 @@ interface FileDao {
             WHERE file.emailId=:emailId""")
     fun changeFileStatusByEmailid(emailId: Long, status: Int)
 
+    @Query("""UPDATE file
+            SET status=:status
+            WHERE file.emailId in (:emailIds)""")
+    fun changeFileStatusByEmailIds(emailIds: List<Long>, status: Int)
+
     @Delete
     fun deleteAll(files: List<CRFile>)
 

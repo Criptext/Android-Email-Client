@@ -316,6 +316,7 @@ class ComposerController(private val model: ComposerModel,
             is ComposerType.ReplyAll -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.Draft -> ComposerRequest.LoadInitialData(type, type.draftId)
+            is ComposerType.Support -> ComposerRequest.LoadInitialData(type, 0)
             else -> null
         }
 
@@ -323,7 +324,7 @@ class ComposerController(private val model: ComposerModel,
     }
 
     private fun bindWithModel(composerInputData: ComposerInputData, signature: String) {
-        if(model.isReplyOrDraft){
+        if(model.isReplyOrDraft || model.isSupport){
             scene.setFocusToComposer()
         }
         scene.bindWithModel(firstTime = model.firstTime,

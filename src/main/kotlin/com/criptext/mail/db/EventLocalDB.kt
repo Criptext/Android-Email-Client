@@ -53,7 +53,7 @@ class EventLocalDB(private val emailDao: EmailDao, private val labelDao: LabelDa
 
     fun updateDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes) {
         if (metadataKeys.isNotEmpty()) {
-            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType)
+            emailDao.changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType, DeliveryTypes.UNSEND)
         }
     }
 
