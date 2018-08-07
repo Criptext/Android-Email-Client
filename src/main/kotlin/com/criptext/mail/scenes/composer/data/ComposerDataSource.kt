@@ -17,7 +17,6 @@ class ComposerDataSource(
         private val composerLocalDB: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
         private val emailInsertionDao: EmailInsertionDao,
-        private val authToken: String,
         override val runner: WorkRunner)
     : BackgroundWorkManager<ComposerRequest, ComposerResult>() {
 
@@ -41,7 +40,7 @@ class ComposerDataSource(
                     db = composerLocalDB,
                     publishFn = { res -> flushResults(res) })
             is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filepath = params.filepath,
-                    httpClient = httpClient, fileServiceAuthToken = authToken,
+                    httpClient = httpClient, activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res)}, fileKey = params.fileKey)
             is ComposerRequest.LoadInitialData -> LoadInitialDataWorker(db = composerLocalDB,
                     emailId = params.emailId,

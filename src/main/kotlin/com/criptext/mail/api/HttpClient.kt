@@ -1,6 +1,5 @@
 package com.criptext.mail.api
 
-import android.webkit.URLUtil
 import com.criptext.mail.api.models.MultipartFormItem
 import com.criptext.mail.utils.file.FileUtils
 import okhttp3.*
@@ -17,7 +16,7 @@ interface HttpClient {
     fun post(path: String, authToken: String?, body: JSONObject): String
     fun put(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
-    fun delete(path: String, authToken: String?, param: Pair<String, String>): String
+    fun delete(path: String, authToken: String?): String
     fun getFile(path: String, authToken: String?): ByteArray
 
     enum class AuthScheme { basic, jwt }
@@ -45,9 +44,8 @@ interface HttpClient {
                 AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
             }
 
-        private fun deleteWithParams(url: String, authToken: String?, params: Pair<String, String>): Request {
+        private fun deleteWithoutParams(url: String, authToken: String?): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
-            newUrl.addQueryParameter(params.first, params.second)
             val url = newUrl.build()
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
@@ -165,8 +163,8 @@ interface HttpClient {
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun delete(path: String, authToken: String?, param: Pair<String, String>): String {
-            val request = deleteWithParams(url = baseUrl + path, authToken = authToken, params = param)
+        override fun delete(path: String, authToken: String?): String {
+            val request = deleteWithoutParams(url = baseUrl + path, authToken = authToken)
             return ApiCall.executeRequest(client, request)
         }
 

@@ -80,6 +80,9 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         check.visibility = View.VISIBLE
 
         when(deliveryType){
+            DeliveryTypes.UNSEND -> {
+                check.visibility = View.GONE
+            }
             DeliveryTypes.SENDING -> {
                 setIconAndColor(R.drawable.clock, R.color.sent)
             }

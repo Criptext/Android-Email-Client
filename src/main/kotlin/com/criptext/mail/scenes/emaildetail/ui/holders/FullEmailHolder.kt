@@ -261,6 +261,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         readView.visibility = View.VISIBLE
 
         when(deliveryType){
+            DeliveryTypes.UNSEND -> {
+                readView.visibility = View.GONE
+            }
             DeliveryTypes.SENDING -> {
                 setIconAndColor(R.drawable.clock, R.color.sent)
             }
@@ -272,9 +275,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             }
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.mail_sent, R.color.sent)
-            }
-            DeliveryTypes.UNSEND -> {
-                readView.visibility = View.GONE
             }
             DeliveryTypes.NONE -> {
                 readView.visibility = View.GONE

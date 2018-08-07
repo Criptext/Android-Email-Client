@@ -38,7 +38,7 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
     }
 
     fun deleteDevice(deviceId: Int): String{
-        return httpClient.delete(path = "/devices", authToken = token, param = Pair("deviceId", deviceId.toString()))
+        return httpClient.delete(path = "/devices/$deviceId", authToken = token)
     }
 
 }

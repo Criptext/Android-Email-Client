@@ -8,6 +8,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.ChunkFileReader
 import com.github.kittinunf.result.Result
@@ -19,13 +20,13 @@ import java.io.File
 
 class UploadAttachmentWorker(private val filepath: String,
                              httpClient: HttpClient,
-                             fileServiceAuthToken: String,
+                             activeAccount: ActiveAccount,
                              val fileKey: String?,
                              override val publishFn: (ComposerResult.UploadFile) -> Unit)
     : BackgroundWorker<ComposerResult.UploadFile> {
     override val canBeParallelized = false
 
-    val fileServiceAPIClient = FileServiceAPIClient(httpClient, fileServiceAuthToken)
+    val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): ComposerResult.UploadFile {
          return ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))

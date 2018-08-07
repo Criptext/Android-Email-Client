@@ -56,7 +56,6 @@ class  EmailDetailActivity: BaseActivity() {
                         activeAccount = activeAccount,
                         filesHttpClient= filesHttpClient,
                         emailDetailLocalDB = db,
-                        fileServiceAuthToken = Hosts.fileServiceAuthToken,
                         downloadDir = downloadDir
                 )
         )

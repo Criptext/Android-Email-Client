@@ -40,7 +40,7 @@ class ComposerActivity : BaseActivity() {
                 composerLocalDB = db,
                 activeAccount = activeAccount,
                 emailInsertionDao = appDB.emailInsertionDao(),
-                runner = AsyncTaskWorkRunner(), authToken = Hosts.fileServiceAuthToken)
+                runner = AsyncTaskWorkRunner())
         return ComposerController(
                 model = model,
                 scene = scene,

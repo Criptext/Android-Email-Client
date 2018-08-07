@@ -189,6 +189,7 @@ class SettingsController(
                 host.goToScene(SignInParams(), false)
             }
             is SettingsResult.Logout.Failure -> {
+                scene.dismissLoginOutDialog()
                 scene.showMessage(UIMessage(R.string.error_login_out))
             }
         }

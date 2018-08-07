@@ -1,9 +1,13 @@
 package com.criptext.mail.scenes.settings.views
 
+import android.content.res.Resources
 import android.view.View
+import android.widget.TextView
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.scenes.settings.SettingsUIObserver
 import com.criptext.mail.utils.ui.TabView
+import kotlinx.android.synthetic.main.deckard.view.*
 
 class GeneralSettingsView(view: View, title: String): TabView(view, title) {
 
@@ -13,8 +17,11 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsTermsOfService: View
     private lateinit var settingsOpenSourceLibraries: View
     private lateinit var settingsLogout: View
+    private lateinit var versionText: TextView
 
     private var settingsUIObserver: SettingsUIObserver? = null
+
+    private val versionString ="Criptext System Version ${BuildConfig.VERSION_NAME}"
 
     override fun onCreateView(){
 
@@ -24,6 +31,8 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsTermsOfService = view.findViewById(R.id.settings_terms_of_service)
         settingsOpenSourceLibraries = view.findViewById(R.id.settings_open_source_libraries)
         settingsLogout = view.findViewById(R.id.settings_logout)
+        versionText = view.findViewById(R.id.version_text) as TextView
+        versionText.text = BuildConfig.VERSION_NAME
 
         setButtonListeners()
     }

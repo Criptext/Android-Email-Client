@@ -87,6 +87,8 @@ class MailboxDataSource(
                     selectedLabels = params.selectedLabels,
                     currentLabel = params.currentLabel,
                     shouldRemoveCurrentLabel = params.shouldRemoveCurrentLabel,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })

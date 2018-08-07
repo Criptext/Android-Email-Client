@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.composer
 
+
 import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
@@ -226,11 +228,11 @@ class ComposerController(private val model: ComposerModel,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to)
+        model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name) })
         model.cc.clear()
-        model.cc.addAll(data.cc)
+        model.cc.addAll(data.cc.map { Contact(it.id, it.email.decapitalize(), it.name) })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc)
+        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.decapitalize(), it.name) })
         model.body = data.body
         model.subject = data.subject
     }

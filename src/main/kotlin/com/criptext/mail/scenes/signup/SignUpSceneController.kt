@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
@@ -257,10 +258,13 @@ class SignUpSceneController(
     private fun submitCreateUser() {
         scene.showKeyGenerationHolder()
 
+        val hashedPassword = (model.username.value.substring(0 .. 3)
+                + model.password).sha256()
+
         val newAccount = IncompleteAccount(
                 username = model.username.value,
                 name = model.fullName.value,
-                password = model.password,
+                password = hashedPassword,
                 deviceId = 1,
                 recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null
         )
