@@ -46,7 +46,7 @@ open class Contact(
 
     companion object {
 
-        const val mainDomain = "jigl.com"
+        const val mainDomain = "criptext.com"
         val toAddress: (Contact) -> String = { contact -> contact.email }
 
         fun deAccent(str: String): String {

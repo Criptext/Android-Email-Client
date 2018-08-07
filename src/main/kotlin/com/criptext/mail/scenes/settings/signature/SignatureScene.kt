@@ -6,18 +6,10 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
-import com.criptext.mail.scenes.composer.ComposerScene
 import com.criptext.mail.scenes.composer.ui.HTMLEditText
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.SnackBarHelper
-import org.wordpress.aztec.Aztec
-import org.wordpress.aztec.AztecText
-import org.wordpress.aztec.ITextFormat
-import org.wordpress.aztec.source.SourceViewEditText
-import org.wordpress.aztec.toolbar.AztecToolbar
-import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 interface SignatureScene{
 
@@ -46,15 +38,9 @@ interface SignatureScene{
             view.findViewById<View>(R.id.view_signature)
         }
 
-        private val viewToolbar: View by lazy{
-            view.findViewById<View>(R.id.view_toolbar)
-        }
-
         private val bodyEditText: HTMLEditText by lazy({
             HTMLEditText(
-                    visualEditor = view.findViewById(R.id.visual),
-                    sourceEditor = view.findViewById(R.id.source),
-                    toolbar = view.findViewById(R.id.formatting_toolbar),
+                    richEditor = view.findViewById(R.id.editor),
                     hint = context.getString(R.string.write_signature))
         })
 
@@ -67,7 +53,6 @@ interface SignatureScene{
 
             swicthStatus.setOnCheckedChangeListener { _, isChecked ->
                 viewSignature.visibility = if(isChecked) View.VISIBLE else View.GONE
-                viewToolbar.visibility = if(isChecked) View.VISIBLE else View.GONE
                 textViewStatus.text = if(isChecked) context.resources.getString(R.string.on)
                                         else context.resources.getString(R.string.off)
                 if(isChecked){

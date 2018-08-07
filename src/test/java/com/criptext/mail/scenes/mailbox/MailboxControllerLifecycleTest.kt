@@ -1,8 +1,10 @@
 package com.criptext.mail.scenes.mailbox
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
+import com.criptext.mail.utils.EmailAddressUtils
 import io.mockk.verifySequence
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should be`
@@ -46,7 +48,7 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
         secondRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.inbox.text,
                 loadParams = LoadParams.Reset(size = 20),
-                userEmail = "gabriel@jigl.com"
+                userEmail = "gabriel@${Contact.mainDomain}"
         )
     }
 

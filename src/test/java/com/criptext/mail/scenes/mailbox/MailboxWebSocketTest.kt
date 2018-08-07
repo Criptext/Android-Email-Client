@@ -9,6 +9,7 @@ import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockedIHostActivity
 import com.criptext.mail.mocks.MockedWorkRunner
@@ -142,7 +143,7 @@ class MailboxWebSocketTest {
 
         // mock database result
         every {
-            db.getThreadsFromMailboxLabel("gabriel@jigl.com",
+            db.getThreadsFromMailboxLabel("gabriel@${Contact.mainDomain}",
                     SecureEmail.LABEL_INBOX, null, 20, any())
         } returns MailboxTestUtils.createEmailThreads(20)
         every {

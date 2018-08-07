@@ -18,8 +18,6 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
-import org.wordpress.aztec.AztecText
-import org.wordpress.aztec.toolbar.AztecToolbar
 
 /**
  * Created by gabriel on 2/26/18.
@@ -68,9 +66,7 @@ interface ComposerScene {
         })
         private val bodyEditText: HTMLEditText by lazy({
             HTMLEditText(
-                    visualEditor = view.findViewById<AztecText>(INPUT_BODY_ID),
-                    sourceEditor = null,
-                    toolbar = view.findViewById<AztecToolbar>(R.id.formatting_toolbar),
+                    richEditor = view.findViewById(INPUT_BODY_ID),
                     hint = ctx.resources.getString(R.string.message))
         })
         private val backButton: ImageView by lazy {
@@ -147,7 +143,6 @@ interface ComposerScene {
 
         private fun setListeners() {
             subjectEditText.onFocusChangeListener = onEditTextGotFocus
-            bodyEditText.onFocusChangeListener = onEditTextGotFocus
 
             backButton.setOnClickListener {
                 observer?.onBackButtonClicked()
@@ -169,6 +164,7 @@ interface ComposerScene {
 
         override fun setFocusToComposer() {
             bodyEditText.setFocus()
+            keyboard.showKeyboardWithDelay(bodyEditText.view)
         }
 
         override fun getDataInputByUser(): ComposerInputData {
