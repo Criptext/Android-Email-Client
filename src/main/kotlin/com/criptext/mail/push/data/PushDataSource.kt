@@ -1,0 +1,37 @@
+package com.criptext.mail.push.data
+
+import com.criptext.mail.api.HttpClient
+import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.bgworker.BackgroundWorker
+import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
+
+class PushDataSource(
+        private val httpClient: HttpClient,
+        override val runner: WorkRunner,
+        private val db: AppDatabase)
+    : BackgroundWorkManager<PushRequest, PushResult>() {
+    override fun createWorkerFromParams(
+            params: PushRequest,
+            flushResults: (PushResult) -> Unit)
+            : BackgroundWorker<*> {
+        return when (params) {
+            is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    dbEvents = EventLocalDB(db),
+                    httpClient = httpClient,
+                    activeAccount = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!,
+                    label = params.label,
+                    loadedThreadsCount = params.loadedThreadsCount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+        }
+    }
+
+}

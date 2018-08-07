@@ -4,6 +4,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -32,7 +33,8 @@ class MailboxDataSource(
         private val rawIdentityKeyDao: RawIdentityKeyDao,
         private val emailInsertionDao: EmailInsertionDao,
         private val httpClient: HttpClient,
-        private val mailboxLocalDB: MailboxLocalDB )
+        private val mailboxLocalDB: MailboxLocalDB,
+        private val eventLocalDB: EventLocalDB)
     : BackgroundWorkManager<MailboxRequest, MailboxResult>() {
     override fun createWorkerFromParams(
             params: MailboxRequest,
@@ -47,16 +49,8 @@ class MailboxDataSource(
                     })
 
             is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    emailDao = emailDao,
-                    dao = emailInsertionDao,
-                    accountDao = accountDao,
-                    emailLabelDao = emailLabelDao,
-                    labelDao = labelDao,
-                    feedItemDao = feedItemDao,
-                    fileDao = fileDao,
-                    contactDao = contactDao,
                     signalClient = signalClient,
-                    db = mailboxLocalDB,
+                    dbEvents = eventLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     label = params.label,
@@ -140,6 +134,14 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
             })
+
+            is MailboxRequest.GetEmailPreview -> GetEmailPreviewWorker(
+                    threadId = params.threadId,
+                    mailboxLocalDB = mailboxLocalDB,
+                    userEmail = params.userEmail,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 

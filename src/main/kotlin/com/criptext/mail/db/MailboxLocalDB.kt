@@ -41,8 +41,17 @@ interface MailboxLocalDB {
     fun deleteThreads(threadIds: List<String>)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
                                          rejectedLabels: List<Long>, userEmail: String): EmailThread
+    fun getEmailThreadFromId(threadId: String, selectedLabel: String,
+                                rejectedLabels: List<Long>, userEmail: String): EmailThread
+
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
+        override fun getEmailThreadFromId(threadId: String, selectedLabel: String, rejectedLabels: List<Long>, userEmail: String): EmailThread {
+
+            val email = db.emailDao().getEmailsFromThreadIds(listOf(threadId)).last()
+            return emailThread(email, rejectedLabels, selectedLabel, userEmail)
+        }
+
         override fun createLabelsForEmailInbox(insertedEmailId: Long) {
             val labelInbox = db.labelDao().get(SecureEmail.LABEL_INBOX)
             db.emailLabelDao().insert(EmailLabel(
@@ -94,56 +103,7 @@ interface MailboxLocalDB {
         override fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
                                             rejectedLabels: List<Long>, userEmail: String): EmailThread {
 
-            val id = email.id
-            val labels = db.emailLabelDao().getLabelsFromEmail(id)
-            val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
-            val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
-            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
-            val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
-            val files = db.fileDao().getAttachmentsFromEmail(id)
-            val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
-            email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
-                    .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
-
-            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
-            var totalFiles = 0
-            val participants = emails.flatMap {
-                val contacts = mutableListOf<Contact>()
-                if(selectedLabel == Label.defaultItems.sent.text){
-                    val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
-                    if(EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)){
-                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
-                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
-                    }
-                }
-                else{
-                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
-                }
-                contacts.map { contact ->
-                    if(contact.email == userEmail){
-                        //It's difficult to reach String resources, so I will leave the 'me' string for now
-                        contact.name = "me"
-                    }
-                }
-                totalFiles += db.fileDao().getAttachmentsFromEmail(it.id).size
-                contacts
-            }
-
-            return EmailThread(
-                    participants = participants.distinctBy { it.id },
-                    currentLabel = selectedLabel,
-                    latestEmail = FullEmail(
-                            email = email,
-                            bcc = contactsBCC,
-                            cc = contactsCC,
-                            from = contactsFROM[0],
-                            files = files,
-                            labels = labels,
-                            to = contactsTO,
-                            fileKey = fileKey.key),
-                    totalEmails = emails.size,
-                    hasFiles = totalFiles > 0
-            )
+            return emailThread(email, rejectedLabels, selectedLabel, userEmail)
         }
 
         override fun getThreadsFromMailboxLabel(userEmail: String, labelName: String,
@@ -231,6 +191,58 @@ interface MailboxLocalDB {
 
         override fun deleteThreads(threadIds: List<String>) {
             db.emailDao().deleteThreads(threadIds)
+        }
+
+        private fun emailThread(email: Email, rejectedLabels: List<Long>, selectedLabel: String, userEmail: String): EmailThread {
+            val id = email.id
+            val labels = db.emailLabelDao().getLabelsFromEmail(id)
+            val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+            val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+            val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+            val files = db.fileDao().getAttachmentsFromEmail(id)
+            val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+            email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
+                    .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
+
+            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+            var totalFiles = 0
+            val participants = emails.flatMap {
+                val contacts = mutableListOf<Contact>()
+                if (selectedLabel == Label.defaultItems.sent.text) {
+                    val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
+                    if (EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)) {
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
+                        contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
+                    }
+                } else {
+                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
+                }
+                contacts.map { contact ->
+                    if (contact.email == userEmail) {
+                        //It's difficult to reach String resources, so I will leave the 'me' string for now
+                        contact.name = "me"
+                    }
+                }
+                totalFiles += db.fileDao().getAttachmentsFromEmail(it.id).size
+                contacts
+            }
+
+            return EmailThread(
+                    participants = participants.distinctBy { it.id },
+                    currentLabel = selectedLabel,
+                    latestEmail = FullEmail(
+                            email = email,
+                            bcc = contactsBCC,
+                            cc = contactsCC,
+                            from = contactsFROM[0],
+                            files = files,
+                            labels = labels,
+                            to = contactsTO,
+                            fileKey = fileKey.key),
+                    totalEmails = emails.size,
+                    hasFiles = totalFiles > 0
+            )
         }
     }
 

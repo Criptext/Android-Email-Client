@@ -23,4 +23,11 @@ class SignInAPIClient(private val httpClient: HttpClient) {
     fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): String {
         return httpClient.post(path = "/keybundle", body = bundle.toJSON(), authToken = jwt)
     }
+
+    fun putFirebaseToken(pushToken: String, jwt: String): String {
+        val jsonPut = JSONObject()
+        jsonPut.put("devicePushToken", pushToken)
+
+        return httpClient.put(path = "/keybundle/pushtoken", authToken = jwt, body = jsonPut)
+    }
 }

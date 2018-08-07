@@ -1,7 +1,7 @@
 {
   "password": "secretPassword",
   "keybundle": {
-    "deviceType": 1,
+    "deviceType": 3,
     "signedPreKeyId": 1,
     "preKeys": [
       {

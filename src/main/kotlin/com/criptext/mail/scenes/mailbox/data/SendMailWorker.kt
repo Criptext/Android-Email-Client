@@ -238,7 +238,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     }
 
     private fun getDummySignalSession(recipientId: String): DummyUser{
-        val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+        val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
         val tempUser = InMemoryUser(keyGenerator, recipientId, 1).setup()
         val keyBundleFromTempUser = tempUser.fetchAPreKeyBundle()
 

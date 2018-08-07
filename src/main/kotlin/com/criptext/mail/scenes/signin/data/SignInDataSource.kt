@@ -6,7 +6,11 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
+import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.services.data.MessagingServiceController
+import com.criptext.mail.services.data.MessagingServiceDataSource
 import com.criptext.mail.signal.SignalKeyGenerator
 
 /**
@@ -18,6 +22,7 @@ class SignInDataSource(override val runner: WorkRunner,
                        private val keyGenerator: SignalKeyGenerator,
                        private val keyValueStorage: KeyValueStorage,
                        private val signUpDao: SignUpDao,
+                       private val accountDao: AccountDao,
                        private val signInLocalDB: SignInLocalDB)
     : BackgroundWorkManager<SignInRequest, SignInResult>() {
     override fun createWorkerFromParams(params: SignInRequest,
@@ -31,6 +36,8 @@ class SignInDataSource(override val runner: WorkRunner,
                     password = params.password,
                     keyGenerator = keyGenerator,
                     keyValueStorage = keyValueStorage,
+                    accountDao = accountDao,
+                    messagingInstance = MessagingInstance.Default(),
                     publishFn = { result ->
                         flushResults(result)
                     })

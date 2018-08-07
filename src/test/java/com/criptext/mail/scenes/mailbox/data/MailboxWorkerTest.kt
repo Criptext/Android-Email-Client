@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -10,6 +11,7 @@ import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.runTransactionsAsTheyAreInvoked
 import io.mockk.mockk
+import org.amshove.kluent.mock
 import org.junit.Before
 
 /**
@@ -32,6 +34,7 @@ open class MailboxWorkerTest {
     protected lateinit var rawSessionDao: RawSessionDao
     protected lateinit var rawIdentityKeyDao: RawIdentityKeyDao
     protected lateinit var db: MailboxLocalDB
+    protected lateinit var eventDB: EventLocalDB
     protected lateinit var dao: EmailInsertionDao
     protected lateinit var activeAccount: ActiveAccount
     protected lateinit var dataSource: MailboxDataSource
@@ -57,7 +60,9 @@ open class MailboxWorkerTest {
         accountDao = mockk()
         dao = mockk(relaxed = true)
         dao.runTransactionsAsTheyAreInvoked()
-
+        eventDB = EventLocalDB(emailLabelDao = emailLabelDao, accountDao = accountDao, contactDao = contactDao,
+                labelDao = labelDao, fileDao = fileDao, emailContactDao = emailContactDao,
+                emailInsertionDao = dao, feedDao = feedItemDao, fileKeyDao = fileKeyDao, emailDao = emailDao)
         httpClient = mockk()
         runner = MockedWorkRunner()
         rawSessionDao = mockk()
@@ -67,7 +72,8 @@ open class MailboxWorkerTest {
                 emailInsertionDao = dao, rawSessionDao = rawSessionDao, runner = runner,
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
-                fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao)
+                fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao,
+                eventLocalDB = eventDB)
         dataSource.listener = { result -> lastResult = result }
     }
 

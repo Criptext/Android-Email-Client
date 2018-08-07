@@ -2,8 +2,11 @@ package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
+import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.services.MessagingService
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.gaumala.kotlinsnapshot.Camera
 import io.mockk.*
@@ -22,6 +25,8 @@ class AuthenticateUserWorkerTest {
     private lateinit var httpClient: HttpClient
     private lateinit var signUpDao: SignUpDao
     private lateinit var storage: KeyValueStorage
+    private lateinit var accountDao: AccountDao
+    private lateinit var messagingInstance: MessagingInstance
 
     private val camera = Camera()
 
@@ -32,12 +37,17 @@ class AuthenticateUserWorkerTest {
         httpClient = mockk()
         signUpDao = mockk()
         storage = mockk(relaxed = true)
+        accountDao = mockk()
+        messagingInstance = mockk()
+
+
+        every { messagingInstance.token } returns ""
     }
 
     private fun newWorker(username: String, password: String): AuthenticateUserWorker =
         AuthenticateUserWorker(db = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 keyGenerator = keyGenerator, username = username, password = password,
-                publishFn = {})
+                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance)
 
 
     @Test
@@ -58,6 +68,10 @@ class AuthenticateUserWorkerTest {
             httpClient.post("/keybundle", "__JWTOKEN__", capture(postKeyBundleRequestSlot))
         } returns "__JWTOKEN__"
 
+        every {
+            httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
+        } returns mockedAuthResponse
+
 
         every {
             keyGenerator.register("tester", 2)
@@ -69,6 +83,8 @@ class AuthenticateUserWorkerTest {
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
                     defaultLabels = any())
         } answers { extraStepsSlot.captured.run() }
+
+        every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
 
         val result = worker.work(mockk())
 
@@ -105,6 +121,10 @@ class AuthenticateUserWorkerTest {
         every {
             httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
         } throws SocketTimeoutException()
+
+         every {
+             httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
+         } returns mockedAuthResponse
 
 
         every {
@@ -146,6 +166,10 @@ class AuthenticateUserWorkerTest {
             httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
         } returns "__JWTOKEN__"
 
+        every {
+            httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
+        } returns mockedAuthResponse
+
 
         every {
             keyGenerator.register("tester", 2)
@@ -157,6 +181,7 @@ class AuthenticateUserWorkerTest {
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
                     defaultLabels = any())
         } answers { extraStepsSlot.captured.run() }
+        every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
 
         val result = worker.work(mockk())
 

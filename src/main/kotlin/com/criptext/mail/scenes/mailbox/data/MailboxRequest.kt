@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
+import com.criptext.mail.db.models.Email
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -49,6 +50,8 @@ sealed class MailboxRequest{
     data class UpdateUnreadStatus(val threadIds: List<String>,
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
+
+    data class GetEmailPreview(val threadId: String, val userEmail: String): MailboxRequest()
 
 
 

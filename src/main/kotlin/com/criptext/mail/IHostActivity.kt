@@ -1,7 +1,9 @@
 package com.criptext.mail
 
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
@@ -33,6 +35,7 @@ interface IHostActivity {
      */
     fun finishScene()
     fun getLocalizedString(message: UIMessage): String
+    fun getIntentExtras(): IntentExtrasData?
     fun showDialog(message: UIMessage)
     fun dismissDialog()
     /**

@@ -346,4 +346,6 @@
     <string name="feed_downloaded">downloaded:</string>
     <string name="feed_new">NEW</string>
     <string name="feed_older">OLDER</string>
+
+    <string name="new_email_notification">New Email Notification</string>
 </resources>

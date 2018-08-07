@@ -1,9 +1,8 @@
 package com.criptext.mail.mocks
 
-import android.view.Menu
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
+import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
@@ -49,4 +48,7 @@ class MockedIHostActivity: IHostActivity{
         return true
     }
 
+    override fun getIntentExtras(): IntentExtrasData? {
+        return null
+    }
 }

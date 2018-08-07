@@ -73,7 +73,8 @@ class MoveEmailWorker(
 
         val result =  Result.of{apiClient.postEmailLabelChangedEvent(
                 emailDao.getAllEmailsbyId(emailIds).map { it.metadataKey },
-                listOf(currentLabel.text), selectedLabels.toList().map { it.text }).contains("OK")}
+                listOf(currentLabel.text), selectedLabels.toList().map { it.text })}
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
         return when (result) {
             is Result.Success -> {

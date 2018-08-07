@@ -3,12 +3,14 @@ package com.criptext.mail.scenes.mailbox
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.mocks.MockedIHostActivity
 import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.mailbox.data.LoadEmailThreadsWorker
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
@@ -18,6 +20,7 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
 import org.amshove.kluent.`should be`
+import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 
@@ -29,6 +32,7 @@ class MailboxWebSocketTest {
     private lateinit var scene: MailboxScene
     private lateinit var signal: SignalClient
     private lateinit var db: MailboxLocalDB
+    private lateinit var eventLocalDB: EventLocalDB
     private lateinit var httpClient: HttpClient
     private lateinit var emailDao: EmailDao
     private lateinit var feedItemDao: FeedItemDao
@@ -76,13 +80,19 @@ class MailboxWebSocketTest {
             lambdaSlot.captured()
         }
 
+
         signal = mockk()
         host = mockk()
+        every { host.getIntentExtras()} returns null
 
         httpClient = mockk()
 
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
                 deviceId = 3, jwt = "__JWT_TOKEN__", signature = "")
+
+        eventLocalDB = EventLocalDB(emailLabelDao = emailLabelDao, accountDao = accountDao, contactDao = contactDao,
+                labelDao = labelDao, fileDao = fileDao, emailContactDao = emailCOntactDao,
+                emailInsertionDao = emailInsertionDao, feedDao = feedItemDao, fileKeyDao = fileKeyDao, emailDao = emailDao)
 
         dataSource = MailboxDataSource(
                 runner = runner,
@@ -101,8 +111,8 @@ class MailboxWebSocketTest {
                 labelDao = labelDao,
                 emailLabelDao = emailLabelDao,
                 emailContactJoinDao = emailCOntactDao,
-                accountDao = accountDao
-        )
+                accountDao = accountDao,
+                eventLocalDB = eventLocalDB)
 
         feedController = mockk(relaxed = true)
 

@@ -1,24 +1,23 @@
 package com.criptext.mail.scenes.signup
 
-import android.app.Activity
 import android.content.Intent
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
-import com.criptext.mail.bgworker.RunnableThrottler
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.bgworker.RunnableThrottler
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
-import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.validation.TextInput
 
 /**

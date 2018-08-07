@@ -273,6 +273,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
             }
+            DeliveryTypes.UNSEND -> {
+                readView.visibility = View.GONE
+            }
             DeliveryTypes.NONE -> {
                 readView.visibility = View.GONE
             }
