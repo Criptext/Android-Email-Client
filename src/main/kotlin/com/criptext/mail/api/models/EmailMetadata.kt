@@ -38,8 +38,10 @@ data class EmailMetadata(
             val emailData = JSONObject(metadataJsonString)
             val from = emailData.getString("from")
             // TODO make this more robust
-            val fromEmail = from.substring(from.indexOf("<") + 1, from.indexOf(">"))
-            val fromName = from.substring(0, from.lastIndexOf("<") - 1)
+            val fromEmail = if(from.contains("<") && from.contains(">"))
+                    from.substring(from.indexOf("<") + 1, from.indexOf(">")) else from
+            val fromName = if(from.contains("<") && from.contains(">"))
+                    from.substring(0, from.lastIndexOf("<") - 1) else from
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
             val messageType = emailData.optInt("messageType")
