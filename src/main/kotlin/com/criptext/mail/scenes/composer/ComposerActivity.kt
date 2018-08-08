@@ -14,8 +14,10 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.PhotoUtil
 import droidninja.filepicker.FilePickerConst
 import java.io.File
+
 
 class ComposerActivity : BaseActivity() {
 
@@ -47,18 +49,37 @@ class ComposerActivity : BaseActivity() {
                 host = this)
     }
 
-    private fun setNewAttachmentsAsActivityMessage(data: Intent) {
-        val selectedAttachments = data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS)
-        val attachmentsList = selectedAttachments.map {
-            val size = File(it).length()
-            Pair(it, size)
+    private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
+        if(filePickerConst != PhotoUtil.KEY_PHOTO_TAKEN && data != null) {
+            val selectedAttachments = data.getStringArrayListExtra(filePickerConst)
+            val attachmentsList = selectedAttachments.map {
+                val size = File(it).length()
+                Pair(it, size)
+            }
+            setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
+        }else{
+            val photo= photoUtil.getPhotoFileFromIntent()
+            if(photo != null)
+                setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length()))))
+
         }
-        setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FilePickerConst.REQUEST_CODE_DOC && data != null) {
-            setNewAttachmentsAsActivityMessage(data)
+        if(data != null) {
+            when (requestCode){
+                FilePickerConst.REQUEST_CODE_DOC -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)
+                FilePickerConst.REQUEST_CODE_PHOTO -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_MEDIA)
+            }
+        }else{
+            if (requestCode == PhotoUtil.REQUEST_CODE_CAMERA){
+                setNewAttachmentsAsActivityMessage(null, PhotoUtil.KEY_PHOTO_TAKEN)
+            }
         }
     }
 

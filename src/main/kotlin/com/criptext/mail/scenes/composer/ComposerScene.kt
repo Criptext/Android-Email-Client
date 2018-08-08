@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.composer
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
+import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -38,6 +39,7 @@ interface ComposerScene {
     fun showAttachmentErrorDialog(filename: String)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
+    fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun notifyAttachmentSetChanged()
     fun disableSendButtonOnDialog()
     fun enableSendButtonOnDialog()
@@ -49,6 +51,7 @@ interface ComposerScene {
 
         private val ctx = view.context
         private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
+        private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
 
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
@@ -202,6 +205,10 @@ interface ComposerScene {
 
         override fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?) {
             nonCriptextEmailSendDialog.showNonCriptextEmailSendDialog(observer)
+        }
+
+        override fun showAttachmentsBottomDialog(observer: ComposerUIObserver?) {
+            attachmentBottomDialog.showAttachmentsDialog(observer)
         }
 
         override fun showAttachmentErrorDialog(filename: String){

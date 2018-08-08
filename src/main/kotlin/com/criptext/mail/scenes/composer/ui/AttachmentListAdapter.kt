@@ -30,4 +30,10 @@ class AttachmentListAdapter(private val mContext: Context, private val attachmen
         mView.setProgress(attachment.uploadProgress)
     }
 
+    interface OnAttachmentListener{
+        fun onNewCamAttachmentRequested()
+        fun onNewFileAttachmentRequested()
+        fun onNewGalleryAttachmentRequested()
+    }
+
 }

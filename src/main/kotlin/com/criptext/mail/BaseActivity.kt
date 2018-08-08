@@ -3,8 +3,10 @@ package com.criptext.mail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -15,7 +17,6 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.search.SearchSceneModel
@@ -25,13 +26,17 @@ import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
+import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.IntentUtils
 import com.criptext.mail.utils.ui.ActivityMenu
 import droidninja.filepicker.FilePickerBuilder
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
+import java.util.*
+
 
 /**
  * Base class for all of our activities. If you extend this class you don't need to implement
@@ -69,6 +74,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
      * into the type that your controller expects.
      */
     abstract fun initController(receivedModel: Any): SceneController
+    protected val photoUtil = PhotoUtil.Default()
 
     private fun getCachedModelOrThrow(): Any {
         return cachedModels[javaClass]
@@ -201,6 +207,23 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                         .setActivityTheme(R.style.PickerTheme)
                         .pickFile(this)
             }
+            is ExternalActivityParams.ImagePicker -> {
+                FilePickerBuilder.getInstance()
+                        .enableVideoPicker(true)
+                        .setMaxCount(10)
+                        .setActivityTheme(R.style.AppTheme)
+                        .enableCameraSupport(false)
+                        .pickPhoto(this)
+            }
+            is ExternalActivityParams.Camera -> {
+                val file = photoUtil.createImageFile()
+                if(file != null) {
+                    val photoIntent = IntentUtils.createIntentToOpenCamera(this, file)
+                    if (photoIntent.resolveActivity(this.packageManager) != null)
+                        startActivityForResult(photoIntent, PhotoUtil.REQUEST_CODE_CAMERA)
+                }
+
+            }
             is ExternalActivityParams.FilePresent -> {
                 val file = File(params.filepath)
                 val newIntent = IntentUtils.createIntentToOpenFileInExternalApp(this, file)
@@ -241,5 +264,4 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     enum class RequestCode {
         writeAccess
     }
-
 }
