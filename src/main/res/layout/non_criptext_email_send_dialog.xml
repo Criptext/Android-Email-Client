@@ -68,7 +68,7 @@
                 android:background="@drawable/success_circle"
                 android:padding="9dp"
                 android:src="@drawable/check"
-                android:tint="@color/blue_medium"
+                android:tint="@color/colorOpened"
                 android:visibility="gone" />
         </FrameLayout>
 
@@ -129,7 +129,7 @@
                 android:background="@drawable/success_circle"
                 android:padding="9dp"
                 android:src="@drawable/check"
-                android:tint="@color/blue_medium"
+                android:tint="@color/colorOpened"
                 android:visibility="gone" />
         </FrameLayout>
 

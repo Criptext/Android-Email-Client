@@ -9,7 +9,6 @@ import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
-import org.apache.commons.lang3.ClassUtils.getPackageName
 import java.io.File
 
 

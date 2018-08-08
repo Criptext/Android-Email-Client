@@ -17,7 +17,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
         fun createNewTemplateMessageBody(template: String, signature: String): String {
             val builder = StringBuilder(template)
             if(signature.isNotEmpty()) {
-                builder.append("<div></div><br>")
+                builder.append("<div></div><br><br>")
                 builder.append(signature)
             }
             return builder.toString()
@@ -34,7 +34,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteEnd)
             builder.append(replyBodyContainerTagEnd)
             if(signature.isNotEmpty()) {
-                builder.append("<div></div><br>")
+                builder.append("<div></div><br><br>")
                 builder.append(signature)
             }
             return builder.toString()
@@ -54,7 +54,7 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             builder.append(blockQuoteEnd)
             builder.append(replyBodyContainerTagEnd)
             if(signature.isNotEmpty()) {
-                builder.append("<div></div><br>")
+                builder.append("<div></div><br><br>")
                 builder.append(signature)
             }
             return builder.toString()

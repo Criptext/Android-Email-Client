@@ -140,22 +140,13 @@
                 android:inputType="textCapSentences"
                 fontPath="fonts/NunitoSans-Bold.ttf"/>
 
-            <org.wordpress.aztec.AztecText
+            <jp.wasabeef.richeditor.RichEditor
                 android:id="@+id/body_input"
-                android:layout_marginLeft="14dp"
-                android:layout_marginRight="14dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapSentences|textMultiLine"
-                android:scrollbars="vertical"
-                android:imeOptions="flagNoExtractUi"
-                aztec:blockVerticalPadding="1dp"
-                aztec:textColor="@android:color/black"
-                aztec:quoteBackground="@android:color/white"
-                aztec:quoteColor="#ccc"
-                aztec:quoteMargin="10dp"
-                aztec:quotePadding="10dp"
-                aztec:quoteWidth="1dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"/>
 
             <ImageView
                 android:id="@+id/imageViewMore"
@@ -218,29 +209,6 @@
                 android:src="@drawable/attachment_copy"/>
 
         </FrameLayout>
-
-        <LinearLayout
-            android:id="@+id/view_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#d8d8d8"
-                android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"/>
-
-            <org.wordpress.aztec.toolbar.AztecToolbar
-                android:id="@+id/formatting_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginEnd="60dp"
-                aztec:mediaToolbarAvailable="false"/>
-
-        </LinearLayout>
 
     </FrameLayout>
 

@@ -81,64 +81,17 @@
 
     </RelativeLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/view_signature"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone">
-
-        <org.wordpress.aztec.source.SourceViewEditText
-            android:id="@+id/source"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="14dp"
-            android:layout_marginRight="14dp"
-            android:inputType="textNoSuggestions|textMultiLine"
-            android:scrollbars="vertical"
-            android:imeOptions="flagNoExtractUi"
-            android:visibility="gone"
-            aztec:codeBackgroundColor="@android:color/white"
-            aztec:codeTextColor="@android:color/black" />
-
-        <org.wordpress.aztec.AztecText
-            android:id="@+id/visual"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="14dp"
-            android:layout_marginRight="14dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences|textMultiLine"
-            android:scrollbars="vertical"
-            android:imeOptions="flagNoExtractUi"
-            aztec:blockVerticalPadding="1dp"
-            aztec:textColor="@android:color/black"
-            aztec:drawableFailed="@drawable/pixel"
-            aztec:drawableLoading="@drawable/pixel"/>
-
-    </FrameLayout>
-
-    <LinearLayout
-        android:id="@+id/view_toolbar"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_margin="18dp"
         android:visibility="gone">
 
-        <View
+        <jp.wasabeef.richeditor.RichEditor
+            android:id="@+id/editor"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#d8d8d8"
-            android:layout_marginStart="18dp"
-            android:layout_marginEnd="18dp"/>
-
-        <org.wordpress.aztec.toolbar.AztecToolbar
-            android:id="@+id/formatting_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_margin="18dp"
-            aztec:mediaToolbarAvailable="false"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

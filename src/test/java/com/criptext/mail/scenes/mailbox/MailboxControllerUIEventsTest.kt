@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.R
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
@@ -158,6 +159,6 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         sentRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.trash.text,
                 loadParams = LoadParams.Reset(size = 20),
-                userEmail = "gabriel@jigl.com")
+                userEmail = "gabriel@${Contact.mainDomain}")
     }
 }
