@@ -59,7 +59,7 @@ class UploadAttachmentWorkerTest {
     }
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
-            UploadAttachmentWorker(filepath = filepath, fileServiceAuthToken = fileServiceAuthToken,
+            UploadAttachmentWorker(filepath = filepath,
                     httpClient = httpClient, publishFn = {}, fileKey = null)
 
     @Test

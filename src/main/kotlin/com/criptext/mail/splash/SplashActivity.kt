@@ -1,5 +1,7 @@
 package com.criptext.mail.splash
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -26,6 +28,8 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
+        val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
     }

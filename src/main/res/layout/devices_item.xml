@@ -31,7 +31,6 @@
         android:layout_height="wrap_content"
         android:textSize="13sp"
         android:textColor="#61b900"
-        android:text="@string/current_device"
         android:layout_margin="18dp"
         android:layout_alignParentEnd="true"/>
 

@@ -1,5 +1,6 @@
 package com.criptext.mail
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -81,6 +82,11 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             ?: throw IllegalStateException("No model found for $javaClass. Perhaps you opened the wrong activity")
     }
 
+    private fun dismissAllNotifications() {
+        val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
@@ -97,6 +103,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun onStart() {
         super.onStart()
+        dismissAllNotifications()
 
         if (controller.onStart(activityMessage))
             activityMessage = null

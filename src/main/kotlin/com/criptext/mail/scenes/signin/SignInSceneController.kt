@@ -205,7 +205,7 @@ class SignInSceneController(
                 false
             }
             is SignInLayoutState.InputPassword -> {
-                model.state = SignInLayoutState.LoginValidation(currentState.username)
+                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
                 resetLayout()
                 false
             }

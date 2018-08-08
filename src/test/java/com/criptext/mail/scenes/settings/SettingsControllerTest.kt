@@ -70,7 +70,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetCustomLabels.Success(labels = listOf()))
+        listenerSlot.captured(SettingsResult.ListDevices.Success(devices = listOf()))
 
         val observer = observerSlot.captured
         observer.onProfileNameChanged(newProfileName)
@@ -87,7 +87,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetCustomLabels.Success(labels = listOf()))
+        listenerSlot.captured(SettingsResult.ListDevices.Success(devices = listOf()))
 
         val observer = observerSlot.captured
         observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")

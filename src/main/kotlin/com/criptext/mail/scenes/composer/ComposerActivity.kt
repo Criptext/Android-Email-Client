@@ -25,7 +25,7 @@ class ComposerActivity : BaseActivity() {
     override val toolbarId = R.id.toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val httpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.basic, 14000L, 7000L)
+        val httpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
