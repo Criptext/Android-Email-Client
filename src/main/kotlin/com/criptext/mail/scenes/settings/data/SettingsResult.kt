@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.scenes.settings.devices.DeviceItem
 
 sealed class SettingsResult{
 
@@ -28,6 +29,11 @@ sealed class SettingsResult{
     sealed class ChangeVisibilityLabel : SettingsResult() {
         class Success: ChangeVisibilityLabel()
         class Failure: ChangeVisibilityLabel()
+    }
+
+    sealed class ListDevices : SettingsResult() {
+        class Success(val devices: List<DeviceItem>): ListDevices()
+        class Failure: ListDevices()
     }
 
 }

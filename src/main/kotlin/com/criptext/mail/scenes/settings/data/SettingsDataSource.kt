@@ -52,6 +52,11 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.ListDevices -> ListDevicesWorker(
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

@@ -44,7 +44,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 data.threadId, data.isPostNougat)
 
-            return cn.buildNewMailNotification(clickIntent = pendingIntent,
+            return cn.createNewMailNotification(clickIntent = pendingIntent,
                     title = data.title, body = data.body,
                     notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
 

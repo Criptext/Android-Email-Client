@@ -246,6 +246,7 @@
     <string name="error_getting_account">Error getting user account. Please try again</string>
     <string name="error_updating_account">Error updating user account. Please try again</string>
     <string name="error_login_out">Error login out. Please try again</string>
+    <string name="error_listing_devices">Error getting your device list from the server. Please try again</string>
     <string name="error_updating_signature">Error updating user signature. Please try again</string>
     <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_creating_labels">Error creating a label. Please try again</string>

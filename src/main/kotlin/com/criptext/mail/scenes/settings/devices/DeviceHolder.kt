@@ -13,12 +13,16 @@ import com.criptext.mail.R
 class DeviceHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     private val textViewDeviceName: TextView
+    private val textViewCurrent: TextView
 
     init {
         textViewDeviceName = view.findViewById(R.id.textViewDeviceName) as TextView
+        textViewCurrent = view.findViewById(R.id.textViewCurrentDevice) as TextView
     }
 
     fun bindDevice(deviceItem: DeviceItem){
-        textViewDeviceName.text = deviceItem.name
+        textViewDeviceName.text = deviceItem.friendlyName
+        if(deviceItem.isCurrent)
+            textViewCurrent.setText(R.string.current_device)
     }
 }

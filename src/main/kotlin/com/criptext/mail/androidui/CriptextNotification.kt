@@ -5,13 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.Utility
 
@@ -34,9 +31,9 @@ class CriptextNotification(val ctx: Context) {
         val CHANNEL_ID = "new_email_channel"// The id of the channel.
     }
 
-    private fun buildNotification(builder: NotificationCompat.Builder): Notification {
+    private fun buildNewMailNotification(builder: NotificationCompat.Builder): Notification {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            builder.color = Color.parseColor("#0276a9")
+            builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
         notBuild.defaults = Notification.DEFAULT_VIBRATE
@@ -48,8 +45,21 @@ class CriptextNotification(val ctx: Context) {
         return notBuild
     }
 
-    fun buildNewMailNotification(clickIntent: PendingIntent, title: String, body:String,
-                                 notificationId: Int)
+    private fun buildOpenMailboxNotification(builder: NotificationCompat.Builder): Notification {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            builder.color = Color.parseColor("#0091ff")
+
+        val notBuild = builder.build()
+        notBuild.ledARGB = Color.YELLOW
+        notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
+        notBuild.ledOnMS = 1000
+        notBuild.ledOffMS = 1000
+
+        return notBuild
+    }
+
+    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String,
+                                  notificationId: Int)
             : Notification {
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -71,7 +81,32 @@ class CriptextNotification(val ctx: Context) {
 
 
 
-        return buildNotification(builder)
+        return buildNewMailNotification(builder)
+    }
+
+    fun createOpenMailboxNotification(clickIntent: PendingIntent, title: String, body:String,
+                                      notificationId: Int)
+            : Notification {
+
+        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setContentIntent(clickIntent)
+                .setGroup(ACTION_INBOX)
+                .setGroupSummary(false)
+                .setSmallIcon(R.drawable.push_icon)
+                .setColor(Color.CYAN)
+                .setLargeIcon(Utility.getBitmapFromText(
+                        title,
+                        title[0].toString().toUpperCase(),
+                        250,
+                        250))
+                .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+
+
+
+        return buildOpenMailboxNotification(builder)
     }
 
     fun notify(id: Int, notification: Notification) {
@@ -85,6 +120,7 @@ class CriptextNotification(val ctx: Context) {
     fun showHeaderNotification(title: String, icon: Int, group: String){
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID)
                 .setContentTitle(title)
+                .setColor(Color.parseColor("#0091ff"))
                 .setSmallIcon(icon)
                 .setAutoCancel(true)
                 .setGroupSummary(true)

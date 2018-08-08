@@ -1,12 +1,9 @@
 package com.criptext.mail.push
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.support.annotation.RequiresApi
-import android.support.v4.content.LocalBroadcastManager
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 
@@ -52,7 +49,7 @@ sealed class OpenMailboxNotifier(val data: PushData.OpenMailbox): Notifier {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.buildNewMailNotification(clickIntent = pendingIntent,
+            return cn.createOpenMailboxNotification(clickIntent = pendingIntent,
                     title = data.title, body = data.body,
                     notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
 

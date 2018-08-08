@@ -41,6 +41,7 @@ class SettingsController(
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.Logout -> onLogout(result)
+            is SettingsResult.ListDevices -> onListDevices(result)
         }
     }
 
@@ -60,18 +61,21 @@ class SettingsController(
             val intent = Intent(context, WebViewActivity::class.java)
             intent.putExtra("url", "https://criptext.com/privacy")
             context.startActivity(intent)
+            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onTermsOfServiceClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
             intent.putExtra("url", "https://criptext.com/terms")
             context.startActivity(intent)
+            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onOpenSourceLibrariesClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/open-source-libraries-android")
+            intent.putExtra("url", "https://criptext.com/open-source-android")
             context.startActivity(intent)
+            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onLogoutClicked() {
             scene.showLogoutDialog()
@@ -114,6 +118,9 @@ class SettingsController(
         model.signature = activeAccount.signature
         if(model.labels.isEmpty()) {
             dataSource.submitRequest(SettingsRequest.GetCustomLabels())
+        }
+        if(model.devices.isEmpty()) {
+            dataSource.submitRequest(SettingsRequest.ListDevices())
         }
         return false
     }
@@ -169,12 +176,6 @@ class SettingsController(
                     labelWrapper.isSelected = it.visible
                     labelWrapper
                 })
-                //This is done until we get devices from server
-                model.devices.add(DeviceItem(activeAccount.deviceId.toLong(), DeviceUtils.getDeviceName()))
-                scene.attachView(
-                        name = activeAccount.name,
-                        model = model,
-                        settingsUIObserver = settingsUIObserver)
             }
             is SettingsResult.GetCustomLabels.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_getting_labels))
@@ -191,6 +192,22 @@ class SettingsController(
             is SettingsResult.Logout.Failure -> {
                 scene.dismissLoginOutDialog()
                 scene.showMessage(UIMessage(R.string.error_login_out))
+            }
+        }
+    }
+
+    private fun onListDevices(result: SettingsResult.ListDevices){
+        when(result) {
+            is SettingsResult.ListDevices.Success -> {
+                model.devices.clear()
+                model.devices.addAll(result.devices)
+                scene.attachView(
+                        name = activeAccount.name,
+                        model = model,
+                        settingsUIObserver = settingsUIObserver)
+            }
+            is SettingsResult.ListDevices.Failure -> {
+                scene.showMessage(UIMessage(R.string.error_listing_devices))
             }
         }
     }

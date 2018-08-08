@@ -1,6 +1,7 @@
 package com.criptext.mail.services
 
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import com.criptext.mail.api.HttpClient
