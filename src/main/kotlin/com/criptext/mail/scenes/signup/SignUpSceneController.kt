@@ -258,9 +258,7 @@ class SignUpSceneController(
     private fun submitCreateUser() {
         scene.showKeyGenerationHolder()
 
-        val hashedPassword = (model.username.value.substring(0 .. 3)
-                + model.password).sha256()
-
+        val hashedPassword = model.password.sha256()
         val newAccount = IncompleteAccount(
                 username = model.username.value,
                 name = model.fullName.value,

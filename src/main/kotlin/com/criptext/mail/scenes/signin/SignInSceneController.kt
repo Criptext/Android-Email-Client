@@ -113,9 +113,7 @@ class SignInSceneController(
             model.state = currentState.copy(buttonState = newButtonState)
             scene.setSubmitButtonState(newButtonState)
 
-            val hashedPassword = (currentState.username.substring(0 .. 3)
-                    + currentState.password).sha256()
-
+            val hashedPassword = currentState.password.sha256()
             val req = SignInRequest.AuthenticateUser(
                     username = currentState.username,
                     password = hashedPassword
