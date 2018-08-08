@@ -507,6 +507,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     reloadMailboxThreads()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 } else -> {
+                    threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
             }
@@ -520,6 +521,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     feedController.reloadFeeds()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 } else -> {
+                    threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
             }
@@ -570,6 +572,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {
+                    threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
             }

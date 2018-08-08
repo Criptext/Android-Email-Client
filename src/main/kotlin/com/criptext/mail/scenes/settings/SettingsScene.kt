@@ -24,6 +24,7 @@ interface SettingsScene{
     fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog()
     fun showLoginOutDialog()
+    fun dismissLoginOutDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun getLabelListView(): VirtualListView
 
@@ -90,6 +91,10 @@ interface SettingsScene{
 
         override fun showLoginOutDialog() {
             settingLoginOutDialog.showLoginOutDialog(settingsUIObserver)
+        }
+
+        override fun dismissLoginOutDialog() {
+            settingLoginOutDialog.dismiss()
         }
 
         override fun getLabelListView(): VirtualListView {

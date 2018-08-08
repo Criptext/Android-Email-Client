@@ -12,6 +12,7 @@ import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
@@ -112,9 +113,12 @@ class SignInSceneController(
             model.state = currentState.copy(buttonState = newButtonState)
             scene.setSubmitButtonState(newButtonState)
 
+            val hashedPassword = (currentState.username.substring(0 .. 3)
+                    + currentState.password).sha256()
+
             val req = SignInRequest.AuthenticateUser(
                     username = currentState.username,
-                    password = currentState.password
+                    password = hashedPassword
             )
             dataSource.submitRequest(req)
         }

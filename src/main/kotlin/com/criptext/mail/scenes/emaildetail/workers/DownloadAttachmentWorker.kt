@@ -9,6 +9,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.UIMessage
@@ -25,15 +26,15 @@ class DownloadAttachmentWorker(private val fileToken: String,
                                private val emailId: Long,
                                private val fileKey: String?,
                                private val downloadPath: String,
-                             httpClient: HttpClient,
-                             fileServiceAuthToken: String,
+                               httpClient: HttpClient,
+                               activeAccount: ActiveAccount,
                              override val publishFn: (EmailDetailResult.DownloadFile) -> Unit)
     : BackgroundWorker<EmailDetailResult.DownloadFile> {
 
     override val canBeParallelized = false
     var filepath = ""
 
-    private val fileServiceAPIClient = FileServiceAPIClient(httpClient, fileServiceAuthToken)
+    private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): EmailDetailResult.DownloadFile {
         return EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))

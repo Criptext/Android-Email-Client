@@ -17,12 +17,9 @@ import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.KnownAddress
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.signal.*
-import com.criptext.mail.utils.DateUtils
-import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
 import com.criptext.mail.utils.EmailAddressUtils.isFromCriptextDomain
-import com.criptext.mail.utils.Encoding
-import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -30,7 +27,6 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import org.whispersystems.libsignal.SignalProtocolAddress
 
 
 /**
@@ -218,7 +214,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         if(composerInputData.passwordForNonCriptextUsers == null) {
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    composerInputData.body, null, null, null)
+                    getAttachmentsForUnencryptedGuestEmails(composerInputData.body), null, null, null)
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
             val sessionToEncrypt = getSignalSessionJSON(tempSignalUser, tempSignalUser.fetchAPreKeyBundle()).toString().toByteArray()
@@ -244,6 +240,22 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         signalClient.createSessionsFromBundles(listOf(keyBundleFromTempUser))
         return tempUser
+    }
+
+
+    private fun getAttachmentsForUnencryptedGuestEmails(body: String): String{
+
+        val bodyWithAttachments = StringBuilder()
+        bodyWithAttachments.append(body)
+
+        for (attachment in this.attachments){
+            val mimeTypeSource = getMimeTypeSource(FileUtils.getMimeType(FileUtils.getName(attachment.filepath)))
+            val encodedParams = Encoding.byteArrayToString((attachment.filetoken+":"+fileKey).toByteArray())
+            bodyWithAttachments.append(HTMLUtils.createAttchmentForUnencryptedEmailToNonCriptextUsers(
+                    attachment = attachment, encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
+            )
+        }
+        return bodyWithAttachments.toString()
     }
 
     private fun getSignalSessionJSON(tempUser: DummyUser, keyBundleFromTempUser: PreKeyBundleShareData.DownloadBundle):JSONObject{
@@ -277,6 +289,20 @@ class SendMailWorker(private val signalClient: SignalClient,
                 UIMessage(resId = R.string.send_bad_status, args = arrayOf(ex.errorCode))
             is NetworkErrorException -> UIMessage(resId = R.string.send_network_error)
             else -> UIMessage(resId = R.string.send_try_again_error)
+        }
+    }
+
+    private fun getMimeTypeSource(mimeType: String):String{
+        return when {
+            mimeType.contains("image") -> "fileimage"
+            mimeType.contains("powerpoint") || mimeType.contains("presentation") -> "fileppt"
+            mimeType.contains("excel") || mimeType.contains("sheet") -> "fileexcel"
+            mimeType.contains("pdf") -> "filepdf"
+            mimeType.contains("word") -> "fileword"
+            mimeType.contains("audio") -> "fileaudio"
+            mimeType.contains("video") -> "filevideo"
+            mimeType.contains("zip") -> "filezip"
+            else -> "filedefault"
         }
     }
 

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.JSONData
 import com.criptext.mail.signal.SignalEncryptedData
+import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -68,9 +69,15 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("cc", JSONArray(cc))
             json.put("bcc", JSONArray(bcc))
             json.put("body", body)
-            json.put("session", session)
-            json.put("salt", salt)
-            json.put("iv", iv)
+            if(session != null && iv != null && salt != null) {
+                val saltBytes = Encoding.stringToByteArray(salt)
+                val ivBytes = Encoding.stringToByteArray(iv)
+                val sessionBytes =  Encoding.stringToByteArray(session)
+                val newEncodedSession = Encoding.byteArrayToString(
+                        saltBytes + ivBytes + sessionBytes)
+                json.put("session", newEncodedSession)
+            }else
+                json.put("session", null)
             return json
         }
     }

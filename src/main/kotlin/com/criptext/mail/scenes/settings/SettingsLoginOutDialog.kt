@@ -47,4 +47,8 @@ class SettingsLoginOutDialog(val context: Context) {
 
         return newLogoutDialog
     }
+
+    fun dismiss() {
+        dialog?.dismiss()
+    }
 }
