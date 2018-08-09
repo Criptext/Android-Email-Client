@@ -187,7 +187,7 @@ class SettingsController(
     private fun onLogout(result: SettingsResult.Logout){
         when(result) {
             is SettingsResult.Logout.Success -> {
-                host.goToScene(SignInParams(), false)
+                host.exitToScene(SignInParams(), null, false, true)
             }
             is SettingsResult.Logout.Failure -> {
                 scene.dismissLoginOutDialog()
@@ -207,6 +207,17 @@ class SettingsController(
                         settingsUIObserver = settingsUIObserver)
             }
             is SettingsResult.ListDevices.Failure -> {
+                model.devices.clear()
+                model.devices.add(DeviceItem(
+                        id = activeAccount.deviceId.toLong(),
+                        friendlyName = DeviceUtils.getDeviceName(),
+                        name = DeviceUtils.getDeviceName(),
+                        isCurrent = true,
+                        deviceType = DeviceUtils.getDeviceType().ordinal))
+                scene.attachView(
+                        name = activeAccount.name,
+                        model = model,
+                        settingsUIObserver = settingsUIObserver)
                 scene.showMessage(UIMessage(R.string.error_listing_devices))
             }
         }

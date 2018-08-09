@@ -26,7 +26,7 @@ class SignUpActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val appDB = AppDatabase.getAppDatabase(this.applicationContext)
-        val signalKeyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType(this.applicationContext))
+        val signalKeyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
         val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))
         val signUpSceneModel = receivedModel as SignUpSceneModel
         val keyValueStorage = KeyValueStorage.SharedPrefs(this)

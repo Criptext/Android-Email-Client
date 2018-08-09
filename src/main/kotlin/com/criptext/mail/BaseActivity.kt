@@ -37,6 +37,9 @@ import droidninja.filepicker.FilePickerBuilder
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+
+
 
 
 /**
@@ -125,8 +128,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         if (shouldCallSuper) super.onBackPressed()
     }
 
-    private fun startActivity(activityClass: Class<*>) {
+    private fun startActivity(activityClass: Class<*>, isExitCompletely: Boolean  = false) {
         val intent = Intent(this, activityClass)
+        if(isExitCompletely)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 
@@ -164,21 +169,22 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         return getString(message.resId, *message.args)
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean) {
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
-        startActivity(params.activityClass)
+        startActivity(params.activityClass, deletePastIntents)
 
         if (! keep) finish()
     }
 
-    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean) {
+    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
+                             forceAnimation: Boolean, deletePastIntents: Boolean) {
         BaseActivity.activityMessage = activityMessage
         finish()
         if(forceAnimation) {
             overridePendingTransition(0, R.anim.slide_out_right)
         }
-        goToScene(params, false)
+        goToScene(params, false, deletePastIntents)
     }
 
     override fun getIntentExtras(): IntentExtrasData? {

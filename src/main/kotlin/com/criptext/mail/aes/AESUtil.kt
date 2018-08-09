@@ -1,6 +1,11 @@
 package com.criptext.mail.aes
 
 import com.criptext.mail.utils.Encoding
+import org.spongycastle.crypto.PBEParametersGenerator
+import org.spongycastle.crypto.digests.SHA256Digest
+import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
+import org.spongycastle.crypto.params.KeyParameter
+import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -55,10 +60,12 @@ class AESUtil(keyAndIV: String) {
             val salt = ByteArray(8)
             val srandom = SecureRandom()
             srandom.nextBytes(salt)
-            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val spec = PBEKeySpec(password.toCharArray(), salt, 10000, 128)
-            val tmp = factory.generateSecret(spec)
-            val skey = SecretKeySpec(tmp.encoded, "AES")
+
+            val generator = PKCS5S2ParametersGenerator(SHA256Digest())
+            generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password.toCharArray()), salt, 10000)
+            val key = generator.generateDerivedMacParameters(128) as KeyParameter
+
+            val skey = SecretKeySpec(key.key, "AES")
 
             val iv = ByteArray(128 / 8)
             srandom.nextBytes(iv)

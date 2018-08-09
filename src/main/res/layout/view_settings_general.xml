@@ -271,7 +271,8 @@
                 android:textSize="14sp"
                 android:gravity="center_vertical"
                 android:textColor="#6a707e"
-                android:paddingStart="17dp"/>
+                android:paddingStart="17dp"
+                android:visibility="gone"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -283,7 +284,8 @@
                 android:layout_marginBottom="10dp"
                 android:id="@+id/settings_notifications"
                 android:clickable="true"
-                android:foreground="?attr/selectableItemBackground">
+                android:foreground="?attr/selectableItemBackground"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -316,12 +318,12 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
                 android:id="@+id/settings_privacy_policy"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
@@ -346,14 +348,21 @@
 
             </FrameLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
                 android:id="@+id/settings_terms_of_service"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
@@ -378,14 +387,21 @@
 
             </FrameLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
                 android:id="@+id/settings_open_source_libraries"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
@@ -410,14 +426,21 @@
 
             </FrameLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
                 android:id="@+id/settings_logout"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
