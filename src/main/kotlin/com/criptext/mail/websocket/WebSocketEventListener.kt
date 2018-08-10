@@ -95,6 +95,13 @@ interface WebSocketEventListener{
      * @param update the received update
      */
     fun onNewPeerUsernameChangedUpdate(update: PeerUsernameChangedStatusUpdate)
+    /**
+     * Invoked when a new tracking update been received. Subscribers should try to add the update
+     * to the list of notifications in the UI.
+     * @param emailId id of the email whose delivery status has been updated.
+     * @param update the received update
+     */
+    fun onDeviceRemoved()
 
     /**
      * Called when something went wrong processing the event. Subscribers may want to display an

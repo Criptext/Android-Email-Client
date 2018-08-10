@@ -63,13 +63,16 @@ class MailboxActivity : BaseActivity() {
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
+        val storage = KeyValueStorage.SharedPrefs(this)
 
         // seedEmails(appDB)
         val controller =  initController(
                 appDB = appDB,
                 hostActivity = this,
                 activity = this,
-                model = model)
+                model = model,
+                storage = storage
+                )
         notificationMenuClickListener = controller.menuClickListener
         return controller
     }
@@ -107,7 +110,8 @@ class MailboxActivity : BaseActivity() {
         fun initController(appDB: AppDatabase,
                            activity: Activity,
                            hostActivity: IHostActivity,
-                           model: MailboxSceneModel): MailboxSceneController {
+                           model: MailboxSceneModel,
+                           storage: KeyValueStorage): MailboxSceneController {
 
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
@@ -118,6 +122,7 @@ class MailboxActivity : BaseActivity() {
 
             val mailboxDataSource = MailboxDataSource(
                 signalClient = signalClient,
+                storage = storage,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 emailDao = appDB.emailDao(),

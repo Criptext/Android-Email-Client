@@ -15,6 +15,8 @@ interface SettingsUIObserver {
     fun onOpenSourceLibrariesClicked()
     fun onLogoutClicked()
     fun onLogoutConfirmedClicked()
+    fun onRemoveDeviceConfirmed(deviceId: Int, position: Int)
+    fun onRemoveDevice(deviceId: Int, position: Int)
     fun onProfileNameChanged(fullName: String)
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()

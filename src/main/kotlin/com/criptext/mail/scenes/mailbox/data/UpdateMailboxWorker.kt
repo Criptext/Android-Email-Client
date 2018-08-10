@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -28,6 +29,7 @@ class UpdateMailboxWorker(
         private val loadedThreadsCount: Int,
         private val label: Label,
         httpClient: HttpClient,
+        storage: KeyValueStorage,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
@@ -35,7 +37,7 @@ class UpdateMailboxWorker(
 
     override val canBeParallelized = false
 
-    private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
+    private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true, storage)
 
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
         val message = createErrorMessage(ex)

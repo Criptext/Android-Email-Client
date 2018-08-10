@@ -78,6 +78,7 @@
     <string name="title_terms_of_service">Terms of Service</string>
     <string name="title_open_source_libraries">Open Source Libraries</string>
     <string name="title_logout">Logout</string>
+    <string name="title_remove_device">Remove Device</string>
     <string name="title_custom_dialog">New Label</string>
     <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
@@ -97,6 +98,10 @@
     <!-- LOGOUT DIALOG -->
     <string name="logout_dialog_message"><b>Alert!:</b> Login out will delete all emails from this device. Your emails will remain intact in your other devices, if any. Do you want to logout?</string>
     <string name="login_out_dialog_message">Login out…</string>
+
+    <!-- REMOVE DEVICE DIALOG -->
+    <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
+    <string name="removing_device_dialog_message">Removing device…</string>
 
 
     <!-- NON CRIPTEXT SEND EMAIL DIALOG -->
@@ -191,6 +196,7 @@
     <string name="unsending">Unsending</string>
     <string name="unsend_no_content">The content is no longer available</string>
     <string name="ellipsis">…</string>
+    <string name="device_removed">Device removed successfully</string>
 
     <string name="please_change_account_prop">Please change account property</string>
     <string name="email_will_expire_in">Email will expire in:</string>
@@ -247,6 +253,7 @@
     <string name="error_updating_account">Error updating user account. Please try again</string>
     <string name="error_login_out">Error login out. Please try again</string>
     <string name="error_listing_devices">Error getting your device list from the server.</string>
+    <string name="error_removing_device">Error removing the selected device. Please try again</string>.
     <string name="error_updating_signature">Error updating user signature. Please try again</string>
     <string name="error_getting_labels">Error getting labels. Please try again</string>
     <string name="error_creating_labels">Error creating a label. Please try again</string>

@@ -1,9 +1,12 @@
 package com.criptext.mail.websocket
 
+import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.TrackingUpdate
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -43,6 +46,8 @@ class WebSocketTests {
     private lateinit var controller: WebSocketController
     private lateinit var webSocket: WebSocketClient
     private lateinit var server : MockWebServer
+    private lateinit var storage : KeyValueStorage
+    private lateinit var db : TestDatabase
 
     private val onMessageReceivedSlot = CapturingSlot<(String)->Unit>()
 
@@ -56,6 +61,8 @@ class WebSocketTests {
         emailLabelDao = mockk(relaxed = true)
         fileDao = mockk(relaxed = true)
         feedItemDao = mockk(relaxed = true)
+        storage = mockk(relaxed = true)
+        db = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
         every { dao.runTransaction(capture(lambdaSlot)) } answers {
             lambdaSlot.captured()
@@ -71,11 +78,9 @@ class WebSocketTests {
         val account = ActiveAccount(name = "Gabriel", recipientId = "tester", deviceId = 1,
                 jwt = "__JWT_TOKEN__", signature = "")
 
-        dataSource = EventDataSource(runner = runner , emailInsertionDao = dao, emailDao = emailDao,
-                emailInsertionAPIClient = api, signalClient = signal, activeAccount = account,
-                contactDao = contactDao, feedItemDao = feedItemDao, fileDao = fileDao,
-                accountDao = accountDao, labelDao = labelDao, emailLabelDao = emailLabelDao,
-                httpClient = httpClient)
+        dataSource = EventDataSource(runner = runner , emailInsertionAPIClient = api,
+                signalClient = signal, activeAccount = account, httpClient = httpClient,
+                storage = storage, db = db)
 
         webSocket = mockk()
         every { webSocket.connect(any(), capture(onMessageReceivedSlot))} just Runs

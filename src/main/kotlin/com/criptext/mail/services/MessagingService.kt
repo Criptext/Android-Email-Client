@@ -1,16 +1,14 @@
 package com.criptext.mail.services
 
 import android.app.ActivityManager
-import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.criptext.mail.DeckardApplication
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
-import com.criptext.mail.push.data.PushRequest
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -20,7 +18,8 @@ class MessagingService : FirebaseMessagingService(){
     private val pushController = PushController(
             dataSource = PushDataSource(db = AppDatabase.getAppDatabase(this),
                                         runner = AsyncTaskWorkRunner(),
-                                        httpClient = HttpClient.Default()),
+                                        httpClient = HttpClient.Default(),
+                                        storage = DeckardApplication.getAppStorage()),
             isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
 
 

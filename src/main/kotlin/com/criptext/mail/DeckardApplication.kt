@@ -1,6 +1,7 @@
 package com.criptext.mail
 
 import android.app.Application
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
@@ -20,5 +21,16 @@ class DeckardApplication : Application(){
         if(activeAccount != null) {
             WebSocketSingleton.getInstance(activeAccount, applicationContext)
         }
+        appKeyStorage = KeyValueStorage.SharedPrefs(applicationContext)
     }
+
+    companion object {
+
+        private lateinit var appKeyStorage: KeyValueStorage
+
+        fun getAppStorage(): KeyValueStorage {
+            return appKeyStorage
+        }
+    }
+
 }

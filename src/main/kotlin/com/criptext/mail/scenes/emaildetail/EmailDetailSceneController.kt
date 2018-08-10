@@ -22,6 +22,7 @@ import com.criptext.mail.scenes.mailbox.OnDeleteThreadListener
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.params.ComposerParams
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
@@ -520,6 +521,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceRemoved() {
+            host.exitToScene(SignInParams(), null, false)
+        }
+
         override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
 
         }

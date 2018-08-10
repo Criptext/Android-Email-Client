@@ -61,4 +61,9 @@ sealed class EventResult {
         class Failure(val message: UIMessage): UpdatePeerLabelCreatedStatus()
     }
 
+    sealed class DeviceRemoved: EventResult()  {
+        class Success: DeviceRemoved()
+        class Failure: DeviceRemoved()
+    }
+
 }

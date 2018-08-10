@@ -57,6 +57,13 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.RemoveDevice -> RemoveDeviceWorker(
+                    deviceId = params.deviceId,
+                    position = params.position,
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

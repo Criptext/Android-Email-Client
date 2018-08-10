@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.virtuallist.VirtualListAdapter
 
@@ -13,6 +14,7 @@ import com.criptext.mail.utils.virtuallist.VirtualListAdapter
  */
 
 class DeviceAdapter(private val mContext : Context,
+                    private val devicesListItemListener: DevicesListItemListener,
                     private val deviceList: VirtualList<DeviceItem>)
     : VirtualListAdapter(deviceList) {
 
@@ -22,6 +24,9 @@ class DeviceAdapter(private val mContext : Context,
                 if(holder.itemView == null) return
                 val device = deviceList[position]
                 holder.bindDevice(device)
+                holder.setOnLongClickListener {
+                    devicesListItemListener.onDeviceLongClicked(device, position)
+                }
             }
         }
     }
@@ -40,7 +45,7 @@ class DeviceAdapter(private val mContext : Context,
     }
 
     override fun getActualItemId(position: Int): Long {
-        return deviceList[position].id
+        return deviceList[position].id.toLong()
     }
 
 }
