@@ -16,17 +16,22 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ViewPagerAdapter
 import com.criptext.mail.utils.virtuallist.VirtualListView
+import java.text.FieldPosition
 
 interface SettingsScene{
 
-    fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
+    fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver,
+                   devicesListItemListener: DevicesListItemListener)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog()
     fun showLoginOutDialog()
+    fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissLoginOutDialog()
+    fun dismissRemovingDeviceDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun getLabelListView(): VirtualListView
+    fun getDeviceListView(): VirtualListView
 
     var settingsUIObserver: SettingsUIObserver?
 
@@ -51,18 +56,26 @@ interface SettingsScene{
                     context.getString(R.string.labels))
         }
 
+        private val deviceView: DevicesSettingsView by lazy {
+            DevicesSettingsView(view.findViewById(R.id.viewSettingsDevices),
+                    context.getString(R.string.devices))
+        }
+
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
         private val settingLoginOutDialog = SettingsLoginOutDialog(context)
+        private val settingRemovingDeviceDialog = SettingsRemovingDeviceDialog(context)
+        private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
         override fun attachView(name: String, model: SettingsModel,
-                                settingsUIObserver: SettingsUIObserver){
+                                settingsUIObserver: SettingsUIObserver,
+                                devicesListItemListener: DevicesListItemListener){
 
             this.settingsUIObserver = settingsUIObserver
-            loadTabs(name, model)
+            loadTabs(name, model, devicesListItemListener)
             backButton.setOnClickListener {
                 settingsUIObserver.onBackButtonPressed()
             }
@@ -93,20 +106,33 @@ interface SettingsScene{
             settingLoginOutDialog.showLoginOutDialog(settingsUIObserver)
         }
 
+        override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {
+            settingRemoveDeviceDialog.showRemoveDeviceDialog(settingsUIObserver, deviceId, position)
+        }
+
         override fun dismissLoginOutDialog() {
             settingLoginOutDialog.dismiss()
+        }
+
+        override fun dismissRemovingDeviceDialog() {
+            settingRemovingDeviceDialog.dismiss()
         }
 
         override fun getLabelListView(): VirtualListView {
             return labelView.getListView()
         }
 
-        private fun loadTabs(name: String, model: SettingsModel) {
-            setupViewPager(mViewPager, name, model)
+        override fun getDeviceListView(): VirtualListView {
+            return deviceView.getListView()
+        }
+
+        private fun loadTabs(name: String, model: SettingsModel, devicesListItemListener: DevicesListItemListener) {
+            setupViewPager(mViewPager, name, model, devicesListItemListener)
             tabs.setupWithViewPager(mViewPager)
         }
 
-        private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel) {
+        private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,
+                                   devicesListItemListener: DevicesListItemListener) {
 
             val adapter = ViewPagerAdapter()
             val generalView = GeneralSettingsView(view.findViewById(R.id.viewSettingsGeneral),
@@ -117,9 +143,7 @@ interface SettingsScene{
             labelView.initView(VirtualLabelWrapperList(model), settingsUIObserver)
             adapter.addView(labelView)
 
-            val deviceView = DevicesSettingsView(view.findViewById(R.id.viewSettingsDevices),
-                    context.getString(R.string.devices))
-            deviceView.initView(VirtualDeviceList(model))
+            deviceView.initView(VirtualDeviceList(model), devicesListItemListener)
             adapter.addView(deviceView)
             viewPager.offscreenPageLimit = 2
             viewPager.adapter = adapter

@@ -3,7 +3,9 @@ package com.criptext.mail.scenes.mailbox
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -55,6 +57,7 @@ class MailboxWebSocketTest {
     private lateinit var webSocketListenerSlot: CapturingSlot<WebSocketEventListener>
     private lateinit var feedController : FeedController
     private lateinit var activeAccount: ActiveAccount
+    private lateinit var storage: KeyValueStorage
 
     @Before
     fun setUp() {
@@ -74,6 +77,7 @@ class MailboxWebSocketTest {
         emailLabelDao = mockk()
         emailCOntactDao = mockk()
         accountDao = mockk()
+        storage = mockk(relaxed = true)
 
         emailInsertionDao = mockk(relaxed = true)
         val lambdaSlot = CapturingSlot<() -> Long>() // run transactions as they are invoked
@@ -91,9 +95,7 @@ class MailboxWebSocketTest {
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel",
                 deviceId = 3, jwt = "__JWT_TOKEN__", signature = "")
 
-        eventLocalDB = EventLocalDB(emailLabelDao = emailLabelDao, accountDao = accountDao, contactDao = contactDao,
-                labelDao = labelDao, fileDao = fileDao, emailContactDao = emailCOntactDao,
-                emailInsertionDao = emailInsertionDao, feedDao = feedItemDao, fileKeyDao = fileKeyDao, emailDao = emailDao)
+        eventLocalDB = mockk(relaxed = true)
 
         dataSource = MailboxDataSource(
                 runner = runner,
@@ -113,7 +115,8 @@ class MailboxWebSocketTest {
                 emailLabelDao = emailLabelDao,
                 emailContactJoinDao = emailCOntactDao,
                 accountDao = accountDao,
-                eventLocalDB = eventLocalDB)
+                eventLocalDB = eventLocalDB,
+                storage = storage)
 
         feedController = mockk(relaxed = true)
 

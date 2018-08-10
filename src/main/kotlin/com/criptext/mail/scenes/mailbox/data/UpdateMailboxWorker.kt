@@ -3,9 +3,11 @@ package com.criptext.mail.scenes.mailbox.data
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -28,6 +30,7 @@ class UpdateMailboxWorker(
         private val loadedThreadsCount: Int,
         private val label: Label,
         httpClient: HttpClient,
+        storage: KeyValueStorage,
         override val publishFn: (
                 MailboxResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<MailboxResult.UpdateMailbox> {
@@ -38,6 +41,8 @@ class UpdateMailboxWorker(
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
 
     override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
+        if(ex is ServerErrorException && ex.errorCode == 401)
+            return MailboxResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
         val message = createErrorMessage(ex)
         return MailboxResult.UpdateMailbox.Failure(label, message, ex)
     }
@@ -49,10 +54,7 @@ class UpdateMailboxWorker(
                     isManual = true,
                     mailboxThreads = null)
         else
-            MailboxResult.UpdateMailbox.Failure(
-                    mailboxLabel = label,
-                    message = createErrorMessage(failure.error),
-                    exception = failure.error)
+            catchException(failure.error)
     }
 
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateMailbox>)
@@ -82,6 +84,7 @@ class UpdateMailboxWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex) {
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             is DuplicateMessageException ->
                 UIMessage(resId = R.string.email_already_decrypted)
             else -> {

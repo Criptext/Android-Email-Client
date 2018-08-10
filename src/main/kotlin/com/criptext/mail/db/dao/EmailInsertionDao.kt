@@ -13,6 +13,9 @@ interface EmailInsertionDao {
     @Insert
     fun insertEmail(email: Email): Long
 
+    @Query("SELECT * FROM email")
+    fun getAll(): List<Email>
+
     @Query("DELETE FROM email WHERE id = :draftEmailId" )
     fun deletePreviouslyCreatedDraft(draftEmailId: Long)
 

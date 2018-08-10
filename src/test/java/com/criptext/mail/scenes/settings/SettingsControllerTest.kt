@@ -26,6 +26,7 @@ class SettingsControllerTest{
     private lateinit var sentRequests: MutableList<SettingsRequest>
 
     private val observerSlot = CapturingSlot<SettingsUIObserver>()
+    private val itemListenerSlot = CapturingSlot<DevicesListItemListener>()
     private lateinit var listenerSlot: CapturingSlot<(SettingsResult) -> Unit>
 
     private val newProfileName = "Andres"
@@ -53,7 +54,7 @@ class SettingsControllerTest{
         listenerSlot = CapturingSlot()
 
         every {
-            scene.attachView("Daniel", model, capture(observerSlot))
+            scene.attachView("Daniel", model, capture(observerSlot), capture(itemListenerSlot))
         } just Runs
 
         every {

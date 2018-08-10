@@ -3,21 +3,18 @@ package com.criptext.mail.scenes.settings.devices
 import com.criptext.mail.utils.DeviceUtils
 import org.json.JSONArray
 
-data class DeviceItem(val id: Long, val deviceType: Int, val friendlyName: String, val name: String, val isCurrent: Boolean) {
+data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String, val name: String, val isCurrent: Boolean) {
     companion object {
         fun fromJSON(metadataString: String): List<DeviceItem> {
             val devicesData = JSONArray(metadataString)
-            return (0..(devicesData.length()-1))
+            val devices = (0..(devicesData.length()-1))
                     .map {
                         val json = devicesData.getJSONObject(it)
-                        val device = DeviceItem(json.getLong("deviceId"),
+                        DeviceItem(json.getInt("deviceId"),
                                 json.getInt("deviceType"), json.getString("deviceFriendlyName"),
                                 json.getString("deviceName"), false)
-                        if(device.name == DeviceUtils.getDeviceName())
-                            device.copy(isCurrent = true)
-                        else
-                            device
                     }
+            return (devices.filter { it.isCurrent } + devices.filter { !it.isCurrent })
         }
     }
 }

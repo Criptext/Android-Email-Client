@@ -37,6 +37,8 @@ class DownloadAttachmentWorker(private val fileToken: String,
     private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): EmailDetailResult.DownloadFile {
+        if(ex is ServerErrorException && ex.errorCode == 401)
+            return EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
         return EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
     }
 
@@ -112,10 +114,7 @@ class DownloadAttachmentWorker(private val fileToken: String,
 
         return when (result) {
             is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
-            is Result.Failure -> {
-                EmailDetailResult.DownloadFile.Failure(fileToken,
-                        createErrorMessage(result.error))
-            }
+            is Result.Failure -> catchException(result.error)
         }
     }
 
@@ -126,15 +125,9 @@ class DownloadAttachmentWorker(private val fileToken: String,
         ex.printStackTrace()
         when (ex) { // these are not the real errors TODO fix!
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
-            is ServerErrorException -> {
-                if (ex.errorCode == 400) {
-                    UIMessage(resId = R.string.duplicate_name_error_exception)
-                } else {
-                    UIMessage(resId = R.string.server_error_exception)
-                }
-            }
+            is ServerErrorException -> UIMessage(resId = R.string.server_error)
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
-            else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
+            else -> UIMessage(resId = R.string.error_downloading_file)
         }
     }
 

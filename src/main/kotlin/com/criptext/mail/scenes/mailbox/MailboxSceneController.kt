@@ -21,13 +21,16 @@ import com.criptext.mail.scenes.mailbox.data.*
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
-import com.criptext.mail.scenes.params.ComposerParams
-import com.criptext.mail.scenes.params.EmailDetailParams
-import com.criptext.mail.scenes.params.SearchParams
-import com.criptext.mail.scenes.params.SettingsParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.data.EventDataSource
+import com.criptext.mail.websocket.data.EventRequest
+import com.criptext.mail.websocket.data.EventResult
+import com.google.android.gms.signin.SignIn
 
 /**
  * Created by sebas on 1/30/18.
@@ -41,6 +44,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val feedController : FeedController) : SceneController() {
 
     private val threadListController = ThreadListController(model, scene.virtualListView)
+
+    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+        when(result) {
+            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+        }
+    }
+
     private val dataSourceListener = { result: MailboxResult ->
         when (result) {
             is MailboxResult.GetSelectedLabels -> dataSourceController.onSelectedLabelsLoaded(result)
@@ -274,6 +284,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
+        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
         scene.attachView(
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
@@ -484,6 +495,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     handleSuccessfulMailboxUpdate(resultData)
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
+                is MailboxResult.UpdateMailbox.Unauthorized ->
+                    removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
 
@@ -510,9 +523,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Success ->  {
                     reloadMailboxThreads()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                } else -> {
+                }
+                is MailboxResult.UpdateEmailThreadsLabelsRelations.Failure -> {
                     threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
+                }
+                is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
+                    removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
                 }
             }
         }
@@ -524,9 +541,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     reloadMailboxThreads()
                     feedController.reloadFeeds()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                } else -> {
+                }
+                is MailboxResult.MoveEmailThread.Failure -> {
                     threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
+                }
+                is MailboxResult.MoveEmailThread.Unauthorized -> {
+                    removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
                 }
             }
         }
@@ -538,7 +559,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     reloadMailboxThreads()
                 }
-                is MailboxResult.SendMail.Failure -> scene.showMessage(result.message)
+                is MailboxResult.SendMail.Failure -> {
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.SendMail.Unauthorized -> {
+                    removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+                }
             }
         }
 
@@ -579,6 +605,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     threadListController.reRenderAll()
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
+                is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
+                    removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+                }
             }
         }
 
@@ -597,7 +626,19 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+        when (result) {
+            is RemovedDeviceResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+            }
+        }
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceRemoved() {
+            host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), false, true)
+        }
+
         override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
             reloadViewAfterSocketEvent()
         }

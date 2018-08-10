@@ -239,7 +239,8 @@ object EmailInsertionSetup {
             else -> listOf(Label.defaultItems.inbox)
         }
 
-        val emailAlreadyExists = dao.findEmailByMessageId(metadata.messageId) != null
+        val foundEmail = dao.findEmailByMessageId(metadata.messageId)
+        val emailAlreadyExists =  foundEmail?.messageId == metadata.messageId
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
@@ -249,11 +250,12 @@ object EmailInsertionSetup {
 
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
-        dao.runTransaction({
+        val lonReturn = dao.runTransaction({
                 EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
                 if(meAsSender) false else metadata.extractDBColumns().unread, status =
                 if(meAsSender) DeliveryTypes.SENT else metadata.extractDBColumns().status), decryptedBody, labels,
                         metadata.files, decryptedFileKey)
             })
+        println(lonReturn)
     }
 }

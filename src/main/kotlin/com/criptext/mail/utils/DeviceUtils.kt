@@ -2,7 +2,7 @@ package com.criptext.mail.utils
 
 import android.content.Context
 import android.os.Build
-import com.criptext.mail.R
+import com.criptext.mail.db.models.ActiveAccount
 
 class DeviceUtils{
 
@@ -17,6 +17,11 @@ class DeviceUtils{
             } else {
                 capitalize(manufacturer) + " " + model
             }
+        }
+
+        fun getDeviceId(context: Context): Int?{
+            val activeAccount = ActiveAccount.loadFromStorage(context)
+            return activeAccount?.deviceId
         }
 
         fun getDeviceOS(): String {

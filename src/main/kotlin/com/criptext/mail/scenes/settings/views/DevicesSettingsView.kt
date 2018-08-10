@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.devices.DeviceAdapter
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
 import com.criptext.mail.utils.DeviceUtils
@@ -25,8 +26,12 @@ class DevicesSettingsView(view: View, title: String): TabView(view, title){
 
     }
 
-    fun initView(virtualDeviceList: VirtualDeviceList){
-        deviceListView.setAdapter(DeviceAdapter(view.context, virtualDeviceList))
+    fun initView(virtualDeviceList: VirtualDeviceList, devicesListItemListener: DevicesListItemListener){
+        deviceListView.setAdapter(DeviceAdapter(view.context, devicesListItemListener, virtualDeviceList))
+    }
+
+    fun getListView(): VirtualListView{
+        return deviceListView
     }
     
 }

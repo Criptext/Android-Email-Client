@@ -2,6 +2,8 @@ package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.settings.devices.DeviceItem
+import com.criptext.mail.utils.UIMessage
+import java.text.FieldPosition
 
 sealed class SettingsResult{
 
@@ -32,8 +34,14 @@ sealed class SettingsResult{
     }
 
     sealed class ListDevices : SettingsResult() {
-        class Success(val devices: List<DeviceItem>): ListDevices()
-        class Failure: ListDevices()
+        data class Success(val devices: List<DeviceItem>): ListDevices()
+        data class Failure(val message: UIMessage): ListDevices()
+        data class Unauthorized(val message: UIMessage): ListDevices()
+    }
+
+    sealed class RemoveDevice : SettingsResult() {
+        class Success(val deviceId: Int, val position: Int): RemoveDevice()
+        class Failure: RemoveDevice()
     }
 
 }

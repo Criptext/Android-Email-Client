@@ -16,10 +16,13 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.SignatureParams
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
+import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 
 class SettingsController(
         private val model: SettingsModel,
@@ -34,6 +37,14 @@ class SettingsController(
     override val menuResourceId: Int? = null
 
     private val labelWrapperListController = LabelWrapperListController(model, scene.getLabelListView())
+    private val deviceWrapperListController = DeviceWrapperListController(model, scene.getDeviceListView())
+
+
+    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+        when(result) {
+            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+        }
+    }
 
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
@@ -42,6 +53,7 @@ class SettingsController(
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.Logout -> onLogout(result)
             is SettingsResult.ListDevices -> onListDevices(result)
+            is SettingsResult.RemoveDevice -> onRemoveDevice(result)
         }
     }
 
@@ -85,6 +97,15 @@ class SettingsController(
             scene.showLoginOutDialog()
             dataSource.submitRequest(SettingsRequest.Logout())
         }
+
+        override fun onRemoveDevice(deviceId: Int, position: Int) {
+            scene.showRemoveDeviceDialog(deviceId, position)
+        }
+
+        override fun onRemoveDeviceConfirmed(deviceId: Int, position: Int) {
+            dataSource.submitRequest(SettingsRequest.RemoveDevice(deviceId, position))
+        }
+
         override fun onBackButtonPressed() {
             host.finishScene()
         }
@@ -112,14 +133,34 @@ class SettingsController(
         }
     }
 
+    private val onDevicesListItemListener = object: DevicesListItemListener {
+
+        override fun onDeviceLongClicked(device: DeviceItem, position: Int): Boolean {
+            settingsUIObserver.onRemoveDevice(device.id, position)
+            return true
+        }
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
+        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
         model.fullName = activeAccount.name
         model.signature = activeAccount.signature
         if(model.labels.isEmpty()) {
             dataSource.submitRequest(SettingsRequest.GetCustomLabels())
         }
         if(model.devices.isEmpty()) {
+            model.devices.add(DeviceItem(
+                    id = activeAccount.deviceId,
+                    friendlyName = DeviceUtils.getDeviceName(),
+                    name = DeviceUtils.getDeviceName(),
+                    isCurrent = true,
+                    deviceType = DeviceUtils.getDeviceType().ordinal))
+            scene.attachView(
+                    name = activeAccount.name,
+                    model = model,
+                    settingsUIObserver = settingsUIObserver,
+                    devicesListItemListener = onDevicesListItemListener)
             dataSource.submitRequest(SettingsRequest.ListDevices())
         }
         return false
@@ -141,6 +182,14 @@ class SettingsController(
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
+    }
+
+    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+        when (result) {
+            is RemovedDeviceResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+            }
+        }
     }
 
     private fun onContactNameChanged(result: SettingsResult.ChangeContactName){
@@ -201,23 +250,25 @@ class SettingsController(
             is SettingsResult.ListDevices.Success -> {
                 model.devices.clear()
                 model.devices.addAll(result.devices)
-                scene.attachView(
-                        name = activeAccount.name,
-                        model = model,
-                        settingsUIObserver = settingsUIObserver)
+                deviceWrapperListController.update()
             }
             is SettingsResult.ListDevices.Failure -> {
-                model.devices.clear()
-                model.devices.add(DeviceItem(
-                        id = activeAccount.deviceId.toLong(),
-                        friendlyName = DeviceUtils.getDeviceName(),
-                        name = DeviceUtils.getDeviceName(),
-                        isCurrent = true,
-                        deviceType = DeviceUtils.getDeviceType().ordinal))
-                scene.attachView(
-                        name = activeAccount.name,
-                        model = model,
-                        settingsUIObserver = settingsUIObserver)
+                scene.showMessage(result.message)
+            }
+            is SettingsResult.ListDevices.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+            }
+        }
+    }
+
+    private fun onRemoveDevice(result: SettingsResult.RemoveDevice){
+        scene.dismissRemovingDeviceDialog()
+        when(result) {
+            is SettingsResult.RemoveDevice.Success -> {
+                deviceWrapperListController.remove(result.position)
+                scene.showMessage(UIMessage(R.string.device_removed))
+            }
+            is SettingsResult.RemoveDevice.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_listing_devices))
             }
         }

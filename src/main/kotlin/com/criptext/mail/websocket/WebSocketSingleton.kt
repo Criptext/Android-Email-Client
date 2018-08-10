@@ -5,6 +5,7 @@ import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -20,13 +21,11 @@ object WebSocketSingleton {
 
     private fun newInstance(activeAccount: ActiveAccount, context: Context): WebSocketController {
         val appDB = AppDatabase.getAppDatabase(context.applicationContext)
-        val dataSource = EventDataSource(runner = AsyncTaskWorkRunner(),
-                emailInsertionDao = appDB.emailInsertionDao(), emailDao = appDB.emailDao(),
-                contactDao = appDB.contactDao(), feedItemDao = appDB.feedDao(), fileDao = appDB.fileDao(),
+        val dataSource = EventDataSource(db = appDB, runner = AsyncTaskWorkRunner(),
                 emailInsertionAPIClient = EmailInsertionAPIClient(HttpClient.Default(), activeAccount.jwt),
                 signalClient = SignalClient.Default(SignalStoreCriptext(appDB)),
-                activeAccount = activeAccount, emailLabelDao = appDB.emailLabelDao(), labelDao = appDB.labelDao(),
-                accountDao = appDB.accountDao(), httpClient = HttpClient.Default())
+                activeAccount = activeAccount, httpClient = HttpClient.Default(),
+                storage = KeyValueStorage.SharedPrefs(context))
 
         INSTANCE = WebSocketController(
                 NVWebSocketClient(), activeAccount, dataSource)

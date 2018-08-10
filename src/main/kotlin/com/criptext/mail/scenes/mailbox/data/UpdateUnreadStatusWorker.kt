@@ -34,6 +34,8 @@ class UpdateUnreadStatusWorker(
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.UpdateUnreadStatus {
+        if(ex is ServerErrorException && ex.errorCode == 401)
+            return MailboxResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
         val message = createErrorMessage(ex)
         return MailboxResult.UpdateUnreadStatus.Failure(message)
     }
@@ -51,14 +53,14 @@ class UpdateUnreadStatusWorker(
                 MailboxResult.UpdateUnreadStatus.Success()
             }
             is Result.Failure -> {
-                val message = createErrorMessage(result.error)
-                MailboxResult.UpdateUnreadStatus.Failure(message)
+                catchException(result.error)
             }
         }
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             is NetworkErrorException -> UIMessage(resId = R.string.error_updating_status)
             else -> UIMessage(resId = R.string.error_updating_status)
         }

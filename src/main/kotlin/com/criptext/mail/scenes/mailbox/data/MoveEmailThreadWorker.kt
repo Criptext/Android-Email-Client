@@ -4,6 +4,7 @@ import com.criptext.mail.R
 import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
@@ -38,6 +39,8 @@ class MoveEmailThreadWorker(
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.MoveEmailThread {
+        if(ex is ServerErrorException && ex.errorCode == 401)
+            return MailboxResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
 
         val message = createErrorMessage(ex)
         return MailboxResult.MoveEmailThread.Failure(
@@ -111,6 +114,9 @@ class MoveEmailThreadWorker(
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
-        UIMessage(resId = R.string.failed_getting_emails)
+        when (ex) {
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
+            else -> UIMessage(resId = R.string.failed_getting_emails)
+        }
     }
 }
