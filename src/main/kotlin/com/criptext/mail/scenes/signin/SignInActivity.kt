@@ -34,7 +34,7 @@ class SignInActivity : BaseActivity() {
                 host = this,
                 dataSource = SignInDataSource(
                         runner = AsyncTaskWorkRunner(),
-                        keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType(appCtx)),
+                        keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType()),
                         httpClient = HttpClient.Default(),
                         signUpDao = appDB.signUpDao(),
                         keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),

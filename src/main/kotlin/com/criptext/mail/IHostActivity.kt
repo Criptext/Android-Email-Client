@@ -19,7 +19,7 @@ interface IHostActivity {
      * @param keep if true, the current activity will not be finished after the transition, so
      * that the user can return by pressing back.
      */
-    fun goToScene(params: SceneParams, keep: Boolean)
+    fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false)
 
     /**
      * Finishes the current activity and opens a new one using a "return" animation.
@@ -29,7 +29,7 @@ interface IHostActivity {
      * is useful when you want to return to an activity that already exists so params won't work.
      * @param forceAnimation a boolean to determinate if you want to force the slide_out_right animation.
      */
-    fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean)
+    fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean, deletePastIntents: Boolean = false)
     /**
      * Finishes the current activity.
      */

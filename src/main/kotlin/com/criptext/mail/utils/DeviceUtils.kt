@@ -29,7 +29,7 @@ class DeviceUtils{
                 Character.toUpperCase(first) + s.substring(1)
             }
         }
-        fun getDeviceType(context: Context): DeviceType {
+        fun getDeviceType(): DeviceType {
             return DeviceType.Android
         }
     }

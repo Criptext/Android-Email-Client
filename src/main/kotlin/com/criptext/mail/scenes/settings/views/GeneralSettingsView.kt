@@ -2,9 +2,11 @@ package com.criptext.mail.scenes.settings.views
 
 import android.content.res.Resources
 import android.view.View
+import android.widget.Switch
 import android.widget.TextView
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.settings.SettingsUIObserver
 import com.criptext.mail.utils.ui.TabView
 import kotlinx.android.synthetic.main.deckard.view.*
