@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.mailbox
 
-import android.hardware.camera2.CameraMetadata
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -116,19 +115,21 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
-    fun changeEmailReadStatus(emailId: Long, unread: Boolean) {
-        val position = model.threads.indexOfFirst { it.emailId == emailId }
-        if (position > -1) {
-            model.threads[position] =
-                    model.threads[position].copy(unread = unread)
-            virtualListView?.notifyItemChanged(position)
+    fun changeEmailReadStatus(emailIds: List<Long>, unread: Boolean) {
+        for(emailId in emailIds) {
+            val position = model.threads.indexOfFirst { it.emailId == emailId }
+            if (position > -1) {
+                model.threads[position] =
+                        model.threads[position].copy(unread = unread)
+                virtualListView?.notifyItemChanged(position)
+            }
         }
     }
 
     fun changeThreadReadStatus(threadIds: List<String>, unread: Boolean) {
         model.threads.forEachIndexed { _, emailPreview ->
             for (threadId in threadIds)
-                if(emailPreview.threadId == threadId) changeEmailReadStatus(emailPreview.emailId, unread)
+                if(emailPreview.threadId == threadId) changeEmailReadStatus(listOf(emailPreview.emailId), unread)
         }
     }
 

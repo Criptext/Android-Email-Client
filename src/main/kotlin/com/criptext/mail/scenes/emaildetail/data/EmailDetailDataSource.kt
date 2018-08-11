@@ -72,6 +72,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     threadId = params.threadId,
                     updateUnreadStatus = params.updateUnreadStatus,
                     currentLabel = params.currentLabel,
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result)
                     })

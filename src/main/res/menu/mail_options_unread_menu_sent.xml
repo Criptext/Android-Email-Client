@@ -24,7 +24,7 @@
     <item
         android:id="@+id/mark_unread"
         app:showAsAction="collapseActionView"
-        android:title="@string/mark_as_unread"/>
+        android:title="@string/mark_as_read"/>
     <item
         android:id="@+id/mark_spam"
         app:showAsAction="collapseActionView"

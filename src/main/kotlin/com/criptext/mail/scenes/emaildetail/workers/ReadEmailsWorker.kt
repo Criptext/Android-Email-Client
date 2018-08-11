@@ -7,6 +7,9 @@ import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.map
 
 /**
  * Created by gabriel on 6/27/18.
@@ -30,10 +33,15 @@ class ReadEmailsWorker(private val dao: EmailDao,
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.ReadEmails>)
             : EmailDetailResult.ReadEmails? {
-        dao.toggleRead(ids = emailIds, unread = false)
-        apiClient.postOpenEvent(metadataKeys)
+        val threadIds = dao.getThreadIdsFromEmailIds(emailIds)
+        val result = Result.of { apiClient.postOpenEvent(metadataKeys) }
+                .map { apiClient.postThreadReadChangedEvent(threadIds,false) }
+                .flatMap { Result.of { dao.toggleRead(ids = emailIds, unread = false) } }
 
-        return EmailDetailResult.ReadEmails.Success()
+        return when(result){
+            is Result.Success -> EmailDetailResult.ReadEmails.Success()
+            is Result.Failure -> EmailDetailResult.ReadEmails.Failure()
+        }
     }
 
     override fun cancel() {
