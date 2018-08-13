@@ -1,50 +1,29 @@
-# Deckard-Kotlin
-[![Build Status](https://travis-ci.org/GAumala/deckard-kotlin.svg?branch=master)](https://travis-ci.org/GAumala/deckard-kotlin)
-[![Circle CI](https://circleci.com/gh/GAumala/deckard-kotlin.svg?style=svg)](https://circleci.com/gh/GAumala/deckard-kotlin)
+# Criptext Android Client
 
-Deckard-Kotlin is the simplest possible Kotlin Android application project that uses Robolectric/Espresso for testing and Gradle to build. It has one Activity, a single Robolectric test of that Activity, and an Espresso test of that Activity.
+Finally, an email service that's built around your privacy. Get your @criptext.com email address and see what it's like to have peace of mind and privacy in every email you send.
 
-Deckard imports easily into the latest editions of Android Studio with minimal setup.
+Currently available on the Play store.
 
-## What's Inside?
+<a href="https://play.google.com/store/apps/details?id=com.criptext.mail" target="_blank"><img src="https://cdn.criptext.com/Email/images/emailhome/go-android.png" width="180px"/></a>
 
-- Gradle 3.0.0
-- Kotlin 1.1.51
-- Espresso 3.0.1
-- Robolectric 3.5.1
-- Android Build Tools 26.0.2 along with the respective support-v4 library version
+## Features
 
-If something does not work, or you think a dependency is outdated please submit an issue.
+- End-to-end Encryption: Criptext uses the open source Signal Protocol library to encrypt your emails. Your emails are locked with a unique key that‘s generated and stored on your device alone, which means only you and your intended recipient can read the emails you send.
+- No data collection: unlike every other email service out there, Criptext doesn't store your emails in its servers. Instead, your entire inbox is stored exclusively on your device.
+- Easy to use: our app is designed to work as simple as any other email app — so much so, you'll forget how secure it is.
 
-## Setup
+## Contributing Bug reports
 
-*Note: These instructions assume you have a Java 1.8 [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) installed.*
+We use GitHub for bug tracking. Please search the existing issues for your bug and create a new one if the issue is not yet tracked!
 
-To start a new Android project:
+## Support
 
-1. Install latest [Android Studio](http://developer.android.com/sdk/index.html) version. This project does not work with versions prior to 3.0.
-1. Download Deckard as a zip [here](https://github.com/GAumala/deckard-kotlin/archive/master.zip) and then extract it on your dev machine.
+For troubleshooting and questions, please write us at <a href="mailto:support@criptext.com">support@criptext.com</a>
 
-1. Import the template into Android Studio by clicking "Import project" and selecting the project directory.
+## License 
 
-1. Change the names of things from 'Deckard' to whatever is appropriate for your project. Package name, classes, build.gradle, and the AndroidManifest are good places to start.
-1. Build an app. Win.
+Copyright 2018 Criptext Inc.
 
-### Running on the command line
+Licensed under the GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
 
-1. In the project directory you should be able to run the Robolectric tests:
-    ```bash
-    ./gradlew test
-    ```
-
-1. You can also run the Espresso tests:
-    ```bash
-    ./gradlew connectedAndroidTest
-    ```
-    Note: Make sure to start an Emulator or connect a device first so the test has something to connect to.
-
-1. Finally you can build a debug `.apk` of the project for installation on phones:
-    ```bash
-    ./gradlew assemble
-    ```
-    This will output the file to `build/outputs/apk/*-debug.apk`
+Google Play and the Google Play logo are trademarks of Google Inc.
