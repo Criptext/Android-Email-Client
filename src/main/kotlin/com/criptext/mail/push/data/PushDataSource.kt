@@ -6,6 +6,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
@@ -14,6 +15,7 @@ import com.criptext.mail.signal.SignalStoreCriptext
 class PushDataSource(
         private val httpClient: HttpClient,
         override val runner: WorkRunner,
+        private val storage: KeyValueStorage,
         private val db: AppDatabase)
     : BackgroundWorkManager<PushRequest, PushResult>() {
     override fun createWorkerFromParams(
@@ -28,6 +30,7 @@ class PushDataSource(
                     activeAccount = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })

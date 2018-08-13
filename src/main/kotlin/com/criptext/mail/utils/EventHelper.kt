@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -22,7 +23,8 @@ class EventHelper(private val db: EventLocalDB,
                   httpClient: HttpClient,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
-                  private val acknoledgeEvents: Boolean){
+                  private val acknoledgeEvents: Boolean,
+                  private val storage: KeyValueStorage){
 
     private val mailboxAPIClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
@@ -67,7 +69,7 @@ class EventHelper(private val db: EventLocalDB,
 
     val processEvents: (List<Event>) -> Result<List<EmailPreview>, Exception> = { events ->
         Result.of {
-            val shouldReload = processTrackingUpdates(events)
+            val shouldReload = processOnDeviceRemoved(events) || processTrackingUpdates(events)
                     || processNewEmails(events) || processThreadReadStatusChanged(events) ||
                     processUnsendEmailStatusChanged(events) || processPeerUsernameChanged(events) ||
                     processEmailLabelChanged(events) || processThreadLabelChanged(events) ||
@@ -77,6 +79,21 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
+
+    private fun processOnDeviceRemoved(events: List<Event>): Boolean {
+        val eventIds = events.filter { it.cmd == Event.Cmd.deviceRemoved }
+                .map { it.rowid }
+        if(eventIds.isNotEmpty()) {
+            val deviceRemovedOperation = Result.of {
+                removeDevice()
+            }
+            return when(deviceRemovedOperation){
+                is Result.Success -> true
+                is Result.Failure -> false
+            }
+        }
+        return eventIds.isNotEmpty()
+    }
 
 
     private fun processNewEmails(events: List<Event>): Boolean {
@@ -394,6 +411,8 @@ class EventHelper(private val db: EventLocalDB,
                     .map { EmailPreview.fromEmailThread(it) }
         else throw EventHelper.NothingNewException()
     }
+
+    private fun removeDevice() = db.removeDevice(storage)
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
             db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)

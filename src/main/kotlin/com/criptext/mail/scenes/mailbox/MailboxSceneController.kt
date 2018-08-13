@@ -21,13 +21,11 @@ import com.criptext.mail.scenes.mailbox.data.*
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
-import com.criptext.mail.scenes.params.ComposerParams
-import com.criptext.mail.scenes.params.EmailDetailParams
-import com.criptext.mail.scenes.params.SearchParams
-import com.criptext.mail.scenes.params.SettingsParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.google.android.gms.signin.SignIn
 
 /**
  * Created by sebas on 1/30/18.
@@ -594,6 +592,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceRemoved() {
+            host.exitToScene(SignInParams(), null, false)
+        }
+
         override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
             reloadViewAfterSocketEvent()
         }

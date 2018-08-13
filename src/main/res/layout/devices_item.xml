@@ -4,36 +4,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageViewDeviceType"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_margin="15dp"
-        android:src="@drawable/device_m"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="17dp"
+        android:id="@+id/deviceItem"
+        android:longClickable="true"
+        android:foreground="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/textViewDeviceName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        fontPath="fonts/NunitoSans-Bold.ttf"
-        android:layout_toEndOf="@+id/imageViewDeviceType"
-        android:layout_toStartOf="@+id/textViewCurrentDevice"
-        android:text="MacBook Pro"/>
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textViewCurrentDevice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#61b900"
-        android:layout_margin="18dp"
-        android:layout_alignParentEnd="true"/>
+            <ImageView
+                android:id="@+id/imageViewDeviceType"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/device_m"
+                android:layout_row="0"
+                android:layout_column="0" />
 
+            <TextView
+                android:id="@+id/textViewDeviceName"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_row="0"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="MacBook Pro"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textViewCurrentDevice"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_column="3"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_row="0"
+                android:gravity="center_vertical"
+                android:textColor="#61b900"
+                android:textSize="13sp" />
+        </GridLayout>
+    </FrameLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

@@ -17,4 +17,5 @@ sealed class EventRequest {
     data class UpdatePeerThreadLabelsChangedStatus(val eventId: Long, val peerThreadsLabelChanged: PeerThreadLabelsChangedStatusUpdate): EventRequest()
     data class UpdatePeerUsernameChangedStatus(val eventId: Long, val peerUsernameChanged: PeerUsernameChangedStatusUpdate): EventRequest()
     data class UpdatePeerLabelCreatedStatus(val eventId: Long, val peerLabelCreated: PeerLabelCreatedStatusUpdate): EventRequest()
+    class DeviceRemoved: EventRequest()
 }

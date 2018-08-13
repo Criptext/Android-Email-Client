@@ -18,6 +18,7 @@ class DeviceUtils{
                 capitalize(manufacturer) + " " + model
             }
         }
+
         private fun capitalize(s: String?): String {
             if (s == null || s.isEmpty()) {
                 return ""
