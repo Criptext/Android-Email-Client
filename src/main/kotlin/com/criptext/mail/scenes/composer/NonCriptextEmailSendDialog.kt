@@ -211,6 +211,7 @@ class NonCriptextEmailSendDialog(val context: Context) {
         }
 
         btnCancel.setOnClickListener {
+            uiObserver?.sendDialogCancelPressed()
             dialog.dismiss()
         }
     }

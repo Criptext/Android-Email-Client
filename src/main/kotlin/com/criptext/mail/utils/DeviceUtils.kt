@@ -18,6 +18,11 @@ class DeviceUtils{
                 capitalize(manufacturer) + " " + model
             }
         }
+
+        fun getDeviceOS(): String {
+            return "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
+        }
+
         private fun capitalize(s: String?): String {
             if (s == null || s.isEmpty()) {
                 return ""

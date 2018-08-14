@@ -6,8 +6,8 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.scenes.mailbox.SupportMailTemplate
 import com.criptext.mail.utils.UIMessage
-import com.github.kittinunf.result.Result
 
 /**
  * Created by gabriel on 7/2/18.
@@ -72,16 +72,18 @@ class LoadInitialDataWorker(
     }
 
     private fun createSupportInputData(): ComposerInputData {
-        val supportContact= db.contactDao.getContact("support@${Contact.mainDomain}")
+        val supportTemplate = SupportMailTemplate()
+        val supportContact= db.contactDao.getContact(supportTemplate.contact)
+
         return if(supportContact != null){
             ComposerInputData(to = listOf(supportContact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "Support Message", passwordForNonCriptextUsers = null)
+                    body = supportTemplate.body, subject = supportTemplate.subject, passwordForNonCriptextUsers = null)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
                     name = "Criptext Support")
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "Support Message", passwordForNonCriptextUsers = null)
+                    body = supportTemplate.body, subject = supportTemplate.subject, passwordForNonCriptextUsers = null)
         }
 
 

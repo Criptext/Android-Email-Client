@@ -14,5 +14,10 @@
             android:src="@drawable/logo_splash"
             android:tint="#0091ff"/>
     </item>
+    <item
+        android:bottom="40dp">
+        <bitmap android:src="@drawable/footer_beta"
+            android:gravity="bottom"/>
+    </item>
 
 </layer-list>
