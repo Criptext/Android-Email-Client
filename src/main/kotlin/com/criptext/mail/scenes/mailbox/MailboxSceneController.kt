@@ -637,6 +637,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate) {
+            threadListController.changeEmailReadStatus(emailIds, update.unread)
             reloadViewAfterSocketEvent()
         }
 

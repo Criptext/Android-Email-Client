@@ -63,9 +63,9 @@ object EmailInsertionSetup {
 
         val toAddresses = addressesCSV.split(",").map {
             if(it.contains("<") && it.contains(">"))
-                it.substring(it.indexOf("<"), it.indexOf(">")).removeSurrounding("\"")
+                it.substring(it.indexOf("<"), it.indexOf(">")).replace("\"", "")
             else
-                it.removeSurrounding("\"")
+                it.replace("\"", "")
         }
         val toAddressesNotDuplicated = toAddresses.toSet().toList()
         val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)

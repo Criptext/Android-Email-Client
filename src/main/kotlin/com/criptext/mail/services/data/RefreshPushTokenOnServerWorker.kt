@@ -42,19 +42,21 @@ class RefreshPushTokenOnServerWorker(
     override fun work(reporter: ProgressReporter<MessagingServiceResult.RefreshTokenOnServer>):
             MessagingServiceResult.RefreshTokenOnServer? {
 
-        val result = Result.of {
-            val account = accountDao.getLoggedInAccount()
-            apiClient.putFirebaseToken(pushToken, account?.jwt ?: "")
-        }
-
-        return when(result) {
-            is Result.Success -> {
-                MessagingServiceResult.RefreshTokenOnServer.Success(pushToken)
+        val account = accountDao.getLoggedInAccount()
+        if(account != null) {
+            val result = Result.of {
+               apiClient.putFirebaseToken(pushToken, account.jwt)
             }
-            is Result.Failure -> {
-                MessagingServiceResult.RefreshTokenOnServer.Failure()
+            return when(result) {
+                is Result.Success -> {
+                    MessagingServiceResult.RefreshTokenOnServer.Success(pushToken)
+                }
+                is Result.Failure -> {
+                    MessagingServiceResult.RefreshTokenOnServer.Failure()
+                }
             }
         }
+        return MessagingServiceResult.RefreshTokenOnServer.Failure()
     }
 
     override fun cancel() {

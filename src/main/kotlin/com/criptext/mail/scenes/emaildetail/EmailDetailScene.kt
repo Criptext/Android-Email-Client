@@ -62,7 +62,7 @@ interface EmailDetailScene {
 
         private val context = emailDetailView.context
 
-        private lateinit var fullEmailsRecyclerView: FullEmailRecyclerView
+        private var fullEmailsRecyclerView: FullEmailRecyclerView? = null
         private lateinit var labelsRecyclerView: LabelsRecyclerView
 
         private val labelChooserDialog = LabelChooserDialog(context, emailDetailView)
@@ -116,7 +116,7 @@ interface EmailDetailScene {
                     fileDetailList
                     )
 
-            fullEmailsRecyclerView.scrollToLast()
+            fullEmailsRecyclerView?.scrollToLast()
 
             backButton.setOnClickListener {
                 observer.onBackButtonPressed()
@@ -149,11 +149,11 @@ interface EmailDetailScene {
         }
 
         override fun notifyFullEmailListChanged() {
-            fullEmailsRecyclerView.notifyFullEmailListChanged()
+            fullEmailsRecyclerView?.notifyFullEmailListChanged()
         }
 
         override fun notifyFullEmailChanged(position: Int) {
-            fullEmailsRecyclerView.notifyFullEmailChanged(position = position)
+            fullEmailsRecyclerView?.notifyFullEmailChanged(position = position)
         }
 
         override fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler) {

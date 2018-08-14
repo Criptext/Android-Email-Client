@@ -114,6 +114,10 @@ import java.util.*
             where threadId in (:threadIds)""")
     fun toggleReadByThreadId(threadIds: List<String>, unread: Boolean)
 
+    @Query("""SELECT threadId FROM email
+            where id in (:emailIds)""")
+    fun getThreadIdsFromEmailIds(emailIds: List<Long>): List<String>
+
     @Query("""UPDATE email
             SET threadId=:threadId,
             messageId=:messageId,

@@ -72,7 +72,7 @@ class EventHelper(private val db: EventLocalDB,
                     processUnsendEmailStatusChanged(events) || processPeerUsernameChanged(events) ||
                     processEmailLabelChanged(events) || processThreadLabelChanged(events) ||
                     processEmailDeletedPermanently(events) || processThreadDeletedPermanently(events) ||
-                    processLabelCreated(events) || processOnError(events)
+                    processLabelCreated(events) || processOnError(events) || processEmailReadStatusChanged(events)
             reloadMailbox(shouldReload)
         }
     }
@@ -136,6 +136,36 @@ class EventHelper(private val db: EventLocalDB,
 
         val eventIdsToAcknowledge = events
                 .filter(isThreadReadStatusChangedEvent)
+                .map(toIdAndMetadataPair)
+                .filter(emailInsertedSuccessfully)
+                .map(toEventId)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+
+        return eventIdsToAcknowledge.isNotEmpty()
+    }
+
+    private fun processEmailReadStatusChanged(events: List<Event>): Boolean {
+        val isEmailReadStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailReadStatusUpdate }
+        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerReadEmailStatusUpdate> =
+                { Pair( it.rowid, PeerReadEmailStatusUpdate.fromJSON(it.params)) }
+        val emailInsertedSuccessfully: (Pair<Long, PeerReadEmailStatusUpdate>) -> Boolean =
+                { (_, metadata) ->
+                    try {
+                        updateEmailReadStatus(metadata)
+                        // insertion success, try to acknowledge it
+                        true
+                    }
+                    catch (ex: Exception) {
+                        false
+                    }
+                }
+        val toEventId: (Pair<Long, PeerReadEmailStatusUpdate>) -> Long =
+                { (eventId, _) -> eventId }
+
+        val eventIdsToAcknowledge = events
+                .filter(isEmailReadStatusChangedEvent)
                 .map(toIdAndMetadataPair)
                 .filter(emailInsertedSuccessfully)
                 .map(toEventId)
@@ -400,6 +430,9 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun updateThreadReadStatus(metadata: PeerReadThreadStatusUpdate) =
             db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread)
+
+    private fun updateEmailReadStatus(metadata: PeerReadEmailStatusUpdate) =
+            db.updateUnreadStatusByMetadataKeys(metadata.metadataKeys, metadata.unread)
 
     private fun updateUnsendEmailStatus(metadata: PeerUnsendEmailStatusUpdate) =
             db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate)

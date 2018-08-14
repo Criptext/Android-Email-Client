@@ -144,6 +144,10 @@ class EventLocalDB(private val emailDao: EmailDao, private val labelDao: LabelDa
         emailDao.toggleReadByThreadId(emailThreads, updateUnreadStatus)
     }
 
+    fun updateUnreadStatusByMetadataKeys(metadataKeys: List<Long>, updateUnreadStatus: Boolean) {
+        emailDao.toggleRead(metadataKeys, updateUnreadStatus)
+    }
+
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                      metadata: EmailMetadata, activeAccount: ActiveAccount) {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,

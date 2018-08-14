@@ -550,7 +550,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onNewEmail(email: Email) {
-
+            scene.notifyFullEmailListChanged()
         }
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
