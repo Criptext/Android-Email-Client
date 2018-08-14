@@ -22,6 +22,7 @@ import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
 import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
+import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.SnackBarHelper
@@ -52,6 +53,7 @@ interface MailboxScene{
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: String)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
+    fun showWelcomeDialog()
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
@@ -88,6 +90,7 @@ interface MailboxScene{
         private val labelChooserDialog = LabelChooserDialog(context, mailboxView)
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
+        private val welcomeDialog = WelcomeTourDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -211,6 +214,10 @@ interface MailboxScene{
 
         override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {
             deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
+        }
+
+        override fun showWelcomeDialog() {
+            welcomeDialog.showWelcomeTourDialog()
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {

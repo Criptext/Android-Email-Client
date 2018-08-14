@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_welcome_tour"
+        android:textColor="@color/white"
+        android:text="Ok"
+        android:enabled="false"
+        android:textAllCaps="true"
+        android:padding="10dp"/>
+
+    <com.viewpagerindicator.CirclePageIndicator
+        android:id="@+id/circle_indicator"
+        android:padding="10dip"
+        app:radius="5dp"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        app:fillColor="#FF888888"
+        />
+
+</LinearLayout>

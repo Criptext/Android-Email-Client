@@ -11,7 +11,7 @@ import com.criptext.mail.scenes.mailbox.feed.FeedModel
  * Created by sebas on 1/25/18.
  */
 
-class MailboxSceneModel : SceneModel {
+class MailboxSceneModel(var showWelcome: Boolean = false) : SceneModel {
     var selectedLabel: Label = Label.defaultItems.inbox // default label
     val threads : ArrayList<EmailPreview> = ArrayList()
     val selectedThreads = SelectedThreads()

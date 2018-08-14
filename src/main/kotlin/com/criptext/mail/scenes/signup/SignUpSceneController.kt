@@ -209,7 +209,7 @@ class SignUpSceneController(
 
         override fun onProgressHolderFinish() {
             if(model.signUpSucceed){
-                host.goToScene(MailboxParams(), false)
+                host.goToScene(MailboxParams(true), false)
             }
         }
     }

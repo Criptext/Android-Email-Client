@@ -124,7 +124,7 @@ dependencies {
     implementation 'com.nex3z:notification-badge:0.2.0'
 
     //Circle Image View
-    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
     //Caligraphy
     implementation 'uk.co.chrisjenx:calligraphy:2.2.0'
@@ -191,6 +191,10 @@ dependencies {
     implementation 'com.github.jorgeblacio:Android-FilePicker:fixes-SNAPSHOT'
 
     implementation 'com.madgag.spongycastle:core:1.54.0.0'
+
+    implementation 'com.airbnb.android:lottie:2.5.0'
+
+    implementation 'com.inkapplications.viewpageindicator:library:2.4.4'
 
 }
 
