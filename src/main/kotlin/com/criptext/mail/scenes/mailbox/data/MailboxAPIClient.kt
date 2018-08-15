@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.scenes.composer.data.PostEmailBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -35,7 +36,7 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
     fun postEmailReadChangedEvent(metadataKeys: List<Long>, unread: Boolean): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 301)
+        jsonPost.put("cmd", Event.Cmd.peerEmailReadStatusUpdate)
         json.put("metadataKeys", JSONArray(metadataKeys))
         json.put("unread", if(unread) 1 else 0)
         jsonPost.put("params", json)
@@ -46,7 +47,7 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
     fun postThreadReadChangedEvent(threadIds: List<String>, unread: Boolean): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 302)
+        jsonPost.put("cmd", Event.Cmd.peerEmailThreadReadStatusUpdate)
         json.put("threadIds", JSONArray(threadIds))
         json.put("unread", if(unread) 1 else 0)
         jsonPost.put("params", json)
@@ -57,7 +58,7 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
     fun postThreadDeletedPermanentlyEvent(threadIds: List<String>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 306)
+        jsonPost.put("cmd", Event.Cmd.peerThreadDeleted)
         json.put("threadIds", JSONArray(threadIds))
         jsonPost.put("params", json)
 
@@ -68,7 +69,7 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
                                     labelsAdded: List<String>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 304)
+        jsonPost.put("cmd", Event.Cmd.peerThreadChangedLabels)
         json.put("threadIds", JSONArray(threadIds))
         json.put("labelsRemoved", JSONArray(labelsRemoved))
         json.put("labelsAdded", JSONArray(labelsAdded))

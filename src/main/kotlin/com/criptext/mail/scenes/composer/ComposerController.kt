@@ -59,6 +59,12 @@ class ComposerController(private val model: ComposerModel,
                 saveEmailAsDraft(data, onlySave = false)
         }
 
+        override fun sendDialogCancelPressed() {
+            model.passwordText = ""
+            model.confirmPasswordText = ""
+            model.passwordState = FormInputState.Unknown()
+        }
+
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
             if(isChecked)
                 checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
@@ -77,7 +83,8 @@ class ComposerController(private val model: ComposerModel,
 
         override fun onPasswordChangedListener(text: String) {
             model.passwordText = text
-            checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
+            if(model.confirmPasswordText.isNotEmpty())
+               checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
@@ -126,7 +133,7 @@ class ComposerController(private val model: ComposerModel,
             scene.disableSendButtonOnDialog()
         } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
             scene.togglePasswordSuccess(show = false)
-            val errorMessage = UIMessage(R.string.password_length_error)
+            val errorMessage = UIMessage(R.string.pin_length_error)
             model.passwordState = FormInputState.Error(errorMessage)
             scene.setPasswordError(errorMessage)
             scene.disableSendButtonOnDialog()
@@ -470,6 +477,6 @@ class ComposerController(private val model: ComposerModel,
     }
 
     companion object {
-        val minimumPasswordLength = 8
+        val minimumPasswordLength = 3
     }
 }

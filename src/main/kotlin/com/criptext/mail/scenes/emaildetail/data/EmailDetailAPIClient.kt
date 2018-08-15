@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import org.json.JSONArray
@@ -30,7 +31,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
     fun postEmailDeleteEvent(metadataKeys: List<Long>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 305)
+        jsonPost.put("cmd", Event.Cmd.peerEmailDeleted)
         json.put("metadataKeys", metadataKeys.toJSONLongArray())
         jsonPost.put("params", json)
 
@@ -41,7 +42,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
                                    labelsAdded: List<String>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 303)
+        jsonPost.put("cmd", Event.Cmd.peerEmailChangedLabels)
         json.put("metadataKeys", metadataKeys.toJSONLongArray())
         json.put("labelsRemoved", JSONArray(labelsRemoved))
         json.put("labelsAdded", JSONArray(labelsAdded))
@@ -54,7 +55,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
                                    labelsAdded: List<String>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 303)
+        jsonPost.put("cmd", Event.Cmd.peerThreadChangedLabels)
         json.put("threadIds", JSONArray(threadIds))
         json.put("labelsRemoved", JSONArray(labelsRemoved))
         json.put("labelsAdded", JSONArray(labelsAdded))
@@ -66,7 +67,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
     fun postThreadDeletedPermanentlyEvent(threadIds: List<String>): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 306)
+        jsonPost.put("cmd", Event.Cmd.peerThreadDeleted)
         json.put("threadIds", JSONArray(threadIds))
         jsonPost.put("params", json)
 

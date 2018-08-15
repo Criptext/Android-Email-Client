@@ -187,7 +187,8 @@ class SignUpSceneController(
 
         override fun onPasswordChangedListener(text: String) {
             model.password = text
-            checkPasswords(Pair(model.password, model.confirmPassword))
+            if(model.confirmPassword.isNotEmpty())
+                checkPasswords(Pair(model.password, model.confirmPassword))
         }
 
         override fun onCreateAccountClick() {

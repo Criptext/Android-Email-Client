@@ -15,7 +15,7 @@ object AccountDataValidator {
     private val validEmailAddressPattern = Pattern.compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
     // for the criptext server the only allowed non-alphanumeric characters are: ._-
     // dots cant be at the beginning.
-    private val validCriptextUserPattern = Pattern.compile("[a-z0-9_-]+(?:\\.[a-z0-9_-]+)*")
+    private val validCriptextUserPattern = Pattern.compile("[a-z][a-z0-9._-]+[a-z0-9]")
 
     fun validateUsername(username: String): FormData<String> {
         val sanitizedValue = username.trim().toLowerCase()

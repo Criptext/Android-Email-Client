@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.scenes.composer.data.PostEmailBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -11,7 +12,7 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
     fun postLabelCreatedEvent(text: String, color: String): String {
         val json = JSONObject()
         val jsonPut = JSONObject()
-        jsonPut.put("cmd", 308)
+        jsonPut.put("cmd", Event.Cmd.peerLabelCreated)
         json.put("text", text)
         json.put("color", color)
         jsonPut.put("params", json)
@@ -23,7 +24,7 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
     fun postUsernameChangedEvent(newUserName: String): String {
         val json = JSONObject()
         val jsonPut = JSONObject()
-        jsonPut.put("cmd", 309)
+        jsonPut.put("cmd", Event.Cmd.peerUserChangeName)
         json.put("name", newUserName)
         jsonPut.put("params", json)
 
