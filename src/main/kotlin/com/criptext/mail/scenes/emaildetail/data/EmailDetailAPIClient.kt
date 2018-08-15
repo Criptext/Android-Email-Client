@@ -77,7 +77,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
     fun postEmailReadChangedEvent(metadataKeys: List<Long>, unread: Boolean): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 301)
+        jsonPost.put("cmd", Event.Cmd.peerEmailReadStatusUpdate)
         json.put("metadataKeys", JSONArray(metadataKeys))
         json.put("unread", if(unread) 1 else 0)
         jsonPost.put("params", json)
@@ -88,7 +88,7 @@ class EmailDetailAPIClient(private val httpClient: HttpClient, private val authT
     fun postThreadReadChangedEvent(threadIds: List<String>, unread: Boolean): String {
         val json = JSONObject()
         val jsonPost = JSONObject()
-        jsonPost.put("cmd", 302)
+        jsonPost.put("cmd", Event.Cmd.peerEmailThreadReadStatusUpdate)
         json.put("threadIds", JSONArray(threadIds))
         json.put("unread", if(unread) 1 else 0)
         jsonPost.put("params", json)
