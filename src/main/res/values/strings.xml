@@ -101,12 +101,13 @@
 
     <!-- NON CRIPTEXT SEND EMAIL DIALOG -->
     <string name="pin_length_error">Passphrase must be at least 3 characters.</string>
+    <string name="pin_mismatch_error">Passphrases do not match.</string>
     <string name="title_non_criptext_mail_dialog">Non-Criptext Recipient</string>
     <string name="set_pass_non_criptext_mail_dialog">Send Encrypted</string>
-    <string name="set_pass_detail_non_criptext_mail_dialog">A passphrase enable non-Criptext users to read your encrypted email</string>
+    <string name="set_pass_detail_non_criptext_mail_dialog">Set a passphrase and share it with non-Criptext recipients so they can read your email.</string>
     <string name="pass_hint_non_criptext_email_dialog">Passphrase</string>
     <string name="pass_repeat_hint_non_criptext_email_dialog">Passphrase Repeat</string>
-    <string name="switch_off_non_criptext_email_dialog"><b>Note:</b> This email will be sent as a normal, unencrypted email only to non-Criptext email addresses.</string>
+    <string name="switch_off_non_criptext_email_dialog"><b>Note:</b>non-Criptext email addresses will receive a normal, un-encrypted email.</string>
     <string name="subtitle_expiration_dialog">Encrypted emails to non-Criptext recipients will expire in 10 days</string>
     
     <!-- PERMISSIONS -->

@@ -46,8 +46,8 @@ class EmailDetailControllerResultTest: EmailDetailControllerTest() {
 
 
         sentRequests.size `should be` 1
-        sentRequests.first() `should equal` EmailDetailRequest.ReadEmails(emailIds = listOf(4, 3),
-                metadataKeys = listOf(104L, 103L))
+        sentRequests.first() `should equal` EmailDetailRequest.ReadEmails(emailIds = listOf(4, 3, 2, 1),
+                metadataKeys = listOf(104L, 103L, 102L, 101L))
 
     }
 }

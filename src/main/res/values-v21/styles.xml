@@ -24,6 +24,7 @@
     <style name="Splash.Criptext" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="colorPrimaryDark">@color/colorSplashStart</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
     </style>
 
     <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">

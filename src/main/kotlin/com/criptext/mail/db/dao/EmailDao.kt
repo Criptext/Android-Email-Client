@@ -111,6 +111,11 @@ import java.util.*
 
     @Query("""UPDATE email
             SET unread=:unread
+            where id in (:ids) AND unread !=:unread""")
+    fun toggleCheckingRead(ids: List<Long>, unread: Boolean)
+
+    @Query("""UPDATE email
+            SET unread=:unread
             where threadId in (:threadIds)""")
     fun toggleReadByThreadId(threadIds: List<String>, unread: Boolean)
 

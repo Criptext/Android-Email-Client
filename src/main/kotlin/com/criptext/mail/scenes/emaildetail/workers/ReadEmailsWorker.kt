@@ -33,13 +33,14 @@ class ReadEmailsWorker(private val dao: EmailDao,
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.ReadEmails>)
             : EmailDetailResult.ReadEmails? {
-        val threadIds = dao.getThreadIdsFromEmailIds(emailIds)
+        val emails = dao.getAllEmailsByMetadataKey(metadataKeys)
+        val unreadEmails = emails.filter { it.unread }
         val result = Result.of { apiClient.postOpenEvent(metadataKeys) }
-                .map { apiClient.postThreadReadChangedEvent(threadIds,false) }
-                .flatMap { Result.of { dao.toggleRead(ids = emailIds, unread = false) } }
+                .flatMap { Result.of { apiClient.postThreadReadChangedEvent(unreadEmails.map { it.threadId }.distinct(),false) }}
+                .flatMap { Result.of { dao.toggleCheckingRead(ids = unreadEmails.map { it.id }, unread = false) } }
 
         return when(result){
-            is Result.Success -> EmailDetailResult.ReadEmails.Success()
+            is Result.Success -> EmailDetailResult.ReadEmails.Success(unreadEmails.size)
             is Result.Failure -> EmailDetailResult.ReadEmails.Failure()
         }
     }

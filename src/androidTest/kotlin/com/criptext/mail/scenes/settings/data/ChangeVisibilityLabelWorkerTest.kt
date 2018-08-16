@@ -32,7 +32,7 @@ class ChangeVisibilityLabelWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        settingsLocalDB = SettingsLocalDB(db.labelDao(), db.accountDao(), db.contactDao())
+        settingsLocalDB = SettingsLocalDB.Default(db)
 
         labelId = db.labelDao().insert(Label(
                 id = 0,

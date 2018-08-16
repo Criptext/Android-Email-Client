@@ -23,7 +23,7 @@ class LocalPersistentCommunicationTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
-    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var signUpDao: SignUpDao

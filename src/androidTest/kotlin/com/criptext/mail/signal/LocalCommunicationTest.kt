@@ -19,7 +19,7 @@ class LocalCommunicationTest {
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
-    private val generator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+    private val generator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
 
     @Test
     @Throws(InterruptedException::class)

@@ -29,6 +29,7 @@
 
     <TextView
         fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/set_passphrase_text"
         android:layout_width="206dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -141,6 +142,7 @@
             android:paddingBottom="15dp"
             android:layout_gravity="top|center_horizontal"
             app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+            app:errorEnabled="true"
             app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="#dcdcdc">
@@ -170,15 +172,16 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/subtitle_expiration_dialog"
         android:textColor="@color/textColorPrimary"
-        android:textSize="14sp"/>
+        android:textSize="14sp"
+        android:visibility="gone"/>
 
     <TextView
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:id="@+id/switch_off_message"
         android:layout_width="206dp"
         android:layout_height="match_parent"
-        android:paddingBottom="133dp"
         android:paddingTop="30dp"
+        android:paddingBottom="150.5dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/switch_off_non_criptext_email_dialog"
         android:textColor="@color/textColorPrimary"
