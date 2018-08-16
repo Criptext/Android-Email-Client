@@ -37,12 +37,7 @@ class DownloadAttachmentWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
-    private val fileServiceAuthToken =
-            Encoding.byteArrayToString(
-                    "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(
-                            Charset.forName("UTF-8")
-                    )
-            )
+
     private var filetoken = ""
     private val reporter: ProgressReporter<ComposerResult.UploadFile> =
             if(Config.mockCriptextHTTPRequests) mockk(relaxed = true)
@@ -73,7 +68,7 @@ class DownloadAttachmentWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
 
-        httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.basic,
+        httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
                 readTimeout = 7000L)
     }
@@ -101,7 +96,7 @@ class DownloadAttachmentWorkerTest {
         val files = JSONArray()
         files.put(filejson)
         json.put("files", files)
-        httpClient.post("/file/save", fileServiceAuthToken, json)
+        httpClient.post("/file/save", activeAccount.jwt, json)
     }
 
     @Test

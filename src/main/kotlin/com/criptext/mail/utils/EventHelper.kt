@@ -393,7 +393,7 @@ class EventHelper(private val db: EventLocalDB,
 
         createFeedItems(trackingUpdates)
         changeDeliveryTypes(trackingUpdates)
-        if(acknoledgeEvents)
+        if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
             acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()

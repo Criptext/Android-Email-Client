@@ -27,7 +27,6 @@ class UpdateDeliveryStatusWorkerTest {
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
-
     private lateinit var db: TestDatabase
 
     @Before
@@ -50,7 +49,7 @@ class UpdateDeliveryStatusWorkerTest {
         existingEmail.metadataKey = 121
         existingEmail.delivered = DeliveryTypes.SENT
         db.emailDao().insert(existingEmail)
-        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer"))
 
         val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
                 from = "mayer"))
@@ -73,7 +72,7 @@ class UpdateDeliveryStatusWorkerTest {
         db.emailDao().insert(existingEmail)
 
         val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
-                from = "mayer@jigl.com"))
+                from = "mayer"))
 
         val result = worker.work(mockk(relaxed = true)) as EventResult.UpdateDeliveryStatus.Success
 
@@ -87,7 +86,7 @@ class UpdateDeliveryStatusWorkerTest {
         existingEmail.metadataKey = 121
         existingEmail.delivered = DeliveryTypes.SENT
         db.emailDao().insert(existingEmail)
-        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer"))
 
         var feeds = db.feedDao().getAllFeedItems()
         feeds.size shouldBe 0
@@ -110,9 +109,10 @@ class UpdateDeliveryStatusWorkerTest {
         existingEmail.metadataKey = 121
         existingEmail.delivered = DeliveryTypes.READ
         db.emailDao().insert(existingEmail)
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer"))
 
         val worker = newWorker(TrackingUpdate(metadataKey = 121, type = DeliveryTypes.READ,
-                from = "mayer@jigl.com"))
+                from = "mayer"))
 
         val result = worker.work(mockk(relaxed = true)) as EventResult.UpdateDeliveryStatus.Success
 

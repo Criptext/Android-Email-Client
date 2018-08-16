@@ -26,8 +26,8 @@ class UserDataWriterTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
 
-    private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
-    private val joeContact = Contact(email = "joe@jigl.com", name = "Joe", id = 2)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
+    private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2)
 
     private val labelOne = Label(id = 1, color = "red", text = SecureEmail.LABEL_ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
     private val labelTwo = Label(id = 2, color = "blue", text = SecureEmail.LABEL_INBOX, type = LabelTypes.SYSTEM, visible = true)
@@ -53,8 +53,8 @@ class UserDataWriterTest {
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
 
-    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@jigl.com\",\"name\":\"Bob\"}}",
-    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@jigl.com\",\"name\":\"Joe\"}}",
+    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\"}}",
+    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\"}}",
     "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"ALL MAIL\",\"type\":\"SYSTEM\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"INBOX\",\"type\":\"SYSTEM\",\"visible\":true}}",
     "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":1}}",

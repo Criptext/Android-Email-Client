@@ -25,6 +25,7 @@ import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,10 +36,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UpdateMailboxWorkerTest {
-    @get:Rule
-    val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
-    private lateinit var db: TestDatabase
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var signalClient: SignalClient
     private lateinit var mailboxLocalDB: MailboxLocalDB
@@ -47,6 +45,9 @@ class UpdateMailboxWorkerTest {
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+    @get:Rule
+    val mActivityRule = ActivityTestRule(TestActivity::class.java)
+    private lateinit var db: TestDatabase
 
     @Before
     fun setup() {
@@ -56,9 +57,7 @@ class UpdateMailboxWorkerTest {
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db)
-        eventDB = EventLocalDB(emailLabelDao = mockk(), accountDao = mockk(), contactDao = mockk(),
-                labelDao = mockk(), fileDao = mockk(), emailContactDao = mockk(),
-                emailInsertionDao = mockk(), feedDao = mockk(), fileKeyDao = mockk(), emailDao = mockk())
+        eventDB = EventLocalDB(db)
 
         // mock http requests
         mockWebServer = MockWebServer()
@@ -67,6 +66,7 @@ class UpdateMailboxWorkerTest {
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
     }
+
 
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
             UpdateMailboxWorker(signalClient = signalClient, label = label,
@@ -89,7 +89,7 @@ class UpdateMailboxWorkerTest {
         db.emailDao().insertAll(localEmails)
         db.contactDao().insertIgnoringConflicts(Contact(
                 id = 0,
-                email = "mayer@jigl.com",
+                email = "mayer@criptext.com",
                 name = "Mayer"
         ))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
@@ -123,7 +123,7 @@ class UpdateMailboxWorkerTest {
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
         db.emailDao().insertAll(localEmails)
-        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@jigl.com", "Mayer"))
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer"))
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
@@ -198,10 +198,10 @@ class UpdateMailboxWorkerTest {
                         ExpectedRequest(method = "GET", path = "/event",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                                 ),
-                        ExpectedRequest(method = "GET", path = "/email/body/%3C15221916.12518@jigl.com%3E",
+                        ExpectedRequest(method = "GET", path = "/email/body/81",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                         ),
-                        ExpectedRequest(method = "GET", path = "/email/body/%3C15221916.12519@jigl.com%3E",
+                        ExpectedRequest(method = "GET", path = "/email/body/82",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                         ),
                         ExpectedRequest(method = "POST", path = "/event/ack",
@@ -235,10 +235,10 @@ class UpdateMailboxWorkerTest {
                         ExpectedRequest(method = "GET", path = "/event",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                                 ),
-                        ExpectedRequest(method = "GET", path = "/email/body/%3C15221916.12518@jigl.com%3E",
+                        ExpectedRequest(method = "GET", path = "/email/body/81",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                         ),
-                        ExpectedRequest(method = "GET", path = "/email/body/%3C15221916.12519@jigl.com%3E",
+                        ExpectedRequest(method = "GET", path = "/email/body/82",
                                 expectedAuthScheme = expectedAuthScheme, assertBodyFn = null
                         ),
                         ExpectedRequest(method = "POST", path = "/event/ack",

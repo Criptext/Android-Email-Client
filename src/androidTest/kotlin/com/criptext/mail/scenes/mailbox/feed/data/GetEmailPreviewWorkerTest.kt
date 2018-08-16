@@ -26,7 +26,7 @@ class GetEmailPreviewWorkerTest{
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
 
-    private val userEmail = "daniel@jigl.com"
+    private val userEmail = "daniel@criptext.com"
 
     @Before
     fun setup() {
@@ -37,7 +37,7 @@ class GetEmailPreviewWorkerTest{
     }
 
     private fun insertEmailNeededForTests(): Email {
-        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
+        val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi")
         val metadata = EmailMetadata.DBColumns(to = userEmail,  cc = "", bcc = "",
                 fromContact = fromContact, messageId = "daniel/1/1",
                 date = "2018-02-21 14:00:00", threadId = "thread#1",
