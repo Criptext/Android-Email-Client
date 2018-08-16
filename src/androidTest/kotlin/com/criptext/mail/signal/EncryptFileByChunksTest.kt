@@ -27,7 +27,7 @@ class EncryptFileByChunksTest {
     private lateinit var signalClient: SignalClient
     private lateinit var tester: DummyUser
 
-    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@jigl.com", name = "Joe", id = 2)
 

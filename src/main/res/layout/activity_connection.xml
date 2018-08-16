@@ -9,8 +9,7 @@
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/logo_splash"
-        android:tint="@color/colorAccent"/>
+        android:src="@drawable/logo_splash"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

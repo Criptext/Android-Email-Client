@@ -138,7 +138,7 @@ class ComposerController(private val model: ComposerModel,
             scene.setPasswordError(errorMessage)
             scene.disableSendButtonOnDialog()
         } else {
-            val errorMessage = UIMessage(R.string.password_mismatch_error)
+            val errorMessage = UIMessage(R.string.pin_mismatch_error)
             model.passwordState = FormInputState.Error(errorMessage)
             scene.setPasswordError(errorMessage)
             scene.togglePasswordSuccess(show = false)

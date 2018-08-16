@@ -37,7 +37,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class ReadEmails: EmailDetailResult(){
-        class Success: ReadEmails()
+        data class Success(val readEmailsQuantity: Int): ReadEmails()
         class Failure: ReadEmails()
     }
     sealed class UpdateEmailThreadsLabelsRelations: EmailDetailResult() {

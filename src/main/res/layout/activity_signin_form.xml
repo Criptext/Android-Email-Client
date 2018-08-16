@@ -25,6 +25,7 @@ android:focusableInTouchMode="true" >
 
             <ImageView
                 android:src="@drawable/logo_splash"
+                android:tint="@color/white"
                 android:layout_gravity="center"
                 android:layout_width="80dp"
                 android:layout_height="80dp"/>

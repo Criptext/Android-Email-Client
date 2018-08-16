@@ -43,7 +43,7 @@ class SendEmailWorkerTest {
     private lateinit var httpClient: HttpClient
     private lateinit var tester: DummyUser
 
-    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Phone)
+    private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
     private val bobContact = Contact(email = "bob@jigl.com", name = "Bob", id = 1)

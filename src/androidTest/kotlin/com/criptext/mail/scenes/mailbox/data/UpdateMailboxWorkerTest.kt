@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -43,6 +44,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
+    protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
 
@@ -54,6 +56,9 @@ class UpdateMailboxWorkerTest {
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db)
+        eventDB = EventLocalDB(emailLabelDao = mockk(), accountDao = mockk(), contactDao = mockk(),
+                labelDao = mockk(), fileDao = mockk(), emailContactDao = mockk(),
+                emailInsertionDao = mockk(), feedDao = mockk(), fileKeyDao = mockk(), emailDao = mockk())
 
         // mock http requests
         mockWebServer = MockWebServer()
@@ -64,12 +69,9 @@ class UpdateMailboxWorkerTest {
     }
 
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
-            UpdateMailboxWorker(signalClient = signalClient, db = mailboxLocalDB,
-                    emailDao = db.emailDao(), dao = emailInsertionDao, label = label,
+            UpdateMailboxWorker(signalClient = signalClient, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
-                    publishFn = {}, httpClient = httpClient, contactDao = db.contactDao(),
-                    feedItemDao = db.feedDao(), fileDao = db.fileDao(), emailLabelDao = db.emailLabelDao(),
-                    accountDao = db.accountDao(), labelDao = db.labelDao())
+                    publishFn = {}, httpClient = httpClient, dbEvents = eventDB)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 

@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.UploadAttachmentWorker
 import com.criptext.mail.scenes.emaildetail.workers.DownloadAttachmentWorker
@@ -34,6 +35,8 @@ class DownloadAttachmentWorkerTest {
 
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
     private val fileServiceAuthToken =
             Encoding.byteArrayToString(
                     "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(
@@ -82,13 +85,13 @@ class DownloadAttachmentWorkerTest {
     }
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
-            UploadAttachmentWorker(filepath = filepath, fileServiceAuthToken = fileServiceAuthToken,
+            UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, fileKey = null)
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
                     downloadPath = mActivityRule.activity.cacheDir.absolutePath,
-                    httpClient = httpClient, fileServiceAuthToken = fileServiceAuthToken,
+                    httpClient = httpClient, activeAccount = activeAccount,
                     publishFn = {}, fileKey = null)
 
     private fun sendPermanentRequest(filetoken: String){

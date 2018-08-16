@@ -61,12 +61,7 @@ object EmailInsertionSetup {
     private fun createContactRows(dao: EmailInsertionDao, addressesCSV: String): List<Contact> {
         if (addressesCSV.isEmpty()) return emptyList()
 
-        val toAddresses = addressesCSV.split(",").map {
-            if(it.contains("<") && it.contains(">"))
-                it.substring(it.indexOf("<"), it.indexOf(">")).replace("\"", "")
-            else
-                it.replace("\"", "")
-        }
+        val toAddresses = addressesCSV.split(",").map { removeEmailInvalidCharacters(it) }
         val toAddressesNotDuplicated = toAddresses.toSet().toList()
         val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)
 
@@ -78,13 +73,28 @@ object EmailInsertionSetup {
         return contactsMap.values.toList()
     }
 
+    private fun removeEmailInvalidCharacters(email: String): String{
+        return email.replace("<", "")
+                .replace(">", "")
+                .replace("\"", "")
+                .toLowerCase()
+    }
+
+    private fun removeNameInvalidCharacters(name: String): String{
+        return name.replace("\"", "")
+                .replace("<", "")
+                .replace(">", "")
+    }
+
     private fun createSenderContactRow(dao: EmailInsertionDao, senderContact: Contact): Contact {
         val existingContacts = dao.findContactsByEmail(listOf(senderContact.email))
         return if (existingContacts.isEmpty()) {
             val ids = dao.insertContacts(listOf(senderContact))
-            Contact(id = ids.first(), name = senderContact.name, email = senderContact.email)
+            Contact(id = ids.first(),
+                    name = removeNameInvalidCharacters(senderContact.name),
+                    email = removeEmailInvalidCharacters(senderContact.email))
         } else {
-            dao.updateContactName(existingContacts.first().id, senderContact.name)
+            dao.updateContactName(existingContacts.first().id, removeNameInvalidCharacters(senderContact.name))
             existingContacts.first()
         }
     }

@@ -72,10 +72,10 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                 fullEmail.from.name,
                 fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
 
-        setIcons(fullEmail.email.delivered)
+        setIcons(fullEmail.email.delivered, fullEmail.files.isNotEmpty())
     }
 
-    private fun setIcons(deliveryType: DeliveryTypes){
+    private fun setIcons(deliveryType: DeliveryTypes, hasFiles: Boolean){
 
         check.visibility = View.VISIBLE
 
@@ -99,7 +99,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                 check.visibility = View.GONE
             }
         }
-
+        attachment.visibility = if(hasFiles) View.VISIBLE else View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
