@@ -3,7 +3,6 @@ package com.criptext.mail.scenes.settings.data
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.utils.UIMessage
-import java.text.FieldPosition
 
 sealed class SettingsResult{
 
@@ -33,15 +32,21 @@ sealed class SettingsResult{
         class Failure: ChangeVisibilityLabel()
     }
 
-    sealed class ListDevices : SettingsResult() {
-        data class Success(val devices: List<DeviceItem>): ListDevices()
-        data class Failure(val message: UIMessage): ListDevices()
-        data class Unauthorized(val message: UIMessage): ListDevices()
+    sealed class GetUserSettings : SettingsResult() {
+        data class Success(val userSettings: UserSettingsData): GetUserSettings()
+        data class Failure(val message: UIMessage): GetUserSettings()
+        data class Unauthorized(val message: UIMessage): GetUserSettings()
     }
 
     sealed class RemoveDevice : SettingsResult() {
         class Success(val deviceId: Int, val position: Int): RemoveDevice()
         class Failure: RemoveDevice()
+    }
+
+    sealed class CheckPassword : SettingsResult() {
+        class Success: CheckPassword()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?): CheckPassword()
     }
 
 }

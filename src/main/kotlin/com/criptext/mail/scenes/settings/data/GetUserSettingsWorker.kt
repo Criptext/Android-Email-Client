@@ -6,50 +6,42 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
-import java.io.File
 
 
-
-/**
- * Created by danieltigse on 28/06/18.
- */
-
-class ListDevicesWorker(
+class GetUserSettingsWorker(
         httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
-                SettingsResult.ListDevices) -> Unit)
-    : BackgroundWorker<SettingsResult.ListDevices> {
+                SettingsResult.GetUserSettings) -> Unit)
+    : BackgroundWorker<SettingsResult.GetUserSettings> {
 
     override val canBeParallelized = true
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): SettingsResult.ListDevices {
+    override fun catchException(ex: Exception): SettingsResult.GetUserSettings {
         if(ex is ServerErrorException && ex.errorCode == 401)
-            return SettingsResult.ListDevices.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        return SettingsResult.ListDevices.Failure(createErrorMessage(ex))
+            return SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+        return SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
     }
 
-    override fun work(reporter: ProgressReporter<SettingsResult.ListDevices>): SettingsResult.ListDevices? {
-        val listDevicesOperation = Result.of {apiClient.listDevices()}
+    override fun work(reporter: ProgressReporter<SettingsResult.GetUserSettings>): SettingsResult.GetUserSettings? {
+        val getSettingsOperation = Result.of {apiClient.getSettings()}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-        return when (listDevicesOperation){
+        return when (getSettingsOperation){
             is Result.Success -> {
-                val devices = DeviceItem.fromJSON(listDevicesOperation.value)
-                        .map { if(it.id == activeAccount.deviceId) it.copy(
-                                isCurrent = true
-                        ) else it }
-                SettingsResult.ListDevices.Success(devices)
+                val settings = UserSettingsData.fromJSON(getSettingsOperation.value)
+                val devices = settings.devices.map { if(it.id == activeAccount.deviceId) it.copy(
+                        isCurrent = true
+                ) else it }
+                SettingsResult.GetUserSettings.Success(settings.copy(devices = devices))
             }
             is Result.Failure -> {
-                catchException(listDevicesOperation.error)
+                catchException(getSettingsOperation.error)
             }
         }
     }

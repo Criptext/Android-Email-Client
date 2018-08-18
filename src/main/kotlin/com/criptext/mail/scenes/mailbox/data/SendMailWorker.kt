@@ -141,8 +141,12 @@ class SendMailWorker(private val signalClient: SignalClient,
     }
 
     override fun catchException(ex: Exception): MailboxResult.SendMail {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return MailboxResult.SendMail.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.DeviceWasRemoved ->
+                    return MailboxResult.SendMail.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+            }
+        }
         val message = createErrorMessage(ex)
         return MailboxResult.SendMail.Failure(message)
     }

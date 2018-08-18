@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mailbox_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <LinearLayout
+            android:layout_toEndOf="@id/mailbox_nav_button"
+            android:layout_width="match_parent"
+            android:id="@+id/mailbox_title_layout"
+            android:layout_marginStart="-10dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:visibility="visible"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/mailbox_back_button"
+                android:src="@drawable/back"
+                android:gravity="center"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:padding="10dp"
+                android:layout_height="70dp"
+                android:layout_width="70dp" />
+
+            <TextView
+                android:id="@+id/mailbox_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_height="match_parent"
+                android:text="@string/title_change_email_cap"
+                android:gravity="left|center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/change_email_title"
+            android:textColor="#373a45"
+            android:textSize="18sp"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+        <RelativeLayout
+            android:id="@+id/edit_text_layout"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="30dp"
+                android:layout_toStartOf="@+id/recovery_email_input"
+                android:layout_height="30dp">
+                <ImageView
+                    android:id="@+id/error"
+                    android:visibility="invisible"
+                    android:src="@drawable/x_rounded"
+                    android:tint="@color/red"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <ImageView
+                    android:id="@+id/success"
+                    android:visibility="invisible"
+                    android:src="@drawable/check"
+                    android:tint="@color/colorOpened"
+                    android:padding="9dp"
+                    android:layout_gravity="center|start"
+                    android:background="@drawable/success_circle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </FrameLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/signup_hint_color"
+                app:hintTextAppearance="@style/NormalTextAppearence"
+                app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+                android:layout_centerHorizontal="true"
+                app:errorEnabled="true"
+                android:layout_gravity="top|center_horizontal">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/change_button"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@color/white"
+            android:text="@string/button_change_email_confirm"
+            android:textAllCaps="false"
+            android:enabled="false"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -148,7 +148,6 @@
                 android:paddingStart="17dp"
                 android:id="@+id/settings_change_password"
                 android:clickable="true"
-                android:visibility="gone"
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
@@ -175,7 +174,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#d8d8d8"
-                android:visibility="gone"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -187,8 +185,8 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingStart="17dp"
-                android:id="@+id/settings_recovery"
-                android:clickable="true"
+                android:id="@+id/settings_recovery_loading"
+                android:clickable="false"
                 android:visibility="gone"
                 android:foreground="?attr/selectableItemBackground">
 
@@ -201,7 +199,40 @@
                     android:textColor="@color/drawer_text"
                     android:layout_weight="1"/>
 
+                <ProgressBar
+                    android:id="@+id/check_password_progress"
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="visible"
+                    android:layout_gravity="center_vertical"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/settings_recovery"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_recovery_email"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/not_confirmed_text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="@string/status_not_confirmed"
@@ -227,7 +258,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#d8d8d8"
-                android:visibility="gone"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 

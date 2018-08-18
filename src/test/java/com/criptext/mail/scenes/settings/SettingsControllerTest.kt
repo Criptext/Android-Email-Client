@@ -7,6 +7,7 @@ import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.data.SettingsResult
+import com.criptext.mail.scenes.settings.data.UserSettingsData
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
@@ -71,7 +72,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.ListDevices.Success(devices = listOf()))
+        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false)))
 
         val observer = observerSlot.captured
         observer.onProfileNameChanged(newProfileName)
@@ -88,7 +89,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.ListDevices.Success(devices = listOf()))
+        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false)))
 
         val observer = observerSlot.captured
         observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")

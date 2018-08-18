@@ -72,6 +72,10 @@
             android:theme="@style/AppThemeWithActionBar"
             android:configChanges="orientation|screenSize">
         </activity>
+        <activity android:name=".scenes.settings.recovery_email.RecoveryEmailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.change_email.ChangeEmailActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".services.InstanceIdService"

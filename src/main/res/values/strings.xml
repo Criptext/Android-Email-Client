@@ -79,6 +79,7 @@
     <string name="title_open_source_libraries">Open Source Libraries</string>
     <string name="title_logout">Logout</string>
     <string name="title_remove_device">Remove Device</string>
+    <string name="title_enter_password">Enter your password to continue</string>
     <string name="title_custom_dialog">New Label</string>
     <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
@@ -86,6 +87,8 @@
     <string name="title_recovery_email">Recovery Email</string>
     <string name="title_signature">Signature</string>
     <string name="title_signature_cap">SIGNATURE</string>
+    <string name="title_recovery_email_cap">RECOVERY EMAIL</string>
+    <string name="title_change_email_cap">CHANGE EMAIL</string>
     <string name="title_allow_notifications">Allow Notifications</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>
@@ -93,7 +96,31 @@
     <string name="separator_notifications">NOTIFICATIONS</string>
     <string name="separator_about">ABOUT</string>
     <string name="status_not_confirmed">Not Confirmed</string>
+    <string name="status_confirmed">Verified</string>
     <string name="criptext_version">Criptext System Version </string>
+    <string name="password_enter_error">Password is incorrect.</string>
+    <string name="change_password_success">Password has been changed.</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="new_confirm_password">Confirm New Password</string>
+
+    <!-- RECOVERY EMAIL SCENE -->
+    <string name="recovery_email_title">Current</string>
+    <string name="button_resend_confirmation">Resend Link</string>
+    <string name="button_change_email">Change Email</string>
+    <string name="recovery_confirmation_resend">A confirmation link has been sent to your recovery email.</string>
+    <string name="recovery_confirmation_resend_failed">An error has occurred sending the confirmation link. Try again later.</string>
+    <string name="resend_confirmation_dialog_message">Check your inbox for an email by Criptext and click the link within to verify your new Recovery Email.</string>
+    <string name="resend_confirmation_dialog_title">Confirmation Link Sent</string>
+
+    <!-- CHANGE CONFIRMATION EMAIL -->
+    <string name="title_new_email">Enter your new recovery email.</string>
+    <string name="change_email_title">Enter new email</string>
+    <string name="button_change_email_confirm">Change</string>
+    <string name="recovery_email_has_changed">Recovery email changed successfully</string>
+
+    <!-- CHANGE PASSWORD DIALOG -->
+    <string name="title_change_password_dialog">Change password</string>
 
     <!-- LOGOUT DIALOG -->
     <string name="logout_dialog_message"><b>Alert!:</b> Login out will delete all emails from this device. Your emails will remain intact in your other devices, if any. Do you want to logout?</string>

@@ -33,7 +33,9 @@
     <dimen name="delete_thread_warning_height">200dp</dimen>
     <dimen name="welcome_tour_width">300dp</dimen>
     <dimen name="welcome_tour__height">360dp</dimen>
-    <dimen name="password_login_dialog_width">250dp</dimen>
+    <dimen name="change_email_width">300dp</dimen>
+    <dimen name="change_email_height">220dp</dimen>
+    <dimen name="password_login_dialog_width">300dp</dimen>
     <dimen name="password_login_dialog_height">400dp</dimen>
     <dimen name="profile_name_dialog_height">300dp</dimen>
     <dimen name="non_criptext_email_send_dialog_height">500dp</dimen>
