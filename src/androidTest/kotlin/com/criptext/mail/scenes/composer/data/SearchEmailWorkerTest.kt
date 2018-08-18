@@ -27,11 +27,11 @@ class SearchEmailWorkerTest{
     private lateinit var db: TestDatabase
     private lateinit var searchLocalDB: SearchLocalDB
 
-    private val userEmail = "gabriel@jigl.com"
+    private val userEmail = "gabriel@criptext.com"
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
-       return EmailMetadata.DBColumns(to = "gabriel@jigl.com",  cc = "", bcc = "",
+       return EmailMetadata.DBColumns(to = "gabriel@criptext.com",  cc = "", bcc = "",
                     fromContact = fromContact, messageId = "gabriel/1/$id",
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$id",
                     subject = "Test #$id", unread = true, metadataKey = id + 100L,
@@ -45,7 +45,7 @@ class SearchEmailWorkerTest{
         searchLocalDB = SearchLocalDB.Default(db)
 
         (1..2).forEach {
-            val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
+            val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi")
             val metadata = createMetadataColumns(it, fromContact)
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
@@ -53,7 +53,7 @@ class SearchEmailWorkerTest{
                     decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
         }
 
-        val anotherFromContact = Contact(2,"erika@jigl.com", "Erika Perugachi")
+        val anotherFromContact = Contact(2,"erika@criptext.com", "Erika Perugachi")
         val metadata = createMetadataColumns(3, anotherFromContact)
         val decryptedBody = "Hello again, this is message #3"
         val labels = listOf(Label.defaultItems.inbox)
@@ -65,7 +65,7 @@ class SearchEmailWorkerTest{
     fun test_should_found_two_emails_based_on_sender_email_address(){
 
         val worker = newWorker(
-                queryText = "mayer@jigl.com",
+                queryText = "mayer@criptext.com",
                 loadParams = LoadParams.Reset(20)
         )
 

@@ -50,7 +50,7 @@ class UploadAttachmentWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
 
-        httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.basic,
+        httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
                 readTimeout = 7000L)
     }
@@ -62,9 +62,8 @@ class UploadAttachmentWorkerTest {
     }
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
-            UploadAttachmentWorker(filepath = filepath,
-                    httpClient = httpClient, publishFn = {}, fileKey = null,
-                    activeAccount = activeAccount)
+            UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
+                    httpClient = httpClient, publishFn = {}, fileKey = null)
 
     @Test
     fun should_upload_file_without_errors() {
@@ -93,13 +92,13 @@ class UploadAttachmentWorkerTest {
         if(Config.mockCriptextHTTPRequests) {
             mockWebServer.assertSentRequests(listOf(
                     ExpectedRequest(
-                        expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                        expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
                         method = "POST", path = "/file/upload", assertBodyFn = null),
                     ExpectedRequest(
-                            expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                            expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
                             method = "POST", path = "/file/chunk", assertBodyFn = null),
                     ExpectedRequest(
-                            expectedAuthScheme = ExpectedAuthScheme.Basic(fileServiceAuthToken),
+                            expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
                             method = "POST", path = "/file/chunk", assertBodyFn = null)
             ))
         }

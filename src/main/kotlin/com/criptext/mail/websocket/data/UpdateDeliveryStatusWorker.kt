@@ -42,8 +42,9 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
 
             dao.changeDeliveryTypeByMetadataKey(listOf(trackingUpdate.metadataKey), trackingUpdate.type, DeliveryTypes.UNSEND)
             val update = EmailDeliveryStatusUpdate(existingEmail.id, trackingUpdate)
+            val emailAddress = "${trackingUpdate.from}@${Contact.mainDomain}"
 
-            if(trackingUpdate.type == DeliveryTypes.READ) {
+            if(trackingUpdate.type == DeliveryTypes.READ && existingEmail.delivered != DeliveryTypes.READ) {
                 feedDao.insertFeedItem(FeedItem(
                         id = 0,
                         date = Date(),
@@ -51,19 +52,19 @@ class UpdateDeliveryStatusWorker(private val dao: EmailDao,
                         location = "",
                         seen = false,
                         emailId = existingEmail.id,
-                        contactId = contactDao.getContact("${trackingUpdate.from}@${Contact.mainDomain}")!!.id,
+                        contactId = contactDao.getContact(emailAddress)!!.id,
                         fileId = null
                 ))
+                return EventResult.UpdateDeliveryStatus.Success(update)
             }
 
-            if(trackingUpdate.type == DeliveryTypes.UNSEND) {
+            if(trackingUpdate.type == DeliveryTypes.UNSEND && existingEmail.delivered != DeliveryTypes.UNSEND) {
                 dao.changeDeliveryType(existingEmail.id, DeliveryTypes.UNSEND)
                 dao.unsendEmailById(existingEmail.id, "", "",
                         DateUtils.getDateFromString(DateUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
                 fileDao.changeFileStatusByEmailid(existingEmail.id, 0)
+                return EventResult.UpdateDeliveryStatus.Success(update)
             }
-
-            return EventResult.UpdateDeliveryStatus.Success(update)
         }
 
         // nothing was updated so return null.
