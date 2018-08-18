@@ -8,7 +8,8 @@ import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.ColorUtils
-import com.criptext.mail.utils.Utility
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 
 class CreateCustomLabelWorker(
         private val labelName: String,
@@ -27,19 +28,20 @@ class CreateCustomLabelWorker(
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.CreateCustomLabel>): SettingsResult.CreateCustomLabel? {
-        val id = settingsLocalDB.labelDao.insert(Label(
+        val label = Label(
                 id = 0,
                 text = labelName,
                 color = ColorUtils.colorStringByName(labelName),
                 visible = true,
-                type = LabelTypes.CUSTOM
-        ))
-        if(id > 0) {
-            val label = settingsLocalDB.labelDao.getLabelById(id)
-            apiClient.postLabelCreatedEvent(label.text, label.color)
-            return SettingsResult.CreateCustomLabel.Success(settingsLocalDB.labelDao.getLabelById(id))
+                type = LabelTypes.CUSTOM)
+        val operation = Result.of { apiClient.postLabelCreatedEvent(label.text, label.color) }
+                .flatMap { Result.of { settingsLocalDB.labelDao.insert(label) } }
+
+
+        return when(operation){
+            is Result.Success -> SettingsResult.CreateCustomLabel.Success(settingsLocalDB.labelDao.getLabelById(operation.value))
+            is Result.Failure -> SettingsResult.CreateCustomLabel.Failure()
         }
-        return SettingsResult.CreateCustomLabel.Failure()
     }
 
     override fun cancel() {
