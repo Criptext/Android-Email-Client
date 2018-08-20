@@ -534,23 +534,22 @@
                 android:layout_marginEnd="22dp"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/criptext_version"
-                android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
-                android:textColor="#b9b9b9"
-                android:layout_margin="17dp"/>
+
+                <TextView
+                    android:layout_width="231dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="17dp"
+                    android:text="@string/criptext_version"
+                    android:textColor="#b9b9b9"
+                    android:textSize="@dimen/drawer_text_item" />
             <TextView
                 android:id="@+id/version_text"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
                 android:textColor="#b9b9b9"
                 android:layout_margin="17dp"/>
             </LinearLayout>

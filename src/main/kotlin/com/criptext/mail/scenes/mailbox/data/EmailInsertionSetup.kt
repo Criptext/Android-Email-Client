@@ -10,6 +10,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
 import kotlin.collections.HashMap
@@ -227,7 +228,8 @@ object EmailInsertionSetup {
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                        dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount) {
-        val meAsSender = metadata.senderRecipientId == activeAccount.recipientId
+        val meAsSender = (metadata.senderRecipientId == activeAccount.recipientId)
+                && (metadata.from.contains(activeAccount.userEmail))
         val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
                 || metadata.cc.contains(activeAccount.userEmail)
                 || metadata.to.contains(activeAccount.userEmail)
