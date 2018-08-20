@@ -607,14 +607,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onNewPeerEmailLabelsChangedUpdate(update: PeerEmailLabelsChangedStatusUpdate) {
-            updateEmailThreadsLabelsRelations(SelectedLabels())
             dataSourceController.updateMailbox(model.selectedLabel)
             observer.onRefreshMails()
             reloadViewAfterSocketEvent()
         }
 
         override fun onNewPeerThreadLabelsChangedUpdate(update: PeerThreadLabelsChangedStatusUpdate) {
-            updateEmailThreadsLabelsRelations(SelectedLabels())
             dataSourceController.updateMailbox(model.selectedLabel)
             observer.onRefreshMails()
             reloadViewAfterSocketEvent()
