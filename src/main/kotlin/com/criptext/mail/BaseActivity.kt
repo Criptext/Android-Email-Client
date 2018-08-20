@@ -151,7 +151,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel()
             is SignInParams -> SignInSceneModel()
-            is MailboxParams -> MailboxSceneModel()
+            is MailboxParams -> MailboxSceneModel(params.showWelcome)
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview)
             is ComposerParams -> ComposerModel(params.type)

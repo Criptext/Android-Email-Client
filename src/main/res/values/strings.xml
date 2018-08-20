@@ -162,6 +162,14 @@
     <string name="login_rejected">Login Rejected</string>
     <string name="creating_keys">Creating Keys</string>
 
+    <!-- WELCOME TOUR -->
+    <string name="slide_1_title"><b>Welcome!</b></string>
+    <string name="slide_1_text">Your secure email experience starts now. Be ready for privacy without compromise.</string>
+    <string name="slide_2_title"><b>Strong Privacy</b></string>
+    <string name="slide_2_text">Criptext doesn\'t collect email data. Your emails are only stored on your device.</string>
+    <string name="slide_3_title"><b>The power is yours</b></string>
+    <string name="slide_3_text">You create information, we believe you have a right to own it.</string>
+
     <!-- LOGIN ERRORS -->
     <string name="logout1">Unable to reach account. Please try again later</string>
     <string name="logout2">Unable to create session, please try again later</string>

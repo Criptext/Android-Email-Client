@@ -295,6 +295,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                     userEmail = activeAccount.userEmail))
         }
 
+        if(model.showWelcome) {
+            model.showWelcome = false
+            scene.showWelcomeDialog()
+        }
 
 
         return handleActivityMessage(activityMessage)
