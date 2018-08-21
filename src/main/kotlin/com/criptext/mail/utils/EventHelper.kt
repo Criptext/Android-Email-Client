@@ -26,6 +26,7 @@ class EventHelper(private val db: EventLocalDB,
 
     private val mailboxAPIClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
+    private val eventsToAcknowldege = mutableListOf<Long>()
 
     private lateinit var label: Label
     private var loadedThreadsCount: Int? = null
@@ -67,13 +68,13 @@ class EventHelper(private val db: EventLocalDB,
 
     val processEvents: (List<Event>) -> Result<List<EmailPreview>, Exception> = { events ->
         Result.of {
-            val shouldReload = processTrackingUpdates(events)
-                    || processNewEmails(events) || processThreadReadStatusChanged(events) ||
-                    processUnsendEmailStatusChanged(events) || processPeerUsernameChanged(events) ||
-                    processEmailLabelChanged(events) || processThreadLabelChanged(events) ||
-                    processEmailDeletedPermanently(events) || processThreadDeletedPermanently(events) ||
-                    processLabelCreated(events) || processOnError(events) || processEmailReadStatusChanged(events)
-            reloadMailbox(shouldReload)
+            val shouldReload = processTrackingUpdates(events).or(processNewEmails(events))
+                    .or(processThreadReadStatusChanged(events)).or(processUnsendEmailStatusChanged(events))
+                    .or(processPeerUsernameChanged(events)).or(processEmailLabelChanged(events))
+                    .or(processThreadLabelChanged(events)).or(processEmailDeletedPermanently(events))
+                    .or(processThreadDeletedPermanently(events)).or(processLabelCreated(events))
+                    .or(processOnError(events)).or(processEmailReadStatusChanged(events))
+            reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege)))
         }
     }
 
@@ -111,7 +112,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -141,7 +142,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -171,7 +172,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -200,7 +201,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -229,7 +230,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -258,7 +259,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -287,7 +288,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -316,7 +317,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -345,7 +346,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -374,7 +375,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -394,7 +395,8 @@ class EventHelper(private val db: EventLocalDB,
         createFeedItems(trackingUpdates)
         changeDeliveryTypes(trackingUpdates)
         if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(events.filter(isTrackingUpdateEvent)
+                    .map(toIdAndTrackingUpdatePair).map { it.first })
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -406,7 +408,7 @@ class EventHelper(private val db: EventLocalDB,
                 .map { it.rowid }
 
         if (eventIdsToAcknowledge.isNotEmpty())
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -468,12 +470,14 @@ class EventHelper(private val db: EventLocalDB,
             db.updateFeedItems(trackingUpdates)
 
 
-    private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>) {
+    private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>): Boolean {
         try {
-            mailboxAPIClient.acknowledgeEvents(eventIdsToAcknowledge)
+            if(eventIdsToAcknowledge.isNotEmpty())
+                mailboxAPIClient.acknowledgeEvents(eventIdsToAcknowledge)
         } catch (ex: IOException) {
             // if this request fails, just ignore it, we can acknowledge again later
         }
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
 
