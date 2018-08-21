@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Gianni Carlo"
         android:gravity="center_vertical"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textColor="#7d7d7d"
         android:layout_width="wrap_content" />
 
@@ -23,7 +23,7 @@
         android:text="@string/criptextdotcom"
         android:textColor="@color/azure"
         android:gravity="center_vertical"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textIsSelectable="true"
         android:layout_width="wrap_content" />
 

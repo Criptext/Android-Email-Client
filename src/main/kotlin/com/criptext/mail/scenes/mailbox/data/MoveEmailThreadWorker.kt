@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
 /**
@@ -64,9 +65,9 @@ class MoveEmailThreadWorker(
             val result = Result.of {
                 apiClient.postThreadDeletedPermanentlyEvent(selectedThreadIds) }
                     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                    .flatMap { Result.of { db.deleteThreads(threadIds = selectedThreadIds) } }
             return when (result) {
                 is Result.Success -> {
-                    db.deleteThreads(threadIds = selectedThreadIds)
                     MailboxResult.MoveEmailThread.Success()
                 }
                 is Result.Failure -> {
@@ -87,17 +88,17 @@ class MoveEmailThreadWorker(
             apiClient.postThreadLabelChangedEvent(selectedThreadIds, listOf(currentLabel.text),
                 selectedLabels.toList().map { it.text })}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-
-        return when (result) {
-            is Result.Success -> {
-                if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
+                .flatMap { Result.of { if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
                     //Mark as spam from trash
                     db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
                             emailIds = emailIds)
-                }
+                    }
+                    val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
+                    db.createLabelEmailRelations(labelEmails)
+                } }
 
-                val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
-                db.createLabelEmailRelations(labelEmails)
+        return when (result) {
+            is Result.Success -> {
                 MailboxResult.MoveEmailThread.Success()
             }
             is Result.Failure -> {
