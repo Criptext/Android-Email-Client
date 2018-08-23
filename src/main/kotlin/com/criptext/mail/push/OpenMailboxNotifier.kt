@@ -20,14 +20,14 @@ sealed class OpenMailboxNotifier(val data: PushData.OpenMailbox): Notifier {
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = CriptextNotification(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification)
+        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_OPEN)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
         val cn = CriptextNotification(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
-                CriptextNotification.ACTION_INBOX)
+                CriptextNotification.ACTION_OPEN)
     }
 
     protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Notification

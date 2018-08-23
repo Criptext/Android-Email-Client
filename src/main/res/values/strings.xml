@@ -362,4 +362,6 @@
     <string name="feed_older">OLDER</string>
 
     <string name="new_email_notification">New Email Notification</string>
+    <string name="email_open_notification">Email Open Notification</string>
+    <string name="unknown_notification">Unknown Notification</string>
 </resources>
