@@ -41,6 +41,9 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
                     eventDataSource.submitRequest(EventRequest.UpdateDeliveryStatus(trackingUpdate))
                 }
             }
+            Event.Cmd.deviceRemoved -> {
+                eventDataSource.submitRequest(EventRequest.DeviceRemoved())
+            }
             Event.Cmd.peerEmailReadStatusUpdate -> {
                 val peerReadEmailStatusUpdate = PeerReadEmailStatusUpdate.fromJSON(event.params)
                 eventDataSource.submitRequest(EventRequest.UpdatePeerReadEmailStatus(event.rowid,
@@ -93,6 +96,8 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
         when (eventResult) {
             is EventResult.InsertNewEmail -> publishNewEmailResult(eventResult)
             is EventResult.UpdateDeliveryStatus -> publishNewTrackingUpdate(eventResult)
+            is EventResult.DeviceRemoved -> onDeviceRemoved(eventResult)
+            //PEER EVENTS
             is EventResult.UpdatePeerReadEmailStatus -> publishNewReadEmail(eventResult)
             is EventResult.UpdatePeerReadThreadStatus -> publishNewReadThread(eventResult)
             is EventResult.UpdatePeerUnsendEmailStatus -> publishNewUnsendEmail(eventResult)
@@ -130,6 +135,19 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
 
             is EventResult.UpdateDeliveryStatus.Failure ->
                 currentListener?.onError(eventResult.message)
+        }
+    }
+
+    private fun onDeviceRemoved(eventResult: EventResult.DeviceRemoved) {
+
+        when (eventResult) {
+            is EventResult.DeviceRemoved.Success -> {
+                currentListener?.onDeviceRemoved()
+            }
+
+            is EventResult.DeviceRemoved.Failure ->{
+                //DoNothig?
+            }
         }
     }
 

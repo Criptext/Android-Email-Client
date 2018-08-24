@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.mailbox.data
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
@@ -36,7 +37,8 @@ class UpdateEmailThreadsLabelsWorker(
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations {
-
+        if(ex is ServerErrorException && ex.errorCode == 401)
+            return MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
         val message = createErrorMessage(ex)
         return MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
                 message = message,
@@ -99,6 +101,9 @@ class UpdateEmailThreadsLabelsWorker(
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
-        UIMessage(resId = R.string.failed_getting_emails)
+        when (ex) {
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
+            else -> UIMessage(resId = R.string.failed_getting_emails)
+        }
     }
 }

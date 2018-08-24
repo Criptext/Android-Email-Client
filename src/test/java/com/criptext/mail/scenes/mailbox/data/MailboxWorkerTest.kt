@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -38,6 +39,7 @@ open class MailboxWorkerTest {
     protected lateinit var dao: EmailInsertionDao
     protected lateinit var activeAccount: ActiveAccount
     protected lateinit var dataSource: MailboxDataSource
+    protected lateinit var storage: KeyValueStorage
     protected lateinit var runner: MockedWorkRunner
     protected var lastResult: MailboxResult? = null
     protected var userEmail = "gabriel@criptext.com"
@@ -49,6 +51,7 @@ open class MailboxWorkerTest {
                 jwt = "__JWTOKEN__", signature = "")
         signalClient = mockk()
         db = mockk()
+        storage = mockk(relaxed = true)
         emailDao = mockk()
         feedItemDao = mockk()
         contactDao = mockk()
@@ -60,9 +63,7 @@ open class MailboxWorkerTest {
         accountDao = mockk()
         dao = mockk(relaxed = true)
         dao.runTransactionsAsTheyAreInvoked()
-        eventDB = EventLocalDB(emailLabelDao = emailLabelDao, accountDao = accountDao, contactDao = contactDao,
-                labelDao = labelDao, fileDao = fileDao, emailContactDao = emailContactDao,
-                emailInsertionDao = dao, feedDao = feedItemDao, fileKeyDao = fileKeyDao, emailDao = emailDao)
+        eventDB = mockk(relaxed = true)
         httpClient = mockk()
         runner = MockedWorkRunner()
         rawSessionDao = mockk()
@@ -73,7 +74,7 @@ open class MailboxWorkerTest {
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
                 fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao,
-                eventLocalDB = eventDB)
+                eventLocalDB = eventDB, storage = storage)
         dataSource.listener = { result -> lastResult = result }
     }
 

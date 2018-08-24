@@ -1,12 +1,17 @@
 package com.criptext.mail.scenes
 
 import com.criptext.mail.IHostActivity
+import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 
 /**
  * Base class for all the main controllers.
  * Created by sebas on 1/30/18.
  */
 abstract class SceneController {
+
+    var removeDeviceDataSource: BackgroundWorkManager<RemovedDeviceRequest, RemovedDeviceResult>? = null
     /**
      * Host activity will check this value every time it has to redraw the toolbar's menu. You
      * should return the resource id of the menu you wish to display.

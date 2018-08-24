@@ -18,7 +18,10 @@ import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
 import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 import com.criptext.mail.validation.FormInputState
 
 
@@ -146,6 +149,12 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
+    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+        when(result) {
+            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+        }
+    }
+
     private val dataSourceListener: (ComposerResult) -> Unit = { result ->
         when(result) {
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
@@ -190,6 +199,9 @@ class ComposerController(private val model: ComposerModel,
                 scene.showAttachmentErrorDialog(result.filepath)
                 handleNextUpload()
             }
+            is ComposerResult.UploadFile.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+            }
         }
         scene.notifyAttachmentSetChanged()
     }
@@ -229,6 +241,14 @@ class ComposerController(private val model: ComposerModel,
             }
             is ComposerResult.GetAllContacts.Failure -> {
                 scene.showError(UIMessage(R.string.error_getting_contacts))
+            }
+        }
+    }
+
+    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+        when (result) {
+            is RemovedDeviceResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
             }
         }
     }
@@ -357,6 +377,7 @@ class ComposerController(private val model: ComposerModel,
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
+        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
 
         if (model.initialized)
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)

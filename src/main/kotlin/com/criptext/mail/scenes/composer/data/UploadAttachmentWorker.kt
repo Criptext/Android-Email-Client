@@ -26,11 +26,12 @@ class UploadAttachmentWorker(private val filepath: String,
     : BackgroundWorker<ComposerResult.UploadFile> {
     override val canBeParallelized = false
 
-    val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
+    private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): ComposerResult.UploadFile {
-         return ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
-    }
+    override fun catchException(ex: Exception): ComposerResult.UploadFile =
+            if (ex is ServerErrorException && ex.errorCode == 401)
+                ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+            else ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
 
 
 
@@ -80,8 +81,7 @@ class UploadAttachmentWorker(private val filepath: String,
 
         return when (result) {
             is Result.Success -> ComposerResult.UploadFile.Success(filepath)
-            is Result.Failure -> ComposerResult.UploadFile.Failure(filepath,
-                    createErrorMessage(result.error))
+            is Result.Failure -> catchException(result.error)
         }
     }
 
@@ -89,13 +89,7 @@ class UploadAttachmentWorker(private val filepath: String,
         ex.printStackTrace()
         when (ex) { // these are not the real errors TODO fix!
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
-            is ServerErrorException -> {
-                if(ex.errorCode == 400) {
-                    UIMessage(resId = R.string.duplicate_name_error_exception)
-                } else {
-                    UIMessage(resId = R.string.server_error_exception)
-                }
-            }
+            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
         }

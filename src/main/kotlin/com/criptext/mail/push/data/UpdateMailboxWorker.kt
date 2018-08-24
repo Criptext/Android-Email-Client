@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label

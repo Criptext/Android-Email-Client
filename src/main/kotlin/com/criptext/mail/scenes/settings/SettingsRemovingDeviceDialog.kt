@@ -15,7 +15,7 @@ import com.criptext.mail.R
  * Created by sebas on 3/8/18.
  */
 
-class SettingsLoginOutDialog(val context: Context) {
+class SettingsRemovingDeviceDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
@@ -24,7 +24,7 @@ class SettingsLoginOutDialog(val context: Context) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.settings_custom_login_out_dialog, null)
+        val dialogView = inflater.inflate(R.layout.settings_removing_device_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
@@ -35,18 +35,17 @@ class SettingsLoginOutDialog(val context: Context) {
                              observer: SettingsUIObserver?): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
-        val newLogoutDialog = dialogBuilder.create()
-        val window = newLogoutDialog.window
-        newLogoutDialog.show()
+        val newRemovingDeviceDialog = dialogBuilder.create()
+        val window = newRemovingDeviceDialog.window
+        newRemovingDeviceDialog.show()
         window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
         window.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
-        newLogoutDialog.setCanceledOnTouchOutside(false)
+        newRemovingDeviceDialog.window.setBackgroundDrawable(drawableBackground)
+        newRemovingDeviceDialog.setCanceledOnTouchOutside(false)
 
-
-        return newLogoutDialog
+        return newRemovingDeviceDialog
     }
 
     fun dismiss() {

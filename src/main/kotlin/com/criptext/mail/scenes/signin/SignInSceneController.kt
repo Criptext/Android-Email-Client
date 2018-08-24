@@ -185,6 +185,9 @@ class SignInSceneController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         scene.initLayout(state = model.state, signInUIObserver = uiObserver)
+        if(activityMessage != null && activityMessage is ActivityMessage.ShowUIMessage){
+            scene.showError(activityMessage.message)
+        }
 
         return false
     }

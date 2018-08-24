@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.emaildetail.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
@@ -12,6 +14,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
@@ -36,9 +39,10 @@ class UpdateUnreadStatusWorker(
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): EmailDetailResult.UpdateUnreadStatus {
-        return EmailDetailResult.UpdateUnreadStatus.Failure()
-    }
+    override fun catchException(ex: Exception): EmailDetailResult.UpdateUnreadStatus =
+            if (ex is ServerErrorException && ex.errorCode == 401)
+                EmailDetailResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+            else EmailDetailResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
 
     private fun updateUnreadEmailStatus() =
         Result.of {
@@ -68,5 +72,11 @@ class UpdateUnreadStatusWorker(
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        when(ex){
+            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
+            else -> UIMessage(resId = R.string.error_updating_status)
+        }
+    }
 }
 

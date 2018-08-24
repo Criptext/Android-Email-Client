@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -77,7 +78,6 @@ class EventHelper(private val db: EventLocalDB,
             reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege)))
         }
     }
-
 
 
     private fun processNewEmails(events: List<Event>): Boolean {

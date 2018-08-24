@@ -7,11 +7,13 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.file.AndroidFs
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 
 /**
@@ -41,7 +43,7 @@ class  EmailDetailActivity: BaseActivity() {
                 context = this)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
 
-        return EmailDetailSceneController(
+        val controller =  EmailDetailSceneController(
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,
@@ -59,7 +61,12 @@ class  EmailDetailActivity: BaseActivity() {
                         downloadDir = downloadDir
                 )
         )
-
+        controller.removeDeviceDataSource = RemovedDeviceDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner()
+        )
+        return controller
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

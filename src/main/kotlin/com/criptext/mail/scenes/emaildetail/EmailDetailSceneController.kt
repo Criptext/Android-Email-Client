@@ -22,9 +22,12 @@ import com.criptext.mail.scenes.mailbox.OnDeleteThreadListener
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.params.ComposerParams
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -40,7 +43,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val websocketEvents: WebSocketEventPublisher,
                                  private val keyboard: KeyboardManager) : SceneController() {
-    
+
+
+    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+        when(result) {
+            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+        }
+    }
+
     private val dataSourceListener = { result: EmailDetailResult ->
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId -> onFullEmailsLoaded(result)
@@ -75,6 +85,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
                     forceAnimation = false
             )
+        }
+    }
+
+    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+        when (result) {
+            is RemovedDeviceResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+            }
         }
     }
 
@@ -117,8 +135,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                         params = MailboxParams(),
                         activityMessage = message,
                         forceAnimation = false)
-            } else -> {
-                scene.showError(UIMessage(R.string.error_updating_status))
+            }
+            is EmailDetailResult.UpdateUnreadStatus.Failure -> {
+                    scene.showError(UIMessage(R.string.error_updating_status))
+            }
+            is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
     }
@@ -131,8 +153,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                         params = MailboxParams(),
                         activityMessage = message,
                         forceAnimation = false)
-            } else -> {
-                scene.showError(UIMessage(R.string.error_moving_emails))
+            }
+            is EmailDetailResult.MoveEmailThread.Failure -> {
+                    scene.showError(UIMessage(R.string.error_moving_emails))
+            }
+            is EmailDetailResult.MoveEmailThread.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
     }
@@ -148,11 +174,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
 
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
-                if(result.position > -1){
+                if (result.position > -1) {
                     model.emails[result.position].isUnsending = false
                     scene.notifyFullEmailChanged(result.position)
                 }
                 scene.showError(result.message)
+            }
+            is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
     }
@@ -189,6 +218,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             is EmailDetailResult.DownloadFile.Progress -> {
                 updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
+            }
+            is EmailDetailResult.DownloadFile.Unauthorized -> {
+                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
     }
@@ -375,6 +407,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
+        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
 
         if (model.emails.isEmpty())
@@ -518,6 +551,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceRemoved() {
+            host.exitToScene(SignInParams(), null, false)
+        }
+
         override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
 
         }

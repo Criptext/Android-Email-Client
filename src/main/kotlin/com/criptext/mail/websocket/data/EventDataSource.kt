@@ -5,8 +5,11 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.settings.data.RemoveDeviceWorker
 import com.criptext.mail.signal.SignalClient
 
 /**
@@ -14,66 +17,63 @@ import com.criptext.mail.signal.SignalClient
  */
 
 class EventDataSource(override val runner: WorkRunner,
-                      private val feedItemDao: FeedItemDao,
-                      private val fileDao: FileDao,
-                      private val emailDao: EmailDao,
-                      private val emailLabelDao: EmailLabelDao,
-                      private val labelDao: LabelDao,
-                      private val contactDao: ContactDao,
-                      private val accountDao: AccountDao,
-                      private val emailInsertionDao: EmailInsertionDao,
+                      private val db : AppDatabase,
                       private val emailInsertionAPIClient: EmailInsertionAPIClient,
                       private val signalClient: SignalClient,
                       private val activeAccount: ActiveAccount,
+                      private val storage: KeyValueStorage,
                       private val httpClient: HttpClient): BackgroundWorkManager<EventRequest, EventResult>() {
 
     override fun createWorkerFromParams(params: EventRequest, flushResults: (EventResult) -> Unit): BackgroundWorker<*> {
         return when (params) {
             is EventRequest.InsertNewEmail -> InsertNewEmailWorker(
-                    emailInsertionDao = emailInsertionDao, signalClient = signalClient,
+                    emailInsertionDao = db.emailInsertionDao(), signalClient = signalClient,
                     emailInsertionApi = emailInsertionAPIClient, metadata = params.emailMetadata,
                     activeAccount = activeAccount,
                     publishFn = flushResults)
             is EventRequest.UpdateDeliveryStatus -> UpdateDeliveryStatusWorker(
-                    dao = emailDao, fileDao = fileDao, trackingUpdate = params.trackingUpdate,
-                    feedDao = feedItemDao, contactDao = contactDao, publishFn = flushResults)
+                    dao = db.emailDao(), fileDao = db.fileDao(), trackingUpdate = params.trackingUpdate,
+                    feedDao = db.feedDao(), contactDao = db.contactDao(), publishFn = flushResults)
             is EventRequest.UpdatePeerUnsendEmailStatus -> UpdatePeerUnsendEmailStatusWorker(
-                    dao = emailDao, peerUnsendEmailStatusUpdate = params.peerUnsendEmailStatusUpdate,
-                    fileDao = fileDao, publishFn = flushResults, activeAccount = activeAccount,
+                    dao = db.emailDao(), peerUnsendEmailStatusUpdate = params.peerUnsendEmailStatusUpdate,
+                    fileDao = db.fileDao(), publishFn = flushResults, activeAccount = activeAccount,
                     httpClient = httpClient, eventId = params.eventId)
             is EventRequest.UpdatePeerReadEmailStatus -> UpdatePeerReadStatusWorker(
-                    dao = emailDao, peerReadEmailStatusUpdate = params.peerReadEmailStatusUpdate,
+                    dao = db.emailDao(), peerReadEmailStatusUpdate = params.peerReadEmailStatusUpdate,
                     publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
                     activeAccount = activeAccount)
             is EventRequest.UpdatePeerReadThreadStatus -> UpdatePeerReadThreadStatusWorker(
-                    dao = emailDao, peerReadThreadStatusUpdate = params.peerReadThreadStatusUpdate,
+                    dao = db.emailDao(), peerReadThreadStatusUpdate = params.peerReadThreadStatusUpdate,
                     publishFn = flushResults, activeAccount = activeAccount, httpClient = httpClient,
                     eventId = params.eventId)
             is EventRequest.UpdatePeerEmailDeletedStatus -> UpdatePeerEmailDeletedStatusWorker(
-                    dao = emailDao, peerEmailDeletedStatusUpdate = params.peerEmailDeleted,
+                    dao = db.emailDao(), peerEmailDeletedStatusUpdate = params.peerEmailDeleted,
                     publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
                     activeAccount = activeAccount)
             is EventRequest.UpdatePeerThreadDeletedStatus -> UpdatePeerThreadDeletedStatusWorker(
-                    dao = emailDao, peerThreadDeletedStatusUpdate = params.peerThreadDeleted,
+                    dao = db.emailDao(), peerThreadDeletedStatusUpdate = params.peerThreadDeleted,
                     publishFn = flushResults, activeAccount = activeAccount, httpClient = httpClient,
                     eventId = params.eventId)
             is EventRequest.UpdatePeerEmailLabelsChangedStatus -> UpdatePeerEmailLabelsChangedStatusWorker(
-                    dao = emailDao, peerEmailLabelsChangedStatusUpdate = params.peerEmailLabelsChanged,
-                    emailLabelDao = emailLabelDao, labelDao = labelDao,
+                    dao = db.emailDao(), peerEmailLabelsChangedStatusUpdate = params.peerEmailLabelsChanged,
+                    emailLabelDao = db.emailLabelDao(), labelDao = db.labelDao(),
                     publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
                     activeAccount = activeAccount)
             is EventRequest.UpdatePeerThreadLabelsChangedStatus -> UpdatePeerThreadLabelsChangedStatusWorker(
-                    dao = emailDao, peerThreadLabelsChangedStatusUpdate = params.peerThreadsLabelChanged,
-                    publishFn = flushResults, labelDao = labelDao, emailLabelDao = emailLabelDao,
+                    dao = db.emailDao(), peerThreadLabelsChangedStatusUpdate = params.peerThreadsLabelChanged,
+                    publishFn = flushResults, labelDao = db.labelDao(), emailLabelDao = db.emailLabelDao(),
                     activeAccount = activeAccount, httpClient = httpClient, eventId = params.eventId)
             is EventRequest.UpdatePeerLabelCreatedStatus -> UpdatePeerLabelCreatedStatusWorker(
-                    labelDao = labelDao, peerLabelCreatedStatusUpdate = params.peerLabelCreated,
+                    labelDao = db.labelDao(), peerLabelCreatedStatusUpdate = params.peerLabelCreated,
                     publishFn = flushResults, eventId = params.eventId, httpClient = httpClient,
                     activeAccount = activeAccount)
             is EventRequest.UpdatePeerUsernameChangedStatus -> UpdatePeerUsernameChangedStatusWorker(
-                    contactDao = contactDao, peerUsernameChangedStatusUpdate = params.peerUsernameChanged,
-                    publishFn = flushResults, accountDao = accountDao, activeAccount = activeAccount,
+                    contactDao = db.contactDao(), peerUsernameChangedStatusUpdate = params.peerUsernameChanged,
+                    publishFn = flushResults, accountDao = db.accountDao(), activeAccount = activeAccount,
                     httpClient = httpClient, eventId = params.eventId)
+            is EventRequest.DeviceRemoved -> DeviceRemovedWorker(
+                    db = db, storage = storage, publishFn = flushResults
+            )
         }
     }
 }

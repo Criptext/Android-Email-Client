@@ -9,12 +9,14 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
+import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
 import droidninja.filepicker.FilePickerConst
 import java.io.File
 
@@ -41,12 +43,18 @@ class ComposerActivity : BaseActivity() {
                 activeAccount = activeAccount,
                 emailInsertionDao = appDB.emailInsertionDao(),
                 runner = AsyncTaskWorkRunner())
-        return ComposerController(
+        val controller = ComposerController(
                 model = model,
                 scene = scene,
                 activeAccount = activeAccount,
                 dataSource = dataSource,
                 host = this)
+        controller.removeDeviceDataSource = RemovedDeviceDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner()
+        )
+        return controller
     }
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
@@ -61,7 +69,6 @@ class ComposerActivity : BaseActivity() {
             val photo= photoUtil.getPhotoFileFromIntent()
             if(photo != null)
                 setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length()))))
-
         }
     }
 

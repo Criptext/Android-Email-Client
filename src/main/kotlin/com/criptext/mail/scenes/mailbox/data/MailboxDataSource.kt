@@ -5,6 +5,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -18,6 +19,7 @@ import com.criptext.mail.signal.SignalClient
 
 class MailboxDataSource(
         private val signalClient: SignalClient,
+        private val storage: KeyValueStorage,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
         private val accountDao: AccountDao,
@@ -55,6 +57,7 @@ class MailboxDataSource(
                     activeAccount = activeAccount,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })
