@@ -18,7 +18,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = CriptextNotification(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification)
+        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_INBOX)
     }
 
     private fun postHeaderNotification(ctx: Context){

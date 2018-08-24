@@ -35,6 +35,7 @@ class ReadEmailsWorker(private val dao: EmailDao,
             : EmailDetailResult.ReadEmails? {
         val emails = dao.getAllEmailsByMetadataKey(metadataKeys)
         val unreadEmails = emails.filter { it.unread }
+        if(unreadEmails.isEmpty()) return EmailDetailResult.ReadEmails.Failure()
         val result = Result.of { apiClient.postOpenEvent(metadataKeys) }
                 .flatMap { Result.of { apiClient.postThreadReadChangedEvent(unreadEmails.map { it.threadId }.distinct(),false) }}
                 .flatMap { Result.of { dao.toggleCheckingRead(ids = unreadEmails.map { it.id }, unread = false) } }
