@@ -139,7 +139,7 @@ class EventLocalDB(private val db: AppDatabase){
     }
 
     fun updateUnreadStatusByMetadataKeys(metadataKeys: List<Long>, updateUnreadStatus: Boolean) {
-        db.emailDao().toggleRead(metadataKeys, updateUnreadStatus)
+        db.emailDao().toggleReadByMetadataKey(metadataKeys, updateUnreadStatus)
     }
 
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,

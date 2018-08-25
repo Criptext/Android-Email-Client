@@ -115,9 +115,9 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
-    fun changeEmailReadStatus(emailIds: List<Long>, unread: Boolean) {
-        for(emailId in emailIds) {
-            val position = model.threads.indexOfFirst { it.emailId == emailId }
+    fun changeEmailReadStatus(metadataKeys: List<Long>, unread: Boolean) {
+        for(metadataKey in metadataKeys) {
+            val position = model.threads.indexOfFirst { it.metadataKey == metadataKey }
             if (position > -1) {
                 model.threads[position] =
                         model.threads[position].copy(unread = unread)
@@ -129,7 +129,7 @@ class ThreadListController(private val model : MailboxSceneModel,
     fun changeThreadReadStatus(threadIds: List<String>, unread: Boolean) {
         model.threads.forEachIndexed { _, emailPreview ->
             for (threadId in threadIds)
-                if(emailPreview.threadId == threadId) changeEmailReadStatus(listOf(emailPreview.emailId), unread)
+                if(emailPreview.threadId == threadId) changeEmailReadStatus(listOf(emailPreview.metadataKey), unread)
         }
     }
 

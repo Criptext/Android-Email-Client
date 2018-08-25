@@ -27,10 +27,6 @@ import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
 import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
-import com.criptext.mail.websocket.data.EventDataSource
-import com.criptext.mail.websocket.data.EventRequest
-import com.criptext.mail.websocket.data.EventResult
-import com.google.android.gms.signin.SignIn
 
 /**
  * Created by sebas on 1/30/18.
@@ -679,8 +675,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         }
 
-        override fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate) {
-            threadListController.changeEmailReadStatus(emailIds, update.unread)
+        override fun onNewPeerReadEmailUpdate(metadataKeys: List<Long>, update: PeerReadEmailStatusUpdate) {
+            threadListController.changeEmailReadStatus(metadataKeys, update.unread)
             reloadViewAfterSocketEvent()
         }
 

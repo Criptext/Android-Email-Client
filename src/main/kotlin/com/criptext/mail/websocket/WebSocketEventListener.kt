@@ -32,7 +32,7 @@ interface WebSocketEventListener{
      * @param emailId id of the email whose delivery status has been updated.
      * @param update the received update
      */
-    fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate)
+    fun onNewPeerReadEmailUpdate(metadataKeys: List<Long>, update: PeerReadEmailStatusUpdate)
 
     /**
      * Invoked when a new tracking update been received. Subscribers should try to add the update
