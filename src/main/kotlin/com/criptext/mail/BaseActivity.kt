@@ -38,8 +38,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-
-
+import com.criptext.mail.scenes.settings.change_email.ChangeEmailModel
+import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 
 
 /**
@@ -157,6 +157,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is ComposerParams -> ComposerModel(params.type)
             is SettingsParams -> SettingsModel()
             is SignatureParams -> SignatureModel(params.recipientId)
+            is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
+            is ChangeEmailParams -> ChangeEmailModel(params.recoveryEmail, params.isConfirmed)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

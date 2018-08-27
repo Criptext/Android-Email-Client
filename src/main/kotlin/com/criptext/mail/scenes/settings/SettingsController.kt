@@ -12,6 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.scenes.params.RecoveryEmailParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.SignatureParams
 import com.criptext.mail.scenes.settings.data.SettingsRequest
@@ -23,6 +24,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
 import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
+import com.criptext.mail.validation.FormInputState
 
 class SettingsController(
         private val model: SettingsModel,
@@ -35,6 +37,8 @@ class SettingsController(
     : SceneController(){
 
     override val menuResourceId: Int? = null
+    val arePasswordsMatching: Boolean
+        get() = model.passwordText == model.confirmPasswordText
 
     private val labelWrapperListController = LabelWrapperListController(model, scene.getLabelListView())
     private val deviceWrapperListController = DeviceWrapperListController(model, scene.getDeviceListView())
@@ -52,12 +56,39 @@ class SettingsController(
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.Logout -> onLogout(result)
-            is SettingsResult.ListDevices -> onListDevices(result)
+            is SettingsResult.GetUserSettings -> onListDevices(result)
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
+            is SettingsResult.CheckPassword -> onCheckPassword(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onRecoveryEmailOptionClicked() {
+            host.goToScene(RecoveryEmailParams(model.isEmailCconfirmed, model.recoveryEmail), false)
+        }
+
+        override fun onOldPasswordChangedListener(password: String) {
+            model.oldPasswordText = password
+        }
+
+        override fun onPasswordChangedListener(password: String) {
+            model.passwordText = password
+            if(model.confirmPasswordText.isNotEmpty())
+                checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
+        }
+
+        override fun onConfirmPasswordChangedListener(confirmPassword: String) {
+            model.confirmPasswordText = confirmPassword
+            checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
+        }
+
+        override fun onOkChangePasswordDialogButton() {
+            dataSource.submitRequest(SettingsRequest.CheckPassword(model.oldPasswordText, model.confirmPasswordText))
+        }
+
+        override fun onChangePasswordOptionClicked() {
+            scene.showChangePasswordDialog()
+        }
 
         override fun onCustomLabelNameAdded(labelName: String) {
             dataSource.submitRequest(SettingsRequest.CreateCustomLabel(labelName))
@@ -134,10 +165,36 @@ class SettingsController(
     }
 
     private val onDevicesListItemListener = object: DevicesListItemListener {
-
         override fun onDeviceLongClicked(device: DeviceItem, position: Int): Boolean {
             settingsUIObserver.onRemoveDevice(device.id, position)
             return true
+        }
+    }
+
+    private fun checkPasswords(passwords: Pair<String, String>) {
+        if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
+            scene.showPasswordDialogError(null)
+            scene.toggleChangePasswordSuccess(show = true)
+            model.passwordState = FormInputState.Valid()
+            if (model.passwordState is FormInputState.Valid)
+                scene.enableChangePasswordSaveButton()
+        } else if (arePasswordsMatching && passwords.first.isEmpty()) {
+            scene.showPasswordDialogError(null)
+            scene.toggleChangePasswordSuccess(show = false)
+            model.passwordState = FormInputState.Unknown()
+            scene.disableChangePasswordSaveButton()
+        } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
+            scene.toggleChangePasswordSuccess(show = false)
+            val errorMessage = UIMessage(R.string.password_length_error)
+            model.passwordState = FormInputState.Error(errorMessage)
+            scene.showPasswordDialogError(errorMessage)
+            scene.disableChangePasswordSaveButton()
+        } else {
+            val errorMessage = UIMessage(R.string.password_mismatch_error)
+            model.passwordState = FormInputState.Error(errorMessage)
+            scene.showPasswordDialogError(errorMessage)
+            scene.toggleChangePasswordSuccess(show = false)
+            scene.disableChangePasswordSaveButton()
         }
     }
 
@@ -161,7 +218,7 @@ class SettingsController(
                     model = model,
                     settingsUIObserver = settingsUIObserver,
                     devicesListItemListener = onDevicesListItemListener)
-            dataSource.submitRequest(SettingsRequest.ListDevices())
+            dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
         return false
     }
@@ -245,17 +302,20 @@ class SettingsController(
         }
     }
 
-    private fun onListDevices(result: SettingsResult.ListDevices){
+    private fun onListDevices(result: SettingsResult.GetUserSettings){
         when(result) {
-            is SettingsResult.ListDevices.Success -> {
+            is SettingsResult.GetUserSettings.Success -> {
                 model.devices.clear()
-                model.devices.addAll(result.devices)
+                model.devices.addAll(result.userSettings.devices)
+                model.isEmailCconfirmed = result.userSettings.recoveryEmailConfirmationState
+                model.recoveryEmail = result.userSettings.recoveryEmail
                 deviceWrapperListController.update()
+                scene.updateUserSettings(result.userSettings)
             }
-            is SettingsResult.ListDevices.Failure -> {
+            is SettingsResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)
             }
-            is SettingsResult.ListDevices.Unauthorized -> {
+            is SettingsResult.GetUserSettings.Unauthorized -> {
                 removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
             }
         }
@@ -272,6 +332,22 @@ class SettingsController(
                 scene.showMessage(UIMessage(R.string.error_listing_devices))
             }
         }
+    }
+
+    private fun onCheckPassword(result: SettingsResult.CheckPassword){
+        when(result) {
+            is SettingsResult.CheckPassword.Success -> {
+                scene.dismissEnterPasswordDialog()
+                scene.showMessage(UIMessage(R.string.change_password_success))
+            }
+            is SettingsResult.CheckPassword.Failure -> {
+                scene.showOldPasswordDialogError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    companion object {
+        val minimumPasswordLength = 8
     }
 
 }

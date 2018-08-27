@@ -20,7 +20,8 @@ interface KeyValueStorage {
 
     enum class StringKey(val stringKey: String) {
         ActiveAccount("ActiveAccount"), SignInSession("SignInSession"),
-        SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened")
+        SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
+        LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {

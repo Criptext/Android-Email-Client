@@ -52,7 +52,7 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
-            is SettingsRequest.ListDevices -> ListDevicesWorker(
+            is SettingsRequest.GetUserSettings -> GetUserSettingsWorker(
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
@@ -60,6 +60,12 @@ class SettingsDataSource(
             is SettingsRequest.RemoveDevice -> RemoveDeviceWorker(
                     deviceId = params.deviceId,
                     position = params.position,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = {res -> flushResults(res)}
+            )
+            is SettingsRequest.CheckPassword -> CheckPasswordWorker(
+                    password = params.oldPassword,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }

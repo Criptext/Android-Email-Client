@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
 import com.criptext.mail.scenes.settings.views.DevicesSettingsView
 import com.criptext.mail.scenes.settings.views.GeneralSettingsView
@@ -16,7 +17,6 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ViewPagerAdapter
 import com.criptext.mail.utils.virtuallist.VirtualListView
-import java.text.FieldPosition
 
 interface SettingsScene{
 
@@ -24,18 +24,27 @@ interface SettingsScene{
                    devicesListItemListener: DevicesListItemListener)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
+    fun showPasswordDialogError(message: UIMessage?)
+    fun dismissEnterPasswordDialog()
     fun showLogoutDialog()
     fun showLoginOutDialog()
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissLoginOutDialog()
     fun dismissRemovingDeviceDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
+    fun showChangePasswordDialog()
+    fun disableChangePasswordSaveButton()
+    fun enableChangePasswordSaveButton()
+    fun showOldPasswordDialogError(message: UIMessage?)
+    fun toggleChangePasswordSuccess(show: Boolean)
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
+    fun updateUserSettings(userData: UserSettingsData)
+
 
     var settingsUIObserver: SettingsUIObserver?
 
-    class Default(private val view: View): SettingsScene{
+    class Default(private val view: View): SettingsScene {
 
         private val context = view.context
 
@@ -57,8 +66,11 @@ interface SettingsScene{
         }
 
         private val deviceView: DevicesSettingsView by lazy {
-            DevicesSettingsView(view.findViewById(R.id.viewSettingsDevices),
-                    context.getString(R.string.devices))
+            DevicesSettingsView(view.findViewById(R.id.viewSettingsDevices), context.getString(R.string.devices))
+        }
+        private val generalView: GeneralSettingsView by lazy {
+            GeneralSettingsView(view.findViewById(R.id.viewSettingsGeneral),
+                    context.getString(R.string.general))
         }
 
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
@@ -67,15 +79,18 @@ interface SettingsScene{
         private val settingLoginOutDialog = SettingsLoginOutDialog(context)
         private val settingRemovingDeviceDialog = SettingsRemovingDeviceDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
+        private val settingChangePasswordDialog = NewPasswordDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
         override fun attachView(name: String, model: SettingsModel,
                                 settingsUIObserver: SettingsUIObserver,
-                                devicesListItemListener: DevicesListItemListener){
+                                devicesListItemListener: DevicesListItemListener) {
 
             this.settingsUIObserver = settingsUIObserver
+
             loadTabs(name, model, devicesListItemListener)
+
             backButton.setOnClickListener {
                 settingsUIObserver.onBackButtonPressed()
             }
@@ -118,6 +133,34 @@ interface SettingsScene{
             settingRemovingDeviceDialog.dismiss()
         }
 
+        override fun dismissEnterPasswordDialog() {
+            settingChangePasswordDialog.dismissDialog()
+        }
+
+        override fun showPasswordDialogError(message: UIMessage?) {
+            settingChangePasswordDialog.setPasswordError(message)
+        }
+
+        override fun showOldPasswordDialogError(message: UIMessage?) {
+            settingChangePasswordDialog.setOldPasswordError(message)
+        }
+
+        override fun disableChangePasswordSaveButton() {
+            settingChangePasswordDialog.disableSaveButton()
+        }
+
+        override fun enableChangePasswordSaveButton() {
+            settingChangePasswordDialog.enableSaveButton()
+        }
+
+        override fun toggleChangePasswordSuccess(show: Boolean) {
+            settingChangePasswordDialog.togglePasswordSuccess(show)
+        }
+
+        override fun showChangePasswordDialog() {
+            settingChangePasswordDialog.showDialog(settingsUIObserver)
+        }
+
         override fun getLabelListView(): VirtualListView {
             return labelView.getListView()
         }
@@ -131,12 +174,14 @@ interface SettingsScene{
             tabs.setupWithViewPager(mViewPager)
         }
 
+        override fun updateUserSettings(userData: UserSettingsData) {
+            generalView.setRecoveryEmailConfirmationText(userData.recoveryEmailConfirmationState)
+        }
+
         private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,
                                    devicesListItemListener: DevicesListItemListener) {
 
             val adapter = ViewPagerAdapter()
-            val generalView = GeneralSettingsView(view.findViewById(R.id.viewSettingsGeneral),
-                    context.getString(R.string.general))
             generalView.setExternalListeners(settingsUIObserver)
             adapter.addView(generalView)
 
@@ -150,5 +195,4 @@ interface SettingsScene{
         }
 
     }
-
 }
