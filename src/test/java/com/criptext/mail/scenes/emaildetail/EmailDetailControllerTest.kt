@@ -32,7 +32,7 @@ open class EmailDetailControllerTest {
             count = 0, bodyPreview = "", topText = "", timestamp = Date(System.currentTimeMillis()),
             deliveryStatus = DeliveryTypes.DELIVERED, emailId = 1L, isSelected = false,
             senderName = "", unread = false, hasFiles = false, isStarred = false,
-            latestEmailUnsentDate = Date(System.currentTimeMillis()))
+            latestEmailUnsentDate = Date(System.currentTimeMillis()), metadataKey = 1L)
 
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene

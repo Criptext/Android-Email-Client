@@ -213,7 +213,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
             is EventResult.UpdatePeerReadEmailStatus.Success -> {
                 val update = eventResult.update
                 if (update != null)
-                    currentListener?.onNewPeerReadEmailUpdate(update.emailId, update.peerReadEmailStatusUpdate)
+                    currentListener?.onNewPeerReadEmailUpdate(update.matadataKeys, update.peerReadEmailStatusUpdate)
             }
 
             is EventResult.UpdatePeerReadEmailStatus.Failure ->

@@ -40,7 +40,6 @@ class ReadEmailsWorker(private val dao: EmailDao,
         val unreadEmails = emails.filter { it.unread }
         if(unreadEmails.isEmpty()) return EmailDetailResult.ReadEmails.Failure(UIMessage(R.string.nothing_to_update))
         val result = Result.of { apiClient.postOpenEvent(metadataKeys) }
-                .flatMap { Result.of { apiClient.postThreadReadChangedEvent(unreadEmails.map { it.threadId }.distinct(),false) }}
                 .flatMap { Result.of { dao.toggleCheckingRead(ids = unreadEmails.map { it.id }, unread = false) } }
 
         return when(result){

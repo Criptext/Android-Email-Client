@@ -111,6 +111,11 @@ import java.util.*
 
     @Query("""UPDATE email
             SET unread=:unread
+            where metadataKey in (:metadataKeys)""")
+    fun toggleReadByMetadataKey(metadataKeys: List<Long>, unread: Boolean)
+
+    @Query("""UPDATE email
+            SET unread=:unread
             where id in (:ids) AND unread !=:unread""")
     fun toggleCheckingRead(ids: List<Long>, unread: Boolean)
 

@@ -598,7 +598,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             scene.showError(uiMessage)
         }
 
-        override fun onNewPeerReadEmailUpdate(emailIds: List<Long>, update: PeerReadEmailStatusUpdate) {
+        override fun onNewPeerReadEmailUpdate(metadataKeys: List<Long>, update: PeerReadEmailStatusUpdate) {
             scene.notifyFullEmailListChanged()
         }
 

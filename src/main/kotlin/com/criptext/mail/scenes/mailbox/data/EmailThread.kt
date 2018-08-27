@@ -26,6 +26,8 @@ class EmailThread(val latestEmail: FullEmail,
     val headerPreview: String = participants.joinToString { it.name }
     val id: Long
         get() = latestEmail.email.id
+    val metadataKey: Long
+        get() = latestEmail.email.metadataKey
     val subject: String
         get() = latestEmail.email.subject
     val preview: String
