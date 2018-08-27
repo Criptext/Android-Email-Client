@@ -9,6 +9,7 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.ChunkFileReader
 import com.github.kittinunf.result.Result
@@ -29,8 +30,15 @@ class UploadAttachmentWorker(private val filepath: String,
     private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): ComposerResult.UploadFile =
-            if (ex is ServerErrorException && ex.errorCode == 401)
-                ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+            if(ex is ServerErrorException) {
+                when {
+                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                        ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                        ComposerResult.UploadFile.Forbidden()
+                    else -> ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
+                }
+            }
             else ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
 
 

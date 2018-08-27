@@ -26,6 +26,8 @@ import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
@@ -54,6 +56,9 @@ interface EmailDetailScene {
 
     fun onDecryptedBody(decryptedText: String)
     fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
+    fun dismissConfirmPasswordDialog()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun setConfirmPasswordError(message: UIMessage)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -69,6 +74,7 @@ interface EmailDetailScene {
         private val moveToDialog = MoveToDialog(context)
         private val deleteThreadDialog = DeleteThreadDialog(context)
         private val deleteEmailDialog = DeleteEmailDialog(context)
+        private val confirmPassword = ConfirmPasswordDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -182,6 +188,18 @@ interface EmailDetailScene {
 
         override fun onDecryptedBody(decryptedText: String) {
             
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
 

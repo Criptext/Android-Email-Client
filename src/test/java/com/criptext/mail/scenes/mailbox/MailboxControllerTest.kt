@@ -7,6 +7,9 @@ import com.criptext.mail.scenes.mailbox.data.MailboxRequest
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
+import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
@@ -20,6 +23,7 @@ open class MailboxControllerTest {
     protected lateinit var scene: MailboxScene
     protected lateinit var signal: SignalClient
     protected lateinit var dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>
+    protected lateinit var remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>
     protected lateinit var controller: MailboxSceneController
     protected lateinit var host: IHostActivity
     protected lateinit var webSocketEvents: WebSocketEventPublisher
@@ -37,6 +41,7 @@ open class MailboxControllerTest {
         feedController = mockk(relaxed = true)
         webSocketEvents = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
+        remoteChangeDataSource = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"gabriel","deviceId":1,
                     |"signature":""} """.trimMargin())
@@ -48,6 +53,7 @@ open class MailboxControllerTest {
         controller = MailboxSceneController(
                 model =  model,
                 scene = scene,
+                remoteChangeDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
                 host =  host,
                 feedController = feedController,

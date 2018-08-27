@@ -1,12 +1,13 @@
 package com.criptext.mail.scenes.settings
 
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
  * Created by gabriel on 2/28/18.
  */
 
-interface SettingsUIObserver {
+interface SettingsUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onSignatureOptionClicked()
     fun onProfileNameClicked()

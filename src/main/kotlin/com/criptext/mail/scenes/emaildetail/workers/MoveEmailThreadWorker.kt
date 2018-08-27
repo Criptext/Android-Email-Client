@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -41,15 +42,22 @@ class MoveEmailThreadWorker(
     override val canBeParallelized = false
 
 
-    override fun catchException(ex: Exception): EmailDetailResult.MoveEmailThread {
-
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return EmailDetailResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        val message = createErrorMessage(ex)
-        return EmailDetailResult.MoveEmailThread.Failure(
-                message = message,
+    override fun catchException(ex: Exception): EmailDetailResult.MoveEmailThread =
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    EmailDetailResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    EmailDetailResult.MoveEmailThread.Forbidden()
+                else -> EmailDetailResult.MoveEmailThread.Failure(
+                        message = createErrorMessage(ex),
+                        exception = ex)
+            }
+        }
+        else EmailDetailResult.MoveEmailThread.Failure(
+                message = createErrorMessage(ex),
                 exception = ex)
-    }
+
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
 

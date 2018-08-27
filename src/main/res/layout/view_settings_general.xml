@@ -147,6 +147,7 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="17dp"
                 android:id="@+id/settings_change_password"
+                android:visibility="gone"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 
@@ -201,8 +202,8 @@
 
                 <ProgressBar
                     android:id="@+id/check_password_progress"
-                    android:layout_width="32dp"
-                    android:layout_height="40dp"
+                    android:layout_width="25.6dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="20dp"
                     android:scaleType="fitCenter"
                     android:visibility="visible"

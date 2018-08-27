@@ -12,6 +12,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.AndroidFs
 import com.github.kittinunf.result.Result
@@ -36,11 +37,18 @@ class DownloadAttachmentWorker(private val fileToken: String,
 
     private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): EmailDetailResult.DownloadFile {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        return EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
-    }
+    override fun catchException(ex: Exception): EmailDetailResult.DownloadFile =
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    EmailDetailResult.DownloadFile.Forbidden()
+                else -> EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
+            }
+        }
+        else EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
+
 
 
     private fun downloadFileMetadata(fileToken: String): Result<String, Exception> =

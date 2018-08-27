@@ -12,7 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
 
 class SettingsActivity: BaseActivity(){
 
@@ -31,20 +31,22 @@ class SettingsActivity: BaseActivity(){
                 httpClient = HttpClient.Default(),
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
-        val controller = SettingsController(
+        val remoteChangeDataSource = RemoteChangeDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                httpClient = HttpClient.Default()
+        )
+        return SettingsController(
                 model = model,
                 scene = scene,
+                remoteChangeDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 storage = KeyValueStorage.SharedPrefs(this),
                 host = this)
-        controller.removeDeviceDataSource = RemovedDeviceDataSource(
-                storage = KeyValueStorage.SharedPrefs(this),
-                db = appDB,
-                runner = AsyncTaskWorkRunner()
-        )
-        return controller
     }
 
 }

@@ -22,8 +22,8 @@ import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
+import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
+import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
 import com.criptext.mail.validation.FormInputState
 
 class SettingsController(
@@ -33,6 +33,7 @@ class SettingsController(
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
+        private val remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>,
         private val dataSource: BackgroundWorkManager<SettingsRequest, SettingsResult>)
     : SceneController(){
 
@@ -44,9 +45,10 @@ class SettingsController(
     private val deviceWrapperListController = DeviceWrapperListController(model, scene.getDeviceListView())
 
 
-    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+    private val remoteChangeDataSourceListener: (RemoteChangeResult) -> Unit = { result ->
         when(result) {
-            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is RemoteChangeResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is RemoteChangeResult.ConfirmPassword -> onPasswordChangedRemotely(result)
         }
     }
 
@@ -56,13 +58,21 @@ class SettingsController(
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.Logout -> onLogout(result)
-            is SettingsResult.GetUserSettings -> onListDevices(result)
+            is SettingsResult.GetUserSettings -> onGetUserSettings(result)
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
-            is SettingsResult.CheckPassword -> onCheckPassword(result)
+            is SettingsResult.ChangePassword -> onChangePassword(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onOkButtonPressed(password: String) {
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.ConfirmPassword(password))
+        }
+
+        override fun onCancelButtonPressed() {
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+        }
+
         override fun onRecoveryEmailOptionClicked() {
             host.goToScene(RecoveryEmailParams(model.isEmailCconfirmed, model.recoveryEmail), false)
         }
@@ -83,7 +93,7 @@ class SettingsController(
         }
 
         override fun onOkChangePasswordDialogButton() {
-            dataSource.submitRequest(SettingsRequest.CheckPassword(model.oldPasswordText, model.confirmPasswordText))
+            dataSource.submitRequest(SettingsRequest.ChangePassword(model.oldPasswordText, model.confirmPasswordText))
         }
 
         override fun onChangePasswordOptionClicked() {
@@ -177,30 +187,30 @@ class SettingsController(
             scene.toggleChangePasswordSuccess(show = true)
             model.passwordState = FormInputState.Valid()
             if (model.passwordState is FormInputState.Valid)
-                scene.enableChangePasswordSaveButton()
+                scene.toggleChangePasswordButton(true)
         } else if (arePasswordsMatching && passwords.first.isEmpty()) {
             scene.showPasswordDialogError(null)
             scene.toggleChangePasswordSuccess(show = false)
             model.passwordState = FormInputState.Unknown()
-            scene.disableChangePasswordSaveButton()
+            scene.toggleChangePasswordButton(false)
         } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
             scene.toggleChangePasswordSuccess(show = false)
             val errorMessage = UIMessage(R.string.password_length_error)
             model.passwordState = FormInputState.Error(errorMessage)
             scene.showPasswordDialogError(errorMessage)
-            scene.disableChangePasswordSaveButton()
+            scene.toggleChangePasswordButton(false)
         } else {
             val errorMessage = UIMessage(R.string.password_mismatch_error)
             model.passwordState = FormInputState.Error(errorMessage)
             scene.showPasswordDialogError(errorMessage)
             scene.toggleChangePasswordSuccess(show = false)
-            scene.disableChangePasswordSaveButton()
+            scene.toggleChangePasswordButton(false)
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
+        remoteChangeDataSource.listener = remoteChangeDataSourceListener
         model.fullName = activeAccount.name
         model.signature = activeAccount.signature
         if(model.labels.isEmpty()) {
@@ -241,10 +251,22 @@ class SettingsController(
 
     }
 
-    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+    private fun onDeviceRemovedRemotely(result: RemoteChangeResult.DeviceRemoved){
         when (result) {
-            is RemovedDeviceResult.DeviceRemoved.Success -> {
+            is RemoteChangeResult.DeviceRemoved.Success -> {
                 host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+            }
+        }
+    }
+
+    private fun onPasswordChangedRemotely(result: RemoteChangeResult.ConfirmPassword){
+        when (result) {
+            is RemoteChangeResult.ConfirmPassword.Success -> {
+                scene.dismissConfirmPasswordDialog()
+                scene.showMessage(UIMessage(R.string.update_password_success))
+            }
+            is RemoteChangeResult.ConfirmPassword.Failure -> {
+                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }
     }
@@ -302,7 +324,7 @@ class SettingsController(
         }
     }
 
-    private fun onListDevices(result: SettingsResult.GetUserSettings){
+    private fun onGetUserSettings(result: SettingsResult.GetUserSettings){
         when(result) {
             is SettingsResult.GetUserSettings.Success -> {
                 model.devices.clear()
@@ -316,7 +338,10 @@ class SettingsController(
                 scene.showMessage(result.message)
             }
             is SettingsResult.GetUserSettings.Unauthorized -> {
-                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            }
+            is SettingsResult.GetUserSettings.Forbidden -> {
+                scene.showConfirmPasswordDialog(settingsUIObserver)
             }
         }
     }
@@ -334,14 +359,14 @@ class SettingsController(
         }
     }
 
-    private fun onCheckPassword(result: SettingsResult.CheckPassword){
+    private fun onChangePassword(result: SettingsResult.ChangePassword){
         when(result) {
-            is SettingsResult.CheckPassword.Success -> {
+            is SettingsResult.ChangePassword.Success -> {
                 scene.dismissEnterPasswordDialog()
                 scene.showMessage(UIMessage(R.string.change_password_success))
             }
-            is SettingsResult.CheckPassword.Failure -> {
-                scene.showOldPasswordDialogError(UIMessage(R.string.password_enter_error))
+            is SettingsResult.ChangePassword.Failure -> {
+                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }
     }

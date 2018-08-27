@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.utils.UIMessage
 
 sealed class SettingsResult{
@@ -36,6 +35,7 @@ sealed class SettingsResult{
         data class Success(val userSettings: UserSettingsData): GetUserSettings()
         data class Failure(val message: UIMessage): GetUserSettings()
         data class Unauthorized(val message: UIMessage): GetUserSettings()
+        class Forbidden: GetUserSettings()
     }
 
     sealed class RemoveDevice : SettingsResult() {
@@ -43,10 +43,10 @@ sealed class SettingsResult{
         class Failure: RemoveDevice()
     }
 
-    sealed class CheckPassword : SettingsResult() {
-        class Success: CheckPassword()
+    sealed class ChangePassword : SettingsResult() {
+        class Success: ChangePassword()
         data class Failure(val message: UIMessage,
-                           val exception: Exception?): CheckPassword()
+                           val exception: Exception?): ChangePassword()
     }
 
 }

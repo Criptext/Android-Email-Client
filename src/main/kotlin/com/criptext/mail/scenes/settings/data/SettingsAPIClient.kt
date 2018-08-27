@@ -46,18 +46,11 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.get(path = "/user/settings", authToken = token)
     }
 
-    fun checkPassword(
-            username: String,
-            password: String)
-            : String {
+    fun putChangePassword(oldPassword: String, newPassword: String): String {
         val jsonObject = JSONObject()
-        jsonObject.put("username", username)
-        jsonObject.put("password", password)
-        //return httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
-        if(password == "password".sha256())
-            return "Ok"
-        else
-            throw NetworkErrorException()
+        jsonObject.put("oldPassword", oldPassword)
+        jsonObject.put("newPassword", newPassword)
+        return httpClient.put(path = "/user/password/change", body = jsonObject, authToken = token)
     }
 
     fun deleteDevice(deviceId: Int): String{

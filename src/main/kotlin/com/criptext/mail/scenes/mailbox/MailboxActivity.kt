@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
-import android.os.Bundle
 import android.view.Menu
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
@@ -14,7 +13,6 @@ import com.criptext.mail.db.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
-import com.criptext.mail.scenes.mailbox.feed.data.ActivityFeedItem
 import com.criptext.mail.scenes.mailbox.feed.data.FeedDataSource
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
 import com.criptext.mail.scenes.mailbox.feed.FeedController
@@ -22,11 +20,9 @@ import com.criptext.mail.scenes.mailbox.feed.FeedModel
 import com.criptext.mail.scenes.mailbox.feed.ui.FeedScene
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
-import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.websocket.WebSocketSingleton
 import android.content.Intent
-import com.criptext.mail.push.data.IntentExtrasData
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
 
 
 /**
@@ -75,11 +71,6 @@ class MailboxActivity : BaseActivity() {
                 storage = storage
                 )
         notificationMenuClickListener = controller.menuClickListener
-        controller.removeDeviceDataSource = RemovedDeviceDataSource(
-                storage = storage,
-                db = appDB,
-                runner = AsyncTaskWorkRunner()
-        )
         return controller
     }
 
@@ -153,12 +144,20 @@ class MailboxActivity : BaseActivity() {
                         mailboxView = rootView,
                         hostActivity = hostActivity
                 )
+            val remoteChangeDataSource = RemoteChangeDataSource(
+                    storage = storage,
+                    db = appDB,
+                    runner = AsyncTaskWorkRunner(),
+                    activeAccount = activeAccount,
+                    httpClient = HttpClient.Default()
+            )
 
             return MailboxSceneController(
                     scene = scene,
                     model = model,
                     host = hostActivity,
                     activeAccount = activeAccount,
+                    remoteChangeDataSource = remoteChangeDataSource,
                     dataSource = mailboxDataSource,
                     websocketEvents = webSocketEvents,
                     feedController = initFeedController(appDB, activity, db,

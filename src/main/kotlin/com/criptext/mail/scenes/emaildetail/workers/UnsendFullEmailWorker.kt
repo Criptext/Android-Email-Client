@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -44,12 +45,21 @@ class UnsendFullEmailWorker(
     override fun catchException(ex: Exception):
             EmailDetailResult.UnsendFullEmailFromEmailId {
 
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-
-        val message = createErrorMessage(ex)
-        return EmailDetailResult.UnsendFullEmailFromEmailId.
-                Failure(position, message, ex)
+        if(ex is ServerErrorException) {
+            return when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden()
+                else -> {
+                    val message = createErrorMessage(ex)
+                    EmailDetailResult.UnsendFullEmailFromEmailId.Failure(position, message, ex)
+                }
+            }
+        }else {
+            val message = createErrorMessage(ex)
+            return EmailDetailResult.UnsendFullEmailFromEmailId.Failure(position, message, ex)
+        }
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.UnsendFullEmailFromEmailId>)

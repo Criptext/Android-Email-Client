@@ -16,7 +16,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
 import droidninja.filepicker.FilePickerConst
 import java.io.File
 
@@ -37,24 +37,26 @@ class ComposerActivity : BaseActivity() {
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
                 fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao())
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val remoteChangeDataSource = RemoteChangeDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = activeAccount,
+                httpClient = httpClient
+        )
         val dataSource = ComposerDataSource(
                 httpClient = httpClient,
                 composerLocalDB = db,
                 activeAccount = activeAccount,
                 emailInsertionDao = appDB.emailInsertionDao(),
                 runner = AsyncTaskWorkRunner())
-        val controller = ComposerController(
+        return ComposerController(
                 model = model,
                 scene = scene,
                 activeAccount = activeAccount,
+                remoteChangeDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
                 host = this)
-        controller.removeDeviceDataSource = RemovedDeviceDataSource(
-                storage = KeyValueStorage.SharedPrefs(this),
-                db = appDB,
-                runner = AsyncTaskWorkRunner()
-        )
-        return controller
     }
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {

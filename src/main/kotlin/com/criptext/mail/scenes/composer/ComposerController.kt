@@ -20,8 +20,8 @@ import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceRequest
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceResult
+import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
+import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
 import com.criptext.mail.validation.FormInputState
 
 
@@ -33,6 +33,7 @@ class ComposerController(private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
                          private val activeAccount: ActiveAccount,
+                         private val remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
@@ -120,6 +121,14 @@ class ComposerController(private val model: ComposerModel,
                 showDraftDialog()
             }
         }
+
+        override fun onOkButtonPressed(password: String) {
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.ConfirmPassword(password))
+        }
+
+        override fun onCancelButtonPressed() {
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+        }
     }
 
     private fun checkPasswords(passwords: Pair<String, String>) {
@@ -149,9 +158,10 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
-    private val removedDeviceDataSourceListener: (RemovedDeviceResult) -> Unit = { result ->
+    private val remoteChangeDataSourceListener: (RemoteChangeResult) -> Unit = { result ->
         when(result) {
-            is RemovedDeviceResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is RemoteChangeResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is RemoteChangeResult.ConfirmPassword -> onPasswordChangedRemotely(result)
         }
     }
 
@@ -200,7 +210,10 @@ class ComposerController(private val model: ComposerModel,
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Unauthorized -> {
-                removeDeviceDataSource?.submitRequest(RemovedDeviceRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            }
+            is ComposerResult.UploadFile.Forbidden -> {
+                scene.showConfirmPasswordDialog(observer)
             }
         }
         scene.notifyAttachmentSetChanged()
@@ -245,10 +258,22 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
-    private fun onDeviceRemovedRemotely(result: RemovedDeviceResult.DeviceRemoved){
+    private fun onDeviceRemovedRemotely(result: RemoteChangeResult.DeviceRemoved){
         when (result) {
-            is RemovedDeviceResult.DeviceRemoved.Success -> {
+            is RemoteChangeResult.DeviceRemoved.Success -> {
                 host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+            }
+        }
+    }
+
+    private fun onPasswordChangedRemotely(result: RemoteChangeResult.ConfirmPassword){
+        when (result) {
+            is RemoteChangeResult.ConfirmPassword.Success -> {
+                scene.dismissConfirmPasswordDialog()
+                scene.showMessage(UIMessage(R.string.update_password_success))
+            }
+            is RemoteChangeResult.ConfirmPassword.Failure -> {
+                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }
     }
@@ -377,7 +402,7 @@ class ComposerController(private val model: ComposerModel,
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
-        removeDeviceDataSource?.listener = removedDeviceDataSourceListener
+        remoteChangeDataSource.listener = remoteChangeDataSourceListener
 
         if (model.initialized)
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)

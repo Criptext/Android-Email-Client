@@ -12,6 +12,7 @@ import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.Runs
 import io.mockk.every
@@ -41,6 +42,7 @@ open class EmailDetailControllerTest {
     protected lateinit var mailboxDb: MailboxLocalDB
     protected lateinit var runner: MockedWorkRunner
     protected lateinit var dataSource: EmailDetailDataSource
+    protected lateinit var remoteChangeDataSource: RemoteChangeDataSource
     protected lateinit var controller: EmailDetailSceneController
     protected lateinit var protocolStore: SignalProtocolStore
     protected lateinit var activeAccount: ActiveAccount
@@ -67,9 +69,11 @@ open class EmailDetailControllerTest {
         websocketEvents = mockk(relaxed = true)
 
         dataSource = mockk(relaxed = true)
+        remoteChangeDataSource = mockk(relaxed = true)
 
         controller = EmailDetailSceneController(
                 scene = scene,
+                remoteChangeDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
                 host = host,
                 model = model,

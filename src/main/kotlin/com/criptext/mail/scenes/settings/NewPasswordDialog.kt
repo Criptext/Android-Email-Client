@@ -107,15 +107,15 @@ class NewPasswordDialog(val context: Context) {
     }
 
     private fun hideOldPasswordError() {
-        passwordErrorImage.visibility = View.GONE
+        oldPasswordErrorImage.visibility = View.GONE
 
-        passwordInput.error = ""
+        oldPasswordInput.error = ""
     }
 
     private fun showOldPasswordError(message: UIMessage) {
-        passwordErrorImage.visibility = View.VISIBLE
+        oldPasswordErrorImage.visibility = View.VISIBLE
 
-        passwordInput.error = view.context.getLocalizedUIMessage(message)
+        oldPasswordInput.error = view.context.getLocalizedUIMessage(message)
     }
 
     fun setOldPasswordError(message: UIMessage?) {

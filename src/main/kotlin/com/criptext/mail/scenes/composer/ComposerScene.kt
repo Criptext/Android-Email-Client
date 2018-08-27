@@ -17,6 +17,8 @@ import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
 
@@ -27,6 +29,7 @@ import com.tokenautocomplete.TokenCompleteTextView
 interface ComposerScene {
     var observer: ComposerUIObserver?
     var attachmentsObserver: AttachmentViewObserver?
+    fun showMessage(message: UIMessage)
     fun bindWithModel(firstTime: Boolean,
                       composerInputData: ComposerInputData,
                       attachments: ArrayList<ComposerAttachment>,
@@ -39,6 +42,7 @@ interface ComposerScene {
     fun showAttachmentErrorDialog(filename: String)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
+    fun showConfirmPasswordDialog(observer: UIObserver)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun notifyAttachmentSetChanged()
     fun disableSendButtonOnDialog()
@@ -46,12 +50,15 @@ interface ComposerScene {
     fun setPasswordError(message: UIMessage?)
     fun togglePasswordSuccess(show: Boolean)
     fun setPasswordForNonCriptextFromDialog(password: String?)
+    fun dismissConfirmPasswordDialog()
+    fun setConfirmPasswordError(message: UIMessage)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
         private val ctx = view.context
         private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
         private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
+        private val confirmPassword = ConfirmPasswordDialog(ctx)
 
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
@@ -211,6 +218,18 @@ interface ComposerScene {
             attachmentBottomDialog.showAttachmentsDialog(observer)
         }
 
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPassword.setPasswordError(message)
+        }
+
         override fun showAttachmentErrorDialog(filename: String){
             val builder = AlertDialog.Builder(ctx)
             builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
@@ -273,6 +292,15 @@ interface ComposerScene {
 
         override fun setPasswordForNonCriptextFromDialog(password: String?) {
             passwordForNonCriptextUsersFromDialog = password
+        }
+
+        override fun showMessage(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    ctx,
+                    ctx.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
         }
     }
 

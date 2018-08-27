@@ -10,6 +10,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -33,12 +34,18 @@ class UpdateUnreadStatusWorker(
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.UpdateUnreadStatus {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return MailboxResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        val message = createErrorMessage(ex)
-        return MailboxResult.UpdateUnreadStatus.Failure(message)
-    }
+    override fun catchException(ex: Exception): MailboxResult.UpdateUnreadStatus =
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    MailboxResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    MailboxResult.UpdateUnreadStatus.Forbidden()
+                else -> MailboxResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
+            }
+        }
+        else MailboxResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
+
 
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>)
             : MailboxResult.UpdateUnreadStatus? {

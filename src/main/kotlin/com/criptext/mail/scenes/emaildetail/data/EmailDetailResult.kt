@@ -30,12 +30,14 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception): UnsendFullEmailFromEmailId()
         data class Unauthorized(val message: UIMessage): UnsendFullEmailFromEmailId()
+        class Forbidden: UnsendFullEmailFromEmailId()
     }
 
     sealed class UpdateUnreadStatus: EmailDetailResult(){
         data class Success(val threadId: String, val unread: Boolean): UpdateUnreadStatus()
         data class Failure(val message: UIMessage): UpdateUnreadStatus()
         data class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
+        class Forbidden: UpdateUnreadStatus()
     }
 
     sealed class ReadEmails: EmailDetailResult(){
@@ -55,12 +57,14 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
         data class Unauthorized(val message: UIMessage) : MoveEmailThread()
+        class Forbidden : MoveEmailThread()
     }
 
     sealed class DownloadFile : EmailDetailResult() {
         data class Success(val emailId: Long, val filetoken: String, val filepath: String): DownloadFile()
         data class Failure(val fileToken: String, val message: UIMessage): DownloadFile()
         data class Unauthorized(val message: UIMessage): DownloadFile()
+        class Forbidden: DownloadFile()
         data class Progress(val emailId: Long, val filetoken: String, val progress: Int) : DownloadFile()
     }
 }
