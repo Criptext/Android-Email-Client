@@ -81,6 +81,10 @@ class PasswordLoginHolder(
         }
     }
 
+    fun toggleForgotPasswordClickable(isEnable: Boolean){
+        forgotPassword.isEnabled = isEnable
+    }
+
     fun resetInput() {
         password.clearComposingText()
         password.text = SpannableStringBuilder("")

@@ -26,4 +26,9 @@ sealed class SignInResult {
         data class Success(val userExists: Boolean, val username: String): CheckUsernameAvailability()
         class Failure: CheckUsernameAvailability()
     }
+
+    sealed class ForgotPassword: SignInResult() {
+        class Success: ForgotPassword()
+        class Failure: ForgotPassword()
+    }
 }

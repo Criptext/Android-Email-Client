@@ -147,7 +147,7 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="17dp"
                 android:id="@+id/settings_change_password"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 

@@ -53,6 +53,11 @@ class SignInDataSource(override val runner: WorkRunner,
                     username = params.username,
                     publishFn = { result -> flushResults(result)
                     })
+            is SignInRequest.ForgotPassword -> ForgotPasswordWorker(
+                    httpClient = httpClient, username = params.username,
+                    publishFn = { result -> flushResults(result)
+                    }
+            )
         }
     }
 }
