@@ -8,6 +8,7 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -42,6 +43,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
+    private lateinit var storage: KeyValueStorage
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "")
@@ -63,6 +65,7 @@ class UpdateMailboxWorkerTest {
         mockWebServer = MockWebServer()
         mockWebServer.start()
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
+        storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
     }
@@ -71,7 +74,7 @@ class UpdateMailboxWorkerTest {
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
             UpdateMailboxWorker(signalClient = signalClient, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
-                    publishFn = {}, httpClient = httpClient, dbEvents = eventDB)
+                    publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
