@@ -13,6 +13,7 @@ import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -38,15 +39,22 @@ class MoveEmailThreadWorker(
     private val defaultItems = Label.DefaultItems()
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.MoveEmailThread {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return MailboxResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+    override fun catchException(ex: Exception): MailboxResult.MoveEmailThread =
+            if(ex is ServerErrorException) {
+                when {
+                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                        MailboxResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                        MailboxResult.MoveEmailThread.Forbidden()
+                    else -> MailboxResult.MoveEmailThread.Failure(
+                            message = createErrorMessage(ex),
+                            exception = ex)
+                }
+            }
+            else MailboxResult.MoveEmailThread.Failure(
+                    message = createErrorMessage(ex),
+                    exception = ex)
 
-        val message = createErrorMessage(ex)
-        return MailboxResult.MoveEmailThread.Failure(
-                message = message,
-                exception = ex)
-    }
 
     private fun getLabelEmailRelationsFromEmailIds(emailIds: List<Long>, label: String): List<EmailLabel> {
         val selectedLabels = SelectedLabels()

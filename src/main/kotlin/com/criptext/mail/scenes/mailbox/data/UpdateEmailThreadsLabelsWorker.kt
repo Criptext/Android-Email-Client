@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -36,14 +37,22 @@ class UpdateEmailThreadsLabelsWorker(
 
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        val message = createErrorMessage(ex)
-        return MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
-                message = message,
-                exception = ex)
-    }
+    override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations =
+            if(ex is ServerErrorException) {
+                when {
+                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                        MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                        MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden()
+                    else -> MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
+                            message = createErrorMessage(ex),
+                            exception = ex)
+                }
+            }
+            else MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
+                    message = createErrorMessage(ex),
+                    exception = ex)
+
 
     private fun removeCurrentLabelFromEmails(emailIds: List<Long>) {
         if(currentLabel == defaultItems.starred

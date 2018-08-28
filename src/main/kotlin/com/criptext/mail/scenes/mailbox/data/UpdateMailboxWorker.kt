@@ -13,6 +13,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -40,12 +41,18 @@ class UpdateMailboxWorker(
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
 
-    override fun catchException(ex: Exception): MailboxResult.UpdateMailbox {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return MailboxResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
-        val message = createErrorMessage(ex)
-        return MailboxResult.UpdateMailbox.Failure(label, message, ex)
-    }
+    override fun catchException(ex: Exception): MailboxResult.UpdateMailbox =
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    MailboxResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    MailboxResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                else -> MailboxResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+            }
+        }
+        else MailboxResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+
 
     private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): MailboxResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)

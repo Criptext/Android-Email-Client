@@ -1,15 +1,11 @@
 package com.criptext.mail.websocket.data
 
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.utils.removedevice.RemoveDeviceUtils
+import com.criptext.mail.utils.remotechange.RemoveDeviceUtils
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.mapError
 
 class DeviceRemovedWorker(private val db: AppDatabase,
                           private val storage: KeyValueStorage,

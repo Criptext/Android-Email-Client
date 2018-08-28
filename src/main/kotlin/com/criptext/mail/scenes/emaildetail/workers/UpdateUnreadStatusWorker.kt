@@ -14,6 +14,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -40,9 +41,16 @@ class UpdateUnreadStatusWorker(
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): EmailDetailResult.UpdateUnreadStatus =
-            if (ex is ServerErrorException && ex.errorCode == 401)
-                EmailDetailResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-            else EmailDetailResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
+        if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    EmailDetailResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    EmailDetailResult.UpdateUnreadStatus.Forbidden()
+                else -> EmailDetailResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
+            }
+        }
+        else EmailDetailResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
 
     private fun updateUnreadEmailStatus() =
         Result.of {

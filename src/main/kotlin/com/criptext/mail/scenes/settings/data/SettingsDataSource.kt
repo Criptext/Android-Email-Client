@@ -64,8 +64,9 @@ class SettingsDataSource(
                     activeAccount = activeAccount,
                     publishFn = {res -> flushResults(res)}
             )
-            is SettingsRequest.CheckPassword -> CheckPasswordWorker(
-                    password = params.oldPassword,
+            is SettingsRequest.ChangePassword -> ChangePasswordWorker(
+                    oldPassword = params.oldPassword,
+                    password = params.newPassword,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }

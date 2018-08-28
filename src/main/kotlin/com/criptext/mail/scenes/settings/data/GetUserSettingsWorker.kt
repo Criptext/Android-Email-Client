@@ -7,7 +7,7 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.devices.DeviceItem
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -24,9 +24,16 @@ class GetUserSettingsWorker(
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): SettingsResult.GetUserSettings {
-        if(ex is ServerErrorException && ex.errorCode == 401)
-            return SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-        return SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
+        return if(ex is ServerErrorException) {
+            when {
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerErrorCodes.Forbidden ->
+                    SettingsResult.GetUserSettings.Forbidden()
+                else -> SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
+            }
+        }
+        else SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.GetUserSettings>): SettingsResult.GetUserSettings? {

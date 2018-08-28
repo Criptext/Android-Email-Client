@@ -15,7 +15,9 @@ import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ViewPagerAdapter
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 
 interface SettingsScene{
@@ -33,13 +35,15 @@ interface SettingsScene{
     fun dismissRemovingDeviceDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun showChangePasswordDialog()
-    fun disableChangePasswordSaveButton()
-    fun enableChangePasswordSaveButton()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun toggleChangePasswordButton(enable: Boolean)
     fun showOldPasswordDialogError(message: UIMessage?)
     fun toggleChangePasswordSuccess(show: Boolean)
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
     fun updateUserSettings(userData: UserSettingsData)
+    fun dismissConfirmPasswordDialog()
+    fun setConfirmPasswordError(message: UIMessage)
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -80,6 +84,7 @@ interface SettingsScene{
         private val settingRemovingDeviceDialog = SettingsRemovingDeviceDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val settingChangePasswordDialog = NewPasswordDialog(context)
+        private val confirmPassword = ConfirmPasswordDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -145,12 +150,11 @@ interface SettingsScene{
             settingChangePasswordDialog.setOldPasswordError(message)
         }
 
-        override fun disableChangePasswordSaveButton() {
-            settingChangePasswordDialog.disableSaveButton()
-        }
-
-        override fun enableChangePasswordSaveButton() {
-            settingChangePasswordDialog.enableSaveButton()
+        override fun toggleChangePasswordButton(enable: Boolean) {
+            if(enable)
+                settingChangePasswordDialog.enableSaveButton()
+            else
+                settingChangePasswordDialog.disableSaveButton()
         }
 
         override fun toggleChangePasswordSuccess(show: Boolean) {
@@ -159,6 +163,18 @@ interface SettingsScene{
 
         override fun showChangePasswordDialog() {
             settingChangePasswordDialog.showDialog(settingsUIObserver)
+        }
+
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPassword.setPasswordError(message)
         }
 
         override fun getLabelListView(): VirtualListView {

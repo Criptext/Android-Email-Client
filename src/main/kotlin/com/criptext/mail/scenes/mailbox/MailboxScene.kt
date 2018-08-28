@@ -25,7 +25,9 @@ import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
  * Created by sebas on 1/23/18.
@@ -66,6 +68,9 @@ interface MailboxScene{
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
     fun setMenuLabels(labels: List<LabelWrapper>)
     fun clearMenuActiveLabel()
+    fun dismissConfirmPasswordDialog()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun setConfirmPasswordError(message: UIMessage)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -91,6 +96,7 @@ interface MailboxScene{
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
         private val welcomeDialog = WelcomeTourDialog(context)
+        private val confirmPassword = ConfirmPasswordDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -218,6 +224,18 @@ interface MailboxScene{
 
         override fun showWelcomeDialog() {
             welcomeDialog.showWelcomeTourDialog()
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPassword.setPasswordError(message)
+        }
+
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {

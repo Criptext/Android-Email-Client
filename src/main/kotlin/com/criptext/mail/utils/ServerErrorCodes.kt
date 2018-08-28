@@ -1,6 +1,6 @@
 package com.criptext.mail.utils
 
 object ServerErrorCodes{
-    const val DeviceWasRemoved = 401
-    const val PasswordHasChanged = 403
+    const val Unauthorized = 401
+    const val Forbidden = 403
 }

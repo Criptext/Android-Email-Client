@@ -1,10 +1,12 @@
 package com.criptext.mail.scenes.composer.ui
 
+import com.criptext.mail.utils.uiobserver.UIObserver
+
 /**
  * Created by gabriel on 2/26/18.
  */
 
-interface ComposerUIObserver {
+interface ComposerUIObserver: UIObserver {
     fun onAttachmentButtonClicked()
     fun onNewCamAttachmentRequested()
     fun onNewFileAttachmentRequested()

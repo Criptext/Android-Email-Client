@@ -33,6 +33,7 @@ sealed class ComposerResult {
         data class Progress(val filepath: String, val percentage: Int): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
         data class Unauthorized(val message: UIMessage): UploadFile()
+        class Forbidden: UploadFile()
     }
 
     sealed class DeleteDraft : ComposerResult() {

@@ -17,6 +17,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
         data class Unauthorized(val message: UIMessage) : UpdateEmailThreadsLabelsRelations()
+        class Forbidden: UpdateEmailThreadsLabelsRelations()
     }
 
     sealed class MoveEmailThread: MailboxResult() {
@@ -25,6 +26,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
         data class Unauthorized(val message: UIMessage) : MoveEmailThread()
+        class Forbidden: MoveEmailThread()
     }
 
     sealed class GetSelectedLabels : MailboxResult() {
@@ -87,12 +89,23 @@ sealed class MailboxResult {
                 return mailboxLabel
             }
         }
+
+        data class Forbidden(
+                val mailboxLabel: Label,
+                val message: UIMessage,
+                val exception: Exception?): UpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
     }
 
     sealed class SendMail: MailboxResult() {
         class Success(val emailId: Long): SendMail()
         data class Failure(val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
+        class Forbidden: SendMail()
     }
 
     sealed class GetMenuInformation : MailboxResult() {
@@ -105,6 +118,7 @@ sealed class MailboxResult {
         class Success: UpdateUnreadStatus()
         class Failure(val message: UIMessage): UpdateUnreadStatus()
         class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
+        class Forbidden: UpdateUnreadStatus()
     }
 
     sealed class LinkDevice: MailboxResult() {

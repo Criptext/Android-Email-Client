@@ -13,7 +13,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.file.AndroidFs
-import com.criptext.mail.utils.removedevice.data.RemovedDeviceDataSource
+import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 
 /**
@@ -42,14 +42,22 @@ class  EmailDetailActivity: BaseActivity() {
                 activeAccount = activeAccount,
                 context = this)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
+        val remoteChangeDataSource = RemoteChangeDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = activeAccount,
+                httpClient = httpClient
+        )
 
-        val controller =  EmailDetailSceneController(
+        return  EmailDetailSceneController(
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,
                 activeAccount = activeAccount,
                 websocketEvents = webSocketEvents,
                 keyboard = KeyboardManager(this),
+                remoteChangeDataSource = remoteChangeDataSource,
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
@@ -61,12 +69,6 @@ class  EmailDetailActivity: BaseActivity() {
                         downloadDir = downloadDir
                 )
         )
-        controller.removeDeviceDataSource = RemovedDeviceDataSource(
-                storage = KeyValueStorage.SharedPrefs(this),
-                db = appDB,
-                runner = AsyncTaskWorkRunner()
-        )
-        return controller
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
