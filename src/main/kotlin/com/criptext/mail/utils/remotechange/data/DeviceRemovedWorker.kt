@@ -10,7 +10,8 @@ import com.criptext.mail.utils.remotechange.RemoveDeviceUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 
-class DeviceRemovedWorker(private val activeAccount: ActiveAccount,
+class DeviceRemovedWorker(private val letAPIKnow: Boolean,
+                          private val activeAccount: ActiveAccount,
                           httpClient: HttpClient,
                           private val db: AppDatabase,
                           private val storage: KeyValueStorage,
@@ -27,8 +28,10 @@ class DeviceRemovedWorker(private val activeAccount: ActiveAccount,
     override fun work(reporter: ProgressReporter<RemoteChangeResult.DeviceRemoved>)
             : RemoteChangeResult.DeviceRemoved? {
 
-        val deleteOperation = Result.of { apiClient.deleteDevice(activeAccount.deviceId) }
-                .flatMap { Result.of { RemoveDeviceUtils.removeDevice(db, storage) }}
+        val deleteOperation = if(letAPIKnow) { Result.of { apiClient.deleteDevice(activeAccount.deviceId) }
+                .flatMap { Result.of { RemoveDeviceUtils.removeDevice(db, storage) }}}
+        else
+            Result.of { RemoveDeviceUtils.removeDevice(db, storage) }
         return when (deleteOperation){
             is Result.Success -> {
                 RemoteChangeResult.DeviceRemoved.Success()

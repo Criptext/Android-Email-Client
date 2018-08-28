@@ -127,7 +127,7 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
         }
     }
 
@@ -210,7 +210,7 @@ class ComposerController(private val model: ComposerModel,
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
             }
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)

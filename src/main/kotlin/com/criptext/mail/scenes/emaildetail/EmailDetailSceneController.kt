@@ -72,7 +72,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
         }
 
         override fun onStarredButtonPressed(isStarred: Boolean) {
@@ -162,7 +162,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -183,7 +183,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -209,7 +209,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -251,7 +251,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
             }
             is EmailDetailResult.DownloadFile.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+            }
+            is EmailDetailResult.DownloadFile.Forbidden -> {
+                scene.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
