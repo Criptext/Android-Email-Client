@@ -70,7 +70,7 @@ class SettingsController(
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
         }
 
         override fun onRecoveryEmailOptionClicked() {
@@ -338,7 +338,7 @@ class SettingsController(
                 scene.showMessage(result.message)
             }
             is SettingsResult.GetUserSettings.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
             }
             is SettingsResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(settingsUIObserver)

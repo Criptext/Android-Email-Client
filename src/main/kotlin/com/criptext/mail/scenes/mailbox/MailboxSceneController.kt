@@ -196,7 +196,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
         }
 
         override fun onFeedDrawerClosed() {
@@ -501,7 +501,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
                 is MailboxResult.UpdateMailbox.Unauthorized ->
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
                 is MailboxResult.UpdateMailbox.Forbidden ->
                     scene.showConfirmPasswordDialog(observer)
             }
@@ -536,7 +536,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -557,7 +557,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
                 is MailboxResult.MoveEmailThread.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -576,7 +576,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(result.message)
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -622,7 +622,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
                 is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved())
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)

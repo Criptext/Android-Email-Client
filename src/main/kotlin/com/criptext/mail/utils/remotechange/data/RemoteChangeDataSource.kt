@@ -18,6 +18,7 @@ class RemoteChangeDataSource(override val runner: WorkRunner,
     override fun createWorkerFromParams(params: RemoteChangeRequest, flushResults: (RemoteChangeResult) -> Unit): BackgroundWorker<*> {
         return when (params) {
             is RemoteChangeRequest.DeviceRemoved -> DeviceRemovedWorker(
+                    letAPIKnow = params.letAPIKnow,
                     activeAccount = activeAccount, httpClient = httpClient,
                     db = db, storage = storage, publishFn = flushResults
             )
