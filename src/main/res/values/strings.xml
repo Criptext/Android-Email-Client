@@ -119,6 +119,10 @@
     <string name="button_change_email_confirm">Change</string>
     <string name="recovery_email_has_changed">Recovery email changed successfully</string>
 
+    <!-- FORGOT PASSWORD -->
+    <string name="forgot_password_message">A reset link for your password has been sent to your recovery email address</string>
+    <string name="forgot_password_error">Error contacting the server, try again later</string>
+
     <!-- CHANGE PASSWORD DIALOG -->
     <string name="title_change_password_dialog">Change password</string>
 
@@ -335,7 +339,7 @@
     <string name="login_failed_body">Login attempt rejected!</string>
     <string name="login_user">estocambia@criptex.com</string>
     <string name="button_confirm">Confirm</string>
-    <string name="forgot_password">Forgot?</string>
+    <string name="forgot_password">Forgot password?</string>
 
     <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
     <string name="to_me_4_others"><![CDATA[To me & N others]]></string>

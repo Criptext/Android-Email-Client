@@ -30,6 +30,13 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.get("/user/available?username=$username", null)
     }
 
+    fun postForgotPassword(recipientId: String): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("recipientId", recipientId)
+
+        return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
+    }
+
     fun putFirebaseToken(pushToken: String, jwt: String): String {
         val jsonPut = JSONObject()
         jsonPut.put("devicePushToken", pushToken)

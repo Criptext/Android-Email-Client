@@ -13,4 +13,6 @@ sealed class SignInRequest{
     ): SignInRequest()
 
     data class CheckUserAvailability(val username: String): SignInRequest()
+
+    data class ForgotPassword(val username: String): SignInRequest()
 }

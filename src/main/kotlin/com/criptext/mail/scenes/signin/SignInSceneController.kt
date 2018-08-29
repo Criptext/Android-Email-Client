@@ -34,6 +34,7 @@ class SignInSceneController(
         when (result) {
             is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
             is SignInResult.CheckUsernameAvailability -> onCheckUsernameAvailability(result)
+            is SignInResult.ForgotPassword -> onForgotPassword(result)
         }
     }
 
@@ -45,6 +46,14 @@ class SignInSceneController(
             model.state = currentState.copy(password = "",
                     buttonState = ProgressButtonState.disabled)
             scene.resetInput()
+        }
+    }
+
+    private fun onForgotPassword(result: SignInResult.ForgotPassword){
+        scene.toggleForgotPasswordClickable(true)
+        when(result){
+            is SignInResult.ForgotPassword.Success -> scene.showError(UIMessage(R.string.forgot_password_message))
+            is SignInResult.ForgotPassword.Failure -> scene.showError(UIMessage(R.string.forgot_password_error))
         }
     }
 
@@ -141,7 +150,9 @@ class SignInSceneController(
         }
 
         override fun onForgotPasswordClick() {
-            TODO("GO TO FORGOT PASSWORD???")
+            scene.toggleForgotPasswordClickable(false)
+            val currentState = model.state as SignInLayoutState.InputPassword
+            dataSource.submitRequest(SignInRequest.ForgotPassword(currentState.username))
         }
 
         override fun onCantAccessDeviceClick(){

@@ -24,6 +24,7 @@ interface SignInScene {
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
     fun showKeyGenerationHolder()
+    fun toggleForgotPasswordClickable(isEnabled: Boolean)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -127,6 +128,11 @@ interface SignInScene {
             when (currentHolder) {
                 is SignInStartHolder -> currentHolder.drawError(error)
             }
+        }
+
+        override fun toggleForgotPasswordClickable(isEnabled: Boolean) {
+            val currentHolder = holder as PasswordLoginHolder
+            currentHolder.toggleForgotPasswordClickable(isEnabled)
         }
 
         override fun showKeyGenerationHolder() {
