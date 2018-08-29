@@ -24,8 +24,8 @@ class DeviceAdapter(private val mContext : Context,
                 if(holder.itemView == null) return
                 val device = deviceList[position]
                 holder.bindDevice(device)
-                holder.setOnLongClickListener {
-                    devicesListItemListener.onDeviceLongClicked(device, position)
+                holder.setOnClickListener {
+                    devicesListItemListener.onDeviceTrashClicked(device, position)
                 }
             }
         }

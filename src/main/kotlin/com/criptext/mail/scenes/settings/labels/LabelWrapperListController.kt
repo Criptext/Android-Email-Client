@@ -13,4 +13,8 @@ class LabelWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
+    fun notifyDataSetChange(){
+        listView?.notifyDataSetChanged()
+    }
+
 }

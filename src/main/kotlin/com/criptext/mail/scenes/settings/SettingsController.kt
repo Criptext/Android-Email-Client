@@ -175,7 +175,7 @@ class SettingsController(
     }
 
     private val onDevicesListItemListener = object: DevicesListItemListener {
-        override fun onDeviceLongClicked(device: DeviceItem, position: Int): Boolean {
+        override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             settingsUIObserver.onRemoveDevice(device.id, position)
             return true
         }
@@ -304,6 +304,7 @@ class SettingsController(
                     labelWrapper.isSelected = it.visible
                     labelWrapper
                 })
+                labelWrapperListController.notifyDataSetChange()
             }
             is SettingsResult.GetCustomLabels.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_getting_labels))
