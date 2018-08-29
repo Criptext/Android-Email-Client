@@ -29,9 +29,9 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
             : RemoteChangeResult.DeviceRemoved? {
 
         val deleteOperation = if(letAPIKnow) { Result.of { apiClient.postLogout() }
-                .flatMap { Result.of { RemoveDeviceUtils.removeDevice(db, storage) }}}
+                .flatMap { Result.of { RemoveDeviceUtils.clearAllData(db, storage) }}}
         else
-            Result.of { RemoveDeviceUtils.removeDevice(db, storage) }
+            Result.of { RemoveDeviceUtils.clearAllData(db, storage) }
         return when (deleteOperation){
             is Result.Success -> {
                 RemoteChangeResult.DeviceRemoved.Success()

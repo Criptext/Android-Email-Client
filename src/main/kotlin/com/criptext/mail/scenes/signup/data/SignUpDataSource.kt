@@ -5,8 +5,8 @@ import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.services.MessagingInstance
 
 /**
@@ -15,7 +15,7 @@ import com.criptext.mail.services.MessagingInstance
 
 class SignUpDataSource(override val runner: WorkRunner,
                        private val httpClient: HttpClient,
-                       private val db: SignUpDao,
+                       private val db: AppDatabase,
                        private val signalKeyGenerator: SignalKeyGenerator,
                        private val keyValueStorage: KeyValueStorage )
     : BackgroundWorkManager<SignUpRequest, SignUpResult>() {
@@ -25,6 +25,7 @@ class SignUpDataSource(override val runner: WorkRunner,
         return when (params) {
             is SignUpRequest.RegisterUser -> RegisterUserWorker(
                     db = db,
+                    signUpDao = db.signUpDao(),
                     httpClient = httpClient,
                     incompleteAccount = params.account,
                     signalKeyGenerator = signalKeyGenerator,

@@ -4,18 +4,15 @@ import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.services.data.MessagingServiceController
-import com.criptext.mail.services.data.MessagingServiceDataSource
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -28,7 +25,8 @@ import org.json.JSONObject
  * Created by sebas on 2/28/18.
  */
 class AuthenticateUserWorker(
-        db: SignUpDao,
+        private val db: SignInLocalDB,
+        signUpDao: SignUpDao,
         httpClient: HttpClient,
         private val accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
@@ -40,12 +38,16 @@ class AuthenticateUserWorker(
     : BackgroundWorker<SignInResult.AuthenticateUser> {
 
     private val apiClient = SignInAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(db, keyValueStorage)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SignInResult.AuthenticateUser {
         val message = createErrorMessage(ex)
         return SignInResult.AuthenticateUser.Failure(message, ex)
+    }
+
+    private val shouldKeepData: Boolean by lazy {
+        keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "") == username
     }
 
     private fun authenticateUser(): String {
@@ -55,7 +57,14 @@ class AuthenticateUserWorker(
     }
 
     private fun getSignInSession(): SignInSession {
-        val storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
+        var storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
+        if(storedValue.isNotEmpty()) {
+            if(!shouldKeepData){
+                keyValueStorage.clearAll()
+                db.deleteDatabase()
+            }
+            storedValue = ""
+        }
         val jsonString = if (storedValue.isEmpty()) authenticateUser() else storedValue
         val jsonObject = JSONObject(jsonString)
         return SignInSession.fromJSON(jsonObject)
@@ -95,7 +104,7 @@ class AuthenticateUserWorker(
 
             storeAccountTransaction.run(account = account,
                                         keyBundle = registrationBundles.privateBundle,
-                                        extraSteps = postKeyBundleStep)
+                                        extraSteps = postKeyBundleStep, keepData = shouldKeepData)
         }
 
     }

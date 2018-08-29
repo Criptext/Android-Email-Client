@@ -24,4 +24,7 @@ interface RawIdentityKeyDao {
               WHERE recipientId = :recipientId""")
     fun deleteByRecipientId(recipientId: String)
 
+    @Query("DELETE FROM raw_identitykey")
+    fun deleteAll()
+
 }

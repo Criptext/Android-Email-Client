@@ -9,16 +9,17 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.remotechange.RemoveDeviceUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import com.google.firebase.iid.FirebaseInstanceId
 import org.json.JSONException
 
 /**
@@ -29,8 +30,9 @@ import org.json.JSONException
  */
 
 class RegisterUserWorker(
-        db: SignUpDao,
-        keyValueStorage: KeyValueStorage,
+        private val db: AppDatabase,
+        signUpDao: SignUpDao,
+        private val keyValueStorage: KeyValueStorage,
         httpClient: HttpClient,
         private val signalKeyGenerator: SignalKeyGenerator,
         private val incompleteAccount: IncompleteAccount,
@@ -40,7 +42,7 @@ class RegisterUserWorker(
 
     override val canBeParallelized = false
     private val apiClient = SignUpAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(db, keyValueStorage)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage)
 
 
     override fun catchException(ex: Exception): RegisterUser {
@@ -68,6 +70,7 @@ class RegisterUserWorker(
     }
 
     override fun work(reporter: ProgressReporter<RegisterUser>): RegisterUser? {
+        db.clearAllTables()
         val registrationBundle = signalKeyGenerator.register(
                 recipientId = incompleteAccount.username,
                 deviceId = 1)

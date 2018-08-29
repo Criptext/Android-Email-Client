@@ -10,6 +10,7 @@ import android.content.Context
 interface SignInLocalDB {
     fun login(): Boolean
     fun accountExistsLocally(username: String): Boolean
+    fun deleteDatabase()
 
     class Default(applicationContext: Context): SignInLocalDB {
 
@@ -24,6 +25,10 @@ interface SignInLocalDB {
 
         override fun login(): Boolean {
             TODO("LOGIN NOT IMPLEMENTED")
+        }
+
+        override fun deleteDatabase() {
+            db.clearAllTables()
         }
 
     }

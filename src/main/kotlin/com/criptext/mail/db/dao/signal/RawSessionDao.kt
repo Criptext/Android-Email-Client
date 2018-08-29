@@ -41,4 +41,7 @@ interface RawSessionDao {
     @Query("""SELECT deviceId FROM raw_session
               WHERE recipientId = :recipientId""")
     fun findActiveDevicesByRecipientId(recipientId: String): List<Int>
+
+    @Query("DELETE FROM raw_session")
+    fun deleteAll()
 }
