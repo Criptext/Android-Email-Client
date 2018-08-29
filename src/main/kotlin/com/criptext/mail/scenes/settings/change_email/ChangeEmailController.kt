@@ -70,7 +70,7 @@ class ChangeEmailController(
     }
 
     private fun toggleChangeEmailButton() {
-        if(model.newRecoveryEmail.state !is FormInputState.Error
+        if(model.newRecoveryEmail.state is FormInputState.Valid
                 && model.newRecoveryEmail.value != model.recoveryEmail) {
             scene.enableChangeButton()
         } else {

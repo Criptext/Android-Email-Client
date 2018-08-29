@@ -53,7 +53,7 @@ class SignInSceneController(
         scene.toggleForgotPasswordClickable(true)
         when(result){
             is SignInResult.ForgotPassword.Success -> scene.showError(UIMessage(R.string.forgot_password_message))
-            is SignInResult.ForgotPassword.Failure -> scene.showError(UIMessage(R.string.forgot_password_error))
+            is SignInResult.ForgotPassword.Failure -> scene.showError(result.message)
         }
     }
 

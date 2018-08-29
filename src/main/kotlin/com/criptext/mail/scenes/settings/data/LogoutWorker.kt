@@ -34,7 +34,7 @@ class LogoutWorker(
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.Logout>): SettingsResult.Logout? {
-        val deleteOperation = Result.of {apiClient.deleteDevice(activeAccount.deviceId)}
+        val deleteOperation = Result.of {apiClient.postLogout()}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when (deleteOperation){
             is Result.Success -> {

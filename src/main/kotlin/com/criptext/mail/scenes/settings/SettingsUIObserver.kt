@@ -24,6 +24,7 @@ interface SettingsUIObserver: UIObserver {
     fun onPasswordChangedListener(password: String)
     fun onConfirmPasswordChangedListener(confirmPassword: String)
     fun onOkChangePasswordDialogButton()
+    fun onCancelChangePasswordButton()
     fun onProfileNameChanged(fullName: String)
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()
