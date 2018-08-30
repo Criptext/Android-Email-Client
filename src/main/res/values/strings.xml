@@ -79,7 +79,7 @@
     <string name="title_open_source_libraries">Open Source Libraries</string>
     <string name="title_logout">Logout</string>
     <string name="title_remove_device">Remove Device</string>
-    <string name="title_enter_password">Enter your password to continue</string>
+    <string name="title_enter_password">Enter your password\nto continue</string>
     <string name="title_custom_dialog">New Label</string>
     <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
@@ -122,6 +122,7 @@
     <!-- FORGOT PASSWORD -->
     <string name="forgot_password_message">A reset link for your password has been sent to your recovery email address</string>
     <string name="forgot_password_error">Error contacting the server, try again later</string>
+    <string name="forgot_password_error_400">A recovery email address has not been set up for this account, without it you cannot reset the password</string>
 
     <!-- CHANGE PASSWORD DIALOG -->
     <string name="title_change_password_dialog">Change password</string>
@@ -268,6 +269,7 @@
     <string name="txt_create_criptext_account">Create your Criptext account</string>
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
     <string name="yes">Yes</string>
+    <string name="yes_with_time">Yes(%1$d)</string>
     <string name="discard">Discard</string>
 
     <!-- LOGIN ERRORS -->

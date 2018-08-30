@@ -51,7 +51,7 @@
             android:text="@string/cancel" />
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:textSize="15sp"
             android:textAllCaps="false"

@@ -65,25 +65,26 @@ class NewPasswordDialog(val context: Context) {
                              observer: SettingsUIObserver?): AlertDialog {
 
         val width = res.getDimension(R.dimen.non_criptext_email_send_dialog_width).toInt()
-        val nonCriptextEmailSendDialog = dialogBuilder.create()
-        val window = nonCriptextEmailSendDialog.window
-        nonCriptextEmailSendDialog.show()
+        val changePasswordDialog = dialogBuilder.create()
+        val window = changePasswordDialog.window
+        changePasswordDialog.show()
         window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
         window.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(view.context,
                 R.drawable.dialog_label_chooser_shape)
-        nonCriptextEmailSendDialog.window.setBackgroundDrawable(drawableBackground)
+        changePasswordDialog.window.setBackgroundDrawable(drawableBackground)
+        changePasswordDialog.setCanceledOnTouchOutside(false)
 
         initializeLayoutComponents()
 
         //Assign event listeners
-        assignButtonEvents(view, nonCriptextEmailSendDialog, observer)
+        assignButtonEvents(view, changePasswordDialog, observer)
         assignOldPasswordTextListener()
         assignPasswordTextListener()
         assignConfirmPasswordTextChangeListener()
 
 
-        return nonCriptextEmailSendDialog
+        return changePasswordDialog
     }
 
     private fun initializeLayoutComponents(){
@@ -228,10 +229,11 @@ class NewPasswordDialog(val context: Context) {
                                    observer: SettingsUIObserver?) {
 
         btnSend.setOnClickListener {
-                uiObserver?.onOkChangePasswordDialogButton()
+            uiObserver?.onOkChangePasswordDialogButton()
         }
 
         btnCancel.setOnClickListener {
+            uiObserver?.onCancelChangePasswordButton()
             dialog.dismiss()
         }
     }

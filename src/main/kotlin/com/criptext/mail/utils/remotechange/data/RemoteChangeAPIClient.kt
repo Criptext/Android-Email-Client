@@ -15,4 +15,8 @@ class RemoteChangeAPIClient(private val httpClient: HttpClient, private val toke
         return httpClient.delete(path = "/device/$deviceId", authToken = token)
     }
 
+    fun postLogout(): String{
+        return httpClient.post(path = "/user/logout", authToken = token, body = JSONObject())
+    }
+
 }

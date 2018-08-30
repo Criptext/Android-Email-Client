@@ -57,4 +57,8 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.delete(path = "/device/$deviceId", authToken = token)
     }
 
+    fun postLogout(): String{
+        return httpClient.post(path = "/user/logout", authToken = token, body = JSONObject())
+    }
+
 }

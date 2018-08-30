@@ -29,6 +29,7 @@ sealed class SignInResult {
 
     sealed class ForgotPassword: SignInResult() {
         class Success: ForgotPassword()
-        class Failure: ForgotPassword()
+        data class Failure(val message: UIMessage,
+                val exception: Exception): ForgotPassword()
     }
 }

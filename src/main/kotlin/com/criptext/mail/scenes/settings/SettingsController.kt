@@ -93,7 +93,12 @@ class SettingsController(
         }
 
         override fun onOkChangePasswordDialogButton() {
+            keyboardManager.hideKeyboard()
             dataSource.submitRequest(SettingsRequest.ChangePassword(model.oldPasswordText, model.confirmPasswordText))
+        }
+
+        override fun onCancelChangePasswordButton() {
+            keyboardManager.hideKeyboard()
         }
 
         override fun onChangePasswordOptionClicked() {
