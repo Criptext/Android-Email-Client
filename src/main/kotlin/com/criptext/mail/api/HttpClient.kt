@@ -16,7 +16,7 @@ interface HttpClient {
     fun post(path: String, authToken: String?, body: JSONObject): String
     fun put(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
-    fun delete(path: String, authToken: String?): String
+    fun delete(path: String, authToken: String?, body: JSONObject): String
     fun getFile(path: String, authToken: String?): ByteArray
 
     enum class AuthScheme { basic, jwt }
@@ -44,13 +44,14 @@ interface HttpClient {
                 AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
             }
 
-        private fun deleteWithoutParams(url: String, authToken: String?): Request {
+        private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
             val url = newUrl.build()
+            val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .url(url)
-                    .delete()
+                    .delete(body)
                     .build()
         }
 
@@ -163,8 +164,8 @@ interface HttpClient {
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun delete(path: String, authToken: String?): String {
-            val request = deleteWithoutParams(url = baseUrl + path, authToken = authToken)
+        override fun delete(path: String, authToken: String?, body: JSONObject): String {
+            val request = deleteJSON(url = baseUrl + path, authToken = authToken, json = body)
             return ApiCall.executeRequest(client, request)
         }
 

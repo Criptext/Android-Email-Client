@@ -47,22 +47,29 @@
                 android:id="@+id/textViewCurrentDevice"
                 android:layout_width="113dp"
                 android:layout_height="wrap_content"
-                android:layout_column="2"
+                android:layout_column="4"
                 android:layout_marginStart="5dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="5dp"
                 android:layout_row="0"
-                android:gravity="center_vertical"
+                android:gravity="end"
                 android:textColor="#61b900"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/imageViewTrashDevice"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:paddingBottom="9dp"
+                android:paddingStart="9dp"
+                android:layout_marginEnd="7dp"
+                android:layout_gravity="end"
+                android:src="@drawable/trash"
+                android:tint="#BBBBBB"
+                android:layout_row="0"
+                android:layout_column="4" />
         </GridLayout>
-        <ImageView
-            android:id="@+id/imageViewTrashDevice"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center|end"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="7dp"
-            android:src="@drawable/trash" />
+
+
     </FrameLayout>
     <View
         android:layout_width="match_parent"

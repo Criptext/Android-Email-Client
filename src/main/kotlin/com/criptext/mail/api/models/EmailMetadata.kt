@@ -26,12 +26,13 @@ data class EmailMetadata(
         val threadId: String,
         val subject: String,
         val files: List<CRFile>,
-        val fileKey: String?) {
+        val fileKey: String?,
+        val secure: Boolean) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
-                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE)
+                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -63,7 +64,8 @@ data class EmailMetadata(
                     subject = emailData.getString("subject"),
                     messageType = SignalEncryptedData.Type.fromInt(messageType),
                     files = files,
-                    fileKey = fileKey.key
+                    fileKey = fileKey.key,
+                    secure = true
             )
 
         }
@@ -86,5 +88,6 @@ data class EmailMetadata(
         val fromContact: Contact,
         val subject: String,
         val unread: Boolean,
-        val status: DeliveryTypes)
+        val status: DeliveryTypes,
+        val secure: Boolean)
 }

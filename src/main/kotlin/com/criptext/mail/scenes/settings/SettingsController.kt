@@ -148,8 +148,14 @@ class SettingsController(
             scene.showRemoveDeviceDialog(deviceId, position)
         }
 
-        override fun onRemoveDeviceConfirmed(deviceId: Int, position: Int) {
-            dataSource.submitRequest(SettingsRequest.RemoveDevice(deviceId, position))
+        override fun onRemoveDeviceConfirmed(deviceId: Int, position: Int, password: String) {
+            scene.removeDeviceDialogToggleLoad(true)
+            keyboardManager.hideKeyboard()
+            dataSource.submitRequest(SettingsRequest.RemoveDevice(deviceId, position, password))
+        }
+
+        override fun onRemoveDeviceCancel() {
+            keyboardManager.hideKeyboard()
         }
 
         override fun onBackButtonPressed() {
@@ -353,14 +359,15 @@ class SettingsController(
     }
 
     private fun onRemoveDevice(result: SettingsResult.RemoveDevice){
-        scene.dismissRemovingDeviceDialog()
+        scene.removeDeviceDialogToggleLoad(false)
         when(result) {
             is SettingsResult.RemoveDevice.Success -> {
                 deviceWrapperListController.remove(result.position)
+                scene.removeDeviceDialogDismiss()
                 scene.showMessage(UIMessage(R.string.device_removed))
             }
             is SettingsResult.RemoveDevice.Failure -> {
-                scene.showMessage(UIMessage(R.string.error_listing_devices))
+                scene.setRemoveDeviceError(UIMessage(R.string.password_enter_error))
             }
         }
     }

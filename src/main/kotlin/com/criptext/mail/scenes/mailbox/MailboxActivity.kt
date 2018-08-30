@@ -46,7 +46,7 @@ class MailboxActivity : BaseActivity() {
                       fromContact = fromContact, messageId = "gabriel/1/$it",
                       date = "2018-02-21 14:00:$seconds",unsentDate = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                       subject = "Test #$it", unread = true, metadataKey = 1 + 100,
-                      status = DeliveryTypes.NONE)
+                      status = DeliveryTypes.NONE, secure = true)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction({

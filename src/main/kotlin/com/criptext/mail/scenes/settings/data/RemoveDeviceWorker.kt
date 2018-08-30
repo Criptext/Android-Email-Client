@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 import java.io.File
@@ -14,6 +15,7 @@ import java.io.File
 
 
 class RemoveDeviceWorker(
+        private val password: String,
         private val deviceId: Int,
         private val position: Int,
         httpClient: HttpClient,
@@ -30,7 +32,7 @@ class RemoveDeviceWorker(
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.RemoveDevice>): SettingsResult.RemoveDevice? {
-        val deleteOperation = Result.of {apiClient.deleteDevice(deviceId)}
+        val deleteOperation = Result.of {apiClient.deleteDevice(deviceId, password.sha256())}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when (deleteOperation){
             is Result.Success -> {

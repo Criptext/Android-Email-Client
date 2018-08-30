@@ -32,7 +32,6 @@ interface SettingsScene{
     fun showLoginOutDialog()
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissLoginOutDialog()
-    fun dismissRemovingDeviceDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun showChangePasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
@@ -44,6 +43,9 @@ interface SettingsScene{
     fun updateUserSettings(userData: UserSettingsData)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
+    fun setRemoveDeviceError(message: UIMessage)
+    fun removeDeviceDialogToggleLoad(loading: Boolean)
+    fun removeDeviceDialogDismiss()
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -81,7 +83,6 @@ interface SettingsScene{
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
         private val settingLoginOutDialog = SettingsLoginOutDialog(context)
-        private val settingRemovingDeviceDialog = SettingsRemovingDeviceDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val settingChangePasswordDialog = NewPasswordDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
@@ -134,10 +135,6 @@ interface SettingsScene{
             settingLoginOutDialog.dismiss()
         }
 
-        override fun dismissRemovingDeviceDialog() {
-            settingRemovingDeviceDialog.dismiss()
-        }
-
         override fun dismissEnterPasswordDialog() {
             settingChangePasswordDialog.dismissDialog()
         }
@@ -175,6 +172,19 @@ interface SettingsScene{
 
         override fun setConfirmPasswordError(message: UIMessage) {
             confirmPassword.setPasswordError(message)
+        }
+
+        override fun setRemoveDeviceError(message: UIMessage) {
+            settingRemoveDeviceDialog.setPasswordError(message)
+        }
+
+        override fun removeDeviceDialogToggleLoad(loading: Boolean) {
+            settingRemoveDeviceDialog.toggleLoad(loading)
+        }
+
+        override fun removeDeviceDialogDismiss() {
+
+            settingRemoveDeviceDialog.dismissDialog()
         }
 
         override fun getLabelListView(): VirtualListView {

@@ -1,9 +1,7 @@
 package com.criptext.mail.scenes.settings.data
 
-import android.accounts.NetworkErrorException
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
-import com.criptext.mail.utils.sha256
 import org.json.JSONObject
 
 
@@ -53,8 +51,11 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.put(path = "/user/password/change", body = jsonObject, authToken = token)
     }
 
-    fun deleteDevice(deviceId: Int): String{
-        return httpClient.delete(path = "/device/$deviceId", authToken = token)
+    fun deleteDevice(deviceId: Int, password: String): String{
+        val jsonObject = JSONObject()
+        jsonObject.put("deviceId", deviceId)
+        jsonObject.put("password", password)
+        return httpClient.delete(path = "/device", authToken = token, body = jsonObject)
     }
 
     fun postLogout(): String{
