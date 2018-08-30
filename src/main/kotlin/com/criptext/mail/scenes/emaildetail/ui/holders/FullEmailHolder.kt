@@ -143,7 +143,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val wrapper = ContextThemeWrapper(context, R.style.email_detail_popup_menu)
         val popupMenu = PopupMenu(wrapper , threePointsView)
 
-        val popuplayout = if(fullEmail.email.delivered == DeliveryTypes.NONE || fullEmail.email.delivered == DeliveryTypes.UNSEND) {
+        val popuplayout = if(fullEmail.email.delivered == DeliveryTypes.NONE
+                || fullEmail.email.delivered == DeliveryTypes.UNSEND
+                || !fullEmail.email.secure) {
                     if (fullEmail.email.unread) {
                         if (fullEmail.labels.contains(Label.defaultItems.trash))
                             R.menu.mail_options_unread_menu_in_trash

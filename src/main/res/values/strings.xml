@@ -401,7 +401,7 @@
     <string name="signature_updated">Signature updated</string>
     <string name="show_label_in_list">Show in label list</string>
     <string name="new_label">Create new label</string>
-    <string name="current_device">(Current Device)</string>
+    <string name="current_device">Current Device</string>
     <string name="general">General</string>
     <string name="labels">Labels</string>
     <string name="devices">Devices</string>

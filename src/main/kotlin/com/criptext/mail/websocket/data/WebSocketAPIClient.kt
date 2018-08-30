@@ -14,9 +14,4 @@ class WebSocketAPIClient(private val httpClient: HttpClient, private val token: 
 
         return httpClient.post(authToken = token, path = "/event/ack", body = jsonObject)
     }
-
-    fun deleteDevice(deviceId: Int): String{
-        return httpClient.delete(path = "/devices/$deviceId", authToken = token)
-    }
-
 }

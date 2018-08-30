@@ -34,7 +34,7 @@ object EmailInsertionSetup {
                     null),
             threadId = metadata.threadId,
             subject = metadata.subject,
-            secure = true,
+            secure = metadata.secure,
             preview = preview,
             messageId = metadata.messageId,
             delivered = metadata.status,

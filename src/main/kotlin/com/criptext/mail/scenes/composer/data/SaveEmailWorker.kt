@@ -7,6 +7,7 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.dao.FileKeyDao
 import com.criptext.mail.db.models.*
+import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.file.FileUtils
@@ -46,6 +47,17 @@ class SaveEmailWorker(
     }
     private val selectEmail: (Contact) -> String = { contact -> contact.email }
 
+    private fun isSecure(): Boolean{
+        if(!composerInputData.passwordForNonCriptextUsers.isNullOrEmpty())
+            return true
+        else{
+            if(!Validator.criptextOnlyContacts(composerInputData)){
+                return false
+            }
+        }
+        return true
+    }
+
     private fun List<Contact>.toCSVEmails(): String =
             this.joinToString(separator = ",", transform = selectEmail)
 
@@ -64,7 +76,8 @@ class SaveEmailWorker(
                 metadataKey = System.currentTimeMillis(), // ugly hack because we don't have draft table
                 fromContact = sender,
                 unread = false,
-                status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING)
+                status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
+                secure = isSecure())
     }
 
     private fun createDraftMessageId(deviceId: Int): String =
