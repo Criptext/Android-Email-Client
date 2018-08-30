@@ -1,12 +1,13 @@
 package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.services.MessagingService
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.gaumala.kotlinsnapshot.Camera
 import io.mockk.*
@@ -27,6 +28,7 @@ class AuthenticateUserWorkerTest {
     private lateinit var storage: KeyValueStorage
     private lateinit var accountDao: AccountDao
     private lateinit var messagingInstance: MessagingInstance
+    private lateinit var db: SignInLocalDB
 
     private val camera = Camera()
 
@@ -39,15 +41,16 @@ class AuthenticateUserWorkerTest {
         storage = mockk(relaxed = true)
         accountDao = mockk()
         messagingInstance = mockk()
+        db = mockk()
 
 
         every { messagingInstance.token } returns ""
     }
 
     private fun newWorker(username: String, password: String): AuthenticateUserWorker =
-        AuthenticateUserWorker(db = signUpDao, keyValueStorage = storage, httpClient = httpClient,
+        AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 keyGenerator = keyGenerator, username = username, password = password,
-                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance)
+                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db)
 
 
     @Test
@@ -150,52 +153,6 @@ class AuthenticateUserWorkerTest {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount, any())
         }
 
-    }
-
-    @Test
-    fun `if already has a stored sign in session should use it instead of authenticating with server`() {
-        val worker = newWorker("tester", "securePassword123")
-
-        val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
-                .toJSON().toString()
-        every {
-            storage.getString(KeyValueStorage.StringKey.SignInSession, "")
-        } returns mockedAuthResponse
-
-        every {
-            httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
-        } returns "__JWTOKEN__"
-
-        every {
-            httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
-        } returns mockedAuthResponse
-
-
-        every {
-            keyGenerator.register("tester", 2)
-        } returns RegisterUserTestUtils.createRegistrationBundles("tester", 2)
-
-        val extraStepsSlot = CapturingSlot<Runnable>()
-        every {
-            signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
-                    signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any())
-        } answers { extraStepsSlot.captured.run() }
-        every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
-
-        val result = worker.work(mockk())
-
-        result `should be instance of` SignInResult.AuthenticateUser.Success::class.java
-
-        // verify data got stored
-        verify {
-            storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","deviceId":2}""")
-        }
-        // should have not authenticated with server
-        verify(inverse = true) {
-            httpClient.post("/user/auth", any(), any<JSONObject>())
-        }
     }
 
 }

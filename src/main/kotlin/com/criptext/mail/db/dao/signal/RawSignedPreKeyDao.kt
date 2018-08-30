@@ -24,4 +24,7 @@ interface RawSignedPreKeyDao {
     @Query("SELECT * FROM raw_signedprekey")
     fun findAll(): List<CRSignedPreKey>
 
+    @Query("DELETE FROM raw_signedprekey")
+    fun deleteAll()
+
 }

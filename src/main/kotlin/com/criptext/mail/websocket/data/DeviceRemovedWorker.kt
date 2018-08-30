@@ -22,7 +22,7 @@ class DeviceRemovedWorker(private val db: AppDatabase,
             : EventResult.DeviceRemoved? {
 
         val deleteOperation = Result.of {
-            RemoveDeviceUtils.removeDevice(db, storage)
+            RemoveDeviceUtils.clearAllData(db, storage)
         }
         return when (deleteOperation){
             is Result.Success -> {

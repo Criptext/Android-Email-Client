@@ -1,15 +1,14 @@
 package com.criptext.mail.scenes.signup.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.services.MessagingService
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.gaumala.kotlinsnapshot.Camera
-import com.google.firebase.iid.FirebaseInstanceId
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.json.JSONObject
@@ -27,6 +26,7 @@ class RegisterUserWorkerTest {
     private lateinit var signUpDao: SignUpDao
     private lateinit var storage: KeyValueStorage
     private lateinit var messagingInstance: MessagingInstance
+    private lateinit var db: AppDatabase
 
     private val camera = Camera()
 
@@ -39,14 +39,15 @@ class RegisterUserWorkerTest {
         signUpDao = mockk()
         storage = mockk()
         messagingInstance = mockk()
+        db = mockk()
 
         every { messagingInstance.token } returns ""
     }
 
     private fun newWorker(incompleteAccount: IncompleteAccount): RegisterUserWorker =
-        RegisterUserWorker(db = signUpDao, keyValueStorage = storage, httpClient = httpClient,
+        RegisterUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 signalKeyGenerator = keyGenerator, incompleteAccount = incompleteAccount,
-                publishFn = {}, messagingInstance = messagingInstance)
+                publishFn = {}, messagingInstance = messagingInstance, db = db)
 
 
     @Test
@@ -61,6 +62,7 @@ class RegisterUserWorkerTest {
         every {
             httpClient.put("/keybundle/pushtoken", "OK", any<JSONObject>())
         } returns "OK"
+        every { db.clearAllTables() } just Runs
 
         val newAccount = IncompleteAccount(username ="tester", name = "A Tester", deviceId = 1,
                 password = "secretPassword", recoveryEmail = "tester@gmail.com")

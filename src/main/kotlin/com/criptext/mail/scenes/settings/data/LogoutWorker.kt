@@ -8,6 +8,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import java.io.File
 
@@ -36,10 +37,10 @@ class LogoutWorker(
     override fun work(reporter: ProgressReporter<SettingsResult.Logout>): SettingsResult.Logout? {
         val deleteOperation = Result.of {apiClient.postLogout()}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                .flatMap { Result.Companion.of { db.logout() } }
+                .flatMap { Result.Companion.of { storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId) } }
         return when (deleteOperation){
             is Result.Success -> {
-                db.logoutNukeDB()
-                storage.clearAll()
                 SettingsResult.Logout.Success()
             }
             is Result.Failure -> {

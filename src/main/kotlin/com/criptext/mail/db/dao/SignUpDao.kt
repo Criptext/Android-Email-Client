@@ -2,6 +2,7 @@ package com.criptext.mail.db.dao
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Transaction
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
@@ -35,6 +36,17 @@ interface SignUpDao {
         insertPreKeys(preKeyList)
         insertSignedPreKey(signedPreKey)
         insertLabels(defaultLabels)
+        // execute extra steps here, so that if they fail, we can rollback
+        extraRegistrationSteps.run()
+    }
+
+    @Transaction
+    fun updateAccountData(account: Account, preKeyList: List<CRPreKey>,
+                             signedPreKey: CRSignedPreKey,
+                             extraRegistrationSteps: Runnable) {
+        saveAccount(account)
+        insertPreKeys(preKeyList)
+        insertSignedPreKey(signedPreKey)
         // execute extra steps here, so that if they fail, we can rollback
         extraRegistrationSteps.run()
     }

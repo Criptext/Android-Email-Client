@@ -38,7 +38,7 @@ class SignUpActivity: BaseActivity() {
                 runnableThrottler = runnableThrottler,
                 dataSource = SignUpDataSource(runner = AsyncTaskWorkRunner(),
                         httpClient = HttpClient.Default(),
-                        db = appDB.signUpDao(),
+                        db = appDB,
                         keyValueStorage = keyValueStorage,
                         signalKeyGenerator = signalKeyGenerator))
     }

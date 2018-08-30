@@ -26,6 +26,9 @@ interface AccountDao {
     @Query("SELECT * FROM account LIMIT 1")
     fun getLoggedInAccount() : Account?
 
+    @Query("DELETE FROM account")
+    fun nukeTable()
+
     @Delete
     fun deleteAll(accounts: List<Account>)
 

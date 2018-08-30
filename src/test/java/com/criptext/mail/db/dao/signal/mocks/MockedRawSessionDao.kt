@@ -8,6 +8,9 @@ import com.criptext.mail.db.models.signal.CRSessionRecord
  * Created by gabriel on 4/5/18.
  */
 class MockedRawSessionDao: RawSessionDao {
+    override fun deleteAll() {
+    }
+
     override fun insert(crSessionRecord: CRSessionRecord) {
     }
 
