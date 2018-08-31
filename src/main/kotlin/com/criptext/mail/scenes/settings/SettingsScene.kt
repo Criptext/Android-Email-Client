@@ -45,6 +45,7 @@ interface SettingsScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun setRemoveDeviceError(message: UIMessage)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
+    fun isSendingResetPassword(isSending: Boolean)
     fun removeDeviceDialogDismiss()
 
 
@@ -180,6 +181,10 @@ interface SettingsScene{
 
         override fun removeDeviceDialogToggleLoad(loading: Boolean) {
             settingRemoveDeviceDialog.toggleLoad(loading)
+        }
+
+        override fun isSendingResetPassword(isSending: Boolean) {
+            generalView.isSendingResetPassword(isSending)
         }
 
         override fun removeDeviceDialogDismiss() {

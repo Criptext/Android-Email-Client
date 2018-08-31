@@ -9,7 +9,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title_enter_password"
+        android:text="@string/title_remote_change_password"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="20dp"

@@ -68,9 +68,9 @@ class SaveEmailWorker(
 
         return EmailMetadata.DBColumns(messageId = draftMessageId,
                 threadId = threadId ?: draftMessageId, subject = composerInputData.subject,
-                to = composerInputData.to.toCSVEmails(),
-                cc = composerInputData.cc.toCSVEmails(),
-                bcc = composerInputData.bcc.toCSVEmails(),
+                to = composerInputData.to.map { it.email },
+                cc = composerInputData.cc.map { it.email },
+                bcc = composerInputData.bcc.map { it.email },
                 date = DateUtils.printDateWithServerFormat(Date()),
                 unsentDate = DateUtils.printDateWithServerFormat(Date()),
                 metadataKey = System.currentTimeMillis(), // ugly hack because we don't have draft table

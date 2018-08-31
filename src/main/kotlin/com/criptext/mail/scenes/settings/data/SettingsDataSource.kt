@@ -72,6 +72,11 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.ResetPassword -> ForgotPasswordWorker(
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

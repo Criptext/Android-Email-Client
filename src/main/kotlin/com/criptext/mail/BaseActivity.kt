@@ -4,10 +4,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -37,8 +35,10 @@ import droidninja.filepicker.FilePickerBuilder
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import com.criptext.mail.scenes.settings.SettingsActivity
+import com.criptext.mail.scenes.settings.change_email.ChangeEmailActivity
 import com.criptext.mail.scenes.settings.change_email.ChangeEmailModel
+import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 
 
@@ -268,6 +268,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             cachedModels[MailboxActivity::class.java] = MailboxSceneModel()
             cachedModels[SignInActivity::class.java] = SignInSceneModel()
             cachedModels[SignUpActivity::class.java] = SignUpSceneModel()
+            cachedModels[SettingsActivity::class.java] = SettingsModel()
         }
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

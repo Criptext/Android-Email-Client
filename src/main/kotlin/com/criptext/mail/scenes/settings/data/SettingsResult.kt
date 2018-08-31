@@ -38,6 +38,11 @@ sealed class SettingsResult{
         class Forbidden: GetUserSettings()
     }
 
+    sealed class ResetPassword : SettingsResult() {
+        class Success: ResetPassword()
+        data class Failure(val message: UIMessage): ResetPassword()
+    }
+
     sealed class RemoveDevice : SettingsResult() {
         class Success(val deviceId: Int, val position: Int): RemoveDevice()
         class Failure: RemoveDevice()

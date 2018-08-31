@@ -20,6 +20,7 @@ interface SettingsUIObserver: UIObserver {
     fun onRemoveDeviceCancel()
     fun onRemoveDevice(deviceId: Int, position: Int)
     fun onChangePasswordOptionClicked()
+    fun onResetPasswordOptionClicked()
     fun onRecoveryEmailOptionClicked()
     fun onOldPasswordChangedListener(password: String)
     fun onPasswordChangedListener(password: String)

@@ -15,6 +15,6 @@ class SettingsModel{
     var confirmPasswordText: String = ""
     var passwordState: FormInputState = FormInputState.Unknown()
 
-    var isEmailCconfirmed: Boolean = false
+    var isEmailConfirmed: Boolean = false
     var recoveryEmail: String = ""
 }
