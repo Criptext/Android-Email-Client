@@ -26,10 +26,15 @@ class UpdatePeerReadStatusWorker(private val eventId: Long,
 
     override fun work(reporter: ProgressReporter<EventResult.UpdatePeerReadEmailStatus>)
             : EventResult.UpdatePeerReadEmailStatus? {
+        val tempEmails = dao.getAllEmailsByMetadataKey(peerReadEmailStatusUpdate.metadataKeys)
+        return if(tempEmails.size == peerReadEmailStatusUpdate.metadataKeys.size) {
             dao.toggleReadByMetadataKey(metadataKeys = peerReadEmailStatusUpdate.metadataKeys, unread = peerReadEmailStatusUpdate.unread)
             val update = ReadEmailPeerStatusUpdate(peerReadEmailStatusUpdate.metadataKeys, peerReadEmailStatusUpdate)
             apiClient.acknowledgeEvents(eventId)
-            return EventResult.UpdatePeerReadEmailStatus.Success(update)
+            EventResult.UpdatePeerReadEmailStatus.Success(update)
+        }else{
+            EventResult.UpdatePeerReadEmailStatus.Success(null)
+        }
     }
 
     override fun cancel() {
