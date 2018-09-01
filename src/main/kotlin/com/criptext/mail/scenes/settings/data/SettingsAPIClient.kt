@@ -62,4 +62,11 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.post(path = "/user/logout", authToken = token, body = JSONObject())
     }
 
+    fun postForgotPassword(recipientId: String): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("recipientId", recipientId)
+
+        return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
+    }
+
 }

@@ -74,7 +74,7 @@
     <!-- SETTINGS -->
     <string name="title_swipe">Swipe Options</string>
     <string name="title_profile_name">Profile Name</string>
-    <string name="title_privacy_policies">Privacy Policies</string>
+    <string name="title_privacy_policy">Privacy Policy</string>
     <string name="title_terms_of_service">Terms of Service</string>
     <string name="title_open_source_libraries">Open Source Libraries</string>
     <string name="title_logout">Logout</string>
@@ -84,6 +84,7 @@
     <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
     <string name="title_change_password">Change Password</string>
+    <string name="title_reset_password">Reset Password</string>
     <string name="title_recovery_email">Recovery Email</string>
     <string name="title_signature">Signature</string>
     <string name="title_signature_cap">SIGNATURE</string>
@@ -122,14 +123,15 @@
     <!-- FORGOT PASSWORD -->
     <string name="forgot_password_message">A reset link for your password has been sent to your recovery email address</string>
     <string name="forgot_password_error">Error contacting the server, try again later</string>
-    <string name="forgot_password_error_400">A recovery email address has not been set up for this account, without it you cannot reset the password</string>
+    <string name="forgot_password_error_400">A recovery email address has not been set up or confirmed for this account, without it you cannot reset the password</string>
 
     <!-- CHANGE PASSWORD DIALOG -->
     <string name="title_change_password_dialog">Change password</string>
 
     <!-- CONFIRM PASSWORD REMOTE CHANGE -->
-    <string name="remote_change_password_advice">Your password has changed remotely. Confirm your new password, if you Cancel, the device will logout and all local data will be erased.</string>
+    <string name="remote_change_password_advice">Confirm your new password.\nIf you Cancel, the device will logout and all local data <b>will be erased.</b></string>
     <string name="update_password_success">Password has been updated for this device.</string>
+    <string name="title_remote_change_password">Your password has changed\nremotely</string>
 
     <!-- LOGOUT DIALOG -->
     <string name="logout_dialog_message"><b>Alert!:</b> Login out will delete all emails from this device. Your emails will remain intact in your other devices, if any. Do you want to logout?</string>

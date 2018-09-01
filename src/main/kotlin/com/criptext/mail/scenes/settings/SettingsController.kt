@@ -61,6 +61,7 @@ class SettingsController(
             is SettingsResult.GetUserSettings -> onGetUserSettings(result)
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ChangePassword -> onChangePassword(result)
+            is SettingsResult.ResetPassword -> onResetPassword(result)
         }
     }
 
@@ -74,7 +75,7 @@ class SettingsController(
         }
 
         override fun onRecoveryEmailOptionClicked() {
-            host.goToScene(RecoveryEmailParams(model.isEmailCconfirmed, model.recoveryEmail), false)
+            host.goToScene(RecoveryEmailParams(model.isEmailConfirmed, model.recoveryEmail), false)
         }
 
         override fun onOldPasswordChangedListener(password: String) {
@@ -103,6 +104,11 @@ class SettingsController(
 
         override fun onChangePasswordOptionClicked() {
             scene.showChangePasswordDialog()
+        }
+
+        override fun onResetPasswordOptionClicked() {
+            scene.isSendingResetPassword(true)
+            dataSource.submitRequest(SettingsRequest.ResetPassword())
         }
 
         override fun onCustomLabelNameAdded(labelName: String) {
@@ -341,7 +347,7 @@ class SettingsController(
             is SettingsResult.GetUserSettings.Success -> {
                 model.devices.clear()
                 model.devices.addAll(result.userSettings.devices)
-                model.isEmailCconfirmed = result.userSettings.recoveryEmailConfirmationState
+                model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
                 model.recoveryEmail = result.userSettings.recoveryEmail
                 deviceWrapperListController.update()
                 scene.updateUserSettings(result.userSettings)
@@ -379,7 +385,19 @@ class SettingsController(
                 scene.showMessage(UIMessage(R.string.change_password_success))
             }
             is SettingsResult.ChangePassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+                scene.showOldPasswordDialogError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    private fun onResetPassword(result: SettingsResult.ResetPassword){
+        scene.isSendingResetPassword(false)
+        when(result) {
+            is SettingsResult.ResetPassword.Success -> {
+                scene.showMessage(UIMessage(R.string.forgot_password_message))
+            }
+            is SettingsResult.ResetPassword.Failure -> {
+                scene.showMessage(result.message)
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.criptext.mail.api.models
 
+import com.criptext.mail.api.toList
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.CRFile
 import com.criptext.mail.db.models.Contact
@@ -12,9 +13,9 @@ import org.json.JSONObject
  *
  */
 data class EmailMetadata(
-        val to: String,
-        val cc: String,
-        val bcc: String,
+        val to: List<String>,
+        val cc: List<String>,
+        val bcc: List<String>,
         val from: String,
         val senderRecipientId: String,
         val senderDeviceId: Int?,
@@ -36,11 +37,11 @@ data class EmailMetadata(
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
-            val emailData = JSONObject(metadataJsonString)
+            val  emailData = JSONObject(metadataJsonString)
             val from = emailData.getString("from")
             // TODO make this more robust
             val fromEmail = if(from.contains("<") && from.contains(">"))
-                    from.substring(from.indexOf("<") + 1, from.indexOf(">")) else from
+                    from.substring(from.lastIndexOf("<") + 1, from.lastIndexOf(">")) else from
             val fromName = if(from.contains("<") && from.contains(">"))
                     from.substring(0, from.lastIndexOf("<") - 1) else from
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
@@ -54,9 +55,9 @@ data class EmailMetadata(
                     senderRecipientId = fromRecipientId,
                     senderDeviceId = if (senderDeviceId != 0) senderDeviceId else null,
                     fromContact = fromContact,
-                    to = if(emailData.has("to")) emailData.getString("to") else "",
-                    cc = if(emailData.has("cc")) emailData.getString("cc") else "",
-                    bcc = if(emailData.has("bcc")) emailData.getString("bcc") else "",
+                    to = getToArray(emailData),
+                    cc = getCCArray(emailData),
+                    bcc = getBCCArray(emailData),
                     messageId = emailData.getString("messageId"),
                     metadataKey = emailData.getLong("metadataKey"),
                     date = emailData.getString("date"),
@@ -69,6 +70,39 @@ data class EmailMetadata(
             )
 
         }
+
+        private fun getToArray(emailData: JSONObject): List<String>{
+            return when {
+                emailData.has("toArray") -> emailData.getJSONArray("toArray").toList()
+                emailData.has("to") -> {
+                    if(emailData.getString("to") == "") emptyList()
+                    else emailData.getString("to").split(",")
+                }
+                else -> emptyList()
+            }
+        }
+
+        private fun getCCArray(emailData: JSONObject): List<String>{
+            return when {
+                emailData.has("ccArray") -> emailData.getJSONArray("ccArray").toList()
+                emailData.has("cc") -> {
+                    if(emailData.getString("cc") == "") emptyList()
+                    else emailData.getString("cc").split(",")
+                }
+                else -> emptyList()
+            }
+        }
+
+        private fun getBCCArray(emailData: JSONObject): List<String> {
+            return when {
+                emailData.has("bccArray") -> emailData.getJSONArray("bccArray").toList()
+                emailData.has("bcc") -> {
+                    if(emailData.getString("bcc") == "") emptyList()
+                    else emailData.getString("bcc").split(",")
+                }
+                else -> emptyList()
+            }
+        }
     }
 
     /**
@@ -77,9 +111,9 @@ data class EmailMetadata(
      * definitely need to persist.
      */
     data class DBColumns(
-        val to: String,
-        val cc: String,
-        val bcc: String,
+        val to: List<String>,
+        val cc: List<String>,
+        val bcc: List<String>,
         val messageId: String,
         val metadataKey: Long,
         val date: String,

@@ -5,12 +5,10 @@ import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
-import com.criptext.mail.db.dao.FileKeyDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.DateUtils
-import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
 import kotlin.collections.HashMap
@@ -45,9 +43,9 @@ object EmailInsertionSetup {
     }
 
     private fun fillMapWithNewContacts(dao: EmailInsertionDao, contactsMap: HashMap<String, Contact>,
-                                       toAddresses: List<String>) {
-        val unknownContacts = toAddresses.filter { !contactsMap.containsKey(it) }
-                .map { Contact(id = 0, email = it, name = it.split("@")[0]) }
+                                       toAddresses: List<Contact>) {
+        val unknownContacts = toAddresses.filter { !contactsMap.containsKey(it.email) }
+                .map { it }
 
         if (unknownContacts.isNotEmpty()) {
             val insertedContactIds = dao.insertContacts(unknownContacts)
@@ -59,30 +57,40 @@ object EmailInsertionSetup {
         }
     }
 
-    private fun createContactRows(dao: EmailInsertionDao, addressesCSV: String): List<Contact> {
-        if (addressesCSV.isEmpty()) return emptyList()
+    private fun createContactRows(dao: EmailInsertionDao, addresses: List<String>): List<Contact> {
+        if (addresses.isEmpty()) return emptyList()
 
-        val toAddresses = addressesCSV.split(",").map { removeEmailInvalidCharacters(it) }
-        val toAddressesNotDuplicated = toAddresses.toSet().toList()
-        val existingContacts = dao.findContactsByEmail(toAddressesNotDuplicated)
+        val toAddresses = addresses.map { removeEmailInvalidCharacters(it) }
+        val toNames = addresses.map { removeNameInvalidCharacters(it) }
+
+        val toContacts = mutableListOf<Contact>()
+        for (i in 0..(toAddresses.size - 1))
+            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i]))
+        val existingContacts = dao.findContactsByEmail(toContacts.toSet().map { it.email })
 
         val contactsMap = HashMap<String, Contact>()
         existingContacts.map { Pair(it.email, it) }.toMap(contactsMap)
 
-        fillMapWithNewContacts(dao, contactsMap, toAddressesNotDuplicated)
+        fillMapWithNewContacts(dao, contactsMap, toContacts.toSet().toList())
 
         return contactsMap.values.toList()
     }
 
     private fun removeEmailInvalidCharacters(email: String): String{
-        return email.replace("<", "")
+        val realEmail = if(email.contains("<") && email.contains(">"))
+            email.substring(email.lastIndexOf("<") + 1, email.lastIndexOf(">")) else email
+        return realEmail.replace("<", "")
                 .replace(">", "")
                 .replace("\"", "")
                 .toLowerCase()
     }
 
     private fun removeNameInvalidCharacters(name: String): String{
-        return name.replace("\"", "")
+        val realName = if(name.contains("<") && name.contains(">"))
+                                name.substring(0, name.lastIndexOf("<") - 1)
+                                else if(name.contains("@")) name.split("@")[0]
+                                else name
+        return realName.replace("\"", "")
                 .replace("<", "")
                 .replace(">", "")
     }

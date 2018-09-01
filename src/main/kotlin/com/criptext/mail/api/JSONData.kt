@@ -19,8 +19,15 @@ interface JSONData {
 
 }
 
-fun List<Long>.toJSONLongArray(): JSONArray {
+fun List<Long>.toJSONLongArray():
+        JSONArray {
         val jsonArray = JSONArray()
         this.forEach { jsonArray.put(it) }
         return jsonArray
     }
+
+fun <T> JSONArray.toList(): List<T> {
+    val list = mutableListOf<T>()
+    for(i in 0 until this.length()) list.add(this[i] as T)
+    return list
+}

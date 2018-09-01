@@ -619,7 +619,10 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onNewEmail(email: Email) {
-            scene.notifyFullEmailListChanged()
+            if(email.threadId == model.threadId){
+                dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
+                        email.threadId, model.currentLabel))
+            }
         }
 
         override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {

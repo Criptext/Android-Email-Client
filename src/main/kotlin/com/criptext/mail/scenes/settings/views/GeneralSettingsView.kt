@@ -19,6 +19,8 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsChangePassword: View
     private lateinit var settingsRecoveryEmail: View
     private lateinit var settingsRecoveryEmailLoading: View
+    private lateinit var settingsResetPassword: View
+    private lateinit var settingsResetPasswordLoading: View
     private lateinit var settingsRecoveryEmailConfirmText: TextView
     private lateinit var versionText: TextView
 
@@ -37,12 +39,17 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsChangePassword = view.findViewById(R.id.settings_change_password)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
         settingsRecoveryEmailLoading = view.findViewById(R.id.settings_recovery_loading)
+        settingsResetPassword = view.findViewById(R.id.settings_reset_password)
+        settingsResetPasswordLoading = view.findViewById(R.id.settings_reset_loading)
         settingsRecoveryEmailConfirmText = view.findViewById(R.id.not_confirmed_text) as TextView
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
 
         settingsRecoveryEmail.visibility = View.GONE
         settingsRecoveryEmailLoading.visibility = View.VISIBLE
+
+        settingsResetPasswordLoading.visibility = View.VISIBLE
+        settingsResetPassword.visibility = View.GONE
 
         setButtonListeners()
     }
@@ -54,6 +61,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     fun setRecoveryEmailConfirmationText(isConfirmed: Boolean){
         settingsRecoveryEmail.visibility = View.VISIBLE
         settingsRecoveryEmailLoading.visibility = View.GONE
+
+        settingsResetPasswordLoading.visibility = View.GONE
+        settingsResetPassword.visibility = View.VISIBLE
+
         if(isConfirmed) {
             settingsRecoveryEmailConfirmText.setTextColor(ContextCompat.getColor(
                     view.context, R.color.green))
@@ -65,12 +76,25 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
     }
 
+    fun isSendingResetPassword(isSending: Boolean){
+        if(isSending){
+            settingsResetPasswordLoading.visibility = View.VISIBLE
+            settingsResetPassword.visibility = View.GONE
+        }else{
+            settingsResetPasswordLoading.visibility = View.GONE
+            settingsResetPassword.visibility = View.VISIBLE
+        }
+    }
+
     private fun setButtonListeners(){
         settingsProfileName.setOnClickListener {
             settingsUIObserver?.onProfileNameClicked()
         }
         settingsChangePassword.setOnClickListener {
             settingsUIObserver?.onChangePasswordOptionClicked()
+        }
+        settingsResetPassword.setOnClickListener {
+            settingsUIObserver?.onResetPasswordOptionClicked()
         }
         settingsRecoveryEmail.setOnClickListener {
             settingsUIObserver?.onRecoveryEmailOptionClicked()
