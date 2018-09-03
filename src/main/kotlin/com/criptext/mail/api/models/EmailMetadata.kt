@@ -28,7 +28,8 @@ data class EmailMetadata(
         val subject: String,
         val files: List<CRFile>,
         val fileKey: String?,
-        val secure: Boolean) {
+        val secure: Boolean,
+        val isSpam: Boolean) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
@@ -66,7 +67,8 @@ data class EmailMetadata(
                     messageType = SignalEncryptedData.Type.fromInt(messageType),
                     files = files,
                     fileKey = fileKey.key,
-                    secure = true
+                    secure = true,
+                    isSpam = checkSpam(emailData)
             )
 
         }
@@ -102,6 +104,16 @@ data class EmailMetadata(
                 }
                 else -> emptyList()
             }
+        }
+
+        private fun checkSpam(emailData: JSONObject): Boolean{
+            if(emailData.has("labels")){
+                val labelsList = emailData.getJSONArray("labels").toList<String>()
+                if (labelsList.contains("Spam"))
+                    return true
+            }
+            return false
+
         }
     }
 

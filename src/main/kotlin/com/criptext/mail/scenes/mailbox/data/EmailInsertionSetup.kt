@@ -241,11 +241,14 @@ object EmailInsertionSetup {
         val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
                 || metadata.cc.contains(activeAccount.userEmail)
                 || metadata.to.contains(activeAccount.userEmail)
-        val labels = when {
-            meAsSender && meAsRecipient -> listOf(Label.defaultItems.sent, Label.defaultItems.inbox)
-            meAsSender -> listOf(Label.defaultItems.sent)
-            else -> listOf(Label.defaultItems.inbox)
+        val labels: MutableList<Label> = when {
+            meAsSender && meAsRecipient -> mutableListOf(Label.defaultItems.sent, Label.defaultItems.inbox)
+            meAsSender -> mutableListOf(Label.defaultItems.sent)
+            else -> mutableListOf(Label.defaultItems.inbox)
         }
+
+        if(metadata.isSpam) labels.add(Label.defaultItems.spam)
+
 
         val foundEmail = dao.findEmailByMessageId(metadata.messageId)
         val emailAlreadyExists =  foundEmail?.messageId == metadata.messageId
