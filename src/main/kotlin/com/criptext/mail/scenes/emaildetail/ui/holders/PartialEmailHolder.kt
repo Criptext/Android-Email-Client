@@ -6,10 +6,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.EmailThreadValidator
@@ -59,7 +59,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
 
         headerView.text =
-                if(EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT)) {
+                if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {
                     headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))
                     headerView.context.getString(R.string.draft)
                 }

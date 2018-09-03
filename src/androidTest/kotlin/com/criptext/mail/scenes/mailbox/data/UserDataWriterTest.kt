@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.mailbox.data
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.db.*
@@ -29,8 +28,8 @@ class UserDataWriterTest {
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2)
 
-    private val labelOne = Label(id = 1, color = "red", text = SecureEmail.LABEL_ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
-    private val labelTwo = Label(id = 2, color = "blue", text = SecureEmail.LABEL_INBOX, type = LabelTypes.SYSTEM, visible = true)
+    private val labelOne = Label(id = 1, color = "red", text = Label.LABEL_ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
+    private val labelTwo = Label(id = 2, color = "blue", text = Label.LABEL_INBOX, type = LabelTypes.SYSTEM, visible = true)
 
     private val emailOne = Email(id = 1, content = "contents 1", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,

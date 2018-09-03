@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.models.*
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
@@ -332,7 +331,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun deleteSelectedEmailThreads() {
-        dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_TRASH)
+        dataSourceController.moveEmailThread(chosenLabel = Label.LABEL_TRASH)
     }
 
     private fun deleteSelectedEmailThreads4Ever() {
@@ -385,7 +384,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
             R.id.mailbox_not_spam -> removeCurrentLabelSelectedEmailThreads()
             R.id.mailbox_not_trash -> removeCurrentLabelSelectedEmailThreads()
-            R.id.mailbox_spam -> dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_SPAM)
+            R.id.mailbox_spam -> dataSourceController.moveEmailThread(chosenLabel = Label.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> {
                 val unreadStatus = model.isInUnreadMode
                 toggleReadSelectedEmailThreads(unreadStatus = unreadStatus)
@@ -419,15 +418,15 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_INBOX)
+            dataSourceController.moveEmailThread(chosenLabel = Label.LABEL_INBOX)
         }
 
         override fun onMoveToSpamClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_SPAM)
+            dataSourceController.moveEmailThread(chosenLabel = Label.LABEL_SPAM)
         }
 
         override fun onMoveToTrashClicked() {
-            dataSourceController.moveEmailThread(chosenLabel = SecureEmail.LABEL_TRASH)
+            dataSourceController.moveEmailThread(chosenLabel = Label.LABEL_TRASH)
         }
 
     }

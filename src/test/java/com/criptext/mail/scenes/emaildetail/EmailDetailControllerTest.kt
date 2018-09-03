@@ -111,6 +111,7 @@ open class EmailDetailControllerTest {
                         metadataKey = it + 100L,
                         unread = false,
                         isMuted = false,
+                        trashDate = null,
                         unsentDate = DateUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null)),

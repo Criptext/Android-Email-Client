@@ -16,6 +16,10 @@ import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSessionRecord
 import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.db.typeConverters.*
+import android.arch.persistence.db.SupportSQLiteDatabase
+import android.arch.persistence.room.migration.Migration
+import java.util.*
+
 
 /**
  * Created by sebas on 1/24/18.
@@ -23,8 +27,8 @@ import com.criptext.mail.db.typeConverters.*
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
-                     , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class],
-        version = 1,
+                     , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class],
+        version = 2,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -50,6 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rawSignedPreKeyDao(): RawSignedPreKeyDao
     abstract fun signUpDao(): SignUpDao
     abstract fun openDao(): OpenDao
+    abstract fun emailExternalSessionDao(): EmailExternalSessionDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
@@ -59,10 +64,35 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         //allowMainThreadQueries() // remove this in production... !!!!
-                        // .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
+                        .addMigrations(MIGRATION_1_2)
                         .build()
             }
             return INSTANCE!!
+        }
+
+        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE email ADD COLUMN trashDate INTEGER""")
+                for(label in Label.defaultItems.toList()) {
+                    database.execSQL("""UPDATE label SET text = '${label.text}' WHERE text = '${label.text.toUpperCase()}'""")
+                }
+                database.execSQL("""UPDATE email
+                        SET trashDate = CAST('${Date()}' AS DATE)
+                        WHERE  email.id = (SELECT email_label.emailId FROM email_label
+                                            WHERE email_label.labelId = (SELECT label.id FROM label
+                                                                            WHERE label.text = '${Label.LABEL_TRASH}'))""")
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  email_external_session (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        emailId INTEGER NOT NULL,
+                                        iv TEXT NOT NULL,
+                                        salt TEXT NOT NULL,
+                                        encryptedSession TEXT NOT NULL,
+                                        FOREIGN KEY(emailId) REFERENCES email(id) ON DELETE CASCADE)""")
+                database.execSQL("CREATE INDEX index_email_external_session_emailId ON email_external_session (emailId)")
+                database.execSQL("""UPDATE contact
+                                        SET email = replace(email, rtrim(email, replace(email, ' ', '')), '')
+                                        """)
+            }
         }
     }
 }

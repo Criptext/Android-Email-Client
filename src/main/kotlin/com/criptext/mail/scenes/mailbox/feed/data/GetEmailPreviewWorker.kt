@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.mailbox.feed.data
 
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
@@ -35,8 +34,8 @@ class GetEmailPreviewWorker(private val email: Email,
         val labels = mailboxLocalDB.getLabelsFromThreadIds(listOf(email.threadId))
         return FeedResult.GetEmailPreview.Success(
                 emailPreview = EmailPreview.fromEmailThread(emailThread),
-                isTrash = EmailThreadValidator.isLabelInList(labels, SecureEmail.LABEL_TRASH),
-                isSpam = EmailThreadValidator.isLabelInList(labels, SecureEmail.LABEL_SPAM))
+                isTrash = EmailThreadValidator.isLabelInList(labels, Label.LABEL_TRASH),
+                isSpam = EmailThreadValidator.isLabelInList(labels, Label.LABEL_SPAM))
     }
 
     override fun cancel() {

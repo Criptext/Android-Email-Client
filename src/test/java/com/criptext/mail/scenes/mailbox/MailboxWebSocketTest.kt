@@ -1,9 +1,7 @@
 package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.IHostActivity
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
@@ -13,7 +11,6 @@ import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.mocks.MockedIHostActivity
 import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.mailbox.data.LoadEmailThreadsWorker
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
@@ -24,7 +21,6 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
 import org.amshove.kluent.`should be`
-import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 
@@ -151,7 +147,7 @@ class MailboxWebSocketTest {
         // mock database result
         every {
             db.getThreadsFromMailboxLabel("gabriel@${Contact.mainDomain}",
-                    SecureEmail.LABEL_INBOX, null, 20, any())
+                    Label.LABEL_INBOX, null, 20, any())
         } returns MailboxTestUtils.createEmailThreads(20)
         every {
             emailInsertionDao.findEmailByMessageId(any())

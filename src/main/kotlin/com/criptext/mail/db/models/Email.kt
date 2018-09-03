@@ -55,5 +55,9 @@ data class Email(
         var metadataKey : Long,
 
         @ColumnInfo(name = "isMuted")
-        var isMuted: Boolean
+        var isMuted: Boolean,
+
+        @ColumnInfo(name = "trashDate")
+        @Nullable
+        var trashDate: Date?
 )

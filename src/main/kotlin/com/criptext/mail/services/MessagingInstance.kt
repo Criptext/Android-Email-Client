@@ -9,4 +9,9 @@ interface MessagingInstance{
     class Default : MessagingInstance {
         override val token = FirebaseInstanceId.getInstance().token
     }
+
+    companion object {
+        const val THREAD_ID = "service.threadId"
+        const val ACTIVITY_FLAG = "service.activity"
+    }
 }

@@ -1,6 +1,5 @@
 package com.criptext.mail.db
 
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.EmailThreadValidator
@@ -53,7 +52,7 @@ interface MailboxLocalDB {
         }
 
         override fun createLabelsForEmailInbox(insertedEmailId: Long) {
-            val labelInbox = db.labelDao().get(SecureEmail.LABEL_INBOX)
+            val labelInbox = db.labelDao().get(Label.LABEL_INBOX)
             db.emailLabelDao().insert(EmailLabel(
                     labelId = labelInbox.id,
                     emailId = insertedEmailId))
@@ -111,7 +110,7 @@ interface MailboxLocalDB {
                                                 rejectedLabels: List<Label>): List<EmailThread> {
 
             val labels = db.labelDao().getAll()
-            val selectedLabel = if(labelName == SecureEmail.LABEL_ALL_MAIL) "%" else
+            val selectedLabel = if(labelName == Label.LABEL_ALL_MAIL) "%" else
                 "%${labels.findLast {
                     label ->label.text == labelName
                 }?.id}%"
@@ -211,7 +210,7 @@ interface MailboxLocalDB {
                 val contacts = mutableListOf<Contact>()
                 if (selectedLabel == Label.defaultItems.sent.text) {
                     val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
-                    if (EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)) {
+                    if (EmailThreadValidator.isLabelInList(emailLabels, Label.LABEL_SENT)) {
                         contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
                         contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
                     }

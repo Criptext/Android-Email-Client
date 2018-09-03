@@ -1,9 +1,5 @@
 package com.criptext.mail.db
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.EmailThreadValidator
@@ -71,7 +67,7 @@ interface SearchLocalDB{
                 val contacts = mutableListOf<Contact>()
                 if(selectedLabel == Label.defaultItems.sent.text){
                     val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
-                    if(EmailThreadValidator.isLabelInList(emailLabels, SecureEmail.LABEL_SENT)){
+                    if(EmailThreadValidator.isLabelInList(emailLabels, Label.LABEL_SENT)){
                         contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
                         contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
                     }
