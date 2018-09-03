@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum "/build.gradle" }}
+          key: jars-
       - run:
           name: GServices
           command: echo $GSERVICES | base64 --decode > google-services.json
@@ -17,7 +17,7 @@ jobs:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - save_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum "/build.gradle" }}
+          key: jars-
           paths:
             - ~/.gradle
       - run:
