@@ -278,15 +278,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
 
         override fun onMoveToInboxClicked() {
-            moveEmailThread(SecureEmail.LABEL_INBOX)
+            moveEmailThread(Label.LABEL_INBOX)
         }
 
         override fun onMoveToSpamClicked() {
-            moveEmailThread(SecureEmail.LABEL_SPAM)
+            moveEmailThread(Label.LABEL_SPAM)
         }
 
         override fun onMoveToTrashClicked() {
-            moveEmailThread(SecureEmail.LABEL_TRASH)
+            moveEmailThread(Label.LABEL_TRASH)
         }
     }
 
@@ -374,13 +374,13 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
             if(!fullEmail.labels.contains(Label.defaultItems.trash))
-                moveEmail(fullEmail, SecureEmail.LABEL_TRASH)
+                moveEmail(fullEmail, Label.LABEL_TRASH)
             else
                 deleteSelectedEmail4Ever(fullEmail)
         }
 
         override fun onSpamOptionSelected(fullEmail: FullEmail, position: Int) {
-            moveEmail(fullEmail, SecureEmail.LABEL_SPAM)
+            moveEmail(fullEmail, Label.LABEL_SPAM)
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
@@ -478,7 +478,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun deleteThread() {
-        moveEmailThread(SecureEmail.LABEL_TRASH)
+        moveEmailThread(Label.LABEL_TRASH)
     }
 
     private fun updateUnreadStatusThread(){
@@ -495,7 +495,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
             R.id.mailbox_not_spam -> removeCurrentLabelThread()
             R.id.mailbox_not_trash -> removeCurrentLabelThread()
-            R.id.mailbox_spam -> moveEmailThread(SecureEmail.LABEL_SPAM)
+            R.id.mailbox_spam -> moveEmailThread(Label.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
                 scene.showDialogMoveTo(onMoveThreadsListener)

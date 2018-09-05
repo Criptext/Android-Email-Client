@@ -16,7 +16,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -193,7 +192,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
         headerView.text =
-                if(EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT)) {
+                if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {
                     headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))
                     headerView.context.getString(R.string.draft)
                 }
@@ -245,7 +244,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private fun setToText(fullEmail: FullEmail){
         val numberContacts = fullEmail.to.size
         val isFromMe = (fullEmail.email.delivered != DeliveryTypes.NONE
-                || EmailThreadValidator.isLabelInList(fullEmail.labels, SecureEmail.LABEL_DRAFT))
+                || EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT))
         toView.text = when {
             isFromMe ->
                 "${toView.resources.getString(R.string.to)} ${fullEmail.to.joinToString { it.name }}"

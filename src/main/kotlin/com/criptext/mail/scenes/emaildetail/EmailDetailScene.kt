@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -108,7 +107,7 @@ interface EmailDetailScene {
                 textViewSubject.context.getString(R.string.nosubject)
             else fullEmailList[0].email.subject
 
-            val isStarred = EmailThreadValidator.isLabelInList(fullEmailList[0].labels, SecureEmail.LABEL_STARRED)
+            val isStarred = EmailThreadValidator.isLabelInList(fullEmailList[0].labels, Label.LABEL_STARRED)
             if(isStarred){
                 setIconAndColor(R.drawable.starred, R.color.starred)
             }
@@ -175,7 +174,7 @@ interface EmailDetailScene {
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener,
-                    currentFolder = SecureEmail.LABEL_ALL_MAIL)
+                    currentFolder = Label.LABEL_ALL_MAIL)
         }
 
         override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {

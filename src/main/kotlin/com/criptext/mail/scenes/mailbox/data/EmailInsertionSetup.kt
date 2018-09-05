@@ -38,7 +38,8 @@ object EmailInsertionSetup {
             delivered = metadata.status,
             content = decryptedBody,
             metadataKey = metadata.metadataKey,
-            isMuted = false
+            isMuted = false,
+            trashDate = null
         )
     }
 

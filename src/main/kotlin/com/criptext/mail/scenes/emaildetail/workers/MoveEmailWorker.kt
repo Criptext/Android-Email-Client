@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.workers
 
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
@@ -79,7 +78,7 @@ class MoveEmailWorker(
 
         return when (result) {
             is Result.Success -> {
-                if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
+                if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
                     //Mark as spam from trash
                     db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
                             emailIds = emailIds)

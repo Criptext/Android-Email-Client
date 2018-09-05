@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
+import com.criptext.mail.db.models.Label
 
 /**
  * Created by sebas on 2/8/18.
@@ -66,9 +66,9 @@ class MoveToDialog(val context: Context) {
         val btn_cancel = view.findViewById(R.id.move_to_cancel) as Button
 
         when(currentFolder){
-            SecureEmail.LABEL_ALL_MAIL -> btn_inbox.visibility = View.VISIBLE
-            SecureEmail.LABEL_SPAM -> btn_spam.visibility = View.GONE
-            SecureEmail.LABEL_TRASH -> btn_trash.visibility = View.GONE
+            Label.LABEL_ALL_MAIL -> btn_inbox.visibility = View.VISIBLE
+            Label.LABEL_SPAM -> btn_spam.visibility = View.GONE
+            Label.LABEL_TRASH -> btn_trash.visibility = View.GONE
             else -> {
             }
         }

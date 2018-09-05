@@ -40,6 +40,7 @@ import com.criptext.mail.scenes.settings.change_email.ChangeEmailActivity
 import com.criptext.mail.scenes.settings.change_email.ChangeEmailModel
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
+import com.criptext.mail.services.MessagingInstance
 
 
 /**
@@ -191,7 +192,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun getIntentExtras(): IntentExtrasData? {
         if(intent.extras != null && !intent.extras.isEmpty) {
-            val threadId = intent.extras.get(SecureEmail.THREAD_ID).toString()
+            val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
             if(intent.extras != null) {
                 for (key in intent.extras.keySet()){
                     intent.removeExtra(key)

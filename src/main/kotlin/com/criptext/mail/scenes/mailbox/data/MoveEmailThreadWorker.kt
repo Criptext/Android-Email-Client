@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.R
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
@@ -99,7 +98,7 @@ class MoveEmailThreadWorker(
             apiClient.postThreadLabelChangedEvent(selectedThreadIds, listOf(currentLabel.text),
                 selectedLabels.toList().map { it.text })}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of { if(currentLabel == Label.defaultItems.trash && chosenLabel == SecureEmail.LABEL_SPAM){
+                .flatMap { Result.of { if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
                     //Mark as spam from trash
                     db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
                             emailIds = emailIds)

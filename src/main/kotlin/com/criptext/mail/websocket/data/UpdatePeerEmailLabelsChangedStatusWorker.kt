@@ -1,6 +1,5 @@
 package com.criptext.mail.websocket.data
 
-import com.criptext.mail.SecureEmail
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.PeerEmailLabelsChangedStatusUpdate
 import com.criptext.mail.bgworker.BackgroundWorker

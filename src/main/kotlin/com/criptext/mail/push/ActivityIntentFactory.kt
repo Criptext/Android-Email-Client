@@ -3,12 +3,8 @@ package com.criptext.mail.push
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.criptext.mail.BaseActivity
-import com.criptext.mail.SecureEmail
-import com.criptext.mail.scenes.emaildetail.EmailDetailActivity
 import com.criptext.mail.scenes.mailbox.MailboxActivity
-import com.criptext.mail.splash.SplashActivity
+import com.criptext.mail.services.MessagingInstance
 
 /**
  * Factory class for creating Pending intents invoked when a push notification is clicked.
@@ -25,9 +21,9 @@ class ActivityIntentFactory {
             intent.addCategory(Intent.CATEGORY_LAUNCHER)
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             if (type == PushTypes.newMail && extraParam != null) {
-                intent.putExtra(SecureEmail.THREAD_ID, extraParam)
+                intent.putExtra(MessagingInstance.THREAD_ID, extraParam)
             }else if (type != PushTypes.newMail)
-                intent.putExtra(SecureEmail.ACTIVITY_FLAG, true)
+                intent.putExtra(MessagingInstance.ACTIVITY_FLAG, true)
 
             return intent
         }
