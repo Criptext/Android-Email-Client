@@ -38,11 +38,12 @@ class GetEmailPreviewWorkerTest{
 
     private fun insertEmailNeededForTests(): Email {
         val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi")
-        val metadata = EmailMetadata.DBColumns(to = userEmail,  cc = "", bcc = "",
+        val metadata = EmailMetadata.DBColumns(to = listOf(userEmail),
+                cc = emptyList(), bcc = emptyList(),
                 fromContact = fromContact, messageId = "daniel/1/1",
                 date = "2018-02-21 14:00:00", threadId = "thread#1",
                 subject = "__SUBJECT__", unread = true, metadataKey = 100L, status = DeliveryTypes.NONE,
-                unsentDate = "2018-02-21 14:00:00")
+                unsentDate = "2018-02-21 14:00:00", secure = true, trashDate = "2018-02-21 14:00:00")
         val decryptedBody = "Hello, this is message"
         val labels = listOf(Label.defaultItems.inbox)
         val emailId = EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,

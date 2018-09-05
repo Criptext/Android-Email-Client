@@ -147,6 +147,13 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is MailboxRequest.EmptyTrash -> EmptyTrashWorker(
+                    db = mailboxLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 

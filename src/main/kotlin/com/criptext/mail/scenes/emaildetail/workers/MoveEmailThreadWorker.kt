@@ -90,6 +90,9 @@ class MoveEmailThreadWorker(
 
         return when (result) {
             is Result.Success -> {
+                if(chosenLabel == Label.LABEL_TRASH){
+                    db.setTrashDate(emailIds)
+                }
                 if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
                     //Mark as spam from trash
                     db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,

@@ -112,6 +112,9 @@ class ReadEmailsWorkerTest {
                             isMuted = false,
                             unsentDate = DateUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
+                                    null),
+                            trashDate = DateUtils.getDateFromString(
+                                    "1992-05-23 20:12:58",
                                     null)),
                     labels = emptyList(),
                     to = emptyList(),

@@ -237,4 +237,9 @@ class EventLocalDB(private val db: AppDatabase){
         } as ArrayList<EmailThread>
     }
 
+    fun getThreadIdsFromTrashExpiredEmails(): List<String>{
+        val labelId = db.labelDao().get(Label.LABEL_TRASH).id
+        return db.emailDao().getTrashExpiredThreadIds(labelId)
+    }
+
 }

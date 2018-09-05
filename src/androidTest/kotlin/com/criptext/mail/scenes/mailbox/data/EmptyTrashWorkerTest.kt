@@ -24,7 +24,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MoveEmailThreadsWorkerTest{
+class EmptyTrashWorkerTest{
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
@@ -49,58 +49,35 @@ class MoveEmailThreadsWorkerTest{
         db.labelDao().insertAll(Label.DefaultItems().toList())
         mailboxLocalDB = MailboxLocalDB.Default(db)
 
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash))
     }
 
     @Test
-    fun test_should_move_two_emails_to_spam_folder(){
+    fun should_delete_permanently_all_emails_in_trash(){
 
         mockWebServer.enqueueResponses(listOf(
                 MockedResponse.Ok("")
         ))
 
-        mailboxLocalDB.getThreadsFromMailboxLabel(
-                userEmail = "gabriel@criptext.com",
-                rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
-                labelName = Label.defaultItems.spam.text,
-                startDate = null,
-                limit = 20
-        ).size shouldBe 0
-
-        val emailThreads = mailboxLocalDB.getThreadsFromMailboxLabel(
-                userEmail = "gabriel@criptext.com",
-                rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
-                labelName = Label.defaultItems.inbox.text,
-                startDate = null,
-                limit = 20
-        )
-
-        val worker = newWorker(
-                chosenLabel = Label.defaultItems.spam.text,
-                currentLabel = Label.defaultItems.inbox,
-                selectedThreadIds = emailThreads.map { it.threadId }
-        )
-        worker.work(mockk()) as MailboxResult.MoveEmailThread.Success
-
-        mailboxLocalDB.getThreadsFromMailboxLabel(
-                userEmail = "gabriel@criptext.com",
-                rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
-                labelName = Label.defaultItems.spam.text,
-                startDate = null,
-                limit = 20
+        mailboxLocalDB.getThreadsIdsFromLabel(
+                labelName = Label.defaultItems.trash.text
         ).size shouldBe 2
+
+
+        val worker = newWorker()
+
+        worker.work(mockk()) as MailboxResult.EmptyTrash.Success
+
+        mailboxLocalDB.getThreadsIdsFromLabel(
+                labelName = Label.defaultItems.trash.text
+        ).size shouldBe 0
 
     }
 
-    private fun newWorker(chosenLabel: String?,
-                          selectedThreadIds: List<String>,
-                          currentLabel: Label): MoveEmailThreadWorker =
+    private fun newWorker(): EmptyTrashWorker =
 
-            MoveEmailThreadWorker(
+            EmptyTrashWorker(
                     db = mailboxLocalDB,
-                    currentLabel = currentLabel,
-                    chosenLabel = chosenLabel,
-                    selectedThreadIds = selectedThreadIds,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     publishFn = {})

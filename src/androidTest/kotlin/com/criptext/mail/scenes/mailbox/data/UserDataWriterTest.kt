@@ -33,10 +33,12 @@ class UserDataWriterTest {
 
     private val emailOne = Email(id = 1, content = "contents 1", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
-            preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
+            preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
+            trashDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
     private val emailTwo = Email(id = 2, content = "contents 2", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_2", metadataKey = 456,
-            preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
+            preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
+            trashDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
 
     private val fileOne = CRFile(id = 1, date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"), emailId = 1, name = "this.txt",
             readOnly = true, size = 12, status = 0, token = "txt")

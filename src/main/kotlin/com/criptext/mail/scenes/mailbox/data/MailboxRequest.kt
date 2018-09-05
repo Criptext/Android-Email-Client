@@ -53,6 +53,6 @@ sealed class MailboxRequest{
 
     data class GetEmailPreview(val threadId: String, val userEmail: String): MailboxRequest()
 
-
+    class EmptyTrash: MailboxRequest()
 
 }

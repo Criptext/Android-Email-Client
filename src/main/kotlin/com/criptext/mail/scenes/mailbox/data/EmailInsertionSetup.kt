@@ -39,7 +39,9 @@ object EmailInsertionSetup {
             content = decryptedBody,
             metadataKey = metadata.metadataKey,
             isMuted = false,
-            trashDate = null
+            trashDate = DateUtils.getDateFromString(
+                    metadata.date,
+                    null)
         )
     }
 
@@ -265,7 +267,9 @@ object EmailInsertionSetup {
         val lonReturn = dao.runTransaction({
                 EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
                 if(meAsSender) false else metadata.extractDBColumns().unread, status =
-                if(meAsSender) DeliveryTypes.SENT else metadata.extractDBColumns().status), decryptedBody, labels,
+                if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
+                else if(meAsSender)DeliveryTypes.SENT
+                else metadata.extractDBColumns().status), decryptedBody, labels,
                         metadata.files, decryptedFileKey)
             })
         println(lonReturn)

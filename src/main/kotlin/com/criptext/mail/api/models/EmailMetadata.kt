@@ -34,7 +34,8 @@ data class EmailMetadata(
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
-                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true)
+                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true,
+                    trashDate = null)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -135,5 +136,6 @@ data class EmailMetadata(
         val subject: String,
         val unread: Boolean,
         val status: DeliveryTypes,
-        val secure: Boolean)
+        val secure: Boolean,
+        val trashDate: String?)
 }
