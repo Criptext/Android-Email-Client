@@ -59,6 +59,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
             is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
+            is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
         }
     }
 
@@ -208,6 +209,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 changeMode(multiSelectON = false, silent = false)
                 threadListController.reRenderAll()
             }
+        }
+
+        override fun onEmptyTrashPressed() {
+            scene.showEmptyTrashWarningDialog(onEmptyTrashListener)
         }
 
         override fun onRefreshMails() {
@@ -437,6 +442,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private val onEmptyTrashListener = object : OnEmptyTrashListener {
+        override fun onDeleteConfirmed() {
+            dataSource.submitRequest(MailboxRequest.EmptyTrash())
+        }
+    }
+
     private inner class DataSourceController(
             private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>) {
 
@@ -506,6 +517,22 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
+        fun onEmptyTrash(resultData: MailboxResult.EmptyTrash) {
+            when (resultData) {
+                is MailboxResult.EmptyTrash.Success ->
+                {
+                    scene.showMessage(UIMessage(R.string.trash_is_now_empty))
+                    reloadMailboxThreads()
+                }
+                is MailboxResult.EmptyTrash.Failure ->
+                    scene.showMessage(resultData.message)
+                is MailboxResult.EmptyTrash.Unauthorized ->
+                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                is MailboxResult.EmptyTrash.Forbidden ->
+                    scene.showConfirmPasswordDialog(observer)
+            }
+        }
+
         fun onLoadedMoreThreads(result: MailboxResult.LoadEmailThreads) {
             scene.clearRefreshing()
             scene.updateToolbarTitle(toolbarTitle)
@@ -519,6 +546,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                     if (shouldSync)
                         updateMailbox(model.selectedLabel)
+                    if(result.mailboxLabel == Label.LABEL_TRASH &&
+                            (result.emailPreviews.isNotEmpty() || model.threads.isNotEmpty())){
+                        scene.showEmptyTrashBanner()
+                    }else{
+                        scene.hideEmptyTrashBanner()
+                    }
                 }
             }
         }

@@ -77,7 +77,8 @@ class SaveEmailWorker(
                 fromContact = sender,
                 unread = false,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
-                secure = isSecure())
+                secure = isSecure(),
+                trashDate = DateUtils.printDateWithServerFormat(Date()))
     }
 
     private fun createDraftMessageId(deviceId: Int): String =

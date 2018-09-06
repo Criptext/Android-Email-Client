@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
 import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -71,6 +73,9 @@ interface MailboxScene{
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
+    fun showEmptyTrashBanner()
+    fun hideEmptyTrashBanner()
+    fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -95,6 +100,7 @@ interface MailboxScene{
         private val labelChooserDialog = LabelChooserDialog(context, mailboxView)
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
+        private val emptyTrashDialog = EmptyTrashDialog(context)
         private val welcomeDialog = WelcomeTourDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
 
@@ -135,6 +141,14 @@ interface MailboxScene{
 
         private val backButton: ImageView by lazy {
             mailboxView.findViewById<ImageView>(R.id.mailbox_back_button)
+        }
+
+        private val trashBanner: RelativeLayout by lazy {
+            mailboxView.findViewById<RelativeLayout>(R.id.empty_trash_banner)
+        }
+
+        private val emptyTrashButton: TextView by lazy {
+            mailboxView.findViewById<TextView>(R.id.empty_trash)
         }
 
         override val virtualListView = VirtualRecyclerView(recyclerView)
@@ -222,6 +236,10 @@ interface MailboxScene{
             deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
         }
 
+        override fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener) {
+            emptyTrashDialog.showEmptyTrashDialog(onEmptyTrashListener)
+        }
+
         override fun showWelcomeDialog() {
             welcomeDialog.showWelcomeTourDialog()
         }
@@ -240,6 +258,14 @@ interface MailboxScene{
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {
             toolbarHolder.updateNumberOfMails(emailsSize)
+        }
+
+        override fun hideEmptyTrashBanner() {
+            trashBanner.visibility = View.GONE
+        }
+
+        override fun showEmptyTrashBanner() {
+            trashBanner.visibility = View.VISIBLE
         }
 
         override fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
@@ -289,6 +315,11 @@ interface MailboxScene{
             backButton.setOnClickListener {
                 observer.onBackButtonPressed()
             }
+
+            emptyTrashButton.setOnClickListener{
+                observer.onEmptyTrashPressed()
+            }
+
 
             drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
                 override fun onDrawerStateChanged(newState: Int) {}

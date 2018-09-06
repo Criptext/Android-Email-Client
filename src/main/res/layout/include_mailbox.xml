@@ -84,21 +84,58 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mailbox_refresher"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/empty_trash_banner"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/banner_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_trash_banner"
+            android:layout_marginTop="7dp"
+            android:padding="17dp"
+            android:textColor="#424c52"
+            android:textSize="15sp"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+        <TextView
+            android:id="@+id/empty_trash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/banner_message"
+            android:clickable="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="7dp"
+            android:gravity="bottom|end"
+            android:text="@string/empty_trash"
+            android:textColor="#0091ff"
+            android:textSize="15sp"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+        </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mailbox_recycler"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/mailbox_refresher"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mailbox_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -109,5 +146,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

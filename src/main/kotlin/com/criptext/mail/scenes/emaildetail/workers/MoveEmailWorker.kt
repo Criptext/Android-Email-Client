@@ -94,6 +94,10 @@ class MoveEmailWorker(
                 }
                 db.createLabelEmailRelations(emailLabels)
 
+                if(chosenLabel == Label.LABEL_TRASH){
+                    db.setTrashDate(emailIds)
+                }
+
                 EmailDetailResult.MoveEmailThread.Success(null)
             }
             is Result.Failure -> {

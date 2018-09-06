@@ -11,4 +11,5 @@ interface MailboxUIObserver: UIObserver {
     fun onRefreshMails()
     fun onBackButtonPressed()
     fun onFeedDrawerClosed()
+    fun onEmptyTrashPressed()
 }

@@ -105,6 +105,9 @@ class MoveEmailThreadWorker(
                     }
                     val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
                     db.createLabelEmailRelations(labelEmails)
+                    if(chosenLabel == Label.LABEL_TRASH){
+                        db.setTrashDate(emailIds)
+                    }
                 } }
 
         return when (result) {

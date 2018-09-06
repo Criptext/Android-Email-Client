@@ -31,11 +31,12 @@ class SearchEmailWorkerTest{
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
-       return EmailMetadata.DBColumns(to = "gabriel@criptext.com",  cc = "", bcc = "",
+       return EmailMetadata.DBColumns(to = listOf("gabriel@criptext.com"),  cc = emptyList(), bcc = emptyList(),
                     fromContact = fromContact, messageId = "gabriel/1/$id",
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$id",
                     subject = "Test #$id", unread = true, metadataKey = id + 100L,
-                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds")
+                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds", secure = true,
+                    trashDate = "2018-02-21 14:00:$seconds")
     }
     @Before
     fun setup() {

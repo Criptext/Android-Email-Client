@@ -67,11 +67,12 @@ class LoadInitialDataWorkerTest {
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean, fileKey: String?): Long {
         val toCSV = to.map {it.email}.joinToString(separator = ",")
-        val metadata = EmailMetadata.DBColumns(to = toCSV,  cc = "", bcc = "",
-                    fromContact = fromContact, messageId = "__MESSAGE_ID__",
+        val metadata = EmailMetadata.DBColumns(to = listOf(toCSV),  cc = emptyList(),
+                    bcc = emptyList(), fromContact = fromContact, messageId = "__MESSAGE_ID__",
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
                     subject = subject, unread = true, metadataKey = 100L,
-                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:00")
+                    status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:00", secure = true,
+                    trashDate = "2018-02-21 14:00:00")
             val labels = if (isDraft) listOf(Label.defaultItems.inbox)
                         else listOf(Label.defaultItems.draft)
 

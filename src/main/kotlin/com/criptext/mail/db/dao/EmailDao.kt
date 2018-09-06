@@ -128,6 +128,22 @@ import java.util.*
             where id in (:emailIds)""")
     fun getThreadIdsFromEmailIds(emailIds: List<Long>): List<String>
 
+    @Query("""SELECT DISTINCT threadId FROM email
+            left join email_label on email.id = email_label.emailId
+            where email_label.labelId=:labelId""")
+    fun getThreadIdsFromLabel(labelId: Long): List<String>
+
+    @Query("""SELECT DISTINCT threadId FROM email
+            left join email_label on email.id = email_label.emailId
+            where email_label.labelId=:labelId
+            AND (julianday('now') - julianday(email.trashDate)) >= 30""")
+    fun getTrashExpiredThreadIds(labelId: Long): List<String>
+
+    @Query("""UPDATE email
+            SET trashDate=:trashDate
+            where id in (:emailIds)""")
+    fun updateEmailTrashDate(trashDate: Date, emailIds: List<Long>)
+
     @Query("""UPDATE email
             SET threadId=:threadId,
             messageId=:messageId,

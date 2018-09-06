@@ -131,4 +131,11 @@ sealed class MailboxResult {
                            val isTrash: Boolean, val isSpam: Boolean): GetEmailPreview()
         data class Failure(val message: String): GetEmailPreview()
     }
+
+    sealed class EmptyTrash: MailboxResult() {
+        class Success: EmptyTrash()
+        class Failure(val message: UIMessage): EmptyTrash()
+        class Unauthorized(val message: UIMessage): EmptyTrash()
+        class Forbidden: EmptyTrash()
+    }
 }

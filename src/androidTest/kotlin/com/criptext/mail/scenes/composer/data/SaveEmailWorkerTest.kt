@@ -76,7 +76,8 @@ class SaveEmailWorkerTest {
         val previousDraft = Email(id = 0, messageId = "__MESSAGE_ID__", unread = false,
                 content = "This was my original draft", preview = "__PREVIEW__", subject = "draft",
                 delivered = DeliveryTypes.NONE, date = Date(), secure = false,
-                threadId = "__MESSAGE_ID__", metadataKey = 1246275862L, isMuted = false, unsentDate = Date())
+                threadId = "__MESSAGE_ID__", metadataKey = 1246275862L, isMuted = false, unsentDate = Date(),
+                trashDate = Date())
         val draftId = db.emailDao().insert(previousDraft)
 
 

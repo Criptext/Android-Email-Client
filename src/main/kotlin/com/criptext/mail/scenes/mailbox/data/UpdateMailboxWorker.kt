@@ -26,7 +26,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 
 class UpdateMailboxWorker(
         signalClient: SignalClient,
-        dbEvents: EventLocalDB,
+        private val dbEvents: EventLocalDB,
         activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
         private val label: Label,
@@ -38,6 +38,7 @@ class UpdateMailboxWorker(
 
 
     override val canBeParallelized = false
+    private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
 
@@ -72,6 +73,8 @@ class UpdateMailboxWorker(
                 .flatMap(eventHelper.parseEvents)
                 .flatMap(eventHelper.processEvents)
 
+        checkTrashDates()
+
         return when(operationResult) {
             is Result.Success -> {
                 return MailboxResult.UpdateMailbox.Success(
@@ -87,6 +90,15 @@ class UpdateMailboxWorker(
 
     override fun cancel() {
         TODO("CANCEL IS NOT IMPLEMENTED")
+    }
+
+    private fun checkTrashDates(){
+        val threadIds = dbEvents.getThreadIdsFromTrashExpiredEmails()
+        if(threadIds.isNotEmpty()){
+            Result.of { apiClient.postThreadDeletedPermanentlyEvent(threadIds) }
+                    .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                    .flatMap { Result.of { dbEvents.updateDeleteThreadPermanently(threadIds) } }
+        }
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

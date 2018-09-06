@@ -52,6 +52,10 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private var guestEmails: PostEmailBody.GuestEmail? = null
 
+    private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(activeAccount.userEmail)
+            || composerInputData.cc.map { it.email }.contains(activeAccount.userEmail)
+            || composerInputData.to.map { it.email }.contains(activeAccount.userEmail)
+
     private fun getMailRecipients(): MailRecipients {
         val toAddresses = composerInputData.to.map(Contact.toAddress)
         val ccAddresses = composerInputData.cc.map(Contact.toAddress)
@@ -101,6 +105,13 @@ class SendMailWorker(private val signalClient: SignalClient,
             val downloadedBundles = PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
             signalClient.createSessionsFromBundles(downloadedBundles)
         }
+    }
+
+    private fun getDeliveryType(): DeliveryTypes{
+        return if(meAsRecipient)
+            DeliveryTypes.DELIVERED
+        else
+            DeliveryTypes.SENT
     }
 
     private fun encryptForCriptextRecipients(criptextRecipients: List<String>,
@@ -187,9 +198,9 @@ class SendMailWorker(private val signalClient: SignalClient,
             { response ->
                Result.of {
                    val sentMailData = SentMailData.fromJSON(JSONObject(response))
-                   db.updateEmailAndAddLabelSent(id = emailId, threadId = sentMailData.threadId,
+                   db.updateEmailAndAddLabel(id = emailId, threadId = sentMailData.threadId,
                        messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
-                       status = DeliveryTypes.SENT,
+                       status = getDeliveryType(),
                        date = DateUtils.getDateFromString(sentMailData.date, null)
                    )
                }
