@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
+import com.criptext.mail.api.toJSONLongArray
 import com.criptext.mail.scenes.composer.data.PostEmailBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -87,6 +88,16 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
         jsonObject.put("ids", JSONArray(eventIds))
 
         return httpClient.post(authToken = token, path = "/event/ack", body = jsonObject)
+    }
+
+    fun postEmailDeleteEvent(metadataKeys: List<Long>): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", Event.Cmd.peerEmailDeleted)
+        json.put("metadataKeys", metadataKeys.toJSONLongArray())
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
     }
 
 }

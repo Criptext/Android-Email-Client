@@ -17,7 +17,7 @@ import java.util.*
 interface EmailDetailLocalDB {
 
     fun getLabelsFromThreadId(threadId: String): List<Label>
-    fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail>
+    fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>): List<FullEmail>
     fun unsendEmail(emailId: Long)
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelByName(labelName: String): Label
@@ -43,8 +43,12 @@ interface EmailDetailLocalDB {
             db.fileDao().changeFileStatusByEmailid(emailId, 0)
         }
 
-        override fun getFullEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<FullEmail> {
-            val emails = db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels)
+        override fun getFullEmailsFromThreadId(selectedLabel: String,
+                                               threadId: String, rejectedLabels: List<Long>): List<FullEmail> {
+            val emails = if(selectedLabel == Label.LABEL_SPAM || selectedLabel == Label.LABEL_TRASH)
+                db.emailDao().getEmailsFromThreadIdByLabel(db.labelDao().get(selectedLabel).id, listOf(threadId))
+            else
+                db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels)
             val fullEmails =  emails.map {
                 val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)

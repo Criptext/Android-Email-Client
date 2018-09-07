@@ -25,7 +25,9 @@ class LoadFullEmailsFromThreadWorker(
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.LoadFullEmailsFromThreadId>): EmailDetailResult.LoadFullEmailsFromThreadId {
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val items = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels)
+        val items = db.getFullEmailsFromThreadId(threadId = threadId,
+                rejectedLabels = rejectedLabels,
+                selectedLabel = currentLabel.text)
         items.forEach { it.email.unread = false }
         return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items)
     }

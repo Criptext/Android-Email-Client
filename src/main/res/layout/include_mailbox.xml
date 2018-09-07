@@ -93,7 +93,8 @@
             android:id="@+id/empty_trash_banner"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:backgroundTint="#f2f8ff">
         <TextView
             android:id="@+id/banner_message"
             android:layout_width="wrap_content"

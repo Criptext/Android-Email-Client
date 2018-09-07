@@ -127,10 +127,11 @@ interface MailboxLocalDB {
                                                 rejectedLabels: List<Label>): List<EmailThread> {
 
             val labels = db.labelDao().getAll()
-            val selectedLabel = if(labelName == Label.LABEL_ALL_MAIL) "%" else
-                "%${labels.findLast {
-                    label ->label.text == labelName
-                }?.id}%"
+            val selectedLabel = Label.getLabelIdWildcard(labelName, labels)
+            val conditionalLabels = listOf(
+                    Label.getLabelIdWildcard(Label.LABEL_TRASH, labels),
+                    Label.getLabelIdWildcard(Label.LABEL_SPAM, labels)
+            )
             val rejectedIdLabels = rejectedLabels.filter {label ->
                 label.text != labelName
             }.map {
@@ -138,6 +139,7 @@ interface MailboxLocalDB {
             }
             val emails = if(startDate != null)
                 db.emailDao().getEmailThreadsFromMailboxLabel(
+                        isTrashOrSpam = (selectedLabel in conditionalLabels),
                         startDate = startDate,
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel,
@@ -145,6 +147,7 @@ interface MailboxLocalDB {
 
             else
                 db.emailDao().getInitialEmailThreadsFromMailboxLabel(
+                        isTrashOrSpam = (selectedLabel in conditionalLabels),
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel,
                         limit = limit )
@@ -196,7 +199,9 @@ interface MailboxLocalDB {
         }
 
         override fun getUnreadCounterLabel(labelId: Long): Int {
-            return db.emailDao().getTotalUnreadThreads(emptyList(), "%$labelId%").size
+            val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(
+                    db.labelDao().getLabelById(labelId)).map { it.id }
+            return db.emailDao().getTotalUnreadThreads(rejectedLabels, "%$labelId%").size
         }
 
         override fun getTotalCounterLabel(labelId: Long): Int {
@@ -214,6 +219,9 @@ interface MailboxLocalDB {
         private fun emailThread(email: Email, rejectedLabels: List<Long>, selectedLabel: String, userEmail: String): EmailThread {
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
+            val emailsInSelectedLabel = if(selectedLabel != Label.LABEL_ALL_MAIL)
+                db.emailLabelDao().getEmailCountInLabelByEmailId(email.threadId,
+                        db.labelDao().get(selectedLabel).id) else -1
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
             val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
@@ -258,7 +266,8 @@ interface MailboxLocalDB {
                             labels = labels,
                             to = contactsTO,
                             fileKey = fileKey.key),
-                    totalEmails = emails.size,
+                    totalEmails = if(emailsInSelectedLabel == -1)
+                        emails.size else emailsInSelectedLabel,
                     hasFiles = totalFiles > 0
             )
         }
