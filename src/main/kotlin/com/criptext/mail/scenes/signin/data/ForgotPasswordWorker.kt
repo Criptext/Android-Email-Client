@@ -12,6 +12,7 @@ import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import org.json.JSONException
+import org.json.JSONObject
 
 
 class ForgotPasswordWorker(val httpClient: HttpClient,
@@ -31,7 +32,10 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
         val result = Result.of { apiClient.postForgotPassword(username) }
 
         return when (result) {
-            is Result.Success -> SignInResult.ForgotPassword.Success()
+            is Result.Success ->{
+                val address = JSONObject(result.value).getString("address")
+                SignInResult.ForgotPassword.Success(address)
+            }
             is Result.Failure -> catchException(result.error)
             }
 

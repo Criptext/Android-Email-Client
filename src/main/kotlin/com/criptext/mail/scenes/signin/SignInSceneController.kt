@@ -52,7 +52,9 @@ class SignInSceneController(
     private fun onForgotPassword(result: SignInResult.ForgotPassword){
         scene.toggleForgotPasswordClickable(true)
         when(result){
-            is SignInResult.ForgotPassword.Success -> scene.showError(UIMessage(R.string.forgot_password_message))
+            is SignInResult.ForgotPassword.Success -> {
+                scene.showResetPasswordDialog(result.emailAddress)
+            }
             is SignInResult.ForgotPassword.Failure -> scene.showError(result.message)
         }
     }

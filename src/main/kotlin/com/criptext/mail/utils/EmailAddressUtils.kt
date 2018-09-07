@@ -36,4 +36,21 @@ object EmailAddressUtils {
                 .replace("<", "")
                 .replace(">", "")
     }
+
+    fun hideEmailAddress(emailAddress: String): String{
+        val listOfNonReplace = listOf(
+                emailAddress.lastIndexOf("."),
+                emailAddress.lastIndexOf(".")-1,
+                emailAddress.indexOf("@"),
+                emailAddress.indexOf("@") + 1
+        )
+        var hiddenEmail = ""
+        for (i in 0 until emailAddress.length){
+            hiddenEmail += if(i == 0 || i in listOfNonReplace || i > listOfNonReplace[0])
+                emailAddress[i]
+            else
+                "*"
+        }
+        return hiddenEmail
+    }
 }
