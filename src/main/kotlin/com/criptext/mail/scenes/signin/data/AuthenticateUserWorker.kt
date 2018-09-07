@@ -58,7 +58,8 @@ class AuthenticateUserWorker(
 
     private fun getSignInSession(): SignInSession {
         var storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
-        if(storedValue.isNotEmpty()) {
+        val lastLoggedUser = keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
+        if(lastLoggedUser.isNotEmpty()) {
             if(!shouldKeepData){
                 keyValueStorage.clearAll()
                 db.deleteDatabase()

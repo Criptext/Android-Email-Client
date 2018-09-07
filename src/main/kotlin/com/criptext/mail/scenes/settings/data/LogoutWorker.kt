@@ -37,8 +37,13 @@ class LogoutWorker(
     override fun work(reporter: ProgressReporter<SettingsResult.Logout>): SettingsResult.Logout? {
         val deleteOperation = Result.of {apiClient.postLogout()}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.Companion.of { db.logout() } }
-                .flatMap { Result.Companion.of { storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId) } }
+                .flatMap { Result.of { db.logout() } }
+                .flatMap {
+                    Result.of {
+                        storage.clearAll()
+                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
+                    }
+                }
         return when (deleteOperation){
             is Result.Success -> {
                 SettingsResult.Logout.Success()
