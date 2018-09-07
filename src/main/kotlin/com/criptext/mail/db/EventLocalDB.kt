@@ -66,7 +66,9 @@ class EventLocalDB(private val db: AppDatabase){
 
     fun updateDeleteThreadPermanently(threadIds: List<String>) {
         if(!threadIds.isEmpty()){
-            db.emailDao().deleteThreads(threadIds)
+            val emailsToDelete = db.emailDao().getEmailsFromThreadIdByLabel(Label.defaultItems.trash.id,
+                    threadIds)
+            db.emailDao().deleteAll(emailsToDelete)
         }
     }
 
@@ -207,10 +209,11 @@ class EventLocalDB(private val db: AppDatabase){
                                             rejectedLabels: List<Label>): List<EmailThread> {
 
         val labels = db.labelDao().getAll()
-        val selectedLabel = if(labelName == Label.LABEL_ALL_MAIL) "%" else
-            "%${labels.findLast {
-                label ->label.text == labelName
-            }?.id}%"
+        val selectedLabel = Label.getLabelIdWildcard(labelName, labels)
+        val conditionalLabels = listOf(
+                Label.getLabelIdWildcard(Label.LABEL_TRASH, labels),
+                Label.getLabelIdWildcard(Label.LABEL_SPAM, labels)
+        )
         val rejectedIdLabels = rejectedLabels.filter {label ->
             label.text != labelName
         }.map {
@@ -218,13 +221,15 @@ class EventLocalDB(private val db: AppDatabase){
         }
         val emails = if(startDate != null)
             db.emailDao().getEmailThreadsFromMailboxLabel(
+                    isTrashOrSpam = (selectedLabel in conditionalLabels),
                     startDate = startDate,
                     rejectedLabels = rejectedIdLabels,
                     selectedLabel = selectedLabel,
-                    limit = limit )
+                    limit = limit)
 
         else
             db.emailDao().getInitialEmailThreadsFromMailboxLabel(
+                    isTrashOrSpam = (selectedLabel in conditionalLabels),
                     rejectedLabels = rejectedIdLabels,
                     selectedLabel = selectedLabel,
                     limit = limit )
@@ -237,7 +242,7 @@ class EventLocalDB(private val db: AppDatabase){
         } as ArrayList<EmailThread>
     }
 
-    fun getThreadIdsFromTrashExpiredEmails(): List<String>{
+    fun getThreadIdsFromTrashExpiredEmails(): List<Long>{
         val labelId = db.labelDao().get(Label.LABEL_TRASH).id
         return db.emailDao().getTrashExpiredThreadIds(labelId)
     }

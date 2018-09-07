@@ -53,13 +53,17 @@ import java.util.*
         from email
         left join email_label on email.id = email_label.emailId
         and date < :startDate
-        where not exists
+        where case when :isTrashOrSpam
+        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        end
         group by uniqueId
         having coalesce(allLabels, "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
+            isTrashOrSpam: Boolean,
             startDate: Date,
             rejectedLabels: List<Long>,
             selectedLabel: String,
@@ -133,11 +137,11 @@ import java.util.*
             where email_label.labelId=:labelId""")
     fun getThreadIdsFromLabel(labelId: Long): List<String>
 
-    @Query("""SELECT DISTINCT threadId FROM email
+    @Query("""SELECT DISTINCT emailId FROM email
             left join email_label on email.id = email_label.emailId
             where email_label.labelId=:labelId
             AND (julianday('now') - julianday(email.trashDate)) >= 30""")
-    fun getTrashExpiredThreadIds(labelId: Long): List<String>
+    fun getTrashExpiredThreadIds(labelId: Long): List<Long>
 
     @Query("""UPDATE email
             SET trashDate=:trashDate
@@ -164,6 +168,14 @@ import java.util.*
             GROUP BY email.messageId,email.threadId
             ORDER BY date ASC""")
     fun getEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
+
+    @Query("""SELECT * FROM email
+            left join email_label on email.id = email_label.emailId
+            WHERE threadId=:threadId
+            AND email_label.labelId = :labelId
+            GROUP BY email.messageId,email.threadId
+            ORDER BY date ASC""")
+    fun getEmailsFromThreadIdByLabel(labelId: Long, threadId: List<String>): List<Email>
 
     @Query("""SELECT * FROM email
             WHERE threadId in (:threadIds)""")
@@ -230,13 +242,17 @@ import java.util.*
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
-        where not exists
+        where case when :isTrashOrSpam
+        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        end
         group by uniqueId
         having coalesce(allLabels, "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabel(
+            isTrashOrSpam: Boolean,
             rejectedLabels: List<Long>,
             selectedLabel: String,
             limit: Int): List<Email>
@@ -277,7 +293,7 @@ import java.util.*
         group by uniqueId
         having coalesce(allLabels, "") like :selectedLabel
         """)
-    fun getTotalUnreadThreads(rejectedLabels: List<Int>, selectedLabel: String): List<Email>
+    fun getTotalUnreadThreads(rejectedLabels: List<Long>, selectedLabel: String): List<Email>
 
     @Query("""
         select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,

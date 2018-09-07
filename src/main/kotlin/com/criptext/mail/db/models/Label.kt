@@ -39,6 +39,13 @@ data class Label (
         const val LABEL_DRAFT = "Draft"
         const val LABEL_SPAM = "Spam"
         const val LABEL_STARRED = "Starred"
+
+        fun getLabelIdWildcard(labelName: String, labels: List<Label>): String{
+            return if(labelName == Label.LABEL_ALL_MAIL) "%" else
+                "%${labels.findLast {
+                    label ->label.text == labelName
+                }?.id}%"
+        }
     }
 
     class DefaultItems {

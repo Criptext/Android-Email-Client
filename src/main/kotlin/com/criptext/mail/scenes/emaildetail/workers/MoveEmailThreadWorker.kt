@@ -59,7 +59,7 @@ class MoveEmailThreadWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = db.getFullEmailsFromThreadId(threadId, rejectedLabels).map {
+        val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels).map {
             it.email.id
         }
 

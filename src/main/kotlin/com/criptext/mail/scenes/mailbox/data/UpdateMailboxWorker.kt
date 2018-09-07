@@ -93,11 +93,11 @@ class UpdateMailboxWorker(
     }
 
     private fun checkTrashDates(){
-        val threadIds = dbEvents.getThreadIdsFromTrashExpiredEmails()
-        if(threadIds.isNotEmpty()){
-            Result.of { apiClient.postThreadDeletedPermanentlyEvent(threadIds) }
+        val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails()
+        if(emailIds.isNotEmpty()){
+            Result.of { apiClient.postEmailDeleteEvent(emailIds) }
                     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                    .flatMap { Result.of { dbEvents.updateDeleteThreadPermanently(threadIds) } }
+                    .flatMap { Result.of { dbEvents.updateDeleteEmailPermanently(emailIds) } }
         }
     }
 

@@ -38,7 +38,7 @@ class UpdateEmailThreadLabelsWorker(
             : EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = db.getFullEmailsFromThreadId(threadId, rejectedLabels).map {
+        val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels).map {
             it.email.id
         }
 

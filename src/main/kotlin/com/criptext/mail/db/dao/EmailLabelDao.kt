@@ -23,6 +23,10 @@ interface EmailLabelDao {
             ON label.id=email_label.labelId WHERE email_label.emailId=:emailId""")
     fun getLabelsFromEmail(emailId: Long) : List<Label>
 
+    @Query("""SELECT count(*) FROM email LEFT JOIN email_label
+            ON email.id=email_label.emailId WHERE email.threadId=:threadId AND email_label.labelId=:labelId""")
+    fun getEmailCountInLabelByEmailId(threadId: String, labelId: Long) : Int
+
     @Query("""SELECT DISTINCT label.* FROM label INNER JOIN
         email_label ON label.id=email_label.labelId WHERE
         email_label.emailId IN (select id FROM email WHERE threadId=:threadId) """)
