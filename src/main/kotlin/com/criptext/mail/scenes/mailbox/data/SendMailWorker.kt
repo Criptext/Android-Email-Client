@@ -14,6 +14,7 @@ import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.EmailExternalSession
 import com.criptext.mail.db.models.KnownAddress
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.signal.*
@@ -102,7 +103,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
         val bundlesJSONArray = JSONArray(findKeyBundlesResponse)
         if (bundlesJSONArray.length() > 0) {
-            val downloadedBundles = PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
+            val downloadedBundles =
+                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
             signalClient.createSessionsFromBundles(downloadedBundles)
         }
     }
@@ -237,7 +239,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                     getAttachmentsForUnencryptedGuestEmails(composerInputData.body), null, null, null)
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
-            val sessionToEncrypt = getSignalSessionJSON(tempSignalUser, tempSignalUser.fetchAPreKeyBundle()).toString().toByteArray()
+            val sessionToEncrypt = getSignalSessionJSON(tempSignalUser,
+                    tempSignalUser.fetchAPreKeyBundle()).toString().toByteArray()
             val (salt, iv, encryptedSession) =
                     AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
             val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,

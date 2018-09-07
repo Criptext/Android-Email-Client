@@ -9,6 +9,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
 import kotlin.collections.HashMap
@@ -63,8 +64,8 @@ object EmailInsertionSetup {
     private fun createContactRows(dao: EmailInsertionDao, addresses: List<String>): List<Contact> {
         if (addresses.isEmpty()) return emptyList()
 
-        val toAddresses = addresses.map { removeEmailInvalidCharacters(it) }
-        val toNames = addresses.map { removeNameInvalidCharacters(it) }
+        val toAddresses = addresses.map { EmailAddressUtils.extractEmailAddress(it) }
+        val toNames = addresses.map { EmailAddressUtils.extractName(it) }
 
         val toContacts = mutableListOf<Contact>()
         for (i in 0..(toAddresses.size - 1))
@@ -79,34 +80,15 @@ object EmailInsertionSetup {
         return contactsMap.values.toList()
     }
 
-    private fun removeEmailInvalidCharacters(email: String): String{
-        val realEmail = if(email.contains("<") && email.contains(">"))
-            email.substring(email.lastIndexOf("<") + 1, email.lastIndexOf(">")) else email
-        return realEmail.replace("<", "")
-                .replace(">", "")
-                .replace("\"", "")
-                .toLowerCase()
-    }
-
-    private fun removeNameInvalidCharacters(name: String): String{
-        val realName = if(name.contains("<") && name.contains(">"))
-                                name.substring(0, name.lastIndexOf("<") - 1)
-                                else if(name.contains("@")) name.split("@")[0]
-                                else name
-        return realName.replace("\"", "")
-                .replace("<", "")
-                .replace(">", "")
-    }
-
     private fun createSenderContactRow(dao: EmailInsertionDao, senderContact: Contact): Contact {
         val existingContacts = dao.findContactsByEmail(listOf(senderContact.email))
         return if (existingContacts.isEmpty()) {
             val ids = dao.insertContacts(listOf(senderContact))
             Contact(id = ids.first(),
-                    name = removeNameInvalidCharacters(senderContact.name),
-                    email = removeEmailInvalidCharacters(senderContact.email))
+                    name = EmailAddressUtils.extractName(senderContact.name),
+                    email = EmailAddressUtils.extractEmailAddress(senderContact.email))
         } else {
-            dao.updateContactName(existingContacts.first().id, removeNameInvalidCharacters(senderContact.name))
+            dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name))
             existingContacts.first()
         }
     }
