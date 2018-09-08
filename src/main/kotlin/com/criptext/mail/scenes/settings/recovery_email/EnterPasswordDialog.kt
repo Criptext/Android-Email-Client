@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.change_email
+package com.criptext.mail.scenes.settings.recovery_email
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,10 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
@@ -29,12 +26,12 @@ class EnterPasswordDialog(val context: Context) {
 
     private lateinit var password: AppCompatEditText
     private lateinit var passwordInput: TextInputLayout
-    private lateinit var passwordSuccessImage: ImageView
-    private lateinit var passwordErrorImage: ImageView
+
+    private lateinit var forgotPassword: TextView
 
     private lateinit var view: View
 
-    fun showDialog(observer: ChangeEmailUIObserver?) {
+    fun showDialog(observer: RecoveryEmailUIObserver?) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -46,7 +43,7 @@ class EnterPasswordDialog(val context: Context) {
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: ChangeEmailUIObserver?): AlertDialog {
+                             observer: RecoveryEmailUIObserver?): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -60,8 +57,6 @@ class EnterPasswordDialog(val context: Context) {
 
         password = dialogView.findViewById(R.id.input) as AppCompatEditText
         passwordInput = dialogView.findViewById(R.id.input_layout)
-        passwordSuccessImage = dialogView.findViewById(R.id.success)
-        passwordErrorImage = dialogView.findViewById(R.id.error)
 
         assignPasswordTextListener()
         assignButtonEvents(dialogView, newLogoutDialog, observer)
@@ -71,11 +66,17 @@ class EnterPasswordDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: ChangeEmailUIObserver?) {
+                                   observer: RecoveryEmailUIObserver?) {
 
         btnOk = view.findViewById(R.id.change_email_ok) as Button
         btnCancel = view.findViewById(R.id.change_email_cancel) as Button
         progressBar = view.findViewById(R.id.check_password_progress) as ProgressBar
+        forgotPassword = view.findViewById(R.id.forgot_password)
+
+        forgotPassword.setOnClickListener {
+            dismissDialog()
+            observer?.onForgotPasswordPressed()
+        }
 
         btnOk.setOnClickListener {
             observer?.onEnterPasswordOkPressed(password.text.toString())
@@ -88,15 +89,11 @@ class EnterPasswordDialog(val context: Context) {
 
     @SuppressLint("RestrictedApi")
     private fun hidePasswordError() {
-        passwordErrorImage.visibility = View.GONE
-
         passwordInput.error = ""
     }
 
     @SuppressLint("RestrictedApi")
     private fun showPasswordError(message: UIMessage) {
-        passwordErrorImage.visibility = View.VISIBLE
-
         passwordInput.error = view.context.getLocalizedUIMessage(message)
     }
 

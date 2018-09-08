@@ -36,8 +36,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
 import com.criptext.mail.scenes.settings.SettingsActivity
-import com.criptext.mail.scenes.settings.change_email.ChangeEmailActivity
-import com.criptext.mail.scenes.settings.change_email.ChangeEmailModel
+import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
+import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.services.MessagingInstance
@@ -159,7 +159,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SettingsParams -> SettingsModel()
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
-            is ChangeEmailParams -> ChangeEmailModel(params.recoveryEmail, params.isConfirmed)
+            is ChangePasswordParams -> ChangePasswordModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -270,6 +270,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             cachedModels[SignInActivity::class.java] = SignInSceneModel()
             cachedModels[SignUpActivity::class.java] = SignUpSceneModel()
             cachedModels[SettingsActivity::class.java] = SettingsModel()
+            cachedModels[ChangePasswordActivity::class.java] = ChangePasswordModel()
         }
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

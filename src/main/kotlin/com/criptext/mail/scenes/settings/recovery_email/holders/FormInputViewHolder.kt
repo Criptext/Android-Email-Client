@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.change_email.holders
+package com.criptext.mail.scenes.settings.recovery_email.holders
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
@@ -15,8 +15,8 @@ import com.criptext.mail.validation.FormInputState
  */
 class FormInputViewHolder(private val textInputLayout: TextInputLayout,
                           private val editText: AppCompatEditText,
-                          private val validView: View,
-                          private val errorView: View,
+                          private val validView: View?,
+                          private val errorView: View?,
                           private val disableSubmitButton: () -> Unit) {
 
     private val ctx = textInputLayout.context
@@ -26,8 +26,8 @@ class FormInputViewHolder(private val textInputLayout: TextInputLayout,
     fun setState(state: FormInputState) {
         when (state) {
             is FormInputState.Valid -> {
-                validView.visibility = View.VISIBLE
-                errorView.visibility = View.INVISIBLE
+                validView?.visibility = View.VISIBLE
+                errorView?.visibility = View.INVISIBLE
                 textInputLayout.error = ""
 
                 editText.supportBackgroundTintList = ColorStateList.valueOf(
@@ -35,8 +35,8 @@ class FormInputViewHolder(private val textInputLayout: TextInputLayout,
             }
 
             is FormInputState.Unknown -> {
-                validView.visibility = View.INVISIBLE
-                errorView.visibility = View.INVISIBLE
+                validView?.visibility = View.INVISIBLE
+                errorView?.visibility = View.INVISIBLE
                 textInputLayout.error = ""
 
                 editText.supportBackgroundTintList = ColorStateList.valueOf(
@@ -44,8 +44,8 @@ class FormInputViewHolder(private val textInputLayout: TextInputLayout,
             }
 
             is FormInputState.Error -> {
-                validView.visibility = View.INVISIBLE
-                errorView.visibility = View.VISIBLE
+                validView?.visibility = View.INVISIBLE
+                errorView?.visibility = View.VISIBLE
                 textInputLayout.error = ctx.getLocalizedUIMessage(state.message)
 
                 editText.supportBackgroundTintList = ColorStateList.valueOf(

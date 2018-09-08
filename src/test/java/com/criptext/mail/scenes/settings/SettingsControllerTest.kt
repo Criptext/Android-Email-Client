@@ -8,7 +8,7 @@ import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
@@ -23,7 +23,7 @@ class SettingsControllerTest{
     private lateinit var activeAccount: ActiveAccount
     private lateinit var storage: KeyValueStorage
     private lateinit var dataSource: SettingsDataSource
-    private lateinit var remoteChangeDataSource: RemoteChangeDataSource
+    private lateinit var generalDataSource: GeneralDataSource
     private lateinit var controller: SettingsController
     private lateinit var runner: MockedWorkRunner
     private lateinit var sentRequests: MutableList<SettingsRequest>
@@ -41,7 +41,7 @@ class SettingsControllerTest{
         model = SettingsModel()
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
-        remoteChangeDataSource = mockk(relaxed = true)
+        generalDataSource = mockk(relaxed = true)
         storage = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
@@ -52,7 +52,7 @@ class SettingsControllerTest{
                 host = host,
                 activeAccount = activeAccount,
                 storage = storage,
-                remoteChangeDataSource = remoteChangeDataSource,
+                generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = mockk(relaxed = true))
 

@@ -16,7 +16,6 @@ import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.remotechange.RemoveDeviceUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError

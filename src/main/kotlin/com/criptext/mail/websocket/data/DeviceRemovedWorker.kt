@@ -4,7 +4,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.utils.remotechange.RemoveDeviceUtils
+import com.criptext.mail.utils.generaldatasource.RemoveDeviceUtils
 import com.github.kittinunf.result.Result
 
 class DeviceRemovedWorker(private val db: AppDatabase,

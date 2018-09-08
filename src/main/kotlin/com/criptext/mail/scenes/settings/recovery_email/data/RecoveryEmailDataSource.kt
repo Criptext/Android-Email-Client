@@ -31,6 +31,13 @@ class RecoveryEmailDataSource(
                     httpClient = httpClient,
                     activeAccount = activeAccount
             )
+            is RecoveryEmailRequest.ChangeRecoveryEmail -> ChangeRecoveryEmailWorker(
+                    newEmail = params.newRecoveryEmail,
+                    password = params.password,
+                    publishFn = flushResults,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.signin
+package com.criptext.mail.utils.ui
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -12,15 +12,11 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.utils.EmailAddressUtils
 
-/**
- * Created by sebas on 3/8/18.
- */
-
 class ForgotPasswordDialog(val context: Context, val emailAddress: String) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showPasswordLoginDialog() {
+    fun showForgotPasswordDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.forgot_password_dialog, null)

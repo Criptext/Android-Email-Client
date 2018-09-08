@@ -20,8 +20,8 @@ import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
-import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.validation.FormInputState
 
 
@@ -33,7 +33,7 @@ class ComposerController(private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
                          private val activeAccount: ActiveAccount,
-                         private val remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>,
+                         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
@@ -123,11 +123,11 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onOkButtonPressed(password: String) {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.ConfirmPassword(password))
+            generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
     }
 
@@ -158,10 +158,10 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
-    private val remoteChangeDataSourceListener: (RemoteChangeResult) -> Unit = { result ->
+    private val remoteChangeDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
-            is RemoteChangeResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
-            is RemoteChangeResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
         }
     }
 
@@ -210,7 +210,7 @@ class ComposerController(private val model: ComposerModel,
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
@@ -258,21 +258,21 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
-    private fun onDeviceRemovedRemotely(result: RemoteChangeResult.DeviceRemoved){
+    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
-            is RemoteChangeResult.DeviceRemoved.Success -> {
+            is GeneralResult.DeviceRemoved.Success -> {
                 host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
             }
         }
     }
 
-    private fun onPasswordChangedRemotely(result: RemoteChangeResult.ConfirmPassword){
+    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
-            is RemoteChangeResult.ConfirmPassword.Success -> {
+            is GeneralResult.ConfirmPassword.Success -> {
                 scene.dismissConfirmPasswordDialog()
                 scene.showMessage(UIMessage(R.string.update_password_success))
             }
-            is RemoteChangeResult.ConfirmPassword.Failure -> {
+            is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }
@@ -402,7 +402,7 @@ class ComposerController(private val model: ComposerModel,
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
 
         dataSourceController.setDataSourceListener()
-        remoteChangeDataSource.listener = remoteChangeDataSourceListener
+        generalDataSource.listener = remoteChangeDataSourceListener
 
         if (model.initialized)
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)

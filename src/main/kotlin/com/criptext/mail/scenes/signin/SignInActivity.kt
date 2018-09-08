@@ -7,11 +7,13 @@ import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.signin.data.SignInDataSource
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 
 /**
  * Created by sebas on 2/15/18.
@@ -28,10 +30,18 @@ class SignInActivity : BaseActivity() {
         val appDB = AppDatabase.getAppDatabase(appCtx)
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel
+        val generalDataSource = GeneralDataSource(
+                storage = KeyValueStorage.SharedPrefs(this),
+                db = appDB,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                httpClient = HttpClient.Default()
+        )
         return SignInSceneController(
                 model = signInSceneModel,
                 scene = signInSceneView,
                 host = this,
+                generalDataSource = generalDataSource,
                 dataSource = SignInDataSource(
                         runner = AsyncTaskWorkRunner(),
                         keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType()),

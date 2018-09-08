@@ -92,20 +92,21 @@
     <string name="title_signature_cap">SIGNATURE</string>
     <string name="title_recovery_email_cap">RECOVERY EMAIL</string>
     <string name="title_change_email_cap">CHANGE EMAIL</string>
+    <string name="title_change_password_cap">CHANGE PASSWORD</string>
     <string name="title_allow_notifications">Allow Notifications</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>
     <string name="separator_account">ACCOUNT</string>
     <string name="separator_notifications">NOTIFICATIONS</string>
     <string name="separator_about">ABOUT</string>
-    <string name="status_not_confirmed">Not Confirmed</string>
-    <string name="status_confirmed">Verified</string>
+    <string name="status_not_confirmed">(not verified)</string>
+    <string name="status_confirmed">(verified)</string>
     <string name="criptext_version">Criptext System Version </string>
     <string name="password_enter_error">Password is incorrect.</string>
     <string name="change_password_success">Password has been changed.</string>
-    <string name="old_password">Old Password</string>
-    <string name="new_password">New Password</string>
-    <string name="new_confirm_password">Confirm New Password</string>
+    <string name="old_password">Enter old password</string>
+    <string name="new_password">Enter new password</string>
+    <string name="new_confirm_password">Repeat new password</string>
 
     <!-- RECOVERY EMAIL SCENE -->
     <string name="recovery_email_title">Current</string>
@@ -115,11 +116,12 @@
     <string name="recovery_confirmation_resend_failed">An error has occurred sending the confirmation link. Try again later.</string>
     <string name="resend_confirmation_dialog_message">Check your inbox for an email by Criptext and click the link within to verify your new Recovery Email.</string>
     <string name="resend_confirmation_dialog_title">Confirmation Link Sent</string>
+    <string name="recovery_email_hint">Enter new recovery email</string>
 
     <!-- CHANGE CONFIRMATION EMAIL -->
     <string name="title_new_email">Enter your new recovery email.</string>
-    <string name="change_email_title">Enter new email</string>
-    <string name="button_change_email_confirm">Change</string>
+    <string name="change_email_title">New</string>
+    <string name="button_change_email_confirm">Change Email</string>
     <string name="recovery_email_has_changed">Recovery email changed successfully</string>
 
     <!-- FORGOT PASSWORD -->
@@ -127,8 +129,9 @@
     <string name="forgot_password_error">Error contacting the server, try again later</string>
     <string name="forgot_password_error_400">A recovery email address has not been set up or confirmed for this account, without it you cannot reset the password</string>
 
-    <!-- CHANGE PASSWORD DIALOG -->
-    <string name="title_change_password_dialog">Change password</string>
+    <!-- CHANGE PASSWORD -->
+    <string name="change_password_current">Current</string>
+    <string name="change_password_new">New</string>
 
     <!-- CONFIRM PASSWORD REMOTE CHANGE -->
     <string name="remote_change_password_advice">Confirm your new password.\nIf you Cancel, the device will logout and all local data <b>will be erased.</b></string>

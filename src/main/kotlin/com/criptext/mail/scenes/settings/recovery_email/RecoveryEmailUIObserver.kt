@@ -3,7 +3,8 @@ package com.criptext.mail.scenes.settings.recovery_email
 interface RecoveryEmailUIObserver {
     fun onBackButtonPressed()
     fun onResendRecoveryLinkPressed()
-    fun onChangeRecoveryEmailPressed()
-    fun onChangeEmailPasswordEnteredOkPressed(password: String)
-    fun onChangeEmailNewEmailEnteredOkPressed()
+    fun onRecoveryEmailTextChanged(text: String)
+    fun onChangeButtonPressed(text: String)
+    fun onEnterPasswordOkPressed(password: String)
+    fun onForgotPasswordPressed()
 }

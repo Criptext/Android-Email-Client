@@ -9,11 +9,11 @@ import org.json.JSONObject
 
 class RecoveryEmailAPIClient(private val httpClient: HttpClient, private val token: String) {
 
-    fun putChangeEmail(password: String, newEmail: String): String {
+    fun putChangerecoveryEmail(email: String, password: String): String{
         val json = JSONObject()
-        json.put("email", newEmail)
+        json.put("email", email)
         json.put("password", password)
-        return httpClient.post(path = "/event/peers", authToken = token, body = json)
+        return httpClient.put(path = "/user/recovery/change", authToken = token, body = json)
     }
 
     fun checkPassword(

@@ -7,12 +7,17 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
-import com.criptext.mail.scenes.params.ChangeEmailParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
+import com.criptext.mail.validation.FormInputState
+import com.criptext.mail.validation.TextInput
 
 class RecoveryEmailController(
         private val model: RecoveryEmailModel,
@@ -21,6 +26,7 @@ class RecoveryEmailController(
         private val keyboardManager: KeyboardManager,
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
+        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
         private val dataSource: BackgroundWorkManager<RecoveryEmailRequest, RecoveryEmailResult>)
     : SceneController(){
 
@@ -32,14 +38,46 @@ class RecoveryEmailController(
 
     override val menuResourceId: Int? = null
 
-    private val signatureUIObserver = object: RecoveryEmailUIObserver{
+    private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
+        when(result) {
+            is GeneralResult.ResetPassword -> onResetPassword(result)
+        }
+    }
 
-        override fun onChangeEmailPasswordEnteredOkPressed(password: String) {
-            dataSource.submitRequest(RecoveryEmailRequest.CheckPassword(password))
+    private val signatureUIObserver = object: RecoveryEmailUIObserver{
+        override fun onForgotPasswordPressed() {
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword())
         }
 
-        override fun onChangeEmailNewEmailEnteredOkPressed() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun onRecoveryEmailTextChanged(text: String) {
+            val newRecoveryEmail = if (text.isEmpty()) {
+                TextInput(value = text, state = FormInputState.Unknown())
+            } else {
+                val userInput = AccountDataValidator.validateRecoveryEmailAddress(text)
+                when (userInput) {
+                    is FormData.Valid -> {
+                        TextInput(value = userInput.value,
+                                state = FormInputState.Valid())
+                    }
+
+                    is FormData.Error -> {
+                        TextInput(value = text,
+                                state = FormInputState.Error(userInput.message))
+                    }
+                }
+            }
+            model.newRecoveryEmail = newRecoveryEmail
+            scene.setRecoveryEmailState(newRecoveryEmail.state)
+            toggleChangeEmailButton()
+        }
+
+        override fun onChangeButtonPressed(text: String) {
+            scene.showEnterPasswordDialog()
+        }
+
+        override fun onEnterPasswordOkPressed(password: String) {
+            scene.dialogToggleLoad(true)
+            dataSource.submitRequest(RecoveryEmailRequest.ChangeRecoveryEmail(password, model.newRecoveryEmail.value))
         }
 
         override fun onBackButtonPressed() {
@@ -52,15 +90,22 @@ class RecoveryEmailController(
             scene.onResendLinkTimeSet(RESEND_TIME)
             dataSource.submitRequest(RecoveryEmailRequest.ResendConfirmationLink())
         }
+    }
 
-        override fun onChangeRecoveryEmailPressed() {
-            host.goToScene(ChangeEmailParams(model.recoveryEmail, model.isEmailConfirmed), false)
+    private fun toggleChangeEmailButton() {
+        if(model.newRecoveryEmail.state is FormInputState.Valid
+                && model.newRecoveryEmail.value != model.recoveryEmail) {
+            scene.enableChangeButton()
+        } else {
+            scene.disableChangeButton()
         }
+
     }
 
     private val dataSourceListener = { result: RecoveryEmailResult ->
         when (result) {
             is RecoveryEmailResult.ResendConfirmationLink -> onResendConfirmationEmail(result)
+            is RecoveryEmailResult.ChangeRecoveryEmail -> onChangeRecoveryEmail(result)
         }
     }
 
@@ -68,6 +113,7 @@ class RecoveryEmailController(
         model.lastTimeConfirmationLinkSent = lastTimeConfirmationLinkSent
         scene.attachView(signatureUIObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
+        generalDataSource.listener = generalDataSourceListener
         return false
     }
 
@@ -80,6 +126,33 @@ class RecoveryEmailController(
             is RecoveryEmailResult.ResendConfirmationLink.Failure -> {
                 scene.onResendLinkFailed()
                 scene.showMessage(UIMessage(R.string.recovery_confirmation_resend_failed))
+            }
+        }
+    }
+
+    private fun onChangeRecoveryEmail(result: RecoveryEmailResult.ChangeRecoveryEmail){
+        when(result) {
+            is RecoveryEmailResult.ChangeRecoveryEmail.Success -> {
+                model.recoveryEmail = model.newRecoveryEmail.value
+                model.isEmailConfirmed = false
+                scene.updateCurrent(model)
+                scene.enterPasswordDialogDismiss()
+                scene.showMessage(UIMessage(R.string.recovery_email_has_changed))
+            }
+            is RecoveryEmailResult.ChangeRecoveryEmail.Failure -> {
+                scene.enterPasswordDialogError(result.message)
+                scene.dialogToggleLoad(false)
+            }
+        }
+    }
+
+    private fun onResetPassword(result: GeneralResult.ResetPassword){
+        when(result) {
+            is GeneralResult.ResetPassword.Success -> {
+                scene.showForgotPasswordDialog(result.email)
+            }
+            is GeneralResult.ResetPassword.Failure -> {
+                scene.showMessage(result.message)
             }
         }
     }

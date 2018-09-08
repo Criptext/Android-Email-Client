@@ -8,6 +8,7 @@ import com.criptext.mail.scenes.signin.holders.*
 import com.criptext.mail.scenes.signup.holders.KeyGenerationHolder
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.validation.ProgressButtonState
 
 /**
@@ -125,7 +126,7 @@ interface SignInScene {
         }
 
         override fun showResetPasswordDialog(emailAddress: String) {
-            ForgotPasswordDialog(view.context, emailAddress).showPasswordLoginDialog()
+            ForgotPasswordDialog(view.context, emailAddress).showForgotPasswordDialog()
         }
 
         override fun drawInputError(error: UIMessage) {

@@ -21,40 +21,12 @@
         android:id="@+id/edit_text_layout"
         android:layout_width="match_parent"
         android:layout_gravity="center"
-        android:layout_height="wrap_content">
-
-        <FrameLayout
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="30dp">
-
-            <ImageView
-                android:id="@+id/error"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|start"
-                android:padding="3dp"
-                android:src="@drawable/x_rounded"
-                android:tint="@color/red"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/success"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|start"
-                android:background="@drawable/success_circle"
-                android:padding="9dp"
-                android:src="@drawable/check"
-                android:tint="@color/colorOpened"
-                android:visibility="gone" />
-        </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout"
-            android:layout_width="175dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_gravity="top|center_horizontal"
@@ -75,6 +47,20 @@
                 android:textSize="15sp" />
 
         </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/forgot_password"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignBottom="@+id/input_layout"
+            android:gravity="end"
+            android:text="@string/forgot_password"
+            android:textColor="@color/colorAccent"
+            android:layout_marginEnd="25dp"
+            android:textSize="15sp" />
 
     </RelativeLayout>
 

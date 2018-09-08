@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.data
+package com.criptext.mail.scenes.settings.changepassword.data
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -15,19 +15,19 @@ class ChangePasswordWorker(
         private val oldPassword: String,
         private val password: String,
         httpClient: HttpClient,
-        private val activeAccount: ActiveAccount,
+        activeAccount: ActiveAccount,
         override val publishFn: (
-                SettingsResult.ChangePassword) -> Unit)
-    : BackgroundWorker<SettingsResult.ChangePassword> {
+                ChangePasswordResult.ChangePassword) -> Unit)
+    : BackgroundWorker<ChangePasswordResult.ChangePassword> {
 
     override val canBeParallelized = true
-    private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = ChangePasswordAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): SettingsResult.ChangePassword {
-        return SettingsResult.ChangePassword.Failure(UIMessage(R.string.password_enter_error), ex)
+    override fun catchException(ex: Exception): ChangePasswordResult.ChangePassword {
+        return ChangePasswordResult.ChangePassword.Failure(UIMessage(R.string.password_enter_error), ex)
     }
 
-    override fun work(reporter: ProgressReporter<SettingsResult.ChangePassword>): SettingsResult.ChangePassword? {
+    override fun work(reporter: ProgressReporter<ChangePasswordResult.ChangePassword>): ChangePasswordResult.ChangePassword? {
         val checkPasswordOperation =
                 Result.of {
                     apiClient.putChangePassword(oldPassword.sha256(), password.sha256())
@@ -35,7 +35,7 @@ class ChangePasswordWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when (checkPasswordOperation){
             is Result.Success -> {
-                SettingsResult.ChangePassword.Success()
+                ChangePasswordResult.ChangePassword.Success()
             }
             is Result.Failure -> {
                 catchException(checkPasswordOperation.error)

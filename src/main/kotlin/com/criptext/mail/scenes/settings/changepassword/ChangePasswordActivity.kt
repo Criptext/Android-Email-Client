@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.recovery_email
+package com.criptext.mail.scenes.settings.changepassword
 
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
@@ -9,21 +9,23 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordDataSource
+import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 
-class RecoveryEmailActivity: BaseActivity(){
+class ChangePasswordActivity: BaseActivity(){
 
-    override val layoutId = R.layout.activity_recovery_email
+    override val layoutId = R.layout.activity_change_password
     override val toolbarId = R.id.mailbox_toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val model = receivedModel as RecoveryEmailModel
+        val model = receivedModel as ChangePasswordModel
         val view = findViewById<ViewGroup>(R.id.main_content)
-        val scene = RecoveryEmailScene.Default(view)
+        val scene = ChangePasswordScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
-        val dataSource = RecoveryEmailDataSource(
+        val dataSource = ChangePasswordDataSource(
                 httpClient = HttpClient.Default(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 runner = AsyncTaskWorkRunner(),
@@ -35,14 +37,12 @@ class RecoveryEmailActivity: BaseActivity(){
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 httpClient = HttpClient.Default()
         )
-        return RecoveryEmailController(
+        return ChangePasswordController(
                 model = model,
                 scene = scene,
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
-                storage = KeyValueStorage.SharedPrefs(this),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
     }
 

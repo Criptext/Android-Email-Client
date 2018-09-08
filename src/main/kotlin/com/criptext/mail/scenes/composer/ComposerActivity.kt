@@ -16,7 +16,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import droidninja.filepicker.FilePickerConst
 import java.io.File
 
@@ -37,7 +37,7 @@ class ComposerActivity : BaseActivity() {
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
                 fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao())
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
-        val remoteChangeDataSource = RemoteChangeDataSource(
+        val remoteChangeDataSource = GeneralDataSource(
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
@@ -54,7 +54,7 @@ class ComposerActivity : BaseActivity() {
                 model = model,
                 scene = scene,
                 activeAccount = activeAccount,
-                remoteChangeDataSource = remoteChangeDataSource,
+                generalDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
                 host = this)
     }
