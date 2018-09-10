@@ -20,6 +20,7 @@ interface SignInScene {
     fun drawInputError(error: UIMessage)
     fun drawSuccess()
     fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver)
+    fun showResetPasswordDialog(emailAddress: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
@@ -121,6 +122,10 @@ interface SignInScene {
 
         override fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
             (holder as LoginValidationHolder).showPasswordLoginDialog(onPasswordLoginDialogListener)
+        }
+
+        override fun showResetPasswordDialog(emailAddress: String) {
+            ForgotPasswordDialog(view.context, emailAddress).showPasswordLoginDialog()
         }
 
         override fun drawInputError(error: UIMessage) {

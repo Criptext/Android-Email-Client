@@ -123,7 +123,7 @@
     <string name="recovery_email_has_changed">Recovery email changed successfully</string>
 
     <!-- FORGOT PASSWORD -->
-    <string name="forgot_password_message">A reset link for your password has been sent to your recovery email address</string>
+    <string name="forgot_password_message">An email was sent to %1$s with the instructions to reset your password</string>
     <string name="forgot_password_error">Error contacting the server, try again later</string>
     <string name="forgot_password_error_400">A recovery email address has not been set up or confirmed for this account, without it you cannot reset the password</string>
 
