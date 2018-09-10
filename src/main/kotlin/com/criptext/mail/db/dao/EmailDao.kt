@@ -14,6 +14,11 @@ import java.util.*
     @Insert
     fun insertAll(emails : List<Email>)
 
+    @Query("""SELECT * FROM email
+        WHERE delivered in (:deliveryTypes)
+    """)
+    fun getPendingEmails(deliveryTypes: List<Int>) : List<Email>
+
     @Query("SELECT * FROM email")
     fun getAll() : List<Email>
 

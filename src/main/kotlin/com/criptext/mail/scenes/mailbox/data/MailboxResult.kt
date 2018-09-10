@@ -138,4 +138,9 @@ sealed class MailboxResult {
         class Unauthorized(val message: UIMessage): EmptyTrash()
         class Forbidden: EmptyTrash()
     }
+
+    sealed class ResendEmails: MailboxResult() {
+        class Success: ResendEmails()
+        class Failure: ResendEmails()
+    }
 }

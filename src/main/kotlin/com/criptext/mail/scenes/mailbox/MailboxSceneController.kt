@@ -299,6 +299,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
+        dataSource.submitRequest(MailboxRequest.ResendEmails())
 
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         if (model.threads.isEmpty()) reloadMailboxThreads()
@@ -497,6 +498,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 feedController.reloadFeeds()
             }
+            dataSource.submitRequest(MailboxRequest.ResendEmails())
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
@@ -506,8 +508,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
             scene.clearRefreshing()
             when (resultData) {
-                is MailboxResult.UpdateMailbox.Success ->
+                is MailboxResult.UpdateMailbox.Success -> {
                     handleSuccessfulMailboxUpdate(resultData)
+                }
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
                 is MailboxResult.UpdateMailbox.Unauthorized ->
@@ -603,6 +606,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.email_sent))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     reloadMailboxThreads()
+                    dataSource.submitRequest(MailboxRequest.ResendEmails())
                 }
                 is MailboxResult.SendMail.Failure -> {
                     scene.showMessage(result.message)

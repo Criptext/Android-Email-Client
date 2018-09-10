@@ -23,6 +23,7 @@ class NVWebSocketClient: WebSocketClient {
 
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,
                 MutableList<String>>?) {
+            println("LOG ON CONNECT")
         }
 
         override fun onConnectError(websocket: WebSocket?, exception: WebSocketException?) {

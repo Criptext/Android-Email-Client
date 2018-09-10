@@ -38,15 +38,53 @@ interface MailboxLocalDB {
     fun setTrashDate(emailIds: List<Long>)
     fun getTotalCounterLabel(labelId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
+    fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail>
     fun deleteThreads(threadIds: List<String>)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
                                          rejectedLabels: List<Long>, userEmail: String): EmailThread
     fun getEmailThreadFromId(threadId: String, selectedLabel: String,
                                 rejectedLabels: List<Long>, userEmail: String): EmailThread
     fun getThreadsIdsFromLabel(labelName: String): List<String>
+    fun getExternalData(id: Long): EmailExternalSession?
+    fun saveExternalSession(externalSession: EmailExternalSession)
 
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
+        override fun saveExternalSession(externalSession: EmailExternalSession) {
+            db.emailExternalSessionDao().insert(externalSession)
+        }
+
+        override fun getExternalData(id: Long): EmailExternalSession? {
+            return db.emailExternalSessionDao().getExternalSessionByEmailId(id)
+        }
+
+        override fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail> {
+            val emails = db.emailDao().getPendingEmails(deliveryTypes)
+            val fullEmails =  emails.map {
+                val id = it.id
+                val labels = db.emailLabelDao().getLabelsFromEmail(id)
+                val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+                val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+                val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+                val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+                val files = db.fileDao().getAttachmentsFromEmail(id)
+                val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+
+                FullEmail(
+                        email = it,
+                        bcc = contactsBCC,
+                        cc = contactsCC,
+                        from = contactsFROM[0],
+                        files = files,
+                        labels = labels,
+                        to = contactsTO, fileKey = fileKey.key)
+            }
+
+            fullEmails.lastOrNull()?.viewOpen = true
+
+            return fullEmails
+        }
+
         override fun setTrashDate(emailIds: List<Long>) {
             db.emailDao().updateEmailTrashDate(Date(), emailIds)
         }

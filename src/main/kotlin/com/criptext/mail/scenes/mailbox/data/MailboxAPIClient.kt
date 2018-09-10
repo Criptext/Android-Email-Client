@@ -26,13 +26,6 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
                 path =  "/email/body/$uuid")
     }
 
-    fun findKeyBundles(recipients: List<String>, knownAddresses: Map<String, List<Int>>): String {
-        val jsonObject = JSONObject()
-        jsonObject.put("recipients", JSONArray(recipients))
-        jsonObject.put("knownAddresses", JSONObject(knownAddresses))
-        return httpClient.post(authToken = token, path = "/keybundle", body = jsonObject)
-    }
-
 
     fun postEmailReadChangedEvent(metadataKeys: List<Long>, unread: Boolean): String {
         val json = JSONObject()

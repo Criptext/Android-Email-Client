@@ -55,4 +55,6 @@ sealed class MailboxRequest{
 
     class EmptyTrash: MailboxRequest()
 
+    class ResendEmails: MailboxRequest()
+
 }

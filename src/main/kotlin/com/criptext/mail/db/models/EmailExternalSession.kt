@@ -21,5 +21,7 @@ data class  EmailExternalSession(
         @ColumnInfo(name = "salt")
         var salt: String,
         @ColumnInfo(name = "encryptedSession")
-        var encryptedSession: String
+        var encryptedSession: String,
+        @ColumnInfo(name = "encryptedBody")
+        var encryptedBody: String
 )

@@ -16,5 +16,9 @@ enum class DeliveryTypes {
             else
                 NONE
         }
+
+        fun getTrueOrdinal(deliveryTypes: DeliveryTypes): Int {
+            return deliveryTypes.ordinal + 1
+        }
     }
 }

@@ -28,7 +28,7 @@ import java.util.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class],
-        version = 2,
+        version = 3,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -64,7 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         //allowMainThreadQueries() // remove this in production... !!!!
-                        .addMigrations(MIGRATION_1_2)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                         .build()
             }
             return INSTANCE!!
@@ -92,6 +92,12 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""UPDATE contact
                                         SET email = replace(email, rtrim(email, replace(email, ' ', '')), '')
                                         """)
+            }
+        }
+
+        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE email_external_session ADD COLUMN encryptedBody TEXT NOT NULL DEFAULT "" """)
             }
         }
     }

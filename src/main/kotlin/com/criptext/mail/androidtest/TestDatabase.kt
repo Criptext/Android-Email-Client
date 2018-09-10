@@ -19,7 +19,7 @@ import com.criptext.mail.db.typeConverters.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class],
-        version = 1,
+        version = 2,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -38,6 +38,7 @@ abstract class TestDatabase: AppDatabase() {
             if (INSTANCE == null)
                 INSTANCE = Room.databaseBuilder(ctx, TestDatabase::class.java, "testDB")
                     .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
                     .build()
             return INSTANCE!!
         }
