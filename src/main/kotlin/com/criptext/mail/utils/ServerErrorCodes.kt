@@ -4,4 +4,5 @@ object ServerErrorCodes{
     const val BadRequest = 400
     const val Unauthorized = 401
     const val Forbidden = 403
+    const val MethodNotAllowed = 405
 }

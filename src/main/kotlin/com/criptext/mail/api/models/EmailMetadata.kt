@@ -6,6 +6,7 @@ import com.criptext.mail.db.models.CRFile
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.signal.SignalEncryptedData
+import com.criptext.mail.utils.EmailAddressUtils
 import org.json.JSONObject
 
 /**
@@ -42,10 +43,8 @@ data class EmailMetadata(
             val  emailData = JSONObject(metadataJsonString)
             val from = emailData.getString("from")
             // TODO make this more robust
-            val fromEmail = if(from.contains("<") && from.contains(">"))
-                    from.substring(from.lastIndexOf("<") + 1, from.lastIndexOf(">")) else from
-            val fromName = if(from.contains("<") && from.contains(">"))
-                    from.substring(0, from.lastIndexOf("<") - 1) else from
+            val fromEmail = EmailAddressUtils.extractEmailAddress(from)
+            val fromName = EmailAddressUtils.extractName(from)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
             val messageType = emailData.optInt("messageType")

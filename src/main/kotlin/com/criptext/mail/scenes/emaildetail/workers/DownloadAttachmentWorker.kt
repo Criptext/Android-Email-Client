@@ -133,7 +133,7 @@ class DownloadAttachmentWorker(private val fileToken: String,
         ex.printStackTrace()
         when (ex) { // these are not the real errors TODO fix!
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
-            is ServerErrorException -> UIMessage(resId = R.string.server_error)
+            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
             else -> UIMessage(resId = R.string.error_downloading_file)
         }

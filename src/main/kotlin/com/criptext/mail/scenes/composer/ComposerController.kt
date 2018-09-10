@@ -515,11 +515,12 @@ class ComposerController(private val model: ComposerModel,
 
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
-        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED){
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
             return
         }
-        host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+        scene.showAttachmentsBottomDialog(observer)
+
     }
 
     companion object {

@@ -405,25 +405,32 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
-                val lastEmail = result.fullEmailList.last().email
-                model.threadPreview = model.threadPreview.copy(
-                        unread = false,
-                        count = result.fullEmailList.size,
-                        bodyPreview = lastEmail.preview,
-                        deliveryStatus = lastEmail.delivered)
-                model.emails.addAll(result.fullEmailList)
-                val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
-                result.fullEmailList.forEach { fullEmail ->
-                    model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                if (result.fullEmailList.isEmpty()) {
+                    host.exitToScene(
+                            params = MailboxParams(),
+                            activityMessage = null,
+                            forceAnimation = false)
+                } else {
+                    val lastEmail = result.fullEmailList.last().email
+                    model.threadPreview = model.threadPreview.copy(
+                            unread = false,
+                            count = result.fullEmailList.size,
+                            bodyPreview = lastEmail.preview,
+                            deliveryStatus = lastEmail.delivered)
+                    model.emails.addAll(result.fullEmailList)
+                    val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
+                    result.fullEmailList.forEach { fullEmail ->
+                        model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                    }
+
+                    scene.attachView(
+                            fullEmailList = fullEmailsList,
+                            fullEmailEventListener = emailHolderEventListener,
+                            fileDetailList = model.fileDetails,
+                            observer = emailDetailUIObserver)
+
+                    readEmails(result.fullEmailList)
                 }
-
-                scene.attachView(
-                        fullEmailList = fullEmailsList,
-                        fullEmailEventListener = emailHolderEventListener,
-                        fileDetailList = model.fileDetails,
-                        observer = emailDetailUIObserver)
-
-                readEmails(result.fullEmailList)
             }
 
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {

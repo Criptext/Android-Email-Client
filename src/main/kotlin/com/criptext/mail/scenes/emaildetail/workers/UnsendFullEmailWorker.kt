@@ -99,7 +99,11 @@ class UnsendFullEmailWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex){
-            is ServerErrorException ->  UIMessage(resId = R.string.server_error_exception)
+            is ServerErrorException ->  when(ex.errorCode) {
+                ServerErrorCodes.MethodNotAllowed ->
+                   UIMessage(resId = R.string.fail_unsend_email_expired)
+                else -> UIMessage(resId = R.string.server_error_exception)
+            }
             else -> UIMessage(resId = R.string.fail_unsend_email)
         }
     }

@@ -4,12 +4,18 @@ import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
+import org.jsoup.safety.Whitelist
 
 class HTMLUtils {
     companion object {
+        private val whiteList = Whitelist.relaxed()
+                .addTags("style", "title", "head")
+                .addAttributes(":all", "class", "style")
 
         fun html2text(html: String): String {
-            return Jsoup.parse(html).text()
+
+            val body = Jsoup.clean(html, whiteList)
+            return Jsoup.parse(body).text()
         }
 
         fun changedHeaderHtml(htmlText: String): String {
