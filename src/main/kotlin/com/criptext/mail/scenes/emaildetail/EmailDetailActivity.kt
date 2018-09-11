@@ -13,7 +13,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.file.AndroidFs
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 
 /**
@@ -42,7 +42,7 @@ class  EmailDetailActivity: BaseActivity() {
                 activeAccount = activeAccount,
                 context = this)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
-        val remoteChangeDataSource = RemoteChangeDataSource(
+        val remoteChangeDataSource = GeneralDataSource(
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
@@ -57,7 +57,7 @@ class  EmailDetailActivity: BaseActivity() {
                 activeAccount = activeAccount,
                 websocketEvents = webSocketEvents,
                 keyboard = KeyboardManager(this),
-                remoteChangeDataSource = remoteChangeDataSource,
+                generalDataSource = remoteChangeDataSource,
                 dataSource = EmailDetailDataSource(
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),

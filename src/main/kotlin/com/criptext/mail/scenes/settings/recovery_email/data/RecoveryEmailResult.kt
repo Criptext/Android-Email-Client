@@ -14,4 +14,9 @@ sealed class RecoveryEmailResult{
         class Failure(val message: UIMessage): CheckPassword()
     }
 
+    sealed class ChangeRecoveryEmail: RecoveryEmailResult() {
+        class Success(val newEmail: String): ChangeRecoveryEmail()
+        class Failure(val message: UIMessage): ChangeRecoveryEmail()
+    }
+
 }

@@ -23,12 +23,11 @@ import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.params.ComposerParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
-import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -41,16 +40,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
                                  activeAccount: ActiveAccount,
-                                 private val remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>,
+                                 private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val websocketEvents: WebSocketEventPublisher,
                                  private val keyboard: KeyboardManager) : SceneController() {
 
 
-    private val remoteChangeDataSourceListener: (RemoteChangeResult) -> Unit = { result ->
+    private val remoteChangeDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
-            is RemoteChangeResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
-            is RemoteChangeResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
         }
     }
 
@@ -68,11 +67,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
         override fun onOkButtonPressed(password: String) {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.ConfirmPassword(password))
+            generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
         override fun onStarredButtonPressed(isStarred: Boolean) {
@@ -98,21 +97,21 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private fun onDeviceRemovedRemotely(result: RemoteChangeResult.DeviceRemoved){
+    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
-            is RemoteChangeResult.DeviceRemoved.Success -> {
+            is GeneralResult.DeviceRemoved.Success -> {
                 host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
             }
         }
     }
 
-    private fun onPasswordChangedRemotely(result: RemoteChangeResult.ConfirmPassword){
+    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
-            is RemoteChangeResult.ConfirmPassword.Success -> {
+            is GeneralResult.ConfirmPassword.Success -> {
                 scene.dismissConfirmPasswordDialog()
                 scene.showError(UIMessage(R.string.update_password_success))
             }
-            is RemoteChangeResult.ConfirmPassword.Failure -> {
+            is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }
@@ -162,7 +161,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -183,7 +182,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -209,7 +208,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -251,7 +250,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
             }
             is EmailDetailResult.DownloadFile.Unauthorized -> {
-                remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -448,7 +447,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        remoteChangeDataSource.listener = remoteChangeDataSourceListener
+        generalDataSource.listener = remoteChangeDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
 
         if (model.emails.isEmpty())

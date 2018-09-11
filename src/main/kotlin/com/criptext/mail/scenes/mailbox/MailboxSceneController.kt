@@ -22,8 +22,8 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
-import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -33,7 +33,7 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
-                             private val remoteChangeDataSource: BackgroundWorkManager<RemoteChangeRequest, RemoteChangeResult>,
+                             private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                              private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>,
                              private val activeAccount: ActiveAccount,
                              private val websocketEvents: WebSocketEventPublisher,
@@ -41,10 +41,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val threadListController = ThreadListController(model, scene.virtualListView)
 
-    private val removedDeviceDataSourceListener: (RemoteChangeResult) -> Unit = { result ->
+    private val removedDeviceDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
-            is RemoteChangeResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
-            is RemoteChangeResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
         }
     }
 
@@ -192,11 +192,11 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
         override fun onOkButtonPressed(password: String) {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.ConfirmPassword(password))
+            generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
 
         override fun onCancelButtonPressed() {
-            remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(true))
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
         override fun onFeedDrawerClosed() {
@@ -293,7 +293,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSourceController.setDataSourceListener()
-        remoteChangeDataSource.listener = removedDeviceDataSourceListener
+        generalDataSource.listener = removedDeviceDataSourceListener
         scene.attachView(
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
@@ -511,7 +511,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.UpdateMailbox.Failure ->
                     handleFailedMailboxUpdate(resultData)
                 is MailboxResult.UpdateMailbox.Unauthorized ->
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 is MailboxResult.UpdateMailbox.Forbidden ->
                     scene.showConfirmPasswordDialog(observer)
             }
@@ -527,7 +527,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.EmptyTrash.Failure ->
                     scene.showMessage(resultData.message)
                 is MailboxResult.EmptyTrash.Unauthorized ->
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 is MailboxResult.EmptyTrash.Forbidden ->
                     scene.showConfirmPasswordDialog(observer)
             }
@@ -568,7 +568,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -589,7 +589,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
                 is MailboxResult.MoveEmailThread.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -608,7 +608,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(result.message)
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -654,7 +654,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
                 is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
-                    remoteChangeDataSource.submitRequest(RemoteChangeRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -677,21 +677,21 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
-    private fun onDeviceRemovedRemotely(result: RemoteChangeResult.DeviceRemoved){
+    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
-            is RemoteChangeResult.DeviceRemoved.Success -> {
+            is GeneralResult.DeviceRemoved.Success -> {
                 host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
             }
         }
     }
 
-    private fun onPasswordChangedRemotely(result: RemoteChangeResult.ConfirmPassword){
+    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
-            is RemoteChangeResult.ConfirmPassword.Success -> {
+            is GeneralResult.ConfirmPassword.Success -> {
                 scene.dismissConfirmPasswordDialog()
                 scene.showMessage(UIMessage(R.string.update_password_success))
             }
-            is RemoteChangeResult.ConfirmPassword.Failure -> {
+            is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
         }

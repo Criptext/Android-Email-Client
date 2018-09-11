@@ -44,13 +44,6 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.get(path = "/user/settings", authToken = token)
     }
 
-    fun putChangePassword(oldPassword: String, newPassword: String): String {
-        val jsonObject = JSONObject()
-        jsonObject.put("oldPassword", oldPassword)
-        jsonObject.put("newPassword", newPassword)
-        return httpClient.put(path = "/user/password/change", body = jsonObject, authToken = token)
-    }
-
     fun deleteDevice(deviceId: Int, password: String): String{
         val jsonObject = JSONObject()
         jsonObject.put("deviceId", deviceId)

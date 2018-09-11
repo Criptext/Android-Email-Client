@@ -74,7 +74,7 @@
         </activity>
         <activity android:name=".scenes.settings.recovery_email.RecoveryEmailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.settings.change_email.ChangeEmailActivity"
+        <activity android:name=".scenes.settings.changepassword.ChangePasswordActivity"
             android:screenOrientation="portrait"/>
 
         <service

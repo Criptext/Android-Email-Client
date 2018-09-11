@@ -1,9 +1,6 @@
 package com.criptext.mail.scenes
 
 import com.criptext.mail.IHostActivity
-import com.criptext.mail.bgworker.BackgroundWorkManager
-import com.criptext.mail.utils.remotechange.data.RemoteChangeRequest
-import com.criptext.mail.utils.remotechange.data.RemoteChangeResult
 
 /**
  * Base class for all the main controllers.

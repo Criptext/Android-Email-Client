@@ -1,4 +1,4 @@
-package com.criptext.mail.utils.remotechange
+package com.criptext.mail.utils.generaldatasource
 
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage

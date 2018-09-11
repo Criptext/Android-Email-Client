@@ -12,6 +12,9 @@ import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
@@ -25,6 +28,7 @@ class SignInSceneController(
         private val model: SignInSceneModel,
         private val scene: SignInScene,
         private val host: IHostActivity,
+        private val generalDataSource: GeneralDataSource,
         private val dataSource: SignInDataSource,
         private val keyboard: KeyboardManager): SceneController() {
 
@@ -34,7 +38,12 @@ class SignInSceneController(
         when (result) {
             is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
             is SignInResult.CheckUsernameAvailability -> onCheckUsernameAvailability(result)
-            is SignInResult.ForgotPassword -> onForgotPassword(result)
+        }
+    }
+
+    private val generalDataSourceListener = { result: GeneralResult ->
+        when (result) {
+            is GeneralResult.ResetPassword -> onForgotPassword(result)
         }
     }
 
@@ -49,13 +58,13 @@ class SignInSceneController(
         }
     }
 
-    private fun onForgotPassword(result: SignInResult.ForgotPassword){
+    private fun onForgotPassword(result: GeneralResult.ResetPassword){
         scene.toggleForgotPasswordClickable(true)
         when(result){
-            is SignInResult.ForgotPassword.Success -> {
-                scene.showResetPasswordDialog(result.emailAddress)
+            is GeneralResult.ResetPassword.Success -> {
+                scene.showResetPasswordDialog(result.email)
             }
-            is SignInResult.ForgotPassword.Failure -> scene.showError(result.message)
+            is GeneralResult.ResetPassword.Failure -> scene.showError(result.message)
         }
     }
 
@@ -153,8 +162,7 @@ class SignInSceneController(
 
         override fun onForgotPasswordClick() {
             scene.toggleForgotPasswordClickable(false)
-            val currentState = model.state as SignInLayoutState.InputPassword
-            dataSource.submitRequest(SignInRequest.ForgotPassword(currentState.username))
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword())
         }
 
         override fun onCantAccessDeviceClick(){
@@ -197,6 +205,7 @@ class SignInSceneController(
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
+        generalDataSource.listener = generalDataSourceListener
         scene.initLayout(state = model.state, signInUIObserver = uiObserver)
         if(activityMessage != null && activityMessage is ActivityMessage.ShowUIMessage){
             scene.showError(activityMessage.message)

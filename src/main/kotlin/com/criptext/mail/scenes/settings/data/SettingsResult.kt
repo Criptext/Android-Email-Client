@@ -48,10 +48,4 @@ sealed class SettingsResult{
         class Failure: RemoveDevice()
     }
 
-    sealed class ChangePassword : SettingsResult() {
-        class Success: ChangePassword()
-        data class Failure(val message: UIMessage,
-                           val exception: Exception?): ChangePassword()
-    }
-
 }

@@ -12,7 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 
 class SettingsActivity: BaseActivity(){
 
@@ -31,7 +31,7 @@ class SettingsActivity: BaseActivity(){
                 httpClient = HttpClient.Default(),
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
-        val remoteChangeDataSource = RemoteChangeDataSource(
+        val generalDataSource = GeneralDataSource(
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
@@ -41,7 +41,7 @@ class SettingsActivity: BaseActivity(){
         return SettingsController(
                 model = model,
                 scene = scene,
-                remoteChangeDataSource = remoteChangeDataSource,
+                generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,

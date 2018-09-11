@@ -22,7 +22,7 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.websocket.WebSocketSingleton
 import android.content.Intent
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 
 
 /**
@@ -144,7 +144,7 @@ class MailboxActivity : BaseActivity() {
                         mailboxView = rootView,
                         hostActivity = hostActivity
                 )
-            val remoteChangeDataSource = RemoteChangeDataSource(
+            val remoteChangeDataSource = GeneralDataSource(
                     storage = storage,
                     db = appDB,
                     runner = AsyncTaskWorkRunner(),
@@ -157,7 +157,7 @@ class MailboxActivity : BaseActivity() {
                     model = model,
                     host = hostActivity,
                     activeAccount = activeAccount,
-                    remoteChangeDataSource = remoteChangeDataSource,
+                    generalDataSource = remoteChangeDataSource,
                     dataSource = mailboxDataSource,
                     websocketEvents = webSocketEvents,
                     feedController = initFeedController(appDB, activity, db,

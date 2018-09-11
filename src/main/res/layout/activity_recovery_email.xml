@@ -90,23 +90,15 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#d8d8d8"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="17dp"
-            android:layout_marginEnd="22dp"/>
-
         <LinearLayout
-            android:layout_width="250dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="center">
+            android:layout_gravity="right">
             <ProgressBar
                 android:id="@+id/resend_progress_button"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:visibility="gone"
                 android:layout_gravity="center_horizontal"
@@ -115,25 +107,64 @@
 
             <Button
                 android:id="@+id/resend_link_button"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/btn_welcome_tour"
                 android:textColor="@color/white"
                 android:text="@string/button_resend_confirmation"
                 android:textAllCaps="false"
                 android:enabled="true"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/change_email_title"
+                android:textColor="#373a45"
+                android:textSize="18sp" />
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginEnd="0dp"
+                    android:textColorHint="@color/signup_hint_color"
+                    android:hint="@string/recovery_email_hint"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+                    app:hintTextAppearance="@style/NormalTextAppearence">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:textSize="15sp" />
+
+                </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/change_email_button"
-                android:layout_width="250dp"
+                android:layout_width="140dp"
                 android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="end"
                 android:background="@drawable/btn_welcome_tour"
-                android:textColor="@color/white"
-                android:text="@string/button_change_email"
-                android:enabled="true"
+                android:enabled="false"
+                android:text="@string/button_change_email_confirm"
                 android:textAllCaps="false"
-                android:layout_margin="10dp"/>
+                android:textColor="@color/white" />
+
+
         </LinearLayout>
 
     </LinearLayout>

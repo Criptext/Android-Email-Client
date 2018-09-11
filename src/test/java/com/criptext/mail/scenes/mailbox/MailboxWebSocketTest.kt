@@ -16,7 +16,7 @@ import com.criptext.mail.scenes.mailbox.data.LoadEmailThreadsWorker
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.utils.remotechange.data.RemoteChangeDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
@@ -48,7 +48,7 @@ class MailboxWebSocketTest {
     private lateinit var emailInsertionDao: EmailInsertionDao
     private lateinit var runner: MockedWorkRunner
     private lateinit var dataSource: MailboxDataSource
-    private lateinit var remoteChangeDataSource: RemoteChangeDataSource
+    private lateinit var generalDataSource: GeneralDataSource
     private lateinit var controller: MailboxSceneController
     private lateinit var host: IHostActivity
     private lateinit var webSocketEvents: WebSocketEventPublisher
@@ -115,7 +115,7 @@ class MailboxWebSocketTest {
                 accountDao = accountDao,
                 eventLocalDB = eventLocalDB,
                 storage = storage)
-        remoteChangeDataSource = mockk(relaxed = true)
+        generalDataSource = mockk(relaxed = true)
 
         feedController = mockk(relaxed = true)
 
@@ -127,7 +127,7 @@ class MailboxWebSocketTest {
         controller = MailboxSceneController(
                 model =  model,
                 scene = scene,
-                remoteChangeDataSource = remoteChangeDataSource,
+                generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 host =  host,
                 feedController = feedController,

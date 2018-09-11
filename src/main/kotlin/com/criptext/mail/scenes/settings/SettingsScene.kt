@@ -26,18 +26,12 @@ interface SettingsScene{
                    devicesListItemListener: DevicesListItemListener)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
-    fun showPasswordDialogError(message: UIMessage?)
-    fun dismissEnterPasswordDialog()
     fun showLogoutDialog()
     fun showLoginOutDialog()
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissLoginOutDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
-    fun showChangePasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
-    fun toggleChangePasswordButton(enable: Boolean)
-    fun showOldPasswordDialogError(message: UIMessage?)
-    fun toggleChangePasswordSuccess(show: Boolean)
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
     fun updateUserSettings(userData: UserSettingsData)
@@ -45,7 +39,6 @@ interface SettingsScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun setRemoveDeviceError(message: UIMessage)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
-    fun isSendingResetPassword(isSending: Boolean)
     fun removeDeviceDialogDismiss()
 
 
@@ -85,7 +78,6 @@ interface SettingsScene{
         private val settingLogoutDialog = SettingsLogoutDialog(context)
         private val settingLoginOutDialog = SettingsLoginOutDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
-        private val settingChangePasswordDialog = NewPasswordDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
@@ -136,33 +128,6 @@ interface SettingsScene{
             settingLoginOutDialog.dismiss()
         }
 
-        override fun dismissEnterPasswordDialog() {
-            settingChangePasswordDialog.dismissDialog()
-        }
-
-        override fun showPasswordDialogError(message: UIMessage?) {
-            settingChangePasswordDialog.setPasswordError(message)
-        }
-
-        override fun showOldPasswordDialogError(message: UIMessage?) {
-            settingChangePasswordDialog.setOldPasswordError(message)
-        }
-
-        override fun toggleChangePasswordButton(enable: Boolean) {
-            if(enable)
-                settingChangePasswordDialog.enableSaveButton()
-            else
-                settingChangePasswordDialog.disableSaveButton()
-        }
-
-        override fun toggleChangePasswordSuccess(show: Boolean) {
-            settingChangePasswordDialog.togglePasswordSuccess(show)
-        }
-
-        override fun showChangePasswordDialog() {
-            settingChangePasswordDialog.showDialog(settingsUIObserver)
-        }
-
         override fun showConfirmPasswordDialog(observer: UIObserver) {
             confirmPassword.showDialog(observer)
         }
@@ -181,10 +146,6 @@ interface SettingsScene{
 
         override fun removeDeviceDialogToggleLoad(loading: Boolean) {
             settingRemoveDeviceDialog.toggleLoad(loading)
-        }
-
-        override fun isSendingResetPassword(isSending: Boolean) {
-            generalView.isSendingResetPassword(isSending)
         }
 
         override fun removeDeviceDialogDismiss() {
