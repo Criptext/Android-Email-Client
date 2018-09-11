@@ -382,21 +382,19 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun processTrackingUpdates(events: List<Event>): Boolean {
         val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
-        val isAnEventGeneratedByMe: (Pair<Long, TrackingUpdate>) -> Boolean = { it.second.from != activeAccount.recipientId }
         val toIdAndTrackingUpdatePair: (Event) -> Pair<Long, TrackingUpdate> = {
             Pair(it.rowid, TrackingUpdate.fromJSON(it.params))
         }
 
         val trackingUpdatesPair = events.filter(isTrackingUpdateEvent)
-                .map(toIdAndTrackingUpdatePair).filter(isAnEventGeneratedByMe)
+                .map(toIdAndTrackingUpdatePair)
         val eventIdsToAcknowledge = trackingUpdatesPair.map { it.first }
         val trackingUpdates = trackingUpdatesPair.map { it.second }
 
         createFeedItems(trackingUpdates)
         changeDeliveryTypes(trackingUpdates)
         if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(events.filter(isTrackingUpdateEvent)
-                    .map(toIdAndTrackingUpdatePair).map { it.first })
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
     }

@@ -100,7 +100,7 @@ class RegisterUserWorker(
                 if(ex.errorCode == 400) {
                     UIMessage(resId = R.string.duplicate_name_error_exception)
                 } else {
-                    UIMessage(resId = R.string.server_error_exception)
+                    UIMessage(resId = R.string.fail_register_try_again_error_exception)
                 }
             }
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
