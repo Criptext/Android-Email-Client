@@ -31,10 +31,10 @@ class SignInActivity : BaseActivity() {
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel
         val generalDataSource = GeneralDataSource(
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = KeyValueStorage.SharedPrefs(appCtx),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = null,
                 httpClient = HttpClient.Default()
         )
         return SignInSceneController(

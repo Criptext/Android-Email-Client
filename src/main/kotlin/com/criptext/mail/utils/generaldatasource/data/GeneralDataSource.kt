@@ -14,7 +14,7 @@ import com.criptext.mail.utils.generaldatasource.workers.ForgotPasswordWorker
 class GeneralDataSource(override val runner: WorkRunner,
                         private val db : AppDatabase,
                         private val storage: KeyValueStorage,
-                        private val activeAccount: ActiveAccount,
+                        private val activeAccount: ActiveAccount?,
                         private val httpClient: HttpClient
 ): BackgroundWorkManager<GeneralRequest, GeneralResult>() {
 
@@ -22,15 +22,15 @@ class GeneralDataSource(override val runner: WorkRunner,
         return when (params) {
             is GeneralRequest.DeviceRemoved -> DeviceRemovedWorker(
                     letAPIKnow = params.letAPIKnow,
-                    activeAccount = activeAccount, httpClient = httpClient,
+                    activeAccount = activeAccount!!, httpClient = httpClient,
                     db = db, storage = storage, publishFn = flushResults
             )
             is GeneralRequest.ConfirmPassword -> ConfirmPasswordWorker(
-                    activeAccount = activeAccount, httpClient = httpClient,
+                    activeAccount = activeAccount!!, httpClient = httpClient,
                     password = params.password, publishFn = flushResults
             )
             is GeneralRequest.ResetPassword -> ForgotPasswordWorker(
-                    activeAccount = activeAccount,
+                    recipientId = params.recipientId,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )

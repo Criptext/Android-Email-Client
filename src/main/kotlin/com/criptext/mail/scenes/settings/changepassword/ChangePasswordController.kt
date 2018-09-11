@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.settings.changepassword
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.SettingsParams
@@ -15,6 +16,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.validation.FormInputState
 
 class ChangePasswordController(
+        private val activeAccount: ActiveAccount,
         private val model: ChangePasswordModel,
         private val scene: ChangePasswordScene,
         private val host: IHostActivity,
@@ -36,7 +38,7 @@ class ChangePasswordController(
 
     private val changePasswordUIObserver = object: ChangePasswordUIObserver{
         override fun onForgotPasswordPressed() {
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword())
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
         }
 
         override fun onBackButtonPressed() {

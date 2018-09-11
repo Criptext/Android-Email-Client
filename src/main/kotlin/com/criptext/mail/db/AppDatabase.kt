@@ -28,7 +28,7 @@ import java.util.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class],
-        version = 3,
+        version = 2,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -64,7 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         //allowMainThreadQueries() // remove this in production... !!!!
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                        .addMigrations(MIGRATION_1_2)
                         .build()
             }
             return INSTANCE!!
@@ -87,17 +87,12 @@ abstract class AppDatabase : RoomDatabase() {
                                         iv TEXT NOT NULL,
                                         salt TEXT NOT NULL,
                                         encryptedSession TEXT NOT NULL,
+                                        encryptedBody TEXT NOT NULL,
                                         FOREIGN KEY(emailId) REFERENCES email(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX index_email_external_session_emailId ON email_external_session (emailId)")
                 database.execSQL("""UPDATE contact
                                         SET email = replace(email, rtrim(email, replace(email, ' ', '')), '')
                                         """)
-            }
-        }
-
-        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("""ALTER TABLE email_external_session ADD COLUMN encryptedBody TEXT NOT NULL DEFAULT "" """)
             }
         }
     }
