@@ -27,6 +27,8 @@ interface ResetDao {
     fun deleteAllEmails()
     @Query("DELETE from contact")
     fun deleteAllContacts()
+    @Query("DELETE from email_external_session")
+    fun deleteAllExternalSessions()
 
     /**
      * Apparently transactions don't compile unless you pass at least one argument -__-
@@ -41,5 +43,6 @@ interface ResetDao {
         deleteAllEmails()
         deleteAllLabels()
         deleteAllContacts()
+        deleteAllExternalSessions()
     }
 }

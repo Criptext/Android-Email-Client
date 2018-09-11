@@ -57,35 +57,6 @@ class SendMailWorker(private val signalClient: SignalClient,
             || composerInputData.cc.map { it.email }.contains(activeAccount.userEmail)
             || composerInputData.to.map { it.email }.contains(activeAccount.userEmail)
 
-    private fun getMailRecipients(): MailRecipients {
-        val toAddresses = composerInputData.to.map(Contact.toAddress)
-        val ccAddresses = composerInputData.cc.map(Contact.toAddress)
-        val bccAddresses = composerInputData.bcc.map(Contact.toAddress)
-
-        val toCriptext = toAddresses.filter(isFromCriptextDomain)
-                                    .map(extractRecipientIdFromCriptextAddress)
-        val ccCriptext = ccAddresses.filter(isFromCriptextDomain)
-                                    .map(extractRecipientIdFromCriptextAddress)
-        val bccCriptext = bccAddresses.filter(isFromCriptextDomain)
-                                      .map(extractRecipientIdFromCriptextAddress)
-
-        return MailRecipients(toCriptext = toCriptext, ccCriptext = ccCriptext,
-                bccCriptext = bccCriptext, peerCriptext = listOf(activeAccount.recipientId))
-    }
-
-    private fun getMailRecipientsNonCriptext(): MailRecipients {
-        val toAddresses = composerInputData.to.map(Contact.toAddress)
-        val ccAddresses = composerInputData.cc.map(Contact.toAddress)
-        val bccAddresses = composerInputData.bcc.map(Contact.toAddress)
-
-        val toNonCriptext = toAddresses.filterNot(isFromCriptextDomain)
-        val ccNonCriptext = ccAddresses.filterNot(isFromCriptextDomain)
-        val bccNonCriptext = bccAddresses.filterNot(isFromCriptextDomain)
-
-        return MailRecipients(toCriptext = toNonCriptext, ccCriptext = ccNonCriptext,
-                bccCriptext = bccNonCriptext, peerCriptext = listOf(activeAccount.recipientId))
-    }
-
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
         val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients)
@@ -140,7 +111,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         }.flatten()
     }
 
-    private fun createEncryptedEmails(mailRecipients: MailRecipients): List<PostEmailBody.CriptextEmail> {
+    private fun createEncryptedEmails(mailRecipients: EmailUtils.MailRecipients): List<PostEmailBody.CriptextEmail> {
         val knownCriptextAddresses = findKnownAddresses(mailRecipients.criptextRecipients)
         val criptextToEmails = encryptForCriptextRecipients(mailRecipients.toCriptext,
                 knownCriptextAddresses, PostEmailBody.RecipientTypes.to)
@@ -168,11 +139,11 @@ class SendMailWorker(private val signalClient: SignalClient,
         }
     }
 
-    private fun checkEncryptionKeysOperation(mailRecipients: MailRecipients)
+    private fun checkEncryptionKeysOperation(mailRecipients: EmailUtils.MailRecipients)
             : Result<Unit, Exception> =
             Result.of { addMissingSessions(mailRecipients.criptextRecipients) }
 
-    private fun encryptOperation(mailRecipients: MailRecipients)
+    private fun encryptOperation(mailRecipients: EmailUtils.MailRecipients)
             : Result<List<PostEmailBody.CriptextEmail>, Exception> =
             Result.of { createEncryptedEmails(mailRecipients) }
 
@@ -210,8 +181,10 @@ class SendMailWorker(private val signalClient: SignalClient,
 
 
     override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
-        val mailRecipients = getMailRecipients()
-        val mailRecipientsNonCriptext = getMailRecipientsNonCriptext()
+        val mailRecipients = EmailUtils.getMailRecipients(composerInputData.to,
+                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId)
+        val mailRecipientsNonCriptext = EmailUtils.getMailRecipientsNonCriptext(composerInputData.to,
+                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId)
         guestEmails = if(!mailRecipientsNonCriptext.isEmpty)
             getGuestEmails(mailRecipientsNonCriptext)
         else
@@ -231,7 +204,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         }
     }
 
-    private fun getGuestEmails(mailRecipientsNonCriptext: MailRecipients) : PostEmailBody.GuestEmail?{
+    private fun getGuestEmails(mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
         val postGuestEmailBody: PostEmailBody.GuestEmail?
         if(composerInputData.passwordForNonCriptextUsers == null) {
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
@@ -245,6 +218,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                     AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
             val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
                     1,composerInputData.body).encryptedB64
+            val externalSession = EmailExternalSession(0, emailId = emailId, iv = iv, salt = salt,
+                    encryptedBody = encryptedBody, encryptedSession = encryptedSession)
+            db.saveExternalSession(externalSession)
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     encryptedBody, salt, iv, encryptedSession)
@@ -272,10 +248,12 @@ class SendMailWorker(private val signalClient: SignalClient,
         bodyWithAttachments.append(body)
 
         for (attachment in this.attachments){
-            val mimeTypeSource = getMimeTypeSource(FileUtils.getMimeType(FileUtils.getName(attachment.filepath)))
+            val mimeTypeSource = HTMLUtils.getMimeTypeSourceForUnencryptedEmail(
+                    FileUtils.getMimeType(FileUtils.getName(attachment.filepath)))
             val encodedParams = Encoding.byteArrayToString((attachment.filetoken+":"+fileKey).toByteArray())
             bodyWithAttachments.append(HTMLUtils.createAttchmentForUnencryptedEmailToNonCriptextUsers(
-                    attachment = attachment, encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
+                    attachmentName = FileUtils.getName(attachment.filepath), attachmentSize = attachment.size,
+                    encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
             )
         }
         return bodyWithAttachments.toString()
@@ -314,28 +292,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         }
     }
 
-    private fun getMimeTypeSource(mimeType: String):String{
-        return when {
-            mimeType.contains("image") -> "fileimage"
-            mimeType.contains("powerpoint") || mimeType.contains("presentation") -> "fileppt"
-            mimeType.contains("excel") || mimeType.contains("sheet") -> "fileexcel"
-            mimeType.contains("pdf") -> "filepdf"
-            mimeType.contains("word") -> "fileword"
-            mimeType.contains("audio") -> "fileaudio"
-            mimeType.contains("video") -> "filevideo"
-            mimeType.contains("zip") -> "filezip"
-            else -> "filedefault"
-        }
-    }
-
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
-
-    private class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,
-                                 val bccCriptext: List<String>, val peerCriptext: List<String>) {
-        val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext, peerCriptext).flatten()
-        val isEmpty = toCriptext.isEmpty() && ccCriptext.isEmpty() && bccCriptext.isEmpty()
-    }
-
 }

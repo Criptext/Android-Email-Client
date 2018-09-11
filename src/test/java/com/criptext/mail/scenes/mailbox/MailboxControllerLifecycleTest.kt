@@ -37,15 +37,18 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
     fun `on a cold start should try get menu info and load threads from db`() {
         controller.onStart(null)
 
-        sentRequests.size `should be` 2
+        sentRequests.size `should be` 3
 
         val firstRequest = sentRequests[0]
         val secondRequest = sentRequests[1]
+        val thirdRequest = sentRequests[2]
 
 
-        firstRequest `should be instance of` MailboxRequest.GetMenuInformation::class.java
+        firstRequest `should be instance of` MailboxRequest.ResendEmails::class.java
 
-        secondRequest `should equal` MailboxRequest.LoadEmailThreads(
+        secondRequest `should be instance of` MailboxRequest.GetMenuInformation::class.java
+
+        thirdRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.inbox.text,
                 loadParams = LoadParams.Reset(size = 20),
                 userEmail = "gabriel@${Contact.mainDomain}"

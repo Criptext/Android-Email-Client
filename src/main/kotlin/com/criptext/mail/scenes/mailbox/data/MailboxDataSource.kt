@@ -154,6 +154,15 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is MailboxRequest.ResendEmails -> ResendEmailsWorker(
+                    rawSessionDao = rawSessionDao,
+                    signalClient = signalClient,
+                    db = mailboxLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 
