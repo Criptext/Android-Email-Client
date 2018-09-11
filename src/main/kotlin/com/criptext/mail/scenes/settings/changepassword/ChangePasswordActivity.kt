@@ -38,6 +38,7 @@ class ChangePasswordActivity: BaseActivity(){
                 httpClient = HttpClient.Default()
         )
         return ChangePasswordController(
+                activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 model = model,
                 scene = scene,
                 generalDataSource = generalDataSource,

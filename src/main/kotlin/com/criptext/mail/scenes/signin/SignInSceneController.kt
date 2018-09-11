@@ -162,7 +162,8 @@ class SignInSceneController(
 
         override fun onForgotPasswordClick() {
             scene.toggleForgotPasswordClickable(false)
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword())
+            val currentState = model.state as SignInLayoutState.InputPassword
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(currentState.username))
         }
 
         override fun onCantAccessDeviceClick(){

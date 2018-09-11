@@ -46,7 +46,7 @@ class RecoveryEmailController(
 
     private val signatureUIObserver = object: RecoveryEmailUIObserver{
         override fun onForgotPasswordPressed() {
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword())
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
         }
 
         override fun onRecoveryEmailTextChanged(text: String) {

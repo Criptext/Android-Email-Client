@@ -15,11 +15,11 @@ import org.json.JSONObject
 
 
 class ForgotPasswordWorker(val httpClient: HttpClient,
-                           val activeAccount: ActiveAccount,
+                           val recipientId: String,
                            override val publishFn: (GeneralResult) -> Unit)
     : BackgroundWorker<GeneralResult.ResetPassword> {
 
-    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = GeneralAPIClient(httpClient, "")
 
     override val canBeParallelized = true
 
@@ -28,7 +28,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.ResetPassword>): GeneralResult.ResetPassword? {
-        val result = Result.of { apiClient.postForgotPassword(activeAccount.recipientId) }
+        val result = Result.of { apiClient.postForgotPassword(recipientId) }
 
         return when (result) {
             is Result.Success -> GeneralResult.ResetPassword.Success(JSONObject(result.value).getString("address"))
