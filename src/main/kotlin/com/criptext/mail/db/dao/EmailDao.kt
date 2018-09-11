@@ -31,6 +31,10 @@ import java.util.*
     fun getEmailByMetadataKey(metadataKey: Long) : Email
 
     @Query("""SELECT * FROM email
+                WHERE id=:id""")
+    fun getEmailById(id: Long) : Email?
+
+    @Query("""SELECT * FROM email
                 WHERE id in (:emailIds)""")
     fun getAllEmailsbyId(emailIds: List<Long>) : List<Email>
 
@@ -325,5 +329,12 @@ import java.util.*
 
     @Query("DELETE from email WHERE threadId in (:threadIds)")
     fun deleteThreads(threadIds: List<String>)
+
+    @Query("""DELETE from email WHERE threadId in (:threadIds)
+        AND id IN
+        (SELECT email.id FROM email LEFT JOIN email_label ON email.id = email_label.emailId
+            WHERE email_label.labelId in (:labels))
+    """)
+    fun deleteThreads(threadIds: List<String>, labels: List<Long>)
 
 }

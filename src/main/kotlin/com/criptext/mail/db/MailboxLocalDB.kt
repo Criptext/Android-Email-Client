@@ -38,6 +38,7 @@ interface MailboxLocalDB {
     fun setTrashDate(emailIds: List<Long>)
     fun getTotalCounterLabel(labelId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
+    fun getEmailById(id: Long): Email?
     fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail>
     fun deleteThreads(threadIds: List<String>)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
@@ -50,6 +51,10 @@ interface MailboxLocalDB {
 
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
+        override fun getEmailById(id: Long): Email? {
+            return db.emailDao().getEmailById(id)
+        }
+
         override fun saveExternalSession(externalSession: EmailExternalSession) {
             db.emailExternalSessionDao().insert(externalSession)
         }

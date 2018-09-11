@@ -66,14 +66,17 @@ class SaveEmailWorker(
         val sender = Contact(id = 0, name = account.name,
                 email = "${account.recipientId}@${Contact.mainDomain}")
 
+        val tempThreadId = System.currentTimeMillis()
+
         return EmailMetadata.DBColumns(messageId = draftMessageId,
-                threadId = threadId ?: draftMessageId, subject = composerInputData.subject,
+                threadId = threadId ?: tempThreadId.toString(),
+                subject = composerInputData.subject,
                 to = composerInputData.to.map { it.email },
                 cc = composerInputData.cc.map { it.email },
                 bcc = composerInputData.bcc.map { it.email },
                 date = DateUtils.printDateWithServerFormat(Date()),
                 unsentDate = DateUtils.printDateWithServerFormat(Date()),
-                metadataKey = System.currentTimeMillis(), // ugly hack because we don't have draft table
+                metadataKey = tempThreadId, // ugly hack because we don't have draft table
                 fromContact = sender,
                 unread = false,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,

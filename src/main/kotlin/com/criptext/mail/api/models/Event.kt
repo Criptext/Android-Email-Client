@@ -30,6 +30,9 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
             val peerEmailUnsendStatusUpdate = 307
             val peerLabelCreated = 308
             val peerUserChangeName = 309
+            val deviceLock = 310
+            val recoveryEmailChanged = 311
+            val recoveryEmailConfirmed = 312
 
         }
     }

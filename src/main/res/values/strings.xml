@@ -378,6 +378,9 @@
     <string name="server_error_exception">Server Error. Please try again later.</string>
     <string name="server_bad_status">Failed to contact server. Bad status code: %1$s</string>
 
+    <!-- WEB SOCKET ERROR -->
+    <string name="web_socket_error">Unrecognized server event. Event code: %1$d</string>
+
     <string name="nosubject">(No Subject)</string>
     <string name="nocontent">(No Content)</string>
     <string name="unknown">Unknown</string>

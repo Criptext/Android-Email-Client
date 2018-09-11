@@ -43,15 +43,16 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
         val secondRequest = sentRequests[1]
         val thirdRequest = sentRequests[2]
 
-        firstRequest`should be instance of` MailboxRequest.GetMenuInformation::class.java
+        firstRequest `should be instance of` MailboxRequest.GetMenuInformation::class.java
 
-        secondRequest  `should equal` MailboxRequest.LoadEmailThreads(
+        secondRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.inbox.text,
                 loadParams = LoadParams.Reset(size = 20),
                 userEmail = "gabriel@${Contact.mainDomain}"
         )
 
         thirdRequest`should be instance of` MailboxRequest.ResendEmails::class.java
+
     }
 
     @Test

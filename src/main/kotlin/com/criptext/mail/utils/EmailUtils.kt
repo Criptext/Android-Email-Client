@@ -1,6 +1,10 @@
 package com.criptext.mail.utils
 
+import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.Email
+import com.github.kittinunf.result.Result
+
 
 object EmailUtils {
 
@@ -33,6 +37,27 @@ object EmailUtils {
 
         return MailRecipients(toCriptext = toNonCriptext, ccCriptext = ccNonCriptext,
                 bccCriptext = bccNonCriptext, peerCriptext = listOf(recipientId))
+    }
+
+    fun getThreadIdForSending(db: MailboxLocalDB, threadId: String?, emailId: Long): String?{
+        val email = db.getEmailById(emailId)
+        if(email != null){
+            val threadIdToLong = Result.of {email.threadId.toLong()}
+            when(threadIdToLong){
+                is Result.Success -> if (threadIdToLong.value == email.metadataKey) return null
+                is Result.Failure -> return email.threadId
+            }
+        }
+        return threadId
+    }
+
+    fun getThreadIdForSending(email: Email): String?{
+        val threadIdToLong = Result.of {email.threadId.toLong()}
+        when(threadIdToLong){
+            is Result.Success -> if (threadIdToLong.value == email.metadataKey) return null
+            is Result.Failure -> return email.threadId
+        }
+        return email.threadId
     }
 
     class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,

@@ -39,8 +39,7 @@ class  EmailDetailActivity: BaseActivity() {
 
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount,
-                context = this)
+                activeAccount = activeAccount)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
         val remoteChangeDataSource = GeneralDataSource(
                 storage = KeyValueStorage.SharedPrefs(this),

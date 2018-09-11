@@ -22,6 +22,9 @@ interface EmailInsertionDao {
     @Query("Select * from email where messageId = :messageId")
     fun findEmailByMessageId(messageId: String): Email?
 
+    @Query("Select * from email where metadataKey = :metadataKey")
+    fun findEmailByMetadataKey(metadataKey: Long): Email?
+
     @Insert
     fun insertEmails(emails: List<Email>): List<Long>
 

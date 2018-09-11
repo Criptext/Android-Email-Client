@@ -10,7 +10,7 @@ import com.neovisionaries.ws.client.*
 
 class NVWebSocketClient: WebSocketClient {
     private var ws: WebSocket? = null
-    private var onMessageReceived: ((String) -> Unit)? = null
+    private var onMessageReceived: ((String) -> Unit?)? = null
 
     private val webSocketAdapter = object : WebSocketAdapter() {
         override fun onDisconnected(websocket: WebSocket?, serverCloseFrame: WebSocketFrame?,
@@ -23,7 +23,6 @@ class NVWebSocketClient: WebSocketClient {
 
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,
                 MutableList<String>>?) {
-            println("LOG ON CONNECT")
         }
 
         override fun onConnectError(websocket: WebSocket?, exception: WebSocketException?) {
@@ -46,7 +45,7 @@ class NVWebSocketClient: WebSocketClient {
         }
     }
 
-    override fun connect(url: String, onMessageReceived: (String) -> Unit) {
+    override fun connect(url: String, onMessageReceived: (String) -> Unit?) {
         this.onMessageReceived = onMessageReceived
         val ws = WebSocketFactory().createSocket(url)
         ws.addProtocol("criptext-protocol")
