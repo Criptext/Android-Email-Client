@@ -1,5 +1,0 @@
-package com.criptext.mail.websocket.data
-
-import com.criptext.mail.api.models.PeerThreadLabelsChangedStatusUpdate
-
-data class ThreadChangedLabelsPeerStatusUpdate(val peerThreadLabelsChangedStatusUpdate: PeerThreadLabelsChangedStatusUpdate)

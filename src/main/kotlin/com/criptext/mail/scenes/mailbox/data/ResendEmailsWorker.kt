@@ -170,7 +170,7 @@ class ResendEmailsWorker(
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
-                            threadId = currentFullEmail!!.email.threadId,
+                            threadId = EmailUtils.getThreadIdForSending(currentFullEmail!!.email),
                             subject = currentFullEmail!!.email.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = getGuestEmails(currentFullEmail!!,

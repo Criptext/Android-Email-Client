@@ -10,5 +10,5 @@ interface WebSocketClient {
 
     fun reconnect()
 
-    fun connect(url: String, onMessageReceived: (String) -> Unit)
+    fun connect(url: String, onMessageReceived: (String) -> Unit?)
 }

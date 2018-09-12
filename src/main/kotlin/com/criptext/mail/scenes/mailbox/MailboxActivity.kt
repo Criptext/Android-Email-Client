@@ -114,8 +114,7 @@ class MailboxActivity : BaseActivity() {
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
             val webSocketEvents = WebSocketSingleton.getInstance(
-                    activeAccount = activeAccount!!,
-                    context = activity)
+                    activeAccount = activeAccount!!)
 
             val mailboxDataSource = MailboxDataSource(
                 signalClient = signalClient,

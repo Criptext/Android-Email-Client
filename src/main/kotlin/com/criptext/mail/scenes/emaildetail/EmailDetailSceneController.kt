@@ -591,62 +591,20 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onNewEvent() {
+            scene.notifyFullEmailListChanged()
+        }
+
+        override fun onDeviceLocked() {
+            scene.showConfirmPasswordDialog(emailDetailUIObserver)
+        }
+
         override fun onDeviceRemoved() {
-            host.exitToScene(SignInParams(), null, false)
-        }
-
-        override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
-
-        }
-
-        override fun onNewPeerEmailLabelsChangedUpdate(update: PeerEmailLabelsChangedStatusUpdate) {
-            scene.notifyFullEmailListChanged()
-        }
-
-        override fun onNewPeerThreadLabelsChangedUpdate(update: PeerThreadLabelsChangedStatusUpdate) {
-            scene.notifyFullEmailListChanged()
-        }
-
-        override fun onNewPeerUsernameChangedUpdate(update: PeerUsernameChangedStatusUpdate) {
-
-        }
-
-        override fun onNewPeerThreadDeletedUpdate(update: PeerThreadDeletedStatusUpdate) {
-            scene.notifyFullEmailListChanged()
-        }
-
-        override fun onNewPeerUnsendEmailUpdate(emailId: Long, update: PeerUnsendEmailStatusUpdate) {
-            val position = findEmailPositionByEmailId(emailId)
-            scene.notifyFullEmailChanged(position)
-        }
-
-        override fun onNewPeerEmailDeletedUpdate(emailIds: List<Long>, update: PeerEmailDeletedStatusUpdate) {
-            scene.notifyFullEmailListChanged()
-        }
-
-        override fun onNewEmail(email: Email) {
-            if(email.threadId == model.threadId){
-                dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
-                        email.threadId, model.currentLabel))
-            }
-        }
-
-        override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
-            val position = findEmailPositionByEmailId(emailId)
-            if (position > -1)
-                markEmailAtPositionAsOpened(position)
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
         }
 
         override fun onError(uiMessage: UIMessage) {
             scene.showError(uiMessage)
-        }
-
-        override fun onNewPeerReadEmailUpdate(metadataKeys: List<Long>, update: PeerReadEmailStatusUpdate) {
-            scene.notifyFullEmailListChanged()
-        }
-
-        override fun onNewPeerReadThreadUpdate(update: PeerReadThreadStatusUpdate) {
-            scene.notifyFullEmailListChanged()
         }
     }
 }

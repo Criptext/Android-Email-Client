@@ -605,10 +605,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
                 is MailboxResult.SendMail.Success -> {
-                    scene.showMessage(UIMessage(R.string.email_sent))
-                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                    reloadMailboxThreads()
-                    dataSource.submitRequest(MailboxRequest.ResendEmails())
+                    if(result.emailId != null) {
+                        scene.showMessage(UIMessage(R.string.email_sent))
+                        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                        reloadMailboxThreads()
+                        dataSource.submitRequest(MailboxRequest.ResendEmails())
+                    }
                 }
                 is MailboxResult.SendMail.Failure -> {
                     scene.showMessage(result.message)
@@ -704,67 +706,17 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+
+        override fun onNewEvent() {
+            reloadViewAfterSocketEvent()
+        }
+
+        override fun onDeviceLocked() {
+            scene.showConfirmPasswordDialog(observer)
+        }
+
         override fun onDeviceRemoved() {
-            host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), false, true)
-        }
-
-        override fun onNewPeerLabelCreatedUpdate(update: PeerLabelCreatedStatusUpdate) {
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerUsernameChangedUpdate(update: PeerUsernameChangedStatusUpdate) {
-            dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-        }
-
-        override fun onNewPeerEmailLabelsChangedUpdate(update: PeerEmailLabelsChangedStatusUpdate) {
-            dataSourceController.updateMailbox(model.selectedLabel)
-            observer.onRefreshMails()
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerThreadLabelsChangedUpdate(update: PeerThreadLabelsChangedStatusUpdate) {
-            dataSourceController.updateMailbox(model.selectedLabel)
-            observer.onRefreshMails()
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerThreadDeletedUpdate(update: PeerThreadDeletedStatusUpdate) {
-            threadListController.removeThreadsById(update.threadIds)
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerUnsendEmailUpdate(emailId: Long, update: PeerUnsendEmailStatusUpdate) {
-            threadListController.changeThreadStatusUnsend(emailId, DeliveryTypes.UNSEND)
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewEmail(email: Email) {
-            // just reset mailbox
-            val req = MailboxRequest.LoadEmailThreads(
-                    label = model.selectedLabel.text,
-                    loadParams = LoadParams.Reset(size = threadsPerPage),
-                    userEmail = activeAccount.userEmail)
-            dataSource.submitRequest(req)
-
-        }
-
-        override fun onNewPeerReadEmailUpdate(metadataKeys: List<Long>, update: PeerReadEmailStatusUpdate) {
-            threadListController.changeEmailReadStatus(metadataKeys, update.unread)
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerEmailDeletedUpdate(emailIds: List<Long>, update: PeerEmailDeletedStatusUpdate) {
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewPeerReadThreadUpdate(update: PeerReadThreadStatusUpdate) {
-            threadListController.changeThreadReadStatus(update.threadIds, update.unread)
-            reloadViewAfterSocketEvent()
-        }
-
-        override fun onNewTrackingUpdate(emailId: Long, update: TrackingUpdate) {
-            threadListController.changeThreadStatus(emailId, update.type)
-            feedController.reloadFeeds()
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
         }
 
         override fun onError(uiMessage: UIMessage) {

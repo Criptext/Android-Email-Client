@@ -1,7 +1,6 @@
 package com.criptext.mail
 
 import android.app.Application
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
@@ -19,7 +18,7 @@ class DeckardApplication : Application(){
         Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
-            WebSocketSingleton.getInstance(activeAccount, applicationContext)
+            WebSocketSingleton.getInstance(activeAccount)
         }
     }
 

@@ -158,7 +158,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
-                            threadId = threadId,
+                            threadId = EmailUtils.getThreadIdForSending(db, threadId, emailId),
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = guestEmails,
@@ -189,6 +189,11 @@ class SendMailWorker(private val signalClient: SignalClient,
             getGuestEmails(mailRecipientsNonCriptext)
         else
             null
+
+        val currentEmail = db.getEmailById(emailId)
+
+        if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null)
+
         val result = checkEncryptionKeysOperation(mailRecipients)
                 .flatMap { encryptOperation(mailRecipients) }
                 .flatMap(sendEmailOperation)
