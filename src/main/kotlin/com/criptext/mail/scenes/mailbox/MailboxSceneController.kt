@@ -287,7 +287,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showMessage(UIMessage(R.string.draft_saved))
                 true
             }
-            else -> false
+            else -> {
+                dataSource.submitRequest(MailboxRequest.ResendEmails())
+                false
+            }
         }
     }
 
@@ -299,7 +302,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
-        dataSource.submitRequest(MailboxRequest.ResendEmails())
 
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         if (model.threads.isEmpty()) reloadMailboxThreads()
