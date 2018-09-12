@@ -13,7 +13,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                         val unread: Boolean, val count: Int, val timestamp: Date,
                         val latestEmailUnsentDate: Date?,
                         val emailId: Long, val metadataKey: Long, val threadId: String,
-                        var isSelected: Boolean, val isStarred: Boolean, val hasFiles: Boolean) {
+                        var isSelected: Boolean, var isStarred: Boolean, val hasFiles: Boolean) {
 
     companion object {
         private fun getSenderNameFromEmailThread(e: EmailThread): String {

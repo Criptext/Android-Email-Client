@@ -1,0 +1,44 @@
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <LinearLayout
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textViewSubject"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                fontPath="fonts/NunitoSans-Bold.ttf" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/labels_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/starred"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="24dp"
+            android:tint="#b9b9b9"
+            android:src="@drawable/starred_empty"/>
+
+    </LinearLayout>

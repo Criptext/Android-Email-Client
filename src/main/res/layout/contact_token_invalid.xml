@@ -10,6 +10,7 @@
         android:layout_height="2dp"/>
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/name"
         android:background="@drawable/contact_invalid"
         android:layout_width="wrap_content"

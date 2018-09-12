@@ -69,8 +69,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                 }
 
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                fullEmail.from.name,
-                fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
+                fullEmail.from.name,250, 250))
 
         setIcons(fullEmail.email.delivered, fullEmail.files.isNotEmpty())
     }
@@ -95,7 +94,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.mail_sent, R.color.sent)
             }
-            DeliveryTypes.NONE -> {
+            else -> {
                 check.visibility = View.GONE
             }
         }

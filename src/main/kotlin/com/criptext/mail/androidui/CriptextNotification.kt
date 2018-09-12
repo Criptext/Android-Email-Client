@@ -70,7 +70,6 @@ class CriptextNotification(val ctx: Context) {
             .setSmallIcon(R.drawable.push_icon)
             .setLargeIcon(Utility.getBitmapFromText(
                     title,
-                    title[0].toString().toUpperCase(),
                     250,
                     250))
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
@@ -96,7 +95,6 @@ class CriptextNotification(val ctx: Context) {
                 .setColor(Color.CYAN)
                 .setLargeIcon(Utility.getBitmapFromText(
                         title,
-                        title[0].toString().toUpperCase(),
                         250,
                         250))
                 .setStyle(NotificationCompat.BigTextStyle().bigText(body))

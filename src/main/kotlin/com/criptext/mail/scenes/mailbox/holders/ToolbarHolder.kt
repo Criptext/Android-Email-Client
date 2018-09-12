@@ -41,7 +41,7 @@ class ToolbarHolder(val view: View) {
     }
 
     fun updateToolbarTitle(title: String) {
-        this.title.text = title
+        this.title.text = title.toUpperCase()
     }
     fun updateNumberOfMails(emailsSize: Int) {
         numberEmails.text = if(emailsSize == 0) "" else "($emailsSize)"

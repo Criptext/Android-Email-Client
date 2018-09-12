@@ -42,6 +42,7 @@
             android:layout_weight="1"/>
 
         <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
             android:id="@+id/count_inbox"
             android:layout_width="wrap_content"
             android:layout_height="20dp"

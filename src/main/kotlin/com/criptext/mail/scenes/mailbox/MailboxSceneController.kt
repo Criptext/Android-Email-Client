@@ -499,8 +499,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.updateToolbarTitle(toolbarTitle)
                 dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 feedController.reloadFeeds()
+                dataSource.submitRequest(MailboxRequest.ResendEmails())
             }
-            dataSource.submitRequest(MailboxRequest.ResendEmails())
         }
 
         private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {

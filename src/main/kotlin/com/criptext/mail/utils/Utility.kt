@@ -11,9 +11,9 @@ class Utility {
 
     companion object {
 
-        fun getBitmapFromText(fullName: String, firstLetter: String, width: Int, height: Int): Bitmap {
-
-            val drawable = TextDrawable.builder().buildRound(firstLetter, ColorUtils.colorByName(fullName))
+        fun getBitmapFromText(fullName: String, width: Int, height: Int): Bitmap {
+            val nameInitials = getAvatarLetters(fullName)
+            val drawable = TextDrawable.builder().buildRound(nameInitials, ColorUtils.colorByName(fullName))
             val canvas = Canvas()
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             canvas.setBitmap(bitmap)
@@ -22,6 +22,15 @@ class Utility {
 
             return bitmap;
 
+        }
+
+        private fun getAvatarLetters(fullName: String): String{
+            val firstLetter = fullName.toCharArray()[0].toString()
+            val secondLetter = if(fullName.contains(" "))
+                fullName[fullName.indexOf(" ") + 1].toString()
+            else
+                ""
+            return firstLetter.plus(secondLetter)
         }
 
     }

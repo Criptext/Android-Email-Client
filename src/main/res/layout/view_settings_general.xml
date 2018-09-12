@@ -28,6 +28,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:id="@+id/textViewTitleDraft"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -49,13 +50,14 @@
             </FrameLayout>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:background="#f4f4f4"
                 android:text="@string/separator_account"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="#6a707e"
+                android:textColor="#000000"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -71,9 +73,50 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_profile_name"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/settings_signature"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_signature"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
                     android:textColor="@color/drawer_text"/>
@@ -112,6 +155,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_profile_photo"
@@ -152,6 +196,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_change_password"
@@ -192,6 +237,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="@string/title_recovery_email"
@@ -224,6 +270,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="@string/title_recovery_email"
@@ -233,6 +280,7 @@
                     android:layout_weight="1"/>
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:id="@+id/not_confirmed_text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -255,53 +303,15 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#d8d8d8"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="22dp"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="17dp"
-                android:id="@+id/settings_signature"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/title_signature"
-                    android:textSize="@dimen/drawer_text_item"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="end|center_vertical"
-                    android:padding="12dp"
-                    android:tint="#e3e3e3"
-                    android:src="@drawable/arrow_right"/>
-
-            </FrameLayout>
-
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:background="#f4f4f4"
                 android:text="@string/separator_notifications"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="#6a707e"
+                android:textColor="#000000"
                 android:paddingStart="17dp"
                 android:visibility="gone"/>
 
@@ -319,6 +329,7 @@
                 android:visibility="gone">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_allow_notifications"
@@ -338,13 +349,14 @@
             </FrameLayout>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:background="#f4f4f4"
                 android:text="@string/separator_about"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="#6a707e"
+                android:textColor="#000000"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -360,6 +372,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_privacy_policy"
@@ -399,6 +412,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_terms_of_service"
@@ -438,6 +452,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_open_source_libraries"
@@ -477,6 +492,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_logout"
@@ -509,6 +525,7 @@
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_sounds"
@@ -539,6 +556,7 @@
                 android:id="@+id/settings_badge">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_badges"
@@ -570,6 +588,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="231dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="17dp"
@@ -577,6 +596,7 @@
                     android:textColor="#b9b9b9"
                     android:textSize="@dimen/drawer_text_item" />
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/version_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

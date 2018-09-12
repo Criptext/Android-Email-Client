@@ -8,11 +8,9 @@ import android.view.ViewGroup
 import com.criptext.mail.R
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
-import com.criptext.mail.scenes.emaildetail.ui.holders.FooterViewHolder
-import com.criptext.mail.scenes.emaildetail.ui.holders.FullEmailHolder
-import com.criptext.mail.scenes.emaildetail.ui.holders.ParentEmailHolder
-import com.criptext.mail.scenes.emaildetail.ui.holders.PartialEmailHolder
+import com.criptext.mail.scenes.emaildetail.ui.holders.*
 import com.criptext.mail.utils.virtuallist.VirtualList
 
 /**
@@ -23,11 +21,15 @@ import com.criptext.mail.utils.virtuallist.VirtualList
 class FullEmailListAdapter(private val mContext : Context,
                            var fullEmailListener : OnFullEmailEventListener?,
                            private val fullEmails: VirtualList<FullEmail>,
-                           private val fileDetails: Map<Long, List<FileDetail>>)
+                           private val fileDetails: Map<Long, List<FileDetail>>,
+                           private val labels: VirtualList<Label>,
+                           private val isStarred: Boolean )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    private lateinit var headerHolder:HeaderViewHolder
+
     private fun isPositionFooter(position: Int): Boolean {
-        return position == fullEmails.size
+        return position == fullEmails.size + 1
     }
 
     override fun getItemViewType(position : Int) : Int{
@@ -35,9 +37,13 @@ class FullEmailListAdapter(private val mContext : Context,
             return EmailViewTypes.FOOTER.ordinal
         }
 
-        val email = fullEmails[position]
+        if(position == 0)
+            return EmailViewTypes.HEADER.ordinal
 
-        if(email.viewOpen) {
+
+        val email = fullEmails[position - 1]
+
+        if (email.viewOpen) {
             return EmailViewTypes.fullEmail.ordinal
         }
 
@@ -48,8 +54,12 @@ class FullEmailListAdapter(private val mContext : Context,
             holder: RecyclerView.ViewHolder,
             position: Int) {
         when(holder){
+            is HeaderViewHolder -> {
+                headerHolder = holder
+                headerHolder.setListeners(emailListener = fullEmailListener)
+            }
             is ParentEmailHolder -> {
-                val fullEmail = fullEmails[position]
+                val fullEmail = fullEmails[position - 1]
 
                 holder.bindFullMail(fullEmail)
                 holder.setListeners(
@@ -66,7 +76,7 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     override fun getItemCount(): Int {
-        return fullEmails.size + 1
+        return fullEmails.size + 2
     }
 
 
@@ -74,6 +84,14 @@ class FullEmailListAdapter(private val mContext : Context,
         val mView: View
 
         return when(EmailViewTypes.values()[viewType]) {
+
+            EmailViewTypes.HEADER -> {
+                mView = LayoutInflater.from(mContext).inflate(R.layout.layout_header_email_detail, parent, false)
+                val subject = if (fullEmails[0].email.subject.isEmpty())
+                        mContext.getString(R.string.nosubject)
+                    else fullEmails[0].email.subject
+                HeaderViewHolder(mView, subject, labels, isStarred)
+            }
 
             EmailViewTypes.FOOTER -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.layout_btns_email_detail, parent, false)
@@ -95,6 +113,10 @@ class FullEmailListAdapter(private val mContext : Context,
         }
     }
 
+    fun notifyLabelsChanged(updatedLabels: VirtualList<Label>, updatedHasStar: Boolean){
+        headerHolder.notifyLabelsChanged(updatedLabels, updatedHasStar)
+    }
+
 
 
     interface OnFullEmailEventListener{
@@ -114,6 +136,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onReplyBtnClicked()
         fun onReplyAllBtnClicked()
         fun onUnsendEmail(fullEmail: FullEmail, position: Int)
+        fun onStarredButtonPressed(isStarred: Boolean)
         fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onContinueDraftOptionSelected(fullEmail: FullEmail)
@@ -121,6 +144,6 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     private enum class EmailViewTypes {
-        draft, fullEmail, fullSentEmail, partialEmail, FOOTER
+        HEADER, draft, fullEmail, fullSentEmail, partialEmail, FOOTER
     }
 }

@@ -7,6 +7,7 @@
     android:layout_height="wrap_content">
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/name"
         android:layout_height="wrap_content"
         android:text="Gianni Carlo"
@@ -16,6 +17,7 @@
         android:layout_width="wrap_content" />
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:maxLines="2"
         android:layout_marginStart="15dp"
         android:id="@+id/email"

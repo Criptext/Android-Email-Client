@@ -47,8 +47,6 @@ interface ComposerScene {
     fun notifyAttachmentSetChanged()
     fun disableSendButtonOnDialog()
     fun enableSendButtonOnDialog()
-    fun setPasswordError(message: UIMessage?)
-    fun togglePasswordSuccess(show: Boolean)
     fun setPasswordForNonCriptextFromDialog(password: String?)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -280,14 +278,6 @@ interface ComposerScene {
 
         override fun enableSendButtonOnDialog() {
             nonCriptextEmailSendDialog.enableSendEmailButton()
-        }
-
-        override fun setPasswordError(message: UIMessage?) {
-            nonCriptextEmailSendDialog.setPasswordError(message)
-        }
-
-        override fun togglePasswordSuccess(show: Boolean) {
-            nonCriptextEmailSendDialog.togglePasswordSuccess(show)
         }
 
         override fun setPasswordForNonCriptextFromDialog(password: String?) {

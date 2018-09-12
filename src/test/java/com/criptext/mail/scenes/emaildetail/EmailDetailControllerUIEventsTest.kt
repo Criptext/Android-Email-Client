@@ -134,7 +134,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         simulateLoadOfEmails(2)
 
         //The actual value of starred icon is ON
-        emailDetailUIObserverSlot.captured.onStarredButtonPressed(isStarred = true)
+        fullEmailEventListener.captured.onStarredButtonPressed(isStarred = true)
 
         val sentRequest = sentRequests.last() as EmailDetailRequest.UpdateEmailThreadsLabelsRelations
 
@@ -149,7 +149,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         simulateLoadOfEmails(2)
 
         //The actual value of starred icon is ON
-        emailDetailUIObserverSlot.captured.onStarredButtonPressed(isStarred = false)
+        fullEmailEventListener.captured.onStarredButtonPressed(isStarred = false)
 
         val sentRequest = sentRequests.last() as EmailDetailRequest.UpdateEmailThreadsLabelsRelations
 

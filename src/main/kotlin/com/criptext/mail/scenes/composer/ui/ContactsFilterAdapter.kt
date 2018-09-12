@@ -46,8 +46,7 @@ class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
         else{
             nameTextView.visibility = View.VISIBLE
         }
-        circleView.setImageBitmap(Utility.getBitmapFromText(item.name,
-                item.name[0].toString().toUpperCase(),250, 250))
+        circleView.setImageBitmap(Utility.getBitmapFromText(item.name,250, 250))
 
         return view
     }

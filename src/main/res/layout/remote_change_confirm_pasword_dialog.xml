@@ -74,7 +74,7 @@
             app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
             app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#dcdcdc">
+            app:passwordToggleTint="#AEAEAE">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input"

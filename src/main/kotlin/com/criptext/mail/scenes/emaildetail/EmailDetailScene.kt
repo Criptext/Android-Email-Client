@@ -45,6 +45,7 @@ interface EmailDetailScene {
     fun showError(message : UIMessage)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
+    fun notifyLabelsChanged(updatedLabels: List<Label>)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
@@ -67,7 +68,6 @@ interface EmailDetailScene {
         private val context = emailDetailView.context
 
         private var fullEmailsRecyclerView: FullEmailRecyclerView? = null
-        private lateinit var labelsRecyclerView: LabelsRecyclerView
 
         private val labelChooserDialog = LabelChooserDialog(context, emailDetailView)
         private val moveToDialog = MoveToDialog(context)
@@ -79,20 +79,8 @@ interface EmailDetailScene {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
         }
 
-        private val recyclerLabelsView: RecyclerView by lazy {
-            emailDetailView.findViewById<RecyclerView>(R.id.labels_recycler)
-        }
-
         private val backButton: ImageView by lazy {
             emailDetailView.findViewById<ImageView>(R.id.mailbox_back_button)
-        }
-
-        private val textViewSubject: TextView by lazy {
-            emailDetailView.findViewById<TextView>(R.id.textViewSubject)
-        }
-
-        private val starredImage: ImageView by lazy {
-            emailDetailView.findViewById<ImageView>(R.id.starred)
         }
 
         override var observer: EmailDetailUIObserver? = null
@@ -103,22 +91,15 @@ interface EmailDetailScene {
                 observer: EmailDetailUIObserver){
 
             this.observer = observer
-            textViewSubject.text = if (fullEmailList[0].email.subject.isEmpty())
-                textViewSubject.context.getString(R.string.nosubject)
-            else fullEmailList[0].email.subject
-
             val isStarred = EmailThreadValidator.isLabelInList(fullEmailList[0].labels, Label.LABEL_STARRED)
-            if(isStarred){
-                setIconAndColor(R.drawable.starred, R.color.starred)
-            }
-
-            labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, getLabelsFromEmails(fullEmailList))
 
             fullEmailsRecyclerView = FullEmailRecyclerView(
                     recyclerView,
                     fullEmailEventListener,
                     fullEmailList,
-                    fileDetailList
+                    fileDetailList,
+                    getLabelsFromEmails(fullEmailList),
+                    isStarred
                     )
 
             fullEmailsRecyclerView?.scrollToLast()
@@ -126,21 +107,6 @@ interface EmailDetailScene {
             backButton.setOnClickListener {
                 observer.onBackButtonPressed()
             }
-
-            starredImage.setOnClickListener({
-                observer.onStarredButtonPressed(!isStarred)
-            })
-
-        }
-
-        private fun setIconAndColor(drawable: Int, color: Int){
-            Picasso.with(context).load(drawable).into(starredImage, object : Callback {
-                override fun onError() {}
-                override fun onSuccess() {
-                    DrawableCompat.setTint(starredImage.drawable,
-                            ContextCompat.getColor(context, color))
-                }
-            })
         }
 
         private fun getLabelsFromEmails(
@@ -150,6 +116,12 @@ interface EmailDetailScene {
                 labelSet.addAll(emails[i].labels)
             }
             val labelsList = ArrayList(labelSet).filter { it.type != LabelTypes.SYSTEM}
+            return VirtualList.Map(labelsList, { t->t })
+        }
+
+        private fun labelsToVirtualList(labels: List<Label>)
+                : VirtualList<Label>{
+            val labelsList = ArrayList(labels).filter { it.type != LabelTypes.SYSTEM}
             return VirtualList.Map(labelsList, { t->t })
         }
 
@@ -199,6 +171,11 @@ interface EmailDetailScene {
 
         override fun setConfirmPasswordError(message: UIMessage) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun notifyLabelsChanged(updatedLabels: List<Label>) {
+            fullEmailsRecyclerView?.notifyLabelsChanged(labelsToVirtualList(updatedLabels),
+                    updatedLabels.contains(Label.defaultItems.starred))
         }
 
 

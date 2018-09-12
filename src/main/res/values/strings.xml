@@ -101,7 +101,7 @@
     <string name="separator_about">ABOUT</string>
     <string name="status_not_confirmed">(not verified)</string>
     <string name="status_confirmed">(verified)</string>
-    <string name="criptext_version">Criptext System Version </string>
+    <string name="criptext_version">Criptext Beta </string>
     <string name="password_enter_error">Password is incorrect.</string>
     <string name="change_password_success">Password has been changed.</string>
     <string name="old_password">Enter old password</string>
@@ -134,9 +134,9 @@
     <string name="change_password_new">New</string>
 
     <!-- CONFIRM PASSWORD REMOTE CHANGE -->
-    <string name="remote_change_password_advice">Confirm your new password.\nIf you Cancel, the device will logout and all local data <b>will be erased.</b></string>
+    <string name="remote_change_password_advice">Confirm your new password.\nIf you cancel, the device will logout and all local data <b>will be erased.</b></string>
     <string name="update_password_success">Password has been updated for this device.</string>
-    <string name="title_remote_change_password">Your password has changed\nremotely</string>
+    <string name="title_remote_change_password">Your password has changed</string>
 
     <!-- LOGOUT DIALOG -->
     <string name="logout_dialog_message"><b>Alert!:</b> Login out will delete all emails from this device. Your emails will remain intact in your other devices, if any. Do you want to logout?</string>
@@ -274,7 +274,7 @@
     <string name="recover_email_warning_content_end">Proceed without recovery email?</string>
     <string name="sign_up_terms_and_conditions_start">I have read and agreed with the</string>
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
-    <string name="btn_create_account">Create account</string>
+    <string name="btn_create_account">Sign Up</string>
     <string name="txt_create_criptext_account">Create your Criptext account</string>
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
     <string name="yes">Yes</string>

@@ -44,6 +44,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/textViewCurrentDevice"
                 android:layout_width="113dp"
                 android:layout_height="wrap_content"

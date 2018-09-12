@@ -53,16 +53,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="18dp"
+        android:layout_margin="20dp"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/recovery_email_title"
-            android:textColor="#373a45"
-            android:textSize="18sp"
-            fontPath="fonts/NunitoSans-Regular.ttf"/>
+
 
         <LinearLayout
             android:layout_height="wrap_content"
@@ -70,12 +64,13 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/recovery_email_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="jorge@email.com"
-                android:textSize="16sp"
+                android:text="@string/recovery_email_title"
+                android:textColor="#373a45"
+                android:textSize="18sp"
                 fontPath="fonts/NunitoSans-Regular.ttf"/>
+
 
             <TextView
                 android:id="@+id/not_confirmed_text"
@@ -89,6 +84,14 @@
                 android:layout_weight="1"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/recovery_email_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="jorge@email.com"
+            android:textSize="16sp"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
 
         <LinearLayout
             android:layout_marginTop="10dp"
@@ -110,14 +113,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/btn_welcome_tour"
-                android:textColor="@color/white"
+                android:textColor="@drawable/btn_sign_in"
                 android:text="@string/button_resend_confirmation"
                 android:textAllCaps="false"
                 android:enabled="true"/>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -162,7 +165,7 @@
                 android:enabled="false"
                 android:text="@string/button_change_email_confirm"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@drawable/btn_sign_in" />
 
 
         </LinearLayout>

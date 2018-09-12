@@ -15,7 +15,6 @@ interface ComposerUIObserver: UIObserver {
     fun onRecipientListChanged()
     fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean)
     fun onBackButtonClicked()
-    fun onConfirmPasswordChangedListener(text: String)
     fun onPasswordChangedListener(text: String)
     fun setOnCheckedChangeListener(isChecked: Boolean)
     fun sendDialogButtonPressed()

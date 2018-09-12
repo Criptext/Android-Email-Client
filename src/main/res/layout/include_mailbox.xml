@@ -69,6 +69,7 @@
             </LinearLayout>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/mailbox_number_emails"
                 android:layout_toEndOf="@+id/mailbox_title_layout"
                 android:layout_width="wrap_content"

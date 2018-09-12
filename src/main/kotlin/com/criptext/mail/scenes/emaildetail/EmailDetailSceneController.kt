@@ -74,20 +74,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
-        override fun onStarredButtonPressed(isStarred: Boolean) {
-            val selectedLabels = SelectedLabels()
-            val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
-            val labels = if(isStarred){
-                labelsWithoutFilter.add(Label.defaultItems.starred)
-                labelsWithoutFilter
-            }
-            else{
-                labelsWithoutFilter.filter { it.id != Label.defaultItems.starred.id }
-            }
-            selectedLabels.addMultipleSelected(labels.toSet().map { LabelWrapper(it) })
-            updateThreadLabelsRelation(selectedLabels)
-        }
-
         override fun onBackButtonPressed() {
             host.exitToScene(
                     params = MailboxParams(),
@@ -134,14 +120,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
 
         when(result) {
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success ->  {
-                val message = ActivityMessage.UpdateLabelsThread(
-                        threadId = result.threadId,
-                        selectedLabelIds = result.selectedLabelIds
-                )
-                host.exitToScene(
-                        params = MailboxParams(),
-                        activityMessage = message,
-                        forceAnimation = false)
+                model.threadPreview.isStarred = result.selectedLabels.contains(Label.defaultItems.starred)
+                scene.notifyLabelsChanged(result.selectedLabels)
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_labels))
             }
@@ -302,6 +282,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onStarredButtonPressed(isStarred: Boolean) {
+            val selectedLabels = SelectedLabels()
+            val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
+            val labels = if(isStarred){
+                labelsWithoutFilter.add(Label.defaultItems.starred)
+                labelsWithoutFilter
+            }
+            else{
+                labelsWithoutFilter.filter { it.id != Label.defaultItems.starred.id }
+            }
+            selectedLabels.addMultipleSelected(labels.toSet().map { LabelWrapper(it) })
+            updateThreadLabelsRelation(selectedLabels)
+        }
 
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
             if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,

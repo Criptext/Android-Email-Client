@@ -5,6 +5,7 @@ import com.criptext.mail.bgworker.RunnableThrottler
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
+import com.criptext.mail.utils.KeyboardManager
 import io.mockk.*
 
 /**
@@ -16,6 +17,7 @@ open class SignUpControllerTest {
     protected lateinit var dataSource: BackgroundWorkManager<SignUpRequest, SignUpResult>
     protected lateinit var sentRequests: MutableList<SignUpRequest>
     protected lateinit var controller: SignUpSceneController
+    protected lateinit var keyboardManager: KeyboardManager
     protected lateinit var host: IHostActivity
     protected lateinit var throttler: RunnableThrottler
 
@@ -27,6 +29,7 @@ open class SignUpControllerTest {
 
         host = mockk(relaxed = true)
         throttler = mockk()
+        keyboardManager = mockk(relaxed = true)
 
         sentRequests = mutableListOf()
         dataSource = mockk(relaxed = true)
@@ -35,6 +38,7 @@ open class SignUpControllerTest {
         controller = SignUpSceneController(
                 model =  model,
                 scene = scene,
+                keyboardManager = keyboardManager,
                 dataSource = dataSource,
                 host =  host,
                 runnableThrottler = throttler

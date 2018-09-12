@@ -33,6 +33,7 @@
                 android:tint="@android:color/white"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/textViewMute"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -59,6 +60,7 @@
                 android:tint="@android:color/white"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -97,6 +99,7 @@
             android:gravity="center_vertical">
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/textViewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,6 +111,7 @@
                 android:ellipsize="end"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/textViewDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,6 +142,7 @@
                 android:src="@drawable/mute"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/textViewDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
