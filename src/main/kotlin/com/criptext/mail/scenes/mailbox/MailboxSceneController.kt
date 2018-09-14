@@ -526,6 +526,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             when (resultData) {
                 is MailboxResult.EmptyTrash.Success ->
                 {
+                    scene.hideEmptyTrashBanner()
                     scene.showMessage(UIMessage(R.string.trash_is_now_empty))
                     reloadMailboxThreads()
                 }
@@ -609,7 +610,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                         scene.showMessage(UIMessage(R.string.email_sent))
                         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                         reloadMailboxThreads()
-                        dataSource.submitRequest(MailboxRequest.ResendEmails())
                     }
                 }
                 is MailboxResult.SendMail.Failure -> {

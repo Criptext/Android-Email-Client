@@ -203,12 +203,14 @@ interface MailboxLocalDB {
                         selectedLabel = selectedLabel,
                         limit = limit )
 
-            return emails.map { email ->
-                getEmailThreadFromEmail(email, labelName,
-                        Label.defaultItems.rejectedLabelsByMailbox(
-                                db.labelDao().get(labelName)
-                        ).map { it.id }, userEmail)
-            } as ArrayList<EmailThread>
+            return if (emails.isNotEmpty()){
+                emails.map { email ->
+                    getEmailThreadFromEmail(email, labelName,
+                            Label.defaultItems.rejectedLabelsByMailbox(
+                                    db.labelDao().get(labelName)
+                            ).map { it.id }, userEmail)
+                } as ArrayList<EmailThread>
+            }else emptyList()
         }
 
         override fun getLabelsFromLabelType(labelNames: List<String>): List<Label> {

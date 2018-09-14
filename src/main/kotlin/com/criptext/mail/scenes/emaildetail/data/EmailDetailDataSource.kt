@@ -58,6 +58,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     })
 
             is EmailDetailRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadLabelsWorker(
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
                     selectedLabels = params.selectedLabels,
