@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="110dp"
+    android:layout_height="wrap_content"
     android:background="#f7f7f8"
-    android:orientation="vertical"
-    android:weightSum="1">
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:padding="25dp"
+    android:layout_marginTop="20dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleView"
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="40dp"/>
+        android:layout_width="45dp"
+        android:layout_height="45dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="42dp"
-        android:layout_toRightOf="@+id/circleView">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textViewNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="10dp"
             android:textColor="#373a45"
             android:textSize="16sp"
             android:text="Daniel Tigse Palma"
@@ -38,8 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#373a45"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="10dp"
             android:alpha="0.44"
             android:text="daniel@criptext.com"
             android:textSize="16sp"
@@ -47,5 +45,4 @@
             android:ellipsize="end"/>
 
     </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

@@ -207,8 +207,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             unsendProgressBar.visibility = View.INVISIBLE
 
         leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                fullEmail.from.name,
-                fullEmail.from.name[0].toString().toUpperCase(), 250, 250))
+                fullEmail.from.name,250, 250))
 
         setToText(fullEmail)
         setDraftIcon(fullEmail)
@@ -277,7 +276,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.SENT -> {
                 setIconAndColor(R.drawable.mail_sent, R.color.sent)
             }
-            DeliveryTypes.NONE -> {
+            else -> {
                 readView.visibility = View.GONE
             }
         }

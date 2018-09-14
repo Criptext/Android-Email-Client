@@ -15,9 +15,12 @@ import java.util.*
     fun insertAll(emails : List<Email>)
 
     @Query("""SELECT * FROM email
-        WHERE delivered in (:deliveryTypes)
-    """)
-    fun getPendingEmails(deliveryTypes: List<Int>) : List<Email>
+            left join email_label on email.id = email_label.emailId
+            WHERE delivered in (:deliveryTypes)
+            AND NOT EXISTS
+            (SELECT * FROM email_label WHERE email_label.emailId = email.id and email_label.labelId IN (:rejectedLabels))
+            """)
+    fun getPendingEmails(deliveryTypes: List<Int>, rejectedLabels: List<Long>) : List<Email>
 
     @Query("SELECT * FROM email")
     fun getAll() : List<Email>
@@ -25,6 +28,11 @@ import java.util.*
     @Query("""SELECT * FROM email
                 WHERE metadataKey in (:metadataKeys)""")
     fun getAllEmailsByMetadataKey(metadataKeys: List<Long>) : List<Email>
+
+    @Query("""SELECT * FROM email
+                WHERE metadataKey in (:metadataKeys)
+                AND delivered=3""")
+    fun getAllEmailsToOpenByMetadataKey(metadataKeys: List<Long>) : List<Email>
 
     @Query("""SELECT * FROM email
                 WHERE metadataKey in (:metadataKey)""")
@@ -145,6 +153,11 @@ import java.util.*
             left join email_label on email.id = email_label.emailId
             where email_label.labelId=:labelId""")
     fun getThreadIdsFromLabel(labelId: Long): List<String>
+
+    @Query("""SELECT DISTINCT metadataKey FROM email
+            left join email_label on email.id = email_label.emailId
+            where email_label.labelId=:labelId""")
+    fun getMetadataKeysFromLabel(labelId: Long): List<Long>
 
     @Query("""SELECT DISTINCT emailId FROM email
             left join email_label on email.id = email_label.emailId
@@ -326,6 +339,9 @@ import java.util.*
 
     @Query("DELETE from email WHERE id = :id")
     fun deleteById(id: Long)
+
+    @Query("DELETE from email WHERE metadataKey in (:metadataKeys)")
+    fun deleteByIds(metadataKeys: List<Long>)
 
     @Query("DELETE from email WHERE threadId in (:threadIds)")
     fun deleteThreads(threadIds: List<String>)

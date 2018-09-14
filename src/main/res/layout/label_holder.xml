@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/name"
         android:textColor="@color/white"
         android:textSize="10sp"

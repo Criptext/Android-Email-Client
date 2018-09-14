@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.signup.data.SignUpDataSource
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.KeyboardManager
 
 /**
  * Created by sebas on 2/16/18.
@@ -33,6 +34,7 @@ class SignUpActivity: BaseActivity() {
         val runnableThrottler = RunnableThrottler.Default(500L)
         return SignUpSceneController(
                 model = signUpSceneModel,
+                keyboardManager = KeyboardManager(this),
                 scene = signUpSceneView,
                 host = this,
                 runnableThrottler = runnableThrottler,

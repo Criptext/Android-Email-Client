@@ -45,7 +45,7 @@ sealed class EmailDetailResult {
         data class Failure(val message: UIMessage): ReadEmails()
     }
     sealed class UpdateEmailThreadsLabelsRelations: EmailDetailResult() {
-        data class Success(val threadId: String, val selectedLabelIds: List<Long>): UpdateEmailThreadsLabelsRelations()
+        data class Success(val threadId: String, val selectedLabels: List<Label>): UpdateEmailThreadsLabelsRelations()
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()

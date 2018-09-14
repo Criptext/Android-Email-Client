@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
+import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
@@ -28,6 +29,7 @@ import com.criptext.mail.validation.TextInput
 class SignUpSceneController(
         private val model: SignUpSceneModel,
         private val scene: SignUpScene,
+        private val keyboardManager: KeyboardManager,
         private val host : IHostActivity,
         private val dataSource: BackgroundWorkManager<SignUpRequest, SignUpResult>,
         private val runnableThrottler: RunnableThrottler): SceneController() {
@@ -198,6 +200,7 @@ class SignUpSceneController(
                             onRecoveryEmailWarningListener
                     )
                 } else {
+                    keyboardManager.hideKeyboard()
                     this@SignUpSceneController.submitCreateUser()
                 }
             }

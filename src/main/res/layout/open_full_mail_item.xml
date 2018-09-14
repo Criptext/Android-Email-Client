@@ -51,6 +51,7 @@
                     android:gravity="center_vertical">
 
                     <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
                         android:textColor="@color/black"
                         android:id="@+id/email_header"
                         android:layout_height="wrap_content"
@@ -63,6 +64,7 @@
                         android:layout_weight="1"/>
 
                     <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
                         android:id="@+id/email_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -86,6 +88,7 @@
                         android:src="@drawable/mail_sent" />
 
                     <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
                         android:id="@+id/to"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,6 +101,7 @@
                         android:textColor="#9b9b9b" />
 
                     <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
                         android:id="@+id/more_text"
                         android:layout_width="wrap_content"
                         android:layout_height="28dp"
@@ -196,6 +200,7 @@
             </HorizontalScrollView>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:visibility="gone"
                 android:id="@+id/email_preview"
                 android:layout_width="match_parent"

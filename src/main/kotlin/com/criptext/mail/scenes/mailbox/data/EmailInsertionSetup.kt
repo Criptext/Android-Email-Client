@@ -250,8 +250,8 @@ object EmailInsertionSetup {
                 EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
                 if(meAsSender) false else metadata.extractDBColumns().unread, status =
                 if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
-                else if(meAsSender)DeliveryTypes.SENT
-                else metadata.extractDBColumns().status), decryptedBody, labels,
+                else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
+                else DeliveryTypes.NONE), decryptedBody, labels,
                         metadata.files, decryptedFileKey)
             })
         println(lonReturn)

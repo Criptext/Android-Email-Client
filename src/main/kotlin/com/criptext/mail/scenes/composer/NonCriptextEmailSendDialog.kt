@@ -27,7 +27,6 @@ class NonCriptextEmailSendDialog(val context: Context) {
 
     private lateinit var setPasswordSwitch: Switch
     private lateinit var editTextPasswordLayout: RelativeLayout
-    private lateinit var editTextPasswordRepeatLayout: RelativeLayout
     private lateinit var switchOffMessage: TextView
     private lateinit var setPassphraseText: TextView
 
@@ -35,11 +34,6 @@ class NonCriptextEmailSendDialog(val context: Context) {
     private lateinit var passwordInput: TextInputLayout
     private lateinit var passwordSuccessImage: ImageView
     private lateinit var passwordErrorImage: ImageView
-
-    private lateinit var confirmPassword: AppCompatEditText
-    private lateinit var confirmPasswordInput: TextInputLayout
-    private lateinit var confirmPasswordSuccessImage: ImageView
-    private lateinit var confirmPasswordErrorImage: ImageView
 
     private lateinit var btnSend : Button
     private lateinit var btnCancel : Button
@@ -78,20 +72,17 @@ class NonCriptextEmailSendDialog(val context: Context) {
         //Assign event listeners
         assignButtonEvents(view, nonCriptextEmailSendDialog, observer)
         assignPasswordTextListener()
-        assignConfirmPasswordTextChangeListener()
 
         setPasswordSwitch.setOnCheckedChangeListener { _, isChecked ->
             uiObserver?.setOnCheckedChangeListener(isChecked)
             if(isChecked){
                 editTextPasswordLayout.visibility = View.VISIBLE
-                editTextPasswordRepeatLayout.visibility = View.VISIBLE
                 switchOffMessage.visibility = View.GONE
                 setPassphraseText.visibility = View.VISIBLE
             }
             else{
                 if(!btnSend.isEnabled) enableSendEmailButton()
                 editTextPasswordLayout.visibility = View.GONE
-                editTextPasswordRepeatLayout.visibility = View.GONE
                 switchOffMessage.visibility = View.VISIBLE
                 setPassphraseText.visibility = View.GONE
             }
@@ -105,7 +96,6 @@ class NonCriptextEmailSendDialog(val context: Context) {
         setPasswordSwitch = view.findViewById(R.id.set_password_switch)
 
         editTextPasswordLayout = view.findViewById(R.id.edit_text_password_layout)
-        editTextPasswordRepeatLayout = view.findViewById(R.id.edit_text_password_repeat_layout)
 
         switchOffMessage = view.findViewById(R.id.switch_off_message)
         setPassphraseText = view.findViewById(R.id.set_passphrase_text)
@@ -115,47 +105,8 @@ class NonCriptextEmailSendDialog(val context: Context) {
         passwordSuccessImage = view.findViewById(R.id.success_password)
         passwordErrorImage = view.findViewById(R.id.error_password)
 
-        confirmPassword = view.findViewById(R.id.password_repeat)
-        confirmPasswordInput = view.findViewById(R.id.password_repeat_input)
-        confirmPasswordSuccessImage = view.findViewById(R.id.success_password_repeat)
-        confirmPasswordErrorImage = view.findViewById(R.id.error_password_repeat)
-
         btnSend = (view.findViewById(R.id.non_criptext_email_send) as Button)
         btnCancel = (view.findViewById(R.id.non_criptext_email_cancel) as Button)
-    }
-
-    private fun showPasswordSuccess() {
-        passwordSuccessImage.visibility = View.VISIBLE
-        confirmPasswordSuccessImage.visibility = View.VISIBLE
-    }
-
-    private fun hidePasswordSuccess() {
-        passwordSuccessImage.visibility = View.GONE
-        confirmPasswordSuccessImage.visibility = View.GONE
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun hidePasswordError() {
-        passwordErrorImage.visibility = View.GONE
-        confirmPasswordErrorImage.visibility = View.GONE
-
-        confirmPasswordInput.error = ""
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun showPasswordError(message: UIMessage) {
-        passwordErrorImage.visibility = View.VISIBLE
-        confirmPasswordErrorImage.visibility = View.VISIBLE
-
-        confirmPasswordInput.error = view.context.getLocalizedUIMessage(message)
-    }
-
-    fun setPasswordError(message: UIMessage?) {
-        if (message == null) hidePasswordError()
-        else {
-            showPasswordError(message)
-            disableSendEmailButton()
-        }
     }
 
     fun disableSendEmailButton() {
@@ -177,27 +128,6 @@ class NonCriptextEmailSendDialog(val context: Context) {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
-    }
-
-    private fun assignConfirmPasswordTextChangeListener() {
-        confirmPassword.addTextChangedListener( object : TextWatcher {
-            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                uiObserver?.onConfirmPasswordChangedListener(text.toString())
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-        })
-    }
-
-    fun togglePasswordSuccess(show: Boolean) {
-        if(show) {
-            showPasswordSuccess()
-        } else {
-            hidePasswordSuccess()
-        }
     }
 
 

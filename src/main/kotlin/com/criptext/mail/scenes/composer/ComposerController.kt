@@ -37,9 +37,6 @@ class ComposerController(private val model: ComposerModel,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
-    val arePasswordsMatching: Boolean
-        get() = model.passwordText == model.confirmPasswordText
-
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
@@ -65,30 +62,26 @@ class ComposerController(private val model: ComposerModel,
 
         override fun sendDialogCancelPressed() {
             model.passwordText = ""
-            model.confirmPasswordText = ""
-            model.passwordState = FormInputState.Unknown()
         }
 
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
-            if(isChecked)
-                checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
-            else {
+            if(!isChecked){
                 model.passwordForNonCriptextUsers = null
                 scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
+            }else{
+                scene.disableSendButtonOnDialog()
             }
-        }
-
-        override fun onConfirmPasswordChangedListener(text: String) {
-            model.confirmPasswordText = text
-            model.passwordForNonCriptextUsers = text
-            scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
-            checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
         }
 
         override fun onPasswordChangedListener(text: String) {
             model.passwordText = text
-            if(model.confirmPasswordText.isNotEmpty())
-               checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
+            if(model.passwordText.isNotEmpty()) {
+                model.passwordForNonCriptextUsers = text
+                scene.enableSendButtonOnDialog()
+            }else{
+                model.passwordForNonCriptextUsers = null
+                scene.disableSendButtonOnDialog()
+            }
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
@@ -128,33 +121,6 @@ class ComposerController(private val model: ComposerModel,
 
         override fun onCancelButtonPressed() {
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
-        }
-    }
-
-    private fun checkPasswords(passwords: Pair<String, String>) {
-        if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
-            scene.setPasswordError(null)
-            scene.togglePasswordSuccess(show = true)
-            model.passwordState = FormInputState.Valid()
-            if (model.passwordState is FormInputState.Valid)
-                scene.enableSendButtonOnDialog()
-        } else if (arePasswordsMatching && passwords.first.isEmpty()) {
-            scene.setPasswordError(null)
-            scene.togglePasswordSuccess(show = false)
-            model.passwordState = FormInputState.Unknown()
-            scene.disableSendButtonOnDialog()
-        } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
-            scene.togglePasswordSuccess(show = false)
-            val errorMessage = UIMessage(R.string.pin_length_error)
-            model.passwordState = FormInputState.Error(errorMessage)
-            scene.setPasswordError(errorMessage)
-            scene.disableSendButtonOnDialog()
-        } else {
-            val errorMessage = UIMessage(R.string.pin_mismatch_error)
-            model.passwordState = FormInputState.Error(errorMessage)
-            scene.setPasswordError(errorMessage)
-            scene.togglePasswordSuccess(show = false)
-            scene.disableSendButtonOnDialog()
         }
     }
 

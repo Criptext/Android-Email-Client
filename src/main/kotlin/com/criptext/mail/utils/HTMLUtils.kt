@@ -1,6 +1,5 @@
 package com.criptext.mail.utils
 
-import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
@@ -19,7 +18,6 @@ class HTMLUtils {
         }
 
         fun changedHeaderHtml(htmlText: String): String {
-
             val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
             return head + htmlText + collapseScript() + closedTag

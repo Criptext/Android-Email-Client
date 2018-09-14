@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.virtuallist.VirtualList
 
 /**
@@ -15,14 +16,18 @@ class FullEmailRecyclerView(
         val recyclerView: RecyclerView,
         fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
         val fullEmailList: VirtualList<FullEmail>,
-        val fileDetailList: Map<Long, List<FileDetail>>) {
+        val fileDetailList: Map<Long, List<FileDetail>>,
+        val labels: VirtualList<Label>,
+        val isStarred: Boolean) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
             mContext = ctx,
             fullEmails = fullEmailList,
             fullEmailListener = fullEmailEventListener,
-            fileDetails = fileDetailList)
+            fileDetails = fileDetailList,
+            labels = labels,
+            isStarred = isStarred)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -43,5 +48,9 @@ class FullEmailRecyclerView(
 
     fun notifyFullEmailChanged(position: Int) {
         fullEmailListAdapter.notifyItemChanged(position)
+    }
+
+    fun notifyLabelsChanged(updatedLabels: VirtualList<Label>, updatedHasStar: Boolean) {
+        fullEmailListAdapter.notifyLabelsChanged(updatedLabels, updatedHasStar)
     }
 }

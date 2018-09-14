@@ -31,6 +31,7 @@
                 android:textSize="13sp"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/from_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,6 +43,7 @@
                 android:textSize="13sp"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/from_mail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -75,6 +77,7 @@
                 android:textSize="13sp"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/reply_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,6 +89,7 @@
                 android:textSize="13sp"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/reply_mail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -200,6 +204,7 @@
                 android:textSize="13sp"/>
 
             <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

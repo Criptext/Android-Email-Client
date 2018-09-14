@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:text="@string/slide_1_text"

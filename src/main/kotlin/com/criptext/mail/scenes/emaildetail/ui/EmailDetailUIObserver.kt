@@ -8,5 +8,4 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 
 interface EmailDetailUIObserver: UIObserver {
     fun onBackButtonPressed()
-    fun onStarredButtonPressed(isStarred: Boolean)
 }

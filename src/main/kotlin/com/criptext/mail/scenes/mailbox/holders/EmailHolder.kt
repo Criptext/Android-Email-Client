@@ -61,7 +61,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             previewView.text = previewText
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.unsent_content))
         }else {
-            previewView.setTextColor(ContextCompat.getColor(view.context, R.color.black))
+            previewView.setTextColor(ContextCompat.getColor(view.context, R.color.mail_preview))
             previewView.text = emailPreview.bodyPreview
         }
 
@@ -70,7 +70,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         avatarView.setImageBitmap(
                 Utility.getBitmapFromText(
                         emailPreview.senderName,
-                        emailPreview.senderName[0].toString().toUpperCase(),
                         250,
                         250))
 

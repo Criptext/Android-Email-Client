@@ -44,11 +44,11 @@ class EmptyTrashWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.EmptyTrash>)
             : MailboxResult.EmptyTrash? {
-        val selectedThreadIds = db.getThreadsIdsFromLabel(Label.LABEL_TRASH)
+        val metadataKeys = db.getEmailMetadataKeysFromLabel(Label.LABEL_TRASH)
         val result = Result.of {
-            apiClient.postThreadDeletedPermanentlyEvent(selectedThreadIds) }
+            apiClient.postEmailDeleteEvent(metadataKeys) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of { db.deleteThreads(threadIds = selectedThreadIds) } }
+                .flatMap { Result.of { db.deleteEmail(metadataKeys) } }
         return when (result) {
             is Result.Success -> {
                 MailboxResult.EmptyTrash.Success()

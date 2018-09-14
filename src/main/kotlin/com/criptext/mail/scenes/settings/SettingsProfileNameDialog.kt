@@ -49,6 +49,7 @@ class SettingsProfileNameDialog(val context: Context) {
         assignButtonEvents(dialogView, newPasswordLoginDialog, observer)
         editTextFullName = dialogView.findViewById(R.id.edit_text_profile_name)
         editTextFullName.setText(fullName)
+        editTextFullName.setSelection(fullName.length)
 
         return newPasswordLoginDialog
     }

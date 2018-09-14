@@ -79,6 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_gravity="top|center_horizontal"
+            app:errorEnabled="true"
             app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
             app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send"
             app:passwordToggleEnabled="true"
@@ -90,71 +91,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/pass_hint_non_criptext_email_dialog"
                 android:textAppearance="@style/textinputlayout_non_criptext_email_send"
-                android:inputType="textPassword"
+                android:inputType="textVisiblePassword"
                 android:nextFocusDown="@+id/password_repeat"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-        </android.support.design.widget.TextInputLayout>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/edit_text_password_repeat_layout"
-        android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content">
-
-        <FrameLayout
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp">
-
-            <ImageView
-                android:id="@+id/error_password_repeat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|start"
-                android:padding="3dp"
-                android:src="@drawable/x_rounded"
-                android:tint="@color/red"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/success_password_repeat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|start"
-                android:background="@drawable/success_circle"
-                android:padding="9dp"
-                android:src="@drawable/check"
-                android:tint="@color/colorOpened"
-                android:visibility="gone" />
-        </FrameLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/password_repeat_input"
-            android:layout_width="206dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:paddingBottom="15dp"
-            android:layout_gravity="top|center_horizontal"
-            app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
-            app:errorEnabled="true"
-            app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#dcdcdc">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/password_repeat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/pass_repeat_hint_non_criptext_email_dialog"
-                android:textAppearance="@style/textinputlayout_non_criptext_email_send"
-                android:inputType="textPassword"
-                android:imeOptions="actionDone"
                 android:singleLine="true"
                 android:textSize="15sp" />
 
@@ -180,8 +118,8 @@
         android:id="@+id/switch_off_message"
         android:layout_width="206dp"
         android:layout_height="match_parent"
-        android:paddingTop="30dp"
-        android:paddingBottom="150.5dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="60dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/switch_off_non_criptext_email_dialog"
         android:textColor="@color/textColorPrimary"

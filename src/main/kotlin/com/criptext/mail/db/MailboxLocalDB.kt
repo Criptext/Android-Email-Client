@@ -46,8 +46,10 @@ interface MailboxLocalDB {
     fun getEmailThreadFromId(threadId: String, selectedLabel: String,
                                 rejectedLabels: List<Long>, userEmail: String): EmailThread
     fun getThreadsIdsFromLabel(labelName: String): List<String>
+    fun getEmailMetadataKeysFromLabel(labelName: String): List<Long>
     fun getExternalData(id: Long): EmailExternalSession?
     fun saveExternalSession(externalSession: EmailExternalSession)
+    fun deleteEmail(emailId: List<Long>)
 
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
@@ -64,7 +66,8 @@ interface MailboxLocalDB {
         }
 
         override fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail> {
-            val emails = db.emailDao().getPendingEmails(deliveryTypes)
+            val emails = db.emailDao().getPendingEmails(deliveryTypes,
+                    Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox).map { it.id })
             val fullEmails =  emails.map {
                 val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
@@ -97,6 +100,11 @@ interface MailboxLocalDB {
         override fun getThreadsIdsFromLabel(labelName: String): List<String> {
             val labelId = db.labelDao().get(labelName).id
             return db.emailDao().getThreadIdsFromLabel(labelId)
+        }
+
+        override fun getEmailMetadataKeysFromLabel(labelName: String): List<Long> {
+            val labelId = db.labelDao().get(labelName).id
+            return db.emailDao().getMetadataKeysFromLabel(labelId)
         }
 
         override fun getEmailThreadFromId(threadId: String, selectedLabel: String, rejectedLabels: List<Long>, userEmail: String): EmailThread {
@@ -217,6 +225,10 @@ interface MailboxLocalDB {
 
         override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>){
             db.emailLabelDao().deleteRelationByLabelAndEmailIds(labelId, emailIds)
+        }
+
+        override fun deleteEmail(emailId: List<Long>) {
+            db.emailDao().deleteByIds(emailId)
         }
 
         private fun updateEmail(id: Long, threadId: String, messageId : String, metadataKey: Long,

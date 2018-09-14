@@ -65,7 +65,9 @@ class UpdateEmailThreadLabelsWorker(
             db.createLabelEmailRelations(emailLabels)
         }
 
-        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, selectedLabels.toIDs())
+        val labels = db.getLabelsFromThreadId(threadId)
+
+        return EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, labels)
     }
 
     override fun cancel() {

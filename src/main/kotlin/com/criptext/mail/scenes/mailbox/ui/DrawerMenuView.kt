@@ -176,8 +176,7 @@ class DrawerMenuView(navigationView: NavigationView,
     fun initNavHeader(fullName: String, email: String){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName
-        avatarView.setImageBitmap(Utility.getBitmapFromText(safeFullName,
-                safeFullName.toCharArray()[0].toString(), 250, 250))
+        avatarView.setImageBitmap(Utility.getBitmapFromText(safeFullName, 250, 250))
         textViewNombre.text = safeFullName
         textViewCorreo.text = email
     }

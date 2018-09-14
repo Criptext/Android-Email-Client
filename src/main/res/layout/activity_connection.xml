@@ -156,6 +156,7 @@
     </RelativeLayout>
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/textViewStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -166,6 +167,7 @@
         android:text="@string/establishing"/>
 
     <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/textViewEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

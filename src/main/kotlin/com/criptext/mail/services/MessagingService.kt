@@ -9,23 +9,30 @@ import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
+import com.github.kittinunf.result.Result
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 
 class MessagingService : FirebaseMessagingService(){
 
-    private val pushController = PushController(
-            dataSource = PushDataSource(db = AppDatabase.getAppDatabase(this),
-                                        runner = AsyncTaskWorkRunner(),
-                                        httpClient = HttpClient.Default()),
-            isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+    private var pushController: PushController? = null
 
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        if(pushController == null){
+            val db = Result.of { AppDatabase.getAppDatabase(this) }
+            if(db is Result.Success) {
+                pushController = PushController(
+                        dataSource = PushDataSource(db = db.value,
+                                runner = AsyncTaskWorkRunner(),
+                                httpClient = HttpClient.Default()),
+                        isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            }
+        }
         if(remoteMessage.data.isNotEmpty()) {
             val shouldPostNotification = !isAppOnForeground(this, packageName)
-            val notifier = pushController.parsePushPayload(remoteMessage.data, shouldPostNotification)
+            val notifier = pushController?.parsePushPayload(remoteMessage.data, shouldPostNotification)
             notifier?.notifyPushEvent(this)
         }
     }
