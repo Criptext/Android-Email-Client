@@ -29,6 +29,19 @@ interface WebSocketEventListener {
     fun onDeviceRemoved()
 
     /**
+     * Invoked when the recovery email has changed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     * @param newEmail: New recovery email.
+     */
+    fun onRecoveryEmailChanged(newEmail: String)
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onRecoveryEmailConfirmed()
+
+    /**
      * Called when something went wrong processing the event. Subscribers may want to display an
      * error message.
      * @param uiMessage: Object with localized error message

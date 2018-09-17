@@ -5,6 +5,7 @@ import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
+import org.json.JSONObject
 
 /**
  * Manages the web socket, exposes methods to connect, disconnect, reconnect and subscribe/unsubscribe
@@ -39,9 +40,12 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
             Event.Cmd.peerThreadDeleted,
             Event.Cmd.peerEmailUnsendStatusUpdate,
             Event.Cmd.peerLabelCreated,
-            Event.Cmd.recoveryEmailChanged,
-            Event.Cmd.recoveryEmailConfirmed,
             Event.Cmd.peerUserChangeName -> currentListener?.onNewEvent()
+            Event.Cmd.recoveryEmailChanged -> {
+                val email = JSONObject(event.params).getString("address")
+                currentListener?.onRecoveryEmailChanged(email)
+            }
+            Event.Cmd.recoveryEmailConfirmed -> currentListener?.onRecoveryEmailConfirmed()
             Event.Cmd.deviceRemoved -> currentListener?.onDeviceRemoved()
             Event.Cmd.deviceLock -> currentListener?.onDeviceLocked()
 

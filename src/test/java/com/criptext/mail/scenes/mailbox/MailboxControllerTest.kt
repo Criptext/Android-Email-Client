@@ -28,6 +28,7 @@ open class MailboxControllerTest {
     protected lateinit var webSocketEvents: WebSocketEventPublisher
     protected lateinit var feedController : FeedController
     protected lateinit var sentRequests: MutableList<MailboxRequest>
+    protected lateinit var sentGeneralRequests: MutableList<GeneralRequest>
     protected lateinit var virtualListView: VirtualListView
     protected lateinit var activeAccount: ActiveAccount
 
@@ -61,7 +62,9 @@ open class MailboxControllerTest {
         )
 
         sentRequests = mutableListOf()
+        sentGeneralRequests = mutableListOf()
         every { dataSource.submitRequest(capture(sentRequests)) } just Runs
+        every { generalDataSource.submitRequest(capture(sentGeneralRequests)) } just Runs
     }
 
 }

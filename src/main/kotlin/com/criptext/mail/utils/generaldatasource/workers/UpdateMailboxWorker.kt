@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.mailbox.data
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -15,14 +15,12 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.whispersystems.libsignal.DuplicateMessageException
-
-/**
- * Created by sebas on 3/22/18.
- */
 
 class UpdateMailboxWorker(
         signalClient: SignalClient,
@@ -33,31 +31,31 @@ class UpdateMailboxWorker(
         httpClient: HttpClient,
         storage: KeyValueStorage,
         override val publishFn: (
-                MailboxResult.UpdateMailbox) -> Unit)
-    : BackgroundWorker<MailboxResult.UpdateMailbox> {
+                GeneralResult.UpdateMailbox) -> Unit)
+    : BackgroundWorker<GeneralResult.UpdateMailbox> {
 
 
     override val canBeParallelized = false
-    private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
 
-    override fun catchException(ex: Exception): MailboxResult.UpdateMailbox =
+    override fun catchException(ex: Exception): GeneralResult.UpdateMailbox =
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerErrorCodes.Unauthorized ->
-                    MailboxResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerErrorCodes.Forbidden ->
-                    MailboxResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
-                else -> MailboxResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+                    GeneralResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                else -> GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
             }
         }
-        else MailboxResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+        else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
 
 
-    private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): MailboxResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): GeneralResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
-            MailboxResult.UpdateMailbox.Success(
+            GeneralResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
                     mailboxThreads = null)
@@ -65,8 +63,8 @@ class UpdateMailboxWorker(
             catchException(failure.error)
     }
 
-    override fun work(reporter: ProgressReporter<MailboxResult.UpdateMailbox>)
-            : MailboxResult.UpdateMailbox? {
+    override fun work(reporter: ProgressReporter<GeneralResult.UpdateMailbox>)
+            : GeneralResult.UpdateMailbox? {
         eventHelper.setupForMailbox(label, loadedThreadsCount)
         val operationResult = eventHelper.fetchPendingEvents()
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
@@ -77,7 +75,7 @@ class UpdateMailboxWorker(
 
         return when(operationResult) {
             is Result.Success -> {
-                return MailboxResult.UpdateMailbox.Success(
+                return GeneralResult.UpdateMailbox.Success(
                         mailboxLabel = label,
                         isManual = true,
                         mailboxThreads = operationResult.value

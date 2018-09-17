@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings.recovery_email
 
-interface RecoveryEmailUIObserver {
+import com.criptext.mail.utils.uiobserver.UIObserver
+
+interface RecoveryEmailUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onResendRecoveryLinkPressed()
     fun onRecoveryEmailTextChanged(text: String)

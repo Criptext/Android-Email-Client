@@ -6,11 +6,14 @@ import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 
@@ -23,6 +26,7 @@ class SettingsActivity: BaseActivity(){
         val model = receivedModel as SettingsModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val scene = SettingsScene.Default(view)
         val db = SettingsLocalDB.Default(appDB)
         val dataSource = SettingsDataSource(
@@ -32,6 +36,8 @@ class SettingsActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
         val generalDataSource = GeneralDataSource(
+                signalClient = signalClient,
+                eventLocalDB = EventLocalDB(appDB),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),

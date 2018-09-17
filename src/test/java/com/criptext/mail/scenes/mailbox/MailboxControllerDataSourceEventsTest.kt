@@ -2,6 +2,8 @@ package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import io.mockk.*
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
@@ -13,12 +15,15 @@ import org.junit.Test
  */
 class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
     private lateinit var listenerSlot: CapturingSlot<(MailboxResult) -> Unit>
+    private lateinit var generalListenerSlot: CapturingSlot<(GeneralResult) -> Unit>
 
     @Before
     override fun setUp() {
         super.setUp()
         listenerSlot = CapturingSlot()
+        generalListenerSlot = CapturingSlot()
         every { dataSource::listener.set(capture(listenerSlot)) } just Runs
+        every { generalDataSource::listener.set(capture(generalListenerSlot)) } just Runs
     }
 
     @Test
@@ -50,7 +55,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
 
         // verify UpdateMailbox request sent
         verify {
-            dataSource.submitRequest(MailboxRequest.UpdateMailbox(label = model.selectedLabel,
+            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(label = model.selectedLabel,
                 loadedThreadsCount = loadedThreads.size))
         }
     }
@@ -108,7 +113,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         val threadsFromUpdate = MailboxTestUtils.createEmailPreviews(20)
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.UpdateMailbox.Success(
+        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(
                 mailboxThreads = threadsFromUpdate,
                 mailboxLabel = model.selectedLabel,
                 isManual = false))
@@ -127,7 +132,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.UpdateMailbox.Success(mailboxThreads = null,
+        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
                 mailboxLabel = model.selectedLabel, isManual = false))
 
         model.threads.size `should be` 40
@@ -144,7 +149,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
-        listenerSlot.captured(MailboxResult.UpdateMailbox.Success(mailboxThreads = null,
+        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
                 mailboxLabel = model.selectedLabel, isManual = true))
 
         verify { scene.clearRefreshing() }

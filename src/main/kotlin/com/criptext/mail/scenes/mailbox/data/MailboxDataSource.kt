@@ -50,18 +50,6 @@ class MailboxDataSource(
                         flushResults(result)
                     })
 
-            is MailboxRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = signalClient,
-                    dbEvents = eventLocalDB,
-                    httpClient = httpClient,
-                    activeAccount = activeAccount,
-                    label = params.label,
-                    loadedThreadsCount = params.loadedThreadsCount,
-                    storage = storage,
-                    publishFn = { result ->
-                        flushResults(result)
-                    })
-
             is MailboxRequest.LoadEmailThreads -> LoadEmailThreadsWorker(
                     db = mailboxLocalDB,
                     loadParams = params.loadParams,
