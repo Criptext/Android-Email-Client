@@ -98,10 +98,11 @@ class MoveEmailThreadWorker(
             apiClient.postThreadLabelChangedEvent(selectedThreadIds, listOf(currentLabel.text),
                 selectedLabels.toList().map { it.text })}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of { if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
-                    //Mark as spam from trash
-                    db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
-                            emailIds = emailIds)
+                .flatMap { Result.of {
+                    if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
+                        //Mark as spam from trash
+                        db.deleteRelationByLabelAndEmailIds(labelId = defaultItems.trash.id,
+                                emailIds = emailIds)
                     }
                     val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
                     db.createLabelEmailRelations(labelEmails)

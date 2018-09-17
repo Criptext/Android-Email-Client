@@ -219,7 +219,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
             override fun onAttachmentViewClick(position: Int) {
-                emailListener?.onAttachmentSelected(adapterPosition, position)
+                emailListener?.onAttachmentSelected(adapterPosition + 1, position)
             }
             override fun onRemoveAttachmentClicked(position: Int) {}
         }

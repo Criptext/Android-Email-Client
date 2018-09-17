@@ -66,6 +66,7 @@
 
 **Merged pull requests:**
 
+- Various aesthetic fixes. [\#261](https://github.com/Criptext/Android-Email-Client/pull/261) ([jorgeblacio](https://github.com/jorgeblacio))
 - Now web socket only lets it's listeners now that there is a new event for them to do get events. [\#260](https://github.com/Criptext/Android-Email-Client/pull/260) ([jorgeblacio](https://github.com/jorgeblacio))
 - resend emails only if there is not activityMessage [\#259](https://github.com/Criptext/Android-Email-Client/pull/259) ([danieltigse](https://github.com/danieltigse))
 - Fixed db migration update to contacts in case there is a conflict in email. [\#258](https://github.com/Criptext/Android-Email-Client/pull/258) ([jorgeblacio](https://github.com/jorgeblacio))

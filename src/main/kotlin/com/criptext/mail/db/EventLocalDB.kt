@@ -79,15 +79,25 @@ class EventLocalDB(private val db: AppDatabase){
     fun updateThreadLabels(threadIds: List<String>, labelsAdded: List<String>, labelsRemoved: List<String>) {
         if(threadIds.isNotEmpty()){
 
+            val systemLabels = db.labelDao().get(Label.defaultItems.toList().map { it.text })
             val emailIds = db.emailDao().getEmailsFromThreadIds(threadIds).map { it.id }
-            val removedLabelIds = db.labelDao().get(labelsRemoved).map { it.id }
-            val addedLabelIds = db.labelDao().get(labelsAdded)
+            val removedLabels = db.labelDao().get(labelsRemoved)
+            val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
+            val addedLabels = db.labelDao().get(labelsAdded)
 
-            db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedLabelIds, emailIds)
+            db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedNonSystemLabelIds, emailIds)
+
+            if(Label.defaultItems.trash in removedLabels){
+                db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.trash.id), emailIds)
+            }
+
+            if(Label.defaultItems.trash in addedLabels){
+                db.emailDao().updateEmailTrashDate(Date(), emailIds)
+            }
 
 
             val selectedLabels = SelectedLabels()
-            val labelsWrapper = addedLabelIds.map { LabelWrapper(it) }
+            val labelsWrapper = addedLabels.map { LabelWrapper(it) }
             selectedLabels.addMultipleSelected(labelsWrapper)
             val labelEmails = emailIds.flatMap{ emailId ->
                 selectedLabels.toIDs().map{ labelId ->
@@ -101,15 +111,24 @@ class EventLocalDB(private val db: AppDatabase){
     fun updateEmailLabels(metadataKeys: List<Long>, labelsAdded: List<String>, labelsRemoved: List<String>) {
         if(metadataKeys.isNotEmpty()){
 
+            val systemLabels = db.labelDao().get(Label.defaultItems.toList().map { it.text })
             val emailIds = db.emailDao().getAllEmailsByMetadataKey(metadataKeys).map { it.id }
-            val removedLabelIds = db.labelDao().get(labelsRemoved).map { it.id }
-            val addedLabelIds = db.labelDao().get(labelsAdded)
+            val removedLabels = db.labelDao().get(labelsRemoved)
+            val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
+            val addedLabels = db.labelDao().get(labelsAdded)
 
-            db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedLabelIds, emailIds)
+            db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedNonSystemLabelIds, emailIds)
 
+            if(Label.defaultItems.trash in removedLabels){
+                db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.trash.id), emailIds)
+            }
+
+            if(Label.defaultItems.trash in addedLabels){
+                db.emailDao().updateEmailTrashDate(Date(), emailIds)
+            }
 
             val selectedLabels = SelectedLabels()
-            val labelsWrapper = addedLabelIds.map { LabelWrapper(it) }
+            val labelsWrapper = addedLabels.map { LabelWrapper(it) }
             selectedLabels.addMultipleSelected(labelsWrapper)
             val labelEmails = emailIds.flatMap{ emailId ->
                 selectedLabels.toIDs().map{ labelId ->

@@ -21,7 +21,7 @@ class LoadEmailThreadsWorker(
                 MailboxResult.LoadEmailThreads) -> Unit)
     : BackgroundWorker<MailboxResult.LoadEmailThreads> {
 
-    override val canBeParallelized = true
+    override val canBeParallelized = false
 
     override fun catchException(ex: Exception): MailboxResult.LoadEmailThreads {
 
