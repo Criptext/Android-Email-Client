@@ -3,6 +3,9 @@ package com.criptext.mail.utils
 import android.content.Context
 import android.os.Build
 import com.criptext.mail.db.models.ActiveAccount
+import android.bluetooth.BluetoothAdapter
+import com.github.kittinunf.result.Result
+
 
 class DeviceUtils{
 
@@ -17,6 +20,16 @@ class DeviceUtils{
             } else {
                 capitalize(manufacturer) + " " + model
             }
+        }
+
+        fun getDeviceFriendlyName(): String{
+            val myDevice = BluetoothAdapter.getDefaultAdapter()
+            if(myDevice != null){
+                val operation = Result.of { myDevice.name }
+                if(operation is Result.Success)
+                    return operation.value
+            }
+            return getDeviceName()
         }
 
         fun getDeviceId(context: Context): Int?{
@@ -41,6 +54,15 @@ class DeviceUtils{
         }
         fun getDeviceType(): DeviceType {
             return DeviceType.Android
+        }
+
+        fun getDeviceType(ordinal: Int): DeviceType{
+            return when(ordinal){
+                1 -> DeviceType.PC
+                2 -> DeviceType.iOS
+                3 -> DeviceType.Android
+                else -> DeviceType.NONE
+            }
         }
     }
 }

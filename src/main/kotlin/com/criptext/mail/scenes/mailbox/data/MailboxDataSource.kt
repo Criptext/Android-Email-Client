@@ -113,21 +113,6 @@ class MailboxDataSource(
                     }
             )
 
-            is MailboxRequest.LinkDevice -> LinkDevicesWorker(
-                    emailDao = emailDao,
-                    contactDao = contactDao,
-                    fileDao = fileDao,
-                    fileKeyDao = fileKeyDao,
-                    labelDao = labelDao,
-                    emailLabelDao = emailLabelDao,
-                    emailContactJoinDao = emailContactJoinDao,
-                    signalClient = signalClient,
-                    httpClient = httpClient,
-                    activeAccount = activeAccount,
-                    publishFn = { result ->
-                        flushResults(result)
-            })
-
             is MailboxRequest.GetEmailPreview -> GetEmailPreviewWorker(
                     threadId = params.threadId,
                     mailboxLocalDB = mailboxLocalDB,

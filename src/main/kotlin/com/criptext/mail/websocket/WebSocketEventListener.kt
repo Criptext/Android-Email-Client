@@ -42,6 +42,30 @@ interface WebSocketEventListener {
     fun onRecoveryEmailConfirmed()
 
     /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo)
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onDeviceLinkAuthAccept(deviceId: Int, name: String)
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onDeviceLinkAuthDeny()
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onKeyBundleUploaded(deviceId: Int)
+
+    /**
      * Called when something went wrong processing the event. Subscribers may want to display an
      * error message.
      * @param uiMessage: Object with localized error message

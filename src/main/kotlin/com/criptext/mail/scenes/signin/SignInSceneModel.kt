@@ -8,4 +8,5 @@ import com.criptext.mail.scenes.signin.holders.SignInLayoutState
  */
 class SignInSceneModel : SceneModel {
     var state: SignInLayoutState = SignInLayoutState.Start(username = "", firstTime = true)
+    var ephemeralJwt: String = ""
 }

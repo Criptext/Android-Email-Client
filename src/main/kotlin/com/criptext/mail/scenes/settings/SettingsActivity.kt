@@ -16,6 +16,7 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.websocket.WebSocketSingleton
 
 class SettingsActivity: BaseActivity(){
 
@@ -29,9 +30,12 @@ class SettingsActivity: BaseActivity(){
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val scene = SettingsScene.Default(view)
         val db = SettingsLocalDB.Default(appDB)
+        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val webSocketEvents = WebSocketSingleton.getInstance(
+                activeAccount = activeAccount!!)
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
@@ -41,12 +45,13 @@ class SettingsActivity: BaseActivity(){
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 httpClient = HttpClient.Default()
         )
         return SettingsController(
                 model = model,
                 scene = scene,
+                websocketEvents = webSocketEvents,
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),

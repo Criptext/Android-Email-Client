@@ -106,13 +106,13 @@ class SaveEmailWorker(
         val defaultLabels = Label.DefaultItems()
         val labels = if(onlySave) listOf(defaultLabels.draft) else listOf(defaultLabels.sent)
         val files = createFilesData()
-        val newEmailId = dao.runTransaction({
+        val newEmailId = dao.runTransaction {
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
 
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
                     decryptedBody = composerInputData.body, labels = labels, files = files, fileKey = fileKey)
 
-        })
+        }
 
         return Pair(newEmailId, metadataColumns.threadId)
     }

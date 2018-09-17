@@ -9,10 +9,8 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.utils.generaldatasource.workers.ConfirmPasswordWorker
-import com.criptext.mail.utils.generaldatasource.workers.DeviceRemovedWorker
-import com.criptext.mail.utils.generaldatasource.workers.ForgotPasswordWorker
-import com.criptext.mail.utils.generaldatasource.workers.UpdateMailboxWorker
+import com.criptext.mail.signal.SignalStoreCriptext
+import com.criptext.mail.utils.generaldatasource.workers.*
 
 class GeneralDataSource(override val runner: WorkRunner,
                         private val signalClient: SignalClient,
@@ -48,6 +46,24 @@ class GeneralDataSource(override val runner: WorkRunner,
                     loadedThreadsCount = params.loadedThreadsCount,
                     storage = storage,
                     publishFn = { res -> flushResults(res) })
+            is GeneralRequest.LinkAccept -> LinkAuthAcceptWorker(
+                    activeAccount = activeAccount!!, httpClient = httpClient,
+                    untrustedDeviceInfo = params.untrustedDeviceInfo,
+                    publishFn = { res -> flushResults(res)}
+            )
+            is GeneralRequest.LinkDenied -> LinkAuthDenyWorker(
+                    activeAccount = activeAccount!!, httpClient = httpClient,
+                    untrustedDeviceInfo = params.untrustedDeviceInfo,
+                    publishFn = { res -> flushResults(res)}
+            )
+            is GeneralRequest.DataFileCreation -> DataFileCreationWorker(
+                    httpClient = httpClient, activeAccount = activeAccount!!, emailDao = db.emailDao(),
+                    fileKeyDao = db.fileKeyDao(), fileDao = db.fileDao(), labelDao = db.labelDao(),
+                    contactDao = db.contactDao(), emailLabelDao = db.emailLabelDao(),
+                    emailContactJoinDao = db.emailContactDao(), externalSessionDao = db.emailExternalSessionDao(),
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 }

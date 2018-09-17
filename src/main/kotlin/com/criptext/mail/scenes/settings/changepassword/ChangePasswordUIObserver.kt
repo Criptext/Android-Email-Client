@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings.changepassword
 
-interface ChangePasswordUIObserver {
+import com.criptext.mail.utils.uiobserver.UIObserver
+
+interface ChangePasswordUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onOldPasswordChangedListener(password: String)
     fun onPasswordChangedListener(password: String)

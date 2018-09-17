@@ -34,4 +34,18 @@ class GeneralAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
     }
 
+    fun postLinkAccept(deviceId: String): String {
+        val jsonPost = JSONObject()
+        jsonPost.put("randomId", deviceId)
+
+        return httpClient.post(path = "/link/accept", authToken = token, body = jsonPost)
+    }
+
+    fun postLinkDeny(deviceId: String): String {
+        val jsonPost = JSONObject()
+        jsonPost.put("randomId", deviceId)
+
+        return httpClient.post(path = "/link/deny", authToken = token, body = jsonPost)
+    }
+
 }

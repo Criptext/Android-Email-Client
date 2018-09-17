@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
+import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
 import com.criptext.mail.scenes.params.*
@@ -160,6 +161,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
+            is LinkingParams -> LinkingModel(params.email)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

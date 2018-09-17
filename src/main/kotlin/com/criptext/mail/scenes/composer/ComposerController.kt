@@ -9,6 +9,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -17,12 +18,12 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
 import com.criptext.mail.scenes.params.EmailDetailParams
+import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.validation.FormInputState
 
 
 /**
@@ -40,6 +41,14 @@ class ComposerController(private val model: ComposerModel,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onNewCamAttachmentRequested() {
             host.launchExternalActivityForResult(ExternalActivityParams.Camera())
         }
@@ -128,6 +137,7 @@ class ComposerController(private val model: ComposerModel,
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
@@ -244,6 +254,15 @@ class ComposerController(private val model: ComposerModel,
         }
     }
 
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+                        false, true)
+            }
+        }
+    }
+
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
         model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name) })
@@ -333,10 +352,7 @@ class ComposerController(private val model: ComposerModel,
     private fun generateEmailFileKey(){
         if(model.fileKey != null)  return
         model.fileKey = if(model.type is ComposerType.Empty) {
-            val aesKey = AESUtil.generateSecureRandomBytes()
-            val aesIV = AESUtil.generateSecureRandomBytes()
-
-            aesKey.plus(":".plus(aesIV))
+            AESUtil.generateAesKey()
         } else null
     }
 

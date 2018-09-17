@@ -9,6 +9,8 @@ import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.websocket.WebSocketController
+import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
@@ -26,6 +28,7 @@ class SettingsControllerTest{
     private lateinit var generalDataSource: GeneralDataSource
     private lateinit var controller: SettingsController
     private lateinit var runner: MockedWorkRunner
+    protected lateinit var webSocketEvents: WebSocketController
     private lateinit var sentRequests: MutableList<SettingsRequest>
 
     private val observerSlot = CapturingSlot<SettingsUIObserver>()
@@ -41,6 +44,7 @@ class SettingsControllerTest{
         model = SettingsModel()
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
+        webSocketEvents = mockk(relaxed = true)
         generalDataSource = mockk(relaxed = true)
         storage = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
@@ -50,6 +54,7 @@ class SettingsControllerTest{
                 scene = scene,
                 model = model,
                 host = host,
+                websocketEvents = webSocketEvents,
                 activeAccount = activeAccount,
                 storage = storage,
                 generalDataSource = generalDataSource,

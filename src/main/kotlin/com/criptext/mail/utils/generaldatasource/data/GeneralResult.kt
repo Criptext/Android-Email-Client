@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
@@ -28,7 +29,7 @@ sealed class GeneralResult {
         data class Success(
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
-                val isManual: Boolean): UpdateMailbox() {
+                val isManual: Boolean) : UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
@@ -38,7 +39,7 @@ sealed class GeneralResult {
         data class Failure(
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
+                val exception: Exception?) : UpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
@@ -47,7 +48,7 @@ sealed class GeneralResult {
         data class Unauthorized(
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
+                val exception: Exception?) : UpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
@@ -56,11 +57,25 @@ sealed class GeneralResult {
         data class Forbidden(
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
+                val exception: Exception?) : UpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }
+    }
 
+    sealed class LinkAccept: GeneralResult() {
+        class Success: LinkAccept()
+        data class Failure(val message: UIMessage): LinkAccept()
+    }
+
+    sealed class LinkDeny: GeneralResult() {
+        class Success: LinkDeny()
+        data class Failure(val message: UIMessage): LinkDeny()
+    }
+
+    sealed class DataFileCreation: GeneralResult() {
+        data class Success(val key: String, val filePath: String): DataFileCreation()
+        data class Failure(val message: UIMessage): DataFileCreation()
     }
 }

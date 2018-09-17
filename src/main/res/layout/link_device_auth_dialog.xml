@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Security Alert"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:id="@+id/message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/link_auth_no"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/label_button_left_bg"
+            android:stateListAnimator="@null"
+            android:text="@string/no"
+            android:textAllCaps="false"
+            android:textColor="@color/label_buttons_text"
+            android:textSize="15sp" />
+
+        <Button
+            android:textColor="@color/label_buttons_text"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/link_auth_yes"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_right_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/yes"/>
+
+    </LinearLayout>
+</LinearLayout>

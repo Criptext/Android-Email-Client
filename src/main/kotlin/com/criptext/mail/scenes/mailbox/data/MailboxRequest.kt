@@ -20,7 +20,6 @@ sealed class MailboxRequest{
             val shouldRemoveCurrentLabel: Boolean
             ): MailboxRequest()
 
-    class LinkDevice: MailboxRequest()
 
     data class MoveEmailThread(
             val chosenLabel: String?,

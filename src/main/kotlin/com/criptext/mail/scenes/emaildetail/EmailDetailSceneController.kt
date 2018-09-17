@@ -6,6 +6,7 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.ActiveAccount
@@ -26,6 +27,7 @@ import com.criptext.mail.scenes.mailbox.OnDeleteEmailListener
 import com.criptext.mail.scenes.mailbox.OnDeleteThreadListener
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.params.ComposerParams
+import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.KeyboardManager
@@ -44,7 +46,7 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 class EmailDetailSceneController(private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
-                                 activeAccount: ActiveAccount,
+                                 private val activeAccount: ActiveAccount,
                                  private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                                  private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
                                  private val websocketEvents: WebSocketEventPublisher,
@@ -56,6 +58,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.UpdateMailbox -> onMailboxUpdate(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
@@ -72,6 +75,14 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onOkButtonPressed(password: String) {
             generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
@@ -105,6 +116,15 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+//                        false, true)
             }
         }
     }
@@ -603,6 +623,23 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceLinkAuthDeny() {
+
+        }
+
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
+        }
+
+        override fun onDeviceLinkAuthAccept(deviceId: Int, name:String) {
+
+        }
+
+        override fun onKeyBundleUploaded(deviceId: Int) {
+
+        }
 
         override fun onNewEvent() {
             generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
@@ -617,7 +654,9 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
 
         override fun onDeviceLocked() {
-            scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            host.runOnUiThread(Runnable {
+                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            })
         }
 
         override fun onDeviceRemoved() {

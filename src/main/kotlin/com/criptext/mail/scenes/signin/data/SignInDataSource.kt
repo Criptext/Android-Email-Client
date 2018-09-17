@@ -4,7 +4,6 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
@@ -55,6 +54,28 @@ class SignInDataSource(override val runner: WorkRunner,
                     })
             is SignInRequest.ForgotPassword -> ForgotPasswordWorker(
                     httpClient = httpClient, username = params.username,
+                    publishFn = { result -> flushResults(result)
+                    }
+            )
+            is SignInRequest.LinkBegin -> LinkBeginWorker(
+                    httpClient = httpClient, username = params.username,
+                    publishFn = { result -> flushResults(result)
+                    }
+            )
+            is SignInRequest.LinkAuth -> LinkAuthWorker(
+                    httpClient = httpClient, username = params.username,
+                    jwt = params.ephemeralJwt,
+                    publishFn = { result -> flushResults(result)
+                    }
+            )
+            is SignInRequest.CreateSessionFromLink -> CreateSessionWorker(
+                    name = params.name,
+                    httpClient = httpClient, randomId = params.randomId,
+                    username = params.username, db = signInLocalDB,
+                    accountDao = accountDao, ephemeralJwt = params.ephemeralJwt,
+                    keyGenerator = keyGenerator, keyValueStorage = keyValueStorage,
+                    messagingInstance = MessagingInstance.Default(),
+                    signUpDao = signUpDao,
                     publishFn = { result -> flushResults(result)
                     }
             )

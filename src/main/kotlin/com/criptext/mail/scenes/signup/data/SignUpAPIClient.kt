@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.signup.data
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.scenes.signup.IncompleteAccount
+import com.criptext.mail.utils.DeviceUtils
 import org.json.JSONObject
 
 /**
@@ -42,5 +43,22 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         jsonPut.put("devicePushToken", pushToken)
 
         return httpClient.put(path = "/keybundle/pushtoken", authToken = jwt, body = jsonPut)
+    }
+
+    fun postLinkBegin(recipientId: String): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("targetUsername", recipientId)
+
+        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
+    }
+
+    fun postLinkAuth(recipientId: String, jwt: String): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("recipientId", recipientId)
+        jsonPut.put("deviceName", DeviceUtils.getDeviceName())
+        jsonPut.put("deviceFriendlyName", DeviceUtils.getDeviceFriendlyName())
+        jsonPut.put("deviceType", DeviceUtils.getDeviceType().ordinal)
+
+        return httpClient.post(path = "/link/auth", authToken = jwt, body = jsonPut)
     }
 }

@@ -2,11 +2,13 @@ package com.criptext.mail.scenes.settings.changepassword
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.SettingsParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordRequest
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordResult
 import com.criptext.mail.utils.KeyboardManager
@@ -14,6 +16,8 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.validation.FormInputState
+import com.criptext.mail.websocket.WebSocketEventListener
+import com.criptext.mail.websocket.WebSocketEventPublisher
 
 class ChangePasswordController(
         private val activeAccount: ActiveAccount,
@@ -21,6 +25,7 @@ class ChangePasswordController(
         private val scene: ChangePasswordScene,
         private val host: IHostActivity,
         private val keyboardManager: KeyboardManager,
+        private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
         private val dataSource: BackgroundWorkManager<ChangePasswordRequest, ChangePasswordResult>)
     : SceneController(){
@@ -33,10 +38,29 @@ class ChangePasswordController(
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.ResetPassword -> onResetPassword(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
     private val changePasswordUIObserver = object: ChangePasswordUIObserver{
+        override fun onOkButtonPressed(password: String) {
+            generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
+        }
+
+        override fun onCancelButtonPressed() {
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
+        }
+
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onForgotPasswordPressed() {
             generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
         }
@@ -79,6 +103,7 @@ class ChangePasswordController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        websocketEvents.setListener(webSocketEventListener)
         scene.attachView(changePasswordUIObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
@@ -131,8 +156,90 @@ class ChangePasswordController(
         }
     }
 
-    override fun onStop() {
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+                //Needed for second part of Link Devices
+//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+//                        false, true)
+            }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
 
+    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
+        when (result) {
+            is GeneralResult.ConfirmPassword.Success -> {
+                scene.dismissConfirmPasswordDialog()
+                scene.showMessage(UIMessage(R.string.update_password_success))
+            }
+            is GeneralResult.ConfirmPassword.Failure -> {
+                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
+        when (result) {
+            is GeneralResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(),
+                        ActivityMessage.ShowUIMessage(
+                                UIMessage(R.string.device_removed_remotely_exception)),
+                        true, true)
+            }
+        }
+    }
+
+    override fun onStop() {
+        websocketEvents.clearListener(webSocketEventListener)
+    }
+
+    private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceLinkAuthDeny() {
+
+        }
+
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
+        }
+
+        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+
+        }
+
+        override fun onKeyBundleUploaded(deviceId: Int) {
+
+        }
+
+        override fun onNewEvent() {
+
+        }
+
+        override fun onRecoveryEmailChanged(newEmail: String) {
+
+        }
+
+        override fun onRecoveryEmailConfirmed() {
+
+        }
+
+        override fun onDeviceLocked() {
+            host.runOnUiThread(Runnable {
+                scene.showConfirmPasswordDialog(changePasswordUIObserver)
+            })
+        }
+
+        override fun onDeviceRemoved() {
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+        }
+
+        override fun onError(uiMessage: UIMessage) {
+            scene.showMessage(uiMessage)
+        }
     }
 
     override fun onBackPressed(): Boolean {

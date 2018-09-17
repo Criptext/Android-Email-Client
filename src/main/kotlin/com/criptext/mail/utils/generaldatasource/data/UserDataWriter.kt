@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.mailbox.data
+package com.criptext.mail.utils.generaldatasource.data
 
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
@@ -11,7 +11,8 @@ class UserDataWriter(private val emailDao: EmailDao,
                      private val labelDao: LabelDao,
                      private val emailLabelDao: EmailLabelDao,
                      private val emailContactDao: EmailContactJoinDao,
-                     private val fileKeyDao: FileKeyDao)
+                     private val fileKeyDao: FileKeyDao,
+                     private val emailExternalSessionDao: EmailExternalSessionDao)
 {
 
     fun createFile():String? {
@@ -27,6 +28,7 @@ class UserDataWriter(private val emailDao: EmailDao,
             addMailsAndLabelsRelationToFile(emailLabelDao.getAll(), tmpFileLinkData)
             addMailsAndContactsRelationToFile(emailContactDao.getAll(), tmpFileLinkData)
             addMailsFileKey(fileKeyDao.getAll(), tmpFileLinkData)
+            addExternalSessionsToFile(emailExternalSessionDao.getAll(), tmpFileLinkData)
 
 
             return tmpFileLinkData.absolutePath
@@ -98,6 +100,8 @@ class UserDataWriter(private val emailDao: EmailDao,
             jsonObject.put("date", mail.date)
             jsonObject.put("metadataKey", mail.metadataKey)
             jsonObject.put("isMuted", mail.isMuted)
+            jsonObject.put("unsentDate", mail.unsentDate)
+            jsonObject.put("trashDate", mail.trashDate)
             jsonArrayAllMails.add(jsonObject.toString())
             tmpFile.appendText("${JSONObject("{table: email, object: $jsonObject}")}\n")
         }
@@ -139,6 +143,22 @@ class UserDataWriter(private val emailDao: EmailDao,
             jsonObject.put("emailId", file_key.emailId)
             jsonArrayAllMails.add(jsonObject.toString())
             tmpFile.appendText("${JSONObject("{table: file_key, object: $jsonObject}")}\n")
+        }
+    }
+
+    private fun addExternalSessionsToFile(allExternalSessions: List<EmailExternalSession>, tmpFile: File)
+    {
+        val jsonArrayAllMails = mutableListOf<String>()
+        for (external_session in allExternalSessions){
+            val jsonObject = JSONObject()
+            jsonObject.put("id", external_session.id)
+            jsonObject.put("emailId", external_session.emailId)
+            jsonObject.put("iv", external_session.iv)
+            jsonObject.put("salt", external_session.salt)
+            jsonObject.put("encryptedSession", external_session.encryptedSession)
+            jsonObject.put("encryptedBody", external_session.encryptedBody)
+            jsonArrayAllMails.add(jsonObject.toString())
+            tmpFile.appendText("${JSONObject("{table: email_external_session, object: $jsonObject}")}\n")
         }
     }
 }

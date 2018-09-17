@@ -38,6 +38,7 @@ interface IHostActivity {
     fun getIntentExtras(): IntentExtrasData?
     fun showDialog(message: UIMessage)
     fun dismissDialog()
+    fun runOnUiThread(runnable: Runnable)
     /**
      * Launch an activity for a result, and then pass that result as an ActivityMessage
      * @param params Object with the necessary data to launch the correct activity.

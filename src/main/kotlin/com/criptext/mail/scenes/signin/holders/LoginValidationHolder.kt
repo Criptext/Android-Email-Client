@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signin.OnPasswordLoginDialogListener
@@ -24,10 +25,13 @@ class LoginValidationHolder(
     private val cantAccessDevice: TextView
     private val textViewTitle: TextView
     private val textViewBody: TextView
+    private val textViewRejected: TextView
     private val textViewPrompt: TextView
     private val textViewNotApproved: TextView
     private val backButton: View
     private val buttonResend: Button
+    private val failedImageLayout: FrameLayout
+    private val loadingImageLayout: FrameLayout
 
     private val passwordLoginDialog = PasswordLoginDialog(view.context)
 
@@ -35,11 +39,14 @@ class LoginValidationHolder(
         rootLayout = view.findViewById<View>(R.id.viewRoot)
         cantAccessDevice = view.findViewById(R.id.cant_access_device)
         textViewTitle = view.findViewById(R.id.textViewTitle)
+        textViewRejected = view.findViewById(R.id.device_rejected)
         textViewBody = view.findViewById(R.id.textViewBody)
         buttonResend = view.findViewById(R.id.buttonResend)
         textViewNotApproved = view.findViewById(R.id.textViewNotAproved)
         textViewPrompt = view.findViewById(R.id.textViewPrompt)
         backButton = view.findViewById(R.id.icon_back)
+        failedImageLayout = view.findViewById(R.id.failed_x)
+        loadingImageLayout = view.findViewById(R.id.sign_in_anim)
 
         setListeners()
         startLoadingAnimation()
@@ -106,19 +113,28 @@ class LoginValidationHolder(
         return animSet
     }
 
-    private fun showFailedLogin(){
+    fun showFailedLogin(){
 
-        textViewTitle.text = view.resources.getText(R.string.failed)
-        textViewBody.text = view.resources.getText(R.string.login_rejected)
-        textViewNotApproved.visibility = View.VISIBLE
         buttonResend.visibility = View.GONE
         textViewPrompt.visibility = View.GONE
+        textViewTitle.text = view.context.getText(R.string.failed)
+        textViewBody.visibility = View.GONE
+        textViewNotApproved.visibility = View.VISIBLE
         animLoading?.cancel()
+        loadingImageLayout.visibility = View.GONE
+        failedImageLayout.visibility = View.VISIBLE
         rootLayout.post {
             val animLoading = initFailedAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
                     view.findViewById(R.id.imageViewWatch))
             animLoading.start()
         }
+    }
+
+    fun setEnableButtons(enable: Boolean){
+        buttonResend.isEnabled = enable
+        backButton.isEnabled = enable
+        buttonResend.isClickable = enable
+        backButton.isClickable = enable
     }
 
     private fun setListeners() {
@@ -129,6 +145,11 @@ class LoginValidationHolder(
 
         cantAccessDevice.setOnClickListener {
             uiObserver?.onCantAccessDeviceClick()
+        }
+
+        buttonResend.setOnClickListener {
+            uiObserver?.onResendDeviceLinkAuth(initialState.username)
+            setEnableButtons(false)
         }
     }
 

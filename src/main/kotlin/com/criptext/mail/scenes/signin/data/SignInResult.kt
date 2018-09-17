@@ -32,4 +32,22 @@ sealed class SignInResult {
         data class Failure(val message: UIMessage,
                 val exception: Exception): ForgotPassword()
     }
+
+    sealed class LinkBegin: SignInResult() {
+        data class Success(val ephemeralJwt: String): LinkBegin()
+        data class Failure(val message: UIMessage,
+                    val exception: Exception): LinkBegin()
+    }
+
+    sealed class LinkAuth: SignInResult() {
+        class Success: LinkAuth()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): LinkAuth()
+    }
+
+    sealed class CreateSessionFromLink: SignInResult() {
+        class Success: CreateSessionFromLink()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): CreateSessionFromLink()
+    }
 }
