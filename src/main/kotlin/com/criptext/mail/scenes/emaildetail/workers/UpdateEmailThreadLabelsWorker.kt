@@ -12,6 +12,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
+import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -48,7 +49,12 @@ class UpdateEmailThreadLabelsWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateEmailThreadsLabelsRelations>)
             : EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
+
+        val selectedLabelsList = selectedLabels.toList().map { it.label }
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+                .filter { !rejectedLabels.contains(it.id) }
+                .filter { it.text != Label.LABEL_STARRED }
         val emails = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels)
         val emailIds = emails.map { it.email.id }
         val removedLabels = if(currentLabel == Label.defaultItems.starred
@@ -56,26 +62,55 @@ class UpdateEmailThreadLabelsWorker(
         else
             listOf(currentLabel.text)
 
-        val result = Result.of {
-            apiClient.postEmailLabelChangedEvent(emails.map { it.email.metadataKey }, removedLabels,
-                    selectedLabels.toList().map { it.text })}
+        val peerSelectedLabels = selectedLabels.toList()
+                .filter { it.text != currentLabel.text }
+                .toList().map { it.text }
+        val peerRemovedLabels = db.getLabelsFromThreadId(threadId)
+                .filter { !selectedLabelsList.contains(it) }
+                .filter { (!systemLabels.contains(it)) }
+                .map { it.text }
+                .toMutableList()
+
+
+
+        val result =
+            if(removeCurrentLabel){
+                if(currentLabel == Label.defaultItems.spam){
+                    peerRemovedLabels.removeAll(peerRemovedLabels)
+                    peerRemovedLabels.add(Label.LABEL_SPAM)
+                }else
+                    peerRemovedLabels.add(currentLabel.text)
+                Result.of {
+                    apiClient.postEmailLabelChangedEvent(emails.map { it.email.metadataKey },
+                            peerRemovedLabels,
+                            peerSelectedLabels)
+                }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap { Result.of {
-                    if(removeCurrentLabel){
-                        if(currentLabel == Label.defaultItems.starred
-                                || currentLabel == Label.defaultItems.sent){
-                            db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
-                        }
-                        else{
-                            db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
-                        }
+                    if(currentLabel == Label.defaultItems.starred
+                            || currentLabel == Label.defaultItems.sent){
+                        db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
                     }
                     else{
+                        db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
+                    }
+
+                } }
+
+            } else {
+                Result.of {
+                    apiClient.postEmailLabelChangedEvent(emails.map { it.email.metadataKey },
+                            peerRemovedLabels,
+                            peerSelectedLabels)
+                }
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                .flatMap {
+                    Result.of {
                         db.deleteRelationByEmailIds(emailIds = emailIds)
 
                         val emailLabels = arrayListOf<EmailLabel>()
-                        emailIds.flatMap{ emailId ->
-                            selectedLabels.toIDs().map{ labelId ->
+                        emailIds.flatMap { emailId ->
+                            selectedLabels.toIDs().map { labelId ->
                                 emailLabels.add(EmailLabel(
                                         emailId = emailId,
                                         labelId = labelId))
@@ -83,7 +118,8 @@ class UpdateEmailThreadLabelsWorker(
                         }
                         db.createLabelEmailRelations(emailLabels)
                     }
-                } }
+                }
+            }
 
         return when(result){
             is Result.Success -> {

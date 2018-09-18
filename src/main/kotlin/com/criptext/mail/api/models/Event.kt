@@ -48,6 +48,9 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
             const val recoveryEmailChanged = 311
             const val recoveryEmailConfirmed = 312
 
+            //Get Events
+            const val newEvent = 400
+
         }
     }
 }

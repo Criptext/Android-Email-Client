@@ -31,17 +31,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     private val onMessageReceived = { text: String ->
         val event = Event.fromJSON(text)
         when (event.cmd) {
-            Event.Cmd.newEmail,
-            Event.Cmd.trackingUpdate,
-            Event.Cmd.peerEmailReadStatusUpdate,
-            Event.Cmd.peerEmailThreadReadStatusUpdate,
-            Event.Cmd.peerEmailChangedLabels,
-            Event.Cmd.peerThreadChangedLabels,
-            Event.Cmd.peerEmailDeleted,
-            Event.Cmd.peerThreadDeleted,
-            Event.Cmd.peerEmailUnsendStatusUpdate,
-            Event.Cmd.peerLabelCreated,
-            Event.Cmd.peerUserChangeName -> currentListener?.onNewEvent()
+            Event.Cmd.newEvent -> currentListener?.onNewEvent()
             Event.Cmd.recoveryEmailChanged -> {
                 val email = JSONObject(event.params).getString("address")
                 currentListener?.onRecoveryEmailChanged(email)

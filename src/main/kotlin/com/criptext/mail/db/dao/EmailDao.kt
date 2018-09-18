@@ -245,8 +245,9 @@ import java.util.*
 
     @Query("""UPDATE email
             SET delivered=:deliveryType
-            WHERE metadataKey in (:keys) AND delivered != (:unsendDeliveryTypes)""")
-    fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes, unsendDeliveryTypes: DeliveryTypes)
+            WHERE metadataKey in (:keys) AND delivered not in (:nonChangeableTypes)""")
+    fun changeDeliveryTypeByMetadataKey(keys: List<Long>, deliveryType: DeliveryTypes,
+                                        nonChangeableTypes: List<Int>)
 
     @Query("""SELECT *
             FROM email

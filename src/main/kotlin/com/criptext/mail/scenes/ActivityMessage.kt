@@ -18,6 +18,7 @@ sealed class ActivityMessage {
     data class UpdateUnreadStatusThread(val threadId: String, val unread: Boolean): ActivityMessage()
     data class UpdateLabelsThread(val threadId: String, val selectedLabelIds: List<Long>): ActivityMessage()
     data class UpdateThreadPreview(val threadPreview: EmailPreview): ActivityMessage()
+    class UpdateMailBox: ActivityMessage()
     data class MoveThread(val threadId: String?): ActivityMessage()
     class DraftSaved: ActivityMessage()
     data class ShowUIMessage(val message: UIMessage): ActivityMessage()

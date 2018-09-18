@@ -31,6 +31,7 @@ interface MailboxLocalDB {
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
     fun getLabelByName(labelName: String): Label
+    fun getLabelsByName(labelName: List<String>): List<Label>
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
                                metadataKey: Long, date: Date, status: DeliveryTypes)
     fun getExistingAccount(): Account
@@ -218,6 +219,10 @@ interface MailboxLocalDB {
         }
 
         override fun getLabelByName(labelName: String): Label {
+            return db.labelDao().get(labelName)
+        }
+
+        override fun getLabelsByName(labelName: List<String>): List<Label> {
             return db.labelDao().get(labelName)
         }
 
