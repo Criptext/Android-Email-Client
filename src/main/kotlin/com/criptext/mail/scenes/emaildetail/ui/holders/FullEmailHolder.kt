@@ -67,7 +67,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     viewOpen = false)
         }
         threePointsView.setOnClickListener({
-            displayPopMenu(emailListener, fullEmail, adapter, position)
+            displayPopMenu(emailListener, fullEmail, adapter, position - 1)
         })
 
         moreButton.setOnClickListener({
@@ -219,7 +219,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
             override fun onAttachmentViewClick(position: Int) {
-                emailListener?.onAttachmentSelected(adapterPosition + 1, position)
+                emailListener?.onAttachmentSelected(adapterPosition - 1, position)
             }
             override fun onRemoveAttachmentClicked(position: Int) {}
         }

@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.mailbox.data
 
-import com.criptext.mail.db.models.Email
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -13,10 +12,6 @@ import com.criptext.mail.scenes.label_chooser.SelectedLabels
 sealed class MailboxRequest{
     data class GetSelectedLabels(
             val threadIds: List<String>): MailboxRequest()
-
-    data class UpdateMailbox(
-            val label: Label,
-            val loadedThreadsCount: Int): MailboxRequest()
 
     data class UpdateEmailThreadsLabelsRelations(
             val selectedLabels: SelectedLabels,

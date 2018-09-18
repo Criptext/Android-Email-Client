@@ -7,6 +7,7 @@ import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import io.mockk.*
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be instance of`
@@ -127,7 +128,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
     fun `pulling down should force mailbox to update`() {
         controller.onStart(null)
         clearMocks(virtualListView)
-        sentRequests.clear()
+        sentGeneralRequests.clear()
 
         // set existing threads
         model.threads.addAll(MailboxTestUtils.createEmailPreviews(20))
@@ -137,8 +138,8 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         // verify ui is showing "refreshing" animation
         verify { scene.showRefresh() }
 
-        val sentRequest = sentRequests.first()
-        sentRequest `should equal` MailboxRequest.UpdateMailbox(label = model.selectedLabel,
+        val sentRequest = sentGeneralRequests.first()
+        sentRequest `should equal` GeneralRequest.UpdateMailbox(label = model.selectedLabel,
                 loadedThreadsCount = 20)
     }
 

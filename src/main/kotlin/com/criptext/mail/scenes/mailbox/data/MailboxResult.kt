@@ -60,47 +60,6 @@ sealed class MailboxResult {
         }
     }
 
-    sealed class UpdateMailbox : MailboxResult() {
-        abstract fun getDestinationMailbox(): Label
-        data class Success(
-                val mailboxLabel: Label,
-                val mailboxThreads: List<EmailPreview>?,
-                val isManual: Boolean): UpdateMailbox() {
-
-            override fun getDestinationMailbox(): Label {
-                return mailboxLabel
-            }
-        }
-
-        data class Failure(
-                val mailboxLabel: Label,
-                val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
-            override fun getDestinationMailbox(): Label {
-                return mailboxLabel
-            }
-        }
-
-        data class Unauthorized(
-                val mailboxLabel: Label,
-                val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
-            override fun getDestinationMailbox(): Label {
-                return mailboxLabel
-            }
-        }
-
-        data class Forbidden(
-                val mailboxLabel: Label,
-                val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
-            override fun getDestinationMailbox(): Label {
-                return mailboxLabel
-            }
-        }
-
-    }
-
     sealed class SendMail: MailboxResult() {
         class Success(val emailId: Long?): SendMail()
         data class Failure(val message: UIMessage): SendMail()

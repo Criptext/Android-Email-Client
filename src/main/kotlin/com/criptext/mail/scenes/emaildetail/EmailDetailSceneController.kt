@@ -2,11 +2,16 @@ package com.criptext.mail.scenes.emaildetail
 
 import android.Manifest
 import android.content.pm.PackageManager
-import com.criptext.mail.*
-import com.criptext.mail.api.models.*
+import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
+import com.criptext.mail.IHostActivity
+import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.models.*
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.FileDetail
+import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -50,6 +55,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.UpdateMailbox -> onMailboxUpdate(result)
         }
     }
 
@@ -100,6 +106,19 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
             }
+        }
+    }
+
+    private fun onMailboxUpdate(result: GeneralResult.UpdateMailbox){
+        when (result) {
+            is GeneralResult.UpdateMailbox.Success -> {
+                dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
+                        model.threadId, model.currentLabel))
+            }
+            is GeneralResult.UpdateMailbox.Unauthorized ->
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            is GeneralResult.UpdateMailbox.Forbidden ->
+                scene.showConfirmPasswordDialog(emailDetailUIObserver)
         }
     }
 
@@ -584,8 +603,17 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+
         override fun onNewEvent() {
-            scene.notifyFullEmailListChanged()
+            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+        }
+
+        override fun onRecoveryEmailChanged(newEmail: String) {
+
+        }
+
+        override fun onRecoveryEmailConfirmed() {
+
         }
 
         override fun onDeviceLocked() {

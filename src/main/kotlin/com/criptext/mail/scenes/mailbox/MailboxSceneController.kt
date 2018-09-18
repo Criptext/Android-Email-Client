@@ -45,13 +45,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.UpdateMailbox -> onMailboxUpdated(result)
         }
     }
 
     private val dataSourceListener = { result: MailboxResult ->
         when (result) {
             is MailboxResult.GetSelectedLabels -> dataSourceController.onSelectedLabelsLoaded(result)
-            is MailboxResult.UpdateMailbox -> dataSourceController.onMailboxUpdated(result)
             is MailboxResult.LoadEmailThreads -> dataSourceController.onLoadedMoreThreads(result)
             is MailboxResult.SendMail -> dataSourceController.onSendMailFinished(result)
             is MailboxResult.UpdateEmailThreadsLabelsRelations -> dataSourceController.onUpdatedLabels(result)
@@ -484,42 +484,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun updateMailbox(mailboxLabel: Label) {
             scene.hideDrawer()
             scene.showRefresh()
-            val req = MailboxRequest.UpdateMailbox(
+            val req = GeneralRequest.UpdateMailbox(
                     label = mailboxLabel,
                     loadedThreadsCount = model.threads.size
             )
-            dataSource.submitRequest(req)
-        }
-
-        private fun handleSuccessfulMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Success) {
-            model.lastSync = System.currentTimeMillis()
-            if (resultData.mailboxThreads != null) {
-                threadListController.populateThreads(resultData.mailboxThreads)
-                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
-                scene.updateToolbarTitle(toolbarTitle)
-                dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                feedController.reloadFeeds()
-                dataSource.submitRequest(MailboxRequest.ResendEmails())
-            }
-        }
-
-        private fun handleFailedMailboxUpdate(resultData: MailboxResult.UpdateMailbox.Failure) {
-            scene.showMessage(resultData.message)
-        }
-
-        fun onMailboxUpdated(resultData: MailboxResult.UpdateMailbox) {
-            scene.clearRefreshing()
-            when (resultData) {
-                is MailboxResult.UpdateMailbox.Success -> {
-                    handleSuccessfulMailboxUpdate(resultData)
-                }
-                is MailboxResult.UpdateMailbox.Failure ->
-                    handleFailedMailboxUpdate(resultData)
-                is MailboxResult.UpdateMailbox.Unauthorized ->
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
-                is MailboxResult.UpdateMailbox.Forbidden ->
-                    scene.showConfirmPasswordDialog(observer)
-            }
+            generalDataSource.submitRequest(req)
         }
 
         fun onEmptyTrash(resultData: MailboxResult.EmptyTrash) {
@@ -685,6 +654,37 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun handleSuccessfulMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Success) {
+        model.lastSync = System.currentTimeMillis()
+        if (resultData.mailboxThreads != null) {
+            threadListController.populateThreads(resultData.mailboxThreads)
+            scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+            scene.updateToolbarTitle(toolbarTitle)
+            dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+            feedController.reloadFeeds()
+            dataSource.submitRequest(MailboxRequest.ResendEmails())
+        }
+    }
+
+    private fun handleFailedMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Failure) {
+        scene.showMessage(resultData.message)
+    }
+
+    private fun onMailboxUpdated(resultData: GeneralResult.UpdateMailbox) {
+        scene.clearRefreshing()
+        when (resultData) {
+            is GeneralResult.UpdateMailbox.Success -> {
+                handleSuccessfulMailboxUpdate(resultData)
+            }
+            is GeneralResult.UpdateMailbox.Failure ->
+                handleFailedMailboxUpdate(resultData)
+            is GeneralResult.UpdateMailbox.Unauthorized ->
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            is GeneralResult.UpdateMailbox.Forbidden ->
+                scene.showConfirmPasswordDialog(observer)
+        }
+    }
+
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
@@ -709,6 +709,14 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onNewEvent() {
             reloadViewAfterSocketEvent()
+        }
+
+        override fun onRecoveryEmailChanged(newEmail: String) {
+
+        }
+
+        override fun onRecoveryEmailConfirmed() {
+
         }
 
         override fun onDeviceLocked() {

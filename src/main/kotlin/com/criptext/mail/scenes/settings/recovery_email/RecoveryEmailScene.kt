@@ -15,7 +15,9 @@ import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHol
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 
 
@@ -36,6 +38,7 @@ interface RecoveryEmailScene{
     fun setRecoveryEmailState(state: FormInputState)
     fun updateCurrent(model: RecoveryEmailModel)
     fun showForgotPasswordDialog(email: String)
+    fun showConfirmPasswordDialog(observer: UIObserver)
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -81,6 +84,7 @@ interface RecoveryEmailScene{
 
         private val confirmationSentDialog = ConfirmationSentDialog(context)
         private val enterPasswordDialog = EnterPasswordDialog(context)
+        private val confirmPassword = ConfirmPasswordDialog(context)
 
         override fun attachView(recoveryEmailUIObserver: RecoveryEmailUIObserver, keyboardManager: KeyboardManager,
                                 model: RecoveryEmailModel) {
@@ -198,6 +202,10 @@ interface RecoveryEmailScene{
             resendLinkButton.visibility = View.VISIBLE
             resendLinkButton.isEnabled = false
             resendLinkProgressButton.visibility = View.GONE
+        }
+
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
         }
 
         override fun updateCurrent(model: RecoveryEmailModel) {

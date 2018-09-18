@@ -144,6 +144,8 @@ class MailboxActivity : BaseActivity() {
                         hostActivity = hostActivity
                 )
             val remoteChangeDataSource = GeneralDataSource(
+                    signalClient = signalClient,
+                    eventLocalDB = EventLocalDB(appDB),
                     storage = storage,
                     db = appDB,
                     runner = AsyncTaskWorkRunner(),

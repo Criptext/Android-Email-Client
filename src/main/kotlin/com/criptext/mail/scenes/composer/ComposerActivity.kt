@@ -9,11 +9,14 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -31,6 +34,7 @@ class ComposerActivity : BaseActivity() {
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val scene = ComposerScene.Default(view, KeyboardManager(this))
         val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
@@ -38,6 +42,8 @@ class ComposerActivity : BaseActivity() {
                 fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao())
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val remoteChangeDataSource = GeneralDataSource(
+                signalClient = signalClient,
+                eventLocalDB = EventLocalDB(appDB),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),

@@ -18,6 +18,8 @@ import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.validation.TextInput
+import com.criptext.mail.websocket.WebSocketEventListener
+import com.criptext.mail.websocket.WebSocketEventPublisher
 
 class RecoveryEmailController(
         private val model: RecoveryEmailModel,
@@ -26,6 +28,7 @@ class RecoveryEmailController(
         private val keyboardManager: KeyboardManager,
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
+        private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
         private val dataSource: BackgroundWorkManager<RecoveryEmailRequest, RecoveryEmailResult>)
     : SceneController(){
@@ -44,7 +47,15 @@ class RecoveryEmailController(
         }
     }
 
-    private val signatureUIObserver = object: RecoveryEmailUIObserver{
+    private val recoveryEmailUIObserver = object: RecoveryEmailUIObserver{
+        override fun onOkButtonPressed(password: String) {
+            generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
+        }
+
+        override fun onCancelButtonPressed() {
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
+        }
+
         override fun onForgotPasswordPressed() {
             generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
         }
@@ -110,8 +121,9 @@ class RecoveryEmailController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        websocketEvents.setListener(webSocketEventListener)
         model.lastTimeConfirmationLinkSent = lastTimeConfirmationLinkSent
-        scene.attachView(signatureUIObserver, keyboardManager, model)
+        scene.attachView(recoveryEmailUIObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         return false
@@ -157,12 +169,42 @@ class RecoveryEmailController(
         }
     }
 
-    override fun onStop() {
+    private val webSocketEventListener = object : WebSocketEventListener {
 
+        override fun onNewEvent() {
+
+        }
+
+        override fun onRecoveryEmailChanged(newEmail: String) {
+            model.recoveryEmail = model.newRecoveryEmail.value
+            model.isEmailConfirmed = false
+            scene.updateCurrent(model)
+        }
+
+        override fun onRecoveryEmailConfirmed() {
+            model.isEmailConfirmed = true
+            scene.updateCurrent(model)
+        }
+
+        override fun onDeviceLocked() {
+            scene.showConfirmPasswordDialog(recoveryEmailUIObserver)
+        }
+
+        override fun onDeviceRemoved() {
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+        }
+
+        override fun onError(uiMessage: UIMessage) {
+            scene.showMessage(uiMessage)
+        }
+    }
+
+    override fun onStop() {
+        websocketEvents.clearListener(webSocketEventListener)
     }
 
     override fun onBackPressed(): Boolean {
-        signatureUIObserver.onBackButtonPressed()
+        recoveryEmailUIObserver.onBackButtonPressed()
         return false
     }
 

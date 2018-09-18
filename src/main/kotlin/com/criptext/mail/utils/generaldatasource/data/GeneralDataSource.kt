@@ -5,13 +5,18 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.generaldatasource.workers.ConfirmPasswordWorker
 import com.criptext.mail.utils.generaldatasource.workers.DeviceRemovedWorker
 import com.criptext.mail.utils.generaldatasource.workers.ForgotPasswordWorker
+import com.criptext.mail.utils.generaldatasource.workers.UpdateMailboxWorker
 
 class GeneralDataSource(override val runner: WorkRunner,
+                        private val signalClient: SignalClient,
+                        private val eventLocalDB: EventLocalDB,
                         private val db : AppDatabase,
                         private val storage: KeyValueStorage,
                         private val activeAccount: ActiveAccount?,
@@ -34,6 +39,15 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.UpdateMailbox -> UpdateMailboxWorker(
+                    signalClient = signalClient,
+                    dbEvents = eventLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount!!,
+                    label = params.label,
+                    loadedThreadsCount = params.loadedThreadsCount,
+                    storage = storage,
+                    publishFn = { res -> flushResults(res) })
         }
     }
 }
