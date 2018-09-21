@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
 import com.criptext.mail.scenes.settings.views.DevicesSettingsView
@@ -16,6 +17,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.ViewPagerAdapter
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -40,6 +42,7 @@ interface SettingsScene{
     fun setRemoveDeviceError(message: UIMessage)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
     fun removeDeviceDialogDismiss()
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -79,6 +82,7 @@ interface SettingsScene{
         private val settingLoginOutDialog = SettingsLoginOutDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -146,6 +150,13 @@ interface SettingsScene{
 
         override fun removeDeviceDialogToggleLoad(loading: Boolean) {
             settingRemoveDeviceDialog.toggleLoad(loading)
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
         }
 
         override fun removeDeviceDialogDismiss() {

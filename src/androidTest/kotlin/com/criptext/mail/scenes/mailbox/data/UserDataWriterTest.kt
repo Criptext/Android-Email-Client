@@ -8,6 +8,7 @@ import com.criptext.mail.db.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.*
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
@@ -60,8 +61,8 @@ class UserDataWriterTest {
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"INBOX\",\"type\":\"SYSTEM\",\"visible\":true}}",
     "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":1}}",
     "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":2}}",
-    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":123,\"isMuted\":false}}",
-    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":456,\"isMuted\":false}}",
+    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":123,\"isMuted\":false,\"unsentDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"trashDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":456,\"isMuted\":false,\"unsentDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"trashDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\"}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"TO\"}}",
@@ -90,8 +91,8 @@ class UserDataWriterTest {
 
     @Test
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
-        val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(),db.labelDao(),
-                db.emailLabelDao(), db.emailContactDao(), db.fileKeyDao())
+        val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(), db.labelDao(),
+                db.emailLabelDao(), db.emailContactDao(), db.fileKeyDao(), db.emailExternalSessionDao())
         val result = dataWriter.createFile()
 
         val lines: List<String> = File(result).readLines()

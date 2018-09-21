@@ -1,17 +1,28 @@
 package com.criptext.mail.aes
 
 import com.criptext.mail.utils.Encoding
+import com.criptext.mail.utils.file.ChunkFileReader
 import org.spongycastle.crypto.PBEParametersGenerator
 import org.spongycastle.crypto.digests.SHA256Digest
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.spongycastle.crypto.params.KeyParameter
-import java.security.NoSuchAlgorithmException
+import java.io.File
 import java.security.SecureRandom
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.SecretKeyFactory
 import javax.crypto.Cipher
+import java.io.FileOutputStream
+import java.io.FileInputStream
+import java.io.OutputStream
+import java.io.InputStream
+
+
+
+
+
+
 
 
 class AESUtil(keyAndIV: String) {
@@ -49,11 +60,26 @@ class AESUtil(keyAndIV: String) {
     }
 
     companion object {
-        fun generateSecureRandomBytes(size: Int = 16): String {
+
+        fun generateAesKey():String{
+            val aesKey = AESUtil.generateSecureRandomBytesToString()
+            val aesIV = AESUtil.generateSecureRandomBytesToString()
+
+            return aesKey.plus(":".plus(aesIV))
+        }
+
+        fun generateSecureRandomBytesToString(size: Int = 16): String {
             val random = SecureRandom()
             val bytes = ByteArray(size)
             random.nextBytes(bytes)
             return Encoding.byteArrayToString(bytes)
+        }
+
+        fun generateSecureRandomBytes(size: Int = 16): ByteArray {
+            val random = SecureRandom()
+            val bytes = ByteArray(size)
+            random.nextBytes(bytes)
+            return bytes
         }
 
         fun encryptWithPassword(password: String, dataToEncrypt: ByteArray): Triple<String, String, String>{
@@ -94,5 +120,62 @@ class AESUtil(keyAndIV: String) {
 
             return Encoding.byteArrayToString(ci.doFinal(dataToDecrypt))
         }
+
+        fun encryptFileByChunks(fileToEncrypt: File): Pair<String, String> {
+
+            val salt = generateSecureRandomBytes(8)
+            val strKey = generateSecureRandomBytesToString()
+            val skey = SecretKeySpec(Encoding.stringToByteArray(strKey), "AES")
+
+
+            val iv = generateSecureRandomBytes(128 / 8)
+            val ivspec = IvParameterSpec(iv)
+
+            val outFile = createTempFile(suffix = ".enc")
+
+            val out = FileOutputStream(outFile)
+            out.write(salt)
+            out.write(iv)
+
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.ENCRYPT_MODE, skey, ivspec)
+
+            FileInputStream(fileToEncrypt).use { `in` -> processFile(ci, `in`, out) }
+
+            return Pair(strKey, outFile.absolutePath)
+        }
+
+        fun decryptFileByChunks(fileToDecrypt: File, strKey: String): String {
+            val `in` = FileInputStream(fileToDecrypt)
+            val salt = ByteArray(8)
+            val iv = ByteArray(128 / 8)
+            `in`.read(salt)
+            `in`.read(iv)
+
+            val skey = SecretKeySpec(Encoding.stringToByteArray(strKey), "AES")
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.DECRYPT_MODE, skey, IvParameterSpec(iv))
+
+            val outputFile = createTempFile(suffix = ".ver")
+
+            FileOutputStream(outputFile).use { out -> processFile(ci, `in`, out) }
+
+            return outputFile.absolutePath
+        }
+
+        @Throws(javax.crypto.IllegalBlockSizeException::class, javax.crypto.BadPaddingException::class, java.io.IOException::class)
+        private fun processFile(ci: Cipher, `in`: InputStream, out: OutputStream) {
+            val ibuf = ByteArray(STREAM_BUFFER_SIZE)
+            var len = `in`.read(ibuf)
+            while (len != -1) {
+                val obuf = ci.update(ibuf, 0, len)
+                if (obuf != null) out.write(obuf)
+                len = `in`.read(ibuf)
+            }
+            val obuf = ci.doFinal()
+            if (obuf != null) out.write(obuf)
+        }
+
+        const val STREAM_BUFFER_SIZE = 1024
     }
 }

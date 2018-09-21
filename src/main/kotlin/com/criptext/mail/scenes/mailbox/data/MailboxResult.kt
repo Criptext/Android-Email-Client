@@ -80,11 +80,6 @@ sealed class MailboxResult {
         class Forbidden: UpdateUnreadStatus()
     }
 
-    sealed class LinkDevice: MailboxResult() {
-        class Success(filePath: String): LinkDevice()
-        data class Failure(val message: UIMessage): LinkDevice()
-    }
-
     sealed class GetEmailPreview: MailboxResult() {
         data class Success(val emailPreview: EmailPreview,
                            val isTrash: Boolean, val isSpam: Boolean): GetEmailPreview()

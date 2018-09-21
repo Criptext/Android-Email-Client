@@ -14,6 +14,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.criptext.mail.db.models.Label
@@ -28,6 +29,7 @@ import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
 import com.criptext.mail.utils.uiobserver.UIObserver
 
@@ -76,6 +78,7 @@ interface MailboxScene{
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -103,6 +106,7 @@ interface MailboxScene{
         private val emptyTrashDialog = EmptyTrashDialog(context)
         private val welcomeDialog = WelcomeTourDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -168,13 +172,19 @@ interface MailboxScene{
             this.observer = observer
             this.threadEventListener = threadEventListener
             setListeners(observer)
-
         }
 
         override fun initDrawerLayout() {
-            navButton.setOnClickListener({
+            navButton.setOnClickListener{
                 drawerLayout.openDrawer(GravityCompat.START)
-            })
+            }
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
         override fun onBackPressed(): Boolean {

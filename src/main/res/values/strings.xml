@@ -20,6 +20,7 @@
     <!-- SYNC -->
     <string name="done_exclamation">Done!</string>
     <string name="sync_failed">Sync Failed</string>
+    <string name="link_auth_message">Do you want to approve %1$s?</string>
 
 
     <!-- TOUR -->
@@ -203,11 +204,11 @@
     <string name="didnt_get_prompt">Didn’t get the prompt?</string>
     <string name="not_approved">Your request to access this account was rejected by a verified device. Multiple rejections could lead your device to be blacklisted from Criptext.</string>
     <string name="button_resendit">Resend it</string>
-    <string name="cant_access_device">Can’t access to your device?</string>
+    <string name="cant_access_device">Sign in with password?</string>
     <string name="establishing">Establishing secure connection</string>
     <string name="device_ready">Device Ready</string>
     <string name="failed">Failed</string>
-    <string name="login_rejected">Login Rejected</string>
+    <string name="login_rejected">Device not approved.</string>
     <string name="creating_keys">Creating Keys</string>
 
     <!-- WELCOME TOUR -->
@@ -278,6 +279,7 @@
     <string name="txt_create_criptext_account">Create your Criptext account</string>
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
     <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="yes_with_time">Yes(%1$d)</string>
     <string name="discard">Discard</string>
 

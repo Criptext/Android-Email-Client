@@ -17,6 +17,7 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.websocket.WebSocketSingleton
 
 class ChangePasswordActivity: BaseActivity(){
 
@@ -29,9 +30,13 @@ class ChangePasswordActivity: BaseActivity(){
         val scene = ChangePasswordScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val webSocketEvents = WebSocketSingleton.getInstance(
+                activeAccount = activeAccount!!)
+
         val dataSource = ChangePasswordDataSource(
                 httpClient = HttpClient.Default(),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
         val generalDataSource = GeneralDataSource(
@@ -40,13 +45,14 @@ class ChangePasswordActivity: BaseActivity(){
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 httpClient = HttpClient.Default()
         )
         return ChangePasswordController(
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 model = model,
                 scene = scene,
+                websocketEvents = webSocketEvents,
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),

@@ -12,6 +12,9 @@ import com.criptext.mail.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun runOnUiThread(runnable: Runnable) {
+        
+    }
 
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
         activityLaunched = true

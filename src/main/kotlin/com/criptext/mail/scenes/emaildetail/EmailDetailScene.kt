@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -26,6 +27,7 @@ import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -59,6 +61,7 @@ interface EmailDetailScene {
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -74,6 +77,7 @@ interface EmailDetailScene {
         private val deleteThreadDialog = DeleteThreadDialog(context)
         private val deleteEmailDialog = DeleteEmailDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -167,6 +171,13 @@ interface EmailDetailScene {
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
             confirmPassword.showDialog(observer)
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
         override fun setConfirmPasswordError(message: UIMessage) {

@@ -4,9 +4,6 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.signal.PreKeyBundleShareData
 import org.json.JSONObject
 
-/**
- * Created by sebas on 2/28/18.
- */
 
 class MessagingServiceAPIClient(private val httpClient: HttpClient) {
 

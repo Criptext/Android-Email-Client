@@ -2,12 +2,14 @@ package com.criptext.mail.scenes.settings.recovery_email
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.SettingsParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.utils.KeyboardManager
@@ -44,10 +46,21 @@ class RecoveryEmailController(
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.ResetPassword -> onResetPassword(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
     private val recoveryEmailUIObserver = object: RecoveryEmailUIObserver{
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onOkButtonPressed(password: String) {
             generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
@@ -169,7 +182,58 @@ class RecoveryEmailController(
         }
     }
 
+    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
+        when (result) {
+            is GeneralResult.DeviceRemoved.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                        true, true)
+            }
+        }
+    }
+
+    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
+        when (result) {
+            is GeneralResult.ConfirmPassword.Success -> {
+                scene.dismissConfirmPasswordDialog()
+                scene.showMessage(UIMessage(R.string.update_password_success))
+            }
+            is GeneralResult.ConfirmPassword.Failure -> {
+                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+                //Needed for second part of Link Devices
+//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+//                        false, true)
+            }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceLinkAuthDeny() {
+
+        }
+
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
+        }
+
+        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+
+        }
+
+        override fun onKeyBundleUploaded(deviceId: Int) {
+
+        }
 
         override fun onNewEvent() {
 
@@ -187,7 +251,9 @@ class RecoveryEmailController(
         }
 
         override fun onDeviceLocked() {
-            scene.showConfirmPasswordDialog(recoveryEmailUIObserver)
+            host.runOnUiThread(Runnable {
+                scene.showConfirmPasswordDialog(recoveryEmailUIObserver)
+            })
         }
 
         override fun onDeviceRemoved() {

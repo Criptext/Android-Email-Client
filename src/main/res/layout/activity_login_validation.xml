@@ -62,11 +62,36 @@
             android:gravity="center_horizontal"
             android:text="@string/login_body"/>
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/failed_x"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/error_circle"
+                android:tint="@color/white"
+                />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/x_rounded"
+                android:padding="10dp"
+                android:tint="@android:color/white"/>
+
+        </FrameLayout>
+
+
         
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:id="@+id/sign_in_anim">
             
             <ImageView
                 android:id="@+id/imageViewCircularArrow"
@@ -84,6 +109,17 @@
                 android:tint="@android:color/white"/>
             
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/device_rejected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:textSize="18sp"
+            android:visibility="gone"
+            android:textColor="#ffffff"
+            android:gravity="center_horizontal"
+            android:text="@string/login_rejected"/>
 
     </LinearLayout>
 
@@ -122,7 +158,7 @@
             android:id="@+id/buttonResend"
             android:layout_width="270dp"
             android:layout_height="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="50dp"
             android:layout_centerHorizontal="true"
             android:text="@string/button_resendit"
             android:textColor="@color/white"

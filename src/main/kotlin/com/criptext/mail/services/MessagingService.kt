@@ -3,7 +3,6 @@ package com.criptext.mail.services
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
-import com.criptext.mail.DeckardApplication
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase

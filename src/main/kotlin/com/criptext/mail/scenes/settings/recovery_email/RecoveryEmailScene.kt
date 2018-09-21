@@ -11,12 +11,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHolder
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 
@@ -39,6 +41,9 @@ interface RecoveryEmailScene{
     fun updateCurrent(model: RecoveryEmailModel)
     fun showForgotPasswordDialog(email: String)
     fun showConfirmPasswordDialog(observer: UIObserver)
+    fun dismissConfirmPasswordDialog()
+    fun setConfirmPasswordError(message: UIMessage)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -85,6 +90,7 @@ interface RecoveryEmailScene{
         private val confirmationSentDialog = ConfirmationSentDialog(context)
         private val enterPasswordDialog = EnterPasswordDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         override fun attachView(recoveryEmailUIObserver: RecoveryEmailUIObserver, keyboardManager: KeyboardManager,
                                 model: RecoveryEmailModel) {
@@ -168,6 +174,13 @@ interface RecoveryEmailScene{
             enterPasswordDialog.showDialog(recoveryEmailUIObserver)
         }
 
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, untrustedDeviceInfo)
+        }
+
         override fun disableChangeButton() {
             changeEmailButton.isEnabled = false
         }
@@ -206,6 +219,14 @@ interface RecoveryEmailScene{
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
             confirmPassword.showDialog(observer)
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPassword.setPasswordError(message)
         }
 
         override fun updateCurrent(model: RecoveryEmailModel) {

@@ -2,6 +2,9 @@
 <project version="4">
   <component name="KotlinCommonCompilerArguments">
     <option name="apiVersion" value="1.2" />
+    <option name="errors">
+      <ArgumentParseErrors />
+    </option>
     <option name="languageVersion" value="1.2" />
   </component>
 </project>

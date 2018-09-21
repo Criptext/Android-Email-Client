@@ -46,6 +46,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.UpdateMailbox -> onMailboxUpdated(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
@@ -191,6 +192,14 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onOkButtonPressed(password: String) {
             generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
@@ -670,6 +679,19 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.showMessage(resultData.message)
     }
 
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+                //Needed for second part of Link Devices
+//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+//                        false, true)
+            }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
+
     private fun onMailboxUpdated(resultData: GeneralResult.UpdateMailbox) {
         scene.clearRefreshing()
         when (resultData) {
@@ -688,7 +710,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
-                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                        true, true)
             }
         }
     }
@@ -706,6 +729,23 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceLinkAuthDeny() {
+
+        }
+
+        override fun onKeyBundleUploaded(deviceId: Int) {
+
+        }
+
+        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+
+        }
+
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
+        }
 
         override fun onNewEvent() {
             reloadViewAfterSocketEvent()
@@ -720,7 +760,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onDeviceLocked() {
-            scene.showConfirmPasswordDialog(observer)
+            host.runOnUiThread(Runnable {
+                scene.showConfirmPasswordDialog(observer)
+            })
         }
 
         override fun onDeviceRemoved() {

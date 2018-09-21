@@ -11,6 +11,7 @@ import android.webkit.WebView
 import android.widget.*
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.*
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
@@ -18,6 +19,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
@@ -50,6 +52,7 @@ interface ComposerScene {
     fun setPasswordForNonCriptextFromDialog(password: String?)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -57,6 +60,7 @@ interface ComposerScene {
         private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
         private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
         private val confirmPassword = ConfirmPasswordDialog(ctx)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
 
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
@@ -226,6 +230,10 @@ interface ComposerScene {
 
         override fun setConfirmPasswordError(message: UIMessage) {
             confirmPassword.setPasswordError(message)
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
         override fun showAttachmentErrorDialog(filename: String){

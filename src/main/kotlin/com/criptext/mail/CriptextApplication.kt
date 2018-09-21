@@ -6,7 +6,7 @@ import com.criptext.mail.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
-class DeckardApplication : Application(){
+class CriptextApplication : Application(){
 
     override fun onCreate() {
         super.onCreate()

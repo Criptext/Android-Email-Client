@@ -10,10 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 
 interface ChangePasswordScene{
@@ -25,6 +29,10 @@ interface ChangePasswordScene{
     fun toggleChangePasswordButton(enable: Boolean)
     fun showOldPasswordError(message: UIMessage?)
     fun showForgotPasswordDialog(email: String)
+    fun dismissConfirmPasswordDialog()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun setConfirmPasswordError(message: UIMessage)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
     class Default(val view: View): ChangePasswordScene{
         private lateinit var changePasswordUIObserver: ChangePasswordUIObserver
@@ -62,6 +70,9 @@ interface ChangePasswordScene{
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
+
+        private val confirmPasswordDialog = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         override fun attachView(uiObserver: ChangePasswordUIObserver, keyboardManager: KeyboardManager,
                                 model: ChangePasswordModel) {
@@ -154,6 +165,24 @@ interface ChangePasswordScene{
             ForgotPasswordDialog(context, email).showForgotPasswordDialog()
         }
 
+        override fun dismissConfirmPasswordDialog() {
+            confirmPasswordDialog.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPasswordDialog.setPasswordError(message)
+        }
+
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPasswordDialog.showDialog(observer)
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, untrustedDeviceInfo)
+        }
 
         override fun showMessage(message: UIMessage) {
             val duration = Toast.LENGTH_LONG

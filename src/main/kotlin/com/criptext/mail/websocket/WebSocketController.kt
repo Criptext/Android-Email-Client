@@ -3,6 +3,7 @@ package com.criptext.mail.websocket
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.Event
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import org.json.JSONObject
@@ -48,6 +49,14 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
             Event.Cmd.recoveryEmailConfirmed -> currentListener?.onRecoveryEmailConfirmed()
             Event.Cmd.deviceRemoved -> currentListener?.onDeviceRemoved()
             Event.Cmd.deviceLock -> currentListener?.onDeviceLocked()
+            Event.Cmd.deviceAuthRequest -> {
+                val untrustedDevice = UntrustedDeviceInfo.fromJSON(event.params)
+                currentListener?.onDeviceLinkAuthRequest(untrustedDevice)
+            }
+            Event.Cmd.deviceKeyBundleUploaded ->{
+                val deviceId = JSONObject(event.params).getInt("deviceId")
+                currentListener?.onKeyBundleUploaded(deviceId)
+            }
 
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,
                     arrayOf(event.cmd)))

@@ -6,6 +6,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -26,11 +27,14 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.validation.FormInputState
+import com.criptext.mail.websocket.WebSocketController
+import com.criptext.mail.websocket.WebSocketEventListener
 
 class SettingsController(
         private val model: SettingsModel,
         private val scene: SettingsScene,
         private val host: IHostActivity,
+        private val websocketEvents: WebSocketController,
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
@@ -64,6 +68,14 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+        }
+
         override fun onOkButtonPressed(password: String) {
             generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
         }
@@ -168,6 +180,7 @@ class SettingsController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        websocketEvents.setListener(webSocketEventListener)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         model.fullName = activeAccount.name
@@ -178,7 +191,7 @@ class SettingsController(
         if(model.devices.isEmpty()) {
             model.devices.add(DeviceItem(
                     id = activeAccount.deviceId,
-                    friendlyName = DeviceUtils.getDeviceName(),
+                    friendlyName = DeviceUtils.getDeviceFriendlyName(),
                     name = DeviceUtils.getDeviceName(),
                     isCurrent = true,
                     deviceType = DeviceUtils.getDeviceType().ordinal))
@@ -193,7 +206,7 @@ class SettingsController(
     }
 
     override fun onStop() {
-
+        websocketEvents.clearListener(webSocketEventListener)
     }
 
     override fun onBackPressed(): Boolean {
@@ -328,6 +341,52 @@ class SettingsController(
             is SettingsResult.ResetPassword.Failure -> {
                 scene.showMessage(result.message)
             }
+        }
+    }
+
+    private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceLinkAuthDeny() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onKeyBundleUploaded(deviceId: Int) {
+
+        }
+
+        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+
+        }
+
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
+        }
+
+        override fun onNewEvent() {
+
+        }
+
+        override fun onRecoveryEmailChanged(newEmail: String) {
+
+        }
+
+        override fun onRecoveryEmailConfirmed() {
+
+        }
+
+        override fun onDeviceLocked() {
+            host.runOnUiThread(Runnable {
+                scene.showConfirmPasswordDialog(settingsUIObserver)
+            })
+        }
+
+        override fun onDeviceRemoved() {
+            generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+        }
+
+        override fun onError(uiMessage: UIMessage) {
+            scene.showMessage(uiMessage)
         }
     }
 

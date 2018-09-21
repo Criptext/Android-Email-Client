@@ -15,4 +15,7 @@ interface EmailExternalSessionDao {
         WHERE emailId=:emailId""")
     fun getExternalSessionByEmailId(emailId: Long): EmailExternalSession?
 
+    @Query("""SELECT * FROM email_external_session""")
+    fun getAll(): List<EmailExternalSession>
+
 }

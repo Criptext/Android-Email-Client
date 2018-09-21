@@ -59,7 +59,7 @@ interface SignalKeyGenerator {
                     preKeys = serializePreKeyPublicKeys(registrationData.preKeys),
                     deviceType = deviceType,
                     deviceName = DeviceUtils.getDeviceName(),
-                    deviceFriendlyName = DeviceUtils.getDeviceName())
+                    deviceFriendlyName = DeviceUtils.getDeviceFriendlyName())
 
         }
 
