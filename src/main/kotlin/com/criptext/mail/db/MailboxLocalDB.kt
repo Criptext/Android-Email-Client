@@ -86,7 +86,7 @@ interface MailboxLocalDB {
                         from = contactsFROM[0],
                         files = files,
                         labels = labels,
-                        to = contactsTO, fileKey = fileKey.key)
+                        to = contactsTO, fileKey = fileKey?.key)
             }
 
             fullEmails.lastOrNull()?.viewOpen = true
@@ -289,7 +289,7 @@ interface MailboxLocalDB {
             val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
-            val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+            val fileKey: FileKey? = db.fileKeyDao().getAttachmentKeyFromEmail(id)
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                     .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
 
@@ -327,7 +327,7 @@ interface MailboxLocalDB {
                             files = files,
                             labels = labels,
                             to = contactsTO,
-                            fileKey = fileKey.key),
+                            fileKey = fileKey?.key),
                     totalEmails = getEmailCount(emailsInSelectedLabel, emails.size, selectedLabel),
                     hasFiles = totalFiles > 0
             )

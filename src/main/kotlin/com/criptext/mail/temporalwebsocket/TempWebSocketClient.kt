@@ -16,7 +16,7 @@ class TempWebSocketClient: WebSocketClient {
         override fun onDisconnected(websocket: WebSocket?, serverCloseFrame: WebSocketFrame?,
                                     clientCloseFrame: WebSocketFrame?, closedByServer: Boolean) {
             reconnect()
-            Log.e("TEMP-WEBSOCKET", "DISCONNECTED")
+            Log.e("TEMP-WEBSOCKET", "DISCONNECTED!!!!")
         }
 
         override fun handleCallbackError(websocket: WebSocket?, cause: Throwable?) {
@@ -25,7 +25,7 @@ class TempWebSocketClient: WebSocketClient {
 
         override fun onConnected(websocket: WebSocket?, headers: MutableMap<String,
                 MutableList<String>>?) {
-            Log.e("TEMP-WEBSOCKET", "CONNECTED")
+            Log.e("TEMP-WEBSOCKET", "CONNECTED!!!!")
         }
 
         override fun onConnectError(websocket: WebSocket?, exception: WebSocketException?) {
@@ -55,8 +55,6 @@ class TempWebSocketClient: WebSocketClient {
         ws.addListener(webSocketAdapter)
         ws.connectAsynchronously()
         this.ws = ws
-
     }
-
 }
 

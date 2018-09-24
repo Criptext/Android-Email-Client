@@ -1,9 +1,12 @@
 package com.criptext.mail.api
 
 import com.criptext.mail.api.models.MultipartFormItem
+import com.criptext.mail.utils.LoggingInterceptor
 import com.criptext.mail.utils.file.FileUtils
 import okhttp3.*
 import org.json.JSONObject
+import java.io.FileInputStream
+import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 /**
@@ -18,6 +21,8 @@ interface HttpClient {
     fun get(path: String, authToken: String?): String
     fun delete(path: String, authToken: String?, body: JSONObject): String
     fun getFile(path: String, authToken: String?): ByteArray
+    fun postFileStream(path: String, authToken: String?, filePath: String): String
+    fun getFileStream(path: String, authToken: String?, params: Map<String, String>): InputStream
 
     enum class AuthScheme { basic, jwt }
     class Default(private val baseUrl: String,
@@ -27,22 +32,25 @@ interface HttpClient {
 
         // This is the constructor most activities should use.
         // primary constructor is more for testing.
-        constructor(): this(baseUrl = Hosts.restApiBaseUrl, authScheme = AuthScheme.jwt,
+        constructor() : this(baseUrl = Hosts.restApiBaseUrl, authScheme = AuthScheme.jwt,
                 connectionTimeout = 14000L, readTimeout = 7000L)
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
+        private val MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8")
+
         private val client = OkHttpClient()
                 .newBuilder()
+                .addInterceptor(LoggingInterceptor())
                 .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
                 .build()
 
         private fun Request.Builder.addAuthorizationHeader(authToken: String?) =
-            if(authToken == null) this
-            else when(authScheme) {
-                AuthScheme.basic -> this.addHeader("Authorization", "Basic $authToken")
-                AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
-            }
+                if (authToken == null) this
+                else when (authScheme) {
+                    AuthScheme.basic -> this.addHeader("Authorization", "Basic $authToken")
+                    AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
+                }
 
         private fun Request.Builder.addApiVersionHeader() =
                 this.addHeader("API-Version", "$API_VERSION")
@@ -64,6 +72,15 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .url(url)
+                    .post(body)
+                    .build()
+        }
+
+        private fun postStream(url: String, authToken: String?, filePath: String): Request {
+            val body = StreamRequest(MEDIA_TYPE_PLAINTEXT, filePath)
+            return Request.Builder()
+                    .addAuthorizationHeader(authToken)
                     .url(url)
                     .post(body)
                     .build()
@@ -96,18 +113,18 @@ interface HttpClient {
         }
 
         private fun postMultipartFormData(url: String, authToken: String?,
-                                 body: Map<String, MultipartFormItem>): Request {
+                                          body: Map<String, MultipartFormItem>): Request {
             val multipartBody =
-                body.toList().fold(MultipartBody.Builder(), { builder, (name, item) ->
-                    when (item) {
-                        is MultipartFormItem.StringItem ->
-                            builder.addFormDataPart(name, item.value)
-                        is MultipartFormItem.ByteArrayItem ->
-                            builder.addByteItem(name, item)
-                        is MultipartFormItem.FileItem ->
-                            builder.addFileItem(name, item)
-                    }
-                }).build()
+                    body.toList().fold(MultipartBody.Builder(), { builder, (name, item) ->
+                        when (item) {
+                            is MultipartFormItem.StringItem ->
+                                builder.addFormDataPart(name, item.value)
+                            is MultipartFormItem.ByteArrayItem ->
+                                builder.addByteItem(name, item)
+                            is MultipartFormItem.FileItem ->
+                                builder.addFileItem(name, item)
+                        }
+                    }).build()
 
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
@@ -118,7 +135,7 @@ interface HttpClient {
         }
 
         private fun putMultipartFormData(url: String, authToken: String?,
-                                          body: Map<String, MultipartFormItem>): Request {
+                                         body: Map<String, MultipartFormItem>): Request {
             val multipartBody =
                     body.toList().fold(MultipartBody.Builder(), { builder, (name, item) ->
                         when (item) {
@@ -144,6 +161,18 @@ interface HttpClient {
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
                     .url(url)
+                    .get()
+                    .build()
+        }
+
+        private fun getUrlWithQueryParams(url: String, authToken: String?, params: Map<String, String>): Request {
+            val newUrl = HttpUrl.parse(url)!!.newBuilder()
+            for (key in params.keys) {
+                newUrl.addQueryParameter(key, params[key])
+            }
+            return Request.Builder()
+                    .addAuthorizationHeader(authToken)
+                    .url(newUrl.build())
                     .get()
                     .build()
         }
@@ -183,9 +212,19 @@ interface HttpClient {
             return ApiCall.executeFileRequest(client, request)
         }
 
+        override fun postFileStream(path: String, authToken: String?, filePath: String): String {
+            val request = postStream(url = baseUrl + path, authToken = authToken,
+                    filePath = filePath)
+            return ApiCall.executeRequest(client, request)
+        }
+
+        override fun getFileStream(path: String, authToken: String?, params: Map<String, String>): InputStream {
+            val request = getUrlWithQueryParams(url = baseUrl + path, authToken = authToken, params = params)
+            return ApiCall.executeInputStreamRequest(client, request)
+        }
+
         companion object {
             const val API_VERSION = 1.0
         }
     }
-
 }

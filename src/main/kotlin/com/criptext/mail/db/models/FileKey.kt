@@ -33,11 +33,13 @@ class FileKey(
     }
 
     companion object {
-        fun fromJSON(metadataString: String): FileKey {
-            val emailData = JSONObject(metadataString)
-            if (!emailData.has("fileKey")) return FileKey(0,"", 0)
-            val jsonFileKey = emailData.get("fileKey").toString()
-            return FileKey(0, jsonFileKey,0)
+        fun fromJSON(jsonString: String): FileKey {
+            val json = JSONObject(jsonString)
+            return FileKey(
+                    id = json.getLong("id"),
+                    key = if(json.has("key")) json.getString("key") else null,
+                    emailId = json.getLong("emailId")
+            )
         }
     }
 }

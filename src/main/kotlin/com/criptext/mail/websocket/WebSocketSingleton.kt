@@ -12,7 +12,7 @@ object WebSocketSingleton {
 
     private fun newInstance(activeAccount: ActiveAccount): WebSocketController {
         INSTANCE = WebSocketController(
-                NVWebSocketClient(), activeAccount)
+                NVWebSocketClient(), activeAccount.jwt)
         return INSTANCE!!
     }
 

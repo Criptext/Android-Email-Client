@@ -5,7 +5,9 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import android.support.annotation.Nullable
+import android.text.format.DateUtils
 import com.criptext.mail.db.DeliveryTypes
+import org.json.JSONObject
 import java.util.Date
 
 /**
@@ -60,4 +62,30 @@ data class Email(
         @ColumnInfo(name = "trashDate")
         @Nullable
         var trashDate: Date?
-)
+){
+        companion object {
+            fun fromJSON(jsonString: String): Email{
+                val json = JSONObject(jsonString)
+                return Email(
+                        id = json.getLong("id"),
+                        messageId = json.getString("messageId"),
+                        threadId = json.getString("threadId"),
+                        unread = json.getBoolean("unread"),
+                        secure = json.getBoolean("secure"),
+                        content = json.getString("content"),
+                        preview = json.getString("preview"),
+                        subject = json.getString("subject"),
+                        delivered = DeliveryTypes.fromInt(json.getInt("delivered")),
+                        date = com.criptext.mail.utils.DateUtils.getDateFromString(
+                                json.getString("date"), null),
+                        metadataKey = json.getLong("metadataKey"),
+                        isMuted = json.getBoolean("isMuted"),
+                        unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateUtils.getDateFromString(
+                                json.getString("unsentDate"), null) else null,
+                        trashDate = if(json.has("trashDate")) com.criptext.mail.utils.DateUtils.getDateFromString(
+                                json.getString("trashDate"), null) else null
+
+                )
+            }
+        }
+}

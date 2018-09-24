@@ -287,7 +287,6 @@ class SendMailWorker(private val signalClient: SignalClient,
         jsonSignedPreKey.put("privateKey", Encoding.byteArrayToString(signedPreKey.keyPair.privateKey.serialize()))
         jsonReturn.put("signedPreKey", jsonSignedPreKey)
         jsonReturn.put("fileKey", fileKey)
-        println(jsonReturn.toString())
         return jsonReturn
     }
 

@@ -16,4 +16,6 @@ interface WebSocketEventPublisher {
      */
     fun clearListener(listener: WebSocketEventListener)
 
+    fun disconnectWebSocket()
+
 }

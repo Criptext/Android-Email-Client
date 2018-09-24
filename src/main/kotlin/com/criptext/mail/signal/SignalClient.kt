@@ -49,6 +49,8 @@ interface SignalClient {
      */
     fun decryptMessage(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData): String
 
+    fun decryptBytes(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData): ByteArray
+
     class Default(private val store: SignalProtocolStore) : SignalClient {
         private val createNewSessionParams: (PreKeyBundleShareData.DownloadBundle) -> NewSessionParams =
             { downloadBundle ->
@@ -118,6 +120,17 @@ interface SignalClient {
                 SignalEncryptedData.Type.normal
 
             return SignalEncryptedData(encryptedB64, encryptionType)
+        }
+
+        override fun decryptBytes(recipientId: String, deviceId: Int, encryptedData: SignalEncryptedData): ByteArray {
+            val encryptedBytes = Encoding.stringToByteArray(encryptedData.encryptedB64)
+            val senderAddress = SignalProtocolAddress(recipientId, deviceId)
+            val cipher = SessionCipher(store, senderAddress)
+
+            return if (encryptedData.type == SignalEncryptedData.Type.preKey)
+                cipher.decrypt(PreKeySignalMessage(encryptedBytes))
+            else
+                cipher.decrypt(SignalMessage(encryptedBytes))
         }
 
         override fun encryptFileByChunks(fileToEncrypt: File, recipientId: String, deviceId: Int, chunkSize: Int, outputFileName: String): String {

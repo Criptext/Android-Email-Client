@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.criptext.mail.BuildConfig
+import org.json.JSONObject
 import java.text.Normalizer
 import java.util.regex.Pattern
 
@@ -54,6 +55,18 @@ open class Contact(
             val nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD)
             val pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
             return pattern.matcher(nfdNormalizedString).replaceAll("")
+        }
+
+        fun fromJSON(jsonString: String): Contact {
+            val json = JSONObject(jsonString)
+            val id = json.getLong("id")
+            val email = json.getString("email")
+            val name = json.getString("name")
+            return Contact(
+                    id =  id,
+                    email = email,
+                    name = name
+            )
         }
     }
 

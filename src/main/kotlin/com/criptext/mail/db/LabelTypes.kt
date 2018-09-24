@@ -5,5 +5,14 @@ package com.criptext.mail.db
  */
 
 enum class LabelTypes{
-    SYSTEM, CUSTOM
+    SYSTEM, CUSTOM;
+
+    companion object {
+        fun getLabelType(ordinal: Int): LabelTypes{
+            return when(ordinal){
+                0 -> SYSTEM
+                else -> CUSTOM
+            }
+        }
+    }
 }

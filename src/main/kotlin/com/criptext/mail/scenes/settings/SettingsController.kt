@@ -345,8 +345,12 @@ class SettingsController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+
+        }
+
         override fun onDeviceLinkAuthDeny() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onKeyBundleUploaded(deviceId: Int) {

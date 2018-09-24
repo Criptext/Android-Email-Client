@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.Index
+import org.json.JSONObject
 
 /**
  * Created by sebas on 1/24/18.
@@ -26,5 +27,15 @@ import android.arch.persistence.room.Index
 data class EmailLabel(
         @ColumnInfo(name = "emailId") var emailId: Long,
         @ColumnInfo(name = "labelId") var labelId: Long
-        )
+        ){
+    companion object {
+        fun fromJSON(jsonString: String): EmailLabel{
+            val json = JSONObject(jsonString)
+            return EmailLabel(
+                    emailId = json.getLong("emailId"),
+                    labelId = json.getLong("labelId")
+            )
+        }
+    }
+}
 

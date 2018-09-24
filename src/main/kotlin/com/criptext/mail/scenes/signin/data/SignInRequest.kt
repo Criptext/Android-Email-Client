@@ -22,4 +22,7 @@ sealed class SignInRequest{
 
     data class CreateSessionFromLink(val name: String, val username: String, val randomId: Int,
                                      val ephemeralJwt: String): SignInRequest()
+    data class LinkData(val key: String, val dataAddress: String): SignInRequest()
+
+    data class LinkStatus(val ephemeralJwt: String): SignInRequest()
 }

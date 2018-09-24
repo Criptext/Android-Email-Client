@@ -16,13 +16,13 @@ class DateConverter {
                     Locale.US)
 
     @TypeConverter
-    fun getDate(value: Long) : Date  {
-        return Date(value)
+    fun getDate(value: Long?) : Date?  {
+        return if(value != null) Date(value) else null
     }
 
     @TypeConverter
-    fun parseDate(value: Date): Long {
-        return value.time
+    fun parseDate(value: Date?): Long? {
+        return value?.time
     }
 
     init {

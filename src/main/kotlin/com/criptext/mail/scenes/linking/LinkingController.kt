@@ -8,6 +8,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
@@ -41,10 +42,15 @@ class LinkingController(
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.DataFileCreation -> onDataFileCreation(result)
+            is GeneralResult.PostUserData -> onPostUserData(result)
         }
     }
 
     private val linkingUIObserver = object: LinkingUIObserver{
+        override fun onLinkingHasFinished() {
+            host.exitToScene(MailboxParams(), null, false, true)
+        }
+
         override fun onBackButtonPressed() {
 
         }
@@ -54,7 +60,7 @@ class LinkingController(
         }
 
         override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
+
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -75,6 +81,10 @@ class LinkingController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+
+        }
+
         override fun onDeviceLinkAuthDeny() {
 
         }
@@ -82,6 +92,10 @@ class LinkingController(
         override fun onKeyBundleUploaded(deviceId: Int) {
             model.remoteDeviceId = deviceId
             model.untrustedDevicePostedKeyBundle = true
+            if(model.dataFileHasBeenCreated) {
+                generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                        model.dataFilePath, model.dataFileKey!!))
+            }
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
@@ -117,12 +131,25 @@ class LinkingController(
         }
     }
 
+    private fun onPostUserData(result: GeneralResult.PostUserData){
+        when (result) {
+            is GeneralResult.PostUserData.Success -> {
+                scene.startSucceedAnimation {
+                    linkingUIObserver.onLinkingHasFinished()
+                }
+            }
+        }
+    }
 
     private fun onDataFileCreation(resultData: GeneralResult.DataFileCreation){
         when (resultData) {
             is GeneralResult.DataFileCreation.Success -> {
+                model.dataFileHasBeenCreated = true
+                model.dataFilePath = resultData.filePath
+                model.dataFileKey = resultData.key
                 if(model.untrustedDevicePostedKeyBundle){
-
+                    generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                            model.dataFilePath, model.dataFileKey!!))
                 }
             }
         }

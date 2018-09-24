@@ -73,6 +73,7 @@ class PushController(private val dataSource: PushDataSource, private val isPostN
                     val data = parseNewOpenMailbox(pushData, shouldPostNotification)
                     OpenMailboxNotifier.Open(data)
                 }
+
             }
         }
         return null

@@ -32,6 +32,10 @@ class TempWebSocketController(private val wsClient: TempWebSocketClient,
             this.currentListener = null
     }
 
+    override fun disconnectWebSocket() {
+        disconnect()
+    }
+
     private val onMessageReceived = { text: String ->
         val event = Event.fromJSON(text)
         when (event.cmd) {
@@ -41,7 +45,6 @@ class TempWebSocketController(private val wsClient: TempWebSocketClient,
                 currentListener?.onDeviceLinkAuthAccept(deviceId, name)
             }
             Event.Cmd.deviceAuthDenied -> currentListener?.onDeviceLinkAuthDeny()
-
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,
                     arrayOf(event.cmd)))
         }

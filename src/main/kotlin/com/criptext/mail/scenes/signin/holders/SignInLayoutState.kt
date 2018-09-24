@@ -10,5 +10,5 @@ sealed class SignInLayoutState {
     data class LoginValidation(val username: String): SignInLayoutState()
     data class InputPassword(val username: String, val password: String,
                              val buttonState: ProgressButtonState): SignInLayoutState()
-    class WaitForApproval : SignInLayoutState()
+    data class WaitForApproval(val username: String) : SignInLayoutState()
 }

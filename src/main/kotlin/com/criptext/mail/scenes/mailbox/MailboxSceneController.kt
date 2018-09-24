@@ -705,9 +705,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                //Needed for second part of Link Devices
-//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
-//                        false, true)
+                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+                        false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -755,6 +754,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+
+        }
+
         override fun onDeviceLinkAuthDeny() {
 
         }

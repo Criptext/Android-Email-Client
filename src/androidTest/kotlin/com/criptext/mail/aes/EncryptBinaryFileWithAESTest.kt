@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.mocks.MockLinkDeviceFile
 import com.criptext.mail.scenes.emaildetail.data.DownloadAttachmentWorkerTest
+import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.AndroidFs
 import org.amshove.kluent.shouldBeFile
 import org.amshove.kluent.shouldEqual

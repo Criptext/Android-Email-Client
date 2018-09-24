@@ -59,7 +59,7 @@ class EncryptFileByChunksTest {
 
         try {
             FileDownloader.download(EncryptFileByChunksTest.testTxtFileURL, constantFile)
-            val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
+            val bob = InMemoryUser(keyGenerator, "tester", 2).setup()
 
             constantListOfFileEntries = constantFile.readLines()
 
@@ -67,7 +67,7 @@ class EncryptFileByChunksTest {
             tester.buildSession(keyBundleFromBob)
 
 
-            val encryptedFile = signalClient.encryptFileByChunks(constantFile, "bob", 1, 512000)
+            val encryptedFile = signalClient.encryptFileByChunks(constantFile, "tester", 2, 512000)
 
             val unencryptedFile = File(bob.decryptFileByChunks(File(encryptedFile),"tester", 1))
             

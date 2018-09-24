@@ -7,7 +7,9 @@ import com.criptext.mail.BuildConfig
  */
 
 object EmailAddressUtils {
-    private val CRIPTEXT_DOMAIN_SUFFIX = if(BuildConfig.DEBUG) "@jigl.com" else "@criptext.com"
+
+    val CRIPTEXT_DOMAIN_SUFFIX = if(BuildConfig.DEBUG) "@jigl.com" else "@criptext.com"
+
     val isFromCriptextDomain:(String) -> Boolean =
             { address -> address.endsWith(CRIPTEXT_DOMAIN_SUFFIX) }
     val extractRecipientIdFromCriptextAddress: (String) -> String =

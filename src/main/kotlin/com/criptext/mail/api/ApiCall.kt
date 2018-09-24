@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.io.InputStream
 
 /**
  * Created by sebas on 2/26/18.
@@ -24,6 +25,12 @@ class ApiCall {
             val response = client.newCall(req).execute()
             if (!response.isSuccessful) throw(ServerErrorException(response.code()))
             return response.body()!!.bytes()
+        }
+
+        fun executeInputStreamRequest(client: OkHttpClient, req: Request): InputStream {
+            val response = client.newCall(req).execute()
+            if (!response.isSuccessful) throw(ServerErrorException(response.code()))
+            return response.body()!!.byteStream()
         }
 
     }

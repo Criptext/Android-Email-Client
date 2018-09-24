@@ -4,12 +4,16 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.signal.SignalStoreCriptext
 
 /**
  * Created by sebas on 2/15/18.
@@ -21,7 +25,8 @@ class SignInDataSource(override val runner: WorkRunner,
                        private val keyValueStorage: KeyValueStorage,
                        private val signUpDao: SignUpDao,
                        private val accountDao: AccountDao,
-                       private val signInLocalDB: SignInLocalDB)
+                       private val signInLocalDB: SignInLocalDB,
+                       private val db: AppDatabase)
     : BackgroundWorkManager<SignInRequest, SignInResult>() {
     override fun createWorkerFromParams(params: SignInRequest,
                                         flushResults: (SignInResult) -> Unit):
@@ -68,6 +73,12 @@ class SignInDataSource(override val runner: WorkRunner,
                     publishFn = { result -> flushResults(result)
                     }
             )
+            is SignInRequest.LinkStatus -> LinkStatusWorker(
+                    httpClient = httpClient,
+                    jwt = params.ephemeralJwt,
+                    publishFn = { result -> flushResults(result)
+                    }
+            )
             is SignInRequest.CreateSessionFromLink -> CreateSessionWorker(
                     name = params.name,
                     httpClient = httpClient, randomId = params.randomId,
@@ -77,6 +88,17 @@ class SignInDataSource(override val runner: WorkRunner,
                     messagingInstance = MessagingInstance.Default(),
                     signUpDao = signUpDao,
                     publishFn = { result -> flushResults(result)
+                    }
+            )
+
+            is SignInRequest.LinkData -> LinkDataWorker(
+                    activeAccount = ActiveAccount.loadFromStorage(keyValueStorage)!!,
+                    dataAddress = params.dataAddress,
+                    key = params.key,
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    db = db,
+                    publishFn = {
+                        result -> flushResults(result)
                     }
             )
         }

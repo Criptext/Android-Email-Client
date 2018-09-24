@@ -17,8 +17,8 @@ class LoggingInterceptor : Interceptor {
         val request = chain.request()
 
         val t1 = System.nanoTime()
-        logger.info(String.format("Sending request %s on %s%n%s",
-                request.url(), chain.connection(), request.headers()))
+        logger.info(String.format("Sending request %s: %s on %s%n%s",
+                request.method(), request.url(), chain.connection(), request.headers()))
 
         val response = chain.proceed(request)
 
