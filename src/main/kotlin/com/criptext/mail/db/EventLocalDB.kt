@@ -45,7 +45,9 @@ class EventLocalDB(private val db: AppDatabase){
 
     fun updateDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes) {
         if (metadataKeys.isNotEmpty()) {
-            db.emailDao().changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType, DeliveryTypes.UNSEND)
+            db.emailDao().changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType,
+                    listOf(DeliveryTypes.getTrueOrdinal(DeliveryTypes.UNSEND),
+                    DeliveryTypes.getTrueOrdinal(DeliveryTypes.NONE)))
         }
     }
 
@@ -79,7 +81,9 @@ class EventLocalDB(private val db: AppDatabase){
     fun updateThreadLabels(threadIds: List<String>, labelsAdded: List<String>, labelsRemoved: List<String>) {
         if(threadIds.isNotEmpty()){
 
-            val systemLabels = db.labelDao().get(Label.defaultItems.toList().map { it.text })
+            val systemLabels = db.labelDao().get(Label.defaultItems.toList()
+                    .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
+                    .map { it.text })
             val emailIds = db.emailDao().getEmailsFromThreadIds(threadIds).map { it.id }
             val removedLabels = db.labelDao().get(labelsRemoved)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
@@ -111,7 +115,9 @@ class EventLocalDB(private val db: AppDatabase){
     fun updateEmailLabels(metadataKeys: List<Long>, labelsAdded: List<String>, labelsRemoved: List<String>) {
         if(metadataKeys.isNotEmpty()){
 
-            val systemLabels = db.labelDao().get(Label.defaultItems.toList().map { it.text })
+            val systemLabels = db.labelDao().get(Label.defaultItems.toList()
+                    .filter { it.text in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
+                    .map { it.text })
             val emailIds = db.emailDao().getAllEmailsByMetadataKey(metadataKeys).map { it.id }
             val removedLabels = db.labelDao().get(labelsRemoved)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }

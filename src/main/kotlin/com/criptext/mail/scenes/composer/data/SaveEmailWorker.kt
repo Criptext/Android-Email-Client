@@ -78,7 +78,7 @@ class SaveEmailWorker(
                 unsentDate = DateUtils.printDateWithServerFormat(Date()),
                 metadataKey = tempThreadId, // ugly hack because we don't have draft table
                 fromContact = sender,
-                unread = false,
+                unread = !onlySave,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
                 trashDate = DateUtils.printDateWithServerFormat(Date()))

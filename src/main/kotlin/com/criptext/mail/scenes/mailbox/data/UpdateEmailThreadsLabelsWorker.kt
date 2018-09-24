@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
 /**
@@ -77,27 +78,51 @@ class UpdateEmailThreadsLabelsWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
 
-        val removedLabels = if(currentLabel == defaultItems.starred
-                || currentLabel == defaultItems.sent) listOf(Label.defaultItems.inbox.text)
-        else
-            listOf(currentLabel.text)
-
+        val selectedLabelsList = selectedLabels.toList().map { it.label }
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+                .filter { !rejectedLabels.contains(it.id) }
+                .filter { it.text != Label.LABEL_STARRED }
+
+        val peerSelectedLabels = selectedLabels.toList()
+                .filter { it.text != currentLabel.text }
+                .toList().map { it.text }
+        val peerRemovedLabels = db.getLabelsFromThreadIds(selectedThreadIds)
+                .filter { !selectedLabelsList.contains(it) }
+                .filter { (!systemLabels.contains(it)) }
+                .map { it.text }
+                .toMutableList()
+
+
         val emailIds = selectedThreadIds.flatMap { threadId ->
             db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
         }
 
-        val result = Result.of {
-            apiClient.postThreadLabelChangedEvent(selectedThreadIds, removedLabels,
-                    selectedLabels.toList().map { it.text })}
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        val result =
+            if(shouldRemoveCurrentLabel) {
+                if(currentLabel == Label.defaultItems.spam){
+                    peerRemovedLabels.removeAll(peerRemovedLabels)
+                    peerRemovedLabels.add(Label.LABEL_SPAM)
+                }else
+                    peerRemovedLabels.add(currentLabel.text)
+                Result.of {
+                    apiClient.postThreadLabelChangedEvent(selectedThreadIds, peerRemovedLabels,
+                            peerSelectedLabels)}
+                        .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                        .flatMap { Result.of { removeCurrentLabelFromEmails(emailIds)} }
+
+            }else {
+                Result.of {
+                    apiClient.postThreadLabelChangedEvent(selectedThreadIds, peerRemovedLabels,
+                            peerSelectedLabels)}
+                        .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                        .flatMap { Result.of{updateLabelEmailRelations(emailIds)} }
+
+            }
 
         return when(result){
             is Result.Success -> {
-                if(shouldRemoveCurrentLabel)
-                    removeCurrentLabelFromEmails(emailIds)
-                else
-                    updateLabelEmailRelations(emailIds)
+
                 MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
             }
             is Result.Failure -> {

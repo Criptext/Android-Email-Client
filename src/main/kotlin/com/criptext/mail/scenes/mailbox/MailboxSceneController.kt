@@ -296,6 +296,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showMessage(UIMessage(R.string.draft_saved))
                 true
             }
+            is ActivityMessage.UpdateMailBox -> {
+                reloadMailboxThreads()
+                true
+            }
             else -> {
                 dataSource.submitRequest(MailboxRequest.ResendEmails())
                 false

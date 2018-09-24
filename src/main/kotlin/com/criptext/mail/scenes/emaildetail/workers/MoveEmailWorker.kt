@@ -70,10 +70,15 @@ class MoveEmailWorker(
 
         val selectedLabels = SelectedLabels()
         selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
+        val peerRemoveLabels = if(currentLabel == Label.defaultItems.trash
+                || currentLabel == Label.defaultItems.spam)
+            listOf(currentLabel.text)
+        else
+            emptyList()
 
         val result =  Result.of{apiClient.postEmailLabelChangedEvent(
                 emailDao.getAllEmailsbyId(emailIds).map { it.metadataKey },
-                listOf(currentLabel.text), selectedLabels.toList().map { it.text })}
+                peerRemoveLabels, selectedLabels.toList().map { it.text })}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
         return when (result) {

@@ -21,6 +21,7 @@ interface EmailDetailLocalDB {
     fun unsendEmail(emailId: Long)
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelByName(labelName: String): Label
+    fun getLabelsByName(labelName: List<String>): List<Label>
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean)
     fun deleteThread(threadId: String)
@@ -83,6 +84,10 @@ interface EmailDetailLocalDB {
         }
 
         override fun getLabelByName(labelName: String): Label {
+            return db.labelDao().get(labelName)
+        }
+
+        override fun getLabelsByName(labelName: List<String>): List<Label> {
             return db.labelDao().get(labelName)
         }
 

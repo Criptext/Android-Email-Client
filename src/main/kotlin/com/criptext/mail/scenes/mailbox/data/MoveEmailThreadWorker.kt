@@ -94,9 +94,22 @@ class MoveEmailThreadWorker(
         val selectedLabels = SelectedLabels()
         selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
 
+
+        val selectedLabelsList = selectedLabels.toList().map { it.label }
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+                .filter { !rejectedLabels.contains(it.id) }
+
+        val peerSelectedLabels = selectedLabels.toList()
+                .filter { it.text != currentLabel.text }
+                .toList().map { it.text }
+        val peerRemovedLabels = db.getLabelsFromThreadIds(selectedThreadIds)
+                .filter { !selectedLabelsList.contains(it) }
+                .filter { (!systemLabels.contains(it)) }
+                .map { it.text }
+
         val result = Result.of {
-            apiClient.postThreadLabelChangedEvent(selectedThreadIds, listOf(currentLabel.text),
-                selectedLabels.toList().map { it.text })}
+            apiClient.postThreadLabelChangedEvent(selectedThreadIds, peerRemovedLabels,
+                    peerSelectedLabels)}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap { Result.of {
                     if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){

@@ -246,14 +246,17 @@ object EmailInsertionSetup {
 
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
-        val lonReturn = dao.runTransaction({
-                EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(unread =
-                if(meAsSender) false else metadata.extractDBColumns().unread, status =
-                if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
-                else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
-                else DeliveryTypes.NONE), decryptedBody, labels,
-                        metadata.files, decryptedFileKey)
-            })
+        val lonReturn = dao.runTransaction {
+            EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(
+                    unread = if(meAsSender && !meAsRecipient)
+                                false
+                             else
+                                metadata.extractDBColumns().unread,
+                    status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
+            else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
+            else DeliveryTypes.NONE), decryptedBody, labels,
+                    metadata.files, decryptedFileKey)
+        }
         println(lonReturn)
     }
 }

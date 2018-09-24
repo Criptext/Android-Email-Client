@@ -20,6 +20,7 @@
 - Implement Reset password [\#215](https://github.com/Criptext/Android-Email-Client/issues/215)
 - Implement change password [\#214](https://github.com/Criptext/Android-Email-Client/issues/214)
 - Disable unsend button if the emails is sent unencrypted \(including mixed recipients\) [\#208](https://github.com/Criptext/Android-Email-Client/issues/208)
+- Recover from trash doesn't work [\#206](https://github.com/Criptext/Android-Email-Client/issues/206)
 - Implement change recovery email [\#198](https://github.com/Criptext/Android-Email-Client/issues/198)
 - Add more information in the email for support [\#195](https://github.com/Criptext/Android-Email-Client/issues/195)
 - Upgrade DB version to fix contacts [\#194](https://github.com/Criptext/Android-Email-Client/issues/194)
@@ -66,6 +67,8 @@
 
 **Merged pull requests:**
 
+- Now Recovery Email scene updates trhough the web socket event. [\#266](https://github.com/Criptext/Android-Email-Client/pull/266) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed a bug that moved the emails to ALL\_EMAIL when you recover from trash. \[206\] [\#265](https://github.com/Criptext/Android-Email-Client/pull/265) ([jorgeblacio](https://github.com/jorgeblacio))
 - Various aesthetic fixes. [\#261](https://github.com/Criptext/Android-Email-Client/pull/261) ([jorgeblacio](https://github.com/jorgeblacio))
 - Now web socket only lets it's listeners now that there is a new event for them to do get events. [\#260](https://github.com/Criptext/Android-Email-Client/pull/260) ([jorgeblacio](https://github.com/jorgeblacio))
 - resend emails only if there is not activityMessage [\#259](https://github.com/Criptext/Android-Email-Client/pull/259) ([danieltigse](https://github.com/danieltigse))

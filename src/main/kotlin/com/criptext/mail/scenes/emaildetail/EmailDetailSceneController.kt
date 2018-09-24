@@ -323,6 +323,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
         override fun onStarredButtonPressed(isStarred: Boolean) {
             val selectedLabels = SelectedLabels()
+            val nonSelectedLabels = SelectedLabels()
             val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
             val labels = if(isStarred){
                 labelsWithoutFilter.add(Label.defaultItems.starred)
@@ -439,7 +440,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                 if (result.fullEmailList.isEmpty()) {
                     host.exitToScene(
                             params = MailboxParams(),
-                            activityMessage = null,
+                            activityMessage = ActivityMessage.UpdateMailBox(),
                             forceAnimation = false)
                 } else {
                     val lastEmail = result.fullEmailList.last().email
