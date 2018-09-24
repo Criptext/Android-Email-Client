@@ -40,7 +40,7 @@ class SignInSceneController(
 
     override val menuResourceId: Int? = null
 
-    private lateinit var tempWebSocket: TempWebSocketController
+    private var tempWebSocket: TempWebSocketController? = null
 
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
@@ -84,10 +84,11 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
-                    model.state = SignInLayoutState.LoginValidation(username = result.username)
-                    scene.initLayout(model.state, uiObserver)
-                    dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
-                    //onAcceptPasswordLogin(result.username)
+                    //LINK DEVICE FEATURE
+//                    model.state = SignInLayoutState.LoginValidation(username = result.username)
+//                    scene.initLayout(model.state, uiObserver)
+//                    dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
+                    onAcceptPasswordLogin(result.username)
                 }
                 else{
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
@@ -170,7 +171,7 @@ class SignInSceneController(
 
     private fun handleNewTemporalWebSocket(){
         tempWebSocket = TempWebSocketController(TempWebSocketClient(), model.ephemeralJwt)
-        tempWebSocket.setListener(webSocketEventListener)
+        tempWebSocket?.setListener(webSocketEventListener)
     }
 
     private fun onSignInButtonClicked(currentState: SignInLayoutState.Start) {
@@ -327,8 +328,10 @@ class SignInSceneController(
 
     override fun onStop() {
         scene.signInUIObserver = null
-        tempWebSocket.clearListener(webSocketEventListener)
-        tempWebSocket.disconnect()
+        if(tempWebSocket != null) {
+            tempWebSocket?.clearListener(webSocketEventListener)
+            tempWebSocket?.disconnect()
+        }
     }
 
     override fun onBackPressed(): Boolean {
