@@ -91,6 +91,7 @@ class ComposerController(private val model: ComposerModel,
                 model.passwordForNonCriptextUsers = null
                 scene.disableSendButtonOnDialog()
             }
+            scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
