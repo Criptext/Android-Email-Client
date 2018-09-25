@@ -23,12 +23,13 @@ class DeviceUtils{
         }
 
         fun getDeviceFriendlyName(): String{
-            val myDevice = BluetoothAdapter.getDefaultAdapter()
-            if(myDevice != null){
-                val operation = Result.of { myDevice.name }
-                if(operation is Result.Success)
-                    return operation.value
-            }
+//            val myDevice = BluetoothAdapter.getDefaultAdapter()
+//            if(myDevice != null){
+//                val operation = Result.of { myDevice.name }
+//                if(operation is Result.Success)
+//                    return operation.value
+//            }
+//            return getDeviceName()
             return getDeviceName()
         }
 
