@@ -78,11 +78,16 @@ class SaveEmailWorker(
                 unsentDate = DateUtils.printDateWithServerFormat(Date()),
                 metadataKey = tempThreadId, // ugly hack because we don't have draft table
                 fromContact = sender,
-                unread = !onlySave,
+                unread = meAsRecipient,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
                 trashDate = DateUtils.printDateWithServerFormat(Date()))
     }
+
+    private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(account.userEmail)
+            || composerInputData.cc.map { it.email }.contains(account.userEmail)
+            || composerInputData.to.map { it.email }.contains(account.userEmail)
+
 
     private fun createDraftMessageId(deviceId: Int): String =
             "${System.currentTimeMillis()}:$deviceId"
