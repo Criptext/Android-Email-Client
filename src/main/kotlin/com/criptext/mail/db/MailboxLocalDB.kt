@@ -328,10 +328,17 @@ interface MailboxLocalDB {
                             labels = labels,
                             to = contactsTO,
                             fileKey = fileKey.key),
-                    totalEmails = if(emailsInSelectedLabel == -1)
-                        emails.size else emailsInSelectedLabel,
+                    totalEmails = getEmailCount(emailsInSelectedLabel, emails.size, selectedLabel),
                     hasFiles = totalFiles > 0
             )
+        }
+
+        private fun getEmailCount(emailsInSelectedLabel: Int, emailsSize: Int,
+                                  selectedLabel: String): Int{
+            return if(selectedLabel == Label.LABEL_TRASH || selectedLabel == Label.LABEL_SPAM )
+                emailsInSelectedLabel
+            else
+                emailsSize
         }
     }
 
