@@ -136,6 +136,12 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is MailboxRequest.GetPendingLinkRequest -> GetPendingLinkRequestWorker(
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
         }
     }
 

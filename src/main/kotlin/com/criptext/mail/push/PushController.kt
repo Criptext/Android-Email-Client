@@ -1,14 +1,7 @@
 package com.criptext.mail.push
 
-import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.push.data.PushDataSource
-import com.criptext.mail.push.data.PushResult
-import android.content.Context
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.bgworker.AsyncTaskWorkRunner
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.data.PushRequest
 
 /**
@@ -58,6 +51,7 @@ class PushController(private val dataSource: PushDataSource, private val isPostN
                     val data = parseNewMailPush(pushData, shouldPostNotification)
                     NewMailNotifier.Single(data)
                 }
+                PushTypes.linkDevice,
                 PushTypes.openActivity -> {
                     val data = parseNewOpenMailbox(pushData, shouldPostNotification)
                     OpenMailboxNotifier.Open(data)

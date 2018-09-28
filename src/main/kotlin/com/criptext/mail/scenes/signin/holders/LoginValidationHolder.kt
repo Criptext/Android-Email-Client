@@ -118,7 +118,7 @@ class LoginValidationHolder(
         buttonResend.visibility = View.GONE
         textViewPrompt.visibility = View.GONE
         textViewTitle.text = view.context.getText(R.string.failed)
-        textViewBody.visibility = View.GONE
+        textViewBody.text = view.context.getText(R.string.login_failed_body)
         textViewNotApproved.visibility = View.VISIBLE
         animLoading?.cancel()
         loadingImageLayout.visibility = View.GONE

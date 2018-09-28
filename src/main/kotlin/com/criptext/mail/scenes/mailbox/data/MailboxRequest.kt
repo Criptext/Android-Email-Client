@@ -51,4 +51,6 @@ sealed class MailboxRequest{
 
     class ResendEmails: MailboxRequest()
 
+    class GetPendingLinkRequest: MailboxRequest()
+
 }
