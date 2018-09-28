@@ -85,10 +85,8 @@ class SignInSceneController(
                 if(result.userExists) {
                     keyboard.hideKeyboard()
                     //LINK DEVICE FEATURE
-//                    model.state = SignInLayoutState.LoginValidation(username = result.username)
-//                    scene.initLayout(model.state, uiObserver)
-//                    dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
-                    onAcceptPasswordLogin(result.username)
+                    model.state = SignInLayoutState.LoginValidation(username = result.username)
+                    dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
                 }
                 else{
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
@@ -102,13 +100,15 @@ class SignInSceneController(
     private fun onLinkBegin(result: SignInResult.LinkBegin) {
         when (result) {
             is SignInResult.LinkBegin.Success -> {
+                scene.initLayout(model.state, uiObserver)
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 model.ephemeralJwt = result.ephemeralJwt
                 handleNewTemporalWebSocket()
                 dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username, model.ephemeralJwt))
             }
             is SignInResult.LinkBegin.Failure -> {
-                scene.showError(result.message)
+                val currentState = model.state as SignInLayoutState.LoginValidation
+                onAcceptPasswordLogin(currentState.username)
             }
         }
     }
@@ -121,7 +121,7 @@ class SignInSceneController(
             }
             is SignInResult.LinkAuth.Failure -> {
                 val currentState = model.state as SignInLayoutState.LoginValidation
-                onAcceptPasswordLogin(currentState.username)
+                scene.showError(UIMessage(R.string.server_error_exception))
             }
         }
     }

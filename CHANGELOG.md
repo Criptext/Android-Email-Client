@@ -13,6 +13,7 @@
 
 **Closed issues:**
 
+- Ignore params in websocket, just call GET events [\#254](https://github.com/Criptext/Android-Email-Client/issues/254)
 - add Reset Password in Settings [\#242](https://github.com/Criptext/Android-Email-Client/issues/242)
 - Don't send ack for 302 events if the email doesn't exists [\#240](https://github.com/Criptext/Android-Email-Client/issues/240)
 - Set label Spam when the event params contains `labels` object [\#233](https://github.com/Criptext/Android-Email-Client/issues/233)
@@ -67,6 +68,13 @@
 
 **Merged pull requests:**
 
+- Fixed an issue when user had an untrimed name. [\#276](https://github.com/Criptext/Android-Email-Client/pull/276) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed a couple of mailbox issues. [\#274](https://github.com/Criptext/Android-Email-Client/pull/274) ([jorgeblacio](https://github.com/jorgeblacio))
+- Update issue templates [\#273](https://github.com/Criptext/Android-Email-Client/pull/273) ([danieltigse](https://github.com/danieltigse))
+- Removed bluetooth usage. [\#271](https://github.com/Criptext/Android-Email-Client/pull/271) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed an issue with sending external encrypted emails. [\#269](https://github.com/Criptext/Android-Email-Client/pull/269) ([jorgeblacio](https://github.com/jorgeblacio))
+- First part of link devices, the remote authentication is working. [\#268](https://github.com/Criptext/Android-Email-Client/pull/268) ([jorgeblacio](https://github.com/jorgeblacio))
+- Changed the websocket to only parse one event to do get\_events. [\#267](https://github.com/Criptext/Android-Email-Client/pull/267) ([jorgeblacio](https://github.com/jorgeblacio))
 - Now Recovery Email scene updates trhough the web socket event. [\#266](https://github.com/Criptext/Android-Email-Client/pull/266) ([jorgeblacio](https://github.com/jorgeblacio))
 - Fixed a bug that moved the emails to ALL\_EMAIL when you recover from trash. \[206\] [\#265](https://github.com/Criptext/Android-Email-Client/pull/265) ([jorgeblacio](https://github.com/jorgeblacio))
 - Various aesthetic fixes. [\#261](https://github.com/Criptext/Android-Email-Client/pull/261) ([jorgeblacio](https://github.com/jorgeblacio))
