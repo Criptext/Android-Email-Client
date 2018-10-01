@@ -11,8 +11,10 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.EventLoader
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -37,6 +39,7 @@ class UpdateMailboxWorker(
 
     override val canBeParallelized = false
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
 
@@ -66,9 +69,7 @@ class UpdateMailboxWorker(
     override fun work(reporter: ProgressReporter<GeneralResult.UpdateMailbox>)
             : GeneralResult.UpdateMailbox? {
         eventHelper.setupForMailbox(label, loadedThreadsCount)
-        val operationResult = eventHelper.fetchPendingEvents()
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap(eventHelper.parseEvents)
+        val operationResult = EventLoader.getEvents(mailboxApiClient)
                 .flatMap(eventHelper.processEvents)
 
         checkTrashDates()

@@ -6,6 +6,7 @@ import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.EventLoader
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.json.JSONArray
@@ -27,8 +28,7 @@ class GetPendingLinkRequestWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.GetPendingLinkRequest>)
             : MailboxResult.GetPendingLinkRequest? {
-        val result = fetchPendingEvents()
-                .flatMap(parseEvents)
+        val result = EventLoader.getEvents(apiClient)
                 .flatMap(processEvents)
         return when (result) {
             is Result.Success -> {
@@ -40,26 +40,7 @@ class GetPendingLinkRequestWorker(
         }
     }
 
-    private fun fetchPendingEvents():Result<String, Exception> {
-        return Result.of {
-            val responseText = apiClient.getPendingEvents()
-            if (responseText.isEmpty()) "[]" else responseText
-        }
-    }
 
-    private val parseEvents: (String) -> Result<List<Event>, Exception> = { jsonString ->
-        Result.of {
-            val eventsJSONArray = JSONArray(jsonString)
-            val lastIndex = eventsJSONArray.length() - 1
-            if (lastIndex > -1) {
-                (0..lastIndex).map {
-                    val eventJSONString = eventsJSONArray.get(it).toString()
-                    Event.fromJSON(eventJSONString)
-                }
-            } else emptyList()
-
-        }
-    }
 
     private val processEvents: (List<Event>) -> Result<UntrustedDeviceInfo, Exception> = { events ->
         Result.of {
