@@ -1,7 +1,6 @@
 # Change Log
 
-## [Unreleased](https://github.com/criptext/Android-Email-Client/tree/HEAD)
-
+## [v0.12.0](https://github.com/criptext/Android-Email-Client/tree/v0.12.0) (2018-10-01)
 **Fixed bugs:**
 
 - Show only deleted emails in Trash folder [\#182](https://github.com/Criptext/Android-Email-Client/issues/182)
@@ -68,6 +67,9 @@
 
 **Merged pull requests:**
 
+- Upgrade version for release. [\#279](https://github.com/Criptext/Android-Email-Client/pull/279) ([jorgeblacio](https://github.com/jorgeblacio))
+- Refactored the parse events into a single object. [\#278](https://github.com/Criptext/Android-Email-Client/pull/278) ([jorgeblacio](https://github.com/jorgeblacio))
+- Activated the first part of link devices for release. [\#277](https://github.com/Criptext/Android-Email-Client/pull/277) ([jorgeblacio](https://github.com/jorgeblacio))
 - Fixed an issue when user had an untrimed name. [\#276](https://github.com/Criptext/Android-Email-Client/pull/276) ([jorgeblacio](https://github.com/jorgeblacio))
 - Fixed a couple of mailbox issues. [\#274](https://github.com/Criptext/Android-Email-Client/pull/274) ([jorgeblacio](https://github.com/jorgeblacio))
 - Update issue templates [\#273](https://github.com/Criptext/Android-Email-Client/pull/273) ([danieltigse](https://github.com/danieltigse))
