@@ -44,12 +44,16 @@ interface HttpClient {
                 AuthScheme.jwt -> this.addHeader("Authorization", "Bearer $authToken")
             }
 
+        private fun Request.Builder.addApiVersionHeader() =
+                this.addHeader("API-Version", "$API_VERSION")
+
         private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
             val url = newUrl.build()
             val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .delete(body)
                     .build()
@@ -59,6 +63,7 @@ interface HttpClient {
             val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .post(body)
                     .build()
@@ -68,6 +73,7 @@ interface HttpClient {
             val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .put(body)
                     .build()
@@ -105,6 +111,7 @@ interface HttpClient {
 
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .post(multipartBody)
                     .build()
@@ -126,6 +133,7 @@ interface HttpClient {
 
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .put(multipartBody)
                     .build()
@@ -134,6 +142,7 @@ interface HttpClient {
         private fun getUrl(url: String, authToken: String?): Request {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addApiVersionHeader()
                     .url(url)
                     .get()
                     .build()
@@ -172,6 +181,10 @@ interface HttpClient {
         override fun getFile(path: String, authToken: String?): ByteArray {
             val request = getUrl(url = baseUrl + path, authToken = authToken)
             return ApiCall.executeFileRequest(client, request)
+        }
+
+        companion object {
+            const val API_VERSION = 1.0
         }
     }
 
