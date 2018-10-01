@@ -61,6 +61,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
             is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
+            is MailboxResult.GetPendingLinkRequest -> dataSourceController.getPendingLinkRequest(result)
         }
     }
 
@@ -521,6 +522,15 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
+        fun getPendingLinkRequest(resultData: MailboxResult.GetPendingLinkRequest) {
+            when (resultData) {
+                is MailboxResult.GetPendingLinkRequest.Success ->
+                {
+                    scene.showLinkDeviceAuthConfirmation(resultData.deviceInfo)
+                }
+            }
+        }
+
         fun onLoadedMoreThreads(result: MailboxResult.LoadEmailThreads) {
             scene.clearRefreshing()
             scene.updateToolbarTitle(toolbarTitle)
@@ -701,9 +711,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         when (resultData) {
             is GeneralResult.UpdateMailbox.Success -> {
                 handleSuccessfulMailboxUpdate(resultData)
+                dataSource.submitRequest(MailboxRequest.GetPendingLinkRequest())
             }
-            is GeneralResult.UpdateMailbox.Failure ->
+            is GeneralResult.UpdateMailbox.Failure -> {
                 handleFailedMailboxUpdate(resultData)
+                dataSource.submitRequest(MailboxRequest.GetPendingLinkRequest())
+            }
             is GeneralResult.UpdateMailbox.Unauthorized ->
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             is GeneralResult.UpdateMailbox.Forbidden ->
