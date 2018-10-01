@@ -39,7 +39,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="MacBook Pro"
+                android:text="Google Android SDK built for x86"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
@@ -53,6 +53,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="5dp"
                 android:layout_row="0"
+                android:visibility="gone"
                 android:gravity="end"
                 android:textColor="#61b900"
                 android:textSize="14sp" />

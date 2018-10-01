@@ -11,8 +11,10 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.EventLoader
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -38,6 +40,7 @@ class UpdateMailboxWorker(
     override val canBeParallelized = false
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, false)
+    private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): PushResult.UpdateMailbox {
         val message = createErrorMessage(ex)
@@ -60,9 +63,7 @@ class UpdateMailboxWorker(
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
             : PushResult.UpdateMailbox? {
         eventHelper.setupForMailbox(label, loadedThreadsCount)
-        val operationResult = eventHelper.fetchPendingEvents()
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap(eventHelper.parseEvents)
+        val operationResult = EventLoader.getEvents(apiClient)
                 .flatMap(eventHelper.processEvents)
 
         return when(operationResult) {

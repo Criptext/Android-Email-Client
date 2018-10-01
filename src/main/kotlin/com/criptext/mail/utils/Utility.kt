@@ -20,14 +20,15 @@ class Utility {
             drawable.setBounds(0, 0, width, height)
             drawable.draw(canvas)
 
-            return bitmap;
+            return bitmap
 
         }
 
         private fun getAvatarLetters(fullName: String): String{
-            val firstLetter = fullName.toCharArray()[0].toString()
-            val secondLetter = if(fullName.contains(" "))
-                fullName[fullName.indexOf(" ") + 1].toString()
+            val cleanedName = fullName.trim()
+            val firstLetter = cleanedName.toCharArray()[0].toString().toUpperCase()
+            val secondLetter = if(cleanedName.contains(" "))
+                cleanedName[cleanedName.lastIndexOf(" ") + 1].toString().toUpperCase()
             else
                 ""
             return firstLetter.plus(secondLetter)

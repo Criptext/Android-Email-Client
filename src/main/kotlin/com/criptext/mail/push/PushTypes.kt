@@ -5,11 +5,12 @@ package com.criptext.mail.push
  * Created by gabriel on 8/21/17.
  */
 enum class PushTypes {
-    newMail, openActivity;
+    newMail, openActivity,linkDevice;
 
     fun actionCode(): String = when (this) {
         newMail -> "open_thread"
         openActivity -> "open_activity"
+        linkDevice -> "link_device"
     }
 
     fun requestCodeRandom(): Int = this.ordinal + System.currentTimeMillis().toInt()
@@ -20,6 +21,7 @@ enum class PushTypes {
             when(action){
                 newMail.actionCode() -> newMail
                 openActivity.actionCode() -> openActivity
+                linkDevice.actionCode() -> openActivity
                 else -> throw IllegalArgumentException("Unknown push action: $action")
             }
     }

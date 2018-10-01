@@ -31,8 +31,10 @@ class DeviceHolder(val view: View) : RecyclerView.ViewHolder(view) {
         if(deviceItem.isCurrent) {
             textViewCurrent.setText(R.string.current_device)
             imageTrashDevice.visibility = View.GONE
+            textViewCurrent.visibility = View.VISIBLE
         }else{
             textViewCurrent.text = ""
+            textViewCurrent.visibility = View.GONE
             imageTrashDevice.visibility = View.VISIBLE
         }
         when (deviceItem.deviceType){

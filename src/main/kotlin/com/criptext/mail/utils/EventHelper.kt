@@ -37,36 +37,6 @@ class EventHelper(private val db: EventLocalDB,
         loadedThreadsCount = threadCount
     }
 
-
-    fun processAllPendingEvents():Result<List<EmailPreview>,Exception>{
-        return fetchPendingEvents()
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap(parseEvents)
-                .flatMap(processEvents)
-    }
-
-
-    fun fetchPendingEvents():Result<String, Exception> {
-        return Result.of {
-            val responseText = mailboxAPIClient.getPendingEvents()
-            if (responseText.isEmpty()) "[]" else responseText
-        }
-    }
-
-    val parseEvents: (String) -> Result<List<Event>, Exception> = { jsonString ->
-        Result.of {
-            val eventsJSONArray = JSONArray(jsonString)
-            val lastIndex = eventsJSONArray.length() - 1
-            if (lastIndex > -1) {
-                (0..lastIndex).map {
-                    val eventJSONString = eventsJSONArray.get(it).toString()
-                    Event.fromJSON(eventJSONString)
-                }
-            } else emptyList()
-
-        }
-    }
-
     val processEvents: (List<Event>) -> Result<List<EmailPreview>, Exception> = { events ->
         Result.of {
             val shouldReload = processTrackingUpdates(events).or(processNewEmails(events))
