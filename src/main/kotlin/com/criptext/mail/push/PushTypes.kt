@@ -21,7 +21,7 @@ enum class PushTypes {
             when(action){
                 newMail.actionCode() -> newMail
                 openActivity.actionCode() -> openActivity
-                linkDevice.actionCode() -> openActivity
+                linkDevice.actionCode() -> linkDevice
                 else -> throw IllegalArgumentException("Unknown push action: $action")
             }
     }

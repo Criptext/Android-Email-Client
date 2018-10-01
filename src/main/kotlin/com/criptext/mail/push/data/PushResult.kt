@@ -28,4 +28,14 @@ sealed class PushResult {
             }
         }
     }
+
+    sealed class LinkAccept: PushResult() {
+        data class Success(val notificationId: Int): LinkAccept()
+        data class Failure(val message: UIMessage): LinkAccept()
+    }
+
+    sealed class LinkDeny: PushResult() {
+        data class Success(val notificationId: Int): LinkDeny()
+        data class Failure(val message: UIMessage): LinkDeny()
+    }
 }

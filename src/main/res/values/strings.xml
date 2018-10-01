@@ -20,7 +20,15 @@
     <!-- SYNC -->
     <string name="done_exclamation">Done!</string>
     <string name="sync_failed">Sync Failed</string>
+    <string name="link_auth_title">Device Authentication</string>
     <string name="link_auth_message">Do you want to approve\n %1$s?</string>
+
+    <!-- DEVICE AUTHENTICATION -->
+    <string name="push_approve">Approve</string>
+    <string name="push_deny">Deny</string>
+    <string name="push_link_error_title">Device Authentication</string>
+    <string name="push_link_error_message_approve">Error on approving device, resend authentication request.</string>
+    <string name="push_link_error_message_deny">Error on denying device. Check your internet connection.</string>
 
 
     <!-- TOUR -->
@@ -427,6 +435,8 @@
     <string name="feed_older">OLDER</string>
 
     <string name="new_email_notification">New Email Notification</string>
+    <string name="link_device_notification">Device Authentication Notification</string>
+    <string name="error_notification">Error Notification</string>
     <string name="email_open_notification">Email Open Notification</string>
     <string name="unknown_notification">Unknown Notification</string>
 </resources>

@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
+import com.criptext.mail.BuildConfig
 import java.text.Normalizer
 import java.util.regex.Pattern
 
@@ -46,7 +47,7 @@ open class Contact(
 
     companion object {
 
-        const val mainDomain = "criptext.com"
+        val mainDomain = if(BuildConfig.DEBUG) "jigl.com" else "criptext.com"
         val toAddress: (Contact) -> String = { contact -> contact.email }
 
         fun deAccent(str: String): String {

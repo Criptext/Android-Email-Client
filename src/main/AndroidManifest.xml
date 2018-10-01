@@ -87,6 +87,10 @@
         </service>
 
         <service
+            android:name=".push.data.LinkDeviceActionService"
+            android:exported="false"/>
+
+        <service
             android:name=".services.MessagingService"
             android:exported="false">
             <intent-filter>
