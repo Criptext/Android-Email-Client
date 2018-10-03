@@ -30,7 +30,8 @@ import java.io.OutputStream
 
 
 
-class LinkDataWorker(val activeAccount: ActiveAccount,
+class LinkDataWorker(private val authorizerId: Int,
+                     val activeAccount: ActiveAccount,
                      private val key: String,
                      private val dataAddress: String,
                      private val signalClient: SignalClient,
@@ -72,7 +73,7 @@ class LinkDataWorker(val activeAccount: ActiveAccount,
         val result =  Result.of { apiClient.getFileStream(activeAccount.jwt, params) }
                 .flatMap { readIntoFile(it) }
                 .flatMap { Result.of { Pair(signalClient.decryptBytes(activeAccount.recipientId,
-                        activeAccount.deviceId,
+                        authorizerId,
                         SignalEncryptedData(key, SignalEncryptedData.Type.preKey)),
                         it
                 )

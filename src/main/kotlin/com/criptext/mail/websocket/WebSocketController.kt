@@ -54,7 +54,8 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
             Event.Cmd.deviceDataUploadComplete -> {
                 val dataAddress = JSONObject(event.params).getString("dataAddress")
                 val key = JSONObject(event.params).getString("key")
-                currentListener?.onDeviceDataUploaded(key, dataAddress)
+                val authorizerId = JSONObject(event.params).getInt("authorizerId")
+                currentListener?.onDeviceDataUploaded(key, dataAddress, authorizerId)
             }
 
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,

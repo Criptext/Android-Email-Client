@@ -3,41 +3,51 @@ package com.criptext.mail.scenes.signin.data
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import org.json.JSONObject
 
 
-class LinkBeginWorker(val httpClient: HttpClient,
-                      private val username: String,
-                      override val publishFn: (SignInResult) -> Unit)
-    : BackgroundWorker<SignInResult.LinkBegin> {
+class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
+                          val httpClient: HttpClient,
+                          override val publishFn: (SignInResult) -> Unit)
+    : BackgroundWorker<SignInResult.LinkDataReady> {
 
     private val apiClient = SignInAPIClient(httpClient)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): SignInResult.LinkBegin {
-        when(ex){
-            is ServerErrorException -> {
-                when(ex.errorCode){
-                    ServerErrorCodes.BadRequest -> return SignInResult.LinkBegin.NoDevicesAvailable(createErrorMessage(ex))
-                }
-            }
-        }
-        return SignInResult.LinkBegin.Failure(createErrorMessage(ex))
+    override fun catchException(ex: Exception): SignInResult.LinkDataReady {
+        return SignInResult.LinkDataReady.Failure(createErrorMessage(ex), ex)
     }
 
-    override fun work(reporter: ProgressReporter<SignInResult.LinkBegin>): SignInResult.LinkBegin? {
-        val result = Result.of { apiClient.postLinkBegin(username) }
+    override fun work(reporter: ProgressReporter<SignInResult.LinkDataReady>): SignInResult.LinkDataReady? {
+        val result = Result.of { apiClient.isLinkDataReady(activeAccount.jwt) }
+                .flatMap { Result.of { Event.fromJSON(it) } }
+                .flatMap { Result.of {
+                    Pair(Triple(
+                            JSONObject(it.params).getString("key"),
+                            JSONObject(it.params).getString("dataAddress"),
+                            JSONObject(it.params).getInt("authorizerId")
+                    ), it.cmd)
+                } }
+                .flatMap { Result.of { apiClient.acknowledgeEvents(listOf(it.second.toLong()), activeAccount.jwt)
+                it.first} }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.LinkBegin.Success(result.value)
+
+                SignInResult.LinkDataReady.Success(key = result.value.first,
+                        dataAddress = result.value.second,
+                        authorizerId = result.value.third
+                        )
             }
             is Result.Failure -> catchException(result.error)
         }

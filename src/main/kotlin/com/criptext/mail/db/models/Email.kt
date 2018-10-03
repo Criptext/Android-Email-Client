@@ -73,12 +73,12 @@ data class Email(
                         unread = json.getBoolean("unread"),
                         secure = json.getBoolean("secure"),
                         content = json.getString("content"),
-                        preview = json.getString("preview"),
-                        subject = json.getString("subject"),
-                        delivered = DeliveryTypes.fromInt(json.getInt("delivered")),
+                        preview = if(json.has("preview")) json.getString("preview") else "",
+                        subject = if(json.has("subject")) json.getString("subject") else "",
+                        delivered = DeliveryTypes.fromInt(json.getInt("status")),
                         date = com.criptext.mail.utils.DateUtils.getDateFromString(
                                 json.getString("date"), null),
-                        metadataKey = json.getLong("metadataKey"),
+                        metadataKey = json.getLong("key"),
                         isMuted = json.getBoolean("isMuted"),
                         unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateUtils.getDateFromString(
                                 json.getString("unsentDate"), null) else null,

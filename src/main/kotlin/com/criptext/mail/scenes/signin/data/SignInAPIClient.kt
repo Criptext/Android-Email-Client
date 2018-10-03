@@ -1,7 +1,10 @@
 package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.signal.PreKeyBundleShareData
+import com.criptext.mail.utils.DeviceUtils
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
 
@@ -34,6 +37,38 @@ class SignInAPIClient(private val httpClient: HttpClient) {
 
     fun getFileStream(token: String, params: Map<String,String>): InputStream {
         return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
+    }
+
+    fun postLinkBegin(recipientId: String): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("targetUsername", recipientId)
+
+        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
+    }
+
+    fun getLinkStatus(jwt: String): String{
+        return httpClient.get(path = "/link/status", authToken = jwt)
+    }
+
+    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("recipientId", recipientId)
+        jsonPut.put("deviceName", device.name)
+        jsonPut.put("deviceFriendlyName", device.friendlyName)
+        jsonPut.put("deviceType", device.deviceType)
+
+        return httpClient.post(path = "/link/auth", authToken = jwt, body = jsonPut)
+    }
+
+    fun isLinkDataReady(token: String): String {
+        return httpClient.get("/link/data/ready", authToken = token)
+    }
+
+    fun acknowledgeEvents(eventIds: List<Long>, token: String): String {
+        val jsonObject = JSONObject()
+        jsonObject.put("ids", JSONArray(eventIds))
+
+        return httpClient.post(authToken = token, path = "/event/ack", body = jsonObject)
     }
 
 }

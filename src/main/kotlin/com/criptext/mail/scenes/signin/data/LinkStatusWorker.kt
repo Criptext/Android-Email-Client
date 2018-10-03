@@ -5,10 +5,9 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
+import org.json.JSONObject
 
 
 class LinkStatusWorker(val httpClient: HttpClient,
@@ -16,7 +15,7 @@ class LinkStatusWorker(val httpClient: HttpClient,
                        override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.LinkStatus> {
 
-    private val apiClient = SignUpAPIClient(httpClient)
+    private val apiClient = SignInAPIClient(httpClient)
 
     override val canBeParallelized = false
 
@@ -33,11 +32,12 @@ class LinkStatusWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkStatus>): SignInResult.LinkStatus? {
-        val result =  Result.of { apiClient.postLinkStatus(jwt) }
+        val result =  Result.of { apiClient.getLinkStatus(jwt) }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.LinkStatus.Success()
+                val json = JSONObject(result.value)
+                SignInResult.LinkStatus.Success(json.getString("name"), json.getInt("deviceId"))
             }
             is Result.Failure -> catchException(result.error)
         }

@@ -39,12 +39,8 @@ interface EmailContactJoinDao {
     fun getAll() : List<EmailContact>
 
     @Query("""SELECT * FROM email_contact
-        LEFT JOIN email ON email.id= email_contact.emailId
-        WHERE delivered NOT IN (1,4)
-        AND email_contact.emailId NOT IN
-        (SELECT email_label.emailId FROM email_label WHERE email_label.emailId = email_contact.emailId and email_label.labelId=6)
-    """)
-    fun getAllForLinkFile() : List<EmailContact>
+        WHERE emailId in (:emailIds)""")
+    fun getAllForLinkFile(emailIds: List<Long>) : List<EmailContact>
 
     @Insert
     fun insert(emailContact : EmailContact)

@@ -160,7 +160,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
-            is LinkingParams -> LinkingModel(params.email)
+            is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

@@ -13,9 +13,11 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import org.json.JSONArray
+import org.json.JSONObject
 
-class PostUserWorker(private val httpClient: HttpClient,
+class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle?,
+                     private val httpClient: HttpClient,
+                     private val randomId: String,
                      private val filePath: String,
                      private val deviceId: Int,
                      private val fileKey: ByteArray,
@@ -37,17 +39,18 @@ class PostUserWorker(private val httpClient: HttpClient,
     }
 
     private fun getKeyBundle(): Result<Unit, Exception> {
-        return Result.of { apiClient.findKeyBundles(listOf(activeAccount.recipientId), emptyMap()) }
+        if(keyBundle != null) {
+            return Result.of {
+                signalClient.createSessionsFromBundles(listOf(keyBundle))
+            }
+        }
+        return Result.of { apiClient.getKeyBundle(deviceId) }
                 .flatMap {
                     Result.of {
-                        val bundlesJSONArray = JSONArray(it)
-                        if (bundlesJSONArray.length() > 0) {
-                            val downloadedBundles =
-                                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
-                            signalClient.createSessionsFromBundles(
-                                    downloadedBundles.filter { it.shareData.deviceId == deviceId }
-                            )
-                        }
+                        val bundleJSON = JSONObject(it)
+                        val downloadedBundle =
+                                PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON)
+                        signalClient.createSessionsFromBundles(listOf(downloadedBundle))
                     }
                 }
     }
@@ -57,14 +60,13 @@ class PostUserWorker(private val httpClient: HttpClient,
 
         val operation = getKeyBundle()
         .flatMap { Result.of {
-            fileApiClient.postFileStream(filePath)
+            fileApiClient.postFileStream(filePath, randomId)
         } }
         .flatMap { Result.of {
-            Pair(signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey), it)
+            signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey)
         } }
         .flatMap { Result.of {
-            apiClient.postLinkDataAddress(deviceId, it.second, it.first.encryptedB64)
-            it.first.encryptedB64
+            apiClient.postLinkDataReady(deviceId, it.encryptedB64)
         } }
 
         return when (operation){

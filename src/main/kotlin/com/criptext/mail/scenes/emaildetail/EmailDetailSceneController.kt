@@ -624,7 +624,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }
 

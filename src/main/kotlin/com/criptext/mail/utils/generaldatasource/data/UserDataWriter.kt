@@ -7,6 +7,7 @@ import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.batch
+import droidninja.filepicker.utils.FileUtils
 import org.json.JSONObject
 import java.io.File
 
@@ -21,11 +22,12 @@ class UserDataWriter(private val db: AppDatabase)
 
             addContactsToFile(db.contactDao().getAll(), tmpFileLinkData)
             addLabelsToFile(db.labelDao().getAll(), tmpFileLinkData)
-            addMailsToFile(db.emailDao().getAllForLinkFile(), tmpFileLinkData)
-            addFilesToFile(db.fileDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsAndLabelsRelationToFile(db.emailLabelDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsAndContactsRelationToFile(db.emailContactDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsFileKey(db.fileKeyDao().getAll(), tmpFileLinkData)
+            val emails = db.emailDao().getAllForLinkFile()
+            addMailsToFile(emails, tmpFileLinkData)
+            addFilesToFile(db.fileDao().getAttachmentsFromEmails(emails.map { it.id }), tmpFileLinkData)
+            addMailsAndLabelsRelationToFile(db.emailLabelDao().getAllForLinkFile(emails.map { it.id }), tmpFileLinkData)
+            addMailsAndContactsRelationToFile(db.emailContactDao().getAllForLinkFile(emails.map { it.id }), tmpFileLinkData)
+            addMailsFileKey(db.fileKeyDao().getAttachmentKeyFromEmails(emails.map { it.id }), tmpFileLinkData)
 
             return tmpFileLinkData.absolutePath
         }catch (ex:Exception){
@@ -45,6 +47,7 @@ class UserDataWriter(private val db: AppDatabase)
         var line = data.readLine()
         db.beginTransaction()
         while(line != null) {
+            if(line.isEmpty()) continue
             val json = JSONObject(line)
             when (json.getString("table")) {
                 "contact" -> contactWriter.insert(json.get("object").toString())
@@ -131,9 +134,9 @@ class UserDataWriter(private val db: AppDatabase)
             jsonObject.put("content", mail.content)
             jsonObject.put("preview", mail.preview)
             jsonObject.put("subject", mail.subject)
-            jsonObject.put("delivered", DeliveryTypes.getTrueOrdinal(mail.delivered))
+            jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
             jsonObject.put("date", DateUtils.printDateWithServerFormat(mail.date))
-            jsonObject.put("metadataKey", mail.metadataKey)
+            jsonObject.put("key", mail.metadataKey)
             jsonObject.put("isMuted", mail.isMuted)
             jsonObject.put("unsentDate",
                     if(mail.unsentDate != null)
@@ -181,15 +184,18 @@ class UserDataWriter(private val db: AppDatabase)
         val jsonArrayAllMails = mutableListOf<String>()
         for (file_key in allFileKeys){
             val jsonObject = JSONObject()
-            jsonObject.put("id", file_key.id)
-            jsonObject.put("key", if(file_key.key != null)
-                    file_key.key
-                else
-                    null
-            )
-            jsonObject.put("emailId", file_key.emailId)
-            jsonArrayAllMails.add(jsonObject.toString())
-            tmpFile.appendText("${JSONObject("{table: file_key, object: $jsonObject}")}\n")
+            val key = if(file_key.key != null)
+                file_key.key
+            else
+                null
+            if(key != null && key.contains(":")) {
+                jsonObject.put("id", file_key.id)
+                jsonObject.put("key", key.substringBefore(":"))
+                jsonObject.put("iv", key.substringAfter(":"))
+                jsonObject.put("emailId", file_key.emailId)
+                jsonArrayAllMails.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: file_key, object: $jsonObject}")}\n")
+            }
         }
     }
 

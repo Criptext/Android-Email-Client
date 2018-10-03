@@ -42,7 +42,7 @@
             android:layout_weight="0.5"
             android:background="@drawable/label_button_left_bg"
             android:stateListAnimator="@null"
-            android:text="@string/no"
+            android:text="@string/push_deny"
             android:textAllCaps="false"
             android:textColor="@color/label_buttons_text"
             android:textSize="15sp" />
@@ -58,7 +58,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/yes"/>
+            android:text="@string/push_approve"/>
 
     </LinearLayout>
 </LinearLayout>

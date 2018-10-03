@@ -13,8 +13,6 @@ import com.criptext.mail.scenes.signin.data.SignInDataSource
 import com.criptext.mail.scenes.signin.data.SignInRequest
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
-import com.criptext.mail.temporalwebsocket.TempWebSocketClient
-import com.criptext.mail.temporalwebsocket.TempWebSocketController
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -51,7 +49,9 @@ class SignInSceneController(
             is SignInResult.LinkBegin -> onLinkBegin(result)
             is SignInResult.LinkAuth -> onLinkAuth(result)
             is SignInResult.CreateSessionFromLink -> onCreateSessionFromLink(result)
+            is SignInResult.LinkDataReady -> onLinkDataReady(result)
             is SignInResult.LinkData -> onLinkData(result)
+            is SignInResult.LinkStatus -> onLinkStatus(result)
         }
     }
 
@@ -133,7 +133,8 @@ class SignInSceneController(
                 val handler = Handler()
                 host.runOnUiThread(Runnable {
                     handler.postDelayed(Runnable {
-                        dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                        if(model.linkDeviceState is LinkDeviceState.Auth)
+                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
                     }, RETRY_TIME)
                 })
 
@@ -155,11 +156,35 @@ class SignInSceneController(
                 model.activeAccount = result.activeAccount
                 stopTempWebSocket()
                 handleNewWebSocket()
+                val handler = Handler()
+                handler.postDelayed(Runnable {
+                    if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                        dataSource.submitRequest(SignInRequest.LinkDataReady())
+                }, RETRY_TIME)
             }
             is SignInResult.CreateSessionFromLink.Failure -> {
                 val authResult =
                         SignInResult.AuthenticateUser.Failure(result.message, Exception())
                 onAuthenticationFailed(authResult)
+            }
+        }
+    }
+
+    private fun onLinkDataReady(result: SignInResult.LinkDataReady) {
+        when (result) {
+            is SignInResult.LinkDataReady.Success -> {
+                if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
+                    model.linkDeviceState = LinkDeviceState.WaitingForDownload()
+                    dataSource.submitRequest(SignInRequest.LinkData(result.key, result.dataAddress,
+                            result.authorizerId))
+                }
+            }
+            is SignInResult.LinkDataReady.Failure -> {
+                val handler = Handler()
+                handler.postDelayed(Runnable {
+                    if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                        dataSource.submitRequest(SignInRequest.LinkDataReady())
+                }, RETRY_TIME)
             }
         }
     }
@@ -171,6 +196,36 @@ class SignInSceneController(
             }
             is SignInResult.LinkData.Failure -> {
 
+            }
+        }
+    }
+
+    private fun onLinkStatus(result: SignInResult.LinkStatus) {
+        when (result) {
+            is SignInResult.LinkStatus.Success -> {
+                if(model.linkDeviceState is LinkDeviceState.Auth) {
+                    model.linkDeviceState = LinkDeviceState.Accepted()
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = result.name,
+                            username = currentState.username,
+                            randomId = result.deviceId, ephemeralJwt = model.ephemeralJwt))
+                }
+
+            }
+            is SignInResult.LinkStatus.Waiting -> {
+                val handler = Handler()
+                host.runOnUiThread(Runnable {
+                    handler.postDelayed(Runnable {
+                        if(model.linkDeviceState is LinkDeviceState.Auth)
+                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                    }, RETRY_TIME)
+                })
+            }
+            is SignInResult.LinkStatus.Denied -> {
+                if(model.linkDeviceState !is LinkDeviceState.Denied) {
+                    model.linkDeviceState = LinkDeviceState.Denied()
+                    scene.showLinkAuthError()
+                }
             }
         }
     }
@@ -241,15 +296,21 @@ class SignInSceneController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
             host.runOnUiThread(Runnable {
-                dataSource.submitRequest(SignInRequest.LinkData(key, dataAddress))
+                if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
+                    model.linkDeviceState = LinkDeviceState.WaitingForDownload()
+                    dataSource.submitRequest(SignInRequest.LinkData(key, dataAddress, authorizerId))
+                }
             })
         }
 
         override fun onDeviceLinkAuthDeny() {
             host.runOnUiThread(Runnable {
-                scene.showLinkBeginError()
+                if(model.linkDeviceState !is LinkDeviceState.Denied) {
+                    model.linkDeviceState = LinkDeviceState.Denied()
+                    scene.showLinkAuthError()
+                }
             })
         }
 
@@ -309,6 +370,7 @@ class SignInSceneController(
         }
 
         override fun onBackPressed() {
+            model.linkDeviceState = LinkDeviceState.Begin()
             this@SignInSceneController.onBackPressed()
         }
 
