@@ -23,6 +23,14 @@ interface FileDao {
     @Query("SELECT * FROM file")
     fun getAll() : List<CRFile>
 
+    @Query("""SELECT * FROM file
+        LEFT JOIN email on file.emailId=email.id
+        WHERE delivered NOT IN (1, 4)
+        AND file.emailId NOT IN
+        (SELECT email_label.emailId FROM email_label WHERE email_label.emailId = file.emailId and email_label.labelId=6)
+    """)
+    fun getAllForLinkFile() : List<CRFile>
+
     @Query("SELECT * FROM file where id=:id")
     fun getFileById(id : Long) : CRFile?
 

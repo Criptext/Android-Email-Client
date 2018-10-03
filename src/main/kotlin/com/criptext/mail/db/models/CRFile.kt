@@ -76,5 +76,19 @@ class CRFile(
             }
             return files
         }
+
+        fun fromJSON(jsonString: String): CRFile {
+            val json = JSONObject(jsonString)
+            return CRFile(
+                    id = json.getLong("id"),
+                    token = json.getString("token"),
+                    name = json.getString("name"),
+                    size = json.getLong("size"),
+                    status = json.getInt("status"),
+                    date = DateUtils.getDateFromString(json.getString("date"), null),
+                    emailId = json.getLong("emailId"),
+                    readOnly = json.getBoolean("readOnly")
+            )
+        }
     }
 }

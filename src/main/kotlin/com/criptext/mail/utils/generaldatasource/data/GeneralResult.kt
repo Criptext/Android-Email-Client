@@ -75,7 +75,12 @@ sealed class GeneralResult {
     }
 
     sealed class DataFileCreation: GeneralResult() {
-        data class Success(val key: String, val filePath: String): DataFileCreation()
+        data class Success(val key: ByteArray, val filePath: String): DataFileCreation()
         data class Failure(val message: UIMessage): DataFileCreation()
+    }
+
+    sealed class PostUserData: GeneralResult() {
+        class Success: PostUserData()
+        data class Failure(val message: UIMessage): PostUserData()
     }
 }

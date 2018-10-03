@@ -28,9 +28,7 @@ object EmailInsertionSetup {
             date = DateUtils.getDateFromString(
                     metadata.date,
                     null),
-            unsentDate =  DateUtils.getDateFromString(
-                    metadata.date,
-                    null),
+            unsentDate =  null,
             threadId = metadata.threadId,
             subject = metadata.subject,
             secure = metadata.secure,
@@ -40,9 +38,7 @@ object EmailInsertionSetup {
             content = decryptedBody,
             metadataKey = metadata.metadataKey,
             isMuted = false,
-            trashDate = DateUtils.getDateFromString(
-                    metadata.date,
-                    null)
+            trashDate = null
         )
     }
 
@@ -129,7 +125,9 @@ object EmailInsertionSetup {
     }
 
     private fun insertEmailFileKey(dao: EmailInsertionDao, fileKey: String?, emailId: Long) {
-        dao.insertEmailFileKey(FileKey(0, fileKey, emailId))
+        if(fileKey != null) {
+            dao.insertEmailFileKey(FileKey(0, fileKey, emailId))
+        }
     }
 
     private fun insertEmailFiles(dao: EmailInsertionDao,

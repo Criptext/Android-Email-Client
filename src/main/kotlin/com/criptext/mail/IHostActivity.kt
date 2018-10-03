@@ -1,7 +1,5 @@
 package com.criptext.mail
 
-import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage

@@ -96,7 +96,7 @@ interface SearchLocalDB{
                             files = files,
                             labels = labels,
                             to = contactsTO,
-                            fileKey = fileKey.key),
+                            fileKey = fileKey?.key),
                     totalEmails = emails.size,
                     hasFiles = totalFiles > 0
             )

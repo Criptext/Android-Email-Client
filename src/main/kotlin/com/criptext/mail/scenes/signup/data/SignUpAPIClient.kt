@@ -52,6 +52,10 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
     }
 
+    fun postLinkStatus(jwt: String): String{
+        return httpClient.post(path = "/link/status", authToken = jwt, body = JSONObject())
+    }
+
     fun postLinkAuth(recipientId: String, jwt: String): String{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)

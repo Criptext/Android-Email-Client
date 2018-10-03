@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.criptext.mail.db.LabelTypes
+import org.json.JSONObject
 
 /**
  * Created by sebas on 1/24/18.
@@ -45,6 +46,22 @@ data class Label (
                 "%${labels.findLast {
                     label ->label.text == labelName
                 }?.id}%"
+        }
+
+        fun fromJSON(jsonString: String): Label {
+            val json = JSONObject(jsonString)
+            val id = json.getLong("id")
+            val color = json.getString("color")
+            val text = json.getString("text")
+            val type = json.getString("type")
+            val visible = json.getBoolean("visible")
+            return Label(
+                id =  id,
+                color = color,
+                text = text,
+                type = LabelTypes.valueOf(type.toUpperCase()),
+                visible = visible
+            )
         }
     }
 

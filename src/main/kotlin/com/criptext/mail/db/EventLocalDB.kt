@@ -221,7 +221,7 @@ class EventLocalDB(private val db: AppDatabase){
                         files = files,
                         labels = labels,
                         to = contactsTO,
-                        fileKey = fileKey.key),
+                        fileKey = fileKey?.key),
                 totalEmails = emails.size,
                 hasFiles = totalFiles > 0
         )

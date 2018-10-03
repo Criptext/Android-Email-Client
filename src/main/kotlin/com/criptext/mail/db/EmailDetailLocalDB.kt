@@ -67,7 +67,7 @@ interface EmailDetailLocalDB {
                         from = contactsFROM[0],
                         files = files,
                         labels = labels,
-                        to = contactsTO, fileKey = fileKey.key)
+                        to = contactsTO, fileKey = fileKey?.key)
             }
 
             fullEmails.lastOrNull()?.viewOpen = true

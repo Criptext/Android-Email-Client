@@ -50,7 +50,7 @@ data class EmailMetadata(
             val messageType = emailData.optInt("messageType")
             val senderDeviceId = emailData.optInt("senderDeviceId")
             val files = CRFile.listFromJSON(metadataJsonString)
-            val fileKey = FileKey.fromJSON(metadataJsonString)
+            val fileKey = getFileKey(metadataJsonString)
             return EmailMetadata(
                     from = from,
                     senderRecipientId = fromRecipientId,
@@ -114,6 +114,13 @@ data class EmailMetadata(
             }
             return false
 
+        }
+
+        private fun getFileKey(metadataString: String): FileKey{
+            val emailData = JSONObject(metadataString)
+            if (!emailData.has("fileKey")) return FileKey(0,null, 0)
+            val jsonFileKey = emailData.get("fileKey").toString()
+            return FileKey(0, jsonFileKey,0)
         }
     }
 

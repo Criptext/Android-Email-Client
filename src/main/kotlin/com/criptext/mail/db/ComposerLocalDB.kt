@@ -33,6 +33,6 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                 files = files,
                 labels = labels,
                 to = contactsTO,
-                fileKey = fileKey.key)
+                fileKey = fileKey?.key)
     }
 }

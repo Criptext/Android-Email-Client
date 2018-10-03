@@ -13,4 +13,5 @@ sealed class GeneralRequest {
     data class LinkAccept(val untrustedDeviceInfo: UntrustedDeviceInfo): GeneralRequest()
     data class LinkDenied(val untrustedDeviceInfo: UntrustedDeviceInfo): GeneralRequest()
     class DataFileCreation: GeneralRequest()
+    data class PostUserData(val deviceID: Int, val filePath: String, val key: ByteArray): GeneralRequest()
 }

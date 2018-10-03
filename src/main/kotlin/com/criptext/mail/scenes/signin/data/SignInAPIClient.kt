@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.signin.data
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.signal.PreKeyBundleShareData
 import org.json.JSONObject
+import java.io.InputStream
 
 /**
  * Created by sebas on 2/28/18.
@@ -30,4 +31,9 @@ class SignInAPIClient(private val httpClient: HttpClient) {
 
         return httpClient.put(path = "/keybundle/pushtoken", authToken = jwt, body = jsonPut)
     }
+
+    fun getFileStream(token: String, params: Map<String,String>): InputStream {
+        return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
+    }
+
 }

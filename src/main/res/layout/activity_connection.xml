@@ -176,7 +176,6 @@
         android:textSize="12sp"
         android:textColor="#373a45"
         android:alpha="0.4"
-        android:gravity="center_horizontal"
-        android:text="david.grindstaff@criptext.com"/>
+        android:gravity="center_horizontal" />
 
 </LinearLayout>

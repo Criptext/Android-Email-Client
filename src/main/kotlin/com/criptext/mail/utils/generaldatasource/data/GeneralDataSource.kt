@@ -57,11 +57,16 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.DataFileCreation -> DataFileCreationWorker(
-                    httpClient = httpClient, activeAccount = activeAccount!!, emailDao = db.emailDao(),
-                    fileKeyDao = db.fileKeyDao(), fileDao = db.fileDao(), labelDao = db.labelDao(),
-                    contactDao = db.contactDao(), emailLabelDao = db.emailLabelDao(),
-                    emailContactJoinDao = db.emailContactDao(), externalSessionDao = db.emailExternalSessionDao(),
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    db = db,
+                    publishFn = { res -> flushResults(res)}
+            )
+            is GeneralRequest.PostUserData -> PostUserWorker(
+                    httpClient = httpClient,
+                    activeAccount = activeAccount!!,
+                    filePath = params.filePath,
+                    deviceId = params.deviceID,
+                    fileKey = params.key,
+                    signalClient = signalClient,
                     publishFn = { res -> flushResults(res)}
             )
         }

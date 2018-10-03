@@ -9,6 +9,7 @@ import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -49,10 +50,11 @@ class CreateSessionWorker(val httpClient: HttpClient,
                 }
                 .flatMap { signalRegistrationOperation() }
                 .flatMap(storeAccountOperation)
+                .flatMap { Result.of {  ActiveAccount.loadFromStorage(keyValueStorage)!! }}
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.CreateSessionFromLink.Success()
+                SignInResult.CreateSessionFromLink.Success(result.value)
             }
             is Result.Failure -> catchException(result.error)
         }

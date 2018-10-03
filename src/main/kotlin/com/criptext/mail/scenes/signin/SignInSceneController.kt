@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin
 
+import android.os.Handler
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
@@ -7,7 +8,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
-import com.criptext.mail.scenes.signin.data.CreateSessionWorker
+import com.criptext.mail.scenes.signin.data.LinkDeviceState
 import com.criptext.mail.scenes.signin.data.SignInDataSource
 import com.criptext.mail.scenes.signin.data.SignInRequest
 import com.criptext.mail.scenes.signin.data.SignInResult
@@ -23,14 +24,14 @@ import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
-import com.criptext.mail.websocket.NVWebSocketClient
-import com.criptext.mail.websocket.WebSocketEventListener
+import com.criptext.mail.websocket.*
 
 /**
  * Created by sebas on 2/15/18.
  */
 
 class SignInSceneController(
+        private val webSocketFactory: CriptextWebSocketFactory,
         private val model: SignInSceneModel,
         private val scene: SignInScene,
         private val host: IHostActivity,
@@ -40,7 +41,8 @@ class SignInSceneController(
 
     override val menuResourceId: Int? = null
 
-    private var tempWebSocket: TempWebSocketController? = null
+    private var tempWebSocket: WebSocketEventPublisher? = null
+    private var webSocket: WebSocketEventPublisher? = null
 
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
@@ -49,6 +51,7 @@ class SignInSceneController(
             is SignInResult.LinkBegin -> onLinkBegin(result)
             is SignInResult.LinkAuth -> onLinkAuth(result)
             is SignInResult.CreateSessionFromLink -> onCreateSessionFromLink(result)
+            is SignInResult.LinkData -> onLinkData(result)
         }
     }
 
@@ -84,6 +87,7 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
+
                     //LINK DEVICE FEATURE
                     model.state = SignInLayoutState.LoginValidation(username = result.username)
                     dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
@@ -125,6 +129,13 @@ class SignInSceneController(
         scene.toggleResendClickable(true)
         when (result) {
             is SignInResult.LinkAuth.Success -> {
+                model.linkDeviceState = LinkDeviceState.Auth()
+                val handler = Handler()
+                host.runOnUiThread(Runnable {
+                    handler.postDelayed(Runnable {
+                        dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                    }, RETRY_TIME)
+                })
 
             }
             is SignInResult.LinkAuth.Failure -> {
@@ -137,15 +148,29 @@ class SignInSceneController(
     private fun onCreateSessionFromLink(result: SignInResult.CreateSessionFromLink) {
         when (result) {
             is SignInResult.CreateSessionFromLink.Success -> {
-                //This is for the second part of link devices
-//                model.state = SignInLayoutState.WaitForApproval()
-//                scene.initLayout(model.state, uiObserver)
-                scene.showKeyGenerationHolder()
+                val currentState = model.state as SignInLayoutState.LoginValidation
+                model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                scene.initLayout(model.state, uiObserver)
+                scene.showLinkDeviceProcessAnimation()
+                model.activeAccount = result.activeAccount
+                stopTempWebSocket()
+                handleNewWebSocket()
             }
             is SignInResult.CreateSessionFromLink.Failure -> {
                 val authResult =
                         SignInResult.AuthenticateUser.Failure(result.message, Exception())
                 onAuthenticationFailed(authResult)
+            }
+        }
+    }
+
+    private fun onLinkData(result: SignInResult.LinkData) {
+        when (result) {
+            is SignInResult.LinkData.Success -> {
+                scene.startLinkSucceedAnimation()
+            }
+            is SignInResult.LinkData.Failure -> {
+
             }
         }
     }
@@ -178,8 +203,13 @@ class SignInSceneController(
     }
 
     private fun handleNewTemporalWebSocket(){
-        tempWebSocket = TempWebSocketController(TempWebSocketClient(), model.ephemeralJwt)
+        tempWebSocket = webSocketFactory.createTemporalWebSocket(model.ephemeralJwt)
         tempWebSocket?.setListener(webSocketEventListener)
+    }
+
+    private fun handleNewWebSocket(){
+        webSocket = webSocketFactory.createWebSocket(model.activeAccount!!.jwt)
+        webSocket?.setListener(webSocketEventListener)
     }
 
     private fun onSignInButtonClicked(currentState: SignInLayoutState.Start) {
@@ -211,6 +241,12 @@ class SignInSceneController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+            host.runOnUiThread(Runnable {
+                dataSource.submitRequest(SignInRequest.LinkData(key, dataAddress))
+            })
+        }
+
         override fun onDeviceLinkAuthDeny() {
             host.runOnUiThread(Runnable {
                 scene.showLinkBeginError()
@@ -218,11 +254,16 @@ class SignInSceneController(
         }
 
         override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
-            val currentState = model.state as SignInLayoutState.LoginValidation
+            if(model.linkDeviceState is LinkDeviceState.Auth) {
+                host.runOnUiThread(Runnable {
 
-            dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = name,
-                    username = currentState.username,
-                    randomId = deviceId, ephemeralJwt = model.ephemeralJwt))
+                    model.linkDeviceState = LinkDeviceState.Accepted()
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = name,
+                            username = currentState.username,
+                            randomId = deviceId, ephemeralJwt = model.ephemeralJwt))
+                })
+            }
         }
 
         override fun onKeyBundleUploaded(deviceId: Int) {
@@ -290,7 +331,7 @@ class SignInSceneController(
                     onPasswordLoginDialogListener = this@SignInSceneController.passwordLoginDialogListener)
         }
         override fun userLoginReady() {
-            host.goToScene(MailboxParams(), false)
+            host.goToScene(MailboxParams(), false, true)
         }
 
         override fun toggleUsernameFocusState(isFocused: Boolean) {
@@ -323,6 +364,13 @@ class SignInSceneController(
         scene.initLayout(model.state, uiObserver)
     }
 
+    private fun stopTempWebSocket(){
+        if(tempWebSocket != null) {
+            tempWebSocket?.clearListener(webSocketEventListener)
+            tempWebSocket?.disconnectWebSocket()
+        }
+    }
+
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
@@ -336,9 +384,9 @@ class SignInSceneController(
 
     override fun onStop() {
         scene.signInUIObserver = null
-        if(tempWebSocket != null) {
-            tempWebSocket?.clearListener(webSocketEventListener)
-            tempWebSocket?.disconnect()
+        if(webSocket != null) {
+            webSocket?.clearListener(webSocketEventListener)
+            webSocket?.disconnectWebSocket()
         }
     }
 
@@ -357,8 +405,6 @@ class SignInSceneController(
                 false
             }
             is SignInLayoutState.WaitForApproval -> {
-                model.state = SignInLayoutState.Start("", firstTime = false)
-                resetLayout()
                 false
             }
         }
@@ -384,5 +430,9 @@ class SignInSceneController(
         fun onForgotPasswordClick()
         fun onBackPressed()
         fun onProgressHolderFinish()
+    }
+
+    companion object {
+        const val RETRY_TIME = 5000L
     }
 }

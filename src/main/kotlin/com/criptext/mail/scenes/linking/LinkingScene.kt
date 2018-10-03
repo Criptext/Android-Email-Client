@@ -18,9 +18,10 @@ interface LinkingScene{
 
     fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver)
     fun showMessage(message : UIMessage)
+    fun showStatusMessage(message: UIMessage)
     fun startLoadingAnimation()
     fun startSucceedAnimation(launchMailboxScene: (
-            signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit)
+            linkingUIObserver: LinkingUIObserver) -> Unit)
     fun stopAnimationLoading()
 
 
@@ -38,9 +39,9 @@ interface LinkingScene{
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
         private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
         private var animLoading: AnimatorSet? = null
-        var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
+            this.linkingUIObserver = linkingUIObserver
             textViewEmail.text = model.email
             startLoadingAnimation()
         }
@@ -114,7 +115,7 @@ interface LinkingScene{
 
 
         override fun startSucceedAnimation(launchMailboxScene: (
-                signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit) {
+                linkingUIObserver: LinkingUIObserver) -> Unit) {
             animLoading!!.cancel()
             loadingView.post {
                 val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
@@ -135,7 +136,7 @@ interface LinkingScene{
                     }
 
                     override fun onAnimationEnd(p0: Animator?) {
-                        launchMailboxScene(signInUIObserver!!)
+                        launchMailboxScene(linkingUIObserver!!)
                     }
 
                     override fun onAnimationCancel(p0: Animator?) {
@@ -229,6 +230,10 @@ interface LinkingScene{
 
         override fun stopAnimationLoading() {
             animLoading!!.cancel()
+        }
+
+        override fun showStatusMessage(message: UIMessage) {
+            textViewStatus.text = context.getLocalizedUIMessage(message)
         }
 
 

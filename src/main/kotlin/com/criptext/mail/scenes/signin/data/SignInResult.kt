@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin.data
 
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -46,8 +47,20 @@ sealed class SignInResult {
     }
 
     sealed class CreateSessionFromLink: SignInResult() {
-        class Success: CreateSessionFromLink()
+        data class Success(val activeAccount: ActiveAccount): CreateSessionFromLink()
         data class Failure(val message: UIMessage,
                            val exception: Exception): CreateSessionFromLink()
+    }
+
+    sealed class LinkData: SignInResult() {
+        class Success: LinkData()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): LinkData()
+    }
+
+    sealed class LinkStatus: SignInResult() {
+        class Success: LinkStatus()
+        class Waiting: LinkStatus()
+        class Denied: LinkStatus()
     }
 }

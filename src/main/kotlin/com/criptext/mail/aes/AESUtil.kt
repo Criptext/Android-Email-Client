@@ -121,11 +121,10 @@ class AESUtil(keyAndIV: String) {
             return Encoding.byteArrayToString(ci.doFinal(dataToDecrypt))
         }
 
-        fun encryptFileByChunks(fileToEncrypt: File): Pair<String, String> {
+        fun encryptFileByChunks(fileToEncrypt: File): Pair<ByteArray, String> {
 
-            val salt = generateSecureRandomBytes(8)
-            val strKey = generateSecureRandomBytesToString()
-            val skey = SecretKeySpec(Encoding.stringToByteArray(strKey), "AES")
+            val strKey = generateSecureRandomBytes()
+            val skey = SecretKeySpec(strKey, "AES")
 
 
             val iv = generateSecureRandomBytes(128 / 8)
@@ -134,7 +133,6 @@ class AESUtil(keyAndIV: String) {
             val outFile = createTempFile(suffix = ".enc")
 
             val out = FileOutputStream(outFile)
-            out.write(salt)
             out.write(iv)
 
             val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
@@ -145,14 +143,12 @@ class AESUtil(keyAndIV: String) {
             return Pair(strKey, outFile.absolutePath)
         }
 
-        fun decryptFileByChunks(fileToDecrypt: File, strKey: String): String {
+        fun decryptFileByChunks(fileToDecrypt: File, strKey: ByteArray): String {
             val `in` = FileInputStream(fileToDecrypt)
-            val salt = ByteArray(8)
             val iv = ByteArray(128 / 8)
-            `in`.read(salt)
             `in`.read(iv)
 
-            val skey = SecretKeySpec(Encoding.stringToByteArray(strKey), "AES")
+            val skey = SecretKeySpec(strKey, "AES")
             val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
             ci.init(Cipher.DECRYPT_MODE, skey, IvParameterSpec(iv))
 
@@ -176,6 +172,6 @@ class AESUtil(keyAndIV: String) {
             if (obuf != null) out.write(obuf)
         }
 
-        const val STREAM_BUFFER_SIZE = 1024
+        const val STREAM_BUFFER_SIZE = 512
     }
 }

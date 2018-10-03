@@ -29,8 +29,8 @@ class UserDataWriterTest {
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2)
 
-    private val labelOne = Label(id = 1, color = "red", text = Label.LABEL_ALL_MAIL, type = LabelTypes.SYSTEM, visible = true)
-    private val labelTwo = Label(id = 2, color = "blue", text = Label.LABEL_INBOX, type = LabelTypes.SYSTEM, visible = true)
+    private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM, visible = true)
+    private val labelTwo = Label(id = 2, color = "blue", text = "Custom Label 2", type = LabelTypes.CUSTOM, visible = true)
 
     private val emailOne = Email(id = 1, content = "contents 1", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
@@ -57,12 +57,12 @@ class UserDataWriterTest {
 
     private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\"}}",
     "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\"}}",
-    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"ALL MAIL\",\"type\":\"SYSTEM\",\"visible\":true}}",
-    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"INBOX\",\"type\":\"SYSTEM\",\"visible\":true}}",
-    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":1}}",
-    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"readOnly\":true,\"emailId\":2}}",
-    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":123,\"isMuted\":false,\"unsentDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"trashDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\"}}",
-    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"delivered\":\"DELIVERED\",\"date\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"metadataKey\":456,\"isMuted\":false,\"unsentDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\",\"trashDate\":\"Fri Dec 21 00:00:00 GMT-05:00 2012\"}}",
+    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":1,\"visible\":true}}",
+    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":1,\"visible\":true}}",
+    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":1}}",
+    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":2}}",
+    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"delivered\":6,\"date\":\"2012-12-21 05:00:00\",\"metadataKey\":123,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"delivered\":6,\"date\":\"2012-12-21 05:00:00\",\"metadataKey\":456,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"TO\"}}",
@@ -91,8 +91,7 @@ class UserDataWriterTest {
 
     @Test
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
-        val dataWriter = UserDataWriter(db.emailDao(), db.contactDao(), db.fileDao(), db.labelDao(),
-                db.emailLabelDao(), db.emailContactDao(), db.fileKeyDao(), db.emailExternalSessionDao())
+        val dataWriter = UserDataWriter(db)
         val result = dataWriter.createFile()
 
         val lines: List<String> = File(result).readLines()

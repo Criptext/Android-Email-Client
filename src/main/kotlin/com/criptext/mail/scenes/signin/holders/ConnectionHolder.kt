@@ -10,18 +10,20 @@ import android.view.animation.Animation
 import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signin.SignInSceneController
+import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.EmailUtils
 
 /**
  * Created by sebas on 3/2/18.
  */
 
-class ConnectionHolder(val view: View): BaseSignInHolder() {
+class ConnectionHolder(val view: View, val username: String,
+                       private val signInUIObserver: SignInSceneController.SignInUIObserver): BaseSignInHolder() {
 
     private val loadingView: View
     private val textViewStatus: TextView
     private val textViewEmail: TextView
     private var animLoading: AnimatorSet? = null
-    var signInUIObserver: SignInSceneController.SignInUIObserver? = null
 
     fun startLoadingAnimation() {
         loadingView.post {
@@ -212,5 +214,6 @@ class ConnectionHolder(val view: View): BaseSignInHolder() {
         loadingView = view.findViewById(R.id.viewAnimation)
         textViewStatus = view.findViewById(R.id.textViewStatus)
         textViewEmail = view.findViewById(R.id.textViewEmail)
+        textViewEmail.text = username.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
     }
 }

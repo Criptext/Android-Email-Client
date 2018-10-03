@@ -12,5 +12,6 @@ object Hosts {
     val webSocketBaseUrl = if(BuildConfig.DEBUG) "wss://stagesocket.criptext.com:3002"
                         else "wss://socket.criptext.com:3002"
     val fileServiceUrl = "https://services.criptext.com"
+    val fileTransferServer = "https://transfer.criptext.com"
     val fileServiceAuthToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="
 }

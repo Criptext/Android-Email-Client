@@ -15,7 +15,7 @@ import org.json.JSONObject
  * Created by gabriel on 9/15/17.
  */
 
-class WebSocketController(private val wsClient: WebSocketClient, activeAccount: ActiveAccount): WebSocketEventPublisher {
+class WebSocketController(private val wsClient: WebSocketClient, jwt: String): WebSocketEventPublisher {
 
     var currentListener: WebSocketEventListener? = null
 
@@ -26,6 +26,10 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     override fun clearListener(listener: WebSocketEventListener) {
         if (this.currentListener === listener)
             this.currentListener = null
+    }
+
+    override fun disconnectWebSocket() {
+        disconnect()
     }
 
     private val onMessageReceived = { text: String ->
@@ -47,6 +51,11 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
                 val deviceId = JSONObject(event.params).getInt("deviceId")
                 currentListener?.onKeyBundleUploaded(deviceId)
             }
+            Event.Cmd.deviceDataUploadComplete -> {
+                val dataAddress = JSONObject(event.params).getString("dataAddress")
+                val key = JSONObject(event.params).getString("key")
+                currentListener?.onDeviceDataUploaded(key, dataAddress)
+            }
 
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,
                     arrayOf(event.cmd)))
@@ -54,7 +63,7 @@ class WebSocketController(private val wsClient: WebSocketClient, activeAccount: 
     }
 
     init {
-        val url = createCriptextSocketServerURL(activeAccount.jwt)
+        val url = createCriptextSocketServerURL(jwt)
         wsClient.connect(url, onMessageReceived)
     }
 

@@ -27,8 +27,10 @@ interface SignInScene {
     fun setSubmitButtonState(state: ProgressButtonState)
     fun showKeyGenerationHolder()
     fun showLinkBeginError()
+    fun showLinkDeviceProcessAnimation()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
+    fun startLinkSucceedAnimation()
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -70,7 +72,7 @@ interface SignInScene {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_connection, viewGroup)
-                    ConnectionHolder(newLayout)
+                    ConnectionHolder(newLayout, state.username, signInUIObserver)
                 }
 
                 is SignInLayoutState.InputPassword -> {
@@ -106,6 +108,18 @@ interface SignInScene {
         private val showMailboxScene = {
             signInUIObserver: SignInSceneController.SignInUIObserver ->
             signInUIObserver.userLoginReady()
+        }
+
+        private val showKeyGenerationAfterLink = {
+            signInUIObserver: SignInSceneController.SignInUIObserver ->
+            showKeyGenerationHolder()
+        }
+
+        override fun showLinkDeviceProcessAnimation() {
+            val currentHolder = holder
+            when (currentHolder) {
+                is ConnectionHolder -> currentHolder.startLoadingAnimation()
+            }
         }
 
         override fun resetInput() {
@@ -153,6 +167,11 @@ interface SignInScene {
         override fun toggleResendClickable(isEnabled: Boolean) {
             val currentHolder = holder as LoginValidationHolder
             currentHolder.setEnableButtons(isEnabled)
+        }
+
+        override fun startLinkSucceedAnimation() {
+            val currentHolder = holder as ConnectionHolder
+            currentHolder.startSucceedAnimation(showMailboxScene)
         }
 
         override fun showKeyGenerationHolder() {

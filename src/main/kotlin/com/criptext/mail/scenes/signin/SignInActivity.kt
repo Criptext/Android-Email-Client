@@ -17,6 +17,7 @@ import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.websocket.CriptextWebSocketFactory
 
 /**
  * Created by sebas on 2/15/18.
@@ -44,6 +45,7 @@ class SignInActivity : BaseActivity() {
                 httpClient = HttpClient.Default()
         )
         return SignInSceneController(
+                webSocketFactory = CriptextWebSocketFactory(),
                 model = signInSceneModel,
                 scene = signInSceneView,
                 host = this,
@@ -54,7 +56,8 @@ class SignInActivity : BaseActivity() {
                         httpClient = HttpClient.Default(),
                         signUpDao = appDB.signUpDao(),
                         keyValueStorage = KeyValueStorage.SharedPrefs(appCtx),
-                        signInLocalDB = db, accountDao = appDB.accountDao()),
+                        signInLocalDB = db, accountDao = appDB.accountDao(),
+                        db = appDB),
                 keyboard = KeyboardManager(this)
         )
     }

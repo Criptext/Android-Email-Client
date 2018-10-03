@@ -197,6 +197,10 @@ class ChangePasswordController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+
+        }
+
         override fun onDeviceLinkAuthDeny() {
 
         }
