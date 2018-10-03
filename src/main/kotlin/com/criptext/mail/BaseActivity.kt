@@ -20,12 +20,17 @@ import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.search.SearchSceneModel
+import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
+import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
+import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
+import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
+import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
@@ -36,12 +41,6 @@ import droidninja.filepicker.FilePickerBuilder
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
-import com.criptext.mail.scenes.settings.SettingsActivity
-import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
-import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
-import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailActivity
-import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
-import com.criptext.mail.services.MessagingInstance
 
 
 /**
@@ -221,14 +220,14 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         when(params){
             is ExternalActivityParams.FilePicker -> {
                 FilePickerBuilder.getInstance()
-                        .setMaxCount(5)
+                        .setMaxCount(params.remaining)
                         .setActivityTheme(R.style.PickerTheme)
                         .pickFile(this)
             }
             is ExternalActivityParams.ImagePicker -> {
                 FilePickerBuilder.getInstance()
                         .enableVideoPicker(true)
-                        .setMaxCount(10)
+                        .setMaxCount(params.remaining)
                         .setActivityTheme(R.style.AppTheme)
                         .enableCameraSupport(false)
                         .pickPhoto(this)
@@ -240,12 +239,18 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                     if (photoIntent.resolveActivity(this.packageManager) != null)
                         startActivityForResult(photoIntent, PhotoUtil.REQUEST_CODE_CAMERA)
                 }
-
             }
             is ExternalActivityParams.FilePresent -> {
                 val file = File(params.filepath)
                 val newIntent = IntentUtils.createIntentToOpenFileInExternalApp(this, file)
                 startActivity(newIntent)
+            }
+            is ExternalActivityParams.InviteFriend -> {
+                val share = Intent(android.content.Intent.ACTION_SEND)
+                share.type = "text/plain"
+                share.putExtra(Intent.EXTRA_SUBJECT, "Invite a Friend")
+                share.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_text))
+                startActivity(Intent.createChooser(share, getString(R.string.invite_title)))
             }
         }
     }

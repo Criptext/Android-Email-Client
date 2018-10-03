@@ -15,6 +15,7 @@ import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
 import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -96,10 +97,10 @@ class RegisterUserWorker(
         when (ex) {
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
             is ServerErrorException -> {
-                if(ex.errorCode == 400) {
-                    UIMessage(resId = R.string.duplicate_name_error_exception)
-                } else {
-                    UIMessage(resId = R.string.fail_register_try_again_error_exception)
+                when {
+                    ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.taken_username_error)
+                    ex.errorCode == ServerErrorCodes.TooManyRequests -> UIMessage(resId = R.string.too_many_sign_ups)
+                    else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
                 }
             }
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)

@@ -106,11 +106,19 @@ class SignInSceneController(
                 handleNewTemporalWebSocket()
                 dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username, model.ephemeralJwt))
             }
-            is SignInResult.LinkBegin.Failure -> {
+            is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
+            is SignInResult.LinkBegin.NoDevicesAvailable -> {
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 onAcceptPasswordLogin(currentState.username)
             }
         }
+    }
+
+    private fun returnToStart(message: UIMessage){
+        val currentState = model.state as SignInLayoutState.LoginValidation
+        model.state = SignInLayoutState.Start(currentState.username, false)
+        scene.initLayout(model.state, uiObserver)
+        scene.showError(message)
     }
 
     private fun onLinkAuth(result: SignInResult.LinkAuth) {

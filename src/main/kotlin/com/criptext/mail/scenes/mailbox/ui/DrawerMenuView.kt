@@ -43,6 +43,7 @@ class DrawerMenuView(navigationView: NavigationView,
     private val sliderAllMail : LinearLayout
     private val sliderLabels : LinearLayout
     private val sliderSettings : LinearLayout
+    private val sliderInviteFriend : LinearLayout
     private val sliderSupport : LinearLayout
 
     private val recyclerViewLabels : RecyclerView
@@ -126,6 +127,10 @@ class DrawerMenuView(navigationView: NavigationView,
             drawerMenuItemListener.onSettingsOptionClicked()
         }
 
+        sliderInviteFriend.setOnClickListener{
+            drawerMenuItemListener.onInviteFriendOptionClicked()
+        }
+
         sliderSupport.setOnClickListener {
             drawerMenuItemListener.onSupportOptionClicked()
         }
@@ -145,6 +150,7 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderAllMail = navigationView.findViewById(R.id.slider_all_mail)
         sliderLabels = navigationView.findViewById(R.id.slider_labels)
         sliderSettings = navigationView.findViewById(R.id.slider_settings)
+        sliderInviteFriend = navigationView.findViewById(R.id.slider_invite_friend)
         sliderSupport = navigationView.findViewById(R.id.slider_support)
 
         imageViewArrow = navigationView.findViewById(R.id.imageViewArrow)

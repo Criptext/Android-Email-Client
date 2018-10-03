@@ -225,7 +225,7 @@ class ResendEmailsWorker(
                     encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
             )
         }
-        return bodyWithAttachments.toString()
+        return HTMLUtils.addCriptextFooter(bodyWithAttachments.toString())
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

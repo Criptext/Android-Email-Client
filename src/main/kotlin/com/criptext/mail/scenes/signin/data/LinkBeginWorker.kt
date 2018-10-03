@@ -2,9 +2,11 @@ package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -20,7 +22,14 @@ class LinkBeginWorker(val httpClient: HttpClient,
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SignInResult.LinkBegin {
-        return SignInResult.LinkBegin.Failure(createErrorMessage(ex), ex)
+        when(ex){
+            is ServerErrorException -> {
+                when(ex.errorCode){
+                    ServerErrorCodes.BadRequest -> SignInResult.LinkBegin.NoDevicesAvailable(createErrorMessage(ex))
+                }
+            }
+        }
+        return SignInResult.LinkBegin.Failure(createErrorMessage(ex))
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkBegin>): SignInResult.LinkBegin? {
@@ -39,7 +48,17 @@ class LinkBeginWorker(val httpClient: HttpClient,
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
-        UIMessage(resId = R.string.forgot_password_error)
+        when(ex){
+            is ServerErrorException -> {
+                when(ex.errorCode){
+                    ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.no_devices_available)
+                    ServerErrorCodes.TooManyRequests -> UIMessage(resId = R.string.too_many_login_attempts)
+                    ServerErrorCodes.TooManyDevices -> UIMessage(resId = R.string.too_many_devices)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
+                }
+            }
+            else -> UIMessage(resId = R.string.forgot_password_error)
+        }
     }
 
 }

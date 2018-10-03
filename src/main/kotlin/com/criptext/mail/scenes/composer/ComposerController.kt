@@ -21,6 +21,7 @@ import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -54,11 +55,13 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onNewFileAttachmentRequested() {
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker(remaining))
         }
 
         override fun onNewGalleryAttachmentRequested() {
-            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker())
+            val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
+            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker(remaining))
         }
 
         override fun sendDialogButtonPressed() {
@@ -112,7 +115,10 @@ class ComposerController(private val model: ComposerModel,
         override fun onAttachmentButtonClicked() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                scene.showAttachmentsBottomDialog(this)
+                if(model.attachments.size < EmailUtils.ATTACHMENT_LIMIT)
+                    scene.showAttachmentsBottomDialog(this)
+                else
+                    scene.showError(UIMessage(R.string.attachment_limit_reached, arrayOf(EmailUtils.ATTACHMENT_LIMIT)))
             }
         }
 
@@ -218,6 +224,9 @@ class ComposerController(private val model: ComposerModel,
                     host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
+            is ComposerResult.SaveEmail.TooManyRecipients ->
+                scene.showError(UIMessage(R.string.error_saving_too_many_recipients,
+                        arrayOf(EmailUtils.RECIPIENT_LIMIT)))
             is ComposerResult.SaveEmail.Failure -> {
                 scene.showError(UIMessage(R.string.error_saving_as_draft))
             }
@@ -502,7 +511,10 @@ class ComposerController(private val model: ComposerModel,
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
             return
         }
-        scene.showAttachmentsBottomDialog(observer)
+        if(model.attachments.size < EmailUtils.ATTACHMENT_LIMIT)
+            scene.showAttachmentsBottomDialog(observer)
+        else
+            scene.showError(UIMessage(R.string.attachment_limit_reached, arrayOf(EmailUtils.ATTACHMENT_LIMIT)))
 
     }
 

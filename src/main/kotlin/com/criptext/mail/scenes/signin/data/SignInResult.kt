@@ -35,8 +35,8 @@ sealed class SignInResult {
 
     sealed class LinkBegin: SignInResult() {
         data class Success(val ephemeralJwt: String): LinkBegin()
-        data class Failure(val message: UIMessage,
-                    val exception: Exception): LinkBegin()
+        data class NoDevicesAvailable(val message: UIMessage): LinkBegin()
+        data class Failure(val message: UIMessage): LinkBegin()
     }
 
     sealed class LinkAuth: SignInResult() {
