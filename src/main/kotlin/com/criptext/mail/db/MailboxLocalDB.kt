@@ -246,14 +246,14 @@ interface MailboxLocalDB {
 
         override fun updateEmailAndAddLabel(id: Long, threadId: String, messageId: String,
                                             metadataKey: Long, date: Date, status: DeliveryTypes) {
-            db.runInTransaction({
+            db.runInTransaction {
                 updateEmail(id = id, threadId = threadId, messageId = messageId,
                         metadataKey = metadataKey, date = date, status = status)
                 deleteRelationByEmailIds(arrayListOf(id))
                 createLabelEmailSent(id)
                 if(status == DeliveryTypes.DELIVERED)
                     createLabelEmailInbox(id)
-            })
+            }
         }
 
         override fun getExistingAccount(): Account {

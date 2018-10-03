@@ -22,8 +22,7 @@ class ActivityIntentFactory {
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             if (type == PushTypes.newMail && extraParam != null) {
                 intent.putExtra(MessagingInstance.THREAD_ID, extraParam)
-            }else if (type != PushTypes.newMail)
-                intent.putExtra(MessagingInstance.ACTIVITY_FLAG, true)
+            }
 
             return intent
         }

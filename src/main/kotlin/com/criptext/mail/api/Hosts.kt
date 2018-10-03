@@ -9,7 +9,7 @@ import com.criptext.mail.BuildConfig
 object Hosts {
     val restApiBaseUrl = if(BuildConfig.DEBUG) "https://stage.mail.criptext.com"
                         else "https://api.criptext.com"
-    val webSocketBaseUrl = if(BuildConfig.DEBUG) "wss://stage.socket.criptext.com:3002"
+    val webSocketBaseUrl = if(BuildConfig.DEBUG) "wss://stagesocket.criptext.com:3002"
                         else "wss://socket.criptext.com:3002"
     val fileServiceUrl = "https://services.criptext.com"
     val fileServiceAuthToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="

@@ -21,17 +21,30 @@ class PushDataSource(
             params: PushRequest,
             flushResults: (PushResult) -> Unit)
             : BackgroundWorker<*> {
+        val activeAccount = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
         return when (params) {
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
                     dbEvents = EventLocalDB(db),
                     httpClient = httpClient,
-                    activeAccount = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!,
+                    activeAccount = activeAccount,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is PushRequest.LinkAccept -> LinkAuthAcceptWorker(
+                    activeAccount = activeAccount, httpClient = httpClient,
+                    deviceId = params.randomId,
+                    notificationId = params.notificationId,
+                    publishFn = { res -> flushResults(res)}
+            )
+            is PushRequest.LinkDenied -> LinkAuthDenyWorker(
+                    activeAccount = activeAccount, httpClient = httpClient,
+                    deviceId = params.randomId,
+                    notificationId = params.notificationId,
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 

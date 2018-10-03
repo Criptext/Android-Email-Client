@@ -2,35 +2,35 @@ package com.criptext.mail.push
 
 import android.app.Notification
 import android.content.Context
+import android.os.Build
+import android.support.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.push.data.PushDataSource
 
-/**
- * Created by gabriel on 8/21/17.
- */
-
-sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
+sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
     companion object {
-        private val type = PushTypes.newMail
+        private val type = PushTypes.linkDevice
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = CriptextNotification(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_INBOX)
+        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification,
+                CriptextNotification.ACTION_LINK_DEVICE)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
-        val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, PushTypes.openActivity,
-                data.threadId, data.isPostNougat)
         val cn = CriptextNotification(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
-                CriptextNotification.ACTION_INBOX, pendingIntent)
+                CriptextNotification.ACTION_LINK_DEVICE)
     }
 
     protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Notification
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun notifyPushEvent(ctx: Context) {
         if (data.shouldPostNotification){
             if(data.isPostNougat) {
@@ -40,15 +40,17 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
         }
     }
 
-    class Single(data: PushData.NewMail): NewMailNotifier(data) {
+    class Open(data: PushData.LinkDevice, private val pushDataSource: PushDataSource): LinkDeviceNotifier(data) {
 
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Notification {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
-                data.threadId, data.isPostNougat)
+                null, data.isPostNougat)
 
-            return cn.createNewMailNotification(clickIntent = pendingIntent,
+            return cn.createLinkDeviceNotification(clickIntent = pendingIntent,
                     title = data.title, body = data.body,
-                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
+                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode(),
+                    pushDataSource = pushDataSource, deviceType = data.deviceType, randomId = data.randomId)
 
         }
     }

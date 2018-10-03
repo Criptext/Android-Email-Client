@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.validation.ProgressButtonState
 
 /**
@@ -28,7 +29,7 @@ class PasswordLoginHolder(
 
     init {
 
-        username.text  = "${initialState.username}@criptext.com"
+        username.text  = "${initialState.username}@${Contact.mainDomain}"
         password.text = SpannableStringBuilder(initialState.password)
         setListeners()
         setSubmitButtonState(initialState.buttonState)
