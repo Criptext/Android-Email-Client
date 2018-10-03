@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
@@ -241,13 +242,27 @@ class SignUpSceneController(
     private fun handleRegisterUserFailure(result: SignUpResult.RegisterUser.Failure) {
         scene.showError(result.message)
         resetWidgetsFromModel()
-        if(result.exception is ServerErrorException &&
-            result.exception.errorCode == 400) {
-            val newState = FormInputState.Error(UIMessage(R.string.taken_username_error))
-            model.username = model.username.copy(state = newState)
+        when(result.exception)
+        {
+            is ServerErrorException -> {
+                when(result.exception.errorCode){
+                    ServerErrorCodes.BadRequest -> {
+                        val newState = FormInputState.Error(result.message)
+                        model.username = model.username.copy(state = newState)
 
-            scene.setUsernameState(newState)
-            scene.disableCreateAccountButton()
+                        scene.setUsernameState(newState)
+                        scene.disableCreateAccountButton()
+                    }
+                    ServerErrorCodes.TooManyRequests -> {
+                        scene.showError(result.message)
+                        host.exitToScene(
+                                params = SignInParams(),
+                                activityMessage = null,
+                                forceAnimation = false,
+                                deletePastIntents = true)
+                    }
+                }
+            }
         }
     }
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {

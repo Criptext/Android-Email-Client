@@ -24,6 +24,7 @@ sealed class ComposerResult {
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>,
                            val fileKey: String?) : SaveEmail()
 
+        class TooManyRecipients: SaveEmail()
         class Failure: SaveEmail()
     }
 

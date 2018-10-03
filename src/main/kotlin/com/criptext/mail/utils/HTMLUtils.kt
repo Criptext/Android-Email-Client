@@ -66,6 +66,13 @@ class HTMLUtils {
                 else -> "filedefault"
             }
         }
+
+        fun addCriptextFooter(body: String): String{
+            val watermarkString = "<div></div><br><br>Sent with <a href=\"https://www.criptext.com/dl\" " +
+                    "style=\"color: rgb(0,145,255)\">Criptext</a> secure email"
+            if(body.contains(watermarkString)) return body
+            return body.plus(watermarkString)
+        }
     }
 
 

@@ -26,6 +26,11 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
+import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
+
 
 /**
  * Created by sebas on 1/30/18.
@@ -164,6 +169,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onSettingsOptionClicked() {
             host.goToScene(SettingsParams(), true)
+        }
+
+        override fun onInviteFriendOptionClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.InviteFriend())
         }
 
         override fun onSupportOptionClicked() {

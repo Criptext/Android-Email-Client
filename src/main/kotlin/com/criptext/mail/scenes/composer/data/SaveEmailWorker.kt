@@ -10,6 +10,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.file.FileUtils
 import java.util.*
 
@@ -36,6 +37,9 @@ class SaveEmailWorker(
 
     override fun work(reporter: ProgressReporter<ComposerResult.SaveEmail>)
             : ComposerResult.SaveEmail? {
+
+        if(isRecipientLimitReached()) return ComposerResult.SaveEmail.TooManyRecipients()
+
         val (newEmailId, savedMailThreadId) = saveEmail()
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
                 onlySave = onlySave, composerInputData = composerInputData, attachments = attachments,
@@ -46,6 +50,12 @@ class SaveEmailWorker(
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
     private val selectEmail: (Contact) -> String = { contact -> contact.email }
+
+    private fun isRecipientLimitReached(): Boolean{
+        val sumOfContacts = composerInputData.to.size + composerInputData.cc.size +
+                composerInputData.bcc.size
+        return sumOfContacts > EmailUtils.RECIPIENT_LIMIT
+    }
 
     private fun isSecure(): Boolean{
         if(!composerInputData.passwordForNonCriptextUsers.isNullOrEmpty())

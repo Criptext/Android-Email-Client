@@ -131,6 +131,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                     MailboxResult.SendMail.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     MailboxResult.SendMail.Forbidden()
+                ex.errorCode == ServerErrorCodes.TooManyRequests ->
+                    MailboxResult.SendMail.Failure(UIMessage(R.string.send_limit_reached))
+
                 else -> MailboxResult.SendMail.Failure(createErrorMessage(ex))
             }
         }else {
@@ -222,7 +225,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             val (salt, iv, encryptedSession) =
                     AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
             val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
-                    1,composerInputData.body).encryptedB64
+                    1,HTMLUtils.addCriptextFooter(composerInputData.body)).encryptedB64
             val externalSession = EmailExternalSession(0, emailId = emailId, iv = iv, salt = salt,
                     encryptedBody = encryptedBody, encryptedSession = encryptedSession)
             db.saveExternalSession(externalSession)
@@ -261,7 +264,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                     encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
             )
         }
-        return bodyWithAttachments.toString()
+        return HTMLUtils.addCriptextFooter(bodyWithAttachments.toString())
     }
 
     private fun getSignalSessionJSON(tempUser: DummyUser, keyBundleFromTempUser: PreKeyBundleShareData.DownloadBundle):JSONObject{

@@ -8,6 +8,9 @@ import com.github.kittinunf.result.Result
 
 object EmailUtils {
 
+    const val RECIPIENT_LIMIT = 300
+    const val ATTACHMENT_LIMIT = 5
+
     fun getMailRecipients(to: List<Contact>, cc: List<Contact>, bcc: List<Contact>,
                                   recipientId: String): MailRecipients {
         val toAddresses = to.map(Contact.toAddress)
