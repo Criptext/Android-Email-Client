@@ -37,7 +37,9 @@ class FileKey(
             val json = JSONObject(jsonString)
             return FileKey(
                     id = json.getLong("id"),
-                    key = if(json.has("key")) json.getString("key") else null,
+                    key = if(json.has("key"))
+                        json.getString("key").plus(":".plus(json.getString("iv")))
+                    else null,
                     emailId = json.getLong("emailId")
             )
         }

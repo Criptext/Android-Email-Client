@@ -61,7 +61,7 @@ open class Contact(
             val json = JSONObject(jsonString)
             val id = json.getLong("id")
             val email = json.getString("email")
-            val name = json.getString("name")
+            val name = if(json.has("name")) json.getString("name") else ""
             return Contact(
                     id =  id,
                     email = email,

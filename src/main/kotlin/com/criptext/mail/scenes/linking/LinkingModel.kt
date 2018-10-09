@@ -1,9 +1,11 @@
 package com.criptext.mail.scenes.linking
 
-class LinkingModel(val email: String) {
+import com.criptext.mail.signal.PreKeyBundleShareData
+
+class LinkingModel(val email: String, var remoteDeviceId: Int, val randomId: String) {
     var untrustedDevicePostedKeyBundle: Boolean = false
-    var remoteDeviceId: Int = 0
     var dataFileHasBeenCreated = false
     var dataFilePath = ""
     var dataFileKey: ByteArray? = null
+    var keyBundle: PreKeyBundleShareData.DownloadBundle? = null
 }

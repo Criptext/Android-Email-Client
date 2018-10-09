@@ -31,7 +31,7 @@
 
     <!-- DEVICE AUTHENTICATION -->
     <string name="push_approve">Approve</string>
-    <string name="push_deny">Deny</string>
+    <string name="push_deny">Reject</string>
     <string name="push_link_error_title">Device Authentication</string>
     <string name="push_link_error_message_approve">Error on approving device, resend authentication request.</string>
     <string name="push_link_error_message_deny">Error on denying device. Check your internet connection.</string>

@@ -93,10 +93,18 @@ class SignInDataSource(override val runner: WorkRunner,
 
             is SignInRequest.LinkData -> LinkDataWorker(
                     activeAccount = ActiveAccount.loadFromStorage(keyValueStorage)!!,
+                    authorizerId = params.authorizerId,
                     dataAddress = params.dataAddress,
                     key = params.key,
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
                     db = db,
+                    publishFn = {
+                        result -> flushResults(result)
+                    }
+            )
+            is SignInRequest.LinkDataReady -> LinkDataReadyWorker(
+                    activeAccount = ActiveAccount.loadFromStorage(keyValueStorage)!!,
+                    httpClient = httpClient,
                     publishFn = {
                         result -> flushResults(result)
                     }

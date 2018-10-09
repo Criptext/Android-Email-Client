@@ -4,7 +4,9 @@ import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -16,7 +18,7 @@ class LinkAuthWorker(val httpClient: HttpClient,
                      override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.LinkAuth> {
 
-    private val apiClient = SignUpAPIClient(httpClient)
+    private val apiClient = SignInAPIClient(httpClient)
 
     override val canBeParallelized = false
 
@@ -25,7 +27,11 @@ class LinkAuthWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkAuth>): SignInResult.LinkAuth? {
-        val result =  Result.of { apiClient.postLinkAuth(username, jwt) }
+
+        val device = DeviceItem(0, DeviceUtils.getDeviceType().ordinal,
+                DeviceUtils.getDeviceFriendlyName(), DeviceUtils.getDeviceName(), true)
+
+        val result =  Result.of { apiClient.postLinkAuth(username, jwt, device) }
 
         return when (result) {
             is Result.Success ->{

@@ -26,7 +26,7 @@ interface SignInScene {
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
     fun showKeyGenerationHolder()
-    fun showLinkBeginError()
+    fun showLinkAuthError()
     fun showLinkDeviceProcessAnimation()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
@@ -129,7 +129,7 @@ interface SignInScene {
             }
         }
 
-        override fun showLinkBeginError() {
+        override fun showLinkAuthError() {
             val currentHolder = holder
             when (currentHolder) {
                 is LoginValidationHolder -> currentHolder.showFailedLogin()

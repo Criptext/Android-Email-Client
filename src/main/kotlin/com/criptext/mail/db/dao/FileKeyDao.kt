@@ -33,6 +33,10 @@ interface FileKeyDao {
             WHERE file_key.emailId=:emailId""")
     fun getAttachmentKeyFromEmail(emailId: Long) : FileKey?
 
+    @Query("""SELECT * FROM file_key
+            WHERE file_key.emailId in (:emailIds)""")
+    fun getAttachmentKeyFromEmails(emailIds: List<Long>) : List<FileKey>
+
     @Delete
     fun deleteAll(files: List<FileKey>)
 

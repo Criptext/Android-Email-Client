@@ -38,6 +38,10 @@ interface FileDao {
             WHERE file.emailId=:emailId""")
     fun getAttachmentsFromEmail(emailId: Long) : List<CRFile>
 
+    @Query("""SELECT * FROM file
+            WHERE file.emailId in (:emailId)""")
+    fun getAttachmentsFromEmails(emailId: List<Long>) : List<CRFile>
+
     @Query("""UPDATE file
             SET status=:status
             WHERE file.emailId=:emailId""")

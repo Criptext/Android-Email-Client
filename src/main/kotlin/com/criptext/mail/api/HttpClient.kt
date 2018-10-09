@@ -21,7 +21,7 @@ interface HttpClient {
     fun get(path: String, authToken: String?): String
     fun delete(path: String, authToken: String?, body: JSONObject): String
     fun getFile(path: String, authToken: String?): ByteArray
-    fun postFileStream(path: String, authToken: String?, filePath: String): String
+    fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): String
     fun getFileStream(path: String, authToken: String?, params: Map<String, String>): InputStream
 
     enum class AuthScheme { basic, jwt }
@@ -77,10 +77,12 @@ interface HttpClient {
                     .build()
         }
 
-        private fun postStream(url: String, authToken: String?, filePath: String): Request {
+        private fun postStream(url: String, authToken: String?, filePath: String,
+                               randomId: String): Request {
             val body = StreamRequest(MEDIA_TYPE_PLAINTEXT, filePath)
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
+                    .addHeader("random-id", randomId)
                     .url(url)
                     .post(body)
                     .build()
@@ -212,9 +214,9 @@ interface HttpClient {
             return ApiCall.executeFileRequest(client, request)
         }
 
-        override fun postFileStream(path: String, authToken: String?, filePath: String): String {
+        override fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): String {
             val request = postStream(url = baseUrl + path, authToken = authToken,
-                    filePath = filePath)
+                    filePath = filePath, randomId = randomId)
             return ApiCall.executeRequest(client, request)
         }
 

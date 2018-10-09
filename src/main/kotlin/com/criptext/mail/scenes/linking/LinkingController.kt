@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.linking
 
+import android.os.Handler
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
@@ -8,10 +9,15 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.linking.data.LinkingRequest
+import com.criptext.mail.scenes.linking.data.LinkingResult
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
+import com.criptext.mail.scenes.signin.SignInSceneController
+import com.criptext.mail.scenes.signin.data.LinkDeviceState
+import com.criptext.mail.scenes.signin.data.SignInRequest
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -32,7 +38,7 @@ class LinkingController(
         private val storage: KeyValueStorage,
         private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<RecoveryEmailRequest, RecoveryEmailResult>)
+        private val dataSource: BackgroundWorkManager<LinkingRequest, LinkingResult>)
     : SceneController(){
 
     
@@ -43,6 +49,12 @@ class LinkingController(
         when(result) {
             is GeneralResult.DataFileCreation -> onDataFileCreation(result)
             is GeneralResult.PostUserData -> onPostUserData(result)
+        }
+    }
+
+    private val dataSourceListener: (LinkingResult) -> Unit = { result ->
+        when(result) {
+            is LinkingResult.CheckForKeyBundle -> onCheckForKeyBundle(result)
         }
     }
 
@@ -75,13 +87,14 @@ class LinkingController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
         scene.attachView(model = model, linkingUIObserver = linkingUIObserver)
+        dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         generalDataSource.submitRequest(GeneralRequest.DataFileCreation())
         return false
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }
 
@@ -90,11 +103,13 @@ class LinkingController(
         }
 
         override fun onKeyBundleUploaded(deviceId: Int) {
-            model.remoteDeviceId = deviceId
-            model.untrustedDevicePostedKeyBundle = true
-            if(model.dataFileHasBeenCreated) {
-                generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                        model.dataFilePath, model.dataFileKey!!))
+            if(!model.untrustedDevicePostedKeyBundle) {
+                model.remoteDeviceId = deviceId
+                model.untrustedDevicePostedKeyBundle = true
+                if (model.dataFileHasBeenCreated) {
+                    generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                            model.dataFilePath, model.dataFileKey!!, model.randomId, null))
+                }
             }
         }
 
@@ -138,6 +153,10 @@ class LinkingController(
                     linkingUIObserver.onLinkingHasFinished()
                 }
             }
+            is GeneralResult.PostUserData.Failure -> {
+                scene.showStatusMessage(UIMessage(R.string.server_error_exception))
+                host.exitToScene(MailboxParams(), null,false, true)
+            }
         }
     }
 
@@ -149,8 +168,36 @@ class LinkingController(
                 model.dataFileKey = resultData.key
                 if(model.untrustedDevicePostedKeyBundle){
                     generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                            model.dataFilePath, model.dataFileKey!!))
+                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle))
+                }else{
+                    dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))
                 }
+            }
+            is GeneralResult.DataFileCreation.Failure -> {
+                scene.showStatusMessage(UIMessage(R.string.server_error_exception))
+                host.exitToScene(MailboxParams(), null,false, true)
+            }
+        }
+    }
+
+    private fun onCheckForKeyBundle(result: LinkingResult.CheckForKeyBundle){
+        when (result) {
+            is LinkingResult.CheckForKeyBundle.Success -> {
+                if(!model.untrustedDevicePostedKeyBundle) {
+                    model.untrustedDevicePostedKeyBundle = true
+                    model.keyBundle = result.keyBundle
+                    generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle))
+                }
+            }
+            is LinkingResult.CheckForKeyBundle.Failure -> {
+                val handler = Handler()
+                host.runOnUiThread(Runnable {
+                    handler.postDelayed(Runnable {
+                        if(!model.untrustedDevicePostedKeyBundle)
+                            dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))
+                    }, RETRY_TIME)
+                })
             }
         }
     }
@@ -173,5 +220,9 @@ class LinkingController(
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
+    }
+
+    companion object {
+        const val RETRY_TIME = 5000L
     }
 }

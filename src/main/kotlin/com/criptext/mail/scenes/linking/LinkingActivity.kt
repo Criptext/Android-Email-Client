@@ -10,6 +10,7 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.linking.data.LinkingDataSource
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailDataSource
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -32,7 +33,7 @@ class LinkingActivity: BaseActivity(){
         val webSocketEvents = WebSocketSingleton.getInstance(
                 activeAccount = activeAccount!!)
 
-        val dataSource = RecoveryEmailDataSource(
+        val dataSource = LinkingDataSource(
                 httpClient = HttpClient.Default(),
                 activeAccount = activeAccount!!,
                 runner = AsyncTaskWorkRunner(),

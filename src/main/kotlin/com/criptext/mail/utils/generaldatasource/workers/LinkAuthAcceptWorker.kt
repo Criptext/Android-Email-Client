@@ -9,8 +9,8 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
+import org.json.JSONObject
 
 class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
                            private val activeAccount: ActiveAccount,
@@ -32,12 +32,12 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
             return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
 
         val operation = Result.of {
-            apiClient.postLinkAccept(untrustedDeviceInfo.deviceId)
+            JSONObject(apiClient.postLinkAccept(untrustedDeviceInfo.deviceId)).getInt("deviceId")
         }
 
         return when (operation){
             is Result.Success -> {
-                GeneralResult.LinkAccept.Success()
+                GeneralResult.LinkAccept.Success(operation.value, untrustedDeviceInfo.deviceId)
             }
             is Result.Failure -> {
                 GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))

@@ -9,7 +9,6 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.generaldatasource.workers.*
 
 class GeneralDataSource(override val runner: WorkRunner,
@@ -63,9 +62,11 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.PostUserData -> PostUserWorker(
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
+                    randomId = params.randomId,
                     filePath = params.filePath,
                     deviceId = params.deviceID,
                     fileKey = params.key,
+                    keyBundle = params.keyBundle,
                     signalClient = signalClient,
                     publishFn = { res -> flushResults(res)}
             )

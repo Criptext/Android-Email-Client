@@ -267,7 +267,8 @@ class ComposerController(private val model: ComposerModel,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid), null,
                         false, true)
             }
         }

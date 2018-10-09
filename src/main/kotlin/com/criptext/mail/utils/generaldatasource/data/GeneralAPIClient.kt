@@ -49,23 +49,20 @@ class GeneralAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.post(path = "/link/deny", authToken = token, body = jsonPost)
     }
 
-    fun postFileStream(filePath: String): String {
-        return httpClient.postFileStream(path = "/userdata", authToken = token, filePath = filePath)
+    fun postFileStream(filePath: String, randomId: String): String {
+        return httpClient.postFileStream(path = "/userdata", authToken = token, filePath = filePath,
+                randomId = randomId)
     }
 
-    fun postLinkDataAddress(deviceId: Int, dataAddress: String, key: String): String {
+    fun postLinkDataReady(deviceId: Int, key: String): String {
         val jsonPost = JSONObject()
         jsonPost.put("deviceId", deviceId)
-        jsonPost.put("dataAddress", dataAddress)
         jsonPost.put("key", key)
-        return httpClient.post(path = "/link/dataaddress", authToken = token, body = jsonPost)
+        return httpClient.post(path = "/link/data/ready", authToken = token, body = jsonPost)
     }
 
-    fun findKeyBundles(recipients: List<String>, knownAddresses: Map<String, List<Int>>): String {
-        val jsonObject = JSONObject()
-        jsonObject.put("recipients", JSONArray(recipients))
-        jsonObject.put("knownAddresses", JSONObject(knownAddresses))
-        return httpClient.post(path = "/keybundle/find", authToken = token, body = jsonObject)
+    fun getKeyBundle(deviceId: Int): String{
+        return httpClient.get(path = "/keybundle/$deviceId", authToken = token)
     }
 
 }

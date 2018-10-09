@@ -705,7 +705,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -754,7 +755,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onDeviceDataUploaded(key: String, dataAddress: String) {
+        override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }
 
