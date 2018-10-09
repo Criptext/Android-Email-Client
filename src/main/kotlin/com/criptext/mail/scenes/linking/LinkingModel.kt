@@ -8,4 +8,5 @@ class LinkingModel(val email: String, var remoteDeviceId: Int, val randomId: Str
     var dataFilePath = ""
     var dataFileKey: ByteArray? = null
     var keyBundle: PreKeyBundleShareData.DownloadBundle? = null
+    var retryTimesCheckForKeyBundle = 0
 }

@@ -4,6 +4,8 @@ import android.os.Handler
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
@@ -12,6 +14,7 @@ import com.criptext.mail.scenes.signin.data.LinkDeviceState
 import com.criptext.mail.scenes.signin.data.SignInDataSource
 import com.criptext.mail.scenes.signin.data.SignInRequest
 import com.criptext.mail.scenes.signin.data.SignInResult
+import com.criptext.mail.scenes.signin.holders.ConnectionHolder
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -33,6 +36,7 @@ class SignInSceneController(
         private val model: SignInSceneModel,
         private val scene: SignInScene,
         private val host: IHostActivity,
+        private val storage: KeyValueStorage,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: SignInDataSource,
         private val keyboard: KeyboardManager): SceneController() {
@@ -58,6 +62,7 @@ class SignInSceneController(
     private val generalDataSourceListener = { result: GeneralResult ->
         when (result) {
             is GeneralResult.ResetPassword -> onForgotPassword(result)
+            is GeneralResult.DeviceRemoved -> onDeviceRemoved(result)
         }
     }
 
@@ -79,6 +84,16 @@ class SignInSceneController(
                 scene.showResetPasswordDialog(result.email)
             }
             is GeneralResult.ResetPassword.Failure -> scene.showError(result.message)
+        }
+    }
+
+    private fun onDeviceRemoved(result: GeneralResult.DeviceRemoved){
+        when(result){
+            is GeneralResult.DeviceRemoved.Success -> {
+                val currentState = model.state as SignInLayoutState.WaitForApproval
+                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                resetLayout()
+            }
         }
     }
 
@@ -133,9 +148,12 @@ class SignInSceneController(
                 val handler = Handler()
                 host.runOnUiThread(Runnable {
                     handler.postDelayed(Runnable {
-                        if(model.linkDeviceState is LinkDeviceState.Auth)
-                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                    }, RETRY_TIME)
+                        if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                            if (model.linkDeviceState is LinkDeviceState.Auth)
+                                dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                            model.retryTimeLinkStatus++
+                        }
+                    }, RETRY_TIME_DEFAULT)
                 })
 
             }
@@ -149,23 +167,21 @@ class SignInSceneController(
     private fun onCreateSessionFromLink(result: SignInResult.CreateSessionFromLink) {
         when (result) {
             is SignInResult.CreateSessionFromLink.Success -> {
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                model.state = SignInLayoutState.WaitForApproval(currentState.username)
-                scene.initLayout(model.state, uiObserver)
-                scene.showLinkDeviceProcessAnimation()
+                scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
                 model.activeAccount = result.activeAccount
                 stopTempWebSocket()
                 handleNewWebSocket()
                 val handler = Handler()
                 handler.postDelayed(Runnable {
-                    if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
-                        dataSource.submitRequest(SignInRequest.LinkDataReady())
-                }, RETRY_TIME)
+                    if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
+                        if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                            dataSource.submitRequest(SignInRequest.LinkDataReady())
+                        model.retryTimeLinkDataReady++
+                    }
+                }, RETRY_TIME_DEFAULT)
             }
             is SignInResult.CreateSessionFromLink.Failure -> {
-                val authResult =
-                        SignInResult.AuthenticateUser.Failure(result.message, Exception())
-                onAuthenticationFailed(authResult)
+                scene.showSyncRetryDialog(result)
             }
         }
     }
@@ -175,6 +191,9 @@ class SignInSceneController(
             is SignInResult.LinkDataReady.Success -> {
                 if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
                     model.linkDeviceState = LinkDeviceState.WaitingForDownload()
+                    model.key = result.key
+                    model.dataAddress = result.dataAddress
+                    model.authorizerId = result.authorizerId
                     dataSource.submitRequest(SignInRequest.LinkData(result.key, result.dataAddress,
                             result.authorizerId))
                 }
@@ -182,9 +201,12 @@ class SignInSceneController(
             is SignInResult.LinkDataReady.Failure -> {
                 val handler = Handler()
                 handler.postDelayed(Runnable {
-                    if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
-                        dataSource.submitRequest(SignInRequest.LinkDataReady())
-                }, RETRY_TIME)
+                    if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
+                        if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                            dataSource.submitRequest(SignInRequest.LinkDataReady())
+                        model.retryTimeLinkDataReady++
+                    }
+                }, RETRY_TIME_DATA_READY)
             }
         }
     }
@@ -192,10 +214,16 @@ class SignInSceneController(
     private fun onLinkData(result: SignInResult.LinkData) {
         when (result) {
             is SignInResult.LinkData.Success -> {
+                scene.setLinkProgress(UIMessage(R.string.sync_complete), SYNC_COMPLETE_PERCENTAGE)
                 scene.startLinkSucceedAnimation()
             }
+            is SignInResult.LinkData.Progress -> {
+                if(result.progress > DOWNLOADING_MAILBOX_PERCENTAGE)
+                    scene.disableCancelSync()
+                scene.setLinkProgress(result.message, result.progress)
+            }
             is SignInResult.LinkData.Failure -> {
-
+                scene.showSyncRetryDialog(result)
             }
         }
     }
@@ -206,6 +234,11 @@ class SignInSceneController(
                 if(model.linkDeviceState is LinkDeviceState.Auth) {
                     model.linkDeviceState = LinkDeviceState.Accepted()
                     val currentState = model.state as SignInLayoutState.LoginValidation
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                    model.name = result.name
+                    model.randomId = result.deviceId
+                    scene.initLayout(model.state, uiObserver)
+                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = result.name,
                             username = currentState.username,
                             randomId = result.deviceId, ephemeralJwt = model.ephemeralJwt))
@@ -216,9 +249,12 @@ class SignInSceneController(
                 val handler = Handler()
                 host.runOnUiThread(Runnable {
                     handler.postDelayed(Runnable {
-                        if(model.linkDeviceState is LinkDeviceState.Auth)
-                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                    }, RETRY_TIME)
+                        if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                            if (model.linkDeviceState is LinkDeviceState.Auth)
+                                dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                            model.retryTimeLinkStatus++
+                        }
+                    }, RETRY_TIME_DEFAULT)
                 })
             }
             is SignInResult.LinkStatus.Denied -> {
@@ -300,6 +336,9 @@ class SignInSceneController(
             host.runOnUiThread(Runnable {
                 if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
                     model.linkDeviceState = LinkDeviceState.WaitingForDownload()
+                    model.key = key
+                    model.dataAddress = dataAddress
+                    model.authorizerId = authorizerId
                     dataSource.submitRequest(SignInRequest.LinkData(key, dataAddress, authorizerId))
                 }
             })
@@ -320,6 +359,11 @@ class SignInSceneController(
 
                     model.linkDeviceState = LinkDeviceState.Accepted()
                     val currentState = model.state as SignInLayoutState.LoginValidation
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                    scene.initLayout(model.state, uiObserver)
+                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
+                    model.name = name
+                    model.randomId = deviceId
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = name,
                             username = currentState.username,
                             randomId = deviceId, ephemeralJwt = model.ephemeralJwt))
@@ -361,6 +405,45 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver {
+        override fun onRetrySyncOk(result: SignInResult) {
+            when(result){
+                is SignInResult.CreateSessionFromLink -> {
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                    scene.initLayout(model.state, this)
+                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
+                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
+                            username = currentState.username,
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
+                }
+                is SignInResult.LinkData -> {
+                    dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress, model.authorizerId))
+                }
+            }
+        }
+
+        override fun onRetrySyncCancel() {
+            if(ActiveAccount.loadFromStorage(storage) == null){
+                val currentState = model.state as SignInLayoutState.WaitForApproval
+                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                resetLayout()
+            }else{
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+
+        override fun onCancelSync() {
+            if(ActiveAccount.loadFromStorage(storage) == null){
+                val currentState = model.state as? SignInLayoutState.WaitForApproval
+                if(currentState != null) {
+                    model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                    resetLayout()
+                }
+            }else{
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+
         override fun onResendDeviceLinkAuth(username: String) {
             dataSource.submitRequest(SignInRequest.LinkAuth(username, model.ephemeralJwt))
         }
@@ -492,9 +575,21 @@ class SignInSceneController(
         fun onForgotPasswordClick()
         fun onBackPressed()
         fun onProgressHolderFinish()
+        fun onCancelSync()
+        fun onRetrySyncOk(result: SignInResult)
+        fun onRetrySyncCancel()
     }
 
     companion object {
-        const val RETRY_TIME = 5000L
+        const val RETRY_TIME_DEFAULT = 5000L
+        const val RETRY_TIME_DATA_READY = 10000L
+        const val RETRY_TIMES_DEFAULT = 12
+        const val RETRY_TIMES_DATA_READY = 18
+
+        //Sync Process Percentages
+        const val  SENDING_KEYS_PERCENTAGE = 10
+        const val  WAITING_FOR_MAILBOX_PERCENTAGE = 40
+        const val  DOWNLOADING_MAILBOX_PERCENTAGE = 70
+        const val  SYNC_COMPLETE_PERCENTAGE = 99
     }
 }

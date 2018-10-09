@@ -28,8 +28,7 @@ class LinkAuthWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkAuth>): SignInResult.LinkAuth? {
 
-        val device = DeviceItem(0, DeviceUtils.getDeviceType().ordinal,
-                DeviceUtils.getDeviceFriendlyName(), DeviceUtils.getDeviceName(), true)
+        val device = DeviceItem()
 
         val result =  Result.of { apiClient.postLinkAuth(username, jwt, device) }
 

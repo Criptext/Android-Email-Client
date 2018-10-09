@@ -10,30 +10,26 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.uiobserver.UIObserver
+import com.criptext.mail.scenes.linking.LinkingUIObserver
 
-class LinkNewDeviceAlertDialog(val context: Context) {
+class KeepWaitingSyncAlertDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLinkDeviceAuthDialog(observer: UIObserver?, untrustedDeviceInfo: UntrustedDeviceInfo) {
+    fun showLinkDeviceAuthDialog(observer: LinkingUIObserver?) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.link_device_auth_dialog, null)
+        val dialogView = inflater.inflate(R.layout.keep_waiting_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
         dialog = createDialog(observer, dialogView,
-                dialogBuilder, untrustedDeviceInfo)
+                dialogBuilder)
     }
 
-    private fun createDialog(observer: UIObserver?, dialogView: View,
-                             dialogBuilder: AlertDialog.Builder,
-                             untrustedDeviceInfo: UntrustedDeviceInfo)
+    private fun createDialog(observer: LinkingUIObserver?, dialogView: View,
+                             dialogBuilder: AlertDialog.Builder)
             : AlertDialog? {
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLinkDeviceAuthDialog = dialogBuilder.create()
@@ -50,15 +46,10 @@ class LinkNewDeviceAlertDialog(val context: Context) {
 
         val textView = dialogView.findViewById(R.id.message_text) as TextView
         val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
-        textView.text = context.getString(R.string.link_auth_message,
-                untrustedDeviceInfo.deviceFriendlyName)
-        when(untrustedDeviceInfo.deviceType){
-            DeviceUtils.DeviceType.PC -> imageView.setImageResource(R.drawable.device_pc)
-            else -> imageView.setImageResource(R.drawable.device_m)
-        }
+
 
         assignButtonEvents(observer, dialogView,
-                newLinkDeviceAuthDialog, untrustedDeviceInfo)
+                newLinkDeviceAuthDialog)
 
         return newLinkDeviceAuthDialog
     }
@@ -67,20 +58,20 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         return dialog?.isShowing
     }
 
-    private fun assignButtonEvents(observer: UIObserver?, view: View,
-                                   dialog: AlertDialog, untrustedDeviceInfo: UntrustedDeviceInfo) {
+    private fun assignButtonEvents(observer: LinkingUIObserver?, view: View,
+                                   dialog: AlertDialog) {
 
         val btnOk = view.findViewById(R.id.link_auth_yes) as Button
 
         btnOk.setOnClickListener {
-            observer?.onLinkAuthConfirmed(untrustedDeviceInfo)
+            observer?.onKeepWaitingOk()
             dialog.dismiss()
         }
 
         val btnCancel = view.findViewById(R.id.link_auth_no) as Button
 
         btnCancel.setOnClickListener {
-            observer?.onLinkAuthDenied(untrustedDeviceInfo)
+            observer?.onKeepWaitingCancel()
             dialog.dismiss()
         }
     }

@@ -13,10 +13,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
-import com.criptext.mail.scenes.params.ChangePasswordParams
-import com.criptext.mail.scenes.params.RecoveryEmailParams
-import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.params.SignatureParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
@@ -52,6 +49,7 @@ class SettingsController(
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
+            is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
@@ -239,6 +237,19 @@ class SettingsController(
             }
             is GeneralResult.ConfirmPassword.Failure -> {
                 scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+            }
+        }
+    }
+
+    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
+        when (resultData) {
+            is GeneralResult.LinkAccept.Success -> {
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid), null,
+                        false, true)
+            }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
             }
         }
     }

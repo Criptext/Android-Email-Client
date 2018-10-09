@@ -35,7 +35,9 @@ class CheckForKeyBundleWorker(
                     apiClient.getKeyBundle(deviceId)
                 }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of { PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(it)) } }
+                .flatMap { Result.of {
+                    PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(it))
+                } }
         return when (operation){
             is Result.Success -> {
                 LinkingResult.CheckForKeyBundle.Success(operation.value)

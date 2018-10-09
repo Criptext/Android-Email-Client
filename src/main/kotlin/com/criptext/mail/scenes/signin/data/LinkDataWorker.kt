@@ -24,6 +24,10 @@ import java.io.FileInputStream
 import java.io.InputStream
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.io.IOException
+import java.util.zip.GZIPInputStream
+
+
 
 
 
@@ -67,19 +71,50 @@ class LinkDataWorker(private val authorizerId: Int,
         }
     }
 
+    private fun decompress(sourceFile: String): String {
+        val targetFile = createTempFile()
+
+        val fis = FileInputStream(sourceFile)
+        val gzis = GZIPInputStream(fis)
+        val buffer = ByteArray(1024)
+        val fos = FileOutputStream(targetFile)
+        var length = gzis.read(buffer)
+        while (length > 0) {
+            fos.write(buffer, 0, length)
+            length = gzis.read(buffer)
+        }
+        fos.close()
+        gzis.close()
+        fis.close()
+        return targetFile.absolutePath
+    }
+
     override fun work(reporter: ProgressReporter<SignInResult.LinkData>): SignInResult.LinkData? {
         val params = mutableMapOf<String, String>()
         params["id"] = dataAddress
-        val result =  Result.of { apiClient.getFileStream(activeAccount.jwt, params) }
+        val result =  Result.of {
+            reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.downloading_mailbox), 70))
+            apiClient.getFileStream(activeAccount.jwt, params)
+        }
                 .flatMap { readIntoFile(it) }
-                .flatMap { Result.of { Pair(signalClient.decryptBytes(activeAccount.recipientId,
+                .flatMap { Result.of {
+                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80))
+                    Pair(signalClient.decryptBytes(activeAccount.recipientId,
                         authorizerId,
                         SignalEncryptedData(key, SignalEncryptedData.Type.preKey)),
                         it
                 )
                 }}
-                .flatMap { Result.of { AESUtil.decryptFileByChunks(it.second, it.first) } }
                 .flatMap { Result.of {
+                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 85))
+                    AESUtil.decryptFileByChunks(it.second, it.first)
+                } }
+                .flatMap { Result.of {
+                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 90))
+                    decompress(it)
+                } }
+                .flatMap { Result.of {
+                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
                     val decryptedFile = File(it)
                     dataWriter.createDBFromFile(decryptedFile)
                 }}
@@ -89,7 +124,10 @@ class LinkDataWorker(private val authorizerId: Int,
             is Result.Success ->{
                 SignInResult.LinkData.Success()
             }
-            is Result.Failure -> catchException(result.error)
+            is Result.Failure -> {
+                result.error.printStackTrace()
+                catchException(result.error)
+            }
         }
     }
 

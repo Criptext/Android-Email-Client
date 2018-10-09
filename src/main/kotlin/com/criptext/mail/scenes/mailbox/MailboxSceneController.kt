@@ -4,10 +4,8 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.*
 import com.criptext.mail.bgworker.BackgroundWorkManager
-import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.Email
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
@@ -27,9 +25,9 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
+import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.push.data.LinkDeviceActionService
 
 
 /**
@@ -326,6 +324,24 @@ class MailboxSceneController(private val scene: MailboxScene,
                 observer = observer, threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
 
+        val extras = host.getIntentExtras()
+
+        if(extras != null) {
+            when(extras.action){
+                Intent.ACTION_MAIN -> {
+                    val extrasMail = extras as IntentExtrasData.IntentExtrasDataMail
+                    dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
+                            userEmail = activeAccount.userEmail))
+                }
+                LinkDeviceActionService.APPROVE -> {
+                    val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
+                    val untrustedDeviceInfo = UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
+                            "", "", null)
+                    generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+                }
+            }
+        }
+
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         if (model.threads.isEmpty()) reloadMailboxThreads()
 
@@ -334,12 +350,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         feedController.onStart()
 
         websocketEvents.setListener(webSocketEventListener)
-        val extras = host.getIntentExtras()
-
-        if(extras != null) {
-            dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extras.threadId,
-                    userEmail = activeAccount.userEmail))
-        }
 
         if(model.showWelcome) {
             model.showWelcome = false

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -7,29 +7,32 @@
     android:id="@+id/main_content"
     android:gravity="center">
 
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/logo_splash"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:id="@+id/titleSync"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp">
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="60dp"
+        android:textSize="24sp"
+        android:textColor="#373a45"
+        android:layout_centerHorizontal="true"
+        android:text="@string/title_sync"/>
 
         <LinearLayout
             android:id="@+id/viewAnimation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_below="@+id/titleSync">
 
             <ImageView
                 android:id="@+id/imageViewDevice1"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="5dp"
                 android:src="@drawable/device_m"
-                android:tint="#dcdddf"/>
+                android:tint="#d8d8d8"/>
 
             <View
                 android:id="@+id/viewCircle1"
@@ -63,90 +66,21 @@
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/circle"/>
 
-            <View
-                android:id="@+id/viewCircle5"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"/>
-
-            <View
-                android:id="@+id/viewCircle6"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"/>
-
-            <View
-                android:id="@+id/viewCircle7"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
-            <View
-                android:id="@+id/viewCircle8"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
-            <View
-                android:id="@+id/viewCircle9"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
-            <View
-                android:id="@+id/viewCircle10"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
-            <View
-                android:id="@+id/viewCircle11"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
-            <View
-                android:id="@+id/viewCircle12"
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/circle"
-                android:alpha="0.1"/>
-
             <ImageView
                 android:id="@+id/imageViewDevice2"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/device_m"
-                android:tint="#dcdddf"/>
+                android:tint="#d8d8d8"/>
 
         </LinearLayout>
 
         <ImageView
             android:id="@+id/imageViewSucceed"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_below="@+id/viewAnimation"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_centerInParent="true"
             android:src="@drawable/check"
             android:padding="8dp"
@@ -154,28 +88,86 @@
             android:background="@drawable/circle_succesed"
             android:alpha="0.0"/>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/viewAnimation"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:progressBackgroundTint="#ddf0ff"
+        android:progressTint="#0091ff"
+        android:progress="0"/>
+
+    <RelativeLayout
+        android:id="@+id/progress_bar_percentage"
+        android:layout_below="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp">
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/diamond_black"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/percentage_advanced"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/square_round_corners_black"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="3dp"
+            android:text="0%"/>
+
     </RelativeLayout>
+
 
     <TextView
         fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/textViewStatus"
+        android:layout_below="@+id/progress_bar_percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textSize="14sp"
         android:textColor="#373a45"
         android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:text="@string/establishing"/>
 
     <TextView
-        fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/textViewEmail"
+        android:layout_below="@+id/textViewStatus"
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:textSize="12sp"
-        android:textColor="#373a45"
         android:alpha="0.4"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:textColor="#373a45"
+        android:textSize="12sp" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/cancelSync"
+        android:layout_marginBottom="20dp"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="@string/cancel_sync"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/azure"
+        android:textSize="14sp" />
+
+</RelativeLayout>

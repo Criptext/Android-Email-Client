@@ -123,8 +123,12 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
-//                        false, true)
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid), null,
+                        false, true)
+            }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showError(resultData.message)
             }
         }
     }

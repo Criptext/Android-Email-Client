@@ -11,6 +11,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.PushTypes
 import com.github.kittinunf.result.Result
+import org.json.JSONObject
 
 class PushAPIRequestHandler(private val ctx: Context, private val manager: NotificationManager){
     private val activeAccount = ActiveAccount.loadFromStorage(ctx)!!
@@ -18,10 +19,15 @@ class PushAPIRequestHandler(private val ctx: Context, private val manager: Notif
 
     private val isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
-    fun linkAccept(deviceId: String, notificationId: Int){
-        val operation = Result.of { apiClient.postLinkAccept(deviceId) }
-        when(operation){
-            is Result.Success -> manager.cancel(notificationId)
+    fun linkAccept(deviceId: String, notificationId: Int): Int {
+        val operation = Result.of {
+            JSONObject(apiClient.postLinkAccept(deviceId)).getInt("deviceId")
+        }
+        return when(operation){
+            is Result.Success -> {
+                manager.cancel(notificationId)
+                operation.value
+            }
             is Result.Failure -> {
                 manager.cancel(notificationId)
                 val data = ErrorNotificationData(ctx.getString(R.string.push_link_error_title),
@@ -29,6 +35,7 @@ class PushAPIRequestHandler(private val ctx: Context, private val manager: Notif
                 val not = CriptextNotification(ctx)
                 val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
+                -1
             }
         }
     }

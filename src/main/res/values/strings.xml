@@ -21,12 +21,33 @@
     <string name="attachment_limit_reached">Only %1$d per email allowed.</string>
 
     <!-- SYNC -->
+    <string name="title_sync">Mailbox Sync</string>
     <string name="done_exclamation">Done!</string>
     <string name="sync_failed">Sync Failed</string>
-    <string name="link_auth_title">Device Authentication</string>
-    <string name="link_auth_message">Do you want to approve\n %1$s?</string>
+    <string name="link_auth_title">Sign In Verification</string>
+    <string name="link_auth_sub_title">Do you want to approve?</string>
+    <string name="link_auth_message">%1$s</string>
     <string name="establishing">Establishing secure connection</string>
-    <string name="device_ready">Device Ready</string>
+    <string name="cancel_sync">Cancel sync</string>
+    <string name="device_ready">Sync Complete!</string>
+    <!-- OLD DEVICE -->
+    <string name="preparing_mailbox">Encrypting Mailbox</string>
+    <string name="getting_keys">Getting Keys</string>
+    <string name="uploading_mailbox">Uploading Mailbox</string>
+    <string name="mailbox_upload_successful">Mailbox uploaded successfully!</string>
+    <string name="keep_waiting_title">Well, that\'s odd…</string>
+    <string name="keep_waiting_message">Something has happened that is delaying this process. Do want to continue waiting?</string>
+
+    <!-- NEW DEVICE -->
+    <string name="sending_keys">Sending Keys</string>
+    <string name="waiting_for_mailbox">Waiting for mailbox</string>
+    <string name="downloading_mailbox">Downloading Mailbox</string>
+    <string name="processing_mailbox">Decrypting Mailbox</string>
+    <string name="sync_complete">Sync Complete!</string>
+    <string name="retry_sync_title">Sync Interrupted</string>
+    <string name="retry_sync_message">Looks like you\'re having connection issues. Would you like to retry Mailbox Sync.</string>
+
+
 
 
     <!-- DEVICE AUTHENTICATION -->
@@ -221,10 +242,11 @@
     <string name="login">Sign In</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
     <string name="didnt_get_prompt">Didn’t get the prompt?</string>
-    <string name="not_approved">Your request to access this account was rejected by a verified device. Multiple rejections could lead your device to be blacklisted from Criptext.</string>
+    <string name="not_approved">Warning: Multiple rejections could lead your device to be blacklisted from Criptext.</string>
     <string name="button_resendit">Resend it</string>
     <string name="cant_access_device">Sign in with password?</string>
     <string name="failed">Failed</string>
+    <string name="title_failed">Sign In Rejected</string>
     <string name="login_rejected">Device not approved.</string>
     <string name="creating_keys">Creating Keys</string>
     <string name="too_many_login_attempts">Too many login attempts, try again later.</string>
@@ -279,6 +301,8 @@
     <string name="title_settings">SETTINGS</string>
     <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
+    <string name="retry">Retry</string>
     <string name="ok">Ok</string>
     <string name="accept">Accept</string>
     <string name="trash">Trash</string>
@@ -371,7 +395,7 @@
     <string name="login_server_error_exception">Failed to authenticate user. Please try again later.</string>
     <string name="login_fail_try_again_error_exception">Failed to authenticate user. Please try again later.</string>
     <string name="loginFailed">Failed</string>
-    <string name="login_failed_body">Sign in attempt rejected!</string>
+    <string name="login_failed_body">Your request to access this account was rejected by a verified device.</string>
     <string name="login_user">estocambia@criptex.com</string>
     <string name="button_confirm">Confirm</string>
     <string name="forgot_password">Forgot password?</string>

@@ -14,6 +14,12 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import java.io.File
+import java.io.IOException
+import java.io.FileInputStream
+import java.util.zip.GZIPOutputStream
+import java.io.FileOutputStream
+
+
 
 
 class DataFileCreationWorker(
@@ -32,14 +38,44 @@ class DataFileCreationWorker(
                 message = message)
     }
 
+    private fun compress(sourceFile: String): String? {
+        val targetFile = createTempFile("compressed", ".gz")
+        try {
+            val fos = FileOutputStream(targetFile)
+            val gzos = GZIPOutputStream(fos)
+            val buffer = ByteArray(1024)
+            val fis = FileInputStream(sourceFile)
+            var length= fis.read(buffer)
+            while (length > 0) {
+                gzos.write(buffer, 0, length)
+                length = fis.read(buffer)
+            }
+            fis.close()
+            gzos.finish()
+            gzos.close()
+            return targetFile.absolutePath
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
     override fun work(reporter: ProgressReporter<GeneralResult.DataFileCreation>)
             : GeneralResult.DataFileCreation? {
         val dataWriter = UserDataWriter(db)
+        reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 40))
         val getFileResult = dataWriter.createFile()
         return if(getFileResult != null){
-            filePath = getFileResult
-            val fileByChunks = AESUtil.encryptFileByChunks(File(filePath))
-            GeneralResult.DataFileCreation.Success(fileByChunks.first, fileByChunks.second)
+            reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 45))
+            val path = compress(getFileResult)
+            if(path == null){
+                GeneralResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
+            }else{
+                filePath = path
+                reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 55))
+                val fileByChunks = AESUtil.encryptFileByChunks(File(filePath))
+                GeneralResult.DataFileCreation.Success(fileByChunks.first, fileByChunks.second)
+            }
         }else
             GeneralResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
 

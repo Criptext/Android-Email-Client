@@ -77,6 +77,7 @@ sealed class GeneralResult {
 
     sealed class DataFileCreation: GeneralResult() {
         data class Success(val key: ByteArray, val filePath: String): DataFileCreation()
+        data class Progress(val message: UIMessage, val progress: Int): DataFileCreation()
         data class Failure(val message: UIMessage): DataFileCreation()
     }
 
