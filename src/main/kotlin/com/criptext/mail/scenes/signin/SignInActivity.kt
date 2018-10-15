@@ -49,6 +49,7 @@ class SignInActivity : BaseActivity() {
                 model = signInSceneModel,
                 scene = signInSceneView,
                 host = this,
+                storage = KeyValueStorage.SharedPrefs(appCtx),
                 generalDataSource = generalDataSource,
                 dataSource = SignInDataSource(
                         runner = AsyncTaskWorkRunner(),

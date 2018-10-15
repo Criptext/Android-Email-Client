@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.push.data.LinkDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
@@ -37,6 +38,7 @@ import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.IntentUtils
 import com.criptext.mail.utils.ui.ActivityMenu
+import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
@@ -69,6 +71,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     lateinit var controller: SceneController
     lateinit var model: Any
+    private val mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
     /**
      * Called during `onCreate` to create a controller for this activity given the current active
@@ -193,13 +196,28 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     override fun getIntentExtras(): IntentExtrasData? {
         if(intent.extras != null && !intent.extras.isEmpty) {
-            val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
-            if(intent.extras != null) {
-                for (key in intent.extras.keySet()){
-                    intent.removeExtra(key)
+            when(intent.action){
+                Intent.ACTION_MAIN ->    {
+                    val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
+                    if(intent.extras != null) {
+                        for (key in intent.extras.keySet()){
+                            intent.removeExtra(key)
+                        }
+                    }
+                    return IntentExtrasData.IntentExtrasDataMail(intent.action, threadId)
+                }
+                LinkDeviceActionService.APPROVE ->    {
+                    val uuid = intent.extras.get("randomId").toString()
+                    if(intent.extras != null) {
+                        for (key in intent.extras.keySet()){
+                            intent.removeExtra(key)
+                        }
+                    }
+                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid)
                 }
             }
-            return IntentExtrasData(threadId)
+
+
         }
         return null
     }
@@ -251,6 +269,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                 share.putExtra(Intent.EXTRA_SUBJECT, "Invite a Friend")
                 share.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_text))
                 startActivity(Intent.createChooser(share, getString(R.string.invite_title)))
+
+                val bundle = Bundle()
+                bundle.putString("app_source", "Unknown")
+                mFirebaseAnalytics.logEvent("invite_friend", bundle)
             }
         }
     }

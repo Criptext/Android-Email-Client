@@ -4,7 +4,7 @@
     android:shape="oval">
 
     <solid
-        android:color="@color/colorHighlight"/>
+        android:color="@color/format_bar_divider_vertical"/>
 
     <size
         android:width="120dp"

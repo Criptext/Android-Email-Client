@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/link_auth_title"
+        android:text="@string/keep_waiting_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
@@ -19,43 +19,13 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/link_auth_sub_title"
+        android:text="@string/keep_waiting_message"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:padding="15dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="16sp"
+        android:textSize="15sp"
         />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:layout_margin="20dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imageViewDeviceType"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/device_m"
-            android:tint="#9b9b9b" />
-
-        <TextView
-            android:id="@+id/message_text"
-            fontPath="fonts/NunitoSans-Bold.ttf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Google Android"
-            android:textColor="@color/non_criptext_email_send_detail_text"
-            android:textSize="15sp" />
-
-    </LinearLayout>
-
 
 
     <LinearLayout
@@ -74,7 +44,7 @@
             android:layout_weight="0.5"
             android:background="@drawable/label_button_left_bg"
             android:stateListAnimator="@null"
-            android:text="@string/push_deny"
+            android:text="@string/no"
             android:textAllCaps="false"
             android:textColor="@color/label_buttons_text"
             android:textSize="15sp" />
@@ -90,7 +60,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/push_approve"/>
+            android:text="@string/yes"/>
 
     </LinearLayout>
 </LinearLayout>

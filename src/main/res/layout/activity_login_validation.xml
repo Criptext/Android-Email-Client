@@ -72,15 +72,19 @@
             <ImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/error_circle"
-                android:tint="@color/white"
+                android:src="@drawable/circle"
+                android:alpha="0.1"
+                android:tint="#dc4d48"
                 />
 
             <ImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/x_rounded"
-                android:padding="10dp"
+                android:src="@drawable/warning"
+                android:paddingBottom="15dp"
+                android:paddingTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:tint="@android:color/white"/>
 
         </FrameLayout>
@@ -92,6 +96,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:id="@+id/sign_in_anim">
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/circle"
+                android:alpha="0.1"
+                android:tint="#dc4d48"
+                />
             
             <ImageView
                 android:id="@+id/imageViewCircularArrow"
@@ -106,6 +117,7 @@
                 android:layout_height="60dp"
                 android:src="@drawable/sandwatch"
                 android:padding="10dp"
+                android:rotation="20"
                 android:tint="@android:color/white"/>
             
         </FrameLayout>

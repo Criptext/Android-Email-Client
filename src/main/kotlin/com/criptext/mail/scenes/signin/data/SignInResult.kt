@@ -54,6 +54,7 @@ sealed class SignInResult {
 
     sealed class LinkData: SignInResult() {
         class Success: LinkData()
+        data class Progress(val message: UIMessage, val progress: Int): LinkData()
         data class Failure(val message: UIMessage,
                            val exception: Exception): LinkData()
     }

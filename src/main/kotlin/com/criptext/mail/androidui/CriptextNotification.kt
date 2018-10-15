@@ -16,6 +16,7 @@ import com.criptext.mail.R
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.LinkDeviceActionService
 import com.criptext.mail.push.data.PushDataSource
+import com.criptext.mail.scenes.linking.LinkingActivity
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.Utility
@@ -162,12 +163,12 @@ class CriptextNotification(val ctx: Context) {
                                       notificationId: Int, pushDataSource: PushDataSource)
             : Notification {
 
-
-        val okAction = Intent(ctx, LinkDeviceActionService::class.java)
+        val okAction = Intent(ctx, MailboxActivity::class.java)
         okAction.action = LinkDeviceActionService.APPROVE
-        okAction.putExtra("notificationId", LINK_DEVICE_ID)
+        okAction.addCategory(Intent.CATEGORY_LAUNCHER)
+        okAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         okAction.putExtra("randomId", randomId)
-        val okPendingIntent = PendingIntent.getService(ctx, 0, okAction,
+        val okPendingIntent = PendingIntent.getActivity(ctx, 0, okAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val denyAction = Intent(ctx, LinkDeviceActionService::class.java)

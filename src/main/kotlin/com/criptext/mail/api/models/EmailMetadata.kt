@@ -7,6 +7,7 @@ import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.EmailAddressUtils
+import com.github.kittinunf.result.Result
 import org.json.JSONObject
 
 /**
@@ -75,32 +76,45 @@ data class EmailMetadata(
 
         private fun getToArray(emailData: JSONObject): List<String>{
             return when {
-                emailData.has("toArray") -> emailData.getJSONArray("toArray").toList()
                 emailData.has("to") -> {
                     if(emailData.getString("to") == "") emptyList()
-                    else emailData.getString("to").split(",")
+                    else{
+                        val getArray = Result.of { emailData.getJSONArray("to").toList<String>()  }
+                        when(getArray){
+                            is Result.Success -> getArray.value
+                            is Result.Failure -> emailData.getString("to").split(",")
+                        }
+                    }
                 }
                 else -> emptyList()
             }
         }
-
         private fun getCCArray(emailData: JSONObject): List<String>{
             return when {
-                emailData.has("ccArray") -> emailData.getJSONArray("ccArray").toList()
                 emailData.has("cc") -> {
                     if(emailData.getString("cc") == "") emptyList()
-                    else emailData.getString("cc").split(",")
+                    else {
+                        val getArray = Result.of { emailData.getJSONArray("cc").toList<String>()  }
+                        when(getArray){
+                            is Result.Success -> getArray.value
+                            is Result.Failure -> emailData.getString("cc").split(",")
+                        }
+                    }
                 }
                 else -> emptyList()
             }
         }
-
         private fun getBCCArray(emailData: JSONObject): List<String> {
             return when {
-                emailData.has("bccArray") -> emailData.getJSONArray("bccArray").toList()
                 emailData.has("bcc") -> {
-                    if(emailData.getString("bcc") == "") emptyList()
-                    else emailData.getString("bcc").split(",")
+                    if (emailData.getString("bcc") == "") emptyList()
+                    else {
+                        val getArray = Result.of { emailData.getJSONArray("bcc").toList<String>() }
+                        when (getArray) {
+                            is Result.Success -> getArray.value
+                            is Result.Failure -> emailData.getString("bcc").split(",")
+                        }
+                    }
                 }
                 else -> emptyList()
             }

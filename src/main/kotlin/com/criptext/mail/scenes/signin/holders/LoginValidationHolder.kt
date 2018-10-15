@@ -64,23 +64,15 @@ class LoginValidationHolder(
 
     private fun initLoadingAnimatorSet(viewArrow: View, viewWatch: View): AnimatorSet{
 
-        val animArray = arrayOfNulls<ObjectAnimator>(4)
+        val animArray = arrayOfNulls<ObjectAnimator>(2)
         var animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 45f)
 
         initSyncObjectAnim(animObj, ValueAnimator.RESTART, 250,0 )
         animArray[0] = animObj
 
-        animObj = ObjectAnimator.ofFloat(viewWatch, "rotation", 45f)
-        initSyncObjectAnim(animObj, ValueAnimator.RESTART, 250, 0)
-        animArray[1] = animObj
-
         animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 360f)
         initSyncObjectAnim(animObj, ValueAnimator.RESTART, 125, 250)
-        animArray[2] = animObj
-
-        animObj = ObjectAnimator.ofFloat(viewWatch, "rotation", 360f)
-        initSyncObjectAnim(animObj, ValueAnimator.RESTART, 125, 250)
-        animArray[3] = animObj
+        animArray[1] = animObj
 
         val animSet = AnimatorSet()
         animSet.playTogether(*animArray)
@@ -117,7 +109,7 @@ class LoginValidationHolder(
 
         buttonResend.visibility = View.GONE
         textViewPrompt.visibility = View.GONE
-        textViewTitle.text = view.context.getText(R.string.failed)
+        textViewTitle.text = view.context.getText(R.string.title_failed)
         textViewBody.text = view.context.getText(R.string.login_failed_body)
         textViewNotApproved.visibility = View.VISIBLE
         animLoading?.cancel()

@@ -271,6 +271,9 @@ class ComposerController(private val model: ComposerModel,
                         resultData.uuid), null,
                         false, true)
             }
+            is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
         }
     }
 

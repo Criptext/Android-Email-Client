@@ -1,3 +1,8 @@
 package com.criptext.mail.push.data
 
-data class IntentExtrasData(val threadId: String)
+sealed class IntentExtrasData(open val action: String) {
+
+    data class IntentExtrasDataMail(override val action: String, val threadId: String) : IntentExtrasData(action)
+    data class IntentExtrasDataDevice(override val action: String, val deviceId: String) : IntentExtrasData(action)
+
+}

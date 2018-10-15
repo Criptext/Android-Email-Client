@@ -4,11 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.*
 import com.criptext.mail.scenes.signup.holders.KeyGenerationHolder
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.ui.RetrySyncAlertDialogNewDevice
 import com.criptext.mail.validation.ProgressButtonState
 
 /**
@@ -27,10 +29,12 @@ interface SignInScene {
     fun setSubmitButtonState(state: ProgressButtonState)
     fun showKeyGenerationHolder()
     fun showLinkAuthError()
-    fun showLinkDeviceProcessAnimation()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
     fun startLinkSucceedAnimation()
+    fun setLinkProgress(message: UIMessage, progress: Int)
+    fun disableCancelSync()
+    fun showSyncRetryDialog(result: SignInResult)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -38,6 +42,7 @@ interface SignInScene {
 
         private val viewGroup = view.parent as ViewGroup
         private var holder: BaseSignInHolder
+        private val retrySyncDialog = RetrySyncAlertDialogNewDevice(view.context)
 
         override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
@@ -115,18 +120,15 @@ interface SignInScene {
             showKeyGenerationHolder()
         }
 
-        override fun showLinkDeviceProcessAnimation() {
-            val currentHolder = holder
-            when (currentHolder) {
-                is ConnectionHolder -> currentHolder.startLoadingAnimation()
-            }
-        }
-
         override fun resetInput() {
             val currentHolder = holder
             when (currentHolder) {
                 is PasswordLoginHolder -> currentHolder.resetInput()
             }
+        }
+
+        override fun showSyncRetryDialog(result: SignInResult) {
+            retrySyncDialog.showLinkDeviceAuthDialog(signInUIObserver, result)
         }
 
         override fun showLinkAuthError() {
@@ -172,6 +174,16 @@ interface SignInScene {
         override fun startLinkSucceedAnimation() {
             val currentHolder = holder as ConnectionHolder
             currentHolder.startSucceedAnimation(showMailboxScene)
+        }
+
+        override fun disableCancelSync() {
+            val currentHolder = holder as ConnectionHolder
+            currentHolder.disableCancelSync()
+        }
+
+        override fun setLinkProgress(message: UIMessage, progress: Int) {
+            val currentHolder = holder as ConnectionHolder
+            currentHolder.setProgress(message, progress)
         }
 
         override fun showKeyGenerationHolder() {

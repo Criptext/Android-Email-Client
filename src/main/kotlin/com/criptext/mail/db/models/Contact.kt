@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.criptext.mail.BuildConfig
+import com.criptext.mail.utils.EmailAddressUtils
 import org.json.JSONObject
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -61,7 +62,8 @@ open class Contact(
             val json = JSONObject(jsonString)
             val id = json.getLong("id")
             val email = json.getString("email")
-            val name = if(json.has("name")) json.getString("name") else ""
+            val name = if(json.has("name")) json.getString("name")
+                                else EmailAddressUtils.extractName(email)
             return Contact(
                     id =  id,
                     email = email,

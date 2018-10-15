@@ -5,24 +5,31 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.support.v4.content.ContextCompat
+import android.util.TypedValue
 import android.view.View
 import android.view.animation.Animation
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.scenes.signin.SignInSceneController
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
+import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
+import com.criptext.mail.utils.ui.ScrollingGradient
 
 interface LinkingScene{
 
     fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver)
     fun showMessage(message : UIMessage)
-    fun showStatusMessage(message: UIMessage)
-    fun startLoadingAnimation()
+    fun setProgress(message: UIMessage, progress: Int)
     fun startSucceedAnimation(launchMailboxScene: (
             linkingUIObserver: LinkingUIObserver) -> Unit)
-    fun stopAnimationLoading()
+    fun showKeepWaitingDialog()
+    fun showRetrySyncDialog(result: GeneralResult)
 
 
     var linkingUIObserver: LinkingUIObserver?
@@ -38,93 +45,30 @@ interface LinkingScene{
         private val loadingView: View = view.findViewById(R.id.viewAnimation)
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
         private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
-        private var animLoading: AnimatorSet? = null
+        private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
+        private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
+        private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
+        private val keepWaitingDialog: KeepWaitingSyncAlertDialog = KeepWaitingSyncAlertDialog(context)
+        private val retrySyncDialog: RetrySyncAlertDialogOldDevice = RetrySyncAlertDialogOldDevice(context)
+        private val timer = IntervalTimer()
 
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
             this.linkingUIObserver = linkingUIObserver
             textViewEmail.text = model.email
-            startLoadingAnimation()
-        }
-
-        override fun startLoadingAnimation() {
-            loadingView.post {
-                animLoading = initSyncingAnimatorSet(view.findViewById(R.id.viewCircle1),
-                        view.findViewById(R.id.viewCircle2),
-                        view.findViewById(R.id.viewCircle3), view.findViewById(R.id.viewCircle4),
-                        view.findViewById(R.id.viewCircle5), view.findViewById(R.id.viewCircle6),
-                        view.findViewById(R.id.viewCircle7), view.findViewById(R.id.viewCircle8),
-                        view.findViewById(R.id.viewCircle9), view.findViewById(R.id.viewCircle10),
-                        view.findViewById(R.id.viewCircle11), view.findViewById(R.id.viewCircle12))
-                animLoading!!.start()
+            cancelSyncText.setOnClickListener {
+                this.linkingUIObserver?.onCancelSync()
             }
+            val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f,
+                    context.resources.displayMetrics)
+            progressBar.indeterminateDrawable = ScrollingGradient(px)
         }
-
-        private fun initSyncObjectAnim(animObj: ObjectAnimator, delay: Long) {
-            animObj.repeatMode = ValueAnimator.REVERSE
-            animObj.repeatCount = -1
-            if (delay > 0)
-                animObj.startDelay = delay
-        }
-
-        private fun initSyncingAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
-                                           circle5: View, circle6: View, circle7: View, circle8: View,
-                                           circle9: View, circle10: View, circle11: View, circle12: View): AnimatorSet {
-
-            val animArray = arrayOfNulls<ObjectAnimator>(12)
-            var animObj = ObjectAnimator.ofFloat(circle7, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 0)
-            animArray[0] = animObj
-            animObj = ObjectAnimator.ofFloat(circle8, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 100)
-            animArray[1] = animObj
-            animObj = ObjectAnimator.ofFloat(circle9, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 200)
-            animArray[2] = animObj
-            animObj = ObjectAnimator.ofFloat(circle10, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 300)
-            animArray[3] = animObj
-            animObj = ObjectAnimator.ofFloat(circle11, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 400)
-            animArray[4] = animObj
-            animObj = ObjectAnimator.ofFloat(circle12, "alpha", 0.1f, 1f)
-            initSyncObjectAnim(animObj, 500)
-            animArray[5] = animObj
-            animObj = ObjectAnimator.ofFloat(circle1, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 0)
-            animArray[6] = animObj
-            animObj = ObjectAnimator.ofFloat(circle2, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 100)
-            animArray[7] = animObj
-            animObj = ObjectAnimator.ofFloat(circle3, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 200)
-            animArray[8] = animObj
-            animObj = ObjectAnimator.ofFloat(circle4, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 300)
-            animArray[9] = animObj
-            animObj = ObjectAnimator.ofFloat(circle5, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 400)
-            animArray[10] = animObj
-            animObj = ObjectAnimator.ofFloat(circle6, "alpha", 1f, 0.1f)
-            initSyncObjectAnim(animObj, 500)
-            animArray[11] = animObj
-            val animSet = AnimatorSet()
-            animSet.playTogether(*animArray)
-            animSet.duration = 500
-            return animSet
-        }
-
 
         override fun startSucceedAnimation(launchMailboxScene: (
                 linkingUIObserver: LinkingUIObserver) -> Unit) {
-            animLoading!!.cancel()
             loadingView.post {
                 val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
                         view.findViewById(R.id.viewCircle2),
                         view.findViewById(R.id.viewCircle3), view.findViewById(R.id.viewCircle4),
-                        view.findViewById(R.id.viewCircle5), view.findViewById(R.id.viewCircle6),
-                        view.findViewById(R.id.viewCircle7), view.findViewById(R.id.viewCircle8),
-                        view.findViewById(R.id.viewCircle9), view.findViewById(R.id.viewCircle10),
-                        view.findViewById(R.id.viewCircle11), view.findViewById(R.id.viewCircle12),
                         view.findViewById(R.id.imageViewDevice1), view.findViewById(R.id.imageViewDevice2),
                         view.findViewById(R.id.imageViewSucceed))
 
@@ -162,64 +106,16 @@ interface LinkingScene{
 
 
         private fun initSuccessAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
-                                           circle5: View, circle6: View, circle7: View, circle8: View,
-                                           circle9: View, circle10: View, circle11: View, circle12: View,
                                            device1: View, device2: View, viewSucceed: View): AnimatorSet {
 
-            val animArray = arrayOfNulls<ObjectAnimator>(15)
-            var animObj = ObjectAnimator.ofFloat(circle7, "alpha", 1f, 0f)
+            val animArray = arrayOfNulls<ObjectAnimator>(1)
+            val animObj = ObjectAnimator.ofFloat(viewSucceed, "alpha", 0.0f, 1f)
             initSuccessObjectAnim(animObj, 0)
             animArray[0] = animObj
-            animObj = ObjectAnimator.ofFloat(circle8, "alpha", 1f, 0f)
-            initSuccessObjectAnim(animObj, 100)
-            animArray[1] = animObj
-            animObj = ObjectAnimator.ofFloat(circle9, "alpha", 1f, 0f)
-            initSuccessObjectAnim(animObj, 200)
-            animArray[2] = animObj
-            animObj = ObjectAnimator.ofFloat(circle10, "alpha", 1f, 0f)
-            initSuccessObjectAnim(animObj, 300)
-            animArray[3] = animObj
-            animObj = ObjectAnimator.ofFloat(circle11, "alpha", 1f, 0f)
-            initSuccessObjectAnim(animObj, 400)
-            animArray[4] = animObj
-            animObj = ObjectAnimator.ofFloat(circle12, "alpha", 1f, 0f)
-            initSuccessObjectAnim(animObj, 500)
-            animArray[5] = animObj
-            animObj = ObjectAnimator.ofFloat(circle1, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 0)
-            animArray[6] = animObj
-            animObj = ObjectAnimator.ofFloat(circle2, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 100)
-            animArray[7] = animObj
-            animObj = ObjectAnimator.ofFloat(circle3, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 200)
-            animArray[8] = animObj
-            animObj = ObjectAnimator.ofFloat(circle4, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 300)
-            animArray[9] = animObj
-            animObj = ObjectAnimator.ofFloat(circle5, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 400)
-            animArray[10] = animObj
-            animObj = ObjectAnimator.ofFloat(circle6, "alpha", 1f, 0.0f)
-            initSuccessObjectAnim(animObj, 500)
-            animArray[11] = animObj
-
-            animObj = ObjectAnimator.ofFloat(device1, "x", device1.x, circle2.x
-                    + circle2.width + circle3.width)
-            initSuccessObjectAnim(animObj, 600)
-            animArray[12] = animObj
-
-            animObj = ObjectAnimator.ofFloat(device2, "x", device2.x, circle8.x)
-            initSuccessObjectAnim(animObj, 600)
-            animArray[13] = animObj
-
-            animObj = ObjectAnimator.ofFloat(viewSucceed, "alpha", 0.0f, 1f)
-            initSuccessObjectAnim(animObj, 600)
-            animArray[14] = animObj
 
             val animSet = AnimatorSet()
             animSet.playTogether(*animArray)
-            animSet.duration = 700
+            animSet.duration = 1000
             return animSet
         }
 
@@ -228,12 +124,28 @@ interface LinkingScene{
                 animObj.startDelay = delay
         }
 
-        override fun stopAnimationLoading() {
-            animLoading!!.cancel()
+        override fun setProgress(message: UIMessage, progress: Int) {
+            textViewStatus.text = context.getLocalizedUIMessage(message)
+            timer.start(50, Runnable {
+                val stepProgress = progressBar.progress + 1
+                if(stepProgress <= progress) {
+                    updateProgress(stepProgress)
+                }
+            })
         }
 
-        override fun showStatusMessage(message: UIMessage) {
-            textViewStatus.text = context.getLocalizedUIMessage(message)
+        override fun showRetrySyncDialog(result: GeneralResult) {
+            retrySyncDialog.showLinkDeviceAuthDialog(linkingUIObserver, result)
+        }
+
+        private fun updateProgress(progress: Int){
+            if(progress >= 99) timer.stop()
+            progressBar.progress = progress
+            progressBarNumber.text = progress.toString().plus("%")
+        }
+
+        override fun showKeepWaitingDialog() {
+            keepWaitingDialog.showLinkDeviceAuthDialog(linkingUIObserver)
         }
 
 

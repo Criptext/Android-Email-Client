@@ -21,7 +21,7 @@ abstract class BackupDataWriter<T>(private val batchSize: Int) : Flushable {
     }
 
     override fun flush(){
-        if(dataList.size > 0) {
+        if(dataList.isNotEmpty()) {
             writeBatch(dataList)
             dataList.clear()
         }
@@ -75,7 +75,7 @@ class EmailDataWriter(private val emailDao: EmailDao,
 
 class FileDataWriter(private val fileDao: FileDao,
                      private val dependencies: List<Flushable> = listOf()):
-        BackupDataWriter<CRFile>(UserDataWriter.DEFAULT_BATCH_SIZE){
+        BackupDataWriter<CRFile>(1){
     override fun deserialize(item: String): CRFile {
         return CRFile.fromJSON(item)
     }

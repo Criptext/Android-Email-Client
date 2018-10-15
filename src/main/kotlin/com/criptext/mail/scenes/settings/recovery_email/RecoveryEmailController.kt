@@ -8,6 +8,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
@@ -206,9 +207,9 @@ class RecoveryEmailController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                //Needed for second part of Link Devices
-//                host.exitToScene(LinkingParams(activeAccount.userEmail), null,
-//                        false, true)
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid), null,
+                        false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)

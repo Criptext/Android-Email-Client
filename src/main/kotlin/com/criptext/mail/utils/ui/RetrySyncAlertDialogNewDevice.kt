@@ -10,30 +10,29 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.uiobserver.UIObserver
+import com.criptext.mail.scenes.linking.LinkingUIObserver
+import com.criptext.mail.scenes.signin.SignInSceneController
+import com.criptext.mail.scenes.signin.data.SignInResult
 
-class LinkNewDeviceAlertDialog(val context: Context) {
+class RetrySyncAlertDialogNewDevice(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLinkDeviceAuthDialog(observer: UIObserver?, untrustedDeviceInfo: UntrustedDeviceInfo) {
+    fun showLinkDeviceAuthDialog(signInUIObserver: SignInSceneController.SignInUIObserver?, result: SignInResult) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.link_device_auth_dialog, null)
+        val dialogView = inflater.inflate(R.layout.keep_waiting_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(observer, dialogView,
-                dialogBuilder, untrustedDeviceInfo)
+        dialog = createDialog(signInUIObserver, dialogView,
+                dialogBuilder, result)
     }
 
-    private fun createDialog(observer: UIObserver?, dialogView: View,
-                             dialogBuilder: AlertDialog.Builder,
-                             untrustedDeviceInfo: UntrustedDeviceInfo)
+    private fun createDialog(signInUIObserver: SignInSceneController.SignInUIObserver?,
+                             dialogView: View,
+                             dialogBuilder: AlertDialog.Builder, result: SignInResult)
             : AlertDialog? {
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLinkDeviceAuthDialog = dialogBuilder.create()
@@ -48,17 +47,9 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         newLinkDeviceAuthDialog.setCancelable(false)
         newLinkDeviceAuthDialog.setCanceledOnTouchOutside(false)
 
-        val textView = dialogView.findViewById(R.id.message_text) as TextView
-        val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
-        textView.text = context.getString(R.string.link_auth_message,
-                untrustedDeviceInfo.deviceFriendlyName)
-        when(untrustedDeviceInfo.deviceType){
-            DeviceUtils.DeviceType.PC -> imageView.setImageResource(R.drawable.device_pc)
-            else -> imageView.setImageResource(R.drawable.device_m)
-        }
 
-        assignButtonEvents(observer, dialogView,
-                newLinkDeviceAuthDialog, untrustedDeviceInfo)
+        assignButtonEvents(signInUIObserver, dialogView,
+                newLinkDeviceAuthDialog, result)
 
         return newLinkDeviceAuthDialog
     }
@@ -67,20 +58,21 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         return dialog?.isShowing
     }
 
-    private fun assignButtonEvents(observer: UIObserver?, view: View,
-                                   dialog: AlertDialog, untrustedDeviceInfo: UntrustedDeviceInfo) {
+    private fun assignButtonEvents(signInUIObserver: SignInSceneController.SignInUIObserver?,
+                                   view: View,
+                                   dialog: AlertDialog, result: SignInResult) {
 
         val btnOk = view.findViewById(R.id.link_auth_yes) as Button
 
         btnOk.setOnClickListener {
-            observer?.onLinkAuthConfirmed(untrustedDeviceInfo)
+            signInUIObserver?.onRetrySyncOk(result)
             dialog.dismiss()
         }
 
         val btnCancel = view.findViewById(R.id.link_auth_no) as Button
 
         btnCancel.setOnClickListener {
-            observer?.onLinkAuthDenied(untrustedDeviceInfo)
+            signInUIObserver?.onRetrySyncCancel()
             dialog.dismiss()
         }
     }

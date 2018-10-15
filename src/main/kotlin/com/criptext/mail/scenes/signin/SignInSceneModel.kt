@@ -13,4 +13,11 @@ class SignInSceneModel : SceneModel {
     var ephemeralJwt: String = ""
     var activeAccount: ActiveAccount? = null
     var linkDeviceState: LinkDeviceState = LinkDeviceState.Begin()
+    var name = ""
+    var randomId = 0
+    var key = ""
+    var dataAddress = ""
+    var authorizerId = 0
+    var retryTimeLinkDataReady = 0
+    var retryTimeLinkStatus = 0
 }

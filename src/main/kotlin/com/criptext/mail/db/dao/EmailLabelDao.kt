@@ -39,8 +39,11 @@ interface EmailLabelDao {
     fun getAll() : List<EmailLabel>
 
     @Query("""SELECT * FROM email_label
-        where emailId in (:emailIds)""")
-    fun getAllForLinkFile(emailIds: List<Long>) : List<EmailLabel>
+        WHERE EXISTS
+        (SELECT * FROM email WHERE delivered NOT IN (1, 4)
+        AND email.id = email_label.emailId)
+        AND email_label.labelId != 6""")
+    fun getAllForLinkFile() : List<EmailLabel>
 
     @Delete
     fun deleteAll(emailLabels: List<EmailLabel>)
