@@ -1,5 +1,38 @@
 # Change Log
 
+## [Unreleased](https://github.com/criptext/Android-Email-Client/tree/HEAD)
+
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.0...HEAD)
+
+**Closed issues:**
+
+- Add header API-Version=1.0 to all the requirements  [\#196](https://github.com/Criptext/Android-Email-Client/issues/196)
+- Link devices [\#129](https://github.com/Criptext/Android-Email-Client/issues/129)
+
+## [v0.13.0](https://github.com/criptext/Android-Email-Client/tree/v0.13.0) (2018-10-15)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.12.1...v0.13.0)
+
+**Merged pull requests:**
+
+- Added retry counters and also full approve from notification. [\#286](https://github.com/Criptext/Android-Email-Client/pull/286) ([jorgeblacio](https://github.com/jorgeblacio))
+- Refactored link devices flow to not be solely dependant on web socket events. [\#285](https://github.com/Criptext/Android-Email-Client/pull/285) ([jorgeblacio](https://github.com/jorgeblacio))
+- Devices now link and share data to login. [\#281](https://github.com/Criptext/Android-Email-Client/pull/281) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.12.1](https://github.com/criptext/Android-Email-Client/tree/v0.12.1) (2018-10-03)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.12.0...v0.12.1)
+
+**Closed issues:**
+
+- Don't back to mailbox when you starred an email [\#199](https://github.com/Criptext/Android-Email-Client/issues/199)
+
+**Merged pull requests:**
+
+- Added limits and some user growth features. [\#284](https://github.com/Criptext/Android-Email-Client/pull/284) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you can approve or deny device auth on push notifications. [\#283](https://github.com/Criptext/Android-Email-Client/pull/283) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now we use the staging server, and added api version header. [\#282](https://github.com/Criptext/Android-Email-Client/pull/282) ([jorgeblacio](https://github.com/jorgeblacio))
+- Updated changelog after release. [\#280](https://github.com/Criptext/Android-Email-Client/pull/280) ([jorgeblacio](https://github.com/jorgeblacio))
+- Update issue templates [\#275](https://github.com/Criptext/Android-Email-Client/pull/275) ([danieltigse](https://github.com/danieltigse))
+
 ## [v0.12.0](https://github.com/criptext/Android-Email-Client/tree/v0.12.0) (2018-10-01)
 **Fixed bugs:**
 
