@@ -1,5 +1,6 @@
 package com.criptext.mail.api
 
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.api.models.MultipartFormItem
 import com.criptext.mail.utils.LoggingInterceptor
 import com.criptext.mail.utils.file.FileUtils
@@ -27,8 +28,8 @@ interface HttpClient {
     enum class AuthScheme { basic, jwt }
     class Default(private val baseUrl: String,
                   private val authScheme: AuthScheme,
-                  connectionTimeout: Long,
-                  readTimeout: Long): HttpClient {
+                  private val connectionTimeout: Long,
+                  private val readTimeout: Long): HttpClient {
 
         // This is the constructor most activities should use.
         // primary constructor is more for testing.
@@ -38,12 +39,18 @@ interface HttpClient {
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         private val MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8")
 
-        private val client = OkHttpClient()
-                .newBuilder()
-                .addInterceptor(LoggingInterceptor())
-                .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
-                .build()
+        private val client = buildClient()
+
+        private fun buildClient(): OkHttpClient {
+            val okClient = OkHttpClient()
+                    .newBuilder()
+                    .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                    .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
+            if(BuildConfig.DEBUG){
+                okClient.addInterceptor(LoggingInterceptor())
+            }
+            return okClient.build()
+        }
 
         private fun Request.Builder.addAuthorizationHeader(authToken: String?) =
                 if (authToken == null) this

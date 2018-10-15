@@ -88,22 +88,40 @@
             android:background="@drawable/circle_succesed"
             android:alpha="0.0"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_below="@+id/viewAnimation"
-        style="@android:style/Widget.ProgressBar.Horizontal"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="12dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewAnimation"
+        android:background="#ddf0ff"
         android:layout_marginTop="45dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:progressBackgroundTint="#ddf0ff"
-        android:progressTint="#0091ff"
-        android:progress="0"/>
+        android:id="@+id/layoutProgressbar">
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progressBar"
+
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:indeterminate="true"
+        app:spb_sections_count="10"
+        app:spb_color="@color/azure"
+        app:spb_speed="1.0"
+        app:spb_stroke_width="4dp"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_reversed="false"
+        app:spb_mirror_mode="false"
+        app:spb_progressiveStart_activated="true"
+        app:spb_progressiveStart_speed="1.0"
+        app:spb_progressiveStop_speed="1.5"
+        />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/progress_bar_percentage"
-        android:layout_below="@+id/progressBar"
+        android:layout_below="@+id/layoutProgressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

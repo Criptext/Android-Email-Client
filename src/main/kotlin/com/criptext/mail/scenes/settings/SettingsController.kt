@@ -192,7 +192,8 @@ class SettingsController(
                     friendlyName = DeviceUtils.getDeviceFriendlyName(),
                     name = DeviceUtils.getDeviceName(),
                     isCurrent = true,
-                    deviceType = DeviceUtils.getDeviceType().ordinal))
+                    deviceType = DeviceUtils.getDeviceType().ordinal,
+                    lastActivity = null))
             scene.attachView(
                     name = activeAccount.name,
                     model = model,

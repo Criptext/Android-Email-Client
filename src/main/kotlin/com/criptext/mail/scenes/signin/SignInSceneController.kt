@@ -590,6 +590,6 @@ class SignInSceneController(
         const val  SENDING_KEYS_PERCENTAGE = 10
         const val  WAITING_FOR_MAILBOX_PERCENTAGE = 40
         const val  DOWNLOADING_MAILBOX_PERCENTAGE = 70
-        const val  SYNC_COMPLETE_PERCENTAGE = 99
+        const val  SYNC_COMPLETE_PERCENTAGE = 100
     }
 }

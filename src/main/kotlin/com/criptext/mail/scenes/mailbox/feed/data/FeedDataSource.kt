@@ -8,6 +8,7 @@ import com.criptext.mail.db.dao.ContactDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.FeedItemDao
 import com.criptext.mail.db.dao.FileDao
+import com.criptext.mail.db.models.ActiveAccount
 
 /**
  * Created by sebas on 1/24/18.
@@ -18,7 +19,8 @@ class FeedDataSource(override val runner: WorkRunner,
                      private val feedItemLocalDB: FeedItemDao,
                      private val emailDao: EmailDao,
                      private val contactDao: ContactDao,
-                     private val fileDao: FileDao)
+                     private val fileDao: FileDao,
+                     private val activeAccount: ActiveAccount)
     : BackgroundWorkManager<FeedRequest, FeedResult>() {
 
     override fun createWorkerFromParams(params: FeedRequest, flushResults: (FeedResult) -> Unit): BackgroundWorker<*> {
@@ -29,6 +31,7 @@ class FeedDataSource(override val runner: WorkRunner,
                     contactDao,
                     fileDao,
                     params.lastTimeFeedOpened,
+                    activeAccount,
                     { result -> flushResults(result) }
             )
             is FeedRequest.DeleteFeedItem -> DeleteFeedItemWorker(feedItemLocalDB,

@@ -1,12 +1,15 @@
 package com.criptext.mail.scenes.settings.devices
 
+import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.DeviceUtils
 import org.json.JSONArray
+import java.util.*
 
-data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String, val name: String, val isCurrent: Boolean) {
+data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String, val name: String,
+                      val isCurrent: Boolean, val lastActivity: Date?) {
 
     constructor() : this(0, DeviceUtils.getDeviceType().ordinal,
-            DeviceUtils.getDeviceFriendlyName(), DeviceUtils.getDeviceName(), true)
+            DeviceUtils.getDeviceFriendlyName(), DeviceUtils.getDeviceName(), true, null)
 
 
     companion object {
@@ -15,9 +18,14 @@ data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String
             val devices = (0..(devicesData.length()-1))
                     .map {
                         val json = devicesData.getJSONObject(it)
+                        val jsonDate = json.getJSONObject("lastActivity").optString("date")
+                        val date = if(jsonDate != null)
+                            DateUtils.getDateFromString(jsonDate, null)
+                        else
+                            null
                         DeviceItem(json.getInt("deviceId"),
                                 json.getInt("deviceType"), json.getString("deviceFriendlyName"),
-                                json.getString("deviceName"), false)
+                                json.getString("deviceName"), false, date)
                     }
             return (devices.filter { it.isCurrent } + devices.filter { !it.isCurrent })
         }

@@ -185,6 +185,7 @@ class ComposerController(private val model: ComposerModel,
             is ComposerResult.UploadFile.Success -> {
                 val composerAttachment = getAttachmentByPath(result.filepath)
                 composerAttachment?.uploadProgress = 100
+                model.isUploadingAttachments = false
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Failure -> {
@@ -288,9 +289,10 @@ class ComposerController(private val model: ComposerModel,
         model.subject = data.subject
     }
 
-    private fun isReadyForSending() = model.to.isNotEmpty()
+    private fun isReadyForSending() = model.to.isNotEmpty() && !model.isUploadingAttachments
 
     private fun uploadSelectedFile(filepath: String){
+        model.isUploadingAttachments = true
         dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath, fileKey = model.fileKey))
     }
 

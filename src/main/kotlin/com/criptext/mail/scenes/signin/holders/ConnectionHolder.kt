@@ -13,10 +13,7 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.scenes.signin.SignInSceneController
-import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 
 /**
  * Created by sebas on 3/2/18.
@@ -75,23 +72,15 @@ class ConnectionHolder(val view: View, val username: String,
 
     fun setProgress(message: UIMessage, progress: Int) {
         textViewStatus.text = view.context.getLocalizedUIMessage(message)
-        timer.start(50, Runnable {
-            val stepProgress = progressBar.progress + 1
-            if(stepProgress <= progress) {
-                updateProgress(stepProgress)
-            }
-        })
+
+        val anim = UIUtils.animationForProgressBar(progressBar, progress,
+                progressBarNumber, 1000)
+        anim.start()
     }
 
     fun disableCancelSync(){
         cancelSyncText.isClickable = false
         cancelSyncText.visibility = View.INVISIBLE
-    }
-
-    private fun updateProgress(progress: Int){
-        if(progress >= 99) timer.stop()
-        progressBar.progress = progress
-        progressBarNumber.text = progress.toString().plus("%")
     }
 
 

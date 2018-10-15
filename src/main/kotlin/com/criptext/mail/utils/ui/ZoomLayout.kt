@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 
+
 /**
  * Created by hirobreak on 21/06/17.
  */
@@ -63,47 +64,44 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
 
     private fun init(context: Context) {
         val scaleDetector = ScaleGestureDetector(context, this)
-        this.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-
-                when (motionEvent.action and MotionEvent.ACTION_MASK) {
-                    MotionEvent.ACTION_DOWN -> {
-                        startMotionEvent(motionEvent)
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        dx = motionEvent.x - startX
-                        dy = motionEvent.y - startY
-                    }
-                    MotionEvent.ACTION_POINTER_DOWN -> {
-                        mode = Mode.ZOOM
-                        startMotionEvent(motionEvent)
-                    }
-                    MotionEvent.ACTION_POINTER_UP -> mode = Mode.DRAG
-                    MotionEvent.ACTION_UP -> {
-                        stopMotionEvent(motionEvent)
-                    }
+        this.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action and MotionEvent.ACTION_MASK) {
+                MotionEvent.ACTION_DOWN -> {
+                    startMotionEvent(motionEvent)
                 }
-                if(isPinching) {
-                    scaleDetector.onTouchEvent(motionEvent)
-                    scaleTransition()
+                MotionEvent.ACTION_MOVE -> {
+                    dx = motionEvent.x - startX
+                    dy = motionEvent.y - startY
                 }
-                return true
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    mode = Mode.ZOOM
+                    startMotionEvent(motionEvent)
+                }
+                MotionEvent.ACTION_POINTER_UP -> mode = Mode.DRAG
+                MotionEvent.ACTION_UP -> {
+                    stopMotionEvent(motionEvent)
+                }
             }
-        })
+            if(isPinching) {
+                scaleDetector.onTouchEvent(motionEvent)
+                scaleTransition()
+            }
+            true
+        }
     }
 
     private fun getRelativeTop(myView: View): Int {
-        if (myView.parent === myView.rootView)
-            return myView.top
+        return if (myView.parent === myView.rootView)
+            myView.top
         else
-            return myView.top + getRelativeTop(myView.parent as View)
+            myView.top + getRelativeTop(myView.parent as View)
     }
 
     private fun getRelativeLeft(myView: View): Int {
-        if (myView.parent === myView.rootView)
-            return myView.left
+        return if (myView.parent === myView.rootView)
+            myView.left
         else
-            return myView.left + getRelativeLeft(myView.parent as View)
+            myView.left + getRelativeLeft(myView.parent as View)
     }
 
     fun startMotionEvent(motionEvent: MotionEvent){
@@ -121,8 +119,8 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
     fun scaleTransition(){
         if (mode == Mode.DRAG && scale >= MIN_ZOOM || mode == Mode.ZOOM) {
             parent.requestDisallowInterceptTouchEvent(true)
-            val maxDx = (child().getWidth() - child().getWidth() / scale) / 2 * scale
-            val maxDy = (child().getHeight() - child().getHeight() / scale) / 2 * scale
+            val maxDx = (child().width - child().width / scale) / 2 * scale
+            val maxDy = (child().height - child().height / scale) / 2 * scale
             dx = Math.min(Math.max(dx/2, -maxDx), maxDx)
             dy = Math.min(Math.max(dy/2, -maxDy), maxDy)
             applyScaleAndTranslation()
@@ -152,8 +150,8 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
 
     fun applyScaleAndTranslation() {
         val childView = child()
-        childView.setScaleX(scale)
-        childView.setScaleY(scale)
+        childView.scaleX = scale
+        childView.scaleY = scale
         childView.translationY = (childView.height * scale - childView.height)/2
         childView.translationX = (childView.width * scale - childView.width)/2
         layoutParams = LinearLayout.LayoutParams((scale * childView.width).toInt(), (scale * childView.height).toInt())
@@ -166,9 +164,8 @@ class ZoomLayout : FrameLayout, ScaleGestureDetector.OnScaleGestureListener {
     }
 
     companion object {
-
-        private val TAG = "ZoomLayout"
-        private val MIN_ZOOM = 1.0f
-        private val MAX_ZOOM = 4.0f
+        private const val TAG = "ZoomLayout"
+        private const val MIN_ZOOM = 1.0f
+        private const val MAX_ZOOM = 4.0f
     }
 }

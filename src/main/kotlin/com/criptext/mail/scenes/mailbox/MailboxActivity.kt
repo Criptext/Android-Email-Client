@@ -101,7 +101,7 @@ class MailboxActivity : BaseActivity() {
                     activeAccount = account,
                     storage = KeyValueStorage.SharedPrefs(activity),
                     feedDataSource = FeedDataSource(AsyncTaskWorkRunner(), mailboxLocalDB,
-                    appDB.feedDao(), appDB.emailDao(), appDB.contactDao(), appDB.fileDao()))
+                    appDB.feedDao(), appDB.emailDao(), appDB.contactDao(), appDB.fileDao(), account))
         }
 
         fun initController(appDB: AppDatabase,

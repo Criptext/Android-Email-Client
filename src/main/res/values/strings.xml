@@ -18,7 +18,7 @@
     <string name="not_encrypted_warning">Warning: 1 or more attachments are not encrypted. Eliminate them and attach them securely using the button</string>
 
     <!-- ATTACHMENT ERRORS -->
-    <string name="attachment_limit_reached">Only %1$d per email allowed.</string>
+    <string name="attachment_limit_reached">Only %1$d attachments per email allowed.</string>
 
     <!-- SYNC -->
     <string name="title_sync">Mailbox Sync</string>
@@ -148,6 +148,9 @@
     <string name="old_password">Enter old password</string>
     <string name="new_password">Enter new password</string>
     <string name="new_confirm_password">Repeat new password</string>
+    <string name="device_last_activity">Last Activity </string>
+    <string name="device_last_activity_time">\t- %1$s</string>
+    <string name="device_last_activity_time_2_months">\t- More than 2 months ago.</string>
 
     <!-- RECOVERY EMAIL SCENE -->
     <string name="recovery_email_title">Current</string>

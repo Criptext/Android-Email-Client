@@ -6,6 +6,8 @@ import com.criptext.mail.db.dao.ContactDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.FeedItemDao
 import com.criptext.mail.db.dao.FileDao
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 
 /**
  * Created by gabriel on 2/19/18.
@@ -16,6 +18,7 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
                       private val contactDao: ContactDao,
                       private val fileDao: FileDao,
                       private val lastTimeFeedOpened: Long,
+                      private val activeAccount: ActiveAccount,
                       override val publishFn: (FeedResult.LoadFeed) -> Unit)
     : BackgroundWorker<FeedResult.LoadFeed> {
 
@@ -32,14 +35,23 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
             ActivityFeedItem(
                     feedItem = it,
                     email = emailDao.findEmailById(it.emailId)!!,
-                    contact = contactDao.getContactById(it.contactId)!!,
+                    contact = getContactForFeed(it.contactId),
                     file = if(it.fileId != null) fileDao.getFileById(it.fileId!!) else null
             )
         }
-        val totalNewFeeds = activityFeedItems.fold(0, { total, next ->
+        val totalNewFeeds = activityFeedItems.fold(0) { total, next ->
             total + (if(next.date.time > lastTimeFeedOpened) 1 else 0)
-        })
+        }
         return FeedResult.LoadFeed.Success(activityFeedItems, totalNewFeeds)
+    }
+
+    private fun getContactForFeed(id: Long) : Contact {
+        val contact = contactDao.getContactById(id)!!
+        if(contact.email == activeAccount.userEmail){
+            contact.name = "Someone"
+            return contact
+        }
+        return contact
     }
 
     override fun cancel() {

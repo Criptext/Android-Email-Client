@@ -200,6 +200,8 @@ dependencies {
 
     implementation 'com.inkapplications.viewpageindicator:library:2.4.4'
 
+    implementation 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+
 }
 
 

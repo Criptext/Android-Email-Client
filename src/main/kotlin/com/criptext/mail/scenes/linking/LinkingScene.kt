@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
@@ -20,6 +21,20 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
 import com.criptext.mail.utils.ui.ScrollingGradient
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.ClipDrawable
+import android.graphics.drawable.LayerDrawable
+import android.os.Build.VERSION
+import android.os.Build.VERSION.SDK_INT
+import android.support.annotation.DrawableRes
+import android.graphics.drawable.Drawable
+import android.os.Build
+import android.view.Gravity
+import android.graphics.Paint
+import android.graphics.drawable.ShapeDrawable
+import android.view.ViewGroup
+import com.criptext.mail.utils.UIUtils
+
 
 interface LinkingScene{
 
@@ -58,9 +73,6 @@ interface LinkingScene{
             cancelSyncText.setOnClickListener {
                 this.linkingUIObserver?.onCancelSync()
             }
-            val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f,
-                    context.resources.displayMetrics)
-            progressBar.indeterminateDrawable = ScrollingGradient(px)
         }
 
         override fun startSucceedAnimation(launchMailboxScene: (
@@ -126,22 +138,13 @@ interface LinkingScene{
 
         override fun setProgress(message: UIMessage, progress: Int) {
             textViewStatus.text = context.getLocalizedUIMessage(message)
-            timer.start(50, Runnable {
-                val stepProgress = progressBar.progress + 1
-                if(stepProgress <= progress) {
-                    updateProgress(stepProgress)
-                }
-            })
+            val anim = UIUtils.animationForProgressBar(progressBar, progress,
+                    progressBarNumber, 1000)
+            anim.start()
         }
 
         override fun showRetrySyncDialog(result: GeneralResult) {
             retrySyncDialog.showLinkDeviceAuthDialog(linkingUIObserver, result)
-        }
-
-        private fun updateProgress(progress: Int){
-            if(progress >= 99) timer.stop()
-            progressBar.progress = progress
-            progressBarNumber.text = progress.toString().plus("%")
         }
 
         override fun showKeepWaitingDialog() {
