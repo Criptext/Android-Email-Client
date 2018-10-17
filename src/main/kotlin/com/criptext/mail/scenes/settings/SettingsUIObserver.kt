@@ -15,6 +15,7 @@ interface SettingsUIObserver: UIObserver {
     fun onTermsOfServiceClicked()
     fun onOpenSourceLibrariesClicked()
     fun onLogoutClicked()
+    fun onTwoFASwitched(isChecked: Boolean)
     fun onLogoutConfirmedClicked()
     fun onRemoveDeviceConfirmed(deviceId: Int, position: Int, password: String)
     fun onRemoveDeviceCancel()

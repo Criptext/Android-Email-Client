@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings.views
 
 import android.support.v4.content.ContextCompat
 import android.view.View
+import android.widget.Switch
 import android.widget.TextView
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
@@ -21,6 +22,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsRecoveryEmailLoading: View
     private lateinit var settingsRecoveryEmailConfirmText: TextView
     private lateinit var versionText: TextView
+    private lateinit var twoFASwitch: Switch
 
     private var settingsUIObserver: SettingsUIObserver? = null
 
@@ -40,11 +42,12 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsRecoveryEmailConfirmText = view.findViewById(R.id.not_confirmed_text) as TextView
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
+        twoFASwitch = view.findViewById(R.id.switch_two_fa)
 
         settingsRecoveryEmail.visibility = View.GONE
         settingsRecoveryEmailLoading.visibility = View.VISIBLE
 
-        setButtonListeners()
+        setListeners()
     }
 
     fun setExternalListeners(settingsUIObserver: SettingsUIObserver?){
@@ -66,7 +69,15 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
     }
 
-    private fun setButtonListeners(){
+    fun set2FA(has2FA: Boolean){
+        twoFASwitch.isChecked = has2FA
+    }
+
+    fun enable2FASwitch(isEnabled: Boolean){
+        twoFASwitch.isEnabled = isEnabled
+    }
+
+    private fun setListeners(){
         settingsProfileName.setOnClickListener {
             settingsUIObserver?.onProfileNameClicked()
         }
@@ -90,6 +101,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
         settingsLogout.setOnClickListener {
             settingsUIObserver?.onLogoutClicked()
+        }
+        twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
+            settingsUIObserver?.onTwoFASwitched(isChecked)
         }
     }
 

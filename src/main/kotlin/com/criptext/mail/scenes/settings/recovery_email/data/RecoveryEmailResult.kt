@@ -16,7 +16,7 @@ sealed class RecoveryEmailResult{
 
     sealed class ChangeRecoveryEmail: RecoveryEmailResult() {
         class Success(val newEmail: String): ChangeRecoveryEmail()
-        class Failure(val message: UIMessage): ChangeRecoveryEmail()
+        class Failure(val ex: Exception, val message: UIMessage): ChangeRecoveryEmail()
     }
 
 }

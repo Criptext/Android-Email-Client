@@ -69,7 +69,7 @@ class SignInDataSource(override val runner: WorkRunner,
             )
             is SignInRequest.LinkAuth -> LinkAuthWorker(
                     httpClient = httpClient, username = params.username,
-                    jwt = params.ephemeralJwt,
+                    jwt = params.ephemeralJwt, password = params.password,
                     publishFn = { result -> flushResults(result)
                     }
             )
