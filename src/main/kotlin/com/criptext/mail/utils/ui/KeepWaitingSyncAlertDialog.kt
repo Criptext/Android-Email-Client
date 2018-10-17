@@ -44,9 +44,6 @@ class KeepWaitingSyncAlertDialog(val context: Context) {
         newLinkDeviceAuthDialog.setCancelable(false)
         newLinkDeviceAuthDialog.setCanceledOnTouchOutside(false)
 
-        val textView = dialogView.findViewById(R.id.message_text) as TextView
-        val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
-
 
         assignButtonEvents(observer, dialogView,
                 newLinkDeviceAuthDialog)
