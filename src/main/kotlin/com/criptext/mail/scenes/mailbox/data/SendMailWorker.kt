@@ -225,7 +225,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             val (salt, iv, encryptedSession) =
                     AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
             val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
-                    1,HTMLUtils.addCriptextFooter(composerInputData.body)).encryptedB64
+                    1, composerInputData.body).encryptedB64
             val externalSession = EmailExternalSession(0, emailId = emailId, iv = iv, salt = salt,
                     encryptedBody = encryptedBody, encryptedSession = encryptedSession)
             db.saveExternalSession(externalSession)

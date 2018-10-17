@@ -21,6 +21,8 @@ class ComposerModel(val type: ComposerType) {
 
     var attachments: ArrayList<ComposerAttachment> = ArrayList()
 
+    var isUploadingAttachments = false
+
     val to = LinkedList<Contact>()
     val cc = LinkedList<Contact>()
     val bcc = LinkedList<Contact>()

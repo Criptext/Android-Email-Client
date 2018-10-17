@@ -66,13 +66,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position,
                     viewOpen = false)
         }
-        threePointsView.setOnClickListener({
+        threePointsView.setOnClickListener {
             displayPopMenu(emailListener, fullEmail, adapter, position - 1)
-        })
+        }
 
-        moreButton.setOnClickListener({
+        moreButton.setOnClickListener {
             contactInfoPopUp.createPopup(fullEmail, null)
-        })
+        }
 
         continueDraftView.setOnClickListener{
             emailListener?.onContinueDraftOptionSelected(fullEmail)
