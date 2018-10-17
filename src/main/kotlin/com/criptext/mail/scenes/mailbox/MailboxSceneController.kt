@@ -27,7 +27,7 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 import android.content.Intent
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.push.data.IntentExtrasData
-import com.criptext.mail.push.data.LinkDeviceActionService
+import com.criptext.mail.push.services.LinkDeviceActionService
 
 
 /**

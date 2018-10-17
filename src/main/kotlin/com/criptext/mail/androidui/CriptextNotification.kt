@@ -13,10 +13,9 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import com.criptext.mail.R
-import com.criptext.mail.push.PushController
-import com.criptext.mail.push.data.LinkDeviceActionService
+import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.data.PushDataSource
-import com.criptext.mail.scenes.linking.LinkingActivity
+import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.Utility
@@ -88,9 +87,23 @@ class CriptextNotification(val ctx: Context) {
         return notBuild
     }
 
-    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String,
+    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String, metadataKey: Long,
                                   notificationId: Int)
             : Notification {
+
+        val readAction = Intent(ctx, NewMailActionService::class.java)
+        readAction.action = NewMailActionService.READ
+        readAction.putExtra("notificationId", INBOX_ID)
+        readAction.putExtra("metadataKey", metadataKey)
+        val readPendingIntent = PendingIntent.getService(ctx, 0, readAction,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
+
+        val trashAction = Intent(ctx, NewMailActionService::class.java)
+        trashAction.action = NewMailActionService.TRASH
+        trashAction.putExtra("notificationId", INBOX_ID)
+        trashAction.putExtra("metadataKey", metadataKey)
+        val trashPendingIntent = PendingIntent.getService(ctx, 0, trashAction,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_NEW_EMAIL)
@@ -103,6 +116,8 @@ class CriptextNotification(val ctx: Context) {
             .setGroup(ACTION_INBOX)
             .setGroupSummary(false)
             .setSmallIcon(R.drawable.push_icon)
+            .addAction(R.drawable.check, ctx.getString(R.string.push_read), readPendingIntent)
+            .addAction(R.drawable.x, ctx.getString(R.string.push_trash), trashPendingIntent)
             .setLargeIcon(Utility.getBitmapFromText(
                     title,
                     250,

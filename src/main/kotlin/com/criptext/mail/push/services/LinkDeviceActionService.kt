@@ -1,9 +1,13 @@
-package com.criptext.mail.push.data
+package com.criptext.mail.push.services
 
 import android.app.IntentService
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.push.data.PushAPIRequestHandler
 
 
 class LinkDeviceActionService : IntentService("Link Device Action Service") {
@@ -19,7 +23,8 @@ class LinkDeviceActionService : IntentService("Link Device Action Service") {
         val data = getIntentData(intent)
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val requestHandler = PushAPIRequestHandler(this, manager)
+        val requestHandler = PushAPIRequestHandler(CriptextNotification(this), manager,
+                ActiveAccount.loadFromStorage(this)!!, HttpClient.Default())
 
         when {
             APPROVE == data.action -> {
@@ -32,7 +37,7 @@ class LinkDeviceActionService : IntentService("Link Device Action Service") {
         }
     }
 
-    private fun getIntentData(intent: Intent?): IntentData{
+    private fun getIntentData(intent: Intent?): IntentData {
         val action = intent!!.action
         val notificationId = intent.getIntExtra("notificationId", 0)
         val randomId = intent.getStringExtra("randomId")

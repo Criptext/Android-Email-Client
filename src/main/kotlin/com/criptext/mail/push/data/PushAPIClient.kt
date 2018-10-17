@@ -23,4 +23,24 @@ class PushAPIClient(private val httpClient: HttpClient, private val token: Strin
 
         return httpClient.post(path = "/link/deny", authToken = token, body = jsonPost)
     }
+
+    fun postOpenEvent(metadataKeys: List<Long>): String {
+        val json = JSONObject()
+        json.put("metadataKeys", metadataKeys.toJSONLongArray())
+
+        return httpClient.post(path = "/event/open", authToken = token, body = json)
+    }
+
+    fun postEmailLabelChangedEvent(metadataKeys: List<Long>, labelsRemoved: List<String>,
+                                   labelsAdded: List<String>): String {
+        val json = JSONObject()
+        val jsonPost = JSONObject()
+        jsonPost.put("cmd", Event.Cmd.peerEmailChangedLabels)
+        json.put("metadataKeys", metadataKeys.toJSONLongArray())
+        json.put("labelsRemoved", JSONArray(labelsRemoved))
+        json.put("labelsAdded", JSONArray(labelsAdded))
+        jsonPost.put("params", json)
+
+        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
+    }
 }
