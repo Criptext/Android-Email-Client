@@ -84,7 +84,7 @@
                 android:id="@+id/email_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="200dp"
+                android:layout_weight="0.75"
                 android:text="Lorem ipsum dolor sit ametas das da sd asd as"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -94,8 +94,9 @@
 
             <TextView
                 android:id="@+id/email_count"
-                android:layout_width="18dp"
+                android:layout_width="25dp"
                 android:layout_height="14dp"
+                android:layout_weight="0.25"
                 android:text="4"
                 android:layout_marginEnd="15dp"
                 android:gravity="center"
@@ -121,19 +122,20 @@
                 android:layout_centerVertical="true"/>
 
             <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/email_preview"
+                fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="180dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textSize="14sp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="fill_horizontal"
                 android:layout_marginEnd="10dp"
                 android:layout_toEndOf="@+id/check"
-                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/starred"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                android:textColor="#6a707e"/>
+                android:textColor="#6a707e"
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/starred"
