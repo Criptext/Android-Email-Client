@@ -70,6 +70,12 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.Set2FA -> TwoFAWorker(
+                    activeAccount = activeAccount,
+                    twoFA = params.twoFA,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

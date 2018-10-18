@@ -48,4 +48,8 @@ sealed class SettingsResult{
         class Failure: RemoveDevice()
     }
 
+    sealed class Set2FA: SettingsResult() {
+        data class Success(val hasTwoFA: Boolean): Set2FA()
+        data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
+    }
 }

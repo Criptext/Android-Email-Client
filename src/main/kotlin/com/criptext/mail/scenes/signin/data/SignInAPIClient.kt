@@ -43,19 +43,20 @@ class SignInAPIClient(private val httpClient: HttpClient) {
         val jsonPut = JSONObject()
         jsonPut.put("targetUsername", recipientId)
 
-        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
+        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut, apiVersion = "2.0.0")
     }
 
     fun getLinkStatus(jwt: String): String{
         return httpClient.get(path = "/link/status", authToken = jwt)
     }
 
-    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem): String{
+    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem, password: String?): String{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
         jsonPut.put("deviceName", device.name)
         jsonPut.put("deviceFriendlyName", device.friendlyName)
         jsonPut.put("deviceType", device.deviceType)
+        jsonPut.put("password", password)
 
         return httpClient.post(path = "/link/auth", authToken = jwt, body = jsonPut)
     }

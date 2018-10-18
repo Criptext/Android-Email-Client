@@ -37,6 +37,8 @@ interface SettingsScene{
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
     fun updateUserSettings(userData: UserSettingsData)
+    fun updateTwoFa(isChecked: Boolean)
+    fun enableTwoFASwitch(isEnabled: Boolean)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
     fun setRemoveDeviceError(message: UIMessage)
@@ -179,6 +181,16 @@ interface SettingsScene{
 
         override fun updateUserSettings(userData: UserSettingsData) {
             generalView.setRecoveryEmailConfirmationText(userData.recoveryEmailConfirmationState)
+            generalView.enable2FASwitch(true)
+            generalView.set2FA(userData.hasTwoFA)
+        }
+
+        override fun enableTwoFASwitch(isEnabled: Boolean) {
+            generalView.enable2FASwitch(isEnabled)
+        }
+
+        override fun updateTwoFa(isChecked: Boolean) {
+            generalView.set2FA(isChecked)
         }
 
         private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,

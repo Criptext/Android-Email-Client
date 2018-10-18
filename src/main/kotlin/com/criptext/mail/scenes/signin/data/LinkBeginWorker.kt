@@ -10,6 +10,7 @@ import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import org.json.JSONObject
 
 
 class LinkBeginWorker(val httpClient: HttpClient,
@@ -34,10 +35,14 @@ class LinkBeginWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkBegin>): SignInResult.LinkBegin? {
         val result = Result.of { apiClient.postLinkBegin(username) }
+                .flatMap { Result.of {
+                    val json = JSONObject(it)
+                    Pair(json.getString("token"), json.getInt("twoFactorAuth") == 1)
+                } }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.LinkBegin.Success(result.value)
+                SignInResult.LinkBegin.Success(result.value.first, result.value.second)
             }
             is Result.Failure -> catchException(result.error)
         }

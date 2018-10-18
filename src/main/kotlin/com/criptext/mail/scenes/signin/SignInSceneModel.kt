@@ -11,6 +11,8 @@ import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 class SignInSceneModel : SceneModel {
     var state: SignInLayoutState = SignInLayoutState.Start(username = "", firstTime = true)
     var ephemeralJwt: String = ""
+    var hasTwoFA = false
+    var realSecurePassword: String? = null
     var activeAccount: ActiveAccount? = null
     var linkDeviceState: LinkDeviceState = LinkDeviceState.Begin()
     var name = ""

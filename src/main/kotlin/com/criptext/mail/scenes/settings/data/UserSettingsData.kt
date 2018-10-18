@@ -5,7 +5,7 @@ import com.criptext.mail.utils.DateUtils
 import org.json.JSONObject
 
 data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: String,
-                            val recoveryEmailConfirmationState: Boolean){
+                            val recoveryEmailConfirmationState: Boolean, val hasTwoFA: Boolean){
     companion object {
         fun fromJSON(metadataString: String): UserSettingsData {
             val metadataJson = JSONObject(metadataString)
@@ -22,9 +22,12 @@ data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: St
                                 json.getInt("deviceType"), json.getString("deviceFriendlyName"),
                                 json.getString("deviceName"), false, date)
                     }
-            val recoveryEmail = metadataJson.getJSONObject("recoveryEmail")
-            return UserSettingsData(devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }, recoveryEmail.getString("address"),
-                    recoveryEmail.getInt("status") == 1)
+            val general = metadataJson.getJSONObject("general")
+            val recoveryEmail = general.getString("recoveryEmail")
+            val recoveryEmailConfirmationState = general.getInt("recoveryEmailConfirmed") == 1
+            val twoFactorAuth = general.getInt("twoFactorAuth") == 1
+            return UserSettingsData(devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }, recoveryEmail,
+                    recoveryEmailConfirmationState, twoFactorAuth)
         }
     }
 }

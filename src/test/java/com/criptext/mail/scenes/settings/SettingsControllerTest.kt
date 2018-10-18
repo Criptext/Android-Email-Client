@@ -81,7 +81,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false)))
+        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false, false)))
 
         val observer = observerSlot.captured
         observer.onProfileNameChanged(newProfileName)
@@ -98,7 +98,7 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false)))
+        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings = UserSettingsData(listOf(), "", false, false)))
 
         val observer = observerSlot.captured
         observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")

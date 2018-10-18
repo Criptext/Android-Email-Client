@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.signin.data.SignInDataSource
 import com.criptext.mail.scenes.signin.data.SignInRequest
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.ConnectionHolder
+import com.criptext.mail.scenes.signin.holders.LoginValidationHolder
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -119,11 +120,18 @@ class SignInSceneController(
     private fun onLinkBegin(result: SignInResult.LinkBegin) {
         when (result) {
             is SignInResult.LinkBegin.Success -> {
-                scene.initLayout(model.state, uiObserver)
+
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 model.ephemeralJwt = result.ephemeralJwt
-                handleNewTemporalWebSocket()
-                dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username, model.ephemeralJwt))
+                model.hasTwoFA = result.hasTwoFA
+                if(model.hasTwoFA){
+                    onAcceptPasswordLogin(currentState.username)
+                }else{
+                    scene.initLayout(model.state, uiObserver)
+                    handleNewTemporalWebSocket()
+                    dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
+                            model.ephemeralJwt))
+                }
             }
             is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
             is SignInResult.LinkBegin.NoDevicesAvailable -> {
@@ -158,8 +166,14 @@ class SignInSceneController(
 
             }
             is SignInResult.LinkAuth.Failure -> {
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                scene.showError(UIMessage(R.string.server_error_exception))
+                if(model.hasTwoFA){
+                    val resultData = SignInResult.AuthenticateUser.Failure(result.message,
+                            result.exception)
+                    onAuthenticationFailed(resultData)
+                }else {
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    scene.showError(UIMessage(R.string.server_error_exception))
+                }
             }
         }
     }
@@ -279,7 +293,8 @@ class SignInSceneController(
         model.state = SignInLayoutState.InputPassword(
                 username = username,
                 password = "",
-                buttonState = ProgressButtonState.disabled)
+                buttonState = ProgressButtonState.disabled,
+                hasTwoFA = model.hasTwoFA)
         scene.initLayout(model.state, uiObserver)
     }
 
@@ -445,7 +460,8 @@ class SignInSceneController(
         }
 
         override fun onResendDeviceLinkAuth(username: String) {
-            dataSource.submitRequest(SignInRequest.LinkAuth(username, model.ephemeralJwt))
+            dataSource.submitRequest(SignInRequest.LinkAuth(username, model.ephemeralJwt,
+                    model.realSecurePassword))
         }
 
         override fun onProgressHolderFinish() {
@@ -461,7 +477,19 @@ class SignInSceneController(
             val state = model.state
             when (state) {
                 is SignInLayoutState.Start -> onSignInButtonClicked(state)
-                is SignInLayoutState.InputPassword -> onSignInButtonClicked(state)
+                is SignInLayoutState.InputPassword -> {
+                    if(model.hasTwoFA){
+                        val currentState = model.state as SignInLayoutState.InputPassword
+                        model.realSecurePassword = currentState.password.sha256()
+                        model.state = SignInLayoutState.LoginValidation(currentState.username)
+                        scene.initLayout(model.state, this)
+                        handleNewTemporalWebSocket()
+                        dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
+                                model.ephemeralJwt, model.realSecurePassword))
+                    }else{
+                        onSignInButtonClicked(state)
+                    }
+                }
             }
         }
 

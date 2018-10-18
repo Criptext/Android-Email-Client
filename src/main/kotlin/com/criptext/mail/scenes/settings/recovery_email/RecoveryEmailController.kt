@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings.recovery_email
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
@@ -14,6 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -118,8 +120,7 @@ class RecoveryEmailController(
     }
 
     private fun toggleChangeEmailButton() {
-        if(model.newRecoveryEmail.state is FormInputState.Valid
-                && model.newRecoveryEmail.value != model.recoveryEmail) {
+        if(model.newRecoveryEmail.state is FormInputState.Valid) {
             scene.enableChangeButton()
         } else {
             scene.disableChangeButton()
@@ -166,8 +167,21 @@ class RecoveryEmailController(
                 scene.showMessage(UIMessage(R.string.recovery_email_has_changed))
             }
             is RecoveryEmailResult.ChangeRecoveryEmail.Failure -> {
-                scene.enterPasswordDialogError(result.message)
-                scene.dialogToggleLoad(false)
+                if(result.ex is ServerErrorException){
+                    when(result.ex.errorCode){
+                        ServerErrorCodes.BadRequest -> {
+                            scene.enterPasswordDialogError(result.message)
+                            scene.dialogToggleLoad(false)
+                        }
+                        else -> {
+                            scene.enterPasswordDialogDismiss()
+                            scene.showMessage(result.message)
+                        }
+                    }
+                }else {
+                    scene.enterPasswordDialogDismiss()
+                    scene.showMessage(result.message)
+                }
             }
         }
     }

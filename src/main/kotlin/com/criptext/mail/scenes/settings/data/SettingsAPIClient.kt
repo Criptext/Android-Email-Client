@@ -36,6 +36,13 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.put(path = "/user/name", authToken = token, body = jsonPut)
     }
 
+    fun putTwoFA(twoFA: Boolean): String {
+        val jsonPut = JSONObject()
+        jsonPut.put("enable", twoFA)
+
+        return httpClient.put(path = "/user/2fa", authToken = token, body = jsonPut)
+    }
+
     fun listDevices(): String{
         return httpClient.get(path = "/devices", authToken = token)
     }

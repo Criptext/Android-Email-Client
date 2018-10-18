@@ -62,10 +62,16 @@ class SettingsController(
             is SettingsResult.GetUserSettings -> onGetUserSettings(result)
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
+            is SettingsResult.Set2FA -> onSet2FA(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onTwoFASwitched(isChecked: Boolean) {
+            scene.enableTwoFASwitch(false)
+            dataSource.submitRequest(SettingsRequest.Set2FA(isChecked))
+        }
+
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }
@@ -352,6 +358,20 @@ class SettingsController(
             }
             is SettingsResult.ResetPassword.Failure -> {
                 scene.showMessage(result.message)
+            }
+        }
+    }
+
+    private fun onSet2FA(result: SettingsResult.Set2FA){
+        when(result) {
+            is SettingsResult.Set2FA.Success -> {
+                scene.enableTwoFASwitch(true)
+                scene.updateTwoFa(result.hasTwoFA)
+            }
+            is SettingsResult.Set2FA.Failure -> {
+                scene.showMessage(result.message)
+                scene.enableTwoFASwitch(true)
+                scene.updateTwoFa(!result.twoFAAttempt)
             }
         }
     }
