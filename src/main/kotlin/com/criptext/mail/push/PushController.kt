@@ -25,9 +25,10 @@ class PushController(private val dataSource: PushDataSource, private val isPostN
         val body = pushData["body"] ?: ""
         val title = pushData["title"] ?: ""
         val threadId = pushData["threadId"] ?: ""
+        val metadataKey = pushData["metadataKey"]?.toLong()
 
         return PushData.NewMail(title = title, body = body, threadId = threadId,
-                shouldPostNotification = shouldPostNotification,
+                metadataKey = metadataKey, shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat)
     }
 

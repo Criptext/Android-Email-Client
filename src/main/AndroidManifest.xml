@@ -87,7 +87,7 @@
         </service>
 
         <service
-            android:name=".push.data.LinkDeviceActionService"
+            android:name=".push.services.LinkDeviceActionService"
             android:exported="false"/>
 
         <service
@@ -97,6 +97,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <service android:name=".push.services.NewMailActionService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

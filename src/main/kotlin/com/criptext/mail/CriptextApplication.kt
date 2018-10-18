@@ -15,7 +15,7 @@ class CriptextApplication : Application(){
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         )
-        Stetho.initializeWithDefaults(this)
+        if(BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
             WebSocketSingleton.getInstance(activeAccount)

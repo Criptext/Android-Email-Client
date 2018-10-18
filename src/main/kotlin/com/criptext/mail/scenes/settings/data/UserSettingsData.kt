@@ -14,7 +14,7 @@ data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: St
                     .map {
                         val json = devicesData.getJSONObject(it)
                         val jsonDate = json.getJSONObject("lastActivity").optString("date")
-                        val date = if(jsonDate != null)
+                        val date = if(!jsonDate.isNullOrEmpty())
                             DateUtils.getDateFromString(jsonDate, null)
                         else
                             null

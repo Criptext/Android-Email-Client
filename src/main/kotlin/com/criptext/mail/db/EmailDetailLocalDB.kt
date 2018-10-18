@@ -30,12 +30,10 @@ interface EmailDetailLocalDB {
     fun getCustomLabels(): List<Label>
     fun setTrashDate(emailIds: List<Long>)
 
-    class Default(applicationContext: Context): EmailDetailLocalDB {
+    class Default(private val db: AppDatabase): EmailDetailLocalDB {
         override fun setTrashDate(emailIds: List<Long>) {
             db.emailDao().updateEmailTrashDate(Date(), emailIds)
         }
-
-        private val db = AppDatabase.getAppDatabase(applicationContext)
 
         override fun unsendEmail(emailId: Long) {
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)

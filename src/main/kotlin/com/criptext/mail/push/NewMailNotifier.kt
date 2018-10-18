@@ -47,7 +47,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
                 data.threadId, data.isPostNougat)
 
             return cn.createNewMailNotification(clickIntent = pendingIntent,
-                    title = data.title, body = data.body,
+                    title = data.title, body = data.body, metadataKey = data.metadataKey ?: -1,
                     notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
 
         }

@@ -33,7 +33,7 @@ class  EmailDetailActivity: BaseActivity() {
         val appDB = AppDatabase.getAppDatabase(this.applicationContext)
         val filesHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val db: EmailDetailLocalDB.Default =
-                EmailDetailLocalDB.Default(this.applicationContext)
+                EmailDetailLocalDB.Default(appDB)
         val emailDetailModel = receivedModel as EmailDetailSceneModel
         val httpClient = HttpClient.Default()
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))

@@ -11,7 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.criptext.mail.push.data.IntentExtrasData
-import com.criptext.mail.push.data.LinkDeviceActionService
+import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
