@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.graphics.Matrix
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -10,10 +11,7 @@ import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.util.DisplayMetrics
 import android.view.*
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
@@ -26,10 +24,13 @@ import com.criptext.mail.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.criptext.mail.scenes.emaildetail.ui.FileListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.ui.ZoomLayout
+import com.criptext.mail.utils.ui.MyZoomLayout
+import com.otaliastudios.zoom.ZoomEngine
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
+
 
 /**
  * Created by sebas on 3/12/18.
@@ -48,10 +49,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val readView: ImageView
     private val contactInfoPopUp: EmailContactInfoPopup
     private val bodyWebView: WebView
-    private val zoomLayout: ZoomLayout
-    private val horizontalScrollView: HorizontalScrollView
     private val bodyContainer : LinearLayout
-    private val webViewLoader: ProgressBar
+    private val zoomLayout: MyZoomLayout
     private val attachmentsRecyclerView: RecyclerView
     private val leftImageView: CircleImageView
     private val unsendProgressBar: ProgressBar
@@ -318,24 +317,47 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
                 return true
             }
+
+            override fun onLoadResource(view: WebView?, url: String?) {
+                reSizeZoomLayout(view)
+                super.onLoadResource(view, url)
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                zoomLayout.visibility = View.VISIBLE
-                webViewLoader.visibility = View.GONE
                 view?.evaluateJavascript("""window.scrollTo(0,0);""") { }
-
-                val treeObserver = horizontalScrollView.viewTreeObserver
-                treeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                         horizontalScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                         horizontalScrollView.scrollTo(0, 0)
-                    }
-                })
+                reSizeZoomLayout(view)
+                setupZoomLayout()
             }
         }
-        val javascriptInterface = WebviewJavascriptInterface(
-                context, zoomLayout)
+        val javascriptInterface = WebviewJavascriptInterface(context, zoomLayout, bodyWebView)
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
+    }
+
+    private fun reSizeZoomLayout(view: WebView?){
+        if(view != null && view.height > 0) {
+            zoomLayout.layoutParams = LinearLayout.LayoutParams(view.width, view.height)
+        }
+    }
+
+    private fun setupZoomLayout(){
+        zoomLayout.mListener = object : MyZoomLayout.ZoomUpdateListener{
+            override fun onUpdate(helper: ZoomEngine?, matrix: Matrix?) {
+                val values = FloatArray(9)
+                matrix?.getValues(values)
+                val scaleY = values[Matrix.MSCALE_Y]
+                zoomLayout.layoutParams = LinearLayout.LayoutParams(bodyWebView.width, (scaleY * bodyWebView.height).toInt())
+            }
+        }
+    }
+
+    private fun setupWeChromeClient(): WebChromeClient{
+        return object: WebChromeClient(){
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                reSizeZoomLayout(view)
+            }
+        }
     }
 
     private fun deactivateElementsForUnsend() {
@@ -362,21 +384,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         readView =  view.findViewById(R.id.check)
         contactInfoPopUp = EmailContactInfoPopup(moreButton)
         bodyWebView = view.findViewById(R.id.email_body)
-        bodyWebView.webChromeClient = WebChromeClient()
-        zoomLayout = view.findViewById(R.id.full_mail_zoom)
-        horizontalScrollView = view.findViewById(R.id.full_mail_scroll)
+        bodyWebView.webChromeClient = setupWeChromeClient()
         bodyContainer = view.findViewById(R.id.body_container)
         rootView = view.findViewById(R.id.cardview)
-        webViewLoader = view.findViewById(R.id.progress_bar_webview_loading)
         attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
         unsendProgressBar = view.findViewById(R.id.loadingPanel)
-
+        zoomLayout = view.findViewById(R.id.zoomLayout)
         setupWebview()
-        horizontalScrollView.isHorizontalScrollBarEnabled = false
-        zoomLayout.slideContainer = { dx: Int ->
-            horizontalScrollView.smoothScrollBy(dx - horizontalScrollView.scrollX, 0)
-        }
     }
-
 }

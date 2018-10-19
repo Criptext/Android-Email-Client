@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardview"
-
     android:layout_marginBottom="10dp"
     android:background="@drawable/partial_email_drawable">
 
@@ -157,47 +157,35 @@
         <LinearLayout
             android:id="@+id/body_container"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginRight="20dp"
-            android:layout_height="wrap_content">
+            android:layout_marginTop="85dp"
+            android:layout_marginRight="20dp">
 
-            <HorizontalScrollView
-                android:scrollbars="none"
-                android:layout_marginTop="85dp"
+            <com.criptext.mail.utils.ui.MyZoomLayout
+                android:id="@+id/zoomLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/full_mail_scroll">
+                android:layout_height="1dp"
+                android:scrollbars="vertical|horizontal"
+                app:overScrollHorizontal="true"
+                app:overScrollVertical="true"
+                app:horizontalPanEnabled="true"
+                app:verticalPanEnabled="true"
+                app:zoomEnabled="true"
+                app:minZoom="1"
+                app:minZoomType="zoom"
+                app:maxZoom="8.0"
+                app:maxZoomType="zoom"
+                app:hasClickableChildren="true"
+                app:overPinchable="false">
 
-                <LinearLayout
+                <WebView
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:id="@+id/email_body"
+                    android:scrollbars="none"/>
 
-                    <ProgressBar
-                        android:visibility="visible"
-                        android:layout_gravity="center_horizontal"
-                        android:id="@+id/progress_bar_webview_loading"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <com.criptext.mail.utils.ui.ZoomLayout
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/full_mail_zoom">
-
-                        <WebView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/email_body"
-                            android:scrollbars="none"/>
-
-                    </com.criptext.mail.utils.ui.ZoomLayout>
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
+            </com.criptext.mail.utils.ui.MyZoomLayout>
 
             <TextView
                 fontPath="fonts/NunitoSans-Regular.ttf"
