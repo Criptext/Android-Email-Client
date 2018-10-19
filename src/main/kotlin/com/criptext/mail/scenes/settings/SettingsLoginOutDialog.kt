@@ -11,10 +11,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.criptext.mail.R
 
-/**
- * Created by sebas on 3/8/18.
- */
-
 class SettingsLoginOutDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null

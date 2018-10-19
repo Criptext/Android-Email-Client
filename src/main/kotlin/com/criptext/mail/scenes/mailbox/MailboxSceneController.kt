@@ -100,9 +100,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
     private fun getTotalUnreadThreads(): Int{
-        return model.threads.fold(0, { total, next ->
+        return model.threads.fold(0) { total, next ->
             total + (if(next.unread) 1 else 0)
-        })
+        }
     }
 
     private fun reloadMailboxThreads() {
@@ -343,7 +343,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-        if (model.threads.isEmpty()) reloadMailboxThreads()
+        reloadMailboxThreads()
 
         toggleMultiModeBar()
         scene.setToolbarNumberOfEmails(getTotalUnreadThreads())

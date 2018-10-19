@@ -29,14 +29,6 @@ class PasswordLoginHolder(
     private val progressBar: View = view.findViewById(R.id.signin_progress_login)
 
     init {
-        if(!initialState.hasTwoFA){
-            title.text = view.context.getString(R.string.login)
-            buttonConfirm.text = view.context.getString(R.string.button_confirm)
-        }else{
-            title.text = view.context.getString(R.string.two_fa)
-            buttonConfirm.text = view.context.getString(R.string.button_next)
-        }
-
         username.text  = "${initialState.username}@${Contact.mainDomain}"
         password.text = SpannableStringBuilder(initialState.password)
         setListeners()

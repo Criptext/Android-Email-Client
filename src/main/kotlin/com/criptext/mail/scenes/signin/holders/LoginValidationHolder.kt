@@ -48,6 +48,11 @@ class LoginValidationHolder(
         failedImageLayout = view.findViewById(R.id.failed_x)
         loadingImageLayout = view.findViewById(R.id.sign_in_anim)
 
+        if(initialState.hasTwoFA){
+            cantAccessDevice.visibility = View.GONE
+            textViewTitle.text = view.context.getText(R.string.title_two_fa)
+        }
+
         setListeners()
         startLoadingAnimation()
     }

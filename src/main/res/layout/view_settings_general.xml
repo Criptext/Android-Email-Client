@@ -340,7 +340,7 @@
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginEnd="17dp"
                     android:enabled="false"
-                    android:checked="true"/>
+                    android:checked="false"/>
 
             </FrameLayout>
 

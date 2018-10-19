@@ -70,7 +70,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     }
 
     fun set2FA(has2FA: Boolean){
+        twoFASwitch.setOnCheckedChangeListener { buttonView, isChecked ->  }
         twoFASwitch.isChecked = has2FA
+        setSwitchListener()
     }
 
     fun enable2FASwitch(isEnabled: Boolean){
@@ -102,6 +104,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsLogout.setOnClickListener {
             settingsUIObserver?.onLogoutClicked()
         }
+        setSwitchListener()
+    }
+
+    private fun setSwitchListener(){
         twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
             settingsUIObserver?.onTwoFASwitched(isChecked)
         }

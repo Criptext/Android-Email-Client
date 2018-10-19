@@ -18,7 +18,9 @@ import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.utils.getLocalizedUIMessage
 
 /**
  * Builds Notifications used in the Criptext App.
@@ -154,19 +156,20 @@ class CriptextNotification(val ctx: Context) {
         return buildOpenMailboxNotification(builder)
     }
 
-    fun createErrorNotification(title: String, body:String)
+    fun createErrorNotification(title: UIMessage, body:UIMessage)
             : Notification {
 
+
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ERROR)
-                .setContentTitle(title)
-                .setContentText(body)
+                .setContentTitle(ctx.getLocalizedUIMessage(title))
+                .setContentText(ctx.getLocalizedUIMessage(body))
                 .setAutoCancel(true)
                 .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
                 .setGroup(ACTION_ERROR)
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+                .setStyle(NotificationCompat.BigTextStyle().bigText(ctx.getLocalizedUIMessage(body)))
 
 
 

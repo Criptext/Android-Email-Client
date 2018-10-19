@@ -143,7 +143,7 @@
     <string name="title_change_email_cap">CHANGE EMAIL</string>
     <string name="title_change_password_cap">CHANGE PASSWORD</string>
     <string name="title_allow_notifications">Allow Notifications</string>
-    <string name="title_two_fa">2-Factor Authentication</string>
+    <string name="title_two_fa">Two-Factor Authentication</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>
     <string name="separator_account">ACCOUNT</string>
@@ -157,9 +157,9 @@
     <string name="old_password">Enter old password</string>
     <string name="new_password">Enter new password</string>
     <string name="new_confirm_password">Repeat new password</string>
-    <string name="device_last_activity">Last Activity </string>
-    <string name="device_last_activity_time">\t- %1$s</string>
-    <string name="device_last_activity_time_2_months">\t- More than 2 months ago.</string>
+    <string name="device_last_activity">Last Active </string>
+    <string name="device_last_activity_time">\t %1$s</string>
+    <string name="device_last_activity_time_2_months">\t More than 2 months ago.</string>
 
     <!-- RECOVERY EMAIL SCENE -->
     <string name="recovery_email_title">Current</string>
@@ -174,9 +174,18 @@
     <!-- CHANGE CONFIRMATION EMAIL -->
     <string name="title_new_email">Enter your new recovery email.</string>
     <string name="change_email_title">New</string>
+    <string name="change_email_note"><b>Note: </b>Changing your recovery email will disable two-factor authentication.</string>
     <string name="button_change_email_confirm">Change Email</string>
     <string name="recovery_email_has_changed">Recovery email changed successfully</string>
     <string name="recovery_email_change_fail_same">Recovery email already is %1$s</string>
+
+    <!-- TWO-FACTOR AUTHENTICATION -->
+    <string name="two_fa_button">Got it!</string>
+    <string name="title_warning_two_fa"><b>Recovery Email Not Set</b></string>
+    <string name="title_enabled_two_fa"><b>2FA Enabled!</b></string>
+    <string name="message_enabled_two_fa">Next time you sign into your account on another device you\'ll have to enter your password and then validate the sign in from an existing device.</string>
+    <string name="message_warning_two_fa">To enable Two-Factor Authentication you must set and verify a recovery email on your account</string>
+    <string name="message_warning_2_two_fa"><b>Please go to Settings > Recovery Email to complete this step.</b></string>
 
     <!-- FORGOT PASSWORD -->
     <string name="forgot_password_message">An email was sent to %1$s with the instructions to reset your password</string>
@@ -253,12 +262,12 @@
 
     <!-- LOGIN -->
     <string name="login">Sign In</string>
-    <string name="two_fa">2-Factor Authentication</string>
+    <string name="two_fa">Two-Factor Authentication</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
     <string name="didnt_get_prompt">Didn’t get the prompt?</string>
     <string name="not_approved">Warning: Multiple rejections could lead your device to be blacklisted from Criptext.</string>
     <string name="button_resendit">Resend it</string>
-    <string name="cant_access_device">Sign in with password?</string>
+    <string name="cant_access_device"><u>Sign in with password?</u></string>
     <string name="failed">Failed</string>
     <string name="title_failed">Sign In Rejected</string>
     <string name="login_rejected">Device not approved.</string>
@@ -427,7 +436,7 @@
     <string name="failed_getting_contacts">Failed to get contacts.</string>
 
     <string name="fail_unsend_email">Failed to unsend the email. Please try again later.</string>
-    <string name="fail_unsend_email_expired">Failed to unsend the email. Time for unsending has already expired.</string>
+    <string name="fail_unsend_email_expired">Failed to unsend the email. Time (1h) for unsending has already expired.</string>
     <string name="failed_getting_emails">Failed to fetch the emails. Please try again later.</string>
     <string name="failed_empty_trash">Failed to delete email(s). Please try again later.</string>
     <string name="nothing_to_update">Nothing to update.</string>
