@@ -68,8 +68,15 @@ class SettingsController(
 
     private val settingsUIObserver = object: SettingsUIObserver{
         override fun onTwoFASwitched(isChecked: Boolean) {
-            scene.enableTwoFASwitch(false)
-            dataSource.submitRequest(SettingsRequest.Set2FA(isChecked))
+            if(model.isEmailConfirmed) {
+                scene.enableTwoFASwitch(false)
+                dataSource.submitRequest(SettingsRequest.Set2FA(isChecked))
+            }else{
+                scene.enableTwoFASwitch(true)
+                scene.updateTwoFa(!isChecked)
+            }
+            if(isChecked)
+                scene.showTwoFADialog(model.isEmailConfirmed)
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {

@@ -12,9 +12,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.criptext.mail.R
 
-/**
- * Created by sebas on 3/8/18.
- */
 
 class SettingsLogoutDialog(val context: Context) {
 

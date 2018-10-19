@@ -105,7 +105,8 @@ class SignInSceneController(
                     keyboard.hideKeyboard()
 
                     //LINK DEVICE FEATURE
-                    model.state = SignInLayoutState.LoginValidation(username = result.username)
+                    model.state = SignInLayoutState.LoginValidation(username = result.username,
+                            hasTwoFA = model.hasTwoFA)
                     dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
                 }
                 else{
@@ -481,7 +482,7 @@ class SignInSceneController(
                     if(model.hasTwoFA){
                         val currentState = model.state as SignInLayoutState.InputPassword
                         model.realSecurePassword = currentState.password.sha256()
-                        model.state = SignInLayoutState.LoginValidation(currentState.username)
+                        model.state = SignInLayoutState.LoginValidation(currentState.username, model.hasTwoFA)
                         scene.initLayout(model.state, this)
                         handleNewTemporalWebSocket()
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,

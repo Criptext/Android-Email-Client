@@ -7,7 +7,7 @@ import com.criptext.mail.validation.ProgressButtonState
  */
 sealed class SignInLayoutState {
     data class Start(val username: String, val firstTime: Boolean): SignInLayoutState()
-    data class LoginValidation(val username: String): SignInLayoutState()
+    data class LoginValidation(val username: String, val hasTwoFA: Boolean = false): SignInLayoutState()
     data class InputPassword(val username: String, val password: String,
                              val buttonState: ProgressButtonState, val hasTwoFA: Boolean = false): SignInLayoutState()
     data class WaitForApproval(val username: String) : SignInLayoutState()

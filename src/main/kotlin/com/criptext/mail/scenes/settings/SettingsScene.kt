@@ -45,6 +45,7 @@ interface SettingsScene{
     fun removeDeviceDialogToggleLoad(loading: Boolean)
     fun removeDeviceDialogDismiss()
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -85,6 +86,7 @@ interface SettingsScene{
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val twoFADialog = Settings2FADialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -172,6 +174,10 @@ interface SettingsScene{
 
         override fun getDeviceListView(): VirtualListView {
             return deviceView.getListView()
+        }
+
+        override fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean) {
+            twoFADialog.showLogoutDialog(hasRecoveryEmailConfirmed)
         }
 
         private fun loadTabs(name: String, model: SettingsModel, devicesListItemListener: DevicesListItemListener) {

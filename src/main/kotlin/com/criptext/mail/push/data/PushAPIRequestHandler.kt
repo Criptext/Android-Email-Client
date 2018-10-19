@@ -46,7 +46,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 manager.cancel(notificationId)
                 val data = ErrorNotificationData(UIMessage(R.string.push_link_error_title),
                         UIMessage(R.string.push_link_error_message_approve))
-                val errorNot = not.createErrorNotification(data.title.toString(), data.body.toString())
+                val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
                 -1
             }
@@ -61,7 +61,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 manager.cancel(notificationId)
                 val data = ErrorNotificationData(UIMessage(R.string.push_link_error_title),
                         UIMessage(R.string.push_link_error_message_deny))
-                val errorNot = not.createErrorNotification(data.title.toString(), data.body.toString())
+                val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }
@@ -78,7 +78,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 operation.error.printStackTrace()
                 val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_read))
-                val errorNot = not.createErrorNotification(data.title.toString(), data.body.toString())
+                val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }
@@ -124,7 +124,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 manager.cancel(notificationId)
                 val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_trash))
-                val errorNot = not.createErrorNotification(data.title.toString(), data.body.toString())
+                val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }

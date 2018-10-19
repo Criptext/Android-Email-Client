@@ -32,6 +32,7 @@ import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
@@ -84,9 +85,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     abstract fun initController(receivedModel: Any): SceneController
     protected val photoUtil = PhotoUtil.Default()
 
-    private fun getCachedModelOrThrow(): Any {
+    private fun getCachedModel(): Any? {
         return cachedModels[javaClass]
-            ?: throw IllegalStateException("No model found for $javaClass. Perhaps you opened the wrong activity")
     }
 
     private fun dismissAllNotifications() {
@@ -104,7 +104,13 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             setSupportActionBar(toolbar)
         }
 
-        model = getCachedModelOrThrow()
+        val cacheModel = getCachedModel()
+        if(cacheModel == null){
+            restartApplication()
+            return
+        }else{
+            model = cacheModel
+        }
         controller = initController(model)
     }
 
@@ -223,6 +229,11 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     override fun finishScene() {
+        finish()
+    }
+
+    private fun restartApplication() {
+        startActivity(Intent(this, SplashActivity::class.java))
         finish()
     }
 

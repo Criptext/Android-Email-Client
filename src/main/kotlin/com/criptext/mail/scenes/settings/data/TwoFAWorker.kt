@@ -2,9 +2,11 @@ package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 
@@ -20,7 +22,14 @@ class TwoFAWorker(val httpClient: HttpClient,
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SettingsResult.Set2FA {
-        return SettingsResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
+        return if(ex is ServerErrorException) {
+            when(ex.errorCode) {
+                ServerErrorCodes.MethodNotAllowed -> SettingsResult.Set2FA.Failure(UIMessage(R.string.message_warning_two_fa), twoFA)
+                else -> SettingsResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
+            }
+        }else {
+            SettingsResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
+        }
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.Set2FA>): SettingsResult.Set2FA? {
