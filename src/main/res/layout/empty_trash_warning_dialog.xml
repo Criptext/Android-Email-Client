@@ -55,7 +55,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             fontPath="fonts/NunitoSans-SemiBold.ttf"
-            android:text="No" />
+            android:text="@string/no" />
 
         <Button
             android:textColor="@color/label_buttons_text"

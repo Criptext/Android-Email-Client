@@ -198,7 +198,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun getLocalizedString(message: UIMessage): String {
-        return getString(message.resId, *message.args)
+        return getLocalizedUIMessage(message)
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean) {

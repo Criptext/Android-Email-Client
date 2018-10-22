@@ -7,6 +7,8 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.TextView
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
+import com.criptext.mail.R
+import com.criptext.mail.db.models.Label
 
 object UIUtils{
 
@@ -21,7 +23,6 @@ object UIUtils{
         anim.duration = duration
         return anim
     }
-
 
     fun expand(v: View) {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -75,5 +76,17 @@ object UIUtils{
         // 1dp/ms
         a.duration = (initialHeight / v.context.resources.displayMetrics.density).toInt().toLong()
         v.startAnimation(a)
+    }
+
+    fun getLocalizedToolbarTitle(title: String): UIMessage{
+        return when(title){
+            Label.LABEL_SENT -> UIMessage(R.string.titulo_mailbox_sent)
+            Label.LABEL_STARRED -> UIMessage(R.string.titulo_mailbox_starred)
+            Label.LABEL_SPAM -> UIMessage(R.string.titulo_mailbox_spam)
+            Label.LABEL_DRAFT -> UIMessage(R.string.titulo_mailbox_draft)
+            Label.LABEL_TRASH -> UIMessage(R.string.titulo_mailbox_trash)
+            Label.LABEL_ALL_MAIL -> UIMessage(R.string.titulo_mailbox_all_mail)
+            else -> UIMessage(R.string.titulo_mailbox)
+        }
     }
 }

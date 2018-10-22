@@ -33,7 +33,7 @@ android:focusableInTouchMode="true" >
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:text="Welcome to Criptext!"
+                android:text="@string/tour_title1"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
                 android:gravity="center"
@@ -89,7 +89,7 @@ android:focusableInTouchMode="true" >
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"
-                            android:hint="Username" />
+                            android:hint="@string/username_hint" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -124,7 +124,7 @@ android:focusableInTouchMode="true" >
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/btn_signup_background"
                 android:textColor="@drawable/btn_sign_in"
-                android:text="Sign In"
+                android:text="@string/login"
                 android:enabled="false"
                 android:textAllCaps="false"
                 android:layout_marginTop="10dp"/>

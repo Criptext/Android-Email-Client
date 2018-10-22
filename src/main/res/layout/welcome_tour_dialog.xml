@@ -19,7 +19,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/btn_welcome_tour"
         android:textColor="@drawable/btn_sign_in"
-        android:text="Ok"
+        android:text="@string/ok"
         android:enabled="false"
         android:textAllCaps="true"
         android:padding="10dp"/>

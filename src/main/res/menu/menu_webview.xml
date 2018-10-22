@@ -6,7 +6,7 @@
     tools:context=".login.GruposActivity">
 
     <item android:id="@+id/ac_open"
-        android:title="Open in Chrome"
+        android:title="@string/web_view_open_in_chrome"
         android:orderInCategory="100"
         app:showAsAction="collapseActionView"/>
 

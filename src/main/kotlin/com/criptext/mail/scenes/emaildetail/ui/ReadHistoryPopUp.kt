@@ -107,7 +107,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
 
         fun bindContact(contact: MockedContact){
             name.text = contact.name
-            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time)
+            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time, context)
         }
 
         init {

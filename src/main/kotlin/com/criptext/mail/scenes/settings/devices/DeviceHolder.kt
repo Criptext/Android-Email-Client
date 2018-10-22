@@ -42,7 +42,7 @@ class DeviceHolder(val view: View) : RecyclerView.ViewHolder(view) {
             textViewCurrent.text = ""
             if(deviceItem.lastActivity != null){
                 textViewLastActive.text = view.context.getString(R.string.device_last_activity_time,
-                        DateAndTimeUtils.getFormattedDate(deviceItem.lastActivity.time))
+                        DateAndTimeUtils.getFormattedDate(deviceItem.lastActivity.time, view.context))
                 lastActiveLayout.visibility = View.VISIBLE
             }else{
                 textViewLastActive.text = view.context.getText(R.string.device_last_activity_time_2_months)
