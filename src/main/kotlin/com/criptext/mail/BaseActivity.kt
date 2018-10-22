@@ -33,6 +33,7 @@ import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
@@ -169,7 +170,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
-            is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId)
+            is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -214,12 +215,13 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                 }
                 LinkDeviceActionService.APPROVE ->    {
                     val uuid = intent.extras.get("randomId").toString()
+                    val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid)
+                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType)
                 }
             }
 

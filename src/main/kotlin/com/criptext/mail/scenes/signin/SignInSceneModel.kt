@@ -4,6 +4,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.signin.data.LinkDeviceState
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
+import com.criptext.mail.utils.DeviceUtils
 
 /**
  * Created by sebas on 2/23/18.
@@ -20,6 +21,7 @@ class SignInSceneModel : SceneModel {
     var key = ""
     var dataAddress = ""
     var authorizerId = 0
+    var authorizerType = DeviceUtils.DeviceType.Android
     var retryTimeLinkDataReady = 0
     var retryTimeLinkStatus = 0
 }

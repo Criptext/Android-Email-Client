@@ -30,6 +30,7 @@ import com.criptext.mail.scenes.params.ComposerParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
@@ -124,7 +125,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
                 host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid), null,
+                        resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -256,6 +257,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private fun downloadFile(emailId: Long, fileToken: String, fileKey: String?){
+        updateAttachmentProgress(emailId, fileToken, 0)
         dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
                 emailId = emailId, fileKey = fileKey))
     }
@@ -642,7 +644,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             })
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name:String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 

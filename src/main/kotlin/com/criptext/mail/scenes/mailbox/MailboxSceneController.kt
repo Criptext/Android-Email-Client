@@ -28,6 +28,7 @@ import android.content.Intent
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 
 
 /**
@@ -336,7 +337,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 LinkDeviceActionService.APPROVE -> {
                     val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
                     val untrustedDeviceInfo = UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
-                            "", "", null)
+                            "", "", extrasDevice.deviceType)
                     generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
                 }
             }
@@ -716,7 +717,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
                 host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid), null,
+                        resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -777,7 +778,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 

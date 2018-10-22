@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
@@ -222,7 +223,7 @@ class RecoveryEmailController(
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
                 host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid), null,
+                        resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -246,7 +247,7 @@ class RecoveryEmailController(
             })
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 

@@ -7,6 +7,7 @@ import android.animation.ValueAnimator
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.animation.Animation
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -19,7 +20,7 @@ import com.criptext.mail.utils.*
  * Created by sebas on 3/2/18.
  */
 
-class ConnectionHolder(val view: View, val username: String,
+class ConnectionHolder(val view: View, val username: String, val authorizerType: DeviceUtils.DeviceType,
                        private val signInUIObserver: SignInSceneController.SignInUIObserver): BaseSignInHolder() {
 
     private val loadingView: View
@@ -28,6 +29,7 @@ class ConnectionHolder(val view: View, val username: String,
     private val progressBar: ProgressBar
     private val progressBarNumber: TextView
     private val cancelSyncText: TextView
+    private val oldDevice: ImageView
     private val timer = IntervalTimer()
 
 
@@ -111,6 +113,12 @@ class ConnectionHolder(val view: View, val username: String,
         progressBar = view.findViewById(R.id.progressBar)
         progressBarNumber = view.findViewById(R.id.percentage_advanced)
         cancelSyncText = view.findViewById(R.id.cancelSync)
+        oldDevice = view.findViewById(R.id.imageViewDevice1)
+
+        when (authorizerType){
+            DeviceUtils.DeviceType.PC -> oldDevice.setImageResource(R.drawable.device_pc)
+            else -> oldDevice.setImageResource(R.drawable.device_m)
+        }
 
         cancelSyncText.setOnClickListener {
             signInUIObserver.onCancelSync()

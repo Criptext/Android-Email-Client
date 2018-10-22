@@ -10,10 +10,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
-import com.criptext.mail.scenes.signin.data.LinkDeviceState
-import com.criptext.mail.scenes.signin.data.SignInDataSource
-import com.criptext.mail.scenes.signin.data.SignInRequest
-import com.criptext.mail.scenes.signin.data.SignInResult
+import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.ConnectionHolder
 import com.criptext.mail.scenes.signin.holders.LoginValidationHolder
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
@@ -156,7 +153,7 @@ class SignInSceneController(
                 model.linkDeviceState = LinkDeviceState.Auth()
                 val handler = Handler()
                 host.runOnUiThread(Runnable {
-                    handler.postDelayed(Runnable {
+                    handler.postDelayed({
                         if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
                             if (model.linkDeviceState is LinkDeviceState.Auth)
                                 dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
@@ -187,7 +184,7 @@ class SignInSceneController(
                 stopTempWebSocket()
                 handleNewWebSocket()
                 val handler = Handler()
-                handler.postDelayed(Runnable {
+                handler.postDelayed({
                     if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
                         if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
@@ -208,14 +205,13 @@ class SignInSceneController(
                     model.linkDeviceState = LinkDeviceState.WaitingForDownload()
                     model.key = result.key
                     model.dataAddress = result.dataAddress
-                    model.authorizerId = result.authorizerId
-                    dataSource.submitRequest(SignInRequest.LinkData(result.key, result.dataAddress,
-                            result.authorizerId))
+                    dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress,
+                            model.authorizerId))
                 }
             }
             is SignInResult.LinkDataReady.Failure -> {
                 val handler = Handler()
-                handler.postDelayed(Runnable {
+                handler.postDelayed({
                     if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
                         if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
@@ -249,21 +245,23 @@ class SignInSceneController(
                 if(model.linkDeviceState is LinkDeviceState.Auth) {
                     model.linkDeviceState = LinkDeviceState.Accepted()
                     val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
-                    model.name = result.name
-                    model.randomId = result.deviceId
+                    model.name = result.linkStatusData.name
+                    model.randomId = result.linkStatusData.deviceId
+                    model.authorizerId = result.linkStatusData.authorizerId
+                    model.authorizerType = result.linkStatusData.authorizerType
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
                     scene.initLayout(model.state, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
-                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = result.name,
+                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
-                            randomId = result.deviceId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
                 }
 
             }
             is SignInResult.LinkStatus.Waiting -> {
                 val handler = Handler()
                 host.runOnUiThread(Runnable {
-                    handler.postDelayed(Runnable {
+                    handler.postDelayed({
                         if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
                             if (model.linkDeviceState is LinkDeviceState.Auth)
                                 dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
@@ -369,20 +367,22 @@ class SignInSceneController(
             })
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
             if(model.linkDeviceState is LinkDeviceState.Auth) {
                 host.runOnUiThread(Runnable {
 
                     model.linkDeviceState = LinkDeviceState.Accepted()
                     val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                    model.name = linkStatusData.name
+                    model.randomId = linkStatusData.deviceId
+                    model.authorizerId = linkStatusData.authorizerId
+                    model.authorizerType = linkStatusData.authorizerType
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
                     scene.initLayout(model.state, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
-                    model.name = name
-                    model.randomId = deviceId
-                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = name,
+                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
                             username = currentState.username,
-                            randomId = deviceId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt))
                 })
             }
         }
@@ -425,7 +425,7 @@ class SignInSceneController(
             when(result){
                 is SignInResult.CreateSessionFromLink -> {
                     val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username)
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
                     scene.initLayout(model.state, this)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,

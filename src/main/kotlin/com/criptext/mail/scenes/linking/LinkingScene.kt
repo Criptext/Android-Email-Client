@@ -33,6 +33,8 @@ import android.view.Gravity
 import android.graphics.Paint
 import android.graphics.drawable.ShapeDrawable
 import android.view.ViewGroup
+import android.widget.ImageView
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIUtils
 
 
@@ -65,11 +67,16 @@ interface LinkingScene{
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
         private val keepWaitingDialog: KeepWaitingSyncAlertDialog = KeepWaitingSyncAlertDialog(context)
         private val retrySyncDialog: RetrySyncAlertDialogOldDevice = RetrySyncAlertDialogOldDevice(context)
+        private val newDevice: ImageView = view.findViewById(R.id.imageViewDevice2)
         private val timer = IntervalTimer()
 
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
             this.linkingUIObserver = linkingUIObserver
             textViewEmail.text = model.email
+            when (model.deviceType){
+                DeviceUtils.DeviceType.PC -> newDevice.setImageResource(R.drawable.device_pc)
+                else -> newDevice.setImageResource(R.drawable.device_m)
+            }
             cancelSyncText.setOnClickListener {
                 this.linkingUIObserver?.onCancelSync()
             }

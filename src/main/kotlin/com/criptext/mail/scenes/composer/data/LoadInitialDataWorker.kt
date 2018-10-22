@@ -47,7 +47,7 @@ class LoadInitialDataWorker(
                 listOf(fullEmail.from)
         }
 
-        val cc = if (replyToAll) fullEmail.cc else emptyList()
+        val cc = if (replyToAll) fullEmail.cc.filter { it.email != userEmailAddress } else emptyList()
 
         val subject = (if(fullEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
                                 fullEmail.email.subject

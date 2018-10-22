@@ -12,6 +12,7 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordRequest
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordResult
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -161,7 +162,7 @@ class ChangePasswordController(
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
                 host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid), null,
+                        resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -212,7 +213,7 @@ class ChangePasswordController(
             })
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 
