@@ -18,6 +18,7 @@ import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -259,7 +260,7 @@ class SettingsController(
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
                 host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid), null,
+                        resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -396,7 +397,7 @@ class SettingsController(
 
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 

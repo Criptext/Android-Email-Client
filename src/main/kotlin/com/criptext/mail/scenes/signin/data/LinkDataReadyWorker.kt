@@ -32,10 +32,9 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
         val result = Result.of { apiClient.isLinkDataReady(activeAccount.jwt) }
                 .flatMap { Result.of { Event.fromJSON(it) } }
                 .flatMap { Result.of {
-                    Pair(Triple(
+                    Pair(Pair(
                             JSONObject(it.params).getString("key"),
-                            JSONObject(it.params).getString("dataAddress"),
-                            JSONObject(it.params).getInt("authorizerId")
+                            JSONObject(it.params).getString("dataAddress")
                     ), it.cmd)
                 } }
                 .flatMap { Result.of { apiClient.acknowledgeEvents(listOf(it.second.toLong()), activeAccount.jwt)
@@ -45,9 +44,7 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
             is Result.Success ->{
 
                 SignInResult.LinkDataReady.Success(key = result.value.first,
-                        dataAddress = result.value.second,
-                        authorizerId = result.value.third
-                        )
+                        dataAddress = result.value.second)
             }
             is Result.Failure -> catchException(result.error)
         }

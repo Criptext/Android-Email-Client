@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import org.json.JSONObject
 
 
@@ -33,11 +34,11 @@ class LinkStatusWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkStatus>): SignInResult.LinkStatus? {
         val result =  Result.of { apiClient.getLinkStatus(jwt) }
+                .flatMap { Result.of { LinkStatusData.fromJSON(it) } }
 
         return when (result) {
             is Result.Success ->{
-                val json = JSONObject(result.value)
-                SignInResult.LinkStatus.Success(json.getString("name"), json.getInt("deviceId"))
+                SignInResult.LinkStatus.Success(result.value)
             }
             is Result.Failure -> catchException(result.error)
         }

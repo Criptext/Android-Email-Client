@@ -186,6 +186,7 @@ class CriptextNotification(val ctx: Context) {
         okAction.addCategory(Intent.CATEGORY_LAUNCHER)
         okAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         okAction.putExtra("randomId", randomId)
+        okAction.putExtra("deviceType", deviceType.ordinal)
         val okPendingIntent = PendingIntent.getActivity(ctx, 0, okAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 

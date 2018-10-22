@@ -12,6 +12,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.linking.data.LinkingRequest
 import com.criptext.mail.scenes.linking.data.LinkingResult
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -141,7 +142,7 @@ class LinkingController(
 
         }
 
-        override fun onDeviceLinkAuthAccept(deviceId: Int, name: String) {
+        override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
 
         }
 

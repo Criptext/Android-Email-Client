@@ -60,13 +60,13 @@ sealed class SignInResult {
     }
 
     sealed class LinkStatus: SignInResult() {
-        data class Success(val name: String, val deviceId: Int): LinkStatus()
+        data class Success(val linkStatusData: LinkStatusData): LinkStatus()
         class Waiting: LinkStatus()
         class Denied: LinkStatus()
     }
 
     sealed class LinkDataReady: SignInResult() {
-        data class Success(val key: String, val dataAddress: String, val authorizerId: Int): LinkDataReady()
+        data class Success(val key: String, val dataAddress: String): LinkDataReady()
         data class Failure(val message: UIMessage,
                            val exception: Exception): LinkDataReady()
     }

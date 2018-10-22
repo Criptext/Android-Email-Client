@@ -2,6 +2,7 @@ package com.criptext.mail.websocket
 
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.models.Email
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -51,7 +52,7 @@ interface WebSocketEventListener {
      * Invoked when the recovery email has been confirmed. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
-    fun onDeviceLinkAuthAccept(deviceId: Int, name: String)
+    fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData)
 
     /**
      * Invoked when the recovery email has been confirmed. Subscribers should try to

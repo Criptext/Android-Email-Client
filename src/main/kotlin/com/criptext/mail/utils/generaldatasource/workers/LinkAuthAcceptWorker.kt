@@ -37,7 +37,7 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
 
         return when (operation){
             is Result.Success -> {
-                GeneralResult.LinkAccept.Success(operation.value, untrustedDeviceInfo.deviceId)
+                GeneralResult.LinkAccept.Success(operation.value, untrustedDeviceInfo.deviceId, untrustedDeviceInfo.deviceType)
             }
             is Result.Failure -> {
                 GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))

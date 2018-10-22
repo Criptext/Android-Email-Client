@@ -5,6 +5,7 @@ import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.websocket.WebSocketClient
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -40,9 +41,8 @@ class TempWebSocketController(private val wsClient: TempWebSocketClient,
         val event = Event.fromJSON(text)
         when (event.cmd) {
             Event.Cmd.deviceAuthConfirmed -> {
-                val deviceId = JSONObject(event.params).getInt("deviceId")
-                val name = JSONObject(event.params).getString("name")
-                currentListener?.onDeviceLinkAuthAccept(deviceId, name)
+                val linkStatusData = LinkStatusData.fromJSON(event.params)
+                currentListener?.onDeviceLinkAuthAccept(linkStatusData)
             }
             Event.Cmd.deviceAuthDenied -> currentListener?.onDeviceLinkAuthDeny()
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,

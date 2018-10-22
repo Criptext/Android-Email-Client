@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin.holders
 
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.validation.ProgressButtonState
 
 /**
@@ -10,5 +11,5 @@ sealed class SignInLayoutState {
     data class LoginValidation(val username: String, val hasTwoFA: Boolean = false): SignInLayoutState()
     data class InputPassword(val username: String, val password: String,
                              val buttonState: ProgressButtonState, val hasTwoFA: Boolean = false): SignInLayoutState()
-    data class WaitForApproval(val username: String) : SignInLayoutState()
+    data class WaitForApproval(val username: String, val authorizerType: DeviceUtils.DeviceType) : SignInLayoutState()
 }

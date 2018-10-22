@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 import java.util.*
 
@@ -66,7 +67,7 @@ sealed class GeneralResult {
     }
 
     sealed class LinkAccept: GeneralResult() {
-        data class Success(val deviceId: Int, val uuid: String): LinkAccept()
+        data class Success(val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): LinkAccept()
         data class Failure(val message: UIMessage): LinkAccept()
     }
 
