@@ -12,7 +12,9 @@ sealed class PushResult {
         data class Success(
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
-                val isManual: Boolean): UpdateMailbox() {
+                val isManual: Boolean,
+                val pushData: Map<String, String>,
+                val shouldPostNotification: Boolean): UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel

@@ -68,7 +68,11 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao){
-        val operation = Result.of { emailDao.getEmailByMetadataKey(metadataKey) }
+        val operation = Result.of {
+            val email = emailDao.getEmailByMetadataKey(metadataKey)
+            println("EMAIL DATA: " + email.metadataKey)
+            email
+        }
                 .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false) } }
                 .flatMap { Result.of { apiClient.postOpenEvent(listOf(metadataKey)) } }
         when(operation){

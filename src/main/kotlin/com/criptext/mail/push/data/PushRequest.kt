@@ -7,7 +7,9 @@ sealed class PushRequest{
 
     data class UpdateMailbox(
             val label: Label,
-            val loadedThreadsCount: Int?): PushRequest()
+            val loadedThreadsCount: Int?,
+            val pushData: Map<String, String>,
+            val shouldPostNotification: Boolean): PushRequest()
 
     data class LinkAccept(val randomId: String, val notificationId: Int): PushRequest()
     data class LinkDenied(val randomId: String, val notificationId: Int): PushRequest()
