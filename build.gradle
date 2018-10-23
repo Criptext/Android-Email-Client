@@ -2,10 +2,10 @@ buildscript {
     ext.kotlin_version = '1.2.41'
 
     repositories {
-        jcenter()
         google()
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
+        jcenter()
     }
 
     dependencies {
@@ -17,12 +17,12 @@ buildscript {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     mavenLocal()
     google()
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.fabric.io/public' }
+    jcenter()
 }
 
 apply plugin: 'com.android.application'
@@ -40,8 +40,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 25
-        versionName "0.13.2"
+        versionCode 26
+        versionName "0.13.3"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

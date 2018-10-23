@@ -3,6 +3,8 @@ package com.criptext.mail.push
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.data.PushRequest
+import com.criptext.mail.push.data.PushResult
+import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
 
 /**
@@ -17,7 +19,18 @@ import com.criptext.mail.utils.DeviceUtils
  * Created by gabriel on 8/18/17.
  */
 
-class PushController(private val dataSource: PushDataSource, private val isPostNougat: Boolean) {
+class PushController(private val dataSource: PushDataSource, private val host: MessagingService,
+                     private val isPostNougat: Boolean) {
+
+    private val dataSourceListener = { result: PushResult ->
+        when (result) {
+            is PushResult.UpdateMailbox -> onUpdateMailbox(result)
+        }
+    }
+
+    init {
+        dataSource.listener = dataSourceListener
+    }
 
 
     private fun parseNewMailPush(pushData: Map<String, String>,
@@ -55,29 +68,37 @@ class PushController(private val dataSource: PushDataSource, private val isPostN
                 deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))
     }
 
-    fun parsePushPayload(pushData: Map<String, String>, shouldPostNotification: Boolean): Notifier? {
+    fun parsePushPayload(pushData: Map<String, String>, shouldPostNotification: Boolean) {
         if(shouldPostNotification)
-            dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null))
-        val action = pushData["action"]
-        if (action != null) {
-            val type = PushTypes.fromActionString(action)
-            return when (type) {
-                PushTypes.newMail -> {
-                    val data = parseNewMailPush(pushData, shouldPostNotification)
-                    NewMailNotifier.Single(data)
-                }
-                PushTypes.linkDevice -> {
-                    val data = parseLinkDevicePush(pushData, shouldPostNotification)
-                    LinkDeviceNotifier.Open(data, dataSource)
-                }
-                PushTypes.openActivity -> {
-                    val data = parseNewOpenMailbox(pushData, shouldPostNotification)
-                    OpenMailboxNotifier.Open(data)
-                }
+            dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+                    pushData, shouldPostNotification))
+    }
 
+    private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
+        when(result){
+            is PushResult.UpdateMailbox.Success -> {
+                val action = result.pushData["action"]
+                if (action != null) {
+                    val type = PushTypes.fromActionString(action)
+                    val notifier =  when (type) {
+                        PushTypes.newMail -> {
+                            val data = parseNewMailPush(result.pushData, result.shouldPostNotification)
+                            NewMailNotifier.Single(data)
+                        }
+                        PushTypes.linkDevice -> {
+                            val data = parseLinkDevicePush(result.pushData, result.shouldPostNotification)
+                            LinkDeviceNotifier.Open(data, dataSource)
+                        }
+                        PushTypes.openActivity -> {
+                            val data = parseNewOpenMailbox(result.pushData, result.shouldPostNotification)
+                            OpenMailboxNotifier.Open(data)
+                        }
+
+                    }
+                    host.notifyPushEvent(notifier)
+                }
             }
         }
-        return null
     }
 
 

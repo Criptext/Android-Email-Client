@@ -31,6 +31,8 @@ class UpdateMailboxWorker(
         activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int?,
         private val label: Label,
+        private val pushData: Map<String, String>,
+        private val shouldPostNotification: Boolean,
         httpClient: HttpClient,
         override val publishFn: (
                 PushResult.UpdateMailbox) -> Unit)
@@ -52,7 +54,9 @@ class UpdateMailboxWorker(
             PushResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
-                    mailboxThreads = null)
+                    mailboxThreads = null,
+                    shouldPostNotification = shouldPostNotification,
+                    pushData = pushData)
         else
             PushResult.UpdateMailbox.Failure(
                     mailboxLabel = label,
@@ -71,7 +75,9 @@ class UpdateMailboxWorker(
                 return PushResult.UpdateMailbox.Success(
                         mailboxLabel = label,
                         isManual = true,
-                        mailboxThreads = operationResult.value
+                        mailboxThreads = operationResult.value,
+                        pushData = pushData,
+                        shouldPostNotification = shouldPostNotification
                 )
             }
 

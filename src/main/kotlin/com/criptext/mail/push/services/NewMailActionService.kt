@@ -17,6 +17,7 @@ class NewMailActionService : IntentService("New Mail Action Service") {
     companion object {
         const val READ = "Read"
         const val TRASH = "Trash"
+        const val REPLY = "Reply"
     }
 
 

@@ -107,6 +107,14 @@ class CriptextNotification(val ctx: Context) {
         val trashPendingIntent = PendingIntent.getService(ctx, 0, trashAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
+        val replyAction = Intent(ctx, MailboxActivity::class.java)
+        replyAction.action = NewMailActionService.REPLY
+        replyAction.addCategory(Intent.CATEGORY_LAUNCHER)
+        replyAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        replyAction.putExtra("metadataKey", metadataKey)
+        val replyPendingAction = PendingIntent.getActivity(ctx, 0, replyAction,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
+
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_NEW_EMAIL)
             .setContentTitle(title)

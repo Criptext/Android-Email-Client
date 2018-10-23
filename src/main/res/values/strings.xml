@@ -59,7 +59,8 @@
 
     <!-- PUSH NEW EMAIL -->
     <string name="push_read">Mark as Read</string>
-    <string name="push_trash">Move to Trash</string>
+    <string name="push_trash">Delete</string>
+    <string name="push_reply">Reply</string>
     <string name="push_email_error_title">New Email</string>
     <string name="push_mail_error_message_read">Error on marking as read this email. Check your internet connection.</string>
     <string name="push_mail_error_message_trash">Error on moving this email to Trash. Check your internet connection.</string>
