@@ -117,6 +117,7 @@ class MailboxDataSource(
                     threadId = params.threadId,
                     mailboxLocalDB = mailboxLocalDB,
                     userEmail = params.userEmail,
+                    doReply = params.doReply,
                     publishFn = { result ->
                         flushResults(result)
                     })

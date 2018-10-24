@@ -83,7 +83,8 @@ sealed class MailboxResult {
 
     sealed class GetEmailPreview: MailboxResult() {
         data class Success(val emailPreview: EmailPreview,
-                           val isTrash: Boolean, val isSpam: Boolean): GetEmailPreview()
+                           val isTrash: Boolean, val isSpam: Boolean,
+                           val doReply: Boolean = false): GetEmailPreview()
         data class Failure(val message: String): GetEmailPreview()
     }
 

@@ -92,7 +92,7 @@
                         android:id="@+id/to"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxWidth="100dp"
+                        android:maxWidth="150dp"
                         android:text="To me, Allison, Daniel, Natasha"
                         android:layout_toEndOf="@+id/check"
                         android:layout_centerVertical="true"

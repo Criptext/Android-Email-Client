@@ -11,6 +11,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
@@ -28,7 +29,8 @@ import org.json.JSONObject
 class PushAPIRequestHandler(private val not: CriptextNotification,
                             private val manager: NotificationManager,
                             val activeAccount: ActiveAccount,
-                            val httpClient: HttpClient){
+                            val httpClient: HttpClient,
+                            private val storage: KeyValueStorage){
     private val apiClient = PushAPIClient(httpClient, activeAccount.jwt)
 
     private val isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -75,9 +77,11 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false) } }
                 .flatMap { Result.of { apiClient.postOpenEvent(listOf(metadataKey)) } }
         when(operation){
-            is Result.Success -> manager.cancel(notificationId)
+            is Result.Success -> {
+                handleNotificationCountForNewEmail(notificationId)
+            }
             is Result.Failure -> {
-                manager.cancel(notificationId)
+                handleNotificationCountForNewEmail(notificationId)
                 operation.error.printStackTrace()
                 val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_read))
@@ -121,15 +125,25 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 db.createLabelEmailRelations(emailLabels)
                 db.setTrashDate(emailIds)
 
-                manager.cancel(notificationId)
+                handleNotificationCountForNewEmail(notificationId)
             }
             is Result.Failure -> {
-                manager.cancel(notificationId)
+                handleNotificationCountForNewEmail(notificationId)
                 val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_trash))
                 val errorNot = not.createErrorNotification(data.title, data.body)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
+        }
+    }
+
+    private fun handleNotificationCountForNewEmail(notificationId: Int){
+        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        manager.cancel(notificationId)
+        if((notCount - 1) == 0) {
+            manager.cancel(CriptextNotification.INBOX_ID)
+        }else{
+            storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
         }
     }
 

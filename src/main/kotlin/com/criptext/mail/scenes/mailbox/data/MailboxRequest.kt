@@ -45,7 +45,7 @@ sealed class MailboxRequest{
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
 
-    data class GetEmailPreview(val threadId: String, val userEmail: String): MailboxRequest()
+    data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false): MailboxRequest()
 
     class EmptyTrash: MailboxRequest()
 

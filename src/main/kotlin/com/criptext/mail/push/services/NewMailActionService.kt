@@ -8,6 +8,7 @@ import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.data.PushAPIRequestHandler
 
@@ -27,7 +28,8 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val requestHandler = PushAPIRequestHandler(CriptextNotification(this), manager,
-                ActiveAccount.loadFromStorage(this)!!, HttpClient.Default())
+                ActiveAccount.loadFromStorage(this)!!, HttpClient.Default(),
+                KeyValueStorage.SharedPrefs(this))
         val db = AppDatabase.getAppDatabase(this)
 
         when {
