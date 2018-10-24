@@ -1,13 +1,9 @@
 package com.criptext.mail.db
 
-import android.content.Context
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.DateUtils
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
 import java.util.*
 
 /**

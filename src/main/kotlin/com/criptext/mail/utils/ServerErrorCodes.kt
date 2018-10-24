@@ -7,4 +7,5 @@ object ServerErrorCodes{
     const val MethodNotAllowed = 405
     const val TooManyRequests = 429
     const val TooManyDevices = 439
+    const val InternalServerError = 500
 }

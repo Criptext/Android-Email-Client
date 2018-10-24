@@ -7,15 +7,16 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.dao.EmailContactJoinDao
 import com.criptext.mail.db.dao.EmailDao
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.emaildetail.workers.*
-import com.criptext.mail.signal.SignalClient
 
 /**
  * Created by sebas on 3/12/18.
  */
 
 class EmailDetailDataSource(override val runner: WorkRunner,
+                            private val pendingDao: PendingEventDao,
                             private val emailDao: EmailDao,
                             private val emailContactDao: EmailContactJoinDao,
                             private val httpClient: HttpClient,
@@ -58,6 +59,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     })
 
             is EmailDetailRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadLabelsWorker(
+                    pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     db = emailDetailLocalDB,
@@ -71,6 +73,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
 
             is EmailDetailRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
                     db = emailDetailLocalDB,
+                    pendingDao = pendingDao,
                     threadId = params.threadId,
                     updateUnreadStatus = params.updateUnreadStatus,
                     currentLabel = params.currentLabel,
@@ -83,6 +86,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.MoveEmailThread -> MoveEmailThreadWorker(
                     chosenLabel = params.chosenLabel,
                     db = emailDetailLocalDB,
+                    pendingDao = pendingDao,
                     threadId = params.threadId,
                     currentLabel = params.currentLabel,
                     activeAccount = activeAccount,
@@ -94,6 +98,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.MoveEmail -> MoveEmailWorker(
                     chosenLabel = params.chosenLabel,
                     db = emailDetailLocalDB,
+                    pendingDao = pendingDao,
                     emailId = params.emailId,
                     currentLabel = params.currentLabel,
                     activeAccount = activeAccount,
@@ -106,6 +111,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.ReadEmails -> ReadEmailsWorker(
                     httpClient = httpClient,
                     dao = emailDao,
+                    pendingDao = pendingDao,
                     activeAccount = activeAccount,
                     emailIds = params.emailIds,
                     metadataKeys = params.metadataKeys,

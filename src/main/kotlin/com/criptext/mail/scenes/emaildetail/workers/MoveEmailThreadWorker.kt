@@ -2,11 +2,12 @@ package com.criptext.mail.scenes.emaildetail.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
@@ -16,8 +17,9 @@ import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
+import com.criptext.mail.utils.peerdata.PeerDeleteThreadData
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.mapError
 
 /**
  * Created by sebas on 04/05/18.
@@ -25,6 +27,7 @@ import com.github.kittinunf.result.mapError
 
 class MoveEmailThreadWorker(
         private val db: EmailDetailLocalDB,
+        private val pendingDao: PendingEventDao,
         private val chosenLabel: String?,
         private val threadId: String,
         private val currentLabel: Label,
@@ -35,6 +38,7 @@ class MoveEmailThreadWorker(
     : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
 
     private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
 
     override val canBeParallelized = false
 
@@ -65,14 +69,13 @@ class MoveEmailThreadWorker(
 
         if(chosenLabel == null){
             val result = Result.of {
-                apiClient.postThreadDeletedPermanentlyEvent(listOf(threadId))
-            }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                db.deleteRelationByEmailIds(emailIds = emailIds)
+                db.deleteThread(threadId)
+            }
 
             return when (result){
                 is Result.Success -> {
-                    //It means the threads will be deleted permanently
-                    db.deleteRelationByEmailIds(emailIds = emailIds)
-                    db.deleteThread(threadId)
+                    peerEventHandler.enqueueEvent(PeerDeleteThreadData(listOf(threadId)).toJSON())
                     EmailDetailResult.MoveEmailThread.Success(threadId)
                 }
                 is Result.Failure -> {
@@ -96,29 +99,30 @@ class MoveEmailThreadWorker(
                 .filter { (!systemLabels.contains(it)) }
                 .map { it.text }
 
-        val result = Result.of { apiClient.postThreadLabelChangedEvent(listOf(threadId),
-                peerRemovedLabels, peerSelectedLabels) }
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        val result = Result.of {
+            if(chosenLabel == Label.LABEL_TRASH){
+                db.setTrashDate(emailIds)
+            }
+            if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
+                //Mark as spam from trash
+                db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
+                        emailIds = emailIds)
+            }
+            val emailLabels = arrayListOf<EmailLabel>()
+            emailIds.flatMap{ emailId ->
+                selectedLabels.toIDs().map{ labelId ->
+                    emailLabels.add(EmailLabel(
+                            emailId = emailId,
+                            labelId = labelId))
+                }
+            }
+            db.createLabelEmailRelations(emailLabels)
+        }
 
         return when (result) {
             is Result.Success -> {
-                if(chosenLabel == Label.LABEL_TRASH){
-                    db.setTrashDate(emailIds)
-                }
-                if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
-                    //Mark as spam from trash
-                    db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
-                            emailIds = emailIds)
-                }
-                val emailLabels = arrayListOf<EmailLabel>()
-                emailIds.flatMap{ emailId ->
-                    selectedLabels.toIDs().map{ labelId ->
-                        emailLabels.add(EmailLabel(
-                                emailId = emailId,
-                                labelId = labelId))
-                    }
-                }
-                db.createLabelEmailRelations(emailLabels)
+                peerEventHandler.enqueueEvent(PeerChangeThreadLabelData(listOf(threadId),
+                        peerRemovedLabels, peerSelectedLabels).toJSON())
                 EmailDetailResult.MoveEmailThread.Success(threadId)
             }
             is Result.Failure -> {

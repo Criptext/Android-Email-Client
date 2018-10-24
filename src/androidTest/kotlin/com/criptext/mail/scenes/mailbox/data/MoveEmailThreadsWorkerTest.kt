@@ -98,6 +98,7 @@ class MoveEmailThreadsWorkerTest{
 
             MoveEmailThreadWorker(
                     db = mailboxLocalDB,
+                    pendingDao = db.pendingEventDao(),
                     currentLabel = currentLabel,
                     chosenLabel = chosenLabel,
                     selectedThreadIds = selectedThreadIds,

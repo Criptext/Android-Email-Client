@@ -25,6 +25,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import android.content.Intent
+import android.os.Handler
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
@@ -67,6 +68,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.GetPendingLinkRequest -> dataSourceController.getPendingLinkRequest(result)
+            is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
         }
     }
 
@@ -363,6 +365,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.showWelcomeDialog()
         }
 
+        dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
 
         return handleActivityMessage(activityMessage)
     }
@@ -553,6 +556,27 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.GetPendingLinkRequest.Success ->
                 {
                     scene.showLinkDeviceAuthConfirmation(resultData.deviceInfo)
+                }
+            }
+        }
+
+        fun onResendPeerEvents(resultData: MailboxResult.ResendPeerEvents){
+            when(resultData){
+                is MailboxResult.ResendPeerEvents.Success -> {
+                    if(!resultData.queueIsEmpty){
+                        val handler = Handler()
+                        handler.postDelayed({
+                            dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+                        }, TIME_TO_RESEND_EVENTS)
+                    }
+                }
+                is MailboxResult.ResendPeerEvents.Failure -> {
+                    if(!resultData.queueIsEmpty){
+                        val handler = Handler()
+                        handler.postDelayed({
+                            dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+                        }, TIME_TO_RESEND_EVENTS)
+                    }
                 }
             }
         }
@@ -749,6 +773,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.UpdateMailbox.Forbidden ->
                 scene.showConfirmPasswordDialog(observer)
         }
+        dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
     }
 
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
@@ -838,6 +863,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     companion object {
         val threadsPerPage = 20
         val minimumIntervalBetweenSyncs = 1000L
+        const val TIME_TO_RESEND_EVENTS = 5000L
     }
 
 }

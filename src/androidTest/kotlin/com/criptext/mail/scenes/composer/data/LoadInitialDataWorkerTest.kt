@@ -7,7 +7,6 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
@@ -66,8 +65,8 @@ class LoadInitialDataWorkerTest {
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean, fileKey: String?): Long {
-        val toCSV = to.map {it.email}.joinToString(separator = ",")
-        val metadata = EmailMetadata.DBColumns(to = listOf(toCSV),  cc = emptyList(),
+        val to = to.map {it.email}
+        val metadata = EmailMetadata.DBColumns(to = to,  cc = emptyList(),
                     bcc = emptyList(), fromContact = fromContact, messageId = "__MESSAGE_ID__",
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
                     subject = subject, unread = true, metadataKey = 100L,

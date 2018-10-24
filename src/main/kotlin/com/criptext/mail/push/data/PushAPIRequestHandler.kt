@@ -9,10 +9,13 @@ import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerAPIClient
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailDao
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
@@ -20,7 +23,11 @@ import com.criptext.mail.push.PushTypes
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.PeerQueue
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
+import com.criptext.mail.utils.peerdata.PeerOpenEmailData
+import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -31,6 +38,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                             val activeAccount: ActiveAccount,
                             val httpClient: HttpClient,
                             private val storage: KeyValueStorage){
+
     private val apiClient = PushAPIClient(httpClient, activeAccount.jwt)
 
     private val isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -69,13 +77,19 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         }
     }
 
-    fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao){
+    fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao){
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
         val operation = Result.of {
             val email = emailDao.getEmailByMetadataKey(metadataKey)
             email
         }
-                .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false) } }
-                .flatMap { Result.of { apiClient.postOpenEvent(listOf(metadataKey)) } }
+        .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false) } }
+
+
+
+        peerEventsApiHandler.enqueueEvent(PeerOpenEmailData(listOf(metadataKey)).toJSON())
+        peerEventsApiHandler.enqueueEvent(PeerReadEmailData(listOf(metadataKey), false).toJSON())
+
         when(operation){
             is Result.Success -> {
                 handleNotificationCountForNewEmail(notificationId)
@@ -91,7 +105,8 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         }
     }
 
-    fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao){
+    fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao){
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
         val selectedLabels = SelectedLabels()
@@ -102,29 +117,31 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         else
             emptyList()
 
-        val result = Result.of { emailDao.getEmailByMetadataKey(metadataKey) }
-                .flatMap {
-                    Result.of{apiClient.postEmailLabelChangedEvent(
-                    emailDao.getAllEmailsbyId(listOf(it.id)).map { it.metadataKey },
-                    peerRemoveLabels, selectedLabels.toList().map { it.text })}
+        val email = emailDao.getEmailByMetadataKey(metadataKey)
+
+        peerEventsApiHandler.enqueueEvent(
+                PeerChangeEmailLabelData(
+                emailDao.getAllEmailsbyId(listOf(email.id)).map { it.metadataKey },
+                peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON()
+        )
+
+        val result = Result.of {
+            val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey).id)
+
+            val emailLabels = arrayListOf<EmailLabel>()
+            emailIds.flatMap{ emailId ->
+                selectedLabels.toIDs().map{ labelId ->
+                    emailLabels.add(EmailLabel(
+                            emailId = emailId,
+                            labelId = labelId))
                 }
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+            }
+            db.createLabelEmailRelations(emailLabels)
+            db.setTrashDate(emailIds)
+        }
 
         return when (result) {
             is Result.Success -> {
-                val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey).id)
-
-                val emailLabels = arrayListOf<EmailLabel>()
-                emailIds.flatMap{ emailId ->
-                    selectedLabels.toIDs().map{ labelId ->
-                        emailLabels.add(EmailLabel(
-                                emailId = emailId,
-                                labelId = labelId))
-                    }
-                }
-                db.createLabelEmailRelations(emailLabels)
-                db.setTrashDate(emailIds)
-
                 handleNotificationCountForNewEmail(notificationId)
             }
             is Result.Failure -> {

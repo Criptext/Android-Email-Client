@@ -2,23 +2,28 @@ package com.criptext.mail.scenes.emaildetail.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailDao
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerOpenEmailData
+import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
 
 /**
  * Created by gabriel on 6/27/18.
  */
 class ReadEmailsWorker(private val dao: EmailDao,
+                       private val pendingDao: PendingEventDao,
                        httpClient: HttpClient,
                        activeAccount: ActiveAccount,
                        override val publishFn: (EmailDetailResult.ReadEmails) -> Unit,
@@ -28,6 +33,7 @@ class ReadEmailsWorker(private val dao: EmailDao,
 
     override val canBeParallelized = false
     private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
 
 
     override fun catchException(ex: Exception): EmailDetailResult.ReadEmails {
@@ -40,12 +46,12 @@ class ReadEmailsWorker(private val dao: EmailDao,
         val unreadEmails = emails.filter { it.unread }
         if(unreadEmails.isEmpty())
             return Result.Failure(EventHelper.NothingNewException())
-        return Result.of { apiClient.postOpenEvent(emails.map { it.metadataKey }) }
-                .flatMap { Result.of {
+        peerEventHandler.enqueueEvent(PeerOpenEmailData(emails.map { it.metadataKey }).toJSON())
+        return Result.of {
                     dao.toggleCheckingRead(ids = unreadEmails.map { it.id },
                             unread = false)
                     unreadEmails.size
-                } }
+        }
     }
 
     private fun peerOpenEmails(): Result<Int, Exception>{
@@ -53,12 +59,14 @@ class ReadEmailsWorker(private val dao: EmailDao,
         val peerUnreadEmails = peerEmails.filter { it.unread }
         if(peerUnreadEmails.isEmpty())
             return Result.Failure(EventHelper.NothingNewException())
-        return Result.of { apiClient.postEmailReadChangedEvent(peerUnreadEmails.map { it.metadataKey },
-                false) }
-                .flatMap { Result.of { dao.toggleCheckingRead(ids = peerUnreadEmails.map { it.id },
+        val metadataKeys = peerUnreadEmails
+                .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
+                .map { it.metadataKey }
+        peerEventHandler.enqueueEvent(PeerReadEmailData(metadataKeys,false).toJSON())
+        return Result.of { dao.toggleCheckingRead(ids = peerUnreadEmails.map { it.id },
                             unread = false)
                     peerUnreadEmails.size
-                } }
+                }
 
     }
 

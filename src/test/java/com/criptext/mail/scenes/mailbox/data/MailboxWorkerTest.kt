@@ -12,7 +12,6 @@ import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.runTransactionsAsTheyAreInvoked
 import io.mockk.mockk
-import org.amshove.kluent.mock
 import org.junit.Before
 
 /**
@@ -24,6 +23,7 @@ open class MailboxWorkerTest {
     protected lateinit var signalClient: SignalClient
     protected lateinit var httpClient: HttpClient
     protected lateinit var emailDao: EmailDao
+    protected lateinit var pendingDao: PendingEventDao
     private lateinit var feedItemDao: FeedItemDao
     private lateinit var contactDao: ContactDao
     private lateinit var accountDao: AccountDao
@@ -61,6 +61,7 @@ open class MailboxWorkerTest {
         emailLabelDao = mockk()
         emailContactDao = mockk()
         accountDao = mockk()
+        pendingDao = mockk()
         dao = mockk(relaxed = true)
         dao.runTransactionsAsTheyAreInvoked()
         eventDB = mockk(relaxed = true)
@@ -74,7 +75,7 @@ open class MailboxWorkerTest {
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
                 fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao,
-                eventLocalDB = eventDB, storage = storage)
+                eventLocalDB = eventDB, storage = storage, pendingDao = pendingDao)
         dataSource.listener = { result -> lastResult = result }
     }
 

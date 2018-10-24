@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 interface HttpClient {
     fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
     fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
-    fun post(path: String, authToken: String?, body: JSONObject, apiVersion: String = "1.0.0"): String
+    fun post(path: String, authToken: String?, body: JSONObject): String
     fun put(path: String, authToken: String?, body: JSONObject): String
     fun get(path: String, authToken: String?): String
     fun delete(path: String, authToken: String?, body: JSONObject): String
@@ -74,11 +74,11 @@ interface HttpClient {
                     .build()
         }
 
-        private fun postJSON(url: String, authToken: String?, json: JSONObject, apiVersion: String): Request {
+        private fun postJSON(url: String, authToken: String?, json: JSONObject): Request {
             val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
-                    .addApiVersionHeader(apiVersion)
+                    .addApiVersionHeader()
                     .url(url)
                     .post(body)
                     .build()
@@ -196,8 +196,8 @@ interface HttpClient {
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun post(path: String, authToken: String?, body: JSONObject, apiVersion: String): String {
-            val request = postJSON(baseUrl + path, authToken, body, apiVersion)
+        override fun post(path: String, authToken: String?, body: JSONObject): String {
+            val request = postJSON(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 
@@ -233,7 +233,7 @@ interface HttpClient {
         }
 
         companion object {
-            const val API_VERSION = "1.0"
+            const val API_VERSION = "3.0.0"
         }
     }
 }

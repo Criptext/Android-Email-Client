@@ -22,6 +22,7 @@ class MailboxDataSource(
         private val storage: KeyValueStorage,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
+        private val pendingDao: PendingEventDao,
         private val accountDao: AccountDao,
         private val emailDao: EmailDao,
         private val fileDao: FileDao,
@@ -74,6 +75,7 @@ class MailboxDataSource(
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(
                     db = mailboxLocalDB,
+                    pendingDao = pendingDao,
                     selectedThreadIds = params.selectedThreadIds,
                     selectedLabels = params.selectedLabels,
                     currentLabel = params.currentLabel,
@@ -86,6 +88,7 @@ class MailboxDataSource(
 
             is MailboxRequest.MoveEmailThread -> MoveEmailThreadWorker(
                     chosenLabel = params.chosenLabel,
+                    pendingDao = pendingDao,
                     db = mailboxLocalDB,
                     selectedThreadIds = params.selectedThreadIds,
                     currentLabel = params.currentLabel,
@@ -103,6 +106,7 @@ class MailboxDataSource(
             )
             is MailboxRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
                     db = mailboxLocalDB,
+                    pendingDao = pendingDao,
                     threadIds = params.threadIds,
                     updateUnreadStatus = params.updateUnreadStatus,
                     currentLabel = params.currentLabel,
@@ -123,6 +127,7 @@ class MailboxDataSource(
                     })
             is MailboxRequest.EmptyTrash -> EmptyTrashWorker(
                     db = mailboxLocalDB,
+                    pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     publishFn = { result ->
@@ -138,6 +143,13 @@ class MailboxDataSource(
                         flushResults(result)
                     })
             is MailboxRequest.GetPendingLinkRequest -> GetPendingLinkRequestWorker(
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+            is MailboxRequest.ResendPeerEvents -> ResendPeerEventsWorker(
+                    pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     publishFn = { result ->

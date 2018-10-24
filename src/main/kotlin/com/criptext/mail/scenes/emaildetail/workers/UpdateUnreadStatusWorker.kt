@@ -2,25 +2,20 @@ package com.criptext.mail.scenes.emaildetail.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EmailDetailLocalDB
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
-import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerThreadReadData
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
-import com.github.kittinunf.result.mapError
-import org.json.JSONObject
 
 /**
  * Created by danieltigse on 4/18/18.
@@ -28,6 +23,7 @@ import org.json.JSONObject
 
 class UpdateUnreadStatusWorker(
         private val db: EmailDetailLocalDB,
+        private val pendingDao: PendingEventDao,
         private val threadId: String,
         private val updateUnreadStatus: Boolean,
         httpClient: HttpClient,
@@ -37,6 +33,8 @@ class UpdateUnreadStatusWorker(
     : BackgroundWorker<EmailDetailResult.UpdateUnreadStatus> {
 
     private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient,
+            activeAccount.jwt, pendingDao)
 
     override val canBeParallelized = false
 
@@ -63,11 +61,10 @@ class UpdateUnreadStatusWorker(
 
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateUnreadStatus>): EmailDetailResult.UpdateUnreadStatus? {
-        val result = Result.of { apiClient.postThreadReadChangedEvent(listOf(threadId),
-                updateUnreadStatus)}
-                .flatMap { updateUnreadEmailStatus()}
+        val result =  updateUnreadEmailStatus()
         return when (result) {
             is Result.Success -> {
+                peerEventHandler.enqueueEvent(PeerThreadReadData(listOf(threadId), updateUnreadStatus).toJSON())
                 EmailDetailResult.UpdateUnreadStatus.Success(threadId, updateUnreadStatus)
             }
             is Result.Failure -> {

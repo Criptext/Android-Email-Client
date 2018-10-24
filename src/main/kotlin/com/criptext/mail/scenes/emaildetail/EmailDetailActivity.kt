@@ -64,6 +64,7 @@ class  EmailDetailActivity: BaseActivity() {
                 keyboard = KeyboardManager(this),
                 generalDataSource = remoteChangeDataSource,
                 dataSource = EmailDetailDataSource(
+                        pendingDao = appDB.pendingEventDao(),
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
                         emailContactDao = appDB.emailContactDao(),

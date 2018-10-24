@@ -80,6 +80,7 @@ class EmptyTrashWorkerTest{
                     db = mailboxLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    pendingDao = db.pendingEventDao(),
                     publishFn = {})
 
     @After

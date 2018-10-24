@@ -2,20 +2,15 @@ package com.criptext.mail.utils
 
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.mapError
-import org.json.JSONArray
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.IOException
 
@@ -91,7 +86,7 @@ class EventHelper(private val db: EventLocalDB,
         val isThreadReadStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailThreadReadStatusUpdate }
         val toIdAndMetadataPair: (Event) -> Pair<Long, PeerReadThreadStatusUpdate> =
                 { Pair( it.rowid, PeerReadThreadStatusUpdate.fromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Pair<Long, PeerReadThreadStatusUpdate>) -> Boolean =
+        val threadReadStatusChangedSuccessfully: (Pair<Long, PeerReadThreadStatusUpdate>) -> Boolean =
                 { (_, metadata) ->
                     try {
                         updateThreadReadStatus(metadata)
@@ -99,7 +94,7 @@ class EventHelper(private val db: EventLocalDB,
                         true
                     }
                     catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerReadThreadStatusUpdate>) -> Long =
@@ -108,7 +103,7 @@ class EventHelper(private val db: EventLocalDB,
         val eventIdsToAcknowledge = events
                 .filter(isThreadReadStatusChangedEvent)
                 .map(toIdAndMetadataPair)
-                .filter(emailInsertedSuccessfully)
+                .filter(threadReadStatusChangedSuccessfully)
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
@@ -121,7 +116,7 @@ class EventHelper(private val db: EventLocalDB,
         val isEmailReadStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailReadStatusUpdate }
         val toIdAndMetadataPair: (Event) -> Pair<Long, PeerReadEmailStatusUpdate> =
                 { Pair( it.rowid, PeerReadEmailStatusUpdate.fromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Pair<Long, PeerReadEmailStatusUpdate>) -> Boolean =
+        val emailReadSuccessfully: (Pair<Long, PeerReadEmailStatusUpdate>) -> Boolean =
                 { (_, metadata) ->
                     try {
                         updateEmailReadStatus(metadata)
@@ -129,7 +124,7 @@ class EventHelper(private val db: EventLocalDB,
                         true
                     }
                     catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerReadEmailStatusUpdate>) -> Long =
@@ -138,7 +133,7 @@ class EventHelper(private val db: EventLocalDB,
         val eventIdsToAcknowledge = events
                 .filter(isEmailReadStatusChangedEvent)
                 .map(toIdAndMetadataPair)
-                .filter(emailInsertedSuccessfully)
+                .filter(emailReadSuccessfully)
                 .map(toEventId)
 
         if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
@@ -216,7 +211,7 @@ class EventHelper(private val db: EventLocalDB,
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerEmailLabelsChangedStatusUpdate>) -> Long =
@@ -245,7 +240,7 @@ class EventHelper(private val db: EventLocalDB,
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerThreadLabelsChangedStatusUpdate>) -> Long =
@@ -303,7 +298,7 @@ class EventHelper(private val db: EventLocalDB,
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerThreadDeletedStatusUpdate>) -> Long =
@@ -332,7 +327,7 @@ class EventHelper(private val db: EventLocalDB,
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerLabelCreatedStatusUpdate>) -> Long =

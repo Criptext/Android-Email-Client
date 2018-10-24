@@ -56,7 +56,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
             UpdateEmailThreadsLabelsWorker( activeAccount = activeAccount,
                     publishFn = {}, httpClient = httpClient, shouldRemoveCurrentLabel = false,
                     selectedThreadIds = selectedThreadIds, currentLabel = currentLabel, db = mailboxLocalDB,
-                    selectedLabels = selectedLabels)
+                    selectedLabels = selectedLabels, pendingDao = db.pendingEventDao())
 
     @Test
     fun when_marked_as_star_should_send_only_star_to_added_labels_and_nothing_on_removed() {
@@ -84,7 +84,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
                 ExpectedRequest(
                         expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
                         method = "POST", path = "/event/peers",
-                        assertBodyFn = {it shouldEqual """{"cmd":304,"params":{"threadIds":["${selectedThread[0]}"],"labelsRemoved":[],"labelsAdded":["Starred"]}}"""})
+                        assertBodyFn = {it shouldEqual "{\"peerEvents\":[\"{\"cmd\":304,\"params\":{\"threadIds\":[\"${selectedThread[0]}\"],\"labelsRemoved\":[],\"labelsAdded\":[\"Starred\"]}}\"]}"})
         ))
 
     }

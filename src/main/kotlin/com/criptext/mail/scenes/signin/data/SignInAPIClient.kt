@@ -43,7 +43,7 @@ class SignInAPIClient(private val httpClient: HttpClient) {
         val jsonPut = JSONObject()
         jsonPut.put("targetUsername", recipientId)
 
-        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut, apiVersion = "2.0.0")
+        return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
     }
 
     fun getLinkStatus(jwt: String): String{

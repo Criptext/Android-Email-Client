@@ -3,11 +3,13 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -19,6 +21,7 @@ import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -27,6 +30,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 class UpdateMailboxWorker(
         signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
+        val pendingEventDao: PendingEventDao,
         activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
         private val label: Label,
@@ -42,6 +46,7 @@ class UpdateMailboxWorker(
     private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
+    private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingEventDao)
 
     override fun catchException(ex: Exception): GeneralResult.UpdateMailbox =
         if(ex is ServerErrorException) {
@@ -94,9 +99,8 @@ class UpdateMailboxWorker(
     private fun checkTrashDates(){
         val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails()
         if(emailIds.isNotEmpty()){
-            Result.of { apiClient.postEmailDeleteEvent(emailIds) }
-                    .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                    .flatMap { Result.of { dbEvents.updateDeleteEmailPermanently(emailIds) } }
+            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds) }
+            peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(emailIds).toJSON())
         }
     }
 

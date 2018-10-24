@@ -2,20 +2,20 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.mapError
 
 /**
  * Created by sebas on 04/05/18.
@@ -23,6 +23,7 @@ import com.github.kittinunf.result.mapError
 
 class UpdateEmailThreadsLabelsWorker(
         private val db: MailboxLocalDB,
+        private val pendingDao: PendingEventDao,
         private val selectedLabels: SelectedLabels,
         private val selectedThreadIds: List<String>,
         private val currentLabel: Label,
@@ -37,6 +38,7 @@ class UpdateEmailThreadsLabelsWorker(
     override val canBeParallelized = false
 
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
 
     override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations =
             if(ex is ServerErrorException) {
@@ -105,24 +107,16 @@ class UpdateEmailThreadsLabelsWorker(
                     peerRemovedLabels.add(Label.LABEL_SPAM)
                 }else
                     peerRemovedLabels.add(currentLabel.text)
-                Result.of {
-                    apiClient.postThreadLabelChangedEvent(selectedThreadIds, peerRemovedLabels,
-                            peerSelectedLabels)}
-                        .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                        .flatMap { Result.of { removeCurrentLabelFromEmails(emailIds)} }
-
+                Result.of { removeCurrentLabelFromEmails(emailIds)}
             }else {
-                Result.of {
-                    apiClient.postThreadLabelChangedEvent(selectedThreadIds, peerRemovedLabels,
-                            peerSelectedLabels)}
-                        .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                        .flatMap { Result.of{updateLabelEmailRelations(emailIds)} }
-
+                Result.of{ updateLabelEmailRelations(emailIds) }
             }
 
         return when(result){
             is Result.Success -> {
-
+                peerEventHandler.enqueueEvent(
+                        PeerChangeThreadLabelData(selectedThreadIds, peerRemovedLabels,
+                        peerSelectedLabels).toJSON())
                 MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
             }
             is Result.Failure -> {

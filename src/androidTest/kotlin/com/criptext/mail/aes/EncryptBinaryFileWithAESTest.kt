@@ -69,7 +69,11 @@ class EncryptBinaryFileWithAESTest {
 
     @After
     fun teardown(){
-        constantFile.delete()
+        try {
+            constantFile.delete()
+        }catch (ex: Exception){
+
+        }
     }
 
     companion object {
