@@ -10,6 +10,7 @@ import com.criptext.mail.email_preview.EmailPreview
 
 class EmailDetailParams(val threadId: String,
                         val currentLabel: Label,
-                        val threadPreview: EmailPreview): SceneParams() {
+                        val threadPreview: EmailPreview,
+                        val doReply: Boolean = false): SceneParams() {
     override val activityClass = EmailDetailActivity::class.java
 }

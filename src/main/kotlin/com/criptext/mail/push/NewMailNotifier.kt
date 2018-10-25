@@ -18,7 +18,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = CriptextNotification(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_INBOX)
+        cn.notify(notification.first, notification.second, CriptextNotification.ACTION_INBOX)
     }
 
     private fun postHeaderNotification(ctx: Context){
@@ -29,7 +29,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
                 CriptextNotification.ACTION_INBOX, pendingIntent)
     }
 
-    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Notification
+    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
 
     override fun notifyPushEvent(ctx: Context) {
         if (data.shouldPostNotification){
@@ -42,13 +42,15 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
 
     class Single(data: PushData.NewMail): NewMailNotifier(data) {
 
-        override fun buildNotification(ctx: Context, cn: CriptextNotification): Notification {
+        override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 data.threadId, data.isPostNougat)
 
-            return cn.createNewMailNotification(clickIntent = pendingIntent,
-                    title = data.title, body = data.body, metadataKey = data.metadataKey ?: -1,
-                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
+            val notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode()
+
+            return Pair(notificationId, cn.createNewMailNotification(clickIntent = pendingIntent, threadId = data.threadId,
+                    title = data.title, body = data.body, metadataKey = data.metadataKey,
+                    notificationId = notificationId))
 
         }
     }

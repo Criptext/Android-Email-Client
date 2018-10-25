@@ -16,13 +16,15 @@ interface KeyValueStorage {
     fun putStringSet(key: StringKey, value: MutableSet<String>)
     fun getLong(key: StringKey, default: Long): Long
     fun putLong(key: StringKey, value: Long)
+    fun getInt(key: StringKey, default: Int): Int
+    fun putInt(key: StringKey, value: Int)
     fun clearAll()
 
     enum class StringKey(val stringKey: String) {
         ActiveAccount("ActiveAccount"), SignInSession("SignInSession"),
         SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
         LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent"),
-        LastLoggedUser("LastLoggedUser")
+        LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {
@@ -56,6 +58,14 @@ interface KeyValueStorage {
 
         override fun putLong(key: StringKey, value: Long) {
             withApply { editor -> editor.putLong(key.stringKey, value) }
+        }
+
+        override fun getInt(key: StringKey, default: Int): Int {
+            return prefs.getInt(key.stringKey, default)
+        }
+
+        override fun putInt(key: StringKey, value: Int) {
+            withApply { editor -> editor.putInt(key.stringKey, value) }
         }
 
         override fun clearAll() {

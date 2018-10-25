@@ -13,7 +13,8 @@ import com.criptext.mail.utils.virtuallist.VirtualList
 
 class EmailDetailSceneModel(val threadId: String,
                             val currentLabel: Label,
-                            var threadPreview: EmailPreview) : SceneModel {
+                            var threadPreview: EmailPreview,
+                            val doReply: Boolean = false) : SceneModel {
     val emails = ArrayList<FullEmail>()
     val fileDetails = HashMap<Long, List<FileDetail>>()
 }

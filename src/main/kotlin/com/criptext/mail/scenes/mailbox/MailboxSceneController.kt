@@ -28,6 +28,7 @@ import android.content.Intent
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
+import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 
 
@@ -339,6 +340,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                     val untrustedDeviceInfo = UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
                             "", "", extrasDevice.deviceType)
                     generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+                }
+                NewMailActionService.REPLY -> {
+                    val extrasMail = extras as IntentExtrasData.IntentExtrasReply
+                    dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
+                            userEmail = activeAccount.userEmail, doReply = true))
                 }
             }
         }
@@ -688,7 +694,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     reloadMailboxThreads()
                     feedController.reloadFeeds()
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
-                            currentLabel = model.selectedLabel, threadPreview = result.emailPreview), true)
+                            currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
+                            doReply = result.doReply), true)
                 }
                 is MailboxResult.GetEmailPreview.Failure -> {
                     dataSourceController.updateMailbox(model.selectedLabel)

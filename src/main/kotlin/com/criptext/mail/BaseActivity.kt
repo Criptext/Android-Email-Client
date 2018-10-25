@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
+import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
@@ -164,7 +165,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is SignInParams -> SignInSceneModel()
             is MailboxParams -> MailboxSceneModel(params.showWelcome)
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
-                    params.currentLabel, params.threadPreview)
+                    params.currentLabel, params.threadPreview, params.doReply)
             is ComposerParams -> ComposerModel(params.type)
             is SettingsParams -> SettingsModel()
             is SignatureParams -> SignatureModel(params.recipientId)
@@ -222,6 +223,16 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                         }
                     }
                     return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType)
+                }
+                NewMailActionService.REPLY -> {
+                    val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
+                    val metadataKey = intent.extras.getLong("metadataKey")
+                    if(intent.extras != null) {
+                        for (key in intent.extras.keySet()){
+                            intent.removeExtra(key)
+                        }
+                    }
+                    return IntentExtrasData.IntentExtrasReply(intent.action, threadId, metadataKey)
                 }
             }
 

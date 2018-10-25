@@ -13,10 +13,12 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import com.criptext.mail.R
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
+import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
@@ -27,6 +29,8 @@ import com.criptext.mail.utils.getLocalizedUIMessage
  * Created by gabriel on 7/25/17.
  */
 class CriptextNotification(val ctx: Context) {
+
+    private val storage = KeyValueStorage.SharedPrefs(ctx)
 
     companion object {
         //Actions for Notifications
@@ -89,22 +93,26 @@ class CriptextNotification(val ctx: Context) {
         return notBuild
     }
 
-    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String, metadataKey: Long,
+    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String,
+                                  metadataKey: Long, threadId: String,
                                   notificationId: Int)
             : Notification {
 
+        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount + 1)
+
         val readAction = Intent(ctx, NewMailActionService::class.java)
         readAction.action = NewMailActionService.READ
-        readAction.putExtra("notificationId", INBOX_ID)
+        readAction.putExtra("notificationId", notificationId)
         readAction.putExtra("metadataKey", metadataKey)
-        val readPendingIntent = PendingIntent.getService(ctx, 0, readAction,
+        val readPendingIntent = PendingIntent.getService(ctx, notificationId, readAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val trashAction = Intent(ctx, NewMailActionService::class.java)
         trashAction.action = NewMailActionService.TRASH
-        trashAction.putExtra("notificationId", INBOX_ID)
+        trashAction.putExtra("notificationId", notificationId)
         trashAction.putExtra("metadataKey", metadataKey)
-        val trashPendingIntent = PendingIntent.getService(ctx, 0, trashAction,
+        val trashPendingIntent = PendingIntent.getService(ctx, notificationId, trashAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val replyAction = Intent(ctx, MailboxActivity::class.java)
@@ -112,6 +120,7 @@ class CriptextNotification(val ctx: Context) {
         replyAction.addCategory(Intent.CATEGORY_LAUNCHER)
         replyAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         replyAction.putExtra("metadataKey", metadataKey)
+        replyAction.putExtra(MessagingInstance.THREAD_ID, threadId)
         val replyPendingAction = PendingIntent.getActivity(ctx, 0, replyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
@@ -126,8 +135,9 @@ class CriptextNotification(val ctx: Context) {
             .setGroup(ACTION_INBOX)
             .setGroupSummary(false)
             .setSmallIcon(R.drawable.push_icon)
-            .addAction(R.drawable.check, ctx.getString(R.string.push_read), readPendingIntent)
-            .addAction(R.drawable.x, ctx.getString(R.string.push_trash), trashPendingIntent)
+            .addAction(R.drawable.mail_opened, ctx.getString(R.string.push_read), readPendingIntent)
+            .addAction(R.drawable.trash, ctx.getString(R.string.push_trash), trashPendingIntent)
+            .addAction(R.drawable.reply, ctx.getString(R.string.push_reply), replyPendingAction)
             .setLargeIcon(Utility.getBitmapFromText(
                     title,
                     250,

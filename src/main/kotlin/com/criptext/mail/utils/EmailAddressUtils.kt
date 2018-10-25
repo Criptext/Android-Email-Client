@@ -35,7 +35,7 @@ object EmailAddressUtils {
                     leftBracket > 0 -> contactAddress.substring(0, leftBracket - 1)
                     contactAddress.contains("@") -> contactAddress.split("@")[0]
                     else -> contactAddress
-                }
+                }.removeSurrounding("'")
         return realName.replace("\"", "")
                 .replace("<", "")
                 .replace(">", "")

@@ -6,6 +6,13 @@ import com.criptext.mail.db.KeyValueStorage
  * Created by gabriel on 3/8/18.
  */
 class MockedKeyValueStorage: KeyValueStorage {
+    override fun getInt(key: KeyValueStorage.StringKey, default: Int): Int {
+        return intMap[key.stringKey] ?: default
+    }
+
+    override fun putInt(key: KeyValueStorage.StringKey, value: Int) {
+        intMap[key.stringKey] = value
+    }
 
     override fun getLong(key: KeyValueStorage.StringKey, default: Long): Long {
         return longMap[key.stringKey] ?: default
@@ -31,6 +38,7 @@ class MockedKeyValueStorage: KeyValueStorage {
     private val stringSetMap = HashMap<String, MutableSet<String>>()
     private val stringMap = HashMap<String, String>()
     private val longMap = HashMap<String, Long>()
+    private val intMap = HashMap<String, Int>()
     override fun getString(key: KeyValueStorage.StringKey, default: String): String {
         return stringMap[key.stringKey] ?: default
     }

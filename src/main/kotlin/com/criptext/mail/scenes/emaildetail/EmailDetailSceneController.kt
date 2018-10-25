@@ -72,6 +72,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
             is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
+            is EmailDetailResult.ReadEmails -> onReadEmails(result)
         }
     }
 
@@ -279,6 +280,16 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            }
+        }
+    }
+
+    private fun onReadEmails(result: EmailDetailResult.ReadEmails){
+        when(result){
+            is EmailDetailResult.ReadEmails.Success -> {
+                if(model.doReply){
+                    emailHolderEventListener.onReplyBtnClicked()
+                }
             }
         }
     }

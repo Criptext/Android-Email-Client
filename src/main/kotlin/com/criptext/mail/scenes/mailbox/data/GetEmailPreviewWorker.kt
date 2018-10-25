@@ -5,6 +5,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.utils.EmailThreadValidator
 import com.github.kittinunf.result.Result
 
@@ -15,6 +16,7 @@ import com.github.kittinunf.result.Result
 
 class GetEmailPreviewWorker(private val threadId:String,
                             private val mailboxLocalDB: MailboxLocalDB,
+                            private val doReply: Boolean = false,
                             private val userEmail: String,
                             override val publishFn: (MailboxResult.GetEmailPreview) -> Unit)
     : BackgroundWorker<MailboxResult.GetEmailPreview> {
@@ -38,7 +40,8 @@ class GetEmailPreviewWorker(private val threadId:String,
                 MailboxResult.GetEmailPreview.Success(
                         emailPreview = EmailPreview.fromEmailThread(emailThreadResult.value),
                         isTrash = EmailThreadValidator.isLabelInList(labels, Label.LABEL_TRASH),
-                        isSpam = EmailThreadValidator.isLabelInList(labels, Label.LABEL_SPAM))
+                        isSpam = EmailThreadValidator.isLabelInList(labels, Label.LABEL_SPAM),
+                        doReply = doReply)
             }
             is Result.Failure -> {
                 catchException(emailThreadResult.error)
