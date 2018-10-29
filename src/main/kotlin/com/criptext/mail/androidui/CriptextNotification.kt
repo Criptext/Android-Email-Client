@@ -137,7 +137,7 @@ class CriptextNotification(val ctx: Context) {
             .setSmallIcon(R.drawable.push_icon)
             .addAction(R.drawable.mail_opened, ctx.getString(R.string.push_read), readPendingIntent)
             .addAction(R.drawable.trash, ctx.getString(R.string.push_trash), trashPendingIntent)
-            .addAction(R.drawable.reply, ctx.getString(R.string.push_reply), replyPendingAction)
+            //.addAction(R.drawable.reply, ctx.getString(R.string.push_reply), replyPendingAction)
             .setLargeIcon(Utility.getBitmapFromText(
                     title,
                     250,

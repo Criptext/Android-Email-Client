@@ -2,12 +2,39 @@
 
 ## [Unreleased](https://github.com/criptext/Android-Email-Client/tree/HEAD)
 
-[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.0...HEAD)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/0.13.2...HEAD)
+
+**Closed issues:**
+
+- Have a single global data source to avoid repeating code in the DB and API requirements on the different controllers. [\#232](https://github.com/Criptext/Android-Email-Client/issues/232)
+- Load email even if the images haven't loaded yet [\#202](https://github.com/Criptext/Android-Email-Client/issues/202)
+- Open app when you tap on a grouped notification [\#201](https://github.com/Criptext/Android-Email-Client/issues/201)
+
+**Merged pull requests:**
+
+- Reply on push notification and bug fixes. [\#299](https://github.com/Criptext/Android-Email-Client/pull/299) ([jorgeblacio](https://github.com/jorgeblacio))
+- Made it so that the notification only appear after the update has been processed. [\#298](https://github.com/Criptext/Android-Email-Client/pull/298) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added device types for connection holder and some other tweaks. [\#296](https://github.com/Criptext/Android-Email-Client/pull/296) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [0.13.2](https://github.com/criptext/Android-Email-Client/tree/0.13.2) (2018-10-19)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.0...0.13.2)
 
 **Closed issues:**
 
 - Add header API-Version=1.0 to all the requirements  [\#196](https://github.com/Criptext/Android-Email-Client/issues/196)
 - Link devices [\#129](https://github.com/Criptext/Android-Email-Client/issues/129)
+
+**Merged pull requests:**
+
+- Added the ui changes for 2FA and some error handling. [\#295](https://github.com/Criptext/Android-Email-Client/pull/295) ([jorgeblacio](https://github.com/jorgeblacio))
+- zoom, pan and drag for email detail webview [\#294](https://github.com/Criptext/Android-Email-Client/pull/294) ([danieltigse](https://github.com/danieltigse))
+- Made some tweaks to the mailbox ui. [\#293](https://github.com/Criptext/Android-Email-Client/pull/293) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now the user can set and use 2-factor authentication. [\#292](https://github.com/Criptext/Android-Email-Client/pull/292) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added options for mark as read and move to trash on push notification. [\#291](https://github.com/Criptext/Android-Email-Client/pull/291) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed a crash when old device times out [\#290](https://github.com/Criptext/Android-Email-Client/pull/290) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various minor Fixes [\#289](https://github.com/Criptext/Android-Email-Client/pull/289) ([jorgeblacio](https://github.com/jorgeblacio))
+- Removed jigl hosts for open source release. [\#288](https://github.com/Criptext/Android-Email-Client/pull/288) ([jorgeblacio](https://github.com/jorgeblacio))
+- Changelog for release 0.13.0 [\#287](https://github.com/Criptext/Android-Email-Client/pull/287) ([jorgeblacio](https://github.com/jorgeblacio))
 
 ## [v0.13.0](https://github.com/criptext/Android-Email-Client/tree/v0.13.0) (2018-10-15)
 [Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.12.1...v0.13.0)
