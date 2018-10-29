@@ -37,6 +37,7 @@ interface SettingsScene{
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
     fun updateUserSettings(userData: UserSettingsData)
+    fun setEmailPreview(isChecked: Boolean)
     fun updateTwoFa(isChecked: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun dismissConfirmPasswordDialog()
@@ -189,6 +190,10 @@ interface SettingsScene{
             generalView.setRecoveryEmailConfirmationText(userData.recoveryEmailConfirmationState)
             generalView.enable2FASwitch(true)
             generalView.set2FA(userData.hasTwoFA)
+        }
+
+        override fun setEmailPreview(isChecked: Boolean) {
+            generalView.setEmailPreview(isChecked)
         }
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {

@@ -27,7 +27,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 
 class UpdateMailboxWorker(
         signalClient: SignalClient,
-        dbEvents: EventLocalDB,
+        private val dbEvents: EventLocalDB,
         activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int?,
         private val label: Label,
@@ -70,13 +70,22 @@ class UpdateMailboxWorker(
         val operationResult = EventLoader.getEvents(apiClient)
                 .flatMap(eventHelper.processEvents)
 
+        val newData = mutableMapOf<String, String>()
+        newData.putAll(pushData)
+
+
         return when(operationResult) {
             is Result.Success -> {
+                val metadataKey = newData["metadataKey"]?.toLong()
+                if(metadataKey != null) {
+                    newData["preview"] = dbEvents.getEmailByMetadataKey(metadataKey).preview
+                }
+
                 return PushResult.UpdateMailbox.Success(
                         mailboxLabel = label,
                         isManual = true,
                         mailboxThreads = operationResult.value,
-                        pushData = pushData,
+                        pushData = newData,
                         shouldPostNotification = shouldPostNotification
                 )
             }

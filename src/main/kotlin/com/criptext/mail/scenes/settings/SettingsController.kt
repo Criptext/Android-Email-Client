@@ -68,6 +68,10 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onEmailPreviewSwitched(isChecked: Boolean) {
+            storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
+        }
+
         override fun onTwoFASwitched(isChecked: Boolean) {
             if(model.isEmailConfirmed) {
                 scene.enableTwoFASwitch(false)
@@ -213,6 +217,9 @@ class SettingsController(
                     model = model,
                     settingsUIObserver = settingsUIObserver,
                     devicesListItemListener = onDevicesListItemListener)
+            val emailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
+            scene.setEmailPreview(emailPreview)
+
             dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
         return false

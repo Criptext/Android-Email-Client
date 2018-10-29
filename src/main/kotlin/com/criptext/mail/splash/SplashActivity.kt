@@ -30,6 +30,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         Fabric.with(this, Crashlytics())
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
     }
