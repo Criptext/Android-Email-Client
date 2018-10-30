@@ -45,6 +45,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,
                     storage = storage,
+                    pendingEventDao = db.pendingEventDao(),
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.LinkAccept -> LinkAuthAcceptWorker(
                     activeAccount = activeAccount!!, httpClient = httpClient,

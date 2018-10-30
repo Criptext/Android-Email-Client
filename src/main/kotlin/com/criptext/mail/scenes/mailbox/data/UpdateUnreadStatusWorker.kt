@@ -3,18 +3,18 @@ package com.criptext.mail.scenes.mailbox.data
 import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.peerdata.PeerThreadReadData
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.mapError
-import org.json.JSONException
 
 /**
  * Created by danieltigse on 4/18/18.
@@ -22,6 +22,7 @@ import org.json.JSONException
 
 class UpdateUnreadStatusWorker(
         private val db: MailboxLocalDB,
+        private val pendingDao: PendingEventDao,
         private val threadIds: List<String>,
         private val updateUnreadStatus: Boolean,
         private val currentLabel: Label,
@@ -31,6 +32,7 @@ class UpdateUnreadStatusWorker(
     : BackgroundWorker<MailboxResult.UpdateUnreadStatus> {
 
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
 
     override val canBeParallelized = false
 
@@ -49,14 +51,15 @@ class UpdateUnreadStatusWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateUnreadStatus>)
             : MailboxResult.UpdateUnreadStatus? {
-        val result = Result.of { apiClient.postThreadReadChangedEvent(threadIds,
-                updateUnreadStatus)}
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        val result = Result.of {
+            val defaultLabels = Label.DefaultItems()
+            val rejectedLabels = defaultLabels.rejectedLabelsByMailbox(currentLabel).map { it.id }
+            db.updateUnreadStatus(threadIds, updateUnreadStatus, rejectedLabels)
+        }
+
         return when (result) {
             is Result.Success -> {
-                val defaultLabels = Label.DefaultItems()
-                val rejectedLabels = defaultLabels.rejectedLabelsByMailbox(currentLabel).map { it.id }
-                db.updateUnreadStatus(threadIds, updateUnreadStatus, rejectedLabels)
+                peerEventHandler.enqueueEvent(PeerThreadReadData(threadIds, updateUnreadStatus).toJSON())
                 MailboxResult.UpdateUnreadStatus.Success()
             }
             is Result.Failure -> {

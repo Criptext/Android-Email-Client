@@ -27,8 +27,9 @@ import java.util.*
 
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
-                     , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class],
-        version = 3,
+                     , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
+                     , PendingEvent::class],
+        version = 4,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -55,6 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun signUpDao(): SignUpDao
     abstract fun openDao(): OpenDao
     abstract fun emailExternalSessionDao(): EmailExternalSessionDao
+    abstract fun pendingEventDao(): PendingEventDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
@@ -64,7 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         //allowMainThreadQueries() // remove this in production... !!!!
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                         .build()
             }
             return INSTANCE!!
@@ -98,6 +100,15 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""UPDATE OR IGNORE contact
                                         SET email = replace(email, rtrim(email, replace(email, ' ', '')), '')
                                         """)
+            }
+        }
+
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  pendingEvent (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        data TEXT NOT NULL)""")
+                database.execSQL("CREATE INDEX index_pending_event_id ON pendingEvent (id)")
             }
         }
     }

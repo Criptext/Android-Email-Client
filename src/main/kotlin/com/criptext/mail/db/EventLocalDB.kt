@@ -78,7 +78,9 @@ class EventLocalDB(private val db: AppDatabase){
 
     fun updateDeleteEmailPermanently(metadataKeys: List<Long>) {
         if(metadataKeys.isNotEmpty()){
-            db.emailDao().deleteAll(db.emailDao().getAllEmailsByMetadataKey(metadataKeys))
+            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
+            if(emails.isEmpty()) return
+            db.emailDao().deleteAll(emails)
         }
     }
 
@@ -88,7 +90,9 @@ class EventLocalDB(private val db: AppDatabase){
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
                     .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
                     .map { it.text })
-            val emailIds = db.emailDao().getEmailsFromThreadIds(threadIds).map { it.id }
+            val threads = db.emailDao().getEmailsFromThreadIds(threadIds)
+            if(threads.isEmpty()) return
+            val emailIds = threads.map { it.id }
             val removedLabels = db.labelDao().get(labelsRemoved)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
             val addedLabels = db.labelDao().get(labelsAdded)
@@ -122,7 +126,9 @@ class EventLocalDB(private val db: AppDatabase){
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
                     .filter { it.text in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
                     .map { it.text })
-            val emailIds = db.emailDao().getAllEmailsByMetadataKey(metadataKeys).map { it.id }
+            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
+            if(emails.isEmpty()) return
+            val emailIds = emails.map { it.id }
             val removedLabels = db.labelDao().get(labelsRemoved)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
             val addedLabels = db.labelDao().get(labelsAdded)

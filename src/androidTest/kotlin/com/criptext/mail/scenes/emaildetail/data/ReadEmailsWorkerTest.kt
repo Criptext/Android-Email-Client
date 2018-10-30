@@ -55,7 +55,7 @@ class ReadEmailsWorkerTest {
     private fun newWorker(emailIds: List<Long>, metadataKeys: List<Long>): ReadEmailsWorker =
             ReadEmailsWorker(dao = db.emailDao(), activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, emailIds = emailIds,
-                    metadataKeys = metadataKeys)
+                    metadataKeys = metadataKeys, pendingDao = db.pendingEventDao())
 
 
     @Test

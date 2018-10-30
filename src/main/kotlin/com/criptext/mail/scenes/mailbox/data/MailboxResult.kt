@@ -100,6 +100,11 @@ sealed class MailboxResult {
         class Failure: ResendEmails()
     }
 
+    sealed class ResendPeerEvents: MailboxResult() {
+        data class Success(val queueIsEmpty: Boolean): ResendPeerEvents()
+        data class Failure(val queueIsEmpty: Boolean): ResendPeerEvents()
+    }
+
     sealed class GetPendingLinkRequest: MailboxResult() {
         data class Success(val deviceInfo: UntrustedDeviceInfo): GetPendingLinkRequest()
         class Failure: GetPendingLinkRequest()

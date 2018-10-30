@@ -84,7 +84,7 @@ class PushRequestHandlerTest {
 
         val requestHandler = newHandler()
         requestHandler.trashEmail(loadedEmails.last().email.metadataKey, 0,
-                emailDetailLocalDB, db.emailDao())
+                emailDetailLocalDB, db.emailDao(), db.pendingEventDao())
 
         val trashEmails = db.emailDao().getMetadataKeysFromLabel(Label.defaultItems.trash.id)
 
@@ -103,7 +103,8 @@ class PushRequestHandlerTest {
         ))
 
         val requestHandler = newHandler()
-        requestHandler.openEmail(loadedEmails.last().email.metadataKey, 0, db.emailDao())
+        requestHandler.openEmail(loadedEmails.last().email.metadataKey, 0, db.emailDao(),
+                db.pendingEventDao())
 
         val readEmails = db.emailDao().getAll().filter { !it.unread }
 

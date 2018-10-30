@@ -76,15 +76,16 @@ class UpdateMailboxWorkerTest {
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
             UpdateMailboxWorker(signalClient = signalClient, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
-                    publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage)
+                    publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
+                    pendingEventDao = db.pendingEventDao())
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
     @Test
     fun when_processing_tracking_updates_should_mark_emails_as_read_in_the_db_and_create_feeds() {
         mockWebServer.enqueueResponses(listOf(
-            MockedResponse.Ok(MockJSONData.sample2TrackingUpdateEvents), /* /event */
-            MockedResponse.Ok("OK") /* /event/ack */
+            MockedResponse.Ok(MockJSONData.sample2TrackingUpdateEvents), /* /data */
+            MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
@@ -120,7 +121,7 @@ class UpdateMailboxWorkerTest {
     fun when_processing_tracking_updates_should_fetch_and_acknowledge_events_correctly() {
         mockWebServer.enqueueResponses(listOf(
             MockedResponse.Ok(MockJSONData.sample2TrackingUpdateEvents), /* /event */
-            MockedResponse.Ok("OK") /* /event/ack */
+            MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
@@ -151,10 +152,10 @@ class UpdateMailboxWorkerTest {
     @Test
     fun when_processing_new_email_events_should_insert_emails_correctly() {
         mockWebServer.enqueueResponses(listOf(
-            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /event */
+            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
             MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
             MockedResponse.Ok("__ENCRYPTED_BODY_2"), /* /email/body (2st email) */
-            MockedResponse.Ok("OK") /* /event/ack */
+            MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
@@ -219,10 +220,10 @@ class UpdateMailboxWorkerTest {
     @Test
     fun when_processing_new_email_events_if_get_body_fails_should_not_acknowledge_that_event() {
         mockWebServer.enqueueResponses(listOf(
-            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /event */
+            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
             MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
             MockedResponse.Timeout(), /* /email/body (2nd email) */
-            MockedResponse.Ok("OK") /* /event/ack */
+            MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
@@ -257,13 +258,13 @@ class UpdateMailboxWorkerTest {
     fun when_processing_new_email_events_if_acknowledge_fails_should_retry_acknowledge_on_2nd_run() {
         mockWebServer.enqueueResponses(listOf(
             // first run
-            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /event */
+            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
             MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
             MockedResponse.Ok("__ENCRYPTED_BODY_2"), /* /email/body (2nd email) */
-            MockedResponse.Timeout(), /* /event/ack */
+            MockedResponse.Timeout(), /* /data/ack */
             // second run
-            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /event */
-            MockedResponse.Ok("Ok") /* /event/ack */
+            MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
+            MockedResponse.Ok("Ok") /* /data/ack */
         ))
 
         // store local emails in db

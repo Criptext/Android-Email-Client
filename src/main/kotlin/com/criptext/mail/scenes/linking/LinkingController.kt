@@ -230,7 +230,7 @@ class LinkingController(
 
     private fun delayPostCheckForKeyBundle(){
         val handler = Handler()
-            handler.postDelayed(Runnable {
+            handler.postDelayed({
                 if(model.retryTimesCheckForKeyBundle < RETRY_TIMES_DEFAULT) {
                     if (!model.untrustedDevicePostedKeyBundle)
                         dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))

@@ -29,8 +29,7 @@ class ChangeContactNameWorker(
 
     override fun work(reporter: ProgressReporter<SettingsResult.ChangeContactName>): SettingsResult.ChangeContactName? {
         val result = Result.of { apiClient.putUsernameChange(fullName)
-            apiClient.postUsernameChangedEvent(fullName) }
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+            }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when (result){
             is Result.Success -> {
                 settingsLocalDB.contactDao.updateContactName("$recipientId@${Contact.mainDomain}", fullName)

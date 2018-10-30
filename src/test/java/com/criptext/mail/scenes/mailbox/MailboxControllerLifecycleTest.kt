@@ -37,11 +37,12 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
     fun `on a cold start should try get menu info and load threads from db`() {
         controller.onStart(null)
 
-        sentRequests.size `should be` 3
+        sentRequests.size `should be` 4
 
         val firstRequest = sentRequests[0]
         val secondRequest = sentRequests[1]
         val thirdRequest = sentRequests[2]
+        val fourthRequest = sentRequests[3]
 
         firstRequest `should be instance of` MailboxRequest.GetMenuInformation::class.java
 
@@ -51,7 +52,9 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
                 userEmail = "gabriel@${Contact.mainDomain}"
         )
 
-        thirdRequest`should be instance of` MailboxRequest.ResendEmails::class.java
+        thirdRequest`should be instance of` MailboxRequest.ResendPeerEvents::class.java
+
+        fourthRequest`should be instance of` MailboxRequest.ResendEmails::class.java
 
     }
 

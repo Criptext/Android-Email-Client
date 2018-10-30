@@ -57,18 +57,18 @@ class UserDataWriterTest {
 
     private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\"}}",
     "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\"}}",
-    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":1,\"visible\":true}}",
-    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":1,\"visible\":true}}",
-    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":1}}",
-    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":2}}",
-    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"delivered\":6,\"date\":\"2012-12-21 05:00:00\",\"metadataKey\":123,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
-    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"delivered\":6,\"date\":\"2012-12-21 05:00:00\",\"metadataKey\":456,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
+    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"visible\":true}}",
+    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"visible\":true}}",
+    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"2012-12-21 05:00:00\",\"key\":123,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"2012-12-21 05:00:00\",\"key\":456,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
-    "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"TO\"}}",
-    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"FROM\"}}",
-    "{\"table\":\"file_key\",\"object\":{\"id\":1,\"key\":\"test_key_16bytes:test_iv_16_bytes\",\"emailId\":1}}",
-    "{\"table\":\"file_key\",\"object\":{\"id\":2,\"key\":\"test_key_16bytes:test_iv_16_bytes\",\"emailId\":2}}")
+    "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"to\"}}",
+    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"from\"}}",
+    "{\"table\":\"filekey\",\"object\":{\"id\":1,\"key\":\"test_key_16bytes\",\"iv\":\"test_iv_16_bytes\",\"emailId\":1}}",
+    "{\"table\":\"filekey\",\"object\":{\"id\":2,\"key\":\"test_key_16bytes\",\"iv\":\"test_iv_16_bytes\",\"emailId\":2}}")
 
     @Before
     fun setup() {

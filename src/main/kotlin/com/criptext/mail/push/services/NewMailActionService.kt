@@ -34,11 +34,11 @@ class NewMailActionService : IntentService("New Mail Action Service") {
 
         when {
             READ == data.action -> {
-                requestHandler.openEmail(data.metadataKey, data.notificationId, db.emailDao())
+                requestHandler.openEmail(data.metadataKey, data.notificationId, db.emailDao(), db.pendingEventDao())
             }
             TRASH == data.action -> {
                 requestHandler.trashEmail(data.metadataKey, data.notificationId,
-                        EmailDetailLocalDB.Default(db), db.emailDao())
+                        EmailDetailLocalDB.Default(db), db.emailDao(), db.pendingEventDao())
             }
             else -> throw IllegalArgumentException("Unsupported action: " + data.action)
         }
