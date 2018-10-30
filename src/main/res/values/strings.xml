@@ -144,6 +144,7 @@
     <string name="title_change_email_cap">CHANGE EMAIL</string>
     <string name="title_change_password_cap">CHANGE PASSWORD</string>
     <string name="title_allow_notifications">Allow Notifications</string>
+    <string name="title_allow_preview">Show Email Preview</string>
     <string name="title_two_fa">Two-Factor Authentication</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>

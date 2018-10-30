@@ -17,6 +17,10 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase){
 
+    fun getEmailByMetadataKey(metadataKey: Long): Email{
+        return db.emailDao().getEmailByMetadataKey(metadataKey)
+    }
+
     fun removeDevice(storage: KeyValueStorage){
         db.clearAllTables()
         storage.clearAll()

@@ -6,6 +6,7 @@ import android.os.Build
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.Notifier
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
@@ -28,7 +29,8 @@ class MessagingService : FirebaseMessagingService(){
                                 runner = AsyncTaskWorkRunner(),
                                 httpClient = HttpClient.Default()),
                         host = this,
-                        isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
+                        activeAccount = ActiveAccount.loadFromStorage(this)!!)
             }
         }
         if(remoteMessage.data.isNotEmpty()) {

@@ -23,6 +23,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsRecoveryEmailConfirmText: TextView
     private lateinit var versionText: TextView
     private lateinit var twoFASwitch: Switch
+    private lateinit var emailPreview: Switch
 
     private var settingsUIObserver: SettingsUIObserver? = null
 
@@ -43,6 +44,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
         twoFASwitch = view.findViewById(R.id.switch_two_fa)
+        emailPreview = view.findViewById(R.id.switch_preview)
 
         settingsRecoveryEmail.visibility = View.GONE
         settingsRecoveryEmailLoading.visibility = View.VISIBLE
@@ -70,13 +72,20 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     }
 
     fun set2FA(has2FA: Boolean){
-        twoFASwitch.setOnCheckedChangeListener { buttonView, isChecked ->  }
+        twoFASwitch.setOnCheckedChangeListener { _, _ ->  }
         twoFASwitch.isChecked = has2FA
         setSwitchListener()
     }
 
     fun enable2FASwitch(isEnabled: Boolean){
         twoFASwitch.isEnabled = isEnabled
+    }
+
+    fun setEmailPreview(showPreview: Boolean){
+        emailPreview.setOnCheckedChangeListener { _, _ ->  }
+        emailPreview.isEnabled = true
+        emailPreview.isChecked = showPreview
+        setSwitchListener()
     }
 
     private fun setListeners(){
@@ -110,6 +119,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private fun setSwitchListener(){
         twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
             settingsUIObserver?.onTwoFASwitched(isChecked)
+        }
+
+        emailPreview.setOnCheckedChangeListener {_, isChecked ->
+            settingsUIObserver?.onEmailPreviewSwitched(isChecked)
         }
     }
 

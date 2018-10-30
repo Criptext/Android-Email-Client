@@ -142,9 +142,8 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         manager.cancel(notificationId)
         if((notCount - 1) == 0) {
             manager.cancel(CriptextNotification.INBOX_ID)
-        }else{
-            storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
         }
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
     }
 
     private fun postNotification(data: ErrorNotificationData, cn: CriptextNotification,

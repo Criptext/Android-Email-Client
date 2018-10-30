@@ -12,8 +12,10 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
+import android.text.Html
 import com.criptext.mail.R
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.push.PushData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
@@ -58,7 +60,7 @@ class CriptextNotification(val ctx: Context) {
 
         val notBuild = builder.build()
         notBuild.defaults = Notification.DEFAULT_VIBRATE
-        notBuild.ledARGB = Color.YELLOW
+        notBuild.ledARGB = Color.CYAN
         notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
         notBuild.ledOnMS = 1000
         notBuild.ledOffMS = 1000
@@ -71,7 +73,7 @@ class CriptextNotification(val ctx: Context) {
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
-        notBuild.ledARGB = Color.YELLOW
+        notBuild.ledARGB = Color.CYAN
         notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
         notBuild.ledOnMS = 1000
         notBuild.ledOffMS = 1000
@@ -85,7 +87,7 @@ class CriptextNotification(val ctx: Context) {
 
         val notBuild = builder.build()
         notBuild.defaults = Notification.DEFAULT_VIBRATE
-        notBuild.ledARGB = Color.YELLOW
+        notBuild.ledARGB = Color.CYAN
         notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
         notBuild.ledOnMS = 1000
         notBuild.ledOffMS = 1000
@@ -93,10 +95,11 @@ class CriptextNotification(val ctx: Context) {
         return notBuild
     }
 
-    fun createNewMailNotification(clickIntent: PendingIntent, title: String, body:String,
-                                  metadataKey: Long, threadId: String,
+    fun createNewMailNotification(clickIntent: PendingIntent, data: PushData.NewMail,
                                   notificationId: Int)
             : Notification {
+
+        val showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
 
         val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount + 1)
@@ -104,14 +107,14 @@ class CriptextNotification(val ctx: Context) {
         val readAction = Intent(ctx, NewMailActionService::class.java)
         readAction.action = NewMailActionService.READ
         readAction.putExtra("notificationId", notificationId)
-        readAction.putExtra("metadataKey", metadataKey)
+        readAction.putExtra("metadataKey", data.metadataKey)
         val readPendingIntent = PendingIntent.getService(ctx, notificationId, readAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val trashAction = Intent(ctx, NewMailActionService::class.java)
         trashAction.action = NewMailActionService.TRASH
         trashAction.putExtra("notificationId", notificationId)
-        trashAction.putExtra("metadataKey", metadataKey)
+        trashAction.putExtra("metadataKey", data.metadataKey)
         val trashPendingIntent = PendingIntent.getService(ctx, notificationId, trashAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
@@ -119,30 +122,41 @@ class CriptextNotification(val ctx: Context) {
         replyAction.action = NewMailActionService.REPLY
         replyAction.addCategory(Intent.CATEGORY_LAUNCHER)
         replyAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        replyAction.putExtra("metadataKey", metadataKey)
-        replyAction.putExtra(MessagingInstance.THREAD_ID, threadId)
+        replyAction.putExtra("metadataKey", data.metadataKey)
+        replyAction.putExtra(MessagingInstance.THREAD_ID, data.threadId)
         val replyPendingAction = PendingIntent.getActivity(ctx, 0, replyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val pushTitle = if(showEmailPreview)
+            data.title.plus(" - ").plus(data.body)
+        else
+            data.title
+
+        val pushBody = if(showEmailPreview)
+            data.preview
+        else
+            data.body
+
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_NEW_EMAIL)
-            .setContentTitle(title)
-            .setContentText(body)
+            .setContentTitle(pushTitle)
+            .setContentText(pushBody)
+            .setSubText(data.activeEmail)
             .setAutoCancel(true)
-            .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
             .setSound(defaultSound)
             .setContentIntent(clickIntent)
             .setGroup(ACTION_INBOX)
             .setGroupSummary(false)
             .setSmallIcon(R.drawable.push_icon)
-            .addAction(R.drawable.mail_opened, ctx.getString(R.string.push_read), readPendingIntent)
-            .addAction(R.drawable.trash, ctx.getString(R.string.push_trash), trashPendingIntent)
-            //.addAction(R.drawable.reply, ctx.getString(R.string.push_reply), replyPendingAction)
+            .addAction(0, ctx.getString(R.string.push_read), readPendingIntent)
+            .addAction(0, ctx.getString(R.string.push_trash), trashPendingIntent)
+            .addAction(0, ctx.getString(R.string.push_reply), replyPendingAction)
             .setLargeIcon(Utility.getBitmapFromText(
-                    title,
+                    data.title,
                     250,
                     250))
-            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(pushBody))
 
 
 
@@ -157,7 +171,6 @@ class CriptextNotification(val ctx: Context) {
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)
-                .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
                 .setContentIntent(clickIntent)
                 .setGroup(ACTION_OPEN)
                 .setGroupSummary(false)
@@ -229,14 +242,13 @@ class CriptextNotification(val ctx: Context) {
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)
-                .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
                 .setSound(defaultSound)
                 .setContentIntent(clickIntent)
                 .setGroup(ACTION_LINK_DEVICE)
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
-                .addAction(R.drawable.check, ctx.getString(R.string.push_approve), okPendingIntent)
-                .addAction(R.drawable.x, ctx.getString(R.string.push_deny), denyPendingIntent)
+                .addAction(0, ctx.getString(R.string.push_approve), okPendingIntent)
+                .addAction(0, ctx.getString(R.string.push_deny), denyPendingIntent)
                 .setLargeIcon(deviceIcon)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(body))
 

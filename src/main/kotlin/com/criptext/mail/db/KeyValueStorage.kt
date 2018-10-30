@@ -18,13 +18,16 @@ interface KeyValueStorage {
     fun putLong(key: StringKey, value: Long)
     fun getInt(key: StringKey, default: Int): Int
     fun putInt(key: StringKey, value: Int)
+    fun getBool(key: StringKey, default: Boolean): Boolean
+    fun putBool(key: StringKey, value: Boolean)
     fun clearAll()
 
     enum class StringKey(val stringKey: String) {
         ActiveAccount("ActiveAccount"), SignInSession("SignInSession"),
         SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
         LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent"),
-        LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount")
+        LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
+        ShowEmailPreview("ShowEmailPreview")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {
@@ -66,6 +69,14 @@ interface KeyValueStorage {
 
         override fun putInt(key: StringKey, value: Int) {
             withApply { editor -> editor.putInt(key.stringKey, value) }
+        }
+
+        override fun getBool(key: StringKey, default: Boolean): Boolean {
+            return prefs.getBoolean(key.stringKey, default)
+        }
+
+        override fun putBool(key: StringKey, value: Boolean) {
+            withApply { editor -> editor.putBoolean(key.stringKey, value) }
         }
 
         override fun clearAll() {

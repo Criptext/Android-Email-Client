@@ -1,5 +1,6 @@
 package com.criptext.mail.push
 
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.data.PushRequest
@@ -20,7 +21,7 @@ import com.criptext.mail.utils.DeviceUtils
  */
 
 class PushController(private val dataSource: PushDataSource, private val host: MessagingService,
-                     private val isPostNougat: Boolean) {
+                     private val isPostNougat: Boolean, private val activeAccount: ActiveAccount) {
 
     private val dataSourceListener = { result: PushResult ->
         when (result) {
@@ -39,10 +40,11 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val title = pushData["title"] ?: ""
         val threadId = pushData["threadId"] ?: ""
         val metadataKey = pushData["metadataKey"]?.toLong()
+        val preview = pushData["preview"] ?: ""
 
         return PushData.NewMail(title = title, body = body, threadId = threadId,
                 metadataKey = metadataKey ?: -1, shouldPostNotification = shouldPostNotification,
-                isPostNougat = isPostNougat)
+                isPostNougat = isPostNougat, preview = preview, activeEmail = activeAccount.userEmail)
     }
 
     private fun parseNewOpenMailbox(pushData: Map<String, String>,
