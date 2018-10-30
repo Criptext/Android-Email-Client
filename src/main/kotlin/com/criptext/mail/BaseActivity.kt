@@ -40,9 +40,11 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.IntentUtils
+import com.criptext.mail.utils.file.addExtensions
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.models.sort.SortingTypes
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
@@ -264,6 +266,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                 FilePickerBuilder.getInstance()
                         .setMaxCount(params.remaining)
                         .setActivityTheme(R.style.PickerTheme)
+                        .sortDocumentsBy(SortingTypes.name)
+                        .addExtensions()
                         .pickFile(this)
             }
             is ExternalActivityParams.ImagePicker -> {
