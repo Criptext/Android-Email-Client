@@ -47,11 +47,14 @@ class WebViewUtils {
             sb.append("return '<a href=\"' + trueUrl + '\" target=\"_blank\">' + url + '</a>';")
             sb.append("});")
 
-            sb.append("var replybody = document.getElementById(\"criptext_quote\") || document.getElementsByTagName(\"blockquote\")[0];")
+            sb.append("var replybody = document.getElementById(\"criptext_quote\")" +
+                    "|| document.getElementsByClassName(\"criptext_quote\")[0] " +
+                    "|| document.getElementsByClassName(\"gmail_quote\")[0] " +
+                    "|| document.getElementsByTagName(\"blockquote\")[0];")
             sb.append("var newNode = document.createElement(\"img\");")
             sb.append("newNode.src = \"$imageUri\";")
             sb.append("newNode.width = 30;")
-            sb.append("newNode.style.paddingTop = \"10px\";")
+            sb.append("newNode.style.paddingTop = \"20px\";")
             sb.append("newNode.style.paddingBottom = \"10px\";")
             sb.append("replybody.style.display = \"none\";")
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")

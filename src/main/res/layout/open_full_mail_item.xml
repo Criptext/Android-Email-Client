@@ -165,7 +165,7 @@
             <com.criptext.mail.utils.ui.MyZoomLayout
                 android:id="@+id/zoomLayout"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0dp"
                 android:scrollbars="vertical|horizontal"
                 app:overScrollHorizontal="true"
                 app:overScrollVertical="true"
