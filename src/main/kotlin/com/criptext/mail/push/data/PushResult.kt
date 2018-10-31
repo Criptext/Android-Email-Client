@@ -24,7 +24,8 @@ sealed class PushResult {
         data class Failure(
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?): UpdateMailbox() {
+                val exception: Exception?,
+                val shouldPostNotification: Boolean): UpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }

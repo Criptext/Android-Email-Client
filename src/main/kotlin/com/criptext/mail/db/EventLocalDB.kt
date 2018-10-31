@@ -88,7 +88,7 @@ class EventLocalDB(private val db: AppDatabase){
         if(threadIds.isNotEmpty()){
 
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
-                    .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
+                    .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH, Label.LABEL_STARRED) }
                     .map { it.text })
             val threads = db.emailDao().getEmailsFromThreadIds(threadIds)
             if(threads.isEmpty()) return
@@ -124,7 +124,7 @@ class EventLocalDB(private val db: AppDatabase){
         if(metadataKeys.isNotEmpty()){
 
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
-                    .filter { it.text in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH) }
+                    .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH, Label.LABEL_STARRED) }
                     .map { it.text })
             val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
             if(emails.isEmpty()) return

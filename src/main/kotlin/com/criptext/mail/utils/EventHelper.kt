@@ -269,7 +269,7 @@ class EventHelper(private val db: EventLocalDB,
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
-                        false
+                        true
                     }
                 }
         val toEventId: (Pair<Long, PeerEmailDeletedStatusUpdate>) -> Long =

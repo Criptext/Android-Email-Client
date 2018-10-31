@@ -1,5 +1,7 @@
 package com.criptext.mail.push
 
+import com.criptext.mail.R
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
@@ -7,6 +9,7 @@ import com.criptext.mail.push.data.PushRequest
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.UIMessage
 
 /**
  * Controller designed to be used by EmailFirebaseMessageService. Exposes a single function:
@@ -99,6 +102,11 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                     }
                     host.notifyPushEvent(notifier)
                 }
+            }
+            is PushResult.UpdateMailbox.Failure -> {
+                val data = PushData.Error(UIMessage(R.string.push_email_update_mailbox_title),
+                        UIMessage(R.string.push_email_update_mailbox_body), isPostNougat, result.shouldPostNotification)
+                ErrorNotifier.Open(data)
             }
         }
     }

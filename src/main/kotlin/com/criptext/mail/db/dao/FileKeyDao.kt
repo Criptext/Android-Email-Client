@@ -19,10 +19,12 @@ interface FileKeyDao {
     fun getAll() : List<FileKey>
 
     @Query("""SELECT * FROM file_key
-        LEFT JOIN email on email.id = file_key.emailId
-        WHERE delivered NOT IN (1,4)
-        AND file_key.emailId NOT IN
-        (SELECT email_label.emailId FROM email_label WHERE email_label.emailId = file_key.emailId and email_label.labelId=6)
+        WHERE EXISTS
+        (SELECT * FROM email WHERE delivered NOT IN (1, 4)
+        AND email.id = file_key.emailId)
+        AND NOT EXISTS
+        (SELECT * FROM email_label WHERE email_label.emailId = file_key.emailId
+        AND email_label.labelId=6)
     """)
     fun getAllForLinkFile() : List<FileKey>
 

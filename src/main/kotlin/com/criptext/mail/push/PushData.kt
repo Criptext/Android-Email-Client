@@ -1,6 +1,7 @@
 package com.criptext.mail.push
 
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.UIMessage
 
 /**
  * POJOs used by PushController
@@ -16,6 +17,9 @@ class PushData {
                        val metadataKey: Long, val isPostNougat: Boolean, val preview: String,
                        val shouldPostNotification:Boolean, val activeEmail: String)
     data class OpenMailbox(val title: String, val body: String,
+                           val isPostNougat: Boolean, val shouldPostNotification:Boolean)
+
+    data class Error(val title: UIMessage, val body: UIMessage,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean)
 
     data class LinkDevice(val title: String, val body: String, val randomId: String,

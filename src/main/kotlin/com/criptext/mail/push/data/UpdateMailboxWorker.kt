@@ -46,7 +46,7 @@ class UpdateMailboxWorker(
 
     override fun catchException(ex: Exception): PushResult.UpdateMailbox {
         val message = createErrorMessage(ex)
-        return PushResult.UpdateMailbox.Failure(label, message, ex)
+        return PushResult.UpdateMailbox.Failure(label, message, ex, shouldPostNotification)
     }
 
     private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): PushResult.UpdateMailbox {
@@ -61,7 +61,8 @@ class UpdateMailboxWorker(
             PushResult.UpdateMailbox.Failure(
                     mailboxLabel = label,
                     message = createErrorMessage(failure.error),
-                    exception = failure.error)
+                    exception = failure.error,
+                    shouldPostNotification = shouldPostNotification)
     }
 
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
