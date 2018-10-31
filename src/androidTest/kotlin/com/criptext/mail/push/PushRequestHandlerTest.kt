@@ -6,10 +6,13 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
+import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.androidui.criptextnotification.NotificationError
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.push.data.PushAPIRequestHandler
@@ -41,9 +44,11 @@ class PushRequestHandlerTest {
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>
     private lateinit var emailDetailLocalDB: EmailDetailLocalDB
+    private lateinit var storage: KeyValueStorage
 
     @Before
     fun setup() {
+        storage = TestSharedPrefs(mActivityRule.activity)
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
@@ -69,10 +74,10 @@ class PushRequestHandlerTest {
     }
 
     private fun newHandler(): PushAPIRequestHandler =
-            PushAPIRequestHandler(not = CriptextNotification(mActivityRule.activity), activeAccount = activeAccount,
+            PushAPIRequestHandler(not = NotificationError(mActivityRule.activity), activeAccount = activeAccount,
                     manager = mActivityRule.activity
                             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager,
-                    httpClient = httpClient)
+                    httpClient = httpClient, storage = storage)
 
     @Test
     fun should_move_to_trash_the_email_shown_on_the_push_notification() {

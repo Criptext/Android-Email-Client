@@ -4,6 +4,7 @@ import android.app.Notification
 import android.content.Context
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.androidui.criptextnotification.NotificationNewMail
 
 /**
  * Created by gabriel on 8/21/17.
@@ -16,7 +17,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
 
 
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationNewMail(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(notification.first, notification.second, CriptextNotification.ACTION_INBOX)
     }
@@ -24,7 +25,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
     private fun postHeaderNotification(ctx: Context){
         val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, PushTypes.openActivity,
                 data.threadId, data.isPostNougat)
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationNewMail(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
                 CriptextNotification.ACTION_INBOX, pendingIntent)
     }
@@ -48,7 +49,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
 
             val notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode()
 
-            return Pair(notificationId, cn.createNewMailNotification(clickIntent = pendingIntent, data = data,
+            return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent, data = data,
                     notificationId = notificationId))
 
         }

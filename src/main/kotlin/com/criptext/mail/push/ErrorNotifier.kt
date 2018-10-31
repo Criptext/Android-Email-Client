@@ -9,10 +9,6 @@ import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.criptextnotification.NotificationError
 import com.criptext.mail.utils.getLocalizedUIMessage
 
-/**
- * Created by gabriel on 8/21/17.
- */
-
 sealed class ErrorNotifier(val data: PushData.Error): Notifier {
     companion object {
         private val type = PushTypes.newMail
@@ -51,8 +47,8 @@ sealed class ErrorNotifier(val data: PushData.Error): Notifier {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.createErrorNotification(clickIntent = pendingIntent,
-                    title = data.title, body = data.body)
+            return cn.createNotification(clickIntent = pendingIntent,
+                    data = data, notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
         }
     }
 

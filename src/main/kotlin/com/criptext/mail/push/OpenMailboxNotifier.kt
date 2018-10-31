@@ -6,6 +6,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.androidui.criptextnotification.NotificationOpenMailbox
 
 /**
  * Created by gabriel on 8/21/17.
@@ -18,14 +19,14 @@ sealed class OpenMailboxNotifier(val data: PushData.OpenMailbox): Notifier {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationOpenMailbox(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_OPEN)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationOpenMailbox(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
                 CriptextNotification.ACTION_OPEN)
     }
@@ -49,8 +50,8 @@ sealed class OpenMailboxNotifier(val data: PushData.OpenMailbox): Notifier {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.createOpenMailboxNotification(clickIntent = pendingIntent,
-                    title = data.title, body = data.body,
+            return cn.createNotification(clickIntent = pendingIntent,
+                    data = data,
                     notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
 
         }
