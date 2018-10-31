@@ -318,15 +318,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 return true
             }
 
-            override fun onLoadResource(view: WebView?, url: String?) {
-                reSizeZoomLayout(view)
-                super.onLoadResource(view, url)
-            }
-
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 view?.evaluateJavascript("""window.scrollTo(0,0);""") { }
-                reSizeZoomLayout(view)
+                reSizeZoomLayout(view, true)
                 setupZoomLayout()
             }
         }
@@ -334,9 +329,21 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
     }
 
-    private fun reSizeZoomLayout(view: WebView?){
-        if(view != null && view.height > 0) {
+    private fun reSizeZoomLayout(view: WebView?, pageFinished: Boolean){
+        if(view == null){
+            return
+        }
+        if(view.height > 0) {
             zoomLayout.layoutParams = LinearLayout.LayoutParams(view.width, view.height)
+            return
+        }
+        //Sometimes onPageFinished is called when the webView has not finished loading
+        //So I put a temporal height to the webView and then call the manual zoom method
+        if(pageFinished){
+            zoomLayout.layoutParams = LinearLayout.LayoutParams(view.width, 250)
+            view.postDelayed({
+                zoomLayout.realZoomTo(1.0f, false)
+            }, 500)
         }
     }
 
@@ -355,7 +362,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         return object: WebChromeClient(){
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
-                reSizeZoomLayout(view)
+                if(newProgress >= 80) {
+                    reSizeZoomLayout(view, false)
+                }
             }
         }
     }

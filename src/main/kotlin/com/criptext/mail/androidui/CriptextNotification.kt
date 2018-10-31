@@ -13,6 +13,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.text.Html
+import android.text.Html.FROM_HTML_MODE_LEGACY
 import com.criptext.mail.R
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.PushData
@@ -128,20 +129,24 @@ class CriptextNotification(val ctx: Context) {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-        val pushTitle = if(showEmailPreview)
-            data.title.plus(" - ").plus(data.body)
-        else
-            data.title
-
+        val pushHtmlBody = "<span style='color:black;'>${data.body}</span><br>${data.preview}"
         val pushBody = if(showEmailPreview)
-            data.preview
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                Html.fromHtml(pushHtmlBody, FROM_HTML_MODE_LEGACY)
+            else
+                Html.fromHtml(pushHtmlBody)
         else
             data.body
 
+        val pushHtmlText = "<span style='color:black;'>${data.body}</span>"
+        val pushText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            Html.fromHtml(pushHtmlText, FROM_HTML_MODE_LEGACY)
+        else
+            Html.fromHtml(pushHtmlText)
+
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_NEW_EMAIL)
-            .setContentTitle(pushTitle)
-            .setContentText(pushBody)
+            .setContentTitle(data.title)
+            .setContentText(pushText)
             .setSubText(data.activeEmail)
             .setAutoCancel(true)
             .setSound(defaultSound)
