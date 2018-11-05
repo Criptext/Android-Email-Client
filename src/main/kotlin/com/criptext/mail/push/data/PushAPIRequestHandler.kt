@@ -19,6 +19,7 @@ import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.push.PushData
 import com.criptext.mail.push.PushTypes
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
@@ -54,9 +55,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
             }
             is Result.Failure -> {
                 manager.cancel(notificationId)
-                val data = ErrorNotificationData(UIMessage(R.string.push_link_error_title),
-                        UIMessage(R.string.push_link_error_message_approve))
-                val errorNot = not.createErrorNotification(data.title, data.body)
+                val data = PushData.Error(UIMessage(R.string.push_link_error_title),
+                        UIMessage(R.string.push_link_error_message_approve), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
                 -1
             }
@@ -69,9 +71,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
             is Result.Success -> manager.cancel(notificationId)
             is Result.Failure -> {
                 manager.cancel(notificationId)
-                val data = ErrorNotificationData(UIMessage(R.string.push_link_error_title),
-                        UIMessage(R.string.push_link_error_message_deny))
-                val errorNot = not.createErrorNotification(data.title, data.body)
+                val data = PushData.Error(UIMessage(R.string.push_link_error_title),
+                        UIMessage(R.string.push_link_error_message_deny), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }
@@ -97,9 +100,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
             is Result.Failure -> {
                 handleNotificationCountForNewEmail(notificationId)
                 operation.error.printStackTrace()
-                val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
-                        UIMessage(R.string.push_mail_error_message_read))
-                val errorNot = not.createErrorNotification(data.title, data.body)
+                val data = PushData.Error(UIMessage(R.string.push_email_error_title),
+                        UIMessage(R.string.push_mail_error_message_read), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }
@@ -146,9 +150,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
             }
             is Result.Failure -> {
                 handleNotificationCountForNewEmail(notificationId)
-                val data = ErrorNotificationData(UIMessage(R.string.push_email_error_title),
-                        UIMessage(R.string.push_mail_error_message_trash))
-                val errorNot = not.createErrorNotification(data.title, data.body)
+                val data = PushData.Error(UIMessage(R.string.push_email_error_title),
+                        UIMessage(R.string.push_mail_error_message_trash), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data = data)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)
             }
         }
@@ -163,25 +168,23 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
     }
 
-    private fun postNotification(data: ErrorNotificationData, cn: CriptextNotification,
+    private fun postNotification(data: PushData.Error, cn: CriptextNotification,
                                  notification: Notification) {
         cn.notify(if(isPostNougat) PushTypes.linkDevice.requestCodeRandom() else
             PushTypes.linkDevice.requestCode(), notification,
                 CriptextNotification.ACTION_LINK_DEVICE)
     }
 
-    private fun postHeaderNotification(cn: CriptextNotification, data: ErrorNotificationData){
+    private fun postHeaderNotification(cn: CriptextNotification, data: PushData.Error){
         cn.showHeaderNotification(data.title.toString(), R.drawable.push_icon,
                 CriptextNotification.ACTION_ERROR)
     }
 
-    private fun notifyPushEvent(data: ErrorNotificationData, cn: CriptextNotification,
+    private fun notifyPushEvent(data: PushData.Error, cn: CriptextNotification,
                                 notification: Notification) {
         if(isPostNougat) {
             postHeaderNotification(cn, data)
         }
         postNotification(data, cn, notification)
     }
-
-    private data class ErrorNotificationData(val title: UIMessage, val body: UIMessage)
 }

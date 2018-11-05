@@ -27,7 +27,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
 
-class NotificationError(override val ctx: Context): CriptextNotification(ctx) {
+class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(ctx) {
 
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -42,19 +42,23 @@ class NotificationError(override val ctx: Context): CriptextNotification(ctx) {
         return notBuild
     }
 
-    override fun createNotification(notificationId: Int, clickIntent: PendingIntent?, data: PushData): Notification {
-        val notificationData = data as PushData.Error
-        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ERROR)
-                .setContentTitle(ctx.getLocalizedUIMessage(notificationData.title))
-                .setContentText(ctx.getLocalizedUIMessage(notificationData.body))
+    override fun createNotification(notificationId: Int, clickIntent: PendingIntent?,
+                                    data: PushData): Notification {
+        val pushData = data as PushData.OpenMailbox
+        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_OPEN_EMAIL)
+                .setContentTitle(pushData.title)
+                .setContentText(pushData.body)
                 .setAutoCancel(true)
-                .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
-                .setGroup(ACTION_ERROR)
+                .setContentIntent(clickIntent)
+                .setGroup(ACTION_OPEN)
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(ctx.getLocalizedUIMessage(notificationData.body)))
-        if(clickIntent != null) builder.setContentIntent(clickIntent)
+                .setLargeIcon(Utility.getBitmapFromText(
+                        pushData.title,
+                        250,
+                        250))
+                .setStyle(NotificationCompat.BigTextStyle().bigText(pushData.body))
 
         return buildNotification(builder)
     }

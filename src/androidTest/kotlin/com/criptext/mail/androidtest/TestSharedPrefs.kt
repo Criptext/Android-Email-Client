@@ -9,6 +9,21 @@ import com.criptext.mail.db.KeyValueStorage
  * Created by gabriel on 5/24/18.
  */
 class TestSharedPrefs(ctx: Context): KeyValueStorage {
+    override fun getInt(key: KeyValueStorage.StringKey, default: Int): Int {
+        return prefs.getInt("_test_" + key.stringKey, default)
+    }
+
+    override fun putInt(key: KeyValueStorage.StringKey, value: Int) {
+        withApply { editor -> editor.putInt("_test_" + key.stringKey, value) }
+    }
+
+    override fun getBool(key: KeyValueStorage.StringKey, default: Boolean): Boolean {
+        return prefs.getBoolean("_test_" + key.stringKey, default)
+    }
+
+    override fun putBool(key: KeyValueStorage.StringKey, value: Boolean) {
+        withApply { editor -> editor.putBoolean("_test_" + key.stringKey, value) }
+    }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(ctx.applicationContext)
 

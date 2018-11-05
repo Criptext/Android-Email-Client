@@ -24,13 +24,14 @@ class MessagingService : FirebaseMessagingService(){
         if(pushController == null){
             val db = Result.of { AppDatabase.getAppDatabase(this) }
             if(db is Result.Success) {
+                val account = ActiveAccount.loadFromStorage(this) ?: return
                 pushController = PushController(
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),
                                 httpClient = HttpClient.Default()),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
-                        activeAccount = ActiveAccount.loadFromStorage(this)!!)
+                        activeAccount = account)
             }
         }
         if(remoteMessage.data.isNotEmpty()) {

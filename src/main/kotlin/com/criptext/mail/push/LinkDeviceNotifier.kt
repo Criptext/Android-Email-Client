@@ -6,6 +6,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.androidui.criptextnotification.NotificationLinkDevice
 import com.criptext.mail.push.data.PushDataSource
 
 sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
@@ -15,7 +16,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationLinkDevice(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification,
                 CriptextNotification.ACTION_LINK_DEVICE)
@@ -23,7 +24,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
-        val cn = CriptextNotification(ctx)
+        val cn = NotificationLinkDevice(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
                 CriptextNotification.ACTION_LINK_DEVICE)
     }
@@ -40,17 +41,16 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
         }
     }
 
-    class Open(data: PushData.LinkDevice, private val pushDataSource: PushDataSource): LinkDeviceNotifier(data) {
+    class Open(data: PushData.LinkDevice): LinkDeviceNotifier(data) {
 
         @RequiresApi(Build.VERSION_CODES.O)
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Notification {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.createLinkDeviceNotification(clickIntent = pendingIntent,
-                    title = data.title, body = data.body,
-                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode(),
-                    pushDataSource = pushDataSource, deviceType = data.deviceType, randomId = data.randomId)
+            return cn.createNotification(clickIntent = pendingIntent,
+                    data = data,
+                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
 
         }
     }

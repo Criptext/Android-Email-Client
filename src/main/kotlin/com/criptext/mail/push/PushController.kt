@@ -1,7 +1,6 @@
 package com.criptext.mail.push
 
 import com.criptext.mail.R
-import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
@@ -92,7 +91,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                         }
                         PushTypes.linkDevice -> {
                             val data = parseLinkDevicePush(result.pushData, result.shouldPostNotification)
-                            LinkDeviceNotifier.Open(data, dataSource)
+                            LinkDeviceNotifier.Open(data)
                         }
                         PushTypes.openActivity -> {
                             val data = parseNewOpenMailbox(result.pushData, result.shouldPostNotification)
