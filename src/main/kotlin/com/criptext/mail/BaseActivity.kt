@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
@@ -78,6 +79,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     lateinit var model: Any
     private val mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
+    private val postDelayHandler = Handler()
+
     /**
      * Called during `onCreate` to create a controller for this activity given the current active
      * model which is passed as parameter. `BaseActivity` will call this once and keep a private
@@ -127,6 +130,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     override fun onStop() {
+        postDelayHandler.removeCallbacksAndMessages(null)
         super.onStop()
         controller.onStop()
     }
@@ -192,6 +196,10 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         startActivity(params.activityClass, deletePastIntents)
 
         if (! keep) finish()
+    }
+
+    override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
+        postDelayHandler.postDelayed(runnable, delayMilliseconds)
     }
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,

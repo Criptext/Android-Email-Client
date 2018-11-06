@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.signin
 
-import android.os.Handler
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
@@ -11,8 +10,6 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.signin.data.*
-import com.criptext.mail.scenes.signin.holders.ConnectionHolder
-import com.criptext.mail.scenes.signin.holders.LoginValidationHolder
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -23,7 +20,9 @@ import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
-import com.criptext.mail.websocket.*
+import com.criptext.mail.websocket.CriptextWebSocketFactory
+import com.criptext.mail.websocket.WebSocketEventListener
+import com.criptext.mail.websocket.WebSocketEventPublisher
 
 /**
  * Created by sebas on 2/15/18.
@@ -151,16 +150,13 @@ class SignInSceneController(
         when (result) {
             is SignInResult.LinkAuth.Success -> {
                 model.linkDeviceState = LinkDeviceState.Auth()
-                val handler = Handler()
-                host.runOnUiThread(Runnable {
-                    handler.postDelayed({
-                        if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
-                            if (model.linkDeviceState is LinkDeviceState.Auth)
-                                dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                            model.retryTimeLinkStatus++
-                        }
-                    }, RETRY_TIME_DEFAULT)
-                })
+                host.postDelay(Runnable{
+                    if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                        if (model.linkDeviceState is LinkDeviceState.Auth)
+                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                        model.retryTimeLinkStatus++
+                    }
+                }, RETRY_TIME_DEFAULT)
 
             }
             is SignInResult.LinkAuth.Failure -> {
@@ -183,8 +179,7 @@ class SignInSceneController(
                 model.activeAccount = result.activeAccount
                 stopTempWebSocket()
                 handleNewWebSocket()
-                val handler = Handler()
-                handler.postDelayed({
+                host.postDelay(Runnable {
                     if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
                         if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
@@ -210,8 +205,7 @@ class SignInSceneController(
                 }
             }
             is SignInResult.LinkDataReady.Failure -> {
-                val handler = Handler()
-                handler.postDelayed({
+                host.postDelay(Runnable{
                     if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
                         if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
@@ -259,16 +253,13 @@ class SignInSceneController(
 
             }
             is SignInResult.LinkStatus.Waiting -> {
-                val handler = Handler()
-                host.runOnUiThread(Runnable {
-                    handler.postDelayed({
-                        if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
-                            if (model.linkDeviceState is LinkDeviceState.Auth)
-                                dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                            model.retryTimeLinkStatus++
-                        }
-                    }, RETRY_TIME_DEFAULT)
-                })
+                host.postDelay(Runnable{
+                    if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                        if (model.linkDeviceState is LinkDeviceState.Auth)
+                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
+                        model.retryTimeLinkStatus++
+                    }
+                }, RETRY_TIME_DEFAULT)
             }
             is SignInResult.LinkStatus.Denied -> {
                 if(model.linkDeviceState !is LinkDeviceState.Denied) {

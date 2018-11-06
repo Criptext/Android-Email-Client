@@ -37,6 +37,7 @@ interface IHostActivity {
     fun showDialog(message: UIMessage)
     fun dismissDialog()
     fun runOnUiThread(runnable: Runnable)
+    fun postDelay(runnable: Runnable, delayMilliseconds: Long)
     /**
      * Launch an activity for a result, and then pass that result as an ActivityMessage
      * @param params Object with the necessary data to launch the correct activity.
