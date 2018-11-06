@@ -12,6 +12,10 @@ import com.criptext.mail.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
+
+    }
+
     override fun runOnUiThread(runnable: Runnable) {
         
     }

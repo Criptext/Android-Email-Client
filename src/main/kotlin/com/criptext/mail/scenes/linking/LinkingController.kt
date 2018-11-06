@@ -229,16 +229,15 @@ class LinkingController(
     }
 
     private fun delayPostCheckForKeyBundle(){
-        val handler = Handler()
-            handler.postDelayed({
-                if(model.retryTimesCheckForKeyBundle < RETRY_TIMES_DEFAULT) {
-                    if (!model.untrustedDevicePostedKeyBundle)
-                        dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))
-                    model.retryTimesCheckForKeyBundle++
-                }else{
-                    scene.showKeepWaitingDialog()
-                }
-            }, RETRY_TIME)
+        host.postDelay(Runnable {
+            if(model.retryTimesCheckForKeyBundle < RETRY_TIMES_DEFAULT) {
+                if (!model.untrustedDevicePostedKeyBundle)
+                    dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))
+                model.retryTimesCheckForKeyBundle++
+            }else{
+                scene.showKeepWaitingDialog()
+            }
+        }, RETRY_TIME)
     }
 
 
