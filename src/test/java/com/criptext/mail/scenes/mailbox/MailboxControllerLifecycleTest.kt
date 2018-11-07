@@ -69,7 +69,9 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
 
 
         if (sentRequests.size > 0) {
-            sentRequests[1] `should be instance of` MailboxRequest.LoadEmailThreads::class.java
+            sentRequests.forEach {
+                it `should not be instance of` MailboxRequest.LoadEmailThreads::class.java
+            }
         }
     }
 }

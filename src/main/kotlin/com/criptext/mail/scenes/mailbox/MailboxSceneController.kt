@@ -352,7 +352,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-        reloadMailboxThreads()
+        if (model.threads.isEmpty()) reloadMailboxThreads()
 
         toggleMultiModeBar()
         scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
