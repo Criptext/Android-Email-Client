@@ -81,6 +81,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao){
+        handleNotificationCountForNewEmail(notificationId)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
         val operation = Result.of {
             val email = emailDao.getEmailByMetadataKey(metadataKey)
@@ -95,10 +96,8 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
         when(operation){
             is Result.Success -> {
-                handleNotificationCountForNewEmail(notificationId)
             }
             is Result.Failure -> {
-                handleNotificationCountForNewEmail(notificationId)
                 operation.error.printStackTrace()
                 val data = PushData.Error(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_read), isPostNougat, true)
@@ -110,6 +109,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao){
+        handleNotificationCountForNewEmail(notificationId)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
@@ -146,10 +146,9 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
         return when (result) {
             is Result.Success -> {
-                handleNotificationCountForNewEmail(notificationId)
+
             }
             is Result.Failure -> {
-                handleNotificationCountForNewEmail(notificationId)
                 val data = PushData.Error(UIMessage(R.string.push_email_error_title),
                         UIMessage(R.string.push_mail_error_message_trash), isPostNougat, true)
                 val errorNot = not.createNotification(CriptextNotification.ERROR_ID,

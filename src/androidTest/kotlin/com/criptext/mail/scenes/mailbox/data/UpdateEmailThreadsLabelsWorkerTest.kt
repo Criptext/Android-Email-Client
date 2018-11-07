@@ -84,7 +84,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
                 ExpectedRequest(
                         expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
                         method = "POST", path = "/event/peers",
-                        assertBodyFn = {it shouldEqual "{\"peerEvents\":[\"{\"cmd\":304,\"params\":{\"threadIds\":[\"${selectedThread[0]}\"],\"labelsRemoved\":[],\"labelsAdded\":[\"Starred\"]}}\"]}"})
+                        assertBodyFn = {it shouldEqual """{"peerEvents":["{\"cmd\":304,\"params\":{\"threadIds\":[\"${selectedThread[0]}\"],\"labelsRemoved\":[],\"labelsAdded\":[\"Starred\"]}}"]}"""})
         ))
 
     }

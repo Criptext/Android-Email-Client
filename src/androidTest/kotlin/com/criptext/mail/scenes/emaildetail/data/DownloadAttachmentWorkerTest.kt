@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.emaildetail.data
 
+import android.Manifest
 import android.support.test.rule.ActivityTestRule
+import android.support.test.rule.GrantPermissionRule
 import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
@@ -11,8 +13,9 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.UploadAttachmentWorker
 import com.criptext.mail.scenes.emaildetail.workers.DownloadAttachmentWorker
-import com.criptext.mail.utils.Encoding
-import com.criptext.mail.utils.*
+import com.criptext.mail.utils.FileDownloader
+import com.criptext.mail.utils.MockedResponse
+import com.criptext.mail.utils.enqueueResponses
 import com.criptext.mail.utils.file.AndroidFs
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
@@ -25,13 +28,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.nio.charset.Charset
+
 
 @RunWith(AndroidJUnit4::class)
 class DownloadAttachmentWorkerTest {
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
+    @get:Rule
+    var mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
