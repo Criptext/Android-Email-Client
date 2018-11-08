@@ -37,7 +37,6 @@ class MessagingService : FirebaseMessagingService(){
         if(remoteMessage.data.isNotEmpty()) {
             val shouldPostNotification = !isAppOnForeground(this, packageName)
             pushController?.parsePushPayload(remoteMessage.data, shouldPostNotification)
-            //notifier?.notifyPushEvent(this)
         }
     }
 
