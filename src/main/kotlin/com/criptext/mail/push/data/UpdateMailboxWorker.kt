@@ -1,5 +1,6 @@
 package com.criptext.mail.push.data
 
+import android.content.res.Resources
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
@@ -79,16 +80,33 @@ class UpdateMailboxWorker(
             is Result.Success -> {
                 val metadataKey = newData["metadataKey"]?.toLong()
                 if(metadataKey != null) {
-                    newData["preview"] = dbEvents.getEmailByMetadataKey(metadataKey).preview
-                }
+                    val email = dbEvents.getEmailByMetadataKey(metadataKey)
+                    if(email != null){
+                        newData["preview"] = email.preview
+                        newData["body"] = email.subject
+                        newData["title"] = dbEvents.getFromContactByEmailId(email.id)[0].name
 
-                return PushResult.UpdateMailbox.Success(
-                        mailboxLabel = label,
-                        isManual = true,
-                        mailboxThreads = operationResult.value,
-                        pushData = newData,
-                        shouldPostNotification = shouldPostNotification
-                )
+                        PushResult.UpdateMailbox.Success(
+                                mailboxLabel = label,
+                                isManual = true,
+                                mailboxThreads = operationResult.value,
+                                pushData = newData,
+                                shouldPostNotification = shouldPostNotification
+                        )
+                    }else{
+                        PushResult.UpdateMailbox.Failure(
+                                mailboxLabel = label,
+                                message = createErrorMessage(Resources.NotFoundException()),
+                                exception = Resources.NotFoundException(),
+                                shouldPostNotification = shouldPostNotification)
+                    }
+                }else {
+                    PushResult.UpdateMailbox.Failure(
+                            mailboxLabel = label,
+                            message = createErrorMessage(Resources.NotFoundException()),
+                            exception = Resources.NotFoundException(),
+                            shouldPostNotification = shouldPostNotification)
+                }
             }
 
             is Result.Failure -> processFailure(operationResult)

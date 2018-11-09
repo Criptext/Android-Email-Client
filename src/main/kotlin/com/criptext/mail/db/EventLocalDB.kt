@@ -17,8 +17,12 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase){
 
-    fun getEmailByMetadataKey(metadataKey: Long): Email{
-        return db.emailDao().getEmailByMetadataKey(metadataKey)
+    fun getFromContactByEmailId(id: Long): List<Contact> {
+        return db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+    }
+
+    fun getEmailByMetadataKey(metadataKey: Long): Email?{
+        return db.emailDao().findEmailByMetadataKey(metadataKey)
     }
 
     fun removeDevice(storage: KeyValueStorage){
