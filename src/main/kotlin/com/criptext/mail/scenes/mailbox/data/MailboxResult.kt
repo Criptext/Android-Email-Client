@@ -13,7 +13,7 @@ import com.criptext.mail.utils.UIMessage
 sealed class MailboxResult {
 
     sealed class UpdateEmailThreadsLabelsRelations: MailboxResult() {
-        class Success: UpdateEmailThreadsLabelsRelations()
+        data class Success(val threadIds: List<String>, val isStarred: Boolean): UpdateEmailThreadsLabelsRelations()
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
@@ -22,7 +22,7 @@ sealed class MailboxResult {
     }
 
     sealed class MoveEmailThread: MailboxResult() {
-        class Success: MoveEmailThread()
+        data class Success(val threadIds: List<String>, val chosenLabel: String?): MoveEmailThread()
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
@@ -75,7 +75,7 @@ sealed class MailboxResult {
     }
 
     sealed class UpdateUnreadStatus: MailboxResult(){
-        class Success: UpdateUnreadStatus()
+        data class Success(val threadId: List<String>, val unreadStatus: Boolean): UpdateUnreadStatus()
         class Failure(val message: UIMessage): UpdateUnreadStatus()
         class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
         class Forbidden: UpdateUnreadStatus()

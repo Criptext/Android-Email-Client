@@ -79,7 +79,6 @@ class UpdateEmailThreadsLabelsWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
-
         val selectedLabelsList = selectedLabels.toList().map { it.label }
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
@@ -112,12 +111,14 @@ class UpdateEmailThreadsLabelsWorker(
                 Result.of{ updateLabelEmailRelations(emailIds) }
             }
 
+        val isStarred = db.getLabelsFromThreadIds(threadIds = selectedThreadIds).contains(Label.defaultItems.starred)
+
         return when(result){
             is Result.Success -> {
                 peerEventHandler.enqueueEvent(
                         PeerChangeThreadLabelData(selectedThreadIds, peerRemovedLabels,
                         peerSelectedLabels).toJSON())
-                MailboxResult.UpdateEmailThreadsLabelsRelations.Success()
+                MailboxResult.UpdateEmailThreadsLabelsRelations.Success(selectedThreadIds, isStarred)
             }
             is Result.Failure -> {
                 catchException(result.error)

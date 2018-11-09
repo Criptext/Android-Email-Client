@@ -25,8 +25,8 @@ class HTMLUtils {
 
         fun createEmailPreview(emailBody: String): String {
             val bodyWithoutHTML = HTMLUtils.html2text(emailBody)
-            return if (bodyWithoutHTML.length > 100 )
-                bodyWithoutHTML.substring(0,100)
+            return if (bodyWithoutHTML.length > 300 )
+                bodyWithoutHTML.substring(0,300)
             else bodyWithoutHTML
         }
 

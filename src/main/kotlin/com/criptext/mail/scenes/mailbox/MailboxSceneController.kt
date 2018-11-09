@@ -608,7 +608,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             changeMode(multiSelectON = false, silent = false)
             when(result) {
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Success ->  {
-                    reloadMailboxThreads()
+                    threadListController.updateThreadLabels(result.threadIds, result.isStarred)
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Failure -> {
@@ -628,8 +628,13 @@ class MailboxSceneController(private val scene: MailboxScene,
             changeMode(multiSelectON = false, silent = false)
             when(result) {
                 is MailboxResult.MoveEmailThread.Success ->  {
-                    reloadMailboxThreads()
-                    feedController.reloadFeeds()
+                    if(model.selectedLabel.text != Label.LABEL_ALL_MAIL || result.chosenLabel == Label.LABEL_SPAM || result.chosenLabel == Label.LABEL_TRASH) {
+                        threadListController.removeThreadsById(result.threadIds)
+                        feedController.reloadFeeds()
+                        scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                    }else{
+                        threadListController.reRenderAll()
+                    }
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.MoveEmailThread.Failure -> {
@@ -696,7 +701,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onUpdateUnreadStatus(result: MailboxResult){
             when (result) {
                 is MailboxResult.UpdateUnreadStatus.Success -> {
-                    reloadMailboxThreads()
+                    threadListController.changeThreadReadStatus(result.threadId, result.unreadStatus)
+                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {

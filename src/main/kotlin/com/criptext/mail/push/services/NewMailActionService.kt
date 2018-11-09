@@ -20,6 +20,7 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         const val READ = "Read"
         const val TRASH = "Trash"
         const val REPLY = "Reply"
+        const val DELETE = "Delete"
     }
 
 
@@ -28,18 +29,26 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val data = getIntentData(intent)
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val storage = KeyValueStorage.SharedPrefs(this)
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
                 ActiveAccount.loadFromStorage(this)!!, HttpClient.Default(),
-                KeyValueStorage.SharedPrefs(this))
+                storage)
         val db = AppDatabase.getAppDatabase(this)
 
-        when {
-            READ == data.action -> {
+        when (data.action){
+            READ -> {
                 requestHandler.openEmail(data.metadataKey, data.notificationId, db.emailDao(), db.pendingEventDao())
             }
-            TRASH == data.action -> {
+            TRASH -> {
                 requestHandler.trashEmail(data.metadataKey, data.notificationId,
                         EmailDetailLocalDB.Default(db), db.emailDao(), db.pendingEventDao())
+            }
+            DELETE -> {
+                val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+                if((notCount - 1) == 0) {
+                    manager.cancel(CriptextNotification.INBOX_ID)
+                }
+                storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
             }
             else -> throw IllegalArgumentException("Unsupported action: " + data.action)
         }

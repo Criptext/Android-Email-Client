@@ -125,7 +125,7 @@
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="270dp"
+                android:maxWidth="250dp"
                 android:layout_centerVertical="true"
                 android:layout_gravity="fill_horizontal"
                 android:layout_marginEnd="10dp"

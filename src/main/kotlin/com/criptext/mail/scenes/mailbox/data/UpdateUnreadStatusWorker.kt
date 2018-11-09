@@ -60,7 +60,7 @@ class UpdateUnreadStatusWorker(
         return when (result) {
             is Result.Success -> {
                 peerEventHandler.enqueueEvent(PeerThreadReadData(threadIds, updateUnreadStatus).toJSON())
-                MailboxResult.UpdateUnreadStatus.Success()
+                MailboxResult.UpdateUnreadStatus.Success(threadId = threadIds, unreadStatus = updateUnreadStatus)
             }
             is Result.Failure -> {
                 catchException(result.error)

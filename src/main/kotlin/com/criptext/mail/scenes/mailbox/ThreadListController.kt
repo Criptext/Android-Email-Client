@@ -62,9 +62,9 @@ class ThreadListController(private val model : MailboxSceneModel,
             val threadPosition = model.threads.indexOfFirst { thread -> thread.threadId == threadId }
             if (threadPosition > -1) {
                 model.threads.removeAt(threadPosition)
-                virtualListView?.notifyItemRemoved(threadPosition)
             }
         }
+        virtualListView?.notifyDataSetChanged()
     }
 
     fun populateThreads(mailboxThreads: List<EmailPreview>) {
@@ -97,56 +97,37 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
-    fun changeThreadStatus(emailId: Long, deliveryType: DeliveryTypes) {
-        val position = model.threads.indexOfFirst { it.emailId == emailId }
-        if (position > -1) {
-            model.threads[position] =
-                    model.threads[position].copy(deliveryStatus = deliveryType)
-            virtualListView?.notifyItemChanged(position)
-        }
-    }
-
-    fun changeThreadStatusUnsend(emailId: Long, deliveryType: DeliveryTypes) {
-        val position = model.threads.indexOfFirst { it.emailId == emailId }
-        if (position > -1) {
-            model.threads[position] =
-                    model.threads[position].copy(deliveryStatus = deliveryType)
-            virtualListView?.notifyItemChanged(position)
-        }
-    }
-
-    fun changeEmailReadStatus(metadataKeys: List<Long>, unread: Boolean) {
-        for(metadataKey in metadataKeys) {
-            val position = model.threads.indexOfFirst { it.metadataKey == metadataKey }
-            if (position > -1) {
-                model.threads[position] =
-                        model.threads[position].copy(unread = unread)
-                virtualListView?.notifyItemChanged(position)
-            }
-        }
-    }
 
     fun changeThreadReadStatus(threadIds: List<String>, unread: Boolean) {
-        model.threads.forEachIndexed { _, emailPreview ->
+        model.threads.forEachIndexed { index, emailPreview ->
             for (threadId in threadIds)
-                if(emailPreview.threadId == threadId) changeEmailReadStatus(listOf(emailPreview.metadataKey), unread)
+                if(emailPreview.threadId == threadId) {
+                    model.threads[index] = emailPreview.copy(unread = unread)
+                }
         }
+        virtualListView?.notifyDataSetChanged()
     }
 
-    fun removeEmailById(emailIds: List<Long>) {
-        val emailId = emailIds[0]
-        val position = model.threads.indexOfFirst { it.emailId == emailId }
-        if (position > -1) {
-            if(model.threads[position].count == 1){
-                model.threads.removeAt(position)
-                virtualListView?.notifyItemRemoved(position)
-            }else{
-                if (position > -1) {
-                    model.threads[position] =
-                            model.threads[position].copy(count = (model.threads[position].count - 1))
-                    virtualListView?.notifyItemChanged(position)
+    fun updateThreadLabels(threadIds: List<String>, isStarred: Boolean) {
+        model.threads.forEachIndexed { index, emailPreview ->
+            for (threadId in threadIds)
+                if(emailPreview.threadId == threadId) {
+                    model.threads[index] = emailPreview.copy(isStarred = isStarred)
                 }
+        }
+        virtualListView?.notifyDataSetChanged()
+    }
+
+    fun updateThreadsAndAddNew(emails: List<EmailPreview>){
+        val newEmails = model.threads.filter { (it !in emails) && (it.timestamp.after(model.threads.first().timestamp)) }
+        val oldEmails = model.threads.filter { it in emails }
+        oldEmails.forEach {
+            val index = model.threads.indexOf(it)
+            if(index > -1){
+                if(model.threads[index] != it)
+                    model.threads[index] = it
             }
         }
+        newEmails.forEach { model.threads.add(0, it) }
     }
 }
