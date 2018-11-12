@@ -64,6 +64,7 @@ abstract class CriptextNotification(open val ctx: Context) {
                 .setSmallIcon(icon)
                 .setAutoCancel(true)
                 .setGroupSummary(true)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setGroup(group)
 
 
