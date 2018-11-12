@@ -79,7 +79,7 @@ class MoveEmailThreadWorker(
             return when (result) {
                 is Result.Success -> {
                     peerEventHandler.enqueueEvent(PeerDeleteThreadData(selectedThreadIds).toJSON())
-                    MailboxResult.MoveEmailThread.Success()
+                    MailboxResult.MoveEmailThread.Success(selectedThreadIds, chosenLabel)
                 }
                 is Result.Failure -> {
                     catchException(result.error)
@@ -126,7 +126,7 @@ class MoveEmailThreadWorker(
                 peerEventHandler.enqueueEvent(
                         PeerChangeThreadLabelData(selectedThreadIds, peerRemovedLabels,
                         peerSelectedLabels).toJSON())
-                MailboxResult.MoveEmailThread.Success()
+                MailboxResult.MoveEmailThread.Success(selectedThreadIds, chosenLabel)
             }
             is Result.Failure -> {
                 catchException(result.error)
