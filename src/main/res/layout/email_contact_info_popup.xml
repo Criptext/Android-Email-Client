@@ -39,7 +39,7 @@
                 android:layout_toEndOf="@+id/title_from"
                 android:gravity="center_horizontal"
                 android:text="Gianni Carlo"
-                android:textColor="#7d7d7d"
+                android:textColor="#000"
                 android:textSize="13sp"/>
 
             <TextView
@@ -189,7 +189,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -213,7 +212,42 @@
                 android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
                 android:text="10:30 AM"
-                android:textColor="#7d7d7d"
+                android:textColor="#000"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/subject_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/title_subject"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:text="@string/subject_popup"
+                android:textColor="@color/black"
+                android:textSize="13sp"/>
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/title_subject"
+                android:gravity="center_vertical"
+                android:text="Email Subject"
+                android:textColor="#000"
                 android:textSize="13sp"/>
 
         </LinearLayout>

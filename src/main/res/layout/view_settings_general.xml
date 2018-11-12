@@ -672,6 +672,7 @@
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/version_text"
                 android:layout_width="match_parent"
+                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/drawer_text_item"
                 android:textColor="#b9b9b9"

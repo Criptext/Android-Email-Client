@@ -15,4 +15,6 @@ interface VirtualListView {
     fun notifyItemRangeInserted(positionStart: Int, itemCount: Int)
 
     fun setAdapter(virtualListAdapter: VirtualListAdapter)
+
+    fun isOnTop(): Boolean
 }

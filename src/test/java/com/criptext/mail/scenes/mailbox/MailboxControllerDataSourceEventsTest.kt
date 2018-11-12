@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
-import com.criptext.mail.scenes.mailbox.data.MailboxRequest
+import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -35,7 +35,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
 
         // trigger load complete event
         listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
-                isReset = false,
+                loadParams = LoadParams.NewPage(loadedThreads.size, loadedThreads.lastOrNull()?.timestamp),
                 mailboxLabel = model.selectedLabel.text))
 
         model.threads.size `should equal` 20
@@ -50,7 +50,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
 
         // trigger load complete event
         listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
-                isReset = false,
+                loadParams = LoadParams.NewPage(loadedThreads.size, loadedThreads.lastOrNull()?.timestamp),
                 mailboxLabel = model.selectedLabel.text))
 
         // verify UpdateMailbox request sent
@@ -72,7 +72,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
 
         // trigger load complete event
         listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(emailPreviews = loadedThreads,
-                isReset = false,
+                loadParams = LoadParams.NewPage(loadedThreads.size, loadedThreads.lastOrNull()?.timestamp),
                 mailboxLabel = model.selectedLabel.text))
 
         // verify no requests were NOT sent
@@ -94,7 +94,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         // trigger load complete event
         listenerSlot.captured(MailboxResult.LoadEmailThreads.Success(
                 emailPreviews = threadsFromUpdate,
-                isReset = true,
+                loadParams = LoadParams.Reset(20),
                 mailboxLabel = model.selectedLabel.text))
 
         model.threads.size `should be` 20

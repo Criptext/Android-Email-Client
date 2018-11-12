@@ -587,10 +587,25 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result) {
                 is MailboxResult.LoadEmailThreads.Success -> {
                     val hasReachedEnd = result.emailPreviews.size < threadsPerPage
-                    if (model.threads.isNotEmpty() && result.isReset)
-                        threadListController.populateThreads(result.emailPreviews)
-                    else
-                        threadListController.appendAll(result.emailPreviews, hasReachedEnd)
+                    when(result.loadParams){
+                        is LoadParams.Reset -> {
+                            if (model.threads.isNotEmpty())
+                                threadListController.populateThreads(result.emailPreviews)
+                            else
+                                threadListController.appendAll(result.emailPreviews, hasReachedEnd)
+                        }
+                        is LoadParams.NewPage ->
+                            threadListController.appendAll(result.emailPreviews, hasReachedEnd)
+                        is LoadParams.UpdatePage -> {
+                            val newEmails = model.threads.filter { (it !in result.emailPreviews)
+                                    && (it.timestamp.after(model.threads.first().timestamp)) }
+                            val oldEmails = model.threads.filter { it in result.emailPreviews }
+                            threadListController.updateThreadsAndAddNew(newEmails, oldEmails)
+                            if(newEmails.isNotEmpty() && !threadListController.isOnTopOfList())
+                                scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)))
+                        }
+                    }
+
                     scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
                     if (shouldSync)
                         updateMailbox(model.selectedLabel)
@@ -853,7 +868,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         private fun reloadViewAfterSocketEvent(){
-            reloadMailboxThreads()
+            val req = MailboxRequest.LoadEmailThreads(
+                    label = model.selectedLabel.text,
+                    loadParams = LoadParams.UpdatePage(size = model.threads.size,
+                            mostRecentDate = model.threads.firstOrNull()?.timestamp),
+                    userEmail = activeAccount.userEmail)
+            dataSource.submitRequest(req)
             feedController.reloadFeeds()
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
         }

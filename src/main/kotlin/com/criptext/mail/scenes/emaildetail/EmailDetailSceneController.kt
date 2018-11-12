@@ -9,6 +9,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -31,8 +32,10 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.addWhere
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -460,25 +463,51 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                             activityMessage = ActivityMessage.UpdateMailBox(),
                             forceAnimation = false)
                 } else {
-                    val lastEmail = result.fullEmailList.last().email
-                    model.threadPreview = model.threadPreview.copy(
-                            unread = false,
-                            count = result.fullEmailList.size,
-                            bodyPreview = lastEmail.preview,
-                            deliveryStatus = lastEmail.delivered)
-                    model.emails.addAll(result.fullEmailList)
-                    val fullEmailsList = VirtualList.Map(result.fullEmailList, { t -> t })
-                    result.fullEmailList.forEach { fullEmail ->
-                        model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                    if(model.emails.isEmpty()) {
+                        val lastEmail = result.fullEmailList.last().email
+                        model.threadPreview = model.threadPreview.copy(
+                                unread = false,
+                                count = result.fullEmailList.size,
+                                bodyPreview = lastEmail.preview,
+                                deliveryStatus = lastEmail.delivered)
+                        model.emails.addAll(result.fullEmailList)
+                        val fullEmailsList = VirtualEmailDetailList(model)
+                        result.fullEmailList.forEach { fullEmail ->
+                            model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                        }
+
+                        scene.attachView(
+                                fullEmailList = fullEmailsList,
+                                fullEmailEventListener = emailHolderEventListener,
+                                fileDetailList = model.fileDetails,
+                                observer = emailDetailUIObserver)
+
+                        readEmails(result.fullEmailList)
+                    }else{
+                        val lastEmail = result.fullEmailList.last().email
+                        model.threadPreview = model.threadPreview.copy(
+                                unread = false,
+                                count = result.fullEmailList.size,
+                                bodyPreview = lastEmail.preview,
+                                deliveryStatus = lastEmail.delivered)
+                        val currentEmails = model.emails
+                        val newEmails = result.fullEmailList.filter { it.email.id !in currentEmails.map { fullEmail -> fullEmail.email.id } }
+                        val oldEmails = result.fullEmailList.filter { it.email.id in currentEmails.map { fullEmail -> fullEmail.email.id } }
+                        model.emails.addAll(newEmails)
+                        oldEmails.forEach {
+                            val index = model.emails.indexOfFirst { mEmail -> mEmail.email.id == it.email.id }
+                            if(it.email != model.emails[index].email || it.labels != model.emails[index].labels){
+                                model.emails[index] = model.emails[index].copy(email = it.email, labels = it.labels)
+                            }
+                        }
+                        model.emails.forEach { fullEmail ->
+                            model.fileDetails[fullEmail.email.id] = fullEmail.files.map { FileDetail(it) }
+                        }
+                        if(newEmails.isNotEmpty())
+                            scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)))
+                        scene.notifyFullEmailListChanged()
+                        readEmails(model.emails)
                     }
-
-                    scene.attachView(
-                            fullEmailList = fullEmailsList,
-                            fullEmailEventListener = emailHolderEventListener,
-                            fileDetailList = model.fileDetails,
-                            observer = emailDetailUIObserver)
-
-                    readEmails(result.fullEmailList)
                 }
             }
 

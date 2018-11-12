@@ -29,6 +29,11 @@ class SearchEmailWorker(
                 startDate = loadParams.startDate,
                 limit = loadParams.size,
                 userEmail = userEmail)
+        is LoadParams.UpdatePage -> db.searchMailsInDB(
+                queryText = queryText,
+                startDate = null,
+                limit = loadParams.size,
+                userEmail = userEmail)
         is LoadParams.Reset -> db.searchMailsInDB(
                 queryText = queryText,
                 startDate = null,

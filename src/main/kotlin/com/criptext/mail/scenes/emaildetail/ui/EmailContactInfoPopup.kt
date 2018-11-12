@@ -61,6 +61,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         val containerCC = view.findViewById<LinearLayout>(R.id.cc_container)
         val containerBCC = view.findViewById<LinearLayout>(R.id.bcc_container)
         val date = view.findViewById<TextView>(R.id.date)
+        val subject = view.findViewById<TextView>(R.id.subject)
 
         viewFromName.text = fullEmail.from.name
         viewFromEmail.text = fullEmail.from.email
@@ -74,6 +75,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
         }
 
         date.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
+        subject.text = fullEmail.email.subject
     }
 
     class ContactsRecyclerView(val recyclerView: RecyclerView,

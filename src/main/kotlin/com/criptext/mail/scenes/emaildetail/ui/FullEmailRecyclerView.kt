@@ -34,8 +34,19 @@ class FullEmailRecyclerView(
         recyclerView.adapter = fullEmailListAdapter
     }
 
+    fun updateAndNotify(fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
+                        fileDetailList: Map<Long, List<FileDetail>>,
+                        labels: VirtualList<Label>,
+                        isStarred: Boolean){
+
+    }
+
     fun notifyFullEmailListChanged() {
         fullEmailListAdapter.notifyDataSetChanged()
+    }
+
+    fun scrollTo(position: Int){
+        recyclerView.scrollToPosition(position - 1)
     }
 
     fun scrollToLast() {
