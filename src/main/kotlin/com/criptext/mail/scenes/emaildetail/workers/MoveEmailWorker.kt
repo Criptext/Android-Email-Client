@@ -55,15 +55,15 @@ class MoveEmailWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
 
         val emailIds = listOf(emailId)
+        val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
+                .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
+                .map { it.metadataKey }
 
         if(chosenLabel == null){
             //It means the email will be deleted permanently
             val result = Result.of { db.deleteEmail(emailId) }
             return when (result) {
                 is Result.Success -> {
-                    val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
-                            .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
-                            .map { it.metadataKey }
                     peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())
                     EmailDetailResult.MoveEmailThread.Success(null)
                 }
@@ -105,9 +105,6 @@ class MoveEmailWorker(
 
         return when (result) {
             is Result.Success -> {
-                val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
-                        .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
-                        .map { it.metadataKey }
                 peerEventHandler.enqueueEvent(PeerChangeEmailLabelData(metadataKeys,
                         peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON())
 
