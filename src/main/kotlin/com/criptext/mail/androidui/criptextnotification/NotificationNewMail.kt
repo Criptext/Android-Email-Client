@@ -81,7 +81,8 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
         val deletePendingIntent = PendingIntent.getService(ctx, notificationId, deleteAction,0)
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val pushHtmlBody = "<span style='color:black;'>${pushData.body}</span><br>${pushData.preview}"
+        val preview = if(pushData.preview.length == 300) pushData.preview.plus("...") else pushData.preview
+        val pushHtmlBody = "<span style='color:black;'>${pushData.body}</span><br>$preview"
         val pushBody = if(showEmailPreview)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 Html.fromHtml(pushHtmlBody, Html.FROM_HTML_MODE_LEGACY)

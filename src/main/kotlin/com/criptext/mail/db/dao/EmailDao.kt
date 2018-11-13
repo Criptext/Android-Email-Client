@@ -96,6 +96,28 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
+        group_concat(email_label.labelId) as allLabels,
+        max(email.unread) as unread, max(email.date)
+        from email
+        left join email_label on email.id = email_label.emailId
+        and date > :startDate
+        where case when :isTrashOrSpam
+        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        else not exists
+        (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        end
+        group by uniqueId
+        having coalesce(allLabels, "") like :selectedLabel
+        order by date DESC
+            """)
+    fun getNewEmailThreadsFromMailboxLabel(
+            isTrashOrSpam: Boolean,
+            startDate: Date,
+            rejectedLabels: List<Long>,
+            selectedLabel: String): List<Email>
+
+    @Query("""
+        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
         max(email.unread) as unread, max(email.date),
         group_concat(distinct(contact.name)) as contactNames,
         group_concat(distinct(contact.email)) as contactEmails

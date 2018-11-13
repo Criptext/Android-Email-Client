@@ -8,10 +8,11 @@ class VirtualRecyclerView(private val recyclerView: RecyclerView)
     : VirtualListView {
 
     private var virtualAdapter: VirtualListAdapter? = null
+    private var mLayoutManager: LinearLayoutManager
 
     init {
         val ctx: Context = recyclerView.context
-        val mLayoutManager = LinearLayoutManager(ctx)
+        mLayoutManager = LinearLayoutManager(ctx)
         recyclerView.layoutManager = mLayoutManager
     }
 
@@ -29,6 +30,10 @@ class VirtualRecyclerView(private val recyclerView: RecyclerView)
 
     override fun notifyItemChanged(position: Int) {
         virtualAdapter?.notifyItemChanged(position)
+    }
+
+    override fun isOnTop(): Boolean {
+        return mLayoutManager.findFirstCompletelyVisibleItemPosition()==0
     }
 
     override fun setAdapter(virtualListAdapter: VirtualListAdapter) {

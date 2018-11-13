@@ -45,6 +45,20 @@ class LoadEmailThreadsWorker(
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
             limit = loadParams.size,
             userEmail = userEmail)
+        is LoadParams.UpdatePage -> {
+            val newEmails = db.getNewThreadsFromMailboxLabel(
+                    labelName = labelNames,
+                    mostRecentDate = loadParams.mostRecentDate,
+                    rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
+                    userEmail = userEmail
+            )
+            db.getThreadsFromMailboxLabel(
+                    labelName = labelNames,
+                    startDate = null,
+                    rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
+                    limit = loadParams.size + newEmails.size,
+                    userEmail = userEmail)
+        }
     }
 
     override fun work(reporter: ProgressReporter<MailboxResult.LoadEmailThreads>)
@@ -55,7 +69,9 @@ class LoadEmailThreadsWorker(
         return MailboxResult.LoadEmailThreads.Success(
                 emailPreviews = emailPreviews,
                 mailboxLabel = labelNames,
-                isReset = loadParams is LoadParams.Reset)
+                loadParams = if(loadParams is LoadParams.UpdatePage)
+                                loadParams.copy(size = emailPreviews.size)
+                             else loadParams)
     }
 
 

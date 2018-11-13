@@ -118,9 +118,9 @@ class ThreadListController(private val model : MailboxSceneModel,
         virtualListView?.notifyDataSetChanged()
     }
 
-    fun updateThreadsAndAddNew(emails: List<EmailPreview>){
-        val newEmails = model.threads.filter { (it !in emails) && (it.timestamp.after(model.threads.first().timestamp)) }
-        val oldEmails = model.threads.filter { it in emails }
+    fun updateThreadsAndAddNew(newEmails: List<EmailPreview>, oldEmails: List<EmailPreview>) {
+        if(newEmails.isEmpty() && oldEmails.isEmpty()) return
+
         oldEmails.forEach {
             val index = model.threads.indexOf(it)
             if(index > -1){
@@ -129,5 +129,9 @@ class ThreadListController(private val model : MailboxSceneModel,
             }
         }
         newEmails.forEach { model.threads.add(0, it) }
+    }
+
+    fun isOnTopOfList(): Boolean {
+        return virtualListView?.isOnTop() ?: true
     }
 }

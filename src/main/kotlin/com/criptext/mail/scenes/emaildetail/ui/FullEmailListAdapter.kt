@@ -26,6 +26,10 @@ class FullEmailListAdapter(private val mContext : Context,
                            private val isStarred: Boolean )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    init {
+        setHasStableIds(true)
+    }
+
     private lateinit var headerHolder:HeaderViewHolder
 
     private fun isPositionFooter(position: Int): Boolean {

@@ -26,7 +26,11 @@ interface MailboxLocalDB {
             startDate: Date?,
             limit: Int,
             rejectedLabels: List<Label>): List<EmailThread>
-
+    fun getNewThreadsFromMailboxLabel(
+            userEmail: String,
+            labelName: String,
+            mostRecentDate: Date?,
+            rejectedLabels: List<Label>): List<EmailThread>
     fun getLabelsFromLabelType(labelNames: List<String>): List<Label>
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
@@ -203,6 +207,41 @@ interface MailboxLocalDB {
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel,
                         limit = limit )
+
+            return if (emails.isNotEmpty()){
+                emails.map { email ->
+                    getEmailThreadFromEmail(email, labelName,
+                            Label.defaultItems.rejectedLabelsByMailbox(
+                                    db.labelDao().get(labelName)
+                            ).map { it.id }, userEmail)
+                } as ArrayList<EmailThread>
+            }else emptyList()
+        }
+
+        override fun getNewThreadsFromMailboxLabel(userEmail: String, labelName: String,
+                                                mostRecentDate: Date?,
+                                                rejectedLabels: List<Label>): List<EmailThread> {
+
+            val labels = db.labelDao().getAll()
+            val selectedLabel = Label.getLabelIdWildcard(labelName, labels)
+            val conditionalLabels = listOf(
+                    Label.getLabelIdWildcard(Label.LABEL_TRASH, labels),
+                    Label.getLabelIdWildcard(Label.LABEL_SPAM, labels)
+            )
+            val rejectedIdLabels = rejectedLabels.filter {label ->
+                label.text != labelName
+            }.map {
+                it.id
+            }
+            val emails = if(mostRecentDate != null)
+                db.emailDao().getNewEmailThreadsFromMailboxLabel(
+                        isTrashOrSpam = (selectedLabel in conditionalLabels),
+                        startDate = mostRecentDate,
+                        rejectedLabels = rejectedIdLabels,
+                        selectedLabel = selectedLabel)
+
+            else
+                emptyList()
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->

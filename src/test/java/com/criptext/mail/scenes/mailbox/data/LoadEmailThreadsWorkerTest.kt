@@ -4,8 +4,10 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.MailboxTestUtils
 import io.mockk.every
 import io.mockk.mockk
+import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
+import org.amshove.kluent.`should not be instance of`
 import org.junit.Test
 
 /**
@@ -32,7 +34,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 
-        result.isReset `should be` false
+        result.loadParams `should not be instance of` LoadParams.Reset::class
         result.mailboxLabel `should be` selectedFolder
         result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }
@@ -59,7 +61,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 
-        result.isReset `should be` false
+        result.loadParams `should not be instance of` LoadParams.Reset::class
         result.mailboxLabel `should be` selectedFolder
         result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }
@@ -82,7 +84,7 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
 
         val result = lastResult as MailboxResult.LoadEmailThreads.Success
 
-        result.isReset `should be` true
+        result.loadParams `should be instance of` LoadParams.Reset::class
         result.mailboxLabel `should be` selectedFolder
         result.emailPreviews.map { it.emailId } `should equal` expectedThreads.map{ it.id }
     }

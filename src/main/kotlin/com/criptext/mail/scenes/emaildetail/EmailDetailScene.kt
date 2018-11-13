@@ -28,6 +28,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SnackBarHelper
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -43,8 +44,8 @@ interface EmailDetailScene {
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
             fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
             observer: EmailDetailUIObserver)
-
     fun showError(message : UIMessage)
+    fun showMessage(message : UIMessage)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun notifyLabelsChanged(updatedLabels: List<Label>)
@@ -203,6 +204,10 @@ interface EmailDetailScene {
                     context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
+        }
+
+        override fun showMessage(message: UIMessage) {
+            SnackBarHelper.show(emailDetailView, context.getLocalizedUIMessage(message))
         }
     }
 

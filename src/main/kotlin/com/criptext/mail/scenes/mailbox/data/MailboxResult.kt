@@ -42,7 +42,7 @@ sealed class MailboxResult {
         abstract fun getDestinationMailbox(): String
         class Success(
                 val emailPreviews: List<EmailPreview>,
-                val isReset: Boolean,
+                val loadParams: LoadParams,
                 val mailboxLabel: String): LoadEmailThreads() {
 
             override fun getDestinationMailbox(): String {
