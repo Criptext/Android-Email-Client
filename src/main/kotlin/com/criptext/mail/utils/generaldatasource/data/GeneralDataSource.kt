@@ -72,6 +72,11 @@ class GeneralDataSource(override val runner: WorkRunner,
                     signalClient = signalClient,
                     publishFn = { res -> flushResults(res)}
             )
+            is GeneralRequest.TotalUnreadEmails -> GetTotalUnreadMailsByLabelWorker(
+                    emailDao = db.emailDao(),
+                    currentLabel = params.currentLabel,
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 }
