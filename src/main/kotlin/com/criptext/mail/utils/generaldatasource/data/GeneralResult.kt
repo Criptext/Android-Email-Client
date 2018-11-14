@@ -86,4 +86,9 @@ sealed class GeneralResult {
         class Success: PostUserData()
         data class Failure(val message: UIMessage): PostUserData()
     }
+
+    sealed class TotalUnreadEmails: GeneralResult() {
+        data class Success(val total: Int): TotalUnreadEmails()
+        data class Failure(val message: UIMessage): TotalUnreadEmails()
+    }
 }

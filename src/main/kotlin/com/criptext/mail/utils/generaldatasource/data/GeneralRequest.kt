@@ -17,4 +17,5 @@ sealed class GeneralRequest {
     data class PostUserData(val deviceID: Int, val filePath: String, val key: ByteArray,
                             val randomId: String,
                             val keyBundle: PreKeyBundleShareData.DownloadBundle?): GeneralRequest()
+    data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
 }

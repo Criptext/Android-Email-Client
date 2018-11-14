@@ -53,6 +53,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.UpdateMailbox -> onMailboxUpdated(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
         }
     }
 
@@ -281,13 +282,13 @@ class MailboxSceneController(private val scene: MailboxScene,
             is ActivityMessage.UpdateUnreadStatusThread -> {
                 threadListController.updateUnreadStatusAndNotifyItem(activityMessage.threadId,
                         activityMessage.unread)
-                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                 true
             }
             is ActivityMessage.MoveThread -> {
                 if(activityMessage.threadId != null) {
                     threadListController.removeThreadById(activityMessage.threadId)
-                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                 }
                 else{
                     reloadMailboxThreads()
@@ -300,7 +301,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             is ActivityMessage.UpdateThreadPreview -> {
                 threadListController.replaceThread(activityMessage.threadPreview)
-                scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                 true
             }
             is ActivityMessage.DraftSaved -> {
@@ -355,7 +356,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         if (model.threads.isEmpty()) reloadMailboxThreads()
 
         toggleMultiModeBar()
-        scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+        generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
         feedController.onStart()
 
         websocketEvents.setListener(webSocketEventListener)
@@ -606,7 +607,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         }
                     }
 
-                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     if (shouldSync)
                         updateMailbox(model.selectedLabel)
                     if(result.mailboxLabel == Label.LABEL_TRASH &&
@@ -643,10 +644,12 @@ class MailboxSceneController(private val scene: MailboxScene,
             changeMode(multiSelectON = false, silent = false)
             when(result) {
                 is MailboxResult.MoveEmailThread.Success ->  {
-                    if(model.selectedLabel.text != Label.LABEL_ALL_MAIL || result.chosenLabel == Label.LABEL_SPAM || result.chosenLabel == Label.LABEL_TRASH) {
+                    if(model.selectedLabel.text != Label.LABEL_ALL_MAIL ||
+                            result.chosenLabel == Label.LABEL_SPAM ||
+                            result.chosenLabel == Label.LABEL_TRASH) {
                         threadListController.removeThreadsById(result.threadIds)
                         feedController.reloadFeeds()
-                        scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                        generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     }else{
                         threadListController.reRenderAll()
                     }
@@ -717,7 +720,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             when (result) {
                 is MailboxResult.UpdateUnreadStatus.Success -> {
                     threadListController.changeThreadReadStatus(result.threadId, result.unreadStatus)
-                    scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }
                 is MailboxResult.UpdateUnreadStatus.Failure -> {
@@ -753,7 +756,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.lastSync = System.currentTimeMillis()
         if (resultData.mailboxThreads != null) {
             threadListController.populateThreads(resultData.mailboxThreads)
-            scene.setToolbarNumberOfEmails(getTotalUnreadThreads())
+            generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
             scene.updateToolbarTitle(toolbarTitle)
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             feedController.reloadFeeds()
@@ -763,6 +766,14 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun handleFailedMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Failure) {
         scene.showMessage(resultData.message)
+    }
+
+    private fun onTotalUnreadEmails(resultData: GeneralResult.TotalUnreadEmails){
+        when (resultData) {
+            is GeneralResult.TotalUnreadEmails.Success -> {
+                scene.setToolbarNumberOfEmails(resultData.total)
+            }
+        }
     }
 
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
