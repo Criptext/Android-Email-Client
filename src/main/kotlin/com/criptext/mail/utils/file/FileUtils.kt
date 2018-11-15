@@ -1,7 +1,10 @@
 package com.criptext.mail.utils.file
 
+import android.net.Uri
+import android.os.Environment
 import android.webkit.MimeTypeMap
 import com.criptext.mail.db.AttachmentTypes
+import java.io.File
 import java.net.URLConnection
 
 /**
@@ -225,6 +228,8 @@ class FileUtils {
                 mimetype.contains("powerpoint") || mimetype.contains("presentation") -> AttachmentTypes.PPT
                 mimetype.contains("excel") || mimetype.contains("sheet") -> AttachmentTypes.EXCEL
                 mimetype.contains("pdf") -> AttachmentTypes.PDF
+                mimetype.contains("audio") -> AttachmentTypes.AUDIO
+                mimetype.contains("video") -> AttachmentTypes.VIDEO
                 else -> AttachmentTypes.DEFAULT
             }
             return type
@@ -237,6 +242,5 @@ class FileUtils {
             val pre = ("KMGTPE")[exp - 1]
             return String.format("%.2f %sB", size / Math.pow(unit.toDouble(), exp.toDouble()), pre)
         }
-
     }
 }

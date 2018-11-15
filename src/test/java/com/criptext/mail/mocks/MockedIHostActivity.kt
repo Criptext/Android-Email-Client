@@ -1,5 +1,6 @@
 package com.criptext.mail.mocks
 
+import android.content.ContentResolver
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.push.data.IntentExtrasData
@@ -12,6 +13,14 @@ import com.criptext.mail.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun getFileFromUri(uri: String): Pair<String, Long> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getContentResolver(): ContentResolver {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
 
     }

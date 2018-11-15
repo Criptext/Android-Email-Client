@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.composer
 
 import android.content.Intent
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
@@ -19,6 +21,8 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import droidninja.filepicker.FilePickerConst
 import java.io.File
@@ -66,18 +70,66 @@ class ComposerActivity : BaseActivity() {
     }
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
-        if(filePickerConst != PhotoUtil.KEY_PHOTO_TAKEN && data != null) {
-            val selectedAttachments = data.getStringArrayListExtra(filePickerConst)
-            val attachmentsList = selectedAttachments.map {
-                val size = File(it).length()
-                Pair(it, size)
+        when(filePickerConst){
+            FilePickerConst.KEY_SELECTED_DOCS -> {
+                if(data != null) {
+                    val clipData = data.clipData
+                    if(clipData == null) {
+                        data.data?.also { uri ->
+                            val attachment = getPathAndSizeFromUri(uri)
+                            if (attachment != null)
+                                setActivityMessage(ActivityMessage.AddAttachments(listOf(attachment)))
+                        }
+                    }else{
+                        val remaining = data.getIntExtra("remaining", 0)
+                        if(clipData.itemCount < remaining) {
+                            val attachmentList = mutableListOf<Pair<String, Long>>()
+                            for (i in 0 until clipData.itemCount) {
+                                clipData.getItemAt(i).also { item ->
+                                    val attachment = getPathAndSizeFromUri(item.uri)
+                                    if (attachment != null)
+                                        attachmentList.add(attachment)
+                                }
+                            }
+                            if (attachmentList.isNotEmpty())
+                                setActivityMessage(ActivityMessage.AddAttachments(attachmentList))
+                        }else{
+                            setActivityMessage(ActivityMessage.ShowUIMessage(UIMessage(R.string.too_many_files)))
+                        }
+                    }
+                }
             }
-            setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
-        }else{
-            val photo= photoUtil.getPhotoFileFromIntent()
-            if(photo != null)
-                setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length()))))
+            FilePickerConst.KEY_SELECTED_MEDIA -> {
+                if(data != null) {
+                    val selectedAttachments = data.getStringArrayListExtra(filePickerConst)
+                    val attachmentsList = selectedAttachments.map {
+                        val size = File(it).length()
+                        Pair(it, size)
+                    }
+                    setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
+                }
+            }
+            PhotoUtil.KEY_PHOTO_TAKEN -> {
+                val photo= photoUtil.getPhotoFileFromIntent()
+                if(photo != null && photo.length() != 0L)
+                    setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length()))))
+            }
         }
+    }
+
+    private fun getPathAndSizeFromUri(uri: Uri): Pair<String, Long>?{
+        if(uri.toString().contains("com.google.android")){
+            return Pair(uri.toString(), -1L)
+        }else {
+            contentResolver.query(uri, null, null, null, null)?.use {
+                val absolutePath = PathUtil.getPath(this, uri)
+                val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+                it.moveToFirst()
+                if(absolutePath != null)
+                    return Pair(absolutePath, it.getLong(sizeIndex))
+            }
+        }
+        return null
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -89,6 +141,7 @@ class ComposerActivity : BaseActivity() {
         if(data != null) {
             when (requestCode){
                 FilePickerConst.REQUEST_CODE_DOC -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)
+
                 FilePickerConst.REQUEST_CODE_PHOTO -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_MEDIA)
             }
         }else{

@@ -42,6 +42,10 @@ class ComposerController(private val model: ComposerModel,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+        override fun leaveComposer() {
+            checkForDraft()
+        }
+
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }
@@ -123,11 +127,10 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onBackButtonClicked() {
-            if(shouldGoBackWithoutSave()){
-                exitToEmailDetailScene()
-            }
-            else{
-                showDraftDialog()
+            if(!model.isUploadingAttachments) {
+                checkForDraft()
+            }else{
+                scene.showStayInComposerDialog(this)
             }
         }
 
@@ -155,6 +158,7 @@ class ComposerController(private val model: ComposerModel,
             is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
+            is ComposerResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -168,6 +172,17 @@ class ComposerController(private val model: ComposerModel,
 
             is ComposerResult.LoadInitialData.Failure -> {
                 scene.showError(result.message)
+            }
+        }
+    }
+
+    private fun onGetRemoteFile(result: ComposerResult.GetRemoteFile) {
+        when (result) {
+            is ComposerResult.GetRemoteFile.Success -> {
+                scene.dismissPreparingFileDialog()
+                model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second) })
+                scene.notifyAttachmentSetChanged()
+                handleNextUpload()
             }
         }
     }
@@ -289,10 +304,11 @@ class ComposerController(private val model: ComposerModel,
         model.subject = data.subject
     }
 
-    private fun isReadyForSending() = model.to.isNotEmpty() && !model.isUploadingAttachments
+    private fun isReadyForSending() = model.to.isNotEmpty()
 
     private fun uploadSelectedFile(filepath: String){
         model.isUploadingAttachments = true
+        scene.dismissPreparingFileDialog()
         dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath, fileKey = model.fileKey))
     }
 
@@ -320,7 +336,7 @@ class ComposerController(private val model: ComposerModel,
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
 
-        if(isReadyForSending()) {
+        if(isReadyForSending() && !model.isUploadingAttachments) {
             val validationError = Validator.validateContacts(data)
             if (validationError != null)
                 scene.showError(validationError.toUIMessage())
@@ -329,8 +345,11 @@ class ComposerController(private val model: ComposerModel,
                     saveEmailAsDraft(data, onlySave = false)
                 else
                     scene.showNonCriptextEmailSendDialog(observer)
-        } else
+        } else if(model.isUploadingAttachments) {
+            scene.showError(UIMessage(R.string.wait_for_attachments))
+        } else {
             scene.showError(UIMessage(R.string.no_recipients_error))
+        }
     }
 
     override val menuResourceId
@@ -341,9 +360,20 @@ class ComposerController(private val model: ComposerModel,
         val isNewAttachment: (Pair<String, Long>) -> (Boolean) = { data ->
             model.attachments.indexOfFirst { it.filepath == data.first  } < 0
         }
-        model.attachments.addAll(filesMetadata.filter(isNewAttachment).map {
-            ComposerAttachment(it.first, it.second)
-        })
+        val localAttachments = filesMetadata
+                .filter(isNewAttachment)
+                .filter {it.second != -1L}
+                .map{ComposerAttachment(it.first, it.second)}
+        val remoteAttachments = filesMetadata
+                .filter(isNewAttachment)
+                .filter{ it.second == -1L }
+        if(remoteAttachments.isNotEmpty()) {
+            scene.showPreparingFileDialog()
+            dataSource.submitRequest(ComposerRequest.GetRemoteFile(
+                    remoteAttachments.map { it.first }, host.getContentResolver())
+            )
+        }
+        model.attachments.addAll(localAttachments)
         scene.notifyAttachmentSetChanged()
         handleNextUpload()
     }
@@ -353,6 +383,8 @@ class ComposerController(private val model: ComposerModel,
             return
         }
         val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
+        val composerAttachment = getAttachmentByPath(attachmentToUpload.filepath) ?: return
+        composerAttachment.uploadProgress = 0
         uploadSelectedFile(attachmentToUpload.filepath)
     }
 
@@ -360,6 +392,9 @@ class ComposerController(private val model: ComposerModel,
         if (activityMessage is ActivityMessage.AddAttachments) {
             generateEmailFileKey()
             addNewAttachments(activityMessage.filesMetadata)
+            return true
+        }else if(activityMessage is ActivityMessage.ShowUIMessage){
+            scene.showError(activityMessage.message)
             return true
         }
         return false
@@ -424,12 +459,10 @@ class ComposerController(private val model: ComposerModel,
 
     override fun onBackPressed(): Boolean {
 
-        if(shouldGoBackWithoutSave()) {
-            exitToEmailDetailScene()
-        }
-        else {
-            showDraftDialog()
-
+        if(!model.isUploadingAttachments) {
+            checkForDraft()
+        }else{
+            scene.showStayInComposerDialog(observer)
         }
 
         return false
@@ -464,6 +497,14 @@ class ComposerController(private val model: ComposerModel,
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
         return !Validator.mailHasMoreThanSignature(data, activeAccount.signature)
+    }
+
+    private fun checkForDraft(){
+        if (shouldGoBackWithoutSave()) {
+            exitToEmailDetailScene()
+        } else {
+            showDraftDialog()
+        }
     }
 
     private fun exitDeletingDraft() {
