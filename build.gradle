@@ -190,6 +190,8 @@ dependencies {
 
     implementation 'com.github.danieltigse:TimeDurationPicker:0.3'
 
+    implementation 'com.android.support:multidex:1.0.2'
+
     // file picker
 
     implementation 'com.github.jorgeblacio:Android-FilePicker:fixes-SNAPSHOT'

@@ -1,12 +1,12 @@
 package com.criptext.mail
 
-import android.app.Application
+import android.support.multidex.MultiDexApplication
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
-class CriptextApplication : Application(){
+class CriptextApplication : MultiDexApplication(){
 
     override fun onCreate() {
         super.onCreate()
