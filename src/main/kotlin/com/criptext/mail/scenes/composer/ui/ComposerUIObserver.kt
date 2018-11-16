@@ -19,4 +19,5 @@ interface ComposerUIObserver: UIObserver {
     fun setOnCheckedChangeListener(isChecked: Boolean)
     fun sendDialogButtonPressed()
     fun sendDialogCancelPressed()
+    fun leaveComposer()
 }

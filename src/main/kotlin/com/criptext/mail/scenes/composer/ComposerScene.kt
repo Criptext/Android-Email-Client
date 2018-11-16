@@ -24,6 +24,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
@@ -50,11 +51,14 @@ interface ComposerScene {
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
+    fun showPreparingFileDialog()
+    fun dismissPreparingFileDialog()
     fun notifyAttachmentSetChanged()
     fun disableSendButtonOnDialog()
     fun enableSendButtonOnDialog()
     fun setPasswordForNonCriptextFromDialog(password: String?)
     fun dismissConfirmPasswordDialog()
+    fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
 
@@ -65,6 +69,8 @@ interface ComposerScene {
         private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
         private val confirmPassword = ConfirmPasswordDialog(ctx)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
+        private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
+        private val stayInComposerDialog = StayInComposerDialog(ctx)
 
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
@@ -244,6 +250,18 @@ interface ComposerScene {
             val builder = AlertDialog.Builder(ctx)
             builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
                     .show()
+        }
+
+        override fun showPreparingFileDialog() {
+            preparingFileDialog.showDialog()
+        }
+
+        override fun dismissPreparingFileDialog() {
+            preparingFileDialog.dismiss()
+        }
+
+        override fun showStayInComposerDialog(observer: ComposerUIObserver) {
+            stayInComposerDialog.showLinkDeviceAuthDialog(observer)
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, toContacts: List<Contact>,

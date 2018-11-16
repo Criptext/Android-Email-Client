@@ -367,6 +367,11 @@
     <string name="invalid_address_error">"%1$s" is not a valid address. Please check input field "%2$s".</string>
     <string name="no_recipients_error">You need at least one recipient.</string>
     <string name="title_activity_composer">New Secure Email</string>
+    <string name="preparing_file">Preparing file…</string>
+    <string name="too_many_files">Too many files already attached, the maximum is 10.</string>
+    <string name="stay_in_composer_title">Pending Attachments</string>
+    <string name="stay_in_composer_message">Some attachments are being uploaded.\nWould you like to discard them and proceed?</string>
+    <string name="wait_for_attachments">Please wait for your attachments to finish processing.</string>
 
     <string name="message">Message</string>
     <string name="subject">Subject</string>

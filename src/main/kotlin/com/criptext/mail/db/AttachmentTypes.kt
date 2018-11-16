@@ -8,7 +8,7 @@ import com.criptext.mail.R
 
 
 enum class AttachmentTypes {
-    EXCEL, WORD, PDF, PPT, IMAGE, UNSEND, DEFAULT;
+    EXCEL, WORD, PDF, PPT, IMAGE, UNSEND, DEFAULT, AUDIO, VIDEO;
 
     fun getDrawableImage(): Int{
         return when(this){
@@ -19,6 +19,8 @@ enum class AttachmentTypes {
             IMAGE -> R.drawable.img
             UNSEND -> R.drawable.unsent
             DEFAULT -> R.drawable.generic
+            AUDIO -> R.drawable.audio
+            VIDEO -> R.drawable.video
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.criptext.mail
 
+import android.content.ContentResolver
 import android.view.MenuItem
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
@@ -38,6 +39,8 @@ interface IHostActivity {
     fun dismissDialog()
     fun runOnUiThread(runnable: Runnable)
     fun postDelay(runnable: Runnable, delayMilliseconds: Long)
+    fun getFileFromUri(uri: String): Pair<String, Long>
+    fun getContentResolver(): ContentResolver
     /**
      * Launch an activity for a result, and then pass that result as an ActivityMessage
      * @param params Object with the necessary data to launch the correct activity.

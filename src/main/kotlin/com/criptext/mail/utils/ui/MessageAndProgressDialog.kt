@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings
+package com.criptext.mail.utils.ui
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -6,29 +6,29 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 
-class SettingsLoginOutDialog(val context: Context) {
+class MessageAndProgressDialog(val context: Context, val message: UIMessage) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLoginOutDialog(observer: SettingsUIObserver?) {
+    fun showDialog() {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.settings_custom_login_out_dialog, null)
+        val dialogView = inflater.inflate(R.layout.message_and_progress_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer)
+        dialog = createDialog(dialogView, dialogBuilder)
     }
 
-    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?): AlertDialog {
+    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -40,6 +40,7 @@ class SettingsLoginOutDialog(val context: Context) {
                 R.drawable.dialog_label_chooser_shape)
         newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
         newLogoutDialog.setCanceledOnTouchOutside(false)
+        dialogView.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(message)
 
 
         return newLogoutDialog

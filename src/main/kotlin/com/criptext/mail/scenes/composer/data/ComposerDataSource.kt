@@ -48,6 +48,11 @@ class ComposerDataSource(
                     userEmailAddress = activeAccount.userEmail,
                     signature = activeAccount.signature,
                     publishFn = { res -> flushResults(res)})
+            is ComposerRequest.GetRemoteFile -> GetRemoteFileWorker(
+                    uris = params.uris,
+                    contentResolver = params.contentResolver,
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 

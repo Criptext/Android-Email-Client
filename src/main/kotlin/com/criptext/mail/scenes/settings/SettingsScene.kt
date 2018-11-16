@@ -18,6 +18,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.ui.ViewPagerAdapter
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -83,7 +84,7 @@ interface SettingsScene{
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
-        private val settingLoginOutDialog = SettingsLoginOutDialog(context)
+        private val settingLoginOutDialog = MessageAndProgressDialog(context, UIMessage(R.string.login_out_dialog_message))
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
@@ -126,7 +127,7 @@ interface SettingsScene{
         }
 
         override fun showLoginOutDialog() {
-            settingLoginOutDialog.showLoginOutDialog(settingsUIObserver)
+            settingLoginOutDialog.showDialog()
         }
 
         override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {
