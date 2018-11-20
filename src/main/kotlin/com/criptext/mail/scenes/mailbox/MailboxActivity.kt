@@ -158,6 +158,7 @@ class MailboxActivity : BaseActivity() {
                     scene = scene,
                     model = model,
                     host = hostActivity,
+                    storage = storage,
                     activeAccount = activeAccount,
                     generalDataSource = remoteChangeDataSource,
                     dataSource = mailboxDataSource,

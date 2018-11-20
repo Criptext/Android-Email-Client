@@ -77,6 +77,11 @@ class GeneralDataSource(override val runner: WorkRunner,
                     currentLabel = params.currentLabel,
                     publishFn = { res -> flushResults(res)}
             )
+            is GeneralRequest.SyncPhonebook -> SyncPhonebookWorker(
+                    contactDao = db.contactDao(),
+                    contentResolver = params.contentResolver,
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 }

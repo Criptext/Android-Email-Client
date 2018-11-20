@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.ui.WelcomeTour
 
 import android.content.Context
+import android.content.SyncStatusObserver
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -10,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import com.airbnb.lottie.LottieAnimationView
 import com.criptext.mail.R
+import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.viewpagerindicator.CirclePageIndicator
 
 
@@ -25,7 +27,7 @@ class WelcomeTourDialog(val context: Context) {
             WelcomePagerModel("Arm.json", R.string.slide_3_title, R.string.slide_3_text)
     )
 
-    fun showWelcomeTourDialog() {
+    fun showWelcomeTourDialog(observer: MailboxUIObserver) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         view = inflater.inflate(R.layout.welcome_tour_dialog, null)
@@ -35,12 +37,13 @@ class WelcomeTourDialog(val context: Context) {
         dialogBuilder.setView(view)
 
 
-        dialog = createDialog(view, dialogBuilder)
+        dialog = createDialog(view, dialogBuilder, observer)
 
     }
 
     private fun createDialog(dialogView: View,
-                             dialogBuilder: AlertDialog.Builder): AlertDialog {
+                             dialogBuilder: AlertDialog.Builder,
+                             observer: MailboxUIObserver): AlertDialog {
         val width = res.getDimension(R.dimen.welcome_tour_width).toInt()
         val height = res.getDimension(R.dimen.welcome_tour__height).toInt()
         val newWelcomeTourDialog = dialogBuilder.create()
@@ -71,7 +74,7 @@ class WelcomeTourDialog(val context: Context) {
         val pageIndicator = newWelcomeTourDialog.findViewById<CirclePageIndicator>(R.id.circle_indicator)
         pageIndicator?.setViewPager(viewPager)
         pageIndicator?.setCurrentItem(0)
-        assignButtonEvents(newWelcomeTourDialog)
+        assignButtonEvents(newWelcomeTourDialog, observer)
 
 
 
@@ -103,8 +106,9 @@ class WelcomeTourDialog(val context: Context) {
 
     }
 
-    fun assignButtonEvents(dialog: AlertDialog) {
+    fun assignButtonEvents(dialog: AlertDialog, observer: MailboxUIObserver) {
         okButton.setOnClickListener {
+            observer.onWelcomeTourHasFinished()
             dialog.dismiss()
         }
     }

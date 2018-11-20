@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import android.content.ContentResolver
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.signal.PreKeyBundleShareData
@@ -18,4 +19,5 @@ sealed class GeneralRequest {
                             val randomId: String,
                             val keyBundle: PreKeyBundleShareData.DownloadBundle?): GeneralRequest()
     data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
+    data class SyncPhonebook(val contentResolver: ContentResolver): GeneralRequest()
 }

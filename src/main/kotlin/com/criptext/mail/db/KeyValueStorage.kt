@@ -27,7 +27,7 @@ interface KeyValueStorage {
         SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
         LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent"),
         LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
-        ShowEmailPreview("ShowEmailPreview")
+        ShowEmailPreview("ShowEmailPreview"), ShowSyncPhonebookDialog("ShowSyncPhonebookDialog")
     }
 
     class SharedPrefs(ctx: Context) : KeyValueStorage {

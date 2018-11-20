@@ -13,6 +13,9 @@ interface ContactDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertIgnoringConflicts(contact : Contact): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAllIgnoringConflicts(contact : List<Contact>)
+
     @Insert
     fun insertAll(users : List<Contact>)
 

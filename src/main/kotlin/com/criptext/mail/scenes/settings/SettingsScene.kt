@@ -48,6 +48,7 @@ interface SettingsScene{
     fun removeDeviceDialogDismiss()
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
+    fun setSyncContactsProgressVisisble(isVisible: Boolean)
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -180,6 +181,10 @@ interface SettingsScene{
 
         override fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean) {
             twoFADialog.showLogoutDialog(hasRecoveryEmailConfirmed)
+        }
+
+        override fun setSyncContactsProgressVisisble(isVisible: Boolean) {
+            generalView.setSyncContactsProgressVisisble(isVisible)
         }
 
         private fun loadTabs(name: String, model: SettingsModel, devicesListItemListener: DevicesListItemListener) {
