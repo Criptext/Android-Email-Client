@@ -9,7 +9,6 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -32,14 +31,11 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.addWhere
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -80,6 +76,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
     }
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
+
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }

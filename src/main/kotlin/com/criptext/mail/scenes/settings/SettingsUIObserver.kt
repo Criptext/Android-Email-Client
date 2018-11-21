@@ -15,6 +15,7 @@ interface SettingsUIObserver: UIObserver {
     fun onTermsOfServiceClicked()
     fun onOpenSourceLibrariesClicked()
     fun onLogoutClicked()
+    fun onPinLockClicked()
     fun onTwoFASwitched(isChecked: Boolean)
     fun onEmailPreviewSwitched(isChecked: Boolean)
     fun onLogoutConfirmedClicked()

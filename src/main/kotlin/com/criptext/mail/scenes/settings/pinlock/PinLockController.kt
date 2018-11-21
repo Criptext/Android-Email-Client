@@ -1,52 +1,65 @@
-package com.criptext.mail.scenes.settings.changepassword
+package com.criptext.mail.scenes.settings.pinlock
 
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordRequest
-import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
-class ChangePasswordController(
+
+class PinLockController(
         private val activeAccount: ActiveAccount,
-        private val model: ChangePasswordModel,
-        private val scene: ChangePasswordScene,
+        private val model: PinLockModel,
+        private val scene: PinLockScene,
         private val host: IHostActivity,
+        private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
         private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<ChangePasswordRequest, ChangePasswordResult>)
+        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
     : SceneController(){
-
-    val arePasswordsMatching: Boolean
-        get() = model.passwordText == model.confirmPasswordText
 
     override val menuResourceId: Int? = null
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
-            is GeneralResult.ResetPassword -> onResetPassword(result)
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
         }
     }
 
-    private val changePasswordUIObserver = object: ChangePasswordUIObserver{
+    private val uiObserver = object: PinLockUIObserver{
+        override fun onPinSwitchChanged(isEnabled: Boolean) {
+            if(isEnabled){
+                if(!storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
+                    if(storage.getString("com.amirarcane.lockscreen", KeyValueStorage.StringKey.PIN, "").isEmpty())
+                        host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
+                    else
+                        storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+                }
+            }else{
+                storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, false)
+            }
+        }
+
+        override fun onPinChangePressed() {
+            storage.putString("com.amirarcane.lockscreen", KeyValueStorage.StringKey.PIN, "")
+            host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
+        }
 
         override fun onOkButtonPressed(password: String) {
             generalDataSource.submitRequest(GeneralRequest.ConfirmPassword(password))
@@ -64,99 +77,30 @@ class ChangePasswordController(
             generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
-        override fun onForgotPasswordPressed() {
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
-        }
-
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
             host.exitToScene(SettingsParams(), null,true)
-        }
-
-        override fun onOldPasswordChangedListener(password: String) {
-            model.oldPasswordText = password
-            if(model.oldPasswordText != model.lastUsedPassword)
-                scene.showOldPasswordError(null)
-            else
-                scene.showOldPasswordError(UIMessage(R.string.password_enter_error))
-        }
-
-        override fun onPasswordChangedListener(password: String) {
-            model.passwordText = password
-            if(model.confirmPasswordText.isNotEmpty())
-                checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
-        }
-
-        override fun onConfirmPasswordChangedListener(confirmPassword: String) {
-            model.confirmPasswordText = confirmPassword
-            checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
-        }
-
-        override fun onChangePasswordButtonPressed() {
-            keyboardManager.hideKeyboard()
-            model.lastUsedPassword = model.oldPasswordText
-            dataSource.submitRequest(ChangePasswordRequest.ChangePassword(model.oldPasswordText, model.confirmPasswordText))
-        }
-    }
-
-    private val dataSourceListener = { result: ChangePasswordResult ->
-        when (result) {
-            is ChangePasswordResult.ChangePassword -> onChangePasswordResult(result)
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        scene.attachView(changePasswordUIObserver, keyboardManager, model)
-        dataSource.listener = dataSourceListener
+        scene.attachView(uiObserver, keyboardManager, model)
         generalDataSource.listener = generalDataSourceListener
+
+        val handleMessage = handleActivityMessage(activityMessage)
+
+        scene.setPinLockStatus(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false))
+
+        return handleMessage
+    }
+
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        if (activityMessage is ActivityMessage.ActivatePin) {
+            storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+            return true
+        }
         return false
-    }
-
-    private fun checkPasswords(passwords: Pair<String, String>) {
-        if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
-            scene.showPasswordDialogError(null)
-            model.passwordState = FormInputState.Valid()
-            if (model.passwordState is FormInputState.Valid)
-                scene.toggleChangePasswordButton(true)
-        } else if (arePasswordsMatching && passwords.first.isEmpty()) {
-            scene.showPasswordDialogError(null)
-            model.passwordState = FormInputState.Unknown()
-            scene.toggleChangePasswordButton(false)
-        } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
-            val errorMessage = UIMessage(R.string.password_length_error)
-            model.passwordState = FormInputState.Error(errorMessage)
-            scene.showPasswordDialogError(errorMessage)
-            scene.toggleChangePasswordButton(false)
-        } else {
-            val errorMessage = UIMessage(R.string.password_mismatch_error)
-            model.passwordState = FormInputState.Error(errorMessage)
-            scene.showPasswordDialogError(errorMessage)
-            scene.toggleChangePasswordButton(false)
-        }
-    }
-
-    private fun onChangePasswordResult(result: ChangePasswordResult.ChangePassword){
-        when(result) {
-            is ChangePasswordResult.ChangePassword.Success -> {
-                scene.showMessage(UIMessage(R.string.change_password_success))
-                host.finishScene()
-            }
-            is ChangePasswordResult.ChangePassword.Failure -> {
-                scene.showOldPasswordError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
-    private fun onResetPassword(result: GeneralResult.ResetPassword){
-        when(result) {
-            is GeneralResult.ResetPassword.Success -> {
-                scene.showForgotPasswordDialog(result.email)
-            }
-            is GeneralResult.ResetPassword.Failure -> {
-                scene.showMessage(result.message)
-            }
-        }
     }
 
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
@@ -236,7 +180,7 @@ class ChangePasswordController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(changePasswordUIObserver)
+                scene.showConfirmPasswordDialog(uiObserver)
             })
         }
 
@@ -250,7 +194,7 @@ class ChangePasswordController(
     }
 
     override fun onBackPressed(): Boolean {
-        changePasswordUIObserver.onBackButtonPressed()
+        uiObserver.onBackButtonPressed()
         return false
     }
 

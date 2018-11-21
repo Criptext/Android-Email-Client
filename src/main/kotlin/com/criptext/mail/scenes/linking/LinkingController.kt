@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.linking
 
-import android.os.Handler
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
@@ -51,6 +50,7 @@ class LinkingController(
     }
 
     private val linkingUIObserver = object: LinkingUIObserver{
+
         override fun onRetrySyncOk(result: GeneralResult) {
             when(result){
                 is GeneralResult.PostUserData -> {

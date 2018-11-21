@@ -77,7 +77,12 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.settings.changepassword.ChangePasswordActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.linking.LinkingActivity" />
+        <activity android:name=".scenes.linking.LinkingActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.pinlock.PinLockActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.amirarcane.lockscreen.activity.EnterPinActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <service
             android:name=".services.InstanceIdService"

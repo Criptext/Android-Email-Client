@@ -159,6 +159,7 @@
     <string name="title_sounds">Sounds</string>
     <string name="separator_account">ACCOUNT</string>
     <string name="separator_notifications">NOTIFICATIONS</string>
+    <string name="separator_privacy">PRIVACY</string>
     <string name="separator_about">ABOUT</string>
     <string name="status_not_confirmed">(not verified)</string>
     <string name="status_confirmed">(verified)</string>
@@ -219,6 +220,11 @@
     <!-- REMOVE DEVICE DIALOG -->
     <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
     <string name="removing_device_dialog_message">Removing device…</string>
+
+    <!-- PIN LOCK -->
+    <string name="pin_lock_toolbar_title">PIN SETTINGS</string>
+    <string name="pin_lock_switch_text">PIN Lock</string>
+    <string name="pin_lock_change">Change PIN</string>
 
 
     <!-- NON CRIPTEXT SEND EMAIL DIALOG -->

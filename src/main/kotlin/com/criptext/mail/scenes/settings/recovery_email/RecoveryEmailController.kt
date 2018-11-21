@@ -57,6 +57,7 @@ class RecoveryEmailController(
     }
 
     private val recoveryEmailUIObserver = object: RecoveryEmailUIObserver{
+
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }
