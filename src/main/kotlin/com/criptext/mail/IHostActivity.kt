@@ -7,6 +7,7 @@ import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
  * Created by sebas on 1/29/18.

@@ -52,8 +52,16 @@ class MockedKeyValueStorage: KeyValueStorage {
         return stringMap[key.stringKey] ?: default
     }
 
+    override fun getString(file: String, key: KeyValueStorage.StringKey, default: String): String {
+        return getString(key, default)
+    }
+
     override fun putString(key: KeyValueStorage.StringKey, value: String) {
         stringMap[key.stringKey] = value
+    }
+
+    override fun putString(file: String, key: KeyValueStorage.StringKey, value: String) {
+        putString(key, value)
     }
 
 }

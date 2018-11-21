@@ -227,6 +227,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+
         override fun onWelcomeTourHasFinished() {
             scene.showSyncPhonebookDialog(this)
         }
@@ -406,8 +407,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        host.getContentResolver()?.registerContentObserver(
-                ContactsContract.Contacts.CONTENT_URI, true, mObserver)
+        if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                        Manifest.permission.READ_CONTACTS)) {
+            host.getContentResolver()?.registerContentObserver(
+                    ContactsContract.Contacts.CONTENT_URI, true, mObserver)
+        }
 
         dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
 

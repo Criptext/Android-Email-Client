@@ -42,6 +42,7 @@ class ComposerController(private val model: ComposerModel,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+
         override fun leaveComposer() {
             checkForDraft()
         }

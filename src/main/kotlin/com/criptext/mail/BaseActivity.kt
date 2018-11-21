@@ -28,6 +28,7 @@ import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
+import com.criptext.mail.scenes.settings.pinlock.PinLockModel
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
 import com.criptext.mail.scenes.signin.SignInActivity
@@ -49,6 +50,8 @@ import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
+import com.amirarcane.lockscreen.activity.EnterPinActivity
+import com.criptext.mail.db.KeyValueStorage
 
 
 /**
@@ -67,6 +70,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     abstract val layoutId: Int
 
     private val progressDialog: SingletonProgressDialog by lazy { SingletonProgressDialog(this) }
+    private val storage: KeyValueStorage by lazy { KeyValueStorage.SharedPrefs(this) }
 
     /**
      * Resource Id of your activity's toolbar. After the layout is inflated, BaseActivity will call
@@ -99,6 +103,15 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     private fun dismissAllNotifications() {
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+        storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+    }
+
+    private fun checkForPin(){
+        if(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)
+                && storage.getBool(KeyValueStorage.StringKey.AskForPin, false)){
+            storage.putBool(KeyValueStorage.StringKey.AskForPin, false)
+            launchExternalActivityForResult(ExternalActivityParams.PinScreen(false))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,6 +138,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
         super.onStart()
         dismissAllNotifications()
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        checkForPin()
 
         if (controller.onStart(activityMessage))
             activityMessage = null
@@ -180,6 +194,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
+            is PinLockParams -> PinLockModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -301,6 +316,14 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                 val file = File(params.filepath)
                 val newIntent = IntentUtils.createIntentToOpenFileInExternalApp(this, file)
                 startActivity(newIntent)
+            }
+            is ExternalActivityParams.PinScreen -> {
+                val intent = Intent(this, EnterPinActivity::class.java)
+                if(params.isFirstTime)
+                    startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
+                else
+                    startActivity(intent)
+
             }
             is ExternalActivityParams.InviteFriend -> {
                 val share = Intent(android.content.Intent.ACTION_SEND)

@@ -22,4 +22,5 @@ sealed class ActivityMessage {
     data class MoveThread(val threadId: String?): ActivityMessage()
     class DraftSaved: ActivityMessage()
     data class ShowUIMessage(val message: UIMessage): ActivityMessage()
+    class ActivatePin: ActivityMessage()
 }

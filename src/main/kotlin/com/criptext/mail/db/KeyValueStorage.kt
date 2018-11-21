@@ -11,7 +11,9 @@ import android.preference.PreferenceManager
 interface KeyValueStorage {
 
     fun getString(key: StringKey, default: String): String
+    fun getString(file: String, key: StringKey, default: String): String
     fun putString(key: StringKey, value: String)
+    fun putString(file: String, key: StringKey, value: String)
     fun getStringSet(key: StringKey): MutableSet<String>?
     fun putStringSet(key: StringKey, value: MutableSet<String>)
     fun getLong(key: StringKey, default: Long): Long
@@ -27,10 +29,12 @@ interface KeyValueStorage {
         SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
         LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent"),
         LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
-        ShowEmailPreview("ShowEmailPreview"), ShowSyncPhonebookDialog("ShowSyncPhonebookDialog")
+        ShowSyncPhonebookDialog("ShowSyncPhonebookDialog"),
+        ShowEmailPreview("ShowEmailPreview"), HasLockPinActive("HasLockPinActive"),
+        PIN("pin"), AskForPin("AskForPin")
     }
 
-    class SharedPrefs(ctx: Context) : KeyValueStorage {
+    class SharedPrefs(private val ctx: Context) : KeyValueStorage {
 
         private val prefs = PreferenceManager.getDefaultSharedPreferences(ctx.applicationContext)
 
@@ -43,8 +47,18 @@ interface KeyValueStorage {
         override fun getString(key: StringKey, default: String): String =
                 prefs.getString(key.stringKey, default)
 
+        override fun getString(file: String, key: StringKey, default: String): String  {
+            val mPrefs = ctx.getSharedPreferences(file, Context.MODE_PRIVATE)
+            return mPrefs.getString(key.stringKey, default)
+        }
+
         override fun putString(key: StringKey, value: String) {
             withApply { editor -> editor.putString(key.stringKey, value) }
+        }
+
+        override fun putString(file: String, key: StringKey, value: String) {
+            val mPrefs = ctx.getSharedPreferences(file, Context.MODE_PRIVATE)
+            mPrefs.edit().putString(key.stringKey, value).apply()
         }
 
         override fun getStringSet(key: StringKey): MutableSet<String>? {

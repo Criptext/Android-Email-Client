@@ -27,7 +27,6 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
 
@@ -73,13 +72,17 @@ class SettingsController(
 
     private val settingsUIObserver = object: SettingsUIObserver{
         override fun onSyncPhonebookContacts() {
-            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+            if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
                 scene.setSyncContactsProgressVisisble(true)
                 val resolver = host.getContentResolver()
-                if(resolver != null)
+                if (resolver != null)
                     generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
             }
+        }
+
+        override fun onPinLockClicked() {
+            host.goToScene(PinLockParams(), false)
         }
 
         override fun onEmailPreviewSwitched(isChecked: Boolean) {
