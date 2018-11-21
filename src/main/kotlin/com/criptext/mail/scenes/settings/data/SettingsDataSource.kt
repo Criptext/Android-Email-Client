@@ -76,6 +76,12 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.SetReadReceipts -> ReadReceiptsWorker(
+                    activeAccount = activeAccount,
+                    readReceipts = params.readReceipts,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

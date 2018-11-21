@@ -67,10 +67,16 @@ class SettingsController(
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.Set2FA -> onSet2FA(result)
+            is SettingsResult.SetReadReceipts -> onReadReceipts(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onReadReceiptsSwitched(isChecked: Boolean) {
+            scene.enableReadReceiptsSwitch(false)
+            dataSource.submitRequest(SettingsRequest.SetReadReceipts(isChecked))
+        }
+
         override fun onSyncPhonebookContacts() {
             if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
@@ -426,6 +432,19 @@ class SettingsController(
                 scene.showMessage(result.message)
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(!result.twoFAAttempt)
+            }
+        }
+    }
+
+    private fun onReadReceipts(result: SettingsResult.SetReadReceipts){
+        when(result) {
+            is SettingsResult.SetReadReceipts.Success -> {
+                scene.enableReadReceiptsSwitch(true)
+            }
+            is SettingsResult.SetReadReceipts.Failure -> {
+                scene.showMessage(result.message)
+                scene.enableReadReceiptsSwitch(true)
+                scene.updateReadReceipts(!result.twoFAAttempt)
             }
         }
     }
