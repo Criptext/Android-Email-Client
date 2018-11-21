@@ -7,6 +7,7 @@ import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.mailbox.SupportMailTemplate
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -85,8 +86,21 @@ class LoadInitialDataWorker(
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject, passwordForNonCriptextUsers = null)
         }
+    }
 
+    private fun createMailToInputData(to: String): ComposerInputData {
+        val contact = db.contactDao.getContact(to)
 
+        return if(contact != null){
+            ComposerInputData(to = listOf(contact), cc = emptyList(), bcc = emptyList(),
+                    body = "", subject = "", passwordForNonCriptextUsers = null)
+        }else{
+            val newContact = Contact(id = 0, email = to,
+                    name = EmailAddressUtils.extractName(to))
+            db.contactDao.insertAll(listOf(newContact))
+            ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
+                    body = "", subject = "", passwordForNonCriptextUsers = null)
+        }
     }
 
     private fun createComposerInputData(loadedEmail: FullEmail): ComposerInputData =
@@ -103,11 +117,13 @@ class LoadInitialDataWorker(
             val composerInputData = createComposerInputData(loadedEmail)
             ComposerResult.LoadInitialData.Success(composerInputData)
         } else {
-            if(composerType is ComposerType.Support) {
-                ComposerResult.LoadInitialData.Success(createSupportInputData())
-            }else{
-                val message = UIMessage(R.string.composer_load_error)
-                ComposerResult.LoadInitialData.Failure(message)
+            when(composerType){
+                is ComposerType.Support -> ComposerResult.LoadInitialData.Success(createSupportInputData())
+                is ComposerType.MailTo -> ComposerResult.LoadInitialData.Success(createMailToInputData(composerType.to))
+                else -> {
+                    val message = UIMessage(R.string.composer_load_error)
+                    ComposerResult.LoadInitialData.Failure(message)
+                }
             }
         }
     }

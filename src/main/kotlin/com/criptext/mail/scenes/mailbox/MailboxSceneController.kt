@@ -385,6 +385,20 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
                             userEmail = activeAccount.userEmail, doReply = true))
                 }
+                Intent.ACTION_VIEW -> {
+                    val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
+                    host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo)), null, false, true)
+                }
+                Intent.ACTION_APP_ERROR -> {
+                    val extrasMail = extras as IntentExtrasData.IntentErrorMessage
+                    scene.showMessage(extrasMail.uiMessage)
+                }
+                Intent.ACTION_SEND_MULTIPLE,
+                Intent.ACTION_SEND -> {
+                    val extrasMail = extras as IntentExtrasData.IntentExtrasSend
+                    val composerMessage = ActivityMessage.AddAttachments(extrasMail.files)
+                    host.exitToScene(ComposerParams(type = ComposerType.Empty()), composerMessage, false, true)
+                }
             }
         }
 

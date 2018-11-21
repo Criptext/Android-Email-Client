@@ -4,8 +4,10 @@ import android.app.NotificationManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.OpenableColumns
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
@@ -52,6 +54,8 @@ import java.io.File
 import java.util.*
 import com.amirarcane.lockscreen.activity.EnterPinActivity
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.file.PathUtil
 
 
 /**
@@ -261,9 +265,60 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                     }
                     return IntentExtrasData.IntentExtrasReply(intent.action, threadId, metadataKey)
                 }
+                Intent.ACTION_VIEW -> {
+                    val mailTo = intent.data
+                    if(mailTo.toString().contains("mailto:"))
+                        return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"))
+                }
+                Intent.ACTION_SEND,
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    val data = intent
+                    if(data != null) {
+                        val clipData = data.clipData
+                        if(clipData == null) {
+                            data.data?.also { uri ->
+                                val attachment = getPathAndSizeFromUri(uri)
+                                if (attachment != null)
+                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment))
+                            }
+                        }else{
+                            if(clipData.itemCount < EmailUtils.ATTACHMENT_LIMIT) {
+                                val attachmentList = mutableListOf<Pair<String, Long>>()
+                                for (i in 0 until clipData.itemCount) {
+                                    clipData.getItemAt(i).also { item ->
+                                        if (item.uri != null) {
+                                            val attachment = getPathAndSizeFromUri(item.uri)
+                                            if (attachment != null)
+                                                attachmentList.add(attachment)
+                                        }
+                                    }
+                                }
+                                if (attachmentList.isNotEmpty())
+                                    return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList)
+                            }else{
+                                return IntentExtrasData.IntentErrorMessage(Intent.ACTION_APP_ERROR, UIMessage(R.string.too_many_files))
+                            }
+                        }
+                    }
+                }
             }
 
 
+        }
+        return null
+    }
+
+    protected fun getPathAndSizeFromUri(uri: Uri): Pair<String, Long>?{
+        if(uri.toString().contains("com.google.android")){
+            return Pair(uri.toString(), -1L)
+        }else {
+            contentResolver?.query(uri, null, null, null, null)?.use {
+                val absolutePath = PathUtil.getPath(this, uri)
+                val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+                it.moveToFirst()
+                if(absolutePath != null)
+                    return Pair(absolutePath, it.getLong(sizeIndex))
+            }
         }
         return null
     }

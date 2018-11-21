@@ -20,4 +20,6 @@ sealed class ComposerType {
     data class Forward(val originalId: Long, val currentLabel: Label,
                        val threadPreview: EmailPreview): ComposerType()
     class Support: ComposerType()
+    data class MailTo(val to: String): ComposerType()
+    data class Send(val files: List<Pair<String, Long>>): ComposerType()
 }
