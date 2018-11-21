@@ -43,6 +43,13 @@ class SettingsAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.put(path = "/user/2fa", authToken = token, body = jsonPut)
     }
 
+    fun putReadReceipts(readReceipts: Boolean): String {
+        val jsonPut = JSONObject()
+        jsonPut.put("enable", readReceipts)
+
+        return httpClient.put(path = "/user/readtracking", authToken = token, body = jsonPut)
+    }
+
     fun listDevices(): String{
         return httpClient.get(path = "/devices", authToken = token)
     }

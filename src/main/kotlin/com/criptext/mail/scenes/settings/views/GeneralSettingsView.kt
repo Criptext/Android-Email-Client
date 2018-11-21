@@ -27,6 +27,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsSyncPhonebookProgress: ProgressBar
     private lateinit var versionText: TextView
     private lateinit var twoFASwitch: Switch
+    private lateinit var readReceiptsSwitch: Switch
     private lateinit var emailPreview: Switch
 
     private var settingsUIObserver: SettingsUIObserver? = null
@@ -51,6 +52,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
         twoFASwitch = view.findViewById(R.id.switch_two_fa)
+        readReceiptsSwitch = view.findViewById(R.id.switch_read_receipts)
         emailPreview = view.findViewById(R.id.switch_preview)
 
         settingsRecoveryEmail.visibility = View.GONE
@@ -86,6 +88,16 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
 
     fun enable2FASwitch(isEnabled: Boolean){
         twoFASwitch.isEnabled = isEnabled
+    }
+
+    fun setReadReceipts(hasReadReceipts: Boolean){
+        readReceiptsSwitch.setOnCheckedChangeListener { _, _ ->  }
+        readReceiptsSwitch.isChecked = hasReadReceipts
+        setSwitchListener()
+    }
+
+    fun enableReadReceiptsSwitch(isEnabled: Boolean){
+        readReceiptsSwitch.isEnabled = isEnabled
     }
 
     fun setEmailPreview(showPreview: Boolean){
@@ -137,6 +149,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private fun setSwitchListener(){
         twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
             settingsUIObserver?.onTwoFASwitched(isChecked)
+        }
+
+        readReceiptsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsUIObserver?.onReadReceiptsSwitched(isChecked)
         }
 
         emailPreview.setOnCheckedChangeListener {_, isChecked ->

@@ -41,6 +41,8 @@ interface SettingsScene{
     fun setEmailPreview(isChecked: Boolean)
     fun updateTwoFa(isChecked: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
+    fun updateReadReceipts(isChecked: Boolean)
+    fun enableReadReceiptsSwitch(isEnabled: Boolean)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
     fun setRemoveDeviceError(message: UIMessage)
@@ -195,7 +197,9 @@ interface SettingsScene{
         override fun updateUserSettings(userData: UserSettingsData) {
             generalView.setRecoveryEmailConfirmationText(userData.recoveryEmailConfirmationState)
             generalView.enable2FASwitch(true)
+            generalView.enableReadReceiptsSwitch(true)
             generalView.set2FA(userData.hasTwoFA)
+            generalView.setReadReceipts(userData.hasReadReceipts)
         }
 
         override fun setEmailPreview(isChecked: Boolean) {
@@ -208,6 +212,14 @@ interface SettingsScene{
 
         override fun updateTwoFa(isChecked: Boolean) {
             generalView.set2FA(isChecked)
+        }
+
+        override fun enableReadReceiptsSwitch(isEnabled: Boolean) {
+            generalView.enableReadReceiptsSwitch(isEnabled)
+        }
+
+        override fun updateReadReceipts(isChecked: Boolean) {
+            generalView.setReadReceipts(isChecked)
         }
 
         private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,
