@@ -91,4 +91,9 @@ sealed class GeneralResult {
         data class Success(val total: Int): TotalUnreadEmails()
         data class Failure(val message: UIMessage): TotalUnreadEmails()
     }
+
+    sealed class SyncPhonebook: GeneralResult() {
+        class Success: SyncPhonebook()
+        data class Failure(val message: UIMessage): SyncPhonebook()
+    }
 }

@@ -4,17 +4,14 @@ import android.app.NotificationManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.OpenableColumns
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.MimeTypeMap
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
@@ -45,14 +42,10 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.IntentUtils
-import com.criptext.mail.utils.file.PathUtil
-import com.criptext.mail.utils.file.addExtensions
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
-import droidninja.filepicker.models.sort.SortingTypes
-import kotlinx.android.synthetic.main.contact_item.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
@@ -84,9 +77,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
     lateinit var controller: SceneController
     lateinit var model: Any
-    private val mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+    var mFirebaseAnalytics: FirebaseAnalytics? = null
 
-    private val postDelayHandler = Handler()
+    private val handler = Handler()
 
     /**
      * Called during `onCreate` to create a controller for this activity given the current active
@@ -131,13 +124,15 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     override fun onStart() {
         super.onStart()
         dismissAllNotifications()
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         if (controller.onStart(activityMessage))
             activityMessage = null
     }
 
     override fun onStop() {
-        postDelayHandler.removeCallbacksAndMessages(null)
+        handler.removeCallbacksAndMessages(null)
+        mFirebaseAnalytics = null
         super.onStop()
         controller.onStop()
     }
@@ -206,7 +201,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
-        postDelayHandler.postDelayed(runnable, delayMilliseconds)
+        handler.postDelayed(runnable, delayMilliseconds)
     }
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
@@ -316,36 +311,17 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
 
                 val bundle = Bundle()
                 bundle.putString("app_source", "Unknown")
-                mFirebaseAnalytics.logEvent("invite_friend", bundle)
+                mFirebaseAnalytics?.logEvent("invite_friend", bundle)
             }
         }
     }
 
-    override fun getFileFromUri(uri: String): Pair<String, Long> {
-        val realUri = Uri.parse(uri)
-        val extension = if (realUri.scheme == ContentResolver.SCHEME_CONTENT) {
-            val mime = MimeTypeMap.getSingleton()
-            mime.getExtensionFromMimeType(contentResolver.getType(realUri))
-        } else {
-            MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(File(uri)).toString())
-        }
-        val name = contentResolver.query(realUri, null, null, null, null)?.use {
-            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            it.moveToFirst()
-            it.getString(nameIndex)
-        }
-        val file = createTempFile(prefix = name?: "tmp", suffix = ".".plus(extension))
-
-        val stream = contentResolver.openInputStream(realUri)
-        stream.use { input ->
-            File(file.absolutePath).outputStream().use { input.copyTo(it) }
-        }
-
-        return Pair(file.absolutePath, file.length())
+    override fun getContentResolver(): ContentResolver? {
+        return this.applicationContext.contentResolver
     }
 
-    override fun getContentResolver(): ContentResolver {
-        return this.applicationContext.contentResolver
+    override fun getHandler(): Handler? {
+        return handler
     }
 
     override fun checkPermissions(requestCode: Int, permission: String): Boolean =
@@ -380,6 +356,6 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
     }
 
     enum class RequestCode {
-        writeAccess
+        writeAccess, readAccess
     }
 }

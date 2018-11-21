@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings.views
 
 import android.support.v4.content.ContextCompat
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Switch
 import android.widget.TextView
 import com.criptext.mail.BuildConfig
@@ -20,7 +21,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsChangePassword: View
     private lateinit var settingsRecoveryEmail: View
     private lateinit var settingsRecoveryEmailLoading: View
+    private lateinit var settingsSyncPhonebookContacts: View
     private lateinit var settingsRecoveryEmailConfirmText: TextView
+    private lateinit var settingsSyncPhonebookProgress: ProgressBar
     private lateinit var versionText: TextView
     private lateinit var twoFASwitch: Switch
     private lateinit var emailPreview: Switch
@@ -39,8 +42,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsLogout = view.findViewById(R.id.settings_logout)
         settingsChangePassword = view.findViewById(R.id.settings_change_password)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
+        settingsSyncPhonebookContacts = view.findViewById(R.id.settings_sync_contacts)
         settingsRecoveryEmailLoading = view.findViewById(R.id.settings_recovery_loading)
         settingsRecoveryEmailConfirmText = view.findViewById(R.id.not_confirmed_text) as TextView
+        settingsSyncPhonebookProgress = view.findViewById(R.id.sync_phonebook_progress) as ProgressBar
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
         twoFASwitch = view.findViewById(R.id.switch_two_fa)
@@ -88,6 +93,11 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         setSwitchListener()
     }
 
+    fun setSyncContactsProgressVisisble(isVisible: Boolean){
+        if(isVisible) settingsSyncPhonebookProgress.visibility = View.VISIBLE
+        else settingsSyncPhonebookProgress.visibility = View.INVISIBLE
+    }
+
     private fun setListeners(){
         settingsProfileName.setOnClickListener {
             settingsUIObserver?.onProfileNameClicked()
@@ -112,6 +122,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
         settingsLogout.setOnClickListener {
             settingsUIObserver?.onLogoutClicked()
+        }
+        settingsSyncPhonebookContacts.setOnClickListener{
+            settingsUIObserver?.onSyncPhonebookContacts()
         }
         setSwitchListener()
     }

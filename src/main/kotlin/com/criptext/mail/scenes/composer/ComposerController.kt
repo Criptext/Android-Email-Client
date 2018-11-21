@@ -368,10 +368,13 @@ class ComposerController(private val model: ComposerModel,
                 .filter(isNewAttachment)
                 .filter{ it.second == -1L }
         if(remoteAttachments.isNotEmpty()) {
-            scene.showPreparingFileDialog()
-            dataSource.submitRequest(ComposerRequest.GetRemoteFile(
-                    remoteAttachments.map { it.first }, host.getContentResolver())
-            )
+            val resolver = host.getContentResolver()
+            if(resolver != null) {
+                scene.showPreparingFileDialog()
+                dataSource.submitRequest(ComposerRequest.GetRemoteFile(
+                        remoteAttachments.map { it.first }, resolver)
+                )
+            }
         }
         model.attachments.addAll(localAttachments)
         scene.notifyAttachmentSetChanged()

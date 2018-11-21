@@ -31,6 +31,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
+import com.criptext.mail.utils.ui.SyncPhonebookDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -59,7 +60,7 @@ interface MailboxScene{
     fun showDialogLabelsChooser(labelDataSourceHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: String)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
-    fun showWelcomeDialog()
+    fun showWelcomeDialog(observer: MailboxUIObserver)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
@@ -79,6 +80,7 @@ interface MailboxScene{
     fun hideEmptyTrashBanner()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showSyncPhonebookDialog(observer: MailboxUIObserver)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -107,6 +109,7 @@ interface MailboxScene{
         private val welcomeDialog = WelcomeTourDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncPhonebookDialog = SyncPhonebookDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -246,12 +249,16 @@ interface MailboxScene{
             deleteDialog.showDeleteThreadDialog(onDeleteThreadListener)
         }
 
+        override fun showSyncPhonebookDialog(observer: MailboxUIObserver) {
+            syncPhonebookDialog.showSyncPhonebookDialog(observer)
+        }
+
         override fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener) {
             emptyTrashDialog.showEmptyTrashDialog(onEmptyTrashListener)
         }
 
-        override fun showWelcomeDialog() {
-            welcomeDialog.showWelcomeTourDialog()
+        override fun showWelcomeDialog(observer: MailboxUIObserver) {
+            welcomeDialog.showWelcomeTourDialog(observer)
         }
 
         override fun dismissConfirmPasswordDialog() {

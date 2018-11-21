@@ -27,4 +27,5 @@ interface SettingsUIObserver: UIObserver {
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()
     fun onToggleLabelSelection(label: LabelWrapper)
+    fun onSyncPhonebookContacts()
 }

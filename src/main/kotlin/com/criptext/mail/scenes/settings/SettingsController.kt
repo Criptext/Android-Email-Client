@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
@@ -20,6 +22,7 @@ import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -51,6 +54,7 @@ class SettingsController(
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
         }
     }
 
@@ -68,6 +72,16 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onSyncPhonebookContacts() {
+            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                            Manifest.permission.READ_CONTACTS)) {
+                scene.setSyncContactsProgressVisisble(true)
+                val resolver = host.getContentResolver()
+                if(resolver != null)
+                    generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+            }
+        }
+
         override fun onEmailPreviewSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
         }
@@ -240,7 +254,17 @@ class SettingsController(
     }
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
 
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_CONTACTS }
+        if (indexOfPermission < 0) return
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+            scene.showMessage(UIMessage(R.string.sync_phonebook_permission))
+            return
+        }
+        val resolver = host.getContentResolver()
+        if(resolver != null)
+            generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
     }
 
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
@@ -271,6 +295,18 @@ class SettingsController(
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
+
+    private fun onSyncPhonebook(resultData: GeneralResult.SyncPhonebook){
+        scene.setSyncContactsProgressVisisble(false)
+        when (resultData) {
+            is GeneralResult.SyncPhonebook.Success -> {
+                scene.showMessage(UIMessage(R.string.sync_phonebook_text))
+            }
+            is GeneralResult.SyncPhonebook.Failure -> {
                 scene.showMessage(resultData.message)
             }
         }

@@ -121,7 +121,7 @@ class ComposerActivity : BaseActivity() {
         if(uri.toString().contains("com.google.android")){
             return Pair(uri.toString(), -1L)
         }else {
-            contentResolver.query(uri, null, null, null, null)?.use {
+            contentResolver?.query(uri, null, null, null, null)?.use {
                 val absolutePath = PathUtil.getPath(this, uri)
                 val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
                 it.moveToFirst()

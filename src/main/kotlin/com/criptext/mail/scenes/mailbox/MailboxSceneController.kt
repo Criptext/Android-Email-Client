@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
+import android.Manifest
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.*
@@ -25,12 +26,17 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Handler
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import android.database.ContentObserver
+import android.provider.ContactsContract
 
 
 /**
@@ -39,6 +45,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 class MailboxSceneController(private val scene: MailboxScene,
                              private val model: MailboxSceneModel,
                              private val host: IHostActivity,
+                             private val storage: KeyValueStorage,
                              private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                              private val dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>,
                              private val activeAccount: ActiveAccount,
@@ -54,6 +61,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.UpdateMailbox -> onMailboxUpdated(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
+            is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
         }
     }
 
@@ -203,8 +211,35 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private val mObserver = object : ContentObserver(host.getHandler()) {
+
+        override fun onChange(selfChange: Boolean) {
+            super.onChange(selfChange)
+            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                            Manifest.permission.READ_CONTACTS)) {
+                val resolver = host.getContentResolver()
+                if(resolver != null)
+                    generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+            }
+        }
+
+    }
+
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+        override fun onWelcomeTourHasFinished() {
+            scene.showSyncPhonebookDialog(this)
+        }
+
+        override fun onSyncPhonebookYes() {
+            if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                            Manifest.permission.READ_CONTACTS)) {
+                val resolver = host.getContentResolver()
+                if(resolver != null)
+                    generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+            }
+        }
+
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }
@@ -363,8 +398,16 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         if(model.showWelcome) {
             model.showWelcome = false
-            scene.showWelcomeDialog()
+            scene.showWelcomeDialog(observer)
+        }else{
+            if(storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)){
+                scene.showSyncPhonebookDialog(observer)
+                storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
+            }
         }
+
+        host.getContentResolver()?.registerContentObserver(
+                ContactsContract.Contacts.CONTENT_URI, true, mObserver)
 
         dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
 
@@ -776,6 +819,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun onSyncPhonebook(resultData: GeneralResult.SyncPhonebook){
+        when (resultData) {
+            is GeneralResult.SyncPhonebook.Success -> {
+                scene.showMessage(UIMessage(R.string.sync_phonebook_text))
+            }
+        }
+    }
+
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
@@ -895,6 +946,17 @@ class MailboxSceneController(private val scene: MailboxScene,
 
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
+
+        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_CONTACTS }
+        if (indexOfPermission < 0) return
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+            scene.showMessage(UIMessage(R.string.sync_phonebook_permission))
+            return
+        }
+        val resolver = host.getContentResolver()
+        if(resolver != null)
+            generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
     }
 
     companion object {

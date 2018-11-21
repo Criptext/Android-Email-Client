@@ -125,6 +125,12 @@
     <string name="invite_title">Invite a Friend to Criptext!</string>
     <string name="invite_text">Check out Criptext, I use it to email privately and securely with anyone! Get it free at https://criptext.com/dl</string>
 
+    <!-- PHONEBOOK SYNC-->
+    <string name="sync_phonebook_text">Your contacts\' emails have been synced</string>
+    <string name="sync_phonebook_permission">Permission for reading contacts is needed to sync phonebook contacts.</string>
+    <string name="sync_dialog_title">Sync Phonebook Contacts</string>
+    <string name="sync_dialog_message">Do you wish to sync your phonebook contacts now?\n You can always do it later from settings.</string>
+
     <!-- SETTINGS -->
     <string name="title_swipe">Swipe Options</string>
     <string name="title_profile_name">Profile Name</string>
@@ -138,6 +144,7 @@
     <string name="hint_custom_dialog">Enter the name</string>
     <string name="title_profile_photo">Profile Photo</string>
     <string name="title_change_password">Change Password</string>
+    <string name="title_sync_phonebook">Sync Phonebook Contacts</string>
     <string name="title_reset_password">Reset Password</string>
     <string name="title_recovery_email">Recovery Email</string>
     <string name="title_signature">Signature</string>
