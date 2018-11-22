@@ -14,6 +14,11 @@
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         tools:replace="android:allowBackup">
+        <meta-data
+            tools:replace="android:value"
+            android:name="android.support.VERSION"
+            android:value="26.1.0" />
+
         <activity
             android:name=".scenes.mailbox.MailboxActivity"
             android:launchMode="singleTop"
@@ -105,10 +110,9 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.linking.LinkingActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.settings.pinlock.PinLockActivity"
+        <activity android:name=".scenes.settings.pinlock.pinscreen.LockScreenActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.amirarcane.lockscreen.activity.EnterPinActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+        <activity android:name=".scenes.settings.pinlock.PinLockActivity"
             android:screenOrientation="portrait"/>
 
         <service

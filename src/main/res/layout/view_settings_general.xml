@@ -493,7 +493,7 @@
                     fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/pin_lock_switch_text"
+                    android:text="@string/title_pin_lock"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
                     android:textColor="@color/drawer_text"/>

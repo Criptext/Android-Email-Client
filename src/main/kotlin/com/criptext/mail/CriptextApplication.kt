@@ -1,13 +1,20 @@
 package com.criptext.mail
 
 import android.support.multidex.MultiDexApplication
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.linking.LinkingActivity
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.signin.SignInActivity
+import com.criptext.mail.scenes.signup.SignUpActivity
+import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.facebook.stetho.Stetho
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 
-class CriptextApplication : MultiDexApplication(), LifecycleDelegate{
+
+
+class CriptextApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
@@ -19,24 +26,15 @@ class CriptextApplication : MultiDexApplication(), LifecycleDelegate{
         if(BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
+            val lockManager = LockManager.getInstance()
+            lockManager.enableAppLock(this, LockScreenActivity::class.java)
+            lockManager.appLock.setOnlyBackgroundTimeout(true)
+            lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
+            lockManager.appLock.logoId = R.drawable.logo_pin
             WebSocketSingleton.getInstance(activeAccount)
-            val lifeCycleHandler = AppLifecycleHandler(this)
-            registerLifecycleHandler(lifeCycleHandler)
         }
     }
-
-    override fun onAppBackgrounded() {
-        val storage = KeyValueStorage.SharedPrefs(this)
-        storage.putBool(KeyValueStorage.StringKey.AskForPin, true)
-    }
-
-    override fun onAppForegrounded() {
-
-    }
-
-    private fun registerLifecycleHandler(lifeCycleHandler: AppLifecycleHandler) {
-        registerActivityLifecycleCallbacks(lifeCycleHandler)
-        registerComponentCallbacks(lifeCycleHandler)
-    }
-
 }

@@ -6,4 +6,5 @@ interface PinLockUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onPinSwitchChanged(isEnabled: Boolean)
     fun onPinChangePressed()
+    fun onAutoTimeSelected(position: Int)
 }

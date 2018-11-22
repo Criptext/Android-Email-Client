@@ -20,4 +20,5 @@ sealed class GeneralRequest {
                             val keyBundle: PreKeyBundleShareData.DownloadBundle?): GeneralRequest()
     data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
     data class SyncPhonebook(val contentResolver: ContentResolver): GeneralRequest()
+    class Logout: GeneralRequest()
 }

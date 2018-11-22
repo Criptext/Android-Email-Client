@@ -1,7 +1,10 @@
 package com.criptext.mail.utils.file
 
+import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.criptext.mail.db.AttachmentTypes
 import java.io.File
@@ -241,6 +244,22 @@ class FileUtils {
             val exp = (Math.log(size.toDouble()) / Math.log(unit.toDouble())).toInt()
             val pre = ("KMGTPE")[exp - 1]
             return String.format("%.2f %sB", size / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+        }
+
+        fun getPathAndSizeFromUri(uri: Uri, contentResolver: ContentResolver?,
+                                            context: Context): Pair<String, Long>?{
+            if(uri.toString().contains("com.google.android")){
+                return Pair(uri.toString(), -1L)
+            }else {
+                contentResolver?.query(uri, null, null, null, null)?.use {
+                    val absolutePath = PathUtil.getPath(context, uri)
+                    val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+                    it.moveToFirst()
+                    if(absolutePath != null)
+                        return Pair(absolutePath, it.getLong(sizeIndex))
+                }
+            }
+            return null
         }
     }
 }
