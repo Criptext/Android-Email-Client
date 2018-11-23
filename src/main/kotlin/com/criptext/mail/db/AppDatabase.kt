@@ -29,7 +29,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class],
-        version = 4,
+        version = 5,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -65,8 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE = Room.databaseBuilder(context,
                         AppDatabase::class.java,
                         "encriptedMail1")
-                        //allowMainThreadQueries() // remove this in production... !!!!
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                         .build()
             }
             return INSTANCE!!
@@ -109,6 +108,12 @@ abstract class AppDatabase : RoomDatabase() {
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                         data TEXT NOT NULL)""")
                 database.execSQL("CREATE INDEX index_pending_event_id ON pendingEvent (id)")
+            }
+        }
+
+        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE file ADD COLUMN shouldDuplicate INTEGER NOT NULL DEFAULT 0""")
             }
         }
     }

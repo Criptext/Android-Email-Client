@@ -21,4 +21,11 @@ class ComposerAPIClient(private val httpClient: HttpClient, private val token: S
         return httpClient.post(path = "/email", authToken = token, body = postEmailBody.toJSON())
     }
 
+    fun duplicateAttachments(fileTokens: List<String>): String{
+        val jsonObject = JSONObject()
+        val fileTokenArray = JSONArray(fileTokens)
+        jsonObject.put("files", fileTokenArray)
+        return httpClient.post(path = "/file/duplicate", authToken = token, body = jsonObject)
+    }
+
 }

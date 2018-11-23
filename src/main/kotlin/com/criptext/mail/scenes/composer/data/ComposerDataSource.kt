@@ -33,7 +33,8 @@ class ComposerDataSource(
                     account = activeAccount, dao = emailInsertionDao,
 
                     onlySave = params.onlySave, attachments = params.attachments,
-                    publishFn = { res -> flushResults(res) }, fileKey = params.fileKey)
+                    publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
+                    originalId = params.originalId)
 
             is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
                     emailId = params.emailId,

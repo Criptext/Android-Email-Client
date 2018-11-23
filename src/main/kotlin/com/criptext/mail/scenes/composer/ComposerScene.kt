@@ -199,7 +199,8 @@ interface ComposerScene {
         override fun getDataInputByUser(): ComposerInputData {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects,
                     bcc = bccInput.objects, subject = subjectEditText.text.toString(),
-                    body = bodyEditText.text, passwordForNonCriptextUsers = passwordForNonCriptextUsersFromDialog)
+                    body = bodyEditText.text, passwordForNonCriptextUsers = passwordForNonCriptextUsersFromDialog,
+                    attachments = null, fileKey = null)
         }
 
         override fun showError(message: UIMessage) {

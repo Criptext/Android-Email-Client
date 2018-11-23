@@ -36,6 +36,9 @@ interface FileDao {
     @Query("SELECT * FROM file where id=:id")
     fun getFileById(id : Long) : CRFile?
 
+    @Query("UPDATE file SET token=:newToken where id=:id")
+    fun updateToken(id : Long, newToken: String)
+
     @Query("""SELECT * FROM file
             WHERE file.emailId=:emailId""")
     fun getAttachmentsFromEmail(emailId: Long) : List<CRFile>

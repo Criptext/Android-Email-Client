@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
@@ -40,6 +41,11 @@ class ResendEmailsWorker(
 
 
     override val canBeParallelized = false
+
+    private val fileHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt,
+            14000L, 7000L)
+
+    private val fileApiClient = ComposerAPIClient(fileHttpClient, activeAccount.jwt)
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
 
     private var meAsRecipient: Boolean = false
@@ -60,10 +66,35 @@ class ResendEmailsWorker(
             : Result<List<PostEmailBody.CriptextEmail>, Exception> =
             Result.of { createEncryptedEmails(mailRecipients) }
 
+    private fun getFileKey(fileKey: String?, attachments: List<CRFile>): String?{
+        if(fileKey == null) return null
+        val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
+        return if(attachments.containsAll(attachmentsThatNeedDuplicate)) {
+            db.getFileKeyByFileId(attachments.first().id)
+        }else{
+            fileKey
+        }
+    }
+
     private fun createCriptextAttachment(attachments: List<CRFile>)
-            : List<PostEmailBody.CriptextAttachment> = attachments.map { attachment ->
-        PostEmailBody.CriptextAttachment(token = attachment.token,
-                name = attachment.name, size = attachment.size)
+            : List<PostEmailBody.CriptextAttachment> {
+        val finalAttachments = mutableListOf<CRFile>()
+        val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
+        if (attachmentsThatNeedDuplicate.isNotEmpty()) {
+            finalAttachments.addAll(attachments.filter { it !in attachmentsThatNeedDuplicate })
+            val op = Result.of { fileApiClient.duplicateAttachments(attachmentsThatNeedDuplicate.map { it.token }) }
+                    .flatMap { Result.of {
+                        val httpReturn = JSONObject(it)
+                        for(file in attachmentsThatNeedDuplicate){
+                            db.updateFileToken(file.id, httpReturn.getString(file.token))
+                            finalAttachments.add(file)
+                        }
+                    } }
+        }
+        return finalAttachments.map { attachment ->
+            PostEmailBody.CriptextAttachment(token = attachment.token,
+                    name = attachment.name, size = attachment.size)
+        }
     }
 
     override fun catchException(ex: Exception): MailboxResult.ResendEmails =
@@ -158,8 +189,8 @@ class ResendEmailsWorker(
                 val encryptedData = signalClient.encryptMessage(recipientId, deviceId, fullEmail.email.content)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedData.encryptedB64,
-                        messageType = encryptedData.type, fileKey = if(fullEmail.fileKey != null)
-                    signalClient.encryptMessage(recipientId, deviceId, fullEmail.fileKey).encryptedB64
+                        messageType = encryptedData.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
+                    signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
                 else null)
             }
         }.flatten()

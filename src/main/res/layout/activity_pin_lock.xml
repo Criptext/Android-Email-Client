@@ -54,15 +54,16 @@
         android:id="@+id/pin_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp">
 
         <TextView
             fontPath="fonts/NunitoSans-Regular.ttf"
@@ -79,29 +80,38 @@
             android:layout_height="match_parent" />
         </LinearLayout>
 
-        <TextView
-            fontPath="fonts/NunitoSans-Regular.ttf"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pin_lock_message_1"
-            android:textColor="@color/drawer_text"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="15dp"
-            android:textSize="14sp" />
-        <TextView
-            fontPath="fonts/NunitoSans-Regular.ttf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pin_lock_message_2"
-            android:textColor="@color/drawer_text"
-            android:layout_marginBottom="10dp"
-            android:textSize="14sp" />
+            android:orientation="vertical"
+            android:background="#f4f4f4">
+            <TextView
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pin_lock_message_1"
+                android:textColor="@color/drawer_text"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp" />
+            <TextView
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pin_lock_message_2"
+                android:textColor="@color/drawer_text"
+                android:layout_marginBottom="20dp"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="#d8d8d8"
-            android:layout_marginTop="10dp"/>
+            android:background="#d8d8d8"/>
 
         <FrameLayout
             android:layout_width="match_parent"

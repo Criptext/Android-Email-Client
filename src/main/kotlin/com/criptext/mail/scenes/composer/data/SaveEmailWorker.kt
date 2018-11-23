@@ -5,7 +5,6 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
-import com.criptext.mail.db.dao.FileKeyDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
@@ -18,6 +17,7 @@ import java.util.*
  * Created by danieltigse on 4/17/18.
  */
 class SaveEmailWorker(
+        private val originalId: Long?,
         private val threadId: String?,
         private val emailId: Long?,
         private val composerInputData: ComposerInputData,
@@ -41,8 +41,13 @@ class SaveEmailWorker(
         if(isRecipientLimitReached()) return ComposerResult.SaveEmail.TooManyRecipients()
 
         val (newEmailId, savedMailThreadId) = saveEmail()
+        val attachmentsSaved = dao.findFilesByEmailId(newEmailId).map { ComposerAttachment(
+                id = it.id, size = it.size, filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
+                filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
+                uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress
+        ) }
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
-                onlySave = onlySave, composerInputData = composerInputData, attachments = attachments,
+                onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
                 fileKey = fileKey)
     }
 
@@ -112,9 +117,19 @@ class SaveEmailWorker(
                     status = 1,
                     date = Date(),
                     readOnly = false,
-                    emailId = 0
+                    emailId = 0,
+                    shouldDuplicate = shouldDuplicateFile(it.filetoken)
             )
         }
+
+    private fun shouldDuplicateFile(fileToken: String): Boolean{
+        if(originalId == null) return false
+        val email = dao.findEmailById(originalId) ?: return false
+        val oldFiles = dao.findFilesByEmailId(email.id)
+        if(fileToken in oldFiles.map { it.token })
+            return true
+        return false
+    }
 
     private fun saveEmail(): Pair<Long, String> {
         val metadataColumns = createMetadataColumns()

@@ -30,7 +30,8 @@ class LoadInitialDataWorker(
 
     private fun convertDraftToInputData(fullEmail: FullEmail): ComposerInputData {
         return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
-                body = fullEmail.email.content, subject = fullEmail.email.subject, passwordForNonCriptextUsers = null)
+                body = fullEmail.email.content, subject = fullEmail.email.subject,
+                passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
@@ -58,7 +59,7 @@ class LoadInitialDataWorker(
                             senderName = fullEmail.from.name,
                             signature = signature)
         return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
-                body = body, subject = subject, passwordForNonCriptextUsers = null)
+                body = body, subject = subject, passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
@@ -67,8 +68,12 @@ class LoadInitialDataWorker(
                             signature = signature)
         val subject = (if(fullEmail.email.subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())) "" else "FW: ") +
                 fullEmail.email.subject
+        val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map { ComposerAttachment(0,it.name, 100,
+                it.token, com.criptext.mail.utils.file.FileUtils.getAttachmentTypeFromPath(it.name),
+                it.size) })
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
-                body = body, subject = subject, passwordForNonCriptextUsers = null)
+                body = body, subject = subject, passwordForNonCriptextUsers = null,
+                attachments = if(attachments.isEmpty()) null else attachments, fileKey = fullEmail.fileKey)
 
     }
 
@@ -78,13 +83,15 @@ class LoadInitialDataWorker(
 
         return if(supportContact != null){
             ComposerInputData(to = listOf(supportContact), cc = emptyList(), bcc = emptyList(),
-                    body = supportTemplate.body, subject = supportTemplate.subject, passwordForNonCriptextUsers = null)
+                    body = supportTemplate.body, subject = supportTemplate.subject,
+                    passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
                     name = "Criptext Support")
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
-                    body = supportTemplate.body, subject = supportTemplate.subject, passwordForNonCriptextUsers = null)
+                    body = supportTemplate.body, subject = supportTemplate.subject,
+                    passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         }
     }
 
@@ -93,13 +100,15 @@ class LoadInitialDataWorker(
 
         return if(contact != null){
             ComposerInputData(to = listOf(contact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", passwordForNonCriptextUsers = null)
+                    body = "", subject = "", passwordForNonCriptextUsers = null, fileKey = null,
+                    attachments = null)
         }else{
             val newContact = Contact(id = 0, email = to,
                     name = EmailAddressUtils.extractName(to))
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", passwordForNonCriptextUsers = null)
+                    body = "", subject = "", passwordForNonCriptextUsers = null, attachments = null,
+                    fileKey = null)
         }
     }
 

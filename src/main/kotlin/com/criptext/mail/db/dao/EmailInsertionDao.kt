@@ -25,6 +25,9 @@ interface EmailInsertionDao {
     @Query("Select * from email where metadataKey = :metadataKey")
     fun findEmailByMetadataKey(metadataKey: Long): Email?
 
+    @Query("Select * from email where id=:id")
+    fun findEmailById(id: Long): Email?
+
     @Insert
     fun insertEmails(emails: List<Email>): List<Long>
 
@@ -38,6 +41,9 @@ interface EmailInsertionDao {
 
     @Query("SELECT * FROM contact where email in (:emailAddresses)")
     fun findContactsByEmail(emailAddresses: List<String>): List<Contact>
+
+    @Query("SELECT * FROM file where emailId=:id")
+    fun findFilesByEmailId(id: Long): List<CRFile>
 
     @Insert
     fun insertEmailLabelRelations(emailLabelRelations: List<EmailLabel>)
