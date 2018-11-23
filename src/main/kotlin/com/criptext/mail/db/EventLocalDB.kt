@@ -17,6 +17,14 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase){
 
+    fun logout(){
+        db.accountDao().nukeTable()
+        db.rawIdentityKeyDao().deleteAll()
+        db.rawPreKeyDao().deleteAll()
+        db.rawSessionDao().deleteAll()
+        db.rawSignedPreKeyDao().deleteAll()
+    }
+
     fun getFromContactByEmailId(id: Long): List<Contact> {
         return db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
     }

@@ -5,7 +5,6 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
-import java.util.*
 
 /**
  * Created by gabriel on 5/1/18.
@@ -95,5 +94,10 @@ sealed class GeneralResult {
     sealed class SyncPhonebook: GeneralResult() {
         class Success: SyncPhonebook()
         data class Failure(val message: UIMessage): SyncPhonebook()
+    }
+
+    sealed class Logout: GeneralResult() {
+        class Success: Logout()
+        class Failure: Logout()
     }
 }

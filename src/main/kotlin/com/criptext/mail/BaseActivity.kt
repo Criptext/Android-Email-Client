@@ -10,10 +10,10 @@ import android.os.Handler
 import android.provider.OpenableColumns
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
@@ -31,6 +31,7 @@ import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.pinlock.PinLockModel
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
 import com.criptext.mail.scenes.signin.SignInActivity
@@ -40,22 +41,23 @@ import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
+import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.ui.ActivityMenu
+import com.github.omadahealth.lollipin.lib.PinCompatActivity
+import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.*
-import com.amirarcane.lockscreen.activity.EnterPinActivity
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.file.PathUtil
 
 
 /**
@@ -65,7 +67,7 @@ import com.criptext.mail.utils.file.PathUtil
  * Created by gabriel on 2/14/18.
  */
 
-abstract class BaseActivity: AppCompatActivity(), IHostActivity {
+abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     /**
      * Resource Id of the layout to be used by this activity. This value will be used on `onCreate`
@@ -277,7 +279,7 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
-                                val attachment = getPathAndSizeFromUri(uri)
+                                val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                                 if (attachment != null)
                                     return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment))
                             }
@@ -287,7 +289,8 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                                 for (i in 0 until clipData.itemCount) {
                                     clipData.getItemAt(i).also { item ->
                                         if (item.uri != null) {
-                                            val attachment = getPathAndSizeFromUri(item.uri)
+                                            val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
+                                                    contentResolver, this)
                                             if (attachment != null)
                                                 attachmentList.add(attachment)
                                         }
@@ -304,21 +307,6 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
             }
 
 
-        }
-        return null
-    }
-
-    protected fun getPathAndSizeFromUri(uri: Uri): Pair<String, Long>?{
-        if(uri.toString().contains("com.google.android")){
-            return Pair(uri.toString(), -1L)
-        }else {
-            contentResolver?.query(uri, null, null, null, null)?.use {
-                val absolutePath = PathUtil.getPath(this, uri)
-                val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
-                it.moveToFirst()
-                if(absolutePath != null)
-                    return Pair(absolutePath, it.getLong(sizeIndex))
-            }
         }
         return null
     }
@@ -373,12 +361,9 @@ abstract class BaseActivity: AppCompatActivity(), IHostActivity {
                 startActivity(newIntent)
             }
             is ExternalActivityParams.PinScreen -> {
-                val intent = Intent(this, EnterPinActivity::class.java)
-                if(params.isFirstTime)
-                    startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
-                else
-                    startActivity(intent)
-
+                val intent = Intent(this, LockScreenActivity::class.java)
+                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK)
+                startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
             }
             is ExternalActivityParams.InviteFriend -> {
                 val share = Intent(android.content.Intent.ACTION_SEND)

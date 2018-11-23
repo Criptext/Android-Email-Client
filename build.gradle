@@ -22,6 +22,9 @@ repositories {
     google()
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.fabric.io/public' }
+    maven{
+        url "https://github.com/omadahealth/omada-nexus/raw/master/release"
+    }
     jcenter()
 }
 
@@ -77,6 +80,7 @@ configurations.all {
 
         cacheChangingModulesFor 0, 'seconds'
     }
+    exclude group: 'com.android.support', module: 'support-v13'
 }
 
 
@@ -206,8 +210,10 @@ dependencies {
 
     implementation 'com.otaliastudios:zoomlayout:1.3.0'
 
-    //Lock Screen
-    implementation 'com.amirarcane.lock-screen:lockscreen:2.0.0'
+    //Lollipin
+    implementation ('com.github.omadahealth:lollipin:2.1.0@aar') {
+        transitive = true
+    }
 
 }
 

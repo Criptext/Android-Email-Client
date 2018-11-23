@@ -44,4 +44,6 @@
 
     <dimen name="indicator_margin_left">20dp</dimen>
     <dimen name="indicator_margin_top">20dp</dimen>
+
+    <dimen name="pin_code_round_size">15dp</dimen>
 </resources>

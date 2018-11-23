@@ -22,6 +22,7 @@ import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import droidninja.filepicker.FilePickerConst
@@ -76,7 +77,7 @@ class ComposerActivity : BaseActivity() {
                     val clipData = data.clipData
                     if(clipData == null) {
                         data.data?.also { uri ->
-                            val attachment = getPathAndSizeFromUri(uri)
+                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                             if (attachment != null)
                                 setActivityMessage(ActivityMessage.AddAttachments(listOf(attachment)))
                         }
@@ -86,7 +87,8 @@ class ComposerActivity : BaseActivity() {
                             val attachmentList = mutableListOf<Pair<String, Long>>()
                             for (i in 0 until clipData.itemCount) {
                                 clipData.getItemAt(i).also { item ->
-                                    val attachment = getPathAndSizeFromUri(item.uri)
+                                    val attachment = FileUtils.getPathAndSizeFromUri(item.uri, contentResolver,
+                                            this)
                                     if (attachment != null)
                                         attachmentList.add(attachment)
                                 }

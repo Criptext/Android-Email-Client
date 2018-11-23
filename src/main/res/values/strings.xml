@@ -156,6 +156,7 @@
     <string name="title_allow_preview">Show Email Preview</string>
     <string name="title_two_fa">Two-Factor Authentication</string>
     <string name="title_read_receipts">Read Receipts</string>
+    <string name="title_pin_lock">PIN Lock</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>
     <string name="separator_account">ACCOUNT</string>
@@ -224,9 +225,33 @@
 
     <!-- PIN LOCK -->
     <string name="pin_lock_toolbar_title">PIN SETTINGS</string>
-    <string name="pin_lock_switch_text">PIN Lock</string>
-    <string name="pin_lock_change">Change PIN</string>
+    <string name="pin_lock_switch_text">Use PIN Lock</string>
+    <string name="pin_lock_change">Change PIN Code</string>
+    <string name="pin_lock_auto">Auto-Lock</string>
+    <string name="pin_lock_message_1">If you forget your PIN code you\'ll have to sign out and sign back in again.</string>
+    <string name="pin_lock_message_2"><b>Warning:</b> 10 failed attempts will result in all data to be erased from the app for security purposes.</string>
+    <string-array name="pin_lock_auto_options">
+        <item>Immediately</item>
+        <item>1 minute</item>
+        <item>5 minute</item>
+        <item>15 minute</item>
+        <item>1 hour</item>
+        <item>24 hour</item>
+    </string-array>
+    <string name="attempts_remaining">Incorrect PIN, %1$d attempts remaining.</string>
+    <string name="attempts_remaining_critical"><b>WARNING:</b> %1$d attempts remaining until secure data wipe.</string>
+    <string name="pin_forgot_dialog_title">Logout?</string>
+    <string name="pin_forgot_dialog_message">If you don\'t remember your PIN you can logout.\n\nAll your data will be there and you can log back in with your password. \n\n<b>Do you wish to logout?</b></string>
+    <string name="pin_code_forgot_text">Forgot PIN?</string>
+    <string name="pin_code_step_disable">Disable %d-digit Pincode</string>
+    <string name="pin_code_step_create">Create a %d-digit Pincode</string>
+    <string name="pin_code_step_change">Enter your current %d-digit Pincode</string>
+    <string name="pin_code_step_unlock">Enter your %d-digit Pincode</string>
+    <string name="pin_code_step_enable_confirm">Confirm your %d-digit Pincode</string>
 
+    <string name="pin_code_fingerprint_text">Fingerprint</string>
+    <string name="pin_code_fingerprint_success">Fingerprint recognized</string>
+    <string name="pin_code_fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
 
     <!-- NON CRIPTEXT SEND EMAIL DIALOG -->
     <string name="pin_length_error">Passphrase must be at least 3 characters.</string>

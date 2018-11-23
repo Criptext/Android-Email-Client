@@ -79,6 +79,24 @@
             android:layout_height="match_parent" />
         </LinearLayout>
 
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_lock_message_1"
+            android:textColor="@color/drawer_text"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="15dp"
+            android:textSize="14sp" />
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_lock_message_2"
+            android:textColor="@color/drawer_text"
+            android:layout_marginBottom="10dp"
+            android:textSize="14sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
@@ -99,12 +117,13 @@
 
             <TextView
                 fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/change_pin_option_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/pin_lock_change"
                 android:textSize="@dimen/drawer_text_item"
                 android:gravity="center_vertical"
-                android:textColor="@color/drawer_text"/>
+                android:textColor="@color/button_text_color"/>
 
             <ImageView
                 android:layout_width="32dp"
@@ -117,9 +136,39 @@
                 android:src="@drawable/arrow_right"/>
 
         </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#d8d8d8"
+            android:layout_marginTop="10dp"/>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="17dp"
+            android:id="@+id/pin_time">
 
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/pin_auto_option_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/pin_lock_auto"
+                android:textSize="@dimen/drawer_text_item"
+                android:gravity="center_vertical"
+                android:textColor="@color/button_text_color"/>
 
+            <Spinner
+                android:id="@+id/auto_lock_spinner"
+                android:layout_width="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_height="wrap_content"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 

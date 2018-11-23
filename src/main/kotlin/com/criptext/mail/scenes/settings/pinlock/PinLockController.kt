@@ -19,6 +19,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 
 class PinLockController(
@@ -43,21 +44,41 @@ class PinLockController(
     }
 
     private val uiObserver = object: PinLockUIObserver{
+        override fun onAutoTimeSelected(position: Int) {
+            if(model.pinActive) {
+                storage.putInt(KeyValueStorage.StringKey.PINTimeout, position)
+                val lockManager = LockManager.getInstance()
+                lockManager.appLock.timeout = when (position) {
+                    0 -> 500
+                    1 -> 60000
+                    2 -> 5 * 60000
+                    3 -> 15 * 60000
+                    4 -> 60 * 60000
+                    else -> 24 * 60 * 60000
+                }
+            }
+
+        }
+
         override fun onPinSwitchChanged(isEnabled: Boolean) {
+            scene.togglePinOptions(isEnabled)
+            val lockManager = LockManager.getInstance()
             if(isEnabled){
+                lockManager.appLock.enable()
                 if(!storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
-                    if(storage.getString("com.amirarcane.lockscreen", KeyValueStorage.StringKey.PIN, "").isEmpty())
+                    if(!lockManager.appLock.isPasscodeSet) {
                         host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
-                    else
+                    }else {
                         storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+                    }
                 }
             }else{
+                lockManager.appLock.disable()
                 storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, false)
             }
         }
 
         override fun onPinChangePressed() {
-            storage.putString("com.amirarcane.lockscreen", KeyValueStorage.StringKey.PIN, "")
             host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
         }
 
@@ -85,6 +106,10 @@ class PinLockController(
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
+
+        model.pinTimeOut = storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1)
+        model.pinActive = storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)
+
         scene.attachView(uiObserver, keyboardManager, model)
         generalDataSource.listener = generalDataSourceListener
 
@@ -97,7 +122,14 @@ class PinLockController(
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.ActivatePin) {
-            storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+            if(activityMessage.isSuccess) {
+                uiObserver.onAutoTimeSelected(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+                storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+            }else{
+                scene.setPinLockStatus(false)
+                scene.togglePinOptions(false)
+            }
+
             return true
         }
         return false
