@@ -117,21 +117,6 @@ class ComposerActivity : BaseActivity() {
         }
     }
 
-    private fun getPathAndSizeFromUri(uri: Uri): Pair<String, Long>?{
-        if(uri.toString().contains("com.google.android")){
-            return Pair(uri.toString(), -1L)
-        }else {
-            contentResolver?.query(uri, null, null, null, null)?.use {
-                val absolutePath = PathUtil.getPath(this, uri)
-                val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
-                it.moveToFirst()
-                if(absolutePath != null)
-                    return Pair(absolutePath, it.getLong(sizeIndex))
-            }
-        }
-        return null
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)

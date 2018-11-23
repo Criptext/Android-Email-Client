@@ -419,6 +419,7 @@ class ComposerController(private val model: ComposerModel,
             is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.Draft -> ComposerRequest.LoadInitialData(type, type.draftId)
             is ComposerType.Support -> ComposerRequest.LoadInitialData(type, 0)
+            is ComposerType.MailTo -> ComposerRequest.LoadInitialData(type, 0)
             else -> null
         }
 
@@ -429,6 +430,7 @@ class ComposerController(private val model: ComposerModel,
         if(model.isReplyOrDraft || model.isSupport){
             scene.setFocusToComposer()
         }
+        if(model.type is ComposerType.MailTo) scene.setFocusToSubject()
         scene.bindWithModel(firstTime = model.firstTime,
                 composerInputData = composerInputData,
                 attachments = model.attachments,

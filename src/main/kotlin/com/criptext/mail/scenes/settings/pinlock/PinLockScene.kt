@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.settings.pinlock
 
 import android.view.View
+import android.widget.ImageView
 import android.widget.Switch
 import android.widget.Toast
 import com.criptext.mail.R
@@ -31,6 +32,10 @@ interface PinLockScene{
 
         private val context = view.context
 
+        private val backButton: ImageView by lazy {
+            view.findViewById<ImageView>(R.id.backButton) as ImageView
+        }
+
         private val pinEnableSwitch: Switch by lazy {
             view.findViewById<Switch>(R.id.pin_lock_switch)
         }
@@ -46,6 +51,10 @@ interface PinLockScene{
                                 model: PinLockModel) {
 
             pinLockUIObserver = uiObserver
+
+            backButton.setOnClickListener {
+                pinLockUIObserver.onBackButtonPressed()
+            }
 
             pinEnableSwitch.setOnCheckedChangeListener {_, isChecked ->
                 pinLockUIObserver.onPinSwitchChanged(isChecked)
