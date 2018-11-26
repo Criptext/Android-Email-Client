@@ -55,9 +55,28 @@ interface MailboxLocalDB {
     fun getExternalData(id: Long): EmailExternalSession?
     fun saveExternalSession(externalSession: EmailExternalSession)
     fun deleteEmail(emailId: List<Long>)
+    fun fileNeedsDuplicate(id: Long): Boolean
+    fun updateFileToken(id: Long, newToken: String)
+    fun getFileKeyByFileId(id: Long): String?
 
 
     class Default(private val db: AppDatabase): MailboxLocalDB {
+        override fun getFileKeyByFileId(id: Long): String? {
+            val fileKey = db.fileKeyDao().getFileById(id)
+            return if(fileKey != null && !fileKey.key.isNullOrEmpty())
+                fileKey.key
+            else
+                null
+        }
+
+        override fun updateFileToken(id: Long, newToken: String) {
+            db.fileDao().updateToken(id, newToken)
+        }
+
+        override fun fileNeedsDuplicate(id: Long): Boolean {
+            return db.fileDao().getFileById(id)?.shouldDuplicate ?: false
+        }
+
         override fun getEmailById(id: Long): Email? {
             return db.emailDao().getEmailById(id)
         }

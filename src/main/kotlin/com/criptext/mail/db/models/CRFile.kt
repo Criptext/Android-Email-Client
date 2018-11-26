@@ -43,7 +43,10 @@ class CRFile(
 
         @ColumnInfo(name = "emailId")
         @NonNull
-        var emailId : Long
+        var emailId : Long,
+
+        @ColumnInfo(name = "shouldDuplicate")
+        var shouldDuplicate : Boolean
 
 ) {
 
@@ -72,7 +75,8 @@ class CRFile(
                         1,
                         Date(),
                         false,
-                        0))
+                        0,
+                        false))
             }
             return files
         }
@@ -87,7 +91,8 @@ class CRFile(
                     status = json.getInt("status"),
                     date = DateUtils.getDateFromString(json.getString("date"), null),
                     emailId = json.getLong("emailId"),
-                    readOnly = json.getBoolean("readOnly")
+                    readOnly = json.getBoolean("readOnly"),
+                    shouldDuplicate = false
             )
         }
     }

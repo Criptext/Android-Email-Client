@@ -112,14 +112,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
     }
 
-    private fun checkForPin(){
-        if(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)
-                && storage.getBool(KeyValueStorage.StringKey.AskForPin, false)){
-            storage.putBool(KeyValueStorage.StringKey.AskForPin, false)
-            launchExternalActivityForResult(ExternalActivityParams.PinScreen(false))
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
@@ -144,7 +136,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         super.onStart()
         dismissAllNotifications()
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        checkForPin()
 
         if (controller.onStart(activityMessage))
             activityMessage = null

@@ -11,7 +11,7 @@ sealed class ComposerRequest {
     class SaveEmailAsDraft(val threadId: String?, val emailId: Long?,
                            val composerInputData: ComposerInputData,
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>,
-                           val fileKey: String?): ComposerRequest()
+                           val fileKey: String?, val originalId: Long?): ComposerRequest()
     class DeleteDraft(val emailId: Long): ComposerRequest()
     class UploadAttachment(val filepath: String, val fileKey: String?): ComposerRequest()
     class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): ComposerRequest()

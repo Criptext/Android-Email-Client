@@ -4,6 +4,11 @@ import android.view.View
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.scenes.linking.LinkingActivity
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.signin.SignInActivity
+import com.criptext.mail.scenes.signup.SignUpActivity
+import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
@@ -11,6 +16,7 @@ import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 
 interface PinLockScene{
@@ -78,6 +84,8 @@ interface PinLockScene{
             }
 
             pinEnableSwitch.setOnCheckedChangeListener {_, isChecked ->
+                if(isChecked)
+                    pinActivate()
                 pinLockUIObserver.onPinSwitchChanged(isChecked)
             }
 
@@ -97,6 +105,17 @@ interface PinLockScene{
             }
             autoLockSpinner.setSelection(model.pinTimeOut)
             autoLockSpinner.onItemSelectedListener = selectedListener
+        }
+
+        private fun pinActivate(){
+            val lockManager = LockManager.getInstance()
+            lockManager.enableAppLock(context, LockScreenActivity::class.java)
+            lockManager.appLock.setOnlyBackgroundTimeout(true)
+            lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
+            lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
+            lockManager.appLock.logoId = R.drawable.logo_pin
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

@@ -130,6 +130,8 @@
     <string name="sync_phonebook_permission">Permission for reading contacts is needed to sync phonebook contacts.</string>
     <string name="sync_dialog_title">Sync Phonebook Contacts</string>
     <string name="sync_dialog_message">Do you wish to sync your phonebook contacts now?\n You can always do it later from settings.</string>
+    <string name="error_sync_contact">No contacts with email available.</string>
+    <string name="already_sync_contact">Contacts already synced.</string>
 
     <!-- SETTINGS -->
     <string name="title_swipe">Swipe Options</string>
@@ -153,7 +155,7 @@
     <string name="title_change_email_cap">CHANGE EMAIL</string>
     <string name="title_change_password_cap">CHANGE PASSWORD</string>
     <string name="title_allow_notifications">Allow Notifications</string>
-    <string name="title_allow_preview">Show Email Preview</string>
+    <string name="title_allow_preview">Notification Preview</string>
     <string name="title_two_fa">Two-Factor Authentication</string>
     <string name="title_read_receipts">Read Receipts</string>
     <string name="title_pin_lock">PIN Lock</string>
@@ -233,10 +235,10 @@
     <string-array name="pin_lock_auto_options">
         <item>Immediately</item>
         <item>1 minute</item>
-        <item>5 minute</item>
-        <item>15 minute</item>
+        <item>5 minutes</item>
+        <item>15 minutes</item>
         <item>1 hour</item>
-        <item>24 hour</item>
+        <item>24 hours</item>
     </string-array>
     <string name="attempts_remaining">Incorrect PIN, %1$d attempts remaining.</string>
     <string name="attempts_remaining_critical"><b>WARNING:</b> %1$d attempts remaining until secure data wipe.</string>

@@ -26,14 +26,6 @@ class CriptextApplication : MultiDexApplication() {
         if(BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         if(activeAccount != null) {
-            val lockManager = LockManager.getInstance()
-            lockManager.enableAppLock(this, LockScreenActivity::class.java)
-            lockManager.appLock.setOnlyBackgroundTimeout(true)
-            lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
-            lockManager.appLock.logoId = R.drawable.logo_pin
             WebSocketSingleton.getInstance(activeAccount)
         }
     }

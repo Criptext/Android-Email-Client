@@ -64,9 +64,9 @@ class PinLockController(
             scene.togglePinOptions(isEnabled)
             val lockManager = LockManager.getInstance()
             if(isEnabled){
-                lockManager.appLock.enable()
+                //lockManager.appLock.enable()
                 if(!storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
-                    if(!lockManager.appLock.isPasscodeSet) {
+                    if(lockManager.appLock == null || !lockManager.appLock.isPasscodeSet) {
                         host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
                     }else {
                         storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
@@ -116,6 +116,8 @@ class PinLockController(
         val handleMessage = handleActivityMessage(activityMessage)
 
         scene.setPinLockStatus(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false))
+        scene.togglePinOptions(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false))
+
 
         return handleMessage
     }
@@ -128,6 +130,7 @@ class PinLockController(
             }else{
                 scene.setPinLockStatus(false)
                 scene.togglePinOptions(false)
+
             }
 
             return true

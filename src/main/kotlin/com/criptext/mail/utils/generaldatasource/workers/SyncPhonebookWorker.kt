@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import android.content.ContentResolver
+import android.content.res.Resources
 import android.provider.ContactsContract
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
@@ -11,6 +12,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import org.whispersystems.libsignal.DuplicateMessageException
 import java.util.*
 
 
@@ -22,7 +24,10 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
     override val canBeParallelized = true
 
     override fun catchException(ex: Exception): GeneralResult.SyncPhonebook {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return when(ex){
+            is Resources.NotFoundException -> GeneralResult.SyncPhonebook.Failure(UIMessage(R.string.error_sync_contact))
+            else -> GeneralResult.SyncPhonebook.Failure(UIMessage(R.string.already_sync_contact))
+        }
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.SyncPhonebook>)
@@ -31,8 +36,10 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
                 .flatMap { Result.of {
                     val contacts = contactDao.getAll().map { dbContact -> dbContact.email }
                     val phonebookContacts = it.filter { contact -> contact.email !in contacts }
-                    if(phonebookContacts.isEmpty())
-                        throw java.lang.Exception()
+                    if(phonebookContacts.isEmpty() && it.isEmpty())
+                        throw Resources.NotFoundException()
+                    else if(phonebookContacts.isEmpty() && it.isNotEmpty())
+                        throw Exception()
                     contactDao.insertAll(phonebookContacts)
                 } }
         return when (operation){
@@ -40,12 +47,12 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
                 GeneralResult.SyncPhonebook.Success()
             }
             is Result.Failure -> {
-                GeneralResult.SyncPhonebook.Failure(UIMessage(R.string.error_getting_email))
+                catchException(operation.error)
             }
         }
     }
 
-    fun getNameEmailDetails(): ArrayList<Contact> {
+    private fun getNameEmailDetails(): ArrayList<Contact> {
         val emlRecs = ArrayList<Contact>()
         val emlRecsHS = HashSet<String>()
         val projection = arrayOf(ContactsContract.RawContacts._ID, ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.PHOTO_ID, ContactsContract.CommonDataKinds.Email.DATA, ContactsContract.CommonDataKinds.Photo.CONTACT_ID)

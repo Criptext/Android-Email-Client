@@ -167,6 +167,10 @@ class ComposerController(private val model: ComposerModel,
         when (result) {
             is ComposerResult.LoadInitialData.Success -> {
                 updateModelWithInputData(result.initialData)
+                model.fileKey = result.initialData.fileKey
+                if(result.initialData.attachments != null && result.initialData.attachments.isNotEmpty()) {
+                    model.attachments = result.initialData.attachments
+                }
                 bindWithModel(result.initialData, activeAccount.signature)
                 model.initialized = true
             }
@@ -318,6 +322,10 @@ class ComposerController(private val model: ComposerModel,
             is ComposerType.Draft -> model.type.draftId
             else -> null
         }
+        val originalId = when (model.type) {
+            is ComposerType.Forward -> model.type.originalId
+            else -> null
+        }
         val threadPreview =  when (model.type) {
             is ComposerType.Reply -> model.type.threadPreview
             is ComposerType.ReplyAll -> model.type.threadPreview
@@ -328,6 +336,7 @@ class ComposerController(private val model: ComposerModel,
         dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
                 threadId = threadPreview?.threadId,
                 emailId = draftId,
+                originalId = originalId,
                 composerInputData = composerInputData,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey))
 
@@ -346,7 +355,7 @@ class ComposerController(private val model: ComposerModel,
                     saveEmailAsDraft(data, onlySave = false)
                 else
                     scene.showNonCriptextEmailSendDialog(observer)
-        } else if(model.isUploadingAttachments) {
+        } else if(model.isUploadingAttachments && model.attachments.isNotEmpty()) {
             scene.showError(UIMessage(R.string.wait_for_attachments))
         } else {
             scene.showError(UIMessage(R.string.no_recipients_error))
@@ -435,6 +444,7 @@ class ComposerController(private val model: ComposerModel,
                 composerInputData = composerInputData,
                 attachments = model.attachments,
                 signature = signature)
+        scene.notifyAttachmentSetChanged()
         model.firstTime = false
     }
 
@@ -465,7 +475,7 @@ class ComposerController(private val model: ComposerModel,
 
     override fun onBackPressed(): Boolean {
 
-        if(!model.isUploadingAttachments) {
+        if(!model.isUploadingAttachments && model.attachments.isNotEmpty()) {
             checkForDraft()
         }else{
             scene.showStayInComposerDialog(observer)

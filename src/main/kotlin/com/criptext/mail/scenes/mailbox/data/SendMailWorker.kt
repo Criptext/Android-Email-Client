@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.mailbox.data
 import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
@@ -13,14 +14,11 @@ import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.EmailExternalSession
 import com.criptext.mail.db.models.KnownAddress
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.signal.*
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.EmailAddressUtils.extractRecipientIdFromCriptextAddress
-import com.criptext.mail.utils.EmailAddressUtils.isFromCriptextDomain
 import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -49,6 +47,10 @@ class SendMailWorker(private val signalClient: SignalClient,
     : BackgroundWorker<MailboxResult.SendMail> {
     override val canBeParallelized = false
 
+    private val fileHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt,
+            14000L, 7000L)
+
+    private val fileApiClient = ComposerAPIClient(fileHttpClient, activeAccount.jwt)
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
 
     private var guestEmails: PostEmailBody.GuestEmail? = null
@@ -104,8 +106,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                 val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedData.encryptedB64,
-                        messageType = encryptedData.type, fileKey = if(fileKey != null)
-                                signalClient.encryptMessage(recipientId, deviceId, fileKey).encryptedB64
+                        messageType = encryptedData.type, fileKey = if(getFileKey() != null)
+                                signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
                                 else null)
             }
         }.flatten()
@@ -150,10 +152,35 @@ class SendMailWorker(private val signalClient: SignalClient,
             : Result<List<PostEmailBody.CriptextEmail>, Exception> =
             Result.of { createEncryptedEmails(mailRecipients) }
 
+    private fun getFileKey(): String?{
+        if(fileKey == null) return null
+        val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
+        return if(attachments.containsAll(attachmentsThatNeedDuplicate)) {
+            db.getFileKeyByFileId(attachments.first().id)
+        }else{
+            fileKey
+        }
+    }
+
     private fun createCriptextAttachment(attachments: List<ComposerAttachment>)
-            : List<PostEmailBody.CriptextAttachment> = attachments.map { attachment ->
-        PostEmailBody.CriptextAttachment(token = attachment.filetoken,
-                name = FileUtils.getName(attachment.filepath), size = attachment.size)
+            : List<PostEmailBody.CriptextAttachment> {
+        val finalAttachments = mutableListOf<ComposerAttachment>()
+        val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
+        if (attachmentsThatNeedDuplicate.isNotEmpty()) {
+            finalAttachments.addAll(attachments.filter { it !in attachmentsThatNeedDuplicate })
+            val op = Result.of { fileApiClient.duplicateAttachments(attachmentsThatNeedDuplicate.map { it.filetoken }) }
+            if(op is Result.Success){
+                val httpReturn = JSONObject(op.value).getJSONObject("duplicates")
+                for(file in attachmentsThatNeedDuplicate){
+                    db.updateFileToken(file.id, httpReturn.getString(file.filetoken))
+                    finalAttachments.add(file)
+                }
+            }
+        }
+        return finalAttachments.map { attachment ->
+            PostEmailBody.CriptextAttachment(token = attachment.filetoken,
+                    name = FileUtils.getName(attachment.filepath), size = attachment.size)
+        }
     }
 
     private val sendEmailOperation
