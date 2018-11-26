@@ -22,6 +22,7 @@ import java.io.File
  */
 
 class LogoutWorker(
+        private val shouldDeleteAllData: Boolean,
         private val db: EventLocalDB,
         private val storage: KeyValueStorage,
         httpClient: HttpClient,
@@ -40,11 +41,17 @@ class LogoutWorker(
     override fun work(reporter: ProgressReporter<GeneralResult.Logout>): GeneralResult.Logout? {
         val deleteOperation = Result.of {apiClient.postLogout()}
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of { db.logout() } }
+                .flatMap { Result.of {
+                    if(shouldDeleteAllData)
+                        db.logoutNukeDB()
+                    else
+                        db.logout()
+                } }
                 .flatMap {
                     Result.of {
                         storage.clearAll()
-                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
+                        if(!shouldDeleteAllData)
+                            storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
                     }
                 }
         return when (deleteOperation){

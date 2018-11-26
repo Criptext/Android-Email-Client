@@ -115,7 +115,6 @@ interface PinLockScene{
             lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
             lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
             lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
-            lockManager.appLock.logoId = R.drawable.logo_pin
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

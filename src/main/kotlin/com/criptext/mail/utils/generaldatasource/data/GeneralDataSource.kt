@@ -83,6 +83,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.Logout -> LogoutWorker(
+                    shouldDeleteAllData = params.shouldDeleteAllData,
                     db = eventLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,

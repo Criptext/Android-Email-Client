@@ -46,4 +46,12 @@
     <dimen name="indicator_margin_top">20dp</dimen>
 
     <dimen name="pin_code_round_size">15dp</dimen>
+    <dimen name="activity_pin_code_padding">20dp</dimen>
+    <dimen name="keyboard_button_padding">10dp</dimen>
+    <dimen name="keyboard_button_ripple_padding">30dp</dimen>
+    <dimen name="keyboard_button_text_size">15sp</dimen>
+    <dimen name="pin_code_step_text_size">15sp</dimen>
+    <dimen name="pin_code_round_top_margin">20dp</dimen>
+    <dimen name="pin_code_elements_margin">10dp</dimen>
+    <dimen name="pin_code_forgot_text_size">15sp</dimen>
 </resources>
