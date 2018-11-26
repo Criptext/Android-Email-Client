@@ -17,6 +17,10 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase){
 
+    fun logoutNukeDB() {
+        db.clearAllTables()
+    }
+
     fun logout(){
         db.accountDao().nukeTable()
         db.rawIdentityKeyDao().deleteAll()

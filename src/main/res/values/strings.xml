@@ -128,8 +128,8 @@
     <!-- PHONEBOOK SYNC-->
     <string name="sync_phonebook_text">Your contacts\' emails have been synced</string>
     <string name="sync_phonebook_permission">Permission for reading contacts is needed to sync phonebook contacts.</string>
-    <string name="sync_dialog_title">Sync Phonebook Contacts</string>
-    <string name="sync_dialog_message">Do you wish to sync your phonebook contacts now?\n You can always do it later from settings.</string>
+    <string name="sync_dialog_title">Access Phonebook Contacts</string>
+    <string name="sync_dialog_message">This will allow Criptext to suggest email addresses that are stored in your contacts when composing emails.\n\nWould you like to enable Phonebook Contacts?</string>
     <string name="error_sync_contact">No contacts with email available.</string>
     <string name="already_sync_contact">Contacts already synced.</string>
 
@@ -241,15 +241,15 @@
         <item>24 hours</item>
     </string-array>
     <string name="attempts_remaining">Incorrect PIN, %1$d attempts remaining.</string>
-    <string name="attempts_remaining_critical"><b>WARNING:</b> %1$d attempts remaining until secure data wipe.</string>
-    <string name="pin_forgot_dialog_title">Logout?</string>
-    <string name="pin_forgot_dialog_message">If you don\'t remember your PIN you can logout.\n\nAll your data will be there and you can log back in with your password. \n\n<b>Do you wish to logout?</b></string>
-    <string name="pin_code_forgot_text">Forgot PIN?</string>
+    <string name="attempts_remaining_critical"><b>WARNING:</b> %1$d attempts until secure data wipe.</string>
+    <string name="pin_forgot_dialog_title">Sign Out</string>
+    <string name="pin_forgot_dialog_message">Are you sure you want to sign out?</string>
+    <string name="pin_code_forgot_text"><u>Sign Out</u></string>
     <string name="pin_code_step_disable">Disable %d-digit Pincode</string>
-    <string name="pin_code_step_create">Create a %d-digit Pincode</string>
-    <string name="pin_code_step_change">Enter your current %d-digit Pincode</string>
-    <string name="pin_code_step_unlock">Enter your %d-digit Pincode</string>
-    <string name="pin_code_step_enable_confirm">Confirm your %d-digit Pincode</string>
+    <string name="pin_code_step_create">Create your PIN Code</string>
+    <string name="pin_code_step_change">Enter your current PIN Code</string>
+    <string name="pin_code_step_unlock">Enter your PIN Code to unlock Inbox</string>
+    <string name="pin_code_step_enable_confirm">Confirm your PIN Code</string>
 
     <string name="pin_code_fingerprint_text">Fingerprint</string>
     <string name="pin_code_fingerprint_success">Fingerprint recognized</string>

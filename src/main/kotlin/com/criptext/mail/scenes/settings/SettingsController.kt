@@ -54,6 +54,7 @@ class SettingsController(
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
+            is GeneralResult.Logout -> onLogout(result)
         }
     }
 
@@ -62,7 +63,6 @@ class SettingsController(
             is SettingsResult.ChangeContactName -> onContactNameChanged(result)
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
-            is SettingsResult.Logout -> onLogout(result)
             is SettingsResult.GetUserSettings -> onGetUserSettings(result)
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
@@ -167,7 +167,7 @@ class SettingsController(
 
         override fun onLogoutConfirmedClicked() {
             scene.showLoginOutDialog()
-            dataSource.submitRequest(SettingsRequest.Logout())
+            generalDataSource.submitRequest(GeneralRequest.Logout(false))
         }
 
         override fun onRemoveDevice(deviceId: Int, position: Int) {
@@ -363,12 +363,12 @@ class SettingsController(
         }
     }
 
-    private fun onLogout(result: SettingsResult.Logout){
+    private fun onLogout(result: GeneralResult.Logout){
         when(result) {
-            is SettingsResult.Logout.Success -> {
+            is GeneralResult.Logout.Success -> {
                 host.exitToScene(SignInParams(), null, false, true)
             }
-            is SettingsResult.Logout.Failure -> {
+            is GeneralResult.Logout.Failure -> {
                 scene.dismissLoginOutDialog()
                 scene.showMessage(UIMessage(R.string.error_login_out))
             }

@@ -73,7 +73,7 @@ class PinLockController(
                     }
                 }
             }else{
-                lockManager.appLock.disable()
+                lockManager.appLock.disableAndRemoveConfiguration()
                 storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, false)
             }
         }

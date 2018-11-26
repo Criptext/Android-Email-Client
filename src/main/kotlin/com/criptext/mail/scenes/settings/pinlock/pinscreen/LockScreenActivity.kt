@@ -1,7 +1,8 @@
 package com.criptext.mail.scenes.settings.pinlock.pinscreen
 
 import android.content.Intent
-import android.widget.Toast
+import android.support.v4.content.ContextCompat
+import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
@@ -23,11 +24,15 @@ import java.util.*
 
 class LockScreenActivity: AppLockActivity(){
 
+    private val warningText: TextView by lazy {
+        this.findViewById<TextView>(R.id.warning_text)
+    }
+
 
     private val lockScreenUIObserver = object : LockScreenUIObserver{
         override fun onForgotPinYesPressed(dataSource: GeneralDataSource) {
             showLoginOutDialog()
-            dataSource.submitRequest(GeneralRequest.Logout())
+            dataSource.submitRequest(GeneralRequest.Logout(false))
         }
 
     }
@@ -52,10 +57,10 @@ class LockScreenActivity: AppLockActivity(){
 
     override fun onPinFailure(attempts: Int) {
         if(attempts < MAX_ATTEMPTS){
-            handleAttepts(MAX_ATTEMPTS - attempts)
+            handleAttempts(MAX_ATTEMPTS - attempts)
         }else{
             showLoginOutDialog()
-            getDataSource().submitRequest(GeneralRequest.Logout())
+            getDataSource().submitRequest(GeneralRequest.Logout(true))
         }
     }
 
@@ -89,21 +94,19 @@ class LockScreenActivity: AppLockActivity(){
         }
     }
 
-    private fun handleAttepts(attempts: Int){
-        val message = if(attempts > 3)
+    private fun handleAttempts(attempts: Int){
+        val message = if(attempts > 3) {
             UIMessage(R.string.attempts_remaining, arrayOf(attempts))
-        else
+        }else {
+            warningText.setBackgroundResource(R.drawable.pin_warning_background)
+            warningText.setTextColor(ContextCompat.getColor(this, R.color.white))
             UIMessage(R.string.attempts_remaining_critical, arrayOf(attempts))
+        }
         showMessage(message)
     }
 
     private fun showMessage(message: UIMessage){
-        val duration = Toast.LENGTH_LONG
-        val toast = Toast.makeText(
-                this,
-                this.getLocalizedUIMessage(message),
-                duration)
-        toast.show()
+        warningText.text = this.getLocalizedUIMessage(message)
     }
 
     companion object {
