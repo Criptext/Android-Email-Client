@@ -10,6 +10,7 @@ import com.crashlytics.android.Crashlytics
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 import io.fabric.sdk.android.Fabric
 import java.lang.ref.WeakReference
 
@@ -29,10 +30,16 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val lockManager = LockManager.getInstance()
+        if(lockManager.appLock != null && lockManager.appLock.isPasscodeSet && lockManager.isAppLockEnabled
+                && storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
+            lockManager.appLock.enable()
+        }
         notificationManager.cancelAll()
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
+
     }
 
     private fun hasActiveAccount(): Boolean =

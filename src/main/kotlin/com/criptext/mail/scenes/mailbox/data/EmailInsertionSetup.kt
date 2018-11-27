@@ -240,7 +240,7 @@ object EmailInsertionSetup {
 
         val body = apiClient.getBodyFromEmail(metadata.metadataKey)
 
-        val decryptedBody = getDecryptedEmailBody(signalClient, body, metadata)
+        val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
 
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 

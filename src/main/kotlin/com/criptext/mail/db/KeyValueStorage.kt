@@ -31,7 +31,8 @@ interface KeyValueStorage {
         LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
         ShowSyncPhonebookDialog("ShowSyncPhonebookDialog"),
         ShowEmailPreview("ShowEmailPreview"), HasLockPinActive("HasLockPinActive"),
-        PIN("pin"), AskForPin("AskForPin"), PINTimeout("PINTimeout")
+        PIN("pin"), AskForPin("AskForPin"), PINTimeout("PINTimeout"),
+        UserHasAcceptedPhonebookSync("UserHasAcceptedPhonebookSync")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

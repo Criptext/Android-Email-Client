@@ -31,6 +31,7 @@ interface PinLockScene{
     fun showForgotPasswordDialog(email: String)
     fun setPinLockStatus(isEnabled: Boolean)
     fun togglePinOptions(isEnabled: Boolean)
+    fun setupPINLock()
 
     class Default(val view: View): PinLockScene{
         private lateinit var pinLockUIObserver: PinLockUIObserver
@@ -84,8 +85,6 @@ interface PinLockScene{
             }
 
             pinEnableSwitch.setOnCheckedChangeListener {_, isChecked ->
-                if(isChecked)
-                    pinActivate()
                 pinLockUIObserver.onPinSwitchChanged(isChecked)
             }
 
@@ -107,9 +106,9 @@ interface PinLockScene{
             autoLockSpinner.onItemSelectedListener = selectedListener
         }
 
-        private fun pinActivate(){
+        override fun setupPINLock(){
             val lockManager = LockManager.getInstance()
-            lockManager.enableAppLock(context, LockScreenActivity::class.java)
+            //lockManager.enableAppLock(context, LockScreenActivity::class.java)
             lockManager.appLock.setOnlyBackgroundTimeout(true)
             lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
             lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)

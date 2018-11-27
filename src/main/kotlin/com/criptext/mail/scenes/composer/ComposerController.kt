@@ -128,10 +128,13 @@ class ComposerController(private val model: ComposerModel,
         }
 
         override fun onBackButtonClicked() {
-            if(!model.isUploadingAttachments) {
-                checkForDraft()
+            if(model.isUploadingAttachments) {
+                if(model.attachments.isEmpty())
+                    checkForDraft()
+                else
+                    scene.showStayInComposerDialog(this)
             }else{
-                scene.showStayInComposerDialog(this)
+                checkForDraft()
             }
         }
 
@@ -475,10 +478,13 @@ class ComposerController(private val model: ComposerModel,
 
     override fun onBackPressed(): Boolean {
 
-        if(!model.isUploadingAttachments && model.attachments.isNotEmpty()) {
-            checkForDraft()
+        if(model.isUploadingAttachments) {
+            if(model.attachments.isEmpty())
+                checkForDraft()
+            else
+                scene.showStayInComposerDialog(observer)
         }else{
-            scene.showStayInComposerDialog(observer)
+            checkForDraft()
         }
 
         return false

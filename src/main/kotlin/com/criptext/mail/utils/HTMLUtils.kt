@@ -1,5 +1,6 @@
 package com.criptext.mail.utils
 
+import android.text.Html
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
@@ -15,6 +16,11 @@ class HTMLUtils {
 
             val body = Jsoup.clean(html, whiteList)
             return Jsoup.parse(body).text()
+        }
+
+        fun sanitizeHtml(html: String):String {
+            val body = Jsoup.clean(html, whiteList)
+            return Jsoup.parse(body).html()
         }
 
         fun changedHeaderHtml(htmlText: String): String {
