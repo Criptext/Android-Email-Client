@@ -108,12 +108,13 @@ interface PinLockScene{
 
         override fun setupPINLock(){
             val lockManager = LockManager.getInstance()
-            //lockManager.enableAppLock(context, LockScreenActivity::class.java)
-            lockManager.appLock.setOnlyBackgroundTimeout(true)
-            lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
-            lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
+            if(lockManager.appLock != null) {
+                lockManager.appLock.setOnlyBackgroundTimeout(true)
+                lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
+                lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
+                lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
+                lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
+            }
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

@@ -48,13 +48,15 @@ class PinLockController(
             if(model.pinActive) {
                 storage.putInt(KeyValueStorage.StringKey.PINTimeout, position)
                 val lockManager = LockManager.getInstance()
-                lockManager.appLock.timeout = when (position) {
-                    0 -> 500
-                    1 -> 60000
-                    2 -> 5 * 60000
-                    3 -> 15 * 60000
-                    4 -> 60 * 60000
-                    else -> 24 * 60 * 60000
+                if(lockManager.appLock != null) {
+                    lockManager.appLock.timeout = when (position) {
+                        0 -> 500
+                        1 -> 60000
+                        2 -> 5 * 60000
+                        3 -> 15 * 60000
+                        4 -> 60 * 60000
+                        else -> 24 * 60 * 60000
+                    }
                 }
             }
 
@@ -64,7 +66,6 @@ class PinLockController(
             scene.togglePinOptions(isEnabled)
             val lockManager = LockManager.getInstance()
             if(isEnabled){
-                //lockManager.appLock.enable()
                 if(!storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
                     if(lockManager.appLock == null || !lockManager.appLock.isPasscodeSet) {
                         host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
@@ -73,7 +74,7 @@ class PinLockController(
                     }
                 }
             }else{
-                lockManager.appLock.disableAndRemoveConfiguration()
+                lockManager.appLock?.disableAndRemoveConfiguration()
                 storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, false)
             }
         }
@@ -131,7 +132,6 @@ class PinLockController(
             }else{
                 scene.setPinLockStatus(false)
                 scene.togglePinOptions(false)
-
             }
 
             return true
