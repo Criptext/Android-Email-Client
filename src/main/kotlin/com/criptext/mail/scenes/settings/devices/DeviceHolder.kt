@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.*
 import com.criptext.mail.R
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 
 /**
  * Created by danieltigse on 28/6/18.
@@ -42,7 +42,7 @@ class DeviceHolder(val view: View) : RecyclerView.ViewHolder(view) {
             textViewCurrent.text = ""
             if(deviceItem.lastActivity != null){
                 textViewLastActive.text = view.context.getString(R.string.device_last_activity_time,
-                        DateUtils.getFormattedDate(deviceItem.lastActivity.time))
+                        DateAndTimeUtils.getFormattedDate(deviceItem.lastActivity.time))
                 lastActiveLayout.visibility = View.VISIBLE
             }else{
                 textViewLastActive.text = view.context.getText(R.string.device_last_activity_time_2_months)

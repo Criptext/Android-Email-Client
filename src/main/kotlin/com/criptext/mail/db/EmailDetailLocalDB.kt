@@ -3,7 +3,7 @@ package com.criptext.mail.db
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import java.util.*
 
 /**
@@ -34,7 +34,7 @@ interface EmailDetailLocalDB {
         override fun unsendEmail(emailId: Long) {
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)
             db.emailDao().unsendEmailById(emailId, "", "",
-                    DateUtils.getDateFromString(DateUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
+                    DateAndTimeUtils.getDateFromString(DateAndTimeUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
             db.fileDao().changeFileStatusByEmailid(emailId, 0)
         }
 

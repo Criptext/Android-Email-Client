@@ -257,10 +257,11 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         }
     }
 
-    private fun downloadFile(emailId: Long, fileToken: String, fileKey: String?){
+    private fun downloadFile(emailId: Long, fileToken: String, fileKey: String?, fileName: String,
+                             fileSize: Long){
         updateAttachmentProgress(emailId, fileToken, 0)
         dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileToken = fileToken,
-                emailId = emailId, fileKey = fileKey))
+                emailId = emailId, fileKey = fileKey, fileName = fileName, fileSize = fileSize))
     }
 
     private fun onDownloadedFile(result: EmailDetailResult){
@@ -301,7 +302,7 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
         if (attachmentIndex < 0) return
         if(model.fileDetails[emailId]!![attachmentIndex].progress != 100)
             model.fileDetails[emailId]!![attachmentIndex].progress = progress
-        scene.updateAttachmentProgress(emailIndex, attachmentIndex)
+        scene.updateAttachmentProgress(emailIndex + 1, attachmentIndex)
     }
 
     private fun openFile(filepath: String){
@@ -361,7 +362,8 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
             val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
             if(attachment.status != 0) {
-                downloadFile(email.email.id, attachment.token, email.fileKey)
+                downloadFile(email.email.id, attachment.token, email.fileKey, attachment.name,
+                        attachment.size)
             }
         }
 

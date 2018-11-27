@@ -17,7 +17,10 @@ class ApiCall {
 
         fun executeRequest(client: OkHttpClient, req: Request): String {
             val response = client.newCall(req).execute()
-            if (!response.isSuccessful) throw(ServerErrorException(response.code()))
+            if (!response.isSuccessful) {
+                val rateLimitHeader = response.header("Retry-After")?.toLong()
+                throw(ServerErrorException(response.code(), rateLimitHeader))
+            }
             return response.body()!!.string()
         }
 

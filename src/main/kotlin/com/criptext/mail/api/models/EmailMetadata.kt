@@ -31,7 +31,8 @@ data class EmailMetadata(
         val files: List<CRFile>,
         val fileKey: String?,
         val secure: Boolean,
-        val isSpam: Boolean) {
+        val isSpam: Boolean,
+        val isExternal: Boolean?) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
@@ -44,6 +45,10 @@ data class EmailMetadata(
             val  emailData = JSONObject(metadataJsonString)
             val from = emailData.getString("from")
             // TODO make this more robust
+            val isExternal = if(emailData.has("external"))
+                emailData.getBoolean("external")
+            else
+                null
             val fromEmail = EmailAddressUtils.extractEmailAddress(from)
             val fromName = EmailAddressUtils.extractName(from)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
@@ -69,7 +74,8 @@ data class EmailMetadata(
                     files = files,
                     fileKey = fileKey.key,
                     secure = true,
-                    isSpam = checkSpam(emailData)
+                    isSpam = checkSpam(emailData),
+                    isExternal = isExternal
             )
 
         }

@@ -7,7 +7,6 @@ import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
-import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.criptextnotification.NotificationError
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
@@ -16,10 +15,9 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.push.data.PushAPIRequestHandler
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
-import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldEqualTo
 import org.junit.After
@@ -131,7 +129,7 @@ class PushRequestHandlerTest {
                                 </body>
                             </html>
                         """.trimIndent(),
-                            date = DateUtils.getDateFromString(
+                            date = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
                             delivered = DeliveryTypes.READ,
@@ -143,10 +141,10 @@ class PushRequestHandlerTest {
                             metadataKey = it + 100L,
                             unread = false,
                             isMuted = false,
-                            unsentDate = DateUtils.getDateFromString(
+                            unsentDate = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
-                            trashDate = DateUtils.getDateFromString(
+                            trashDate = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null)),
                     labels = emptyList(),
@@ -155,7 +153,7 @@ class PushRequestHandlerTest {
                             name = "test.pdf",
                             size = 65346L,
                             status = 1,
-                            date = DateUtils.getDateFromString(
+                            date = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
                             readOnly = false,

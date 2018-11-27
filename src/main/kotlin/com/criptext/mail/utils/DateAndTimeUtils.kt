@@ -10,7 +10,7 @@ import java.util.*
  * Created by gabriel on 6/1/17.
  */
 
-class DateUtils {
+class DateAndTimeUtils {
     companion object {
         fun getDateFromString(stringDate: String, pattern: String?) : Date{
             val sdf = if(pattern == null){
@@ -157,6 +157,15 @@ class DateUtils {
             formattedDate = formattedDate.replace("A.M.".toRegex(), "AM")
 
             return formattedDate
+        }
+
+        fun getTimeInHoursAndMinutes(seconds: Long?): Triple<Long, Long, Long>?{
+            if(seconds == null) return null
+            val hours = seconds / 3600
+            val minutes = seconds % 3600 / 60
+            val secs = seconds % 60
+
+            return Triple(hours, minutes, secs)
         }
     }
 

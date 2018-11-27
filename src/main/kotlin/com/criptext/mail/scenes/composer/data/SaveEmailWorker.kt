@@ -8,7 +8,7 @@ import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.file.FileUtils
 import java.util.*
@@ -89,14 +89,14 @@ class SaveEmailWorker(
                 to = composerInputData.to.map { it.email },
                 cc = composerInputData.cc.map { it.email },
                 bcc = composerInputData.bcc.map { it.email },
-                date = DateUtils.printDateWithServerFormat(Date()),
-                unsentDate = DateUtils.printDateWithServerFormat(Date()),
+                date = DateAndTimeUtils.printDateWithServerFormat(Date()),
+                unsentDate = DateAndTimeUtils.printDateWithServerFormat(Date()),
                 metadataKey = tempThreadId, // ugly hack because we don't have draft table
                 fromContact = sender,
                 unread = meAsRecipient,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
-                trashDate = DateUtils.printDateWithServerFormat(Date()))
+                trashDate = DateAndTimeUtils.printDateWithServerFormat(Date()))
     }
 
     private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(account.userEmail)

@@ -23,7 +23,9 @@ import org.json.JSONObject
 import java.io.*
 import java.nio.ByteBuffer
 
-class DownloadAttachmentWorker(private val fileToken: String,
+class DownloadAttachmentWorker(private val fileSize: Long,
+                               private val fileName: String,
+                               private val fileToken: String,
                                private val emailId: Long,
                                private val fileKey: String?,
                                private val downloadPath: String,
@@ -115,6 +117,10 @@ class DownloadAttachmentWorker(private val fileToken: String,
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.DownloadFile>): EmailDetailResult.DownloadFile? {
+        if(AndroidFs.fileExistsInDownloadsDir(fileName, fileSize)){
+            filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
+            return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
+        }
         val result = downloadFileMetadata(fileToken)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap(getMetaDataFromJSONResponse)

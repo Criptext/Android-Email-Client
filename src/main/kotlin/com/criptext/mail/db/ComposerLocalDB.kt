@@ -2,10 +2,6 @@ package com.criptext.mail.db
 
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
-import com.criptext.mail.scenes.composer.data.ComposerInputData
-import com.criptext.mail.utils.DateUtils
-import com.criptext.mail.utils.HTMLUtils
-import java.util.*
 
 /**
  * Created by danieltigse on 4/17/18.

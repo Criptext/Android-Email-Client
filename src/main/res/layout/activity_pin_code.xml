@@ -78,6 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
+            android:layout_marginTop="12dp"
             android:layout_centerInParent="true">
         <com.github.omadahealth.typefaceview.TypefaceTextView
             android:id="@+id/pin_code_forgot_textview"

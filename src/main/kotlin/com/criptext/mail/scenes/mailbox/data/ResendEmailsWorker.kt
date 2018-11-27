@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.R
-import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
@@ -9,20 +8,16 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
-import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.data.ComposerAPIClient
-import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.PostEmailBody
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.failure
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONArray
@@ -223,7 +218,7 @@ class ResendEmailsWorker(
                     db.updateEmailAndAddLabel(id = currentFullEmail!!.email.id, threadId = sentMailData.threadId,
                             messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                             status = getDeliveryType(),
-                            date = DateUtils.getDateFromString(sentMailData.date, null)
+                            date = DateAndTimeUtils.getDateFromString(sentMailData.date, null)
                     )
                 }
             }

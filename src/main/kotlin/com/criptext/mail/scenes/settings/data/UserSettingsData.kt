@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.scenes.settings.devices.DeviceItem
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 
 data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: String,
@@ -16,7 +16,7 @@ data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: St
                         val json = devicesData.getJSONObject(it)
                         val jsonDate = json.getJSONObject("lastActivity").optString("date")
                         val date = if(!jsonDate.isNullOrEmpty())
-                            DateUtils.getDateFromString(jsonDate, null)
+                            DateAndTimeUtils.getDateFromString(jsonDate, null)
                         else
                             null
                         DeviceItem(json.getInt("deviceId"),

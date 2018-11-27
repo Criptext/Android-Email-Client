@@ -109,6 +109,7 @@
         <item>@color/dot_dark_screen4</item>
     </array>
 
+    <color name="warning_color">#000000</color>
     <color name="success_color">#FFFFFF</color>
     <color name="hint_color">#FFFFFF</color>
 </resources>

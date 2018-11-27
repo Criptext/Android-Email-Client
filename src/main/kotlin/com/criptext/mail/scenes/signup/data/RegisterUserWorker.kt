@@ -15,6 +15,7 @@ import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
 import com.criptext.mail.services.MessagingInstance
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -99,7 +100,16 @@ class RegisterUserWorker(
             is ServerErrorException -> {
                 when {
                     ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.taken_username_error)
-                    ex.errorCode == ServerErrorCodes.TooManyRequests -> UIMessage(resId = R.string.too_many_sign_ups)
+                    ex.errorCode == ServerErrorCodes.TooManyRequests -> {
+                        val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.rateLimitTime)
+                        if(timeLeft != null) {
+                            if(timeLeft.first == 0L)
+                            UIMessage(resId = R.string.too_many_requests_exception_minute, args = arrayOf(timeLeft.second))
+                            else
+                            UIMessage(resId = R.string.too_many_requests_exception_hour, args = arrayOf(timeLeft.first))
+                        } else
+                            UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
+                    }
                     else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
                 }
             }

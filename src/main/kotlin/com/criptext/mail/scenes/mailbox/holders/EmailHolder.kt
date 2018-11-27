@@ -12,7 +12,7 @@ import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.MailItemHolder
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.Utility
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -73,7 +73,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                         250,
                         250))
 
-        dateView.text = DateUtils.getFormattedDate(emailPreview.timestamp.time)
+        dateView.text = DateAndTimeUtils.getFormattedDate(emailPreview.timestamp.time)
 
         if(emailPreview.unread) {
             dateView.typeface = TypefaceUtils.load(

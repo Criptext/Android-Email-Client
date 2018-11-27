@@ -50,6 +50,8 @@ sealed class EmailDetailRequest{
     ): EmailDetailRequest()
 
     data class DownloadFile(
+            val fileName: String,
+            val fileSize: Long,
             val fileToken: String,
             val emailId: Long,
             val fileKey: String?

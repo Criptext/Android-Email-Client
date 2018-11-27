@@ -14,13 +14,11 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Email
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
-import com.criptext.mail.utils.DateUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
-import java.util.*
 
 /**
  * Created by sebas on 3/22/18.

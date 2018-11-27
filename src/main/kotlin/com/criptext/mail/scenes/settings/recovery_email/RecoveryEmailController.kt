@@ -215,7 +215,7 @@ class RecoveryEmailController(
                 scene.showMessage(UIMessage(R.string.update_password_success))
             }
             is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
+                scene.setConfirmPasswordError(result.message)
             }
         }
     }

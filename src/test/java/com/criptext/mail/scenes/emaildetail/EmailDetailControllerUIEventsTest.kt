@@ -86,7 +86,9 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         val selectedFile = model.emails[selectedIndex].files[selectedIndex]
         fullEmailEventListener.captured.onAttachmentSelected(0, 0)
 
-        verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(selectedFile.token, selectedFile.emailId, null)) }
+        verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileName = selectedFile.name,
+                fileSize = selectedFile.size, fileKey = null, emailId = selectedFile.emailId,
+                fileToken = selectedFile.token)) }
     }
 
     @Test
@@ -101,7 +103,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         simulateDownloadEvent(EmailDetailResult.DownloadFile.Progress(selectedFile.emailId, selectedFile.token, 50))
         model.fileDetails[selectedEmail.email.id]!![selectedIndex].progress `should be equal to` 50
 
-        verify { scene.updateAttachmentProgress(selectedIndex, selectedIndex) }
+        verify { scene.updateAttachmentProgress(selectedIndex + 1, selectedIndex) }
     }
 
     @Test

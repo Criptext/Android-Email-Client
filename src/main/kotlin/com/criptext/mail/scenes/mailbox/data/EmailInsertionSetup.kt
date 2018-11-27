@@ -8,7 +8,8 @@ import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.signal.SignalExternalAddress
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
@@ -25,7 +26,7 @@ object EmailInsertionSetup {
         return Email(
             id = 0,
             unread = metadata.unread,
-            date = DateUtils.getDateFromString(
+            date = DateAndTimeUtils.getDateFromString(
                     metadata.date,
                     null),
             unsentDate =  null,
@@ -185,31 +186,46 @@ object EmailInsertionSetup {
         }
     }
 
+    private fun getSenderId(metadata: EmailMetadata): Pair<Int?, String>{
+        var senderDeviceId = metadata.senderDeviceId
+        var senderRecipientId = metadata.senderRecipientId
+        if (metadata.isExternal != null && metadata.isExternal) {
+            senderDeviceId = SignalExternalAddress.deviceId
+            senderRecipientId = SignalExternalAddress.recipientId
+        }
+        return Pair(senderDeviceId, senderRecipientId)
+    }
+
     private fun getDecryptedEmailBody(signalClient: SignalClient,
                                       body: String,
-                                      metadata: EmailMetadata) =
-        if (metadata.messageType != null && metadata.senderDeviceId != null) {
+                                      metadata: EmailMetadata): String {
+        val senderId = getSenderId(metadata)
+        return if (metadata.messageType != null && senderId.first != null) {
             val encryptedData = SignalEncryptedData(
                     encryptedB64 = body,
                     type = metadata.messageType)
 
             decryptMessage(signalClient = signalClient,
-                    recipientId = metadata.senderRecipientId, deviceId = metadata.senderDeviceId,
+                    recipientId = senderId.second, deviceId = senderId.first!!,
                     encryptedData = encryptedData)
-        } else body
+        } else
+            body
+    }
+
 
     private fun getDecryptedFileKey(signalClient: SignalClient,
-                                      metadata: EmailMetadata) =
-            if (metadata.messageType != null && metadata.senderDeviceId != null && metadata.fileKey != null) {
-                val encryptedData = SignalEncryptedData(
-                        encryptedB64 = metadata.fileKey,
-                        type = metadata.messageType)
+                                      metadata: EmailMetadata): String? {
+        val senderId = getSenderId(metadata)
+        return if (metadata.messageType != null && senderId.first != null && metadata.fileKey != null) {
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = metadata.fileKey,
+                    type = metadata.messageType)
 
-                decryptMessage(signalClient = signalClient,
-                        recipientId = metadata.senderRecipientId, deviceId = metadata.senderDeviceId,
-                        encryptedData = encryptedData)
-            } else null
-
+            decryptMessage(signalClient = signalClient,
+                    recipientId = senderId.second, deviceId = senderId.first!!,
+                    encryptedData = encryptedData)
+        } else null
+    }
 
     /**
      * Inserts all the rows and relations needed for a new email in a single transaction
