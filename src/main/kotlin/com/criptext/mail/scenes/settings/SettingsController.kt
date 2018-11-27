@@ -80,6 +80,7 @@ class SettingsController(
         override fun onSyncPhonebookContacts() {
             if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
+                storage.putBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, true)
                 scene.setSyncContactsProgressVisisble(true)
                 val resolver = host.getContentResolver()
                 if (resolver != null)

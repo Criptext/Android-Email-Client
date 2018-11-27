@@ -125,6 +125,7 @@ class PinLockController(
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.ActivatePin) {
             if(activityMessage.isSuccess) {
+                scene.setupPINLock()
                 uiObserver.onAutoTimeSelected(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
                 storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
             }else{

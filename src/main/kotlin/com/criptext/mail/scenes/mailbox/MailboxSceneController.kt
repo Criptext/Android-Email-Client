@@ -235,6 +235,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onSyncPhonebookYes() {
             if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
+                storage.putBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, true)
                 val resolver = host.getContentResolver()
                 if(resolver != null)
                     generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
@@ -421,8 +422,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
-                        Manifest.permission.READ_CONTACTS)) {
+        if(storage.getBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, false)) {
             host.getContentResolver()?.registerContentObserver(
                     ContactsContract.Contacts.CONTENT_URI, true, mObserver)
         }

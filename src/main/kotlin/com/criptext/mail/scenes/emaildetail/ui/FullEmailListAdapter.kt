@@ -83,6 +83,20 @@ class FullEmailListAdapter(private val mContext : Context,
         return fullEmails.size + 2
     }
 
+    override fun getItemId(position: Int): Long {
+        if(isPositionFooter(position)) {
+            return -1
+        }
+
+        if(position == 0)
+            return -2
+
+
+        val email = fullEmails[position - 1]
+
+        return email.email.id
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val mView: View
