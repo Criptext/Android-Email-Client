@@ -195,6 +195,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
             scene.hideDrawer()
+            scene.hideUpdateBanner()
 
             when(navigationMenuOptions) {
                 NavigationMenuOptions.INBOX,
@@ -232,6 +233,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val observer = object : MailboxUIObserver {
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+        
+        override fun onUpdateBannerXPressed() {
+            scene.hideUpdateBanner()
         }
 
         override fun onWelcomeTourHasFinished() {
@@ -854,6 +859,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             feedController.reloadFeeds()
             dataSource.submitRequest(MailboxRequest.ResendEmails())
+        }
+        if(resultData.updateBannerData != null){
+            scene.showUpdateBanner(resultData.updateBannerData)
         }
     }
 

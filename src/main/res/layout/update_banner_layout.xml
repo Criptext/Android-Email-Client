@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/update_banner"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/login_background"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/banner_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:src="@drawable/alarm_bell"
+            android:layout_gravity="center_vertical"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/banner_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="There’s a new feature!"
+                android:layout_marginBottom="15dp"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                fontPath="fonts/NunitoSans-Bold.ttf"/>
+            <TextView
+                android:id="@+id/banner_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Two-Factor Authentication is here, to add a new layer of security"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                fontPath="fonts/NunitoSans-Regular.ttf"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/x_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="13dp"
+            android:src="@drawable/x"
+            android:tint="@color/white"
+            android:layout_gravity="top"/>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

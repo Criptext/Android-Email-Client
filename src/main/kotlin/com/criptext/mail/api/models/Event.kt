@@ -51,6 +51,9 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
             //Get Events
             const val newEvent = 400
 
+            //Update Banner
+            const val updateBannerEvent = 401
+
             const val openEmail = 500
 
         }

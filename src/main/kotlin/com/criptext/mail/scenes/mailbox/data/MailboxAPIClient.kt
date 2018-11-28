@@ -93,4 +93,8 @@ class MailboxAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
     }
 
+    fun getUpdateBannerData(code: Int, language: String): String {
+        return httpClient.get(path = "/news/$language/$code", authToken = null)
+    }
+
 }

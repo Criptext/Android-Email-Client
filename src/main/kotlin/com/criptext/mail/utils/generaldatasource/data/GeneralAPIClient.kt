@@ -5,6 +5,7 @@ import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.InputStream
 
 class GeneralAPIClient(private val httpClient: HttpClient, private val token: String) {
 
@@ -78,4 +79,7 @@ class GeneralAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.put(path = "/user/readtracking", authToken = token, body = jsonPut)
     }
 
+    fun downloadNewsImageFile(imageUrl: Int): InputStream {
+        return httpClient.getFileStream(path = "/news/security.png", authToken = token, params = emptyMap())
+    }
 }

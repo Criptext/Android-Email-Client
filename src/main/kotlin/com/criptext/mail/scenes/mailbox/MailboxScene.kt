@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.criptext.mail.IHostActivity
@@ -22,15 +23,18 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
 import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.mail_item_left_name.view.*
 
 /**
@@ -77,6 +81,8 @@ interface MailboxScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
+    fun showUpdateBanner(bannerData: UpdateBannerData)
+    fun hideUpdateBanner()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
@@ -157,6 +163,14 @@ interface MailboxScene{
 
         private val emptyTrashButton: TextView by lazy {
             mailboxView.findViewById<TextView>(R.id.empty_trash)
+        }
+
+        private val updateBanner: LinearLayout by lazy {
+            mailboxView.findViewById<LinearLayout>(R.id.update_banner)
+        }
+
+        private val updateBannerXButton: ImageView by lazy {
+            mailboxView.findViewById<ImageView>(R.id.x_button)
         }
 
         override val virtualListView = VirtualRecyclerView(recyclerView)
@@ -297,6 +311,18 @@ interface MailboxScene{
             trashBanner.visibility = View.VISIBLE
         }
 
+        override fun showUpdateBanner(bannerData: UpdateBannerData) {
+            updateBanner.findViewById<TextView>(R.id.banner_title).text = bannerData.title
+            updateBanner.findViewById<TextView>(R.id.banner_message).text = bannerData.message
+            Picasso.with(context).load(bannerData.image)
+                    .into(updateBanner.findViewById<ImageView>(R.id.banner_image))
+            UIUtils.expand(updateBanner)
+        }
+
+        override fun hideUpdateBanner() {
+            UIUtils.collapse(updateBanner)
+        }
+
         override fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {
             labelChooserDialog.onFetchedLabels(
                     defaultSelectedLabels = defaultSelectedLabels,
@@ -347,6 +373,10 @@ interface MailboxScene{
 
             emptyTrashButton.setOnClickListener{
                 observer.onEmptyTrashPressed()
+            }
+
+            updateBannerXButton.setOnClickListener {
+                observer.onUpdateBannerXPressed()
             }
 
 

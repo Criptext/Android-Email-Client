@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/empty_trash_banner"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#f2f8ff">
+        <TextView
+            android:id="@+id/banner_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_trash_banner"
+            android:layout_marginTop="7dp"
+            android:padding="17dp"
+            android:textColor="#424c52"
+            android:textSize="15sp"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+        <TextView
+            android:id="@+id/empty_trash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/banner_message"
+            android:clickable="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="7dp"
+            android:gravity="bottom|end"
+            android:text="@string/empty_trash"
+            android:textColor="#0091ff"
+            android:textSize="15sp"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
