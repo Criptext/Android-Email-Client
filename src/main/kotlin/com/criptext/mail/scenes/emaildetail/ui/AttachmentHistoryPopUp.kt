@@ -10,7 +10,7 @@ import com.criptext.mail.R
 import com.criptext.mail.db.AttachmentTypes
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.emaildetail.AttachmentHistoryListener
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.ui.PopupUtils
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -55,7 +55,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
         val array = ArrayList<MockedAttachmentContact>()
         array.add(MockedAttachmentContact(
                 name = "Sebastian Caceres",
-                date = DateUtils.getDateFromString("2017-05-23 20:12:58", null),
+                date = DateAndTimeUtils.getDateFromString("2017-05-23 20:12:58", null),
                 file = "Look at ma sheep.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.DOWNLOAD,
                 fileType = AttachmentTypes.PDF
@@ -63,7 +63,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         array.add(MockedAttachmentContact(
                 name = "Gianni Carlo",
-                date = DateUtils.getDateFromString("2018-03-12 18:12:58", null),
+                date = DateAndTimeUtils.getDateFromString("2018-03-12 18:12:58", null),
                 file = "Sheep relevance.pdf",
                 action = MockedAttachmentContact.ContactActionTypes.OPEN,
                 fileType = AttachmentTypes.WORD
@@ -117,7 +117,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         fun bindAttachmentContact(contact: MockedAttachmentContact){
             name.text = contact.name
-            date.text = DateUtils.getFormattedDate(contact.date.time)
+            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time)
             action.text = when(contact.action) {
                 MockedAttachmentContact.ContactActionTypes.DOWNLOAD -> {
                     "Downloaded: "

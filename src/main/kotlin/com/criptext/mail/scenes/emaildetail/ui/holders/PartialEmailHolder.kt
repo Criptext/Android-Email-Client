@@ -11,7 +11,7 @@ import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.Utility
 import com.squareup.picasso.Callback
@@ -56,7 +56,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             bodyView.text = fullEmail.email.preview
         }
 
-        dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
+        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time)
 
         headerView.text =
                 if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {

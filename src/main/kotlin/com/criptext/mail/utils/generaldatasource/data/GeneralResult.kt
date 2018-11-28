@@ -17,7 +17,7 @@ sealed class GeneralResult {
 
     sealed class ConfirmPassword: GeneralResult()  {
         class Success: ConfirmPassword()
-        class Failure: ConfirmPassword()
+        data class Failure(val message: UIMessage): ConfirmPassword()
     }
 
     sealed class ResetPassword : GeneralResult() {

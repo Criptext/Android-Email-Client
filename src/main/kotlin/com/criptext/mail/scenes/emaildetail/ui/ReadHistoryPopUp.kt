@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -9,7 +8,7 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.emaildetail.ReadHistoryListener
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.ui.PopupUtils
 import java.util.*
 import kotlin.collections.ArrayList
@@ -50,18 +49,18 @@ class ReadHistoryPopUp(private val anchorView: View) {
     private fun getMockedContacts(): List<MockedContact> {
 
         val array = ArrayList<MockedContact>()
-        array.add(MockedContact("Sebastian Caceres", DateUtils.getDateFromString(
+        array.add(MockedContact("Sebastian Caceres", DateAndTimeUtils.getDateFromString(
                 "1992-05-23 20:12:58", null)))
-        array.add(MockedContact("Gianni Carlo", DateUtils.getDateFromString(
+        array.add(MockedContact("Gianni Carlo", DateAndTimeUtils.getDateFromString(
                 "2016-12-23 20:12:58", null)))
         array.add(MockedContact("Gabriel Aumala",
-                DateUtils.getDateFromString("2017-05-23 20:12:58", null)))
+                DateAndTimeUtils.getDateFromString("2017-05-23 20:12:58", null)))
         array.add(MockedContact("someemail@email.com",
-                DateUtils.getDateFromString("2012-05-23 20:12:58", null)))
+                DateAndTimeUtils.getDateFromString("2012-05-23 20:12:58", null)))
         array.add(MockedContact("Erika Perugachi",
-                DateUtils.getDateFromString("2010-05-23 20:12:58", null)))
+                DateAndTimeUtils.getDateFromString("2010-05-23 20:12:58", null)))
         array.add(MockedContact("Erika Perugachi",
-                DateUtils.getDateFromString("2000-05-23 20:12:58", null)))
+                DateAndTimeUtils.getDateFromString("2000-05-23 20:12:58", null)))
         return array
     }
 
@@ -108,7 +107,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
 
         fun bindContact(contact: MockedContact){
             name.text = contact.name
-            date.text = DateUtils.getFormattedDate(contact.date.time)
+            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time)
         }
 
         init {

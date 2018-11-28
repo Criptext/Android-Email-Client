@@ -12,7 +12,7 @@ import com.criptext.mail.R
 import com.criptext.mail.db.FeedType
 import com.criptext.mail.db.models.Email
 import com.criptext.mail.scenes.mailbox.feed.data.ActivityFeedItem
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.squareup.picasso.Picasso
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
@@ -57,7 +57,7 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
 
         textViewTitle.text = "${activityFeedItem.contactName} ${getTitle(activityFeedItem.type)}"
         textViewDetail.text = getSubtitle(activityFeedItem)
-        textViewDate.text = DateUtils.getFormattedDate(activityFeedItem.date.time)
+        textViewDate.text = DateAndTimeUtils.getFormattedDate(activityFeedItem.date.time)
 
         checkIsNew(lastTimeFeedOpened, position, activityFeedItem)
         checkFeedType(activityFeedItem)

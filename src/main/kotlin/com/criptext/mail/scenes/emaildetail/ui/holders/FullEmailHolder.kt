@@ -29,7 +29,6 @@ import com.otaliastudios.zoom.ZoomEngine
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import java.util.*
 
 
 /**
@@ -189,7 +188,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             deactivateElementsForUnsend()
         }
 
-        dateView.text = DateUtils.getFormattedDate(fullEmail.email.date.time)
+        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time)
         headerView.text =
                 if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {
                     headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))

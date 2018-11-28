@@ -5,7 +5,6 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import android.support.annotation.Nullable
-import android.text.format.DateUtils
 import com.criptext.mail.db.DeliveryTypes
 import org.json.JSONObject
 import java.util.Date
@@ -76,13 +75,13 @@ data class Email(
                         preview = if(json.has("preview")) json.getString("preview") else "",
                         subject = if(json.has("subject")) json.getString("subject") else "",
                         delivered = DeliveryTypes.fromInt(json.getInt("status")),
-                        date = com.criptext.mail.utils.DateUtils.getDateFromString(
+                        date = com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("date"), null),
                         metadataKey = json.getLong("key"),
                         isMuted = json.getBoolean("isMuted"),
-                        unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateUtils.getDateFromString(
+                        unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("unsentDate"), null) else null,
-                        trashDate = if(json.has("trashDate")) com.criptext.mail.utils.DateUtils.getDateFromString(
+                        trashDate = if(json.has("trashDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("trashDate"), null) else null
 
                 )

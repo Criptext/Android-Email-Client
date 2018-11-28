@@ -11,7 +11,7 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.Runs
@@ -99,7 +99,7 @@ open class EmailDetailControllerTest {
                                 </body>
                             </html>
                         """.trimIndent(),
-                        date = DateUtils.getDateFromString(
+                        date = DateAndTimeUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null),
                         delivered = DeliveryTypes.READ,
@@ -112,7 +112,7 @@ open class EmailDetailControllerTest {
                         unread = false,
                         isMuted = false,
                         trashDate = null,
-                        unsentDate = DateUtils.getDateFromString(
+                        unsentDate = DateAndTimeUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
                                 null)),
                     labels = emptyList(),
@@ -121,7 +121,7 @@ open class EmailDetailControllerTest {
                             name = "test.pdf",
                             size = 65346L,
                             status = 1,
-                            date = DateUtils.getDateFromString(
+                            date = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
                             readOnly = false,

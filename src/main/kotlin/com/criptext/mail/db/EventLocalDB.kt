@@ -11,7 +11,7 @@ import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.mailbox.data.ExistingEmailUpdateSetup
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.ColorUtils
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import java.util.*
 
@@ -179,7 +179,7 @@ class EventLocalDB(private val db: AppDatabase){
     fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: String) {
         db.emailDao().changeDeliveryTypeByMetadataKey(metadataKey, DeliveryTypes.UNSEND)
         db.emailDao().unsendEmailByMetadataKey(metadataKey, "", "",
-                DateUtils.getDateFromString(unsentDate, null))
+                DateAndTimeUtils.getDateFromString(unsentDate, null))
         db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey).id, 0)
     }
 

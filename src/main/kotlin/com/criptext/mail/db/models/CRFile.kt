@@ -4,7 +4,7 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
 import java.util.*
 import android.support.annotation.NonNull
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
@@ -89,7 +89,7 @@ class CRFile(
                     name = json.getString("name"),
                     size = json.getLong("size"),
                     status = json.getInt("status"),
-                    date = DateUtils.getDateFromString(json.getString("date"), null),
+                    date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
                     emailId = json.getLong("emailId"),
                     readOnly = json.getBoolean("readOnly"),
                     shouldDuplicate = false

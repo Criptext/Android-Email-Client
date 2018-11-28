@@ -1,15 +1,10 @@
 package com.criptext.mail.utils.generaldatasource.data
 
-import android.arch.persistence.db.SupportSQLiteQuery
-import android.database.sqlite.SQLiteQuery
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
-import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
-import com.criptext.mail.utils.DateUtils
-import com.criptext.mail.utils.batch
-import droidninja.filepicker.utils.FileUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 import java.io.File
 
@@ -113,7 +108,7 @@ class UserDataWriter(private val db: AppDatabase)
             jsonObject.put("name", file.name)
             jsonObject.put("size", file.size)
             jsonObject.put("status", file.status)
-            jsonObject.put("date", DateUtils.printDateWithServerFormat(file.date))
+            jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(file.date))
             jsonObject.put("readOnly", file.readOnly)
             jsonObject.put("emailId", file.emailId)
             jsonObject.put("mimeType", com.criptext.mail.utils.file.FileUtils.getMimeType(file.name))
@@ -136,13 +131,13 @@ class UserDataWriter(private val db: AppDatabase)
             jsonObject.put("preview", mail.preview)
             jsonObject.put("subject", mail.subject)
             jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
-            jsonObject.put("date", DateUtils.printDateWithServerFormat(mail.date))
+            jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
             jsonObject.put("key", mail.metadataKey)
             jsonObject.put("isMuted", mail.isMuted)
             if(mail.unsentDate != null)
-                jsonObject.put("unsentDate",DateUtils.printDateWithServerFormat(mail.unsentDate!!))
+                jsonObject.put("unsentDate",DateAndTimeUtils.printDateWithServerFormat(mail.unsentDate!!))
             if(mail.trashDate != null)
-                jsonObject.put("trashDate", DateUtils.printDateWithServerFormat(mail.trashDate!!))
+                jsonObject.put("trashDate", DateAndTimeUtils.printDateWithServerFormat(mail.trashDate!!))
             jsonArrayAllMails.add(jsonObject.toString())
             tmpFile.appendText("${JSONObject("{table: email, object: $jsonObject}")}\n")
         }

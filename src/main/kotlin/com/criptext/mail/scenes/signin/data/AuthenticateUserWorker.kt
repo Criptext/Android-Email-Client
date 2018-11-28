@@ -4,6 +4,7 @@ import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -14,6 +15,8 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -138,6 +141,27 @@ class AuthenticateUserWorker(
                 UIMessage(resId = R.string.login_network_error_exception)
             is JSONException ->
                     UIMessage(resId = R.string.login_json_error_exception)
+            is ServerErrorException ->{
+                when(ex.errorCode){
+                    ServerErrorCodes.TooManyRequests -> {
+                        val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.rateLimitTime)
+                        if(timeLeft != null) {
+                            if(timeLeft.first == 0L)
+                            UIMessage(resId = R.string.too_many_requests_exception_minute,
+                                    args = arrayOf(timeLeft.second))
+                            else
+                                UIMessage(resId = R.string.too_many_requests_exception_hour,
+                                        args = arrayOf(timeLeft.first))
+                        }else
+                            UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
+                    }
+                    ServerErrorCodes.TooManyDevices ->
+                        UIMessage(R.string.too_many_devices)
+                    ServerErrorCodes.BadRequest ->
+                        UIMessage(R.string.password_enter_error)
+                    else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)
+                }
+            }
             else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)
         }
     }

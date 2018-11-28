@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.settings.devices
 
-import com.criptext.mail.utils.DateUtils
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.DeviceUtils
 import org.json.JSONArray
 import java.util.*
@@ -20,7 +20,7 @@ data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String
                         val json = devicesData.getJSONObject(it)
                         val jsonDate = json.getJSONObject("lastActivity").optString("date")
                         val date = if(jsonDate != null)
-                            DateUtils.getDateFromString(jsonDate, null)
+                            DateAndTimeUtils.getDateFromString(jsonDate, null)
                         else
                             null
                         DeviceItem(json.getInt("deviceId"),

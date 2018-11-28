@@ -24,6 +24,12 @@ class AndroidFs {
             return file
         }
 
+        fun fileExistsInDownloadsDir(filename: String, fileSize: Long): Boolean {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, filename)
+            return file.exists() && file.length() == fileSize
+        }
+
         fun writeByteArraysToFile(file: File, content: ByteArray) {
             val writer = BufferedOutputStream(FileOutputStream(file))
             writer.write(content)

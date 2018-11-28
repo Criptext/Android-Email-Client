@@ -449,10 +449,9 @@
     <!-- EXCEPTIONS REGISTER USER-->
     <string name="network_error_exception">Failed to register user. Please check your internet connection.</string>
     <string name="json_error_exception">Failed to register user. Invalid server response.</string>
-    <string name="device_removed_remotely_exception">This device has been removed remotely.</string>
+    <string name="device_removed_remotely_exception">This device has been removed.</string>
     <string name="fail_register_try_again_error_exception">Failed to register user. Please try again later.</string>
     <string name="duplicate_name_error_exception" >Failed to register user. Username already exists</string>
-    <string name="too_many_sign_ups">Failed to register user. Too many sign ups from this address.</string>
 
     <string name="send_network_error">Failed to send e-mail. Please check your internet connection.</string>
     <string name="send_limit_reached">Failed to send e-mail. Email cap reached. Try again later.</string>
@@ -500,6 +499,9 @@
     <!-- SERVER ERRORS -->
     <string name="server_error_exception">Server Error. Please try again later.</string>
     <string name="server_bad_status">Failed to contact server. Bad status code: %1$s</string>
+    <string name="too_many_requests_exception_hour">Too many consecutive attempts. Please try again in %1$d hour(s).</string>
+    <string name="too_many_requests_exception_minute">Too many consecutive attempts. Please try again in %1$d minutes.</string>
+    <string name="too_many_requests_exception_no_time_found">Too many consecutive attempts. Please try again.</string>
 
     <!-- WEB SOCKET ERROR -->
     <string name="web_socket_error">Unrecognized server event. Event code: %1$d</string>

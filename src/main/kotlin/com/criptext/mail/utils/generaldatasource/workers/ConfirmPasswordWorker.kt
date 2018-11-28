@@ -1,9 +1,14 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.sha256
@@ -20,7 +25,8 @@ class ConfirmPasswordWorker(private val password: String,
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.ConfirmPassword {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val message = createErrorMessage(ex)
+        return GeneralResult.ConfirmPassword.Failure(message)
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.ConfirmPassword>)
@@ -34,12 +40,36 @@ class ConfirmPasswordWorker(private val password: String,
                 GeneralResult.ConfirmPassword.Success()
             }
             is Result.Failure -> {
-                GeneralResult.ConfirmPassword.Failure()
+                catchException(confirmPasswordOperation.error)
             }
         }
     }
 
     override fun cancel() {
         TODO("not implemented")
+    }
+
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        when (ex) {
+            is ServerErrorException -> {
+                when {
+                    ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
+                    ex.errorCode == ServerErrorCodes.TooManyRequests -> {
+                        val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.rateLimitTime)
+                        if(timeLeft != null) {
+                            if(timeLeft.first != 0L)
+                            UIMessage(resId = R.string.too_many_requests_exception_hour,
+                                    args = arrayOf(timeLeft.first))
+                            else
+                            UIMessage(resId = R.string.too_many_requests_exception_minute,
+                                    args = arrayOf(timeLeft.second))
+                        } else
+                            UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
+                    }
+                    else -> UIMessage(resId = R.string.server_error_exception)
+                }
+            }
+            else -> UIMessage(resId = R.string.server_error_exception)
+        }
     }
 }
