@@ -56,6 +56,7 @@ class  EmailDetailActivity: BaseActivity() {
         )
 
         return  EmailDetailSceneController(
+                storage = KeyValueStorage.SharedPrefs(this),
                 model = emailDetailModel,
                 scene = emailDetailSceneView,
                 host = this,

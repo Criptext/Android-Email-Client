@@ -11,7 +11,6 @@ import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -31,7 +30,6 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
-import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -66,6 +64,8 @@ interface EmailDetailScene {
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showStartGuideEmailIsRead(view: View)
+    fun showStartGuideMenu(view: View)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -211,6 +211,14 @@ interface EmailDetailScene {
 
         override fun showMessage(message: UIMessage) {
             SnackBarHelper.show(emailDetailView, context.getLocalizedUIMessage(message))
+        }
+
+        override fun showStartGuideEmailIsRead(view: View) {
+            observer?.showStartGuideEmailIsRead(view)
+        }
+
+        override fun showStartGuideMenu(view: View){
+            observer?.showStartGuideMenu(view)
         }
     }
 

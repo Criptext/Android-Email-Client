@@ -4,35 +4,31 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import com.criptext.mail.R
-import com.criptext.mail.utils.DimmedPromptBackground
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 class StartGuideTapped(val context: Context) {
     private val res = context.resources
 
-    fun showViewTapped(view: View, activity: Activity, title: String){
-        MaterialTapTargetPrompt.Builder(activity)
-                .setTarget(view)
-                .setFocalRadius(res.getDimension(R.dimen.focal_radius))
-                .setFocalColour(res.getColor(R.color.white))
-                .setBackgroundColour(res.getColor(android.R.color.transparent))
-                .setPromptBackground(DimmedPromptBackground())
-                .setPrimaryText(title)
-                .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))
-                .setTextPadding(260f)
-                .show()
+    fun showViewTapped(view: View, activity: Activity, title: Int, dimension: Int) {
+        when (title) {
+            R.string.start_guide_notification -> showTapViewTarget(view, activity, title, dimension, 260f, android.R.color.transparent, R.dimen.focal_radius_small_views)
+            R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 400f, R.color.white, R.dimen.focal_radius)
+            else -> showTapViewTarget(view, activity, title, dimension, 260f, R.color.white, R.dimen.focal_radius)
+        }
     }
 
-    fun showViewTappedTransparent(view: View, activity: Activity, title: String){
+
+    private fun showTapViewTarget(view: View, activity: Activity, title: Int, dimension: Int, padding: Float, color: Int, focal: Int){
         MaterialTapTargetPrompt.Builder(activity)
                 .setTarget(view)
-                .setFocalRadius(res.getDimension(R.dimen.focal_radius_small_views))
-                .setFocalColour(res.getColor(android.R.color.transparent))
+                .setFocalPadding(res.getDimension(dimension))
+                .setFocalRadius(res.getDimension(focal))
+                .setFocalColour(res.getColor(color))
                 .setBackgroundColour(res.getColor(android.R.color.transparent))
                 .setPromptBackground(DimmedPromptBackground())
-                .setPrimaryText(title)
+                .setPrimaryText(res.getString(title))
                 .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))
-                .setTextPadding(260f)
+                .setTextPadding(padding)
                 .show()
     }
 }

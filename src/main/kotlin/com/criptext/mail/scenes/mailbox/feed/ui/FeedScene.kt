@@ -17,7 +17,6 @@ import android.graphics.Rect
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.criptext.mail.utils.ui.ItemDecorator
-import com.criptext.mail.utils.ui.StartGuideTapped
 
 
 /**
@@ -43,8 +42,6 @@ interface FeedScene {
         }
 
         private val context = container.context
-
-        private val showStartGuideNotification = StartGuideTapped(context)
 
         private var itemDecorator: ItemDecorator? = null
 
@@ -99,7 +96,7 @@ interface FeedScene {
             val menuItem = menu?.findItemById(R.id.mailbox_bell_container)
             val actionView = menuItem?.actionView
             if(actionView != null && actionView is FrameLayout) {
-                showStartGuideNotification.showViewTappedTransparent(actionView, context as Activity, context.getString(R.string.start_guide_notification))
+                feedEventListener?.showStartGuideNotification(actionView)
             }
         }
     }

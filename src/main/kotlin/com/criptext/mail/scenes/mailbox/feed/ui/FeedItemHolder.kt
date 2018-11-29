@@ -176,6 +176,7 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
         fun onMuteFeedItemClicked(feedId: Long, position: Int, isMuted: Boolean)
         fun onDeleteFeedItemClicked(feedId: Long, position: Int)
         fun onApproachingEnd()
+        fun showStartGuideNotification(view: View)
     }
 
 }

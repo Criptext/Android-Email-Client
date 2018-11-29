@@ -4,6 +4,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.mocks.MockedKeyValueStorage
 import com.criptext.mail.scenes.composer.data.ComposerRequest
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -18,6 +19,7 @@ open class ComposerControllerTest {
     protected lateinit var dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>
     protected lateinit var generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>
     protected lateinit var host: IHostActivity
+    protected lateinit var storage: MockedKeyValueStorage
     protected lateinit var activeAccount: ActiveAccount
 
     open fun setUp() {
@@ -27,10 +29,11 @@ open class ComposerControllerTest {
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
         generalDataSource = mockk(relaxed = true)
+        storage = MockedKeyValueStorage()
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"John","jwt":"_JWT_","recipientId":"hola","deviceId":1
                     |, "signature":""} """.trimMargin())
-        controller = ComposerController(model, scene, host, activeAccount, generalDataSource, dataSource)
+        controller = ComposerController(storage, model, scene, host, activeAccount, generalDataSource, dataSource)
     }
 
     protected fun clickSendButton() {

@@ -1,4 +1,4 @@
-package com.criptext.mail.utils
+package com.criptext.mail.utils.ui
 
 import android.content.res.Resources
 import android.graphics.Canvas

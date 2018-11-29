@@ -16,5 +16,6 @@ interface MailboxUIObserver: UIObserver {
     fun onWelcomeTourHasFinished()
     fun onSyncPhonebookYes()
     fun onStartGuideEmail()
-    fun onStartGuideMultiple()
+    fun showStartGuideEmail(view: View)
+    fun showStartGuideMultiple(view: View)
 }

@@ -28,7 +28,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Fabric.with(this, Crashlytics())
+        Fabric.with(this, Crashlytics())
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val lockManager = LockManager.getInstance()
         if(lockManager.appLock != null && lockManager.appLock.isPasscodeSet && lockManager.isAppLockEnabled

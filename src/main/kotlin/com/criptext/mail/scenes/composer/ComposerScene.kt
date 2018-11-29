@@ -12,9 +12,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -27,7 +27,6 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
-import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
@@ -65,7 +64,7 @@ interface ComposerScene {
     fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
-    fun showStartGuideAttachments(observer: ComposerUIObserver)
+    fun showStartGuideAttachments()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -76,7 +75,6 @@ interface ComposerScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
-        private val showStartGuideAttachments = StartGuideTapped(ctx)
 
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
@@ -228,8 +226,8 @@ interface ComposerScene {
                     R.drawable.arrow_down).into(imageViewArrow)
         }
 
-        override fun showStartGuideAttachments(observer: ComposerUIObserver) {
-            showStartGuideAttachments.showViewTapped(attachmentButton, ctx as Activity, ctx.getString(R.string.start_guide_secure_attachments))
+        override fun showStartGuideAttachments() {
+            observer?.showStartGuideAttachments(attachmentButton)
         }
 
         override fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener) {

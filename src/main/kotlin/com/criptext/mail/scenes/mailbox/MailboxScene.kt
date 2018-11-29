@@ -80,7 +80,7 @@ interface MailboxScene{
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
-    fun showStartGuideEmail(observer: MailboxUIObserver)
+    fun showStartGuideEmail()
     fun showStartGuideMultiple()
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
@@ -111,8 +111,6 @@ interface MailboxScene{
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
-        private val showStartGuideEmail = StartGuideTapped(context)
-        private val showStartGuideMultiple = StartGuideTapped(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -256,14 +254,14 @@ interface MailboxScene{
             syncPhonebookDialog.showSyncPhonebookDialog(observer)
         }
 
-        override fun showStartGuideEmail(observer: MailboxUIObserver) {
-            showStartGuideEmail.showViewTapped(openComposerButton, context as Activity, context.getString(R.string.start_guide_email))
+        override fun showStartGuideEmail() {
+            observer?.showStartGuideEmail(openComposerButton)
         }
 
         override fun showStartGuideMultiple(){
             if(recyclerView.adapter.itemCount > 2) {
                 val view = recyclerView.findViewHolderForAdapterPosition(0).itemView.mail_item_left_name
-                showStartGuideMultiple.showViewTapped(view, context as Activity, context.getString(R.string.start_guide_multiple_conversations))
+                observer?.showStartGuideMultiple(view)
             }
         }
 

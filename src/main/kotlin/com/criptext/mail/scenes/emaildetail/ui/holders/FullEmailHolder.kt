@@ -16,7 +16,6 @@ import android.webkit.*
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -27,7 +26,6 @@ import com.criptext.mail.scenes.emaildetail.ui.FileListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.MyZoomLayout
-import com.criptext.mail.utils.ui.StartGuideTapped
 import com.otaliastudios.zoom.ZoomEngine
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -85,6 +83,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position,
                     all = false)
         }
+
+        showStartGuideEmailIsRead(emailListener, fullEmail)
+
+        showStartGuideMenu(emailListener, fullEmail)
 
         setAttachments(fileDetails, emailListener)
 
@@ -213,21 +215,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setToText(fullEmail)
         setDraftIcon(fullEmail)
         setIcons(fullEmail.email.delivered)
-
-        val storage = KeyValueStorage.SharedPrefs(context)
-        if(fullEmail.email.delivered == DeliveryTypes.SENT){
-            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowOptions, true)){
-                storage.putBool(KeyValueStorage.StringKey.StartGuideShowOptions, false)
-                val showStartGuideMenu = StartGuideTapped(context)
-                showStartGuideMenu.showViewTapped(threePointsView, context as Activity, context.getString(R.string.start_guide_unsend_button))
-            }
-        }else if (fullEmail.email.delivered == DeliveryTypes.READ){
-            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, true)){
-                storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, false)
-                val showStartGuideMenu = StartGuideTapped(context)
-                showStartGuideMenu.showViewTapped(readView, context as Activity, context.getString(R.string.start_guide_email_read))
-            }
-        }
     }
 
     private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
@@ -399,6 +386,19 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     fun updateAttachmentProgress(attachmentPosition: Int){
         attachmentsRecyclerView.adapter?.notifyItemChanged(attachmentPosition)
     }
+
+    private fun showStartGuideMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail){
+        if(fullEmail.email.delivered == DeliveryTypes.SENT){
+            emailListener?.showStartGuideMenu(threePointsView)
+        }
+    }
+
+    private fun showStartGuideEmailIsRead(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail){
+        if(fullEmail.email.delivered == DeliveryTypes.READ){
+            emailListener?.showStartGuideEmailIsRead(readView)
+        }
+    }
+
 
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)

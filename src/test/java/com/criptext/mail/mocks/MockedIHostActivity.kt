@@ -2,6 +2,7 @@ package com.criptext.mail.mocks
 
 import android.content.ContentResolver
 import android.os.Handler
+import android.view.View
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.push.data.IntentExtrasData
@@ -68,5 +69,8 @@ class MockedIHostActivity: IHostActivity{
 
     override fun getIntentExtras(): IntentExtrasData? {
         return null
+    }
+
+    override fun showStartGuideView(view: View, title: Int, dimension: Int) {
     }
 }

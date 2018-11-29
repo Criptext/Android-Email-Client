@@ -152,7 +152,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
             if (!model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
-                observer.onStartGuideMultiple()
+                if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
+                    scene.showStartGuideMultiple()
+                    storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
+                }
             }
 
             val selectedThreads = model.selectedThreads
@@ -247,15 +250,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onStartGuideEmail(){
             if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmail, true)){
-                scene.showStartGuideEmail(this)
+                scene.showStartGuideEmail()
                 storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmail, false)
-            }
-        }
-
-        override fun onStartGuideMultiple() {
-            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
-                scene.showStartGuideMultiple()
-                storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
             }
         }
 
@@ -303,6 +299,22 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             val params = ComposerParams(ComposerType.Empty())
             host.goToScene(params, true)
+        }
+
+        override fun showStartGuideEmail(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_email,
+                    R.dimen.focal_padding
+            )
+        }
+
+        override fun showStartGuideMultiple(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_multiple_conversations,
+                    R.dimen.focal_padding
+            )
         }
     }
 

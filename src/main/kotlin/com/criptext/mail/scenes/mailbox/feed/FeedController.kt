@@ -65,6 +65,14 @@ open class FeedController(private val model: FeedModel,
                 feedDataSource.submitRequest(req)
             }
         }
+
+        override fun showStartGuideNotification(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_notification,
+                    R.dimen.focal_padding_inverse
+            )
+        }
     }
 
     private val dataSourceListener = { result: FeedResult ->

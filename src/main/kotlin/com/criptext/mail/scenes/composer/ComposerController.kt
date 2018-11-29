@@ -5,6 +5,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.view.View
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -33,12 +34,12 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
  * Created by gabriel on 2/26/18.
  */
 
-class ComposerController(private val model: ComposerModel,
+class ComposerController(private val storage: KeyValueStorage,
+                         private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
                          private val activeAccount: ActiveAccount,
                          private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-                         private val storage: KeyValueStorage,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
@@ -84,6 +85,14 @@ class ComposerController(private val model: ComposerModel,
             model.passwordText = ""
         }
 
+        override fun showStartGuideAttachments(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_secure_attachments,
+                    R.dimen.focal_padding_attachments
+            )
+        }
+
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
             if(!isChecked){
                 model.passwordForNonCriptextUsers = null
@@ -103,13 +112,6 @@ class ComposerController(private val model: ComposerModel,
                 scene.disableSendButtonOnDialog()
             }
             scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
-        }
-
-        override fun showStartGuideAttachments(){
-            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
-                scene.showStartGuideAttachments(this)
-                storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
-            }
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
@@ -473,7 +475,10 @@ class ComposerController(private val model: ComposerModel,
 
         dataSourceController.getAllContacts()
         scene.observer = observer
-        observer.showStartGuideAttachments()
+        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
+            scene.showStartGuideAttachments()
+            storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
+        }
         return handleActivityMessage(activityMessage)
     }
 
