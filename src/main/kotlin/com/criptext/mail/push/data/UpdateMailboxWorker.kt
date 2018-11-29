@@ -47,7 +47,7 @@ class UpdateMailboxWorker(
 
     override fun catchException(ex: Exception): PushResult.UpdateMailbox {
         val message = createErrorMessage(ex)
-        return PushResult.UpdateMailbox.Failure(label, message, ex, shouldPostNotification)
+        return PushResult.UpdateMailbox.Failure(label, message, ex, pushData, shouldPostNotification)
     }
 
     private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): PushResult.UpdateMailbox {
@@ -63,6 +63,7 @@ class UpdateMailboxWorker(
                     mailboxLabel = label,
                     message = createErrorMessage(failure.error),
                     exception = failure.error,
+                    pushData = pushData,
                     shouldPostNotification = shouldPostNotification)
     }
 
@@ -98,6 +99,7 @@ class UpdateMailboxWorker(
                                 mailboxLabel = label,
                                 message = createErrorMessage(Resources.NotFoundException()),
                                 exception = Resources.NotFoundException(),
+                                pushData = pushData,
                                 shouldPostNotification = shouldPostNotification)
                     }
                 }else {
@@ -105,6 +107,7 @@ class UpdateMailboxWorker(
                             mailboxLabel = label,
                             message = createErrorMessage(Resources.NotFoundException()),
                             exception = Resources.NotFoundException(),
+                            pushData = pushData,
                             shouldPostNotification = shouldPostNotification)
                 }
             }
