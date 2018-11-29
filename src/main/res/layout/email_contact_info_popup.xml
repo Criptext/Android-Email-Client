@@ -37,9 +37,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_toEndOf="@+id/title_from"
-                android:gravity="center_horizontal"
-                android:text="Gianni Carlo"
+                android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
                 android:textColor="#000"
+                android:layout_weight="1"
                 android:textSize="13sp"/>
 
             <TextView
@@ -50,7 +50,8 @@
                 android:layout_marginStart="15dp"
                 android:layout_toEndOf="@+id/from_name"
                 android:gravity="center_vertical"
-                android:text="@string/criptextdotcom"
+                android:text="intermail@bancodelpacifico.com.ec"
+                android:layout_weight="1"
                 android:textColor="@color/azure"
                 android:textIsSelectable="true"
                 android:textSize="13sp"/>
@@ -207,11 +208,11 @@
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
+                android:layout_marginStart="34dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
-                android:text="10:30 AM"
+                android:text="Yesterday"
                 android:textColor="#000"
                 android:textSize="13sp"/>
 
@@ -242,11 +243,11 @@
                 android:id="@+id/subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
+                android:layout_marginStart="19dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/title_subject"
                 android:gravity="center_vertical"
-                android:text="Email Subject"
+                android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
                 android:textColor="#000"
                 android:textSize="13sp"/>
 
