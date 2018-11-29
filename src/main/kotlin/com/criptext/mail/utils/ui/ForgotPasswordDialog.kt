@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.utils.EmailAddressUtils
 
-class ForgotPasswordDialog(val context: Context, val emailAddress: String) {
+class ForgotPasswordDialog(val context: Context, val emailAddress: String?) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
@@ -40,9 +40,16 @@ class ForgotPasswordDialog(val context: Context, val emailAddress: String) {
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
         newPasswordLoginDialog.window.setBackgroundDrawable(drawableBackground)
 
-        val textView = dialogView.findViewById(R.id.message_text) as TextView
-        textView.text = context.getString(R.string.forgot_password_message,
-                EmailAddressUtils.hideEmailAddress(emailAddress))
+        val messageTextView = dialogView.findViewById(R.id.message_text) as TextView
+        val titleTextView = dialogView.findViewById(R.id.forgot_title) as TextView
+        if(emailAddress == null) {
+            messageTextView.text = context.getString(R.string.forgot_password_message_no_recovery)
+            titleTextView.text = context.getString(R.string.forgot_password_title_no_recovery)
+        }else{
+            titleTextView.text = context.getString(R.string.forgot_password_title)
+            messageTextView.text = context.getString(R.string.forgot_password_message,
+                    EmailAddressUtils.hideEmailAddress(emailAddress))
+        }
 
         assignButtonEvents(dialogView,
                 newPasswordLoginDialog)

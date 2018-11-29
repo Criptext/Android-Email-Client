@@ -16,5 +16,6 @@ class SettingsModel{
     var passwordState: FormInputState = FormInputState.Unknown()
 
     var isEmailConfirmed: Boolean = false
+    var hasTwoFA: Boolean = false
     var recoveryEmail: String = ""
 }

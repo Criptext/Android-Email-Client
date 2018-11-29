@@ -163,7 +163,9 @@ class SettingsController(
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onLogoutClicked() {
-            scene.showLogoutDialog()
+            val isLastDeviceWith2FA = model.devices.size == 1 &&
+                    model.hasTwoFA
+            scene.showLogoutDialog(isLastDeviceWith2FA)
         }
 
         override fun onLogoutConfirmedClicked() {
@@ -383,6 +385,7 @@ class SettingsController(
                 model.devices.addAll(result.userSettings.devices)
                 model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
                 model.recoveryEmail = result.userSettings.recoveryEmail
+                model.hasTwoFA = result.userSettings.hasTwoFA
                 deviceWrapperListController.update()
                 scene.updateUserSettings(result.userSettings)
             }
@@ -428,11 +431,13 @@ class SettingsController(
             is SettingsResult.Set2FA.Success -> {
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(result.hasTwoFA)
+                model.hasTwoFA = result.hasTwoFA
             }
             is SettingsResult.Set2FA.Failure -> {
                 scene.showMessage(result.message)
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(!result.twoFAAttempt)
+                model.hasTwoFA = !result.twoFAAttempt
             }
         }
     }

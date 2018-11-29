@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Warning!"
+        android:text="@string/recover_email_warning_content_start_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
@@ -36,15 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             />
-        <TextView
-            fontPath="fonts/NunitoSans-Regular.ttf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:text="@string/recover_email_warning_content_end"
-            />
     </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:orientation="horizontal"
@@ -64,7 +55,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             fontPath="fonts/NunitoSans-SemiBold.ttf"
-            android:text="No" />
+            android:text="@string/cancel" />
 
         <Button
             android:textColor="@color/label_buttons_text"
@@ -77,7 +68,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             fontPath="fonts/NunitoSans-SemiBold.ttf"
-            android:text="@string/yes" />
+            android:text="@string/btn_continue" />
 
     </LinearLayout>
 </LinearLayout>
