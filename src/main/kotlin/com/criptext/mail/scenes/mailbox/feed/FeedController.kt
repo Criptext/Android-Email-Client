@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.feed
 
+import android.app.Activity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -102,8 +103,16 @@ open class FeedController(private val model: FeedModel,
                         feedEventListener = feedEventListener,
                         totalNewFeeds = result.totalNewFeeds)
                 scene.updateFeedBadge(result.totalNewFeeds)
+                showStartGuideNotifications(result.totalNewFeeds)
             }
             is FeedResult.LoadFeed.Failure -> scene.showError(result.message)
+        }
+    }
+
+    private fun showStartGuideNotifications(totalNewFeeds: Int) {
+        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowNotification, true) && totalNewFeeds > 0){
+            scene.showStartGuideNotification()
+            storage.putBool(KeyValueStorage.StringKey.StartGuideShowNotification, false)
         }
     }
 

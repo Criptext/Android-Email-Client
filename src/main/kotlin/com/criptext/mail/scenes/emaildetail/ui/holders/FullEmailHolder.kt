@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.graphics.Matrix
 import android.os.Build
@@ -15,6 +16,7 @@ import android.webkit.*
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -25,6 +27,7 @@ import com.criptext.mail.scenes.emaildetail.ui.FileListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.MyZoomLayout
+import com.criptext.mail.utils.ui.StartGuideTapped
 import com.otaliastudios.zoom.ZoomEngine
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -210,6 +213,21 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setToText(fullEmail)
         setDraftIcon(fullEmail)
         setIcons(fullEmail.email.delivered)
+
+        val storage = KeyValueStorage.SharedPrefs(context)
+        if(fullEmail.email.delivered == DeliveryTypes.SENT){
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowOptions, true)){
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowOptions, false)
+                val showStartGuideMenu = StartGuideTapped(context)
+                showStartGuideMenu.showViewTapped(threePointsView, context as Activity, context.getString(R.string.start_guide_unsend_button))
+            }
+        }else if (fullEmail.email.delivered == DeliveryTypes.READ){
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, true)){
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, false)
+                val showStartGuideMenu = StartGuideTapped(context)
+                showStartGuideMenu.showViewTapped(readView, context as Activity, context.getString(R.string.start_guide_email_read))
+            }
+        }
     }
 
     private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){

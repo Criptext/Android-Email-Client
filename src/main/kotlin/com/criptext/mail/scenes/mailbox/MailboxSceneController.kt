@@ -37,6 +37,7 @@ import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import android.database.ContentObserver
 import android.provider.ContactsContract
+import android.view.View
 
 
 /**
@@ -151,6 +152,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
             if (!model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
+                observer.onStartGuideMultiple()
             }
 
             val selectedThreads = model.selectedThreads
@@ -239,6 +241,21 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val resolver = host.getContentResolver()
                 if(resolver != null)
                     generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+                onStartGuideEmail()
+            }
+        }
+
+        override fun onStartGuideEmail(){
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmail, true)){
+                scene.showStartGuideEmail(this)
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmail, false)
+            }
+        }
+
+        override fun onStartGuideMultiple() {
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
+                scene.showStartGuideMultiple()
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
             }
         }
 
@@ -411,7 +428,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         feedController.onStart()
 
         websocketEvents.setListener(webSocketEventListener)
-
         if(model.showWelcome) {
             model.showWelcome = false
             scene.showWelcomeDialog(observer)

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.feed.ui
 
+import android.app.Activity
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.FrameLayout
@@ -16,6 +17,7 @@ import android.graphics.Rect
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.criptext.mail.utils.ui.ItemDecorator
+import com.criptext.mail.utils.ui.StartGuideTapped
 
 
 /**
@@ -32,12 +34,17 @@ interface FeedScene {
                    feedEventListener: FeedItemHolder.FeedEventListener)
     fun updateFeedBadge(totalNewFeeds: Int)
     fun initializeMenu(menu: IHostActivity.IActivityMenu)
+    fun showStartGuideNotification()
 
     class Default(container: View): FeedScene {
 
         private val recyclerViewFeed: RecyclerView by lazy {
             container.findViewById<RecyclerView>(R.id.recyclerViewFeed)
         }
+
+        private val context = container.context
+
+        private val showStartGuideNotification = StartGuideTapped(context)
 
         private var itemDecorator: ItemDecorator? = null
 
@@ -85,6 +92,14 @@ interface FeedScene {
             if(actionView != null && actionView is FrameLayout) {
                 actionView.findViewById<FrameLayout>(R.id.view_alert_red_circle)?.visibility = if (totalNewFeeds > 0) View.VISIBLE else View.GONE
                 actionView.findViewById<TextView>(R.id.view_alert_count_textview)?.text = totalNewFeeds.toString()
+            }
+        }
+
+        override fun showStartGuideNotification() {
+            val menuItem = menu?.findItemById(R.id.mailbox_bell_container)
+            val actionView = menuItem?.actionView
+            if(actionView != null && actionView is FrameLayout) {
+                showStartGuideNotification.showViewTappedTransparent(actionView, context as Activity, context.getString(R.string.start_guide_notification))
             }
         }
     }

@@ -20,4 +20,5 @@ interface ComposerUIObserver: UIObserver {
     fun sendDialogButtonPressed()
     fun sendDialogCancelPressed()
     fun leaveComposer()
+    fun showStartGuideAttachments()
 }

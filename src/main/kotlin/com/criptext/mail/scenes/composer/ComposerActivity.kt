@@ -67,6 +67,7 @@ class ComposerActivity : BaseActivity() {
                 activeAccount = activeAccount,
                 generalDataSource = remoteChangeDataSource,
                 dataSource = dataSource,
+                storage = KeyValueStorage.SharedPrefs(this),
                 host = this)
     }
 

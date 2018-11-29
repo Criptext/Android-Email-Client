@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer
 
 
 import android.Manifest
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import com.criptext.mail.BaseActivity
@@ -11,6 +12,7 @@ import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
@@ -36,6 +38,7 @@ class ComposerController(private val model: ComposerModel,
                          private val host: IHostActivity,
                          private val activeAccount: ActiveAccount,
                          private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
+                         private val storage: KeyValueStorage,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
 
@@ -100,6 +103,13 @@ class ComposerController(private val model: ComposerModel,
                 scene.disableSendButtonOnDialog()
             }
             scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
+        }
+
+        override fun showStartGuideAttachments(){
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
+                scene.showStartGuideAttachments(this)
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
+            }
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
@@ -463,7 +473,7 @@ class ComposerController(private val model: ComposerModel,
 
         dataSourceController.getAllContacts()
         scene.observer = observer
-
+        observer.showStartGuideAttachments()
         return handleActivityMessage(activityMessage)
     }
 

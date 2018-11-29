@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.ui
 
+import android.view.View
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -14,4 +15,6 @@ interface MailboxUIObserver: UIObserver {
     fun onEmptyTrashPressed()
     fun onWelcomeTourHasFinished()
     fun onSyncPhonebookYes()
+    fun onStartGuideEmail()
+    fun onStartGuideMultiple()
 }

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail
 
+import android.app.Activity
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -10,6 +11,7 @@ import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -29,6 +31,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
+import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
