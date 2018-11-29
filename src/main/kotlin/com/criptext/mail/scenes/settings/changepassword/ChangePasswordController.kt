@@ -154,7 +154,7 @@ class ChangePasswordController(
                 scene.showForgotPasswordDialog(result.email)
             }
             is GeneralResult.ResetPassword.Failure -> {
-                scene.showMessage(result.message)
+                scene.showForgotPasswordDialog(null)
             }
         }
     }

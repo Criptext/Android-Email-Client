@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title_logout"
+        android:text="@string/sign_in_warning_dialog_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
@@ -17,17 +17,17 @@
         android:textSize="18sp"/>
 
     <TextView
-        android:id="@+id/logout_dialog_message"
+        android:id="@+id/message_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/logout_dialog_message"
-        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:text="@string/sign_in_warning_dialog_message"
+        fontPath="fonts/NunitoSans-Regular.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:paddingEnd="15dp"
         android:paddingStart="15dp"
-        android:textSize="15sp"/>
+        android:textSize="14sp"/>
 
     <LinearLayout
         android:orientation="horizontal"

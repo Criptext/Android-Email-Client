@@ -29,7 +29,7 @@ interface SettingsScene{
                    devicesListItemListener: DevicesListItemListener)
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
-    fun showLogoutDialog()
+    fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
     fun showLoginOutDialog()
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissLoginOutDialog()
@@ -125,8 +125,8 @@ interface SettingsScene{
             settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver, keyboardManager)
         }
 
-        override fun showLogoutDialog() {
-            settingLogoutDialog.showLogoutDialog(settingsUIObserver)
+        override fun showLogoutDialog(isLastDeviceWith2FA: Boolean) {
+            settingLogoutDialog.showLogoutDialog(settingsUIObserver, isLastDeviceWith2FA)
         }
 
         override fun showLoginOutDialog() {

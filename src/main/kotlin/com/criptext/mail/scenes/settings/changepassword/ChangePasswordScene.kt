@@ -28,7 +28,7 @@ interface ChangePasswordScene{
     fun showPasswordDialogError(message: UIMessage?)
     fun toggleChangePasswordButton(enable: Boolean)
     fun showOldPasswordError(message: UIMessage?)
-    fun showForgotPasswordDialog(email: String)
+    fun showForgotPasswordDialog(email: String?)
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
@@ -161,7 +161,7 @@ interface ChangePasswordScene{
             saveButton.isEnabled = enable
         }
 
-        override fun showForgotPasswordDialog(email: String) {
+        override fun showForgotPasswordDialog(email: String?) {
             ForgotPasswordDialog(context, email).showForgotPasswordDialog()
         }
 

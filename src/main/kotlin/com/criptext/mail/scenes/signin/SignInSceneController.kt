@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -99,11 +100,15 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
-
-                    //LINK DEVICE FEATURE
-                    model.state = SignInLayoutState.LoginValidation(username = result.username,
-                            hasTwoFA = model.hasTwoFA)
-                    dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
+                    val oldAccount = storage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
+                    if(result.username != oldAccount)
+                        scene.showSignInWarningDialog(oldAccount.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX), result.username)
+                    else {
+                        //LINK DEVICE FEATURE
+                        model.state = SignInLayoutState.LoginValidation(username = result.username,
+                                hasTwoFA = model.hasTwoFA)
+                        dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
+                    }
                 }
                 else{
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
@@ -412,6 +417,14 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver {
+
+        override fun onSignInWarningContinue(userName: String) {
+            //LINK DEVICE FEATURE
+            model.state = SignInLayoutState.LoginValidation(username = userName,
+                    hasTwoFA = model.hasTwoFA)
+            dataSource.submitRequest(SignInRequest.LinkBegin(userName))
+        }
+
         override fun onRetrySyncOk(result: SignInResult) {
             when(result){
                 is SignInResult.CreateSessionFromLink -> {
@@ -598,6 +611,7 @@ class SignInSceneController(
         fun onCancelSync()
         fun onRetrySyncOk(result: SignInResult)
         fun onRetrySyncCancel()
+        fun onSignInWarningContinue(userName: String)
     }
 
     companion object {

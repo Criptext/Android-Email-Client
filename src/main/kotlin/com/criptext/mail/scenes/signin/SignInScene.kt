@@ -35,6 +35,7 @@ interface SignInScene {
     fun setLinkProgress(message: UIMessage, progress: Int)
     fun disableCancelSync()
     fun showSyncRetryDialog(result: SignInResult)
+    fun showSignInWarningDialog(oldAccountName: String, newUserName: String)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -43,6 +44,7 @@ interface SignInScene {
         private val viewGroup = view.parent as ViewGroup
         private var holder: BaseSignInHolder
         private val retrySyncDialog = RetrySyncAlertDialogNewDevice(view.context)
+        private val signInWarningDialog = SignInWarningDialog(view.context)
 
         override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
@@ -129,6 +131,10 @@ interface SignInScene {
 
         override fun showSyncRetryDialog(result: SignInResult) {
             retrySyncDialog.showLinkDeviceAuthDialog(signInUIObserver, result)
+        }
+
+        override fun showSignInWarningDialog(oldAccountName: String, newUserName: String) {
+            signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserName)
         }
 
         override fun showLinkAuthError() {
