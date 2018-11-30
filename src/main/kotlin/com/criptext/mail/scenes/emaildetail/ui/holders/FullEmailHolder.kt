@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.graphics.Matrix
 import android.os.Build
@@ -82,6 +83,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position,
                     all = false)
         }
+
+        showStartGuideEmailIsRead(emailListener, fullEmail)
+
+        showStartGuideMenu(emailListener, fullEmail)
 
         setAttachments(fileDetails, emailListener)
 
@@ -381,6 +386,19 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     fun updateAttachmentProgress(attachmentPosition: Int){
         attachmentsRecyclerView.adapter?.notifyItemChanged(attachmentPosition)
     }
+
+    private fun showStartGuideMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail){
+        if(fullEmail.email.delivered == DeliveryTypes.SENT){
+            emailListener?.showStartGuideMenu(threePointsView)
+        }
+    }
+
+    private fun showStartGuideEmailIsRead(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail){
+        if(fullEmail.email.delivered == DeliveryTypes.READ){
+            emailListener?.showStartGuideEmailIsRead(readView)
+        }
+    }
+
 
     init {
         layout = view.findViewById(R.id.open_full_mail_item_container)

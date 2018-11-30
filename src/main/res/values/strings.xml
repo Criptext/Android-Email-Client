@@ -133,6 +133,14 @@
     <string name="error_sync_contact">No contacts with email available.</string>
     <string name="already_sync_contact">Contacts already synced.</string>
 
+    <!-- StartGuide -->
+    <string name="start_guide_unsend_button">Open this menu to find the unsend button</string>
+    <string name="start_guide_email_read">Looks like this email was read</string>
+    <string name="start_guide_secure_attachments">Add secure attachments</string>
+    <string name="start_guide_multiple_conversations">Tap &amp; hold to select multiple conversations</string>
+    <string name="start_guide_notification">See who\'s reading your emails</string>
+    <string name="start_guide_email">Tap to compose a secure email</string>
+
     <!-- SETTINGS -->
     <string name="title_swipe">Swipe Options</string>
     <string name="title_profile_name">Profile Name</string>

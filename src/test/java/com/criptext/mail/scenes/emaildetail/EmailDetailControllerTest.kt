@@ -8,6 +8,7 @@ import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.mocks.MockedKeyValueStorage
 import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
@@ -49,6 +50,7 @@ open class EmailDetailControllerTest {
     protected lateinit var emailInsertionDao: EmailInsertionDao
     protected lateinit var sentRequests: MutableList<EmailDetailRequest>
     protected lateinit var websocketEvents: WebSocketEventPublisher
+    protected lateinit var storage: MockedKeyValueStorage
 
     open fun setUp() {
         protocolStore = mockk()
@@ -71,7 +73,10 @@ open class EmailDetailControllerTest {
         dataSource = mockk(relaxed = true)
         generalDataSource = mockk(relaxed = true)
 
+        storage = MockedKeyValueStorage()
+
         controller = EmailDetailSceneController(
+                storage = storage,
                 scene = scene,
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,

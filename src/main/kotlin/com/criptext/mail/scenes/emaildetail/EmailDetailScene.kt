@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail
 
+import android.app.Activity
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -63,6 +64,8 @@ interface EmailDetailScene {
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showStartGuideEmailIsRead(view: View)
+    fun showStartGuideMenu(view: View)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -208,6 +211,14 @@ interface EmailDetailScene {
 
         override fun showMessage(message: UIMessage) {
             SnackBarHelper.show(emailDetailView, context.getLocalizedUIMessage(message))
+        }
+
+        override fun showStartGuideEmailIsRead(view: View) {
+            observer?.showStartGuideEmailIsRead(view)
+        }
+
+        override fun showStartGuideMenu(view: View){
+            observer?.showStartGuideMenu(view)
         }
     }
 

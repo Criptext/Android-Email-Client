@@ -62,6 +62,7 @@ class ComposerActivity : BaseActivity() {
                 emailInsertionDao = appDB.emailInsertionDao(),
                 runner = AsyncTaskWorkRunner())
         return ComposerController(
+                storage = KeyValueStorage.SharedPrefs(this),
                 model = model,
                 scene = scene,
                 activeAccount = activeAccount,

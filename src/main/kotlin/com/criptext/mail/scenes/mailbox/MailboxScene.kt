@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
+import android.app.Activity
 import android.os.Handler
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -28,11 +29,9 @@ import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.SnackBarHelper
-import com.criptext.mail.utils.ui.SyncPhonebookDialog
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
+import kotlinx.android.synthetic.main.mail_item_left_name.view.*
 
 /**
  * Created by sebas on 1/23/18.
@@ -81,6 +80,8 @@ interface MailboxScene{
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
+    fun showStartGuideEmail()
+    fun showStartGuideMultiple()
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -251,6 +252,17 @@ interface MailboxScene{
 
         override fun showSyncPhonebookDialog(observer: MailboxUIObserver) {
             syncPhonebookDialog.showSyncPhonebookDialog(observer)
+        }
+
+        override fun showStartGuideEmail() {
+            observer?.showStartGuideEmail(openComposerButton)
+        }
+
+        override fun showStartGuideMultiple(){
+            if(recyclerView.adapter.itemCount > 2) {
+                val view = recyclerView.findViewHolderForAdapterPosition(0).itemView.mail_item_left_name
+                observer?.showStartGuideMultiple(view)
+            }
         }
 
         override fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener) {

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.composer
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
@@ -11,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.Contact
@@ -62,6 +64,7 @@ interface ComposerScene {
     fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showStartGuideAttachments()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -221,6 +224,10 @@ interface ComposerScene {
             Picasso.with(imageViewArrow.context).load(
                     if(visible) R.drawable.arrow_up else
                     R.drawable.arrow_down).into(imageViewArrow)
+        }
+
+        override fun showStartGuideAttachments() {
+            observer?.showStartGuideAttachments(attachmentButton)
         }
 
         override fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener) {

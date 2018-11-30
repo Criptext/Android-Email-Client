@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.emaildetail
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.view.View
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -9,6 +10,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -43,7 +45,8 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
  * Created by sebas on 3/12/18.
  */
 
-class EmailDetailSceneController(private val scene: EmailDetailScene,
+class EmailDetailSceneController(private val storage: KeyValueStorage,
+                                 private val scene: EmailDetailScene,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
                                  private val activeAccount: ActiveAccount,
@@ -98,6 +101,22 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     params = MailboxParams(),
                     activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
                     forceAnimation = false
+            )
+        }
+
+        override fun showStartGuideEmailIsRead(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_email_read,
+                    R.dimen.focal_padding_read_mail
+            )
+        }
+
+        override fun showStartGuideMenu(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_unsend_button,
+                    R.dimen.focal_padding_read_mail
             )
         }
     }
@@ -439,6 +458,20 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel)
             host.goToScene(ComposerParams(type), false)
         }
+
+        override fun showStartGuideEmailIsRead(view: View) {
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, true)){
+                scene.showStartGuideEmailIsRead(view)
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmailRead, false)
+            }
+        }
+
+        override fun showStartGuideMenu(view: View) {
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowOptions, true)){
+                scene.showStartGuideMenu(view)
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowOptions, false)
+            }
+        }
     }
 
     private fun readEmails(emails: List<FullEmail>) {
@@ -509,7 +542,6 @@ class EmailDetailSceneController(private val scene: EmailDetailScene,
                     }
                 }
             }
-
             is EmailDetailResult.LoadFullEmailsFromThreadId.Failure -> {
                 scene.showError(UIMessage(R.string.error_getting_email))
             }

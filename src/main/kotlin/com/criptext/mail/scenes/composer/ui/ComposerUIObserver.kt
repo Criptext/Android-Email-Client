@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.composer.ui
 
+import android.view.View
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -20,4 +21,5 @@ interface ComposerUIObserver: UIObserver {
     fun sendDialogButtonPressed()
     fun sendDialogCancelPressed()
     fun leaveComposer()
+    fun showStartGuideAttachments(view: View)
 }

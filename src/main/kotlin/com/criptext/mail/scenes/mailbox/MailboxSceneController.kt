@@ -37,6 +37,7 @@ import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import android.database.ContentObserver
 import android.provider.ContactsContract
+import android.view.View
 
 
 /**
@@ -151,6 +152,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
             if (!model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
+                if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
+                    scene.showStartGuideMultiple()
+                    storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
+                }
             }
 
             val selectedThreads = model.selectedThreads
@@ -239,6 +244,14 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val resolver = host.getContentResolver()
                 if(resolver != null)
                     generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+                onStartGuideEmail()
+            }
+        }
+
+        override fun onStartGuideEmail(){
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowEmail, true)){
+                scene.showStartGuideEmail()
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmail, false)
             }
         }
 
@@ -286,6 +299,22 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             val params = ComposerParams(ComposerType.Empty())
             host.goToScene(params, true)
+        }
+
+        override fun showStartGuideEmail(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_email,
+                    R.dimen.focal_padding
+            )
+        }
+
+        override fun showStartGuideMultiple(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_multiple_conversations,
+                    R.dimen.focal_padding
+            )
         }
     }
 
@@ -411,7 +440,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         feedController.onStart()
 
         websocketEvents.setListener(webSocketEventListener)
-
         if(model.showWelcome) {
             model.showWelcome = false
             scene.showWelcomeDialog(observer)

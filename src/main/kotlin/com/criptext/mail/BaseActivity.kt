@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
@@ -50,6 +51,7 @@ import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
 import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.ui.ActivityMenu
+import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -210,6 +212,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         startActivity(params.activityClass, deletePastIntents)
 
         if (! keep) finish()
+    }
+
+    override fun showStartGuideView(view: View, title: Int, dimension: Int) {
+        val showStartGuideEmail = StartGuideTapped(this)
+        showStartGuideEmail.showViewTapped(
+                view,
+                this,
+                title,
+                dimension)
     }
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {

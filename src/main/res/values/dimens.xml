@@ -54,4 +54,12 @@
     <dimen name="pin_code_round_top_margin">20dp</dimen>
     <dimen name="pin_code_elements_margin">10dp</dimen>
     <dimen name="pin_code_forgot_text_size">15sp</dimen>
+
+    <dimen name="start_guide_text">16sp</dimen>
+    <dimen name="focal_radius">30dp</dimen>
+    <dimen name="focal_radius_small_views">20dp</dimen>
+    <dimen name="focal_padding">-50dp</dimen>
+    <dimen name="focal_padding_inverse">-40dp</dimen>
+    <dimen name="focal_padding_read_mail">-60dp</dimen>
+    <dimen name="focal_padding_attachments">-35dp</dimen>
 </resources>

@@ -1,8 +1,10 @@
 package com.criptext.mail
 
+import android.app.Activity
 import android.content.ContentResolver
 import android.os.Handler
 import android.view.MenuItem
+import android.view.View
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
@@ -50,6 +52,8 @@ interface IHostActivity {
     fun launchExternalActivityForResult(params: ExternalActivityParams)
 
     fun checkPermissions(requestCode: Int, permission: String): Boolean
+
+    fun showStartGuideView(view: View, title: Int, dimension: Int)
 
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?

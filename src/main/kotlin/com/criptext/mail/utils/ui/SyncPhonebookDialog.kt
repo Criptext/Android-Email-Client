@@ -68,6 +68,7 @@ class SyncPhonebookDialog(val context: Context) {
         val btnCancel = view.findViewById(R.id.link_auth_no) as Button
 
         btnCancel.setOnClickListener {
+            mailboxUIObserver?.onStartGuideEmail()
             dialog.dismiss()
         }
     }

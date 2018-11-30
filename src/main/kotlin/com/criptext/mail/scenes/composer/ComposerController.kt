@@ -2,8 +2,10 @@ package com.criptext.mail.scenes.composer
 
 
 import android.Manifest
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.view.View
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -11,6 +13,7 @@ import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
@@ -31,7 +34,8 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
  * Created by gabriel on 2/26/18.
  */
 
-class ComposerController(private val model: ComposerModel,
+class ComposerController(private val storage: KeyValueStorage,
+                         private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
                          private val activeAccount: ActiveAccount,
@@ -79,6 +83,14 @@ class ComposerController(private val model: ComposerModel,
 
         override fun sendDialogCancelPressed() {
             model.passwordText = ""
+        }
+
+        override fun showStartGuideAttachments(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_secure_attachments,
+                    R.dimen.focal_padding_attachments
+            )
         }
 
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
@@ -463,7 +475,10 @@ class ComposerController(private val model: ComposerModel,
 
         dataSourceController.getAllContacts()
         scene.observer = observer
-
+        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
+            scene.showStartGuideAttachments()
+            storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
+        }
         return handleActivityMessage(activityMessage)
     }
 
