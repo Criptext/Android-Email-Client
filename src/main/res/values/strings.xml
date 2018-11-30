@@ -118,7 +118,7 @@
     <string name="slider_upgrade">Upgrade to Pro</string>
     <string name="slider_invite">Invite a Friend</string>
     <string name="slider_support">Support</string>
-    <string name="slider_logout">Logout</string>
+    <string name="slider_logout">Sign Out</string>
     <string name="slider_version">Criptext Email v.</string>
 
     <!-- INVITE FRIEND -->
@@ -147,7 +147,7 @@
     <string name="title_privacy_policy">Privacy Policy</string>
     <string name="title_terms_of_service">Terms of Service</string>
     <string name="title_open_source_libraries">Open Source Libraries</string>
-    <string name="title_logout">Logout</string>
+    <string name="title_logout">Sign Out</string>
     <string name="title_remove_device">Remove Device</string>
     <string name="title_enter_password">Enter your password\nto continue</string>
     <string name="title_custom_dialog">New Label</string>
@@ -225,12 +225,12 @@
     <string name="change_password_new">New</string>
 
     <!-- CONFIRM PASSWORD REMOTE CHANGE -->
-    <string name="remote_change_password_advice">Confirm your new password.\nIf you cancel, the device will logout and all local data <b>will be erased.</b></string>
+    <string name="remote_change_password_advice">Confirm your new password.\nIf you cancel, the device will sign out and all local data <b>will be erased.</b></string>
     <string name="update_password_success">Password has been updated for this device.</string>
     <string name="title_remote_change_password">Your password has changed</string>
 
     <!-- LOGOUT DIALOG -->
-    <string name="logout_dialog_message">Are you sure you want to logout?</string>
+    <string name="logout_dialog_message">Are you sure you want to sign out?</string>
     <string name="logout_dialog_message_2_fa">Since this is your only active device, <b>2FA will be turned off</b> if you sign out. Would you like to continue?</string>
     <string name="login_out_dialog_message">Login out…</string>
 

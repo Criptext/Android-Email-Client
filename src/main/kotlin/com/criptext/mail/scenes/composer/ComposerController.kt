@@ -475,7 +475,7 @@ class ComposerController(private val storage: KeyValueStorage,
 
         dataSourceController.getAllContacts()
         scene.observer = observer
-        if(!storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
+        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
             scene.showStartGuideAttachments()
             storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
         }
