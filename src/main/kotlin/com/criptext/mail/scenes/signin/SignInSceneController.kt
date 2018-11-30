@@ -101,7 +101,7 @@ class SignInSceneController(
                 if(result.userExists) {
                     keyboard.hideKeyboard()
                     val oldAccount = storage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
-                    if(result.username != oldAccount)
+                    if(oldAccount.isNotEmpty() && result.username != oldAccount)
                         scene.showSignInWarningDialog(oldAccount.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX), result.username)
                     else {
                         //LINK DEVICE FEATURE
