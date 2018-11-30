@@ -212,7 +212,11 @@
     <string name="message_warning_2_two_fa"><b>Please go to Settings > Recovery Email to complete this step.</b></string>
 
     <!-- FORGOT PASSWORD -->
-    <string name="forgot_password_message">An email was sent to %1$s with the instructions to reset your password</string>
+    <string name="forgot_password_title">Password Reset</string>
+    <string name="forgot_password_title_no_recovery">No Recovery Email</string>
+    <string name="forgot_password_message">An password reset link was sent to:\n\n <b>%1$s</b> \n\n Link will expire in 30 mins.</string>
+    <string name="forgot_password_message_no_recovery">Password recovery is imposible since no
+        recovery email was set on your account. For further assistance contact as: \n\n <b>support@criptext.com</b></string>
     <string name="forgot_password_error">Error contacting the server, try again later</string>
     <string name="forgot_password_error_400">A recovery email address has not been set up or confirmed for this account, without it you cannot reset the password</string>
 
@@ -226,7 +230,8 @@
     <string name="title_remote_change_password">Your password has changed</string>
 
     <!-- LOGOUT DIALOG -->
-    <string name="logout_dialog_message"><b>Alert!:</b> Login out will delete all emails from this device. Your emails will remain intact in your other devices, if any. Do you want to logout?</string>
+    <string name="logout_dialog_message">Are you sure you want to logout?</string>
+    <string name="logout_dialog_message_2_fa">Since this is your only active device, <b>2FA will be turned off</b> if you sign out. Would you like to continue?</string>
     <string name="login_out_dialog_message">Login out…</string>
 
     <!-- REMOVE DEVICE DIALOG -->
@@ -328,6 +333,13 @@
     <string name="too_many_login_attempts">Too many login attempts, try again later.</string>
     <string name="too_many_devices">Too many devices already logged in.</string>
     <string name="no_devices_available">No devices available to authenticate this device.</string>
+    <string name="sign_in_warning_dialog_message">Signing in with a different email account
+        <b>will erase all mailbox data</b> stored on this device for account \n\n <b>%1$s</b>\n\n
+        Would you like to continue?</string>
+    <string name="sign_in_warning_dialog_title">Sign In Warning</string>
+    <string name="password_warning_dialog_title">Warning</string>
+    <string name="password_warning_dialog_message">If you sign in using your password your
+        <b>mailbox history from other devices won\'t be available</b> on this device. Would you like to continue?</string>
 
     <!-- WELCOME TOUR -->
     <string name="slide_1_title"><b>Welcome!</b></string>
@@ -379,7 +391,7 @@
     <string name="cancel">Cancel</string>
     <string name="skip">Skip</string>
     <string name="retry">Retry</string>
-    <string name="ok">Ok</string>
+    <string name="ok">Okay</string>
     <string name="accept">Accept</string>
     <string name="trash">Trash</string>
     <string name="more">More Options</string>
@@ -387,7 +399,8 @@
     <string name="criptext_com">\@criptext.com</string>
     <string name="sign_up">Sign Up</string>
     <string name="not_registered">Not registered?</string>
-    <string name="recover_email_warning_content_start">You did not set a Recovery Email\nso account recovery is impossible\nif you forget your password</string>
+    <string name="recover_email_warning_content_start_title">Warning!</string>
+    <string name="recover_email_warning_content_start">You did not set a Recovery Email\nso <b>account recovery is impossible</b>\nif you forget your password</string>
     <string name="delete_thread_warning">Are you sure you want to delete the selected thread(s) PERMANENTLY?</string>
     <string name="empty_trash_warning">Are you sure you want to delete email(s) in Trash PERMANENTLY?</string>
     <string name="delete_email_warning">Are you sure you want to delete this email PERMANENTLY?</string>
@@ -400,6 +413,8 @@
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="btn_continue">Continue</string>
+    <string name="btn_continue_with_time">Continue(%1$d)</string>
     <string name="yes_with_time">Yes(%1$d)</string>
     <string name="discard">Discard</string>
 
