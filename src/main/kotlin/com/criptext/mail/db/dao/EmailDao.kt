@@ -26,12 +26,14 @@ import java.util.*
     fun getAll() : List<Email>
 
     @Query("""SELECT * FROM email
-        WHERE delivered NOT IN (1,4)
+        WHERE email.id > :lastId
+        AND delivered NOT IN (1,4)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = email.id and email_label.labelId=6)
-        GROUP BY email.id
+        ORDER BY email.id
+        LIMIT :limit
     """)
-    fun getAllForLinkFile() : List<Email>
+    fun getAllForLinkFile(limit: Int, lastId: Long) : List<Email>
 
     @Query("""SELECT * FROM email
                 WHERE metadataKey in (:metadataKeys)""")

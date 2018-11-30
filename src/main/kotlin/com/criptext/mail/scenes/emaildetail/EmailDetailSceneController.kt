@@ -239,7 +239,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
                 if(result.position > -1){
                     model.emails[result.position].isUnsending = false
-                    scene.notifyFullEmailChanged(result.position)
+                    scene.notifyFullEmailChanged(result.position + 1)
                 }
                 setEmailAtPositionAsUnsend(result.position)
             }
@@ -247,7 +247,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
                 if (result.position > -1) {
                     model.emails[result.position].isUnsending = false
-                    scene.notifyFullEmailChanged(result.position)
+                    scene.notifyFullEmailChanged(result.position + 1)
                 }
                 scene.showError(result.message)
             }
@@ -266,7 +266,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         for(file in fullEmail.files){
             file.status = 0
         }
-        scene.notifyFullEmailChanged(position)
+        scene.notifyFullEmailChanged(position + 1)
 
         val latestEmailWasUpdated = position == model.emails.size - 1
         if (latestEmailWasUpdated) {
@@ -391,7 +391,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     position = position,
                     emailId = fullEmail.email.id)
             fullEmail.isUnsending = true
-            scene.notifyFullEmailChanged(position)
+            scene.notifyFullEmailChanged(position + 1)
             dataSource.submitRequest(req)
         }
         override fun onForwardBtnClicked() {

@@ -58,8 +58,6 @@ class SettingsLogoutDialog(val context: Context) {
                                    observer: SettingsUIObserver?) {
 
         val btn_yes = view.findViewById(R.id.settings_logout_yes) as Button
-        btn_yes.isEnabled = false
-        timerListener(btn_yes,10000)
         val btn_no = view.findViewById(R.id.settings_logout_cancel) as Button
 
         btn_yes.setOnClickListener {
@@ -70,20 +68,5 @@ class SettingsLogoutDialog(val context: Context) {
         btn_no.setOnClickListener {
             dialog.dismiss()
         }
-    }
-
-    private fun timerListener(button: Button, startTime: Long) {
-        object : CountDownTimer(startTime, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                val sec = ((millisUntilFinished / 1000) % 60).toInt()
-                button.text = context.getString(R.string.yes_with_time, sec)
-            }
-
-            override fun onFinish() {
-                button.setText(R.string.yes)
-                button.isEnabled = true
-            }
-        }.start()
     }
 }

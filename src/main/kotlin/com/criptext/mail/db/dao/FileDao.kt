@@ -24,14 +24,16 @@ interface FileDao {
     fun getAll() : List<CRFile>
 
     @Query("""SELECT * FROM file
-        WHERE EXISTS
+        WHERE id > :lastId
+        AND EXISTS
         (SELECT * FROM email WHERE delivered NOT IN (1, 4)
         AND email.id = file.emailId)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = file.emailId and email_label.labelId=6)
-        GROUP BY file.id
+        ORDER BY id
+        LIMIT :limit
     """)
-    fun getAllForLinkFile() : List<CRFile>
+    fun getAllForLinkFile(limit: Int, lastId: Long) : List<CRFile>
 
     @Query("SELECT * FROM file where id=:id")
     fun getFileById(id : Long) : CRFile?
