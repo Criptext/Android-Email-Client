@@ -78,34 +78,43 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                     pushData, shouldPostNotification))
     }
 
+    private fun createAndNotifyPush(pushData: Map<String, String>, shouldPostNotification: Boolean,
+                                    isSuccess: Boolean){
+        val action = pushData["action"]
+        if (action != null) {
+            val type = PushTypes.fromActionString(action)
+            val notifier =  when (type) {
+                PushTypes.newMail -> {
+                    if(isSuccess) {
+                        val data = parseNewMailPush(pushData, shouldPostNotification)
+                        NewMailNotifier.Single(data)
+                    }else{
+                        val data = PushData.Error(UIMessage(R.string.push_email_update_mailbox_title),
+                                UIMessage(R.string.push_email_update_mailbox_body), isPostNougat, shouldPostNotification)
+                        ErrorNotifier.Open(data)
+                    }
+                }
+                PushTypes.linkDevice -> {
+                    val data = parseLinkDevicePush(pushData, shouldPostNotification)
+                    LinkDeviceNotifier.Open(data)
+                }
+                PushTypes.openActivity -> {
+                    val data = parseNewOpenMailbox(pushData, shouldPostNotification)
+                    OpenMailboxNotifier.Open(data)
+                }
+
+            }
+            host.notifyPushEvent(notifier)
+        }
+    }
+
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
             is PushResult.UpdateMailbox.Success -> {
-                val action = result.pushData["action"]
-                if (action != null) {
-                    val type = PushTypes.fromActionString(action)
-                    val notifier =  when (type) {
-                        PushTypes.newMail -> {
-                            val data = parseNewMailPush(result.pushData, result.shouldPostNotification)
-                            NewMailNotifier.Single(data)
-                        }
-                        PushTypes.linkDevice -> {
-                            val data = parseLinkDevicePush(result.pushData, result.shouldPostNotification)
-                            LinkDeviceNotifier.Open(data)
-                        }
-                        PushTypes.openActivity -> {
-                            val data = parseNewOpenMailbox(result.pushData, result.shouldPostNotification)
-                            OpenMailboxNotifier.Open(data)
-                        }
-
-                    }
-                    host.notifyPushEvent(notifier)
-                }
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, true)
             }
             is PushResult.UpdateMailbox.Failure -> {
-                val data = PushData.Error(UIMessage(R.string.push_email_update_mailbox_title),
-                        UIMessage(R.string.push_email_update_mailbox_body), isPostNougat, result.shouldPostNotification)
-                ErrorNotifier.Open(data)
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, false)
             }
         }
     }

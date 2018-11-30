@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings
+package com.criptext.mail.scenes.signin
 
 import android.content.Context
 import android.os.CountDownTimer
@@ -8,35 +8,36 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.SettingsUIObserver
+import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 
 
-class SettingsLogoutDialog(val context: Context) {
+class SignInWarningDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLogoutDialog(observer: SettingsUIObserver?, isLastDeviceWith2FA: Boolean) {
+    fun showDialog(observer: SignInSceneController.SignInUIObserver?, oldAccount: String, newUserName: String) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        val dialogView = inflater.inflate(R.layout.settings_custom_logout_dialog, null)
-
-        if(isLastDeviceWith2FA)
-            dialogView.findViewById<TextView>(R.id.logout_dialog_message).text =
-                    context.getText(R.string.logout_dialog_message_2_fa)
-
+        val dialogView = inflater.inflate(R.layout.sign_in_warning_dialog, null)
+        dialogView.findViewById<TextView>(R.id.message_text).text =
+                context.getLocalizedUIMessage(UIMessage(R.string.sign_in_warning_dialog_message,
+                        arrayOf(EmailAddressUtils.hideEmailAddress(oldAccount))))
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer)
+        dialog = createDialog(dialogView, dialogBuilder, observer, newUserName)
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?): AlertDialog {
+                             observer: SignInSceneController.SignInUIObserver?, newUserName: String): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -48,14 +49,14 @@ class SettingsLogoutDialog(val context: Context) {
                 R.drawable.dialog_label_chooser_shape)
         newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
 
-        assignButtonEvents(dialogView, newLogoutDialog, observer)
+        assignButtonEvents(dialogView, newLogoutDialog, observer, newUserName)
 
 
         return newLogoutDialog
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?) {
+                                   observer: SignInSceneController.SignInUIObserver?, newUserName: String) {
 
         val btn_yes = view.findViewById(R.id.settings_logout_yes) as Button
         btn_yes.isEnabled = false
@@ -64,7 +65,7 @@ class SettingsLogoutDialog(val context: Context) {
 
         btn_yes.setOnClickListener {
             dialog.dismiss()
-            observer?.onLogoutConfirmedClicked()
+            observer?.onSignInWarningContinue(newUserName)
         }
 
         btn_no.setOnClickListener {
@@ -77,11 +78,11 @@ class SettingsLogoutDialog(val context: Context) {
 
             override fun onTick(millisUntilFinished: Long) {
                 val sec = ((millisUntilFinished / 1000) % 60).toInt()
-                button.text = context.getString(R.string.yes_with_time, sec)
+                button.text = context.getString(R.string.btn_continue_with_time, sec)
             }
 
             override fun onFinish() {
-                button.setText(R.string.yes)
+                button.setText(R.string.btn_continue)
                 button.isEnabled = true
             }
         }.start()
