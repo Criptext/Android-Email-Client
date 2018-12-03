@@ -34,6 +34,7 @@ import android.graphics.Paint
 import android.graphics.drawable.ShapeDrawable
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIUtils
 
@@ -62,7 +63,7 @@ interface LinkingScene{
         private val loadingView: View = view.findViewById(R.id.viewAnimation)
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
         private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
-        private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
+        private val progressBar: BootstrapProgressBar = view.findViewById(R.id.progressBar)
         private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
         private val keepWaitingDialog: KeepWaitingSyncAlertDialog = KeepWaitingSyncAlertDialog(context)

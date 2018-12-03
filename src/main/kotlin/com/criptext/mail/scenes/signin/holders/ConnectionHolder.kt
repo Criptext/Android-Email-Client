@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.scenes.signin.SignInSceneController
@@ -26,7 +27,7 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
     private val loadingView: View
     private val textViewStatus: TextView
     private val textViewEmail: TextView
-    private val progressBar: ProgressBar
+    private val progressBar: BootstrapProgressBar
     private val progressBarNumber: TextView
     private val cancelSyncText: TextView
     private val oldDevice: ImageView
@@ -74,7 +75,6 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
 
     fun setProgress(message: UIMessage, progress: Int) {
         textViewStatus.text = view.context.getLocalizedUIMessage(message)
-
         val anim = UIUtils.animationForProgressBar(progressBar, progress,
                 progressBarNumber, 1000)
         anim.start()

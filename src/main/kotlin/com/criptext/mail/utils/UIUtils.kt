@@ -1,19 +1,19 @@
 package com.criptext.mail.utils
 
 import android.animation.ValueAnimator
-import android.widget.ProgressBar
 import android.widget.TextView
+import com.beardedhen.androidbootstrap.BootstrapProgressBar
 
 object UIUtils{
-    fun animationForProgressBar(progressBar: ProgressBar, progress: Int, progressBarNumber: TextView,
+
+    fun animationForProgressBar(progressBar: BootstrapProgressBar, progress: Int, progressBarNumber: TextView,
                                 duration: Long): ValueAnimator{
-        val anim = ValueAnimator.ofInt(progressBar.measuredWidth, (progress * 9))
+        val anim = ValueAnimator.ofInt(progressBar.progress, progress)
         anim.addUpdateListener { valueAnimator ->
             val `val` = valueAnimator.animatedValue as Int
-            val layoutParams = progressBar.layoutParams
-            layoutParams.width = `val`
-            progressBarNumber.text = (`val`/9).toString().plus("%")
-            progressBar.layoutParams = layoutParams
+            progressBarNumber.text = (`val`).toString().plus("%")
+            if (progress >= 90) progressBar.progress = 100
+            else progressBar.progress = progress
         }
         anim.duration = duration
         return anim
