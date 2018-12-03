@@ -11,8 +11,9 @@ class StartGuideTapped(val context: Context) {
 
     fun showViewTapped(view: View, activity: Activity, title: Int, dimension: Int) {
         when (title) {
+            R.string.start_guide_email -> showTapViewTarget(view, activity, title, dimension, 300f, android.R.color.white, R.dimen.focal_radius)
             R.string.start_guide_notification -> showTapViewTarget(view, activity, title, dimension, 260f, android.R.color.transparent, R.dimen.focal_radius_small_views)
-            R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 400f, R.color.white, R.dimen.focal_radius)
+            R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 440f, R.color.white, R.dimen.focal_radius)
             else -> showTapViewTarget(view, activity, title, dimension, 260f, R.color.white, R.dimen.focal_radius)
         }
     }

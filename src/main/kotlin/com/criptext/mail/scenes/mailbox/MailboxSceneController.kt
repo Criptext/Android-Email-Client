@@ -152,10 +152,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
             if (!model.isInMultiSelect) {
                 changeMode(multiSelectON = true, silent = false)
-                if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
-                    scene.showStartGuideMultiple()
-                    storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
-                }
+                scene.showStartGuideMultiple()
             }
 
             val selectedThreads = model.selectedThreads
@@ -310,11 +307,14 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun showStartGuideMultiple(view: View) {
-            host.showStartGuideView(
-                    view,
-                    R.string.start_guide_multiple_conversations,
-                    R.dimen.focal_padding
-            )
+            if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowMultiple, true)){
+                storage.putBool(KeyValueStorage.StringKey.StartGuideShowMultiple, false)
+                host.showStartGuideView(
+                        view,
+                        R.string.start_guide_multiple_conversations,
+                        R.dimen.focal_padding
+                )
+            }
         }
     }
 
