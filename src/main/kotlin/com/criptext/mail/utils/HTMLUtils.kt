@@ -42,7 +42,7 @@ class HTMLUtils {
                                                                  mimeTypeSource: String): String{
             return """
                 <div style="margin-top: 6px; float: left;">
-                  <a style="cursor: pointer; text-decoration: none;" href="https://services.criptext.com/downloader/$encodedParams?e=1">
+                  <a style="cursor: pointer; text-decoration: none;" href="https://services.criptext.com/downloader/$encodedParams">
                     <div style="align-items: center; border: 1px solid #e7e5e5; border-radius: 6px; display: flex; height: 20px; margin-right: 20px; padding: 10px; position: relative; width: 236px;">
                       <div style="position: relative;">
                         <div style="align-items: center; border-radius: 4px; display: flex; height: 22px; width: 22px;">
