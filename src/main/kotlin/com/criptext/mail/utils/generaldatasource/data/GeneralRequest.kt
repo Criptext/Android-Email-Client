@@ -21,4 +21,5 @@ sealed class GeneralRequest {
     data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
     data class SyncPhonebook(val contentResolver: ContentResolver): GeneralRequest()
     data class Logout(val shouldDeleteAllData: Boolean): GeneralRequest()
+    data class DeleteAccount(val password: String): GeneralRequest()
 }

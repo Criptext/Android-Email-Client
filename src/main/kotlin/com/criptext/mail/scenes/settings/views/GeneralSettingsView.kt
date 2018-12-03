@@ -18,6 +18,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsTermsOfService: View
     private lateinit var settingsOpenSourceLibraries: View
     private lateinit var settingsLogout: View
+    private lateinit var settingsDeleteAccount: View
     private lateinit var settingsChangePassword: View
     private lateinit var settingsRecoveryEmail: View
     private lateinit var settingsRecoveryEmailLoading: View
@@ -42,6 +43,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsTermsOfService = view.findViewById(R.id.settings_terms_of_service)
         settingsOpenSourceLibraries = view.findViewById(R.id.settings_open_source_libraries)
         settingsLogout = view.findViewById(R.id.settings_logout)
+        settingsDeleteAccount = view.findViewById(R.id.settings_delete_account)
         settingsChangePassword = view.findViewById(R.id.settings_change_password)
         settingsPin = view.findViewById(R.id.settings_pin_lock)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
@@ -136,6 +138,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
         settingsLogout.setOnClickListener {
             settingsUIObserver?.onLogoutClicked()
+        }
+        settingsDeleteAccount.setOnClickListener {
+            settingsUIObserver?.onDeleteAccountClicked()
         }
         settingsSyncPhonebookContacts.setOnClickListener {
             settingsUIObserver?.onSyncPhonebookContacts()

@@ -22,11 +22,13 @@ import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
 
@@ -55,6 +57,7 @@ class SettingsController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.Logout -> onLogout(result)
+            is GeneralResult.DeleteAccount -> onDeleteAccount(result)
         }
     }
 
@@ -72,6 +75,27 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onDeleteAccountClicked() {
+            scene.showGeneralDialogWithInput(DialogData(
+                    title = UIMessage(R.string.delete_account_dialog_title),
+                    message = listOf(UIMessage(R.string.delete_account_dialog_message)),
+                    type = DialogType.DeleteAccount()
+            ))
+        }
+
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            when(result){
+                is DialogResult.DialogWithInput -> {
+                    when(result.type){
+                        is DialogType.DeleteAccount -> {
+                            scene.toggleGeneralDialogLoad(true)
+                            generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
+                        }
+                    }
+                }
+            }
+        }
+
         override fun onReadReceiptsSwitched(isChecked: Boolean) {
             scene.enableReadReceiptsSwitch(false)
             dataSource.submitRequest(SettingsRequest.SetReadReceipts(isChecked))
@@ -169,7 +193,7 @@ class SettingsController(
         }
 
         override fun onLogoutConfirmedClicked() {
-            scene.showLoginOutDialog()
+            scene.showMessageAndProgressDialog(UIMessage(R.string.login_out_dialog_message))
             generalDataSource.submitRequest(GeneralRequest.Logout(false))
         }
 
@@ -372,8 +396,20 @@ class SettingsController(
                 host.exitToScene(SignInParams(), null, false, true)
             }
             is GeneralResult.Logout.Failure -> {
-                scene.dismissLoginOutDialog()
+                scene.dismissMessageAndProgressDialog()
                 scene.showMessage(UIMessage(R.string.error_login_out))
+            }
+        }
+    }
+
+    private fun onDeleteAccount(result: GeneralResult.DeleteAccount){
+        scene.toggleGeneralDialogLoad(false)
+        when(result) {
+            is GeneralResult.DeleteAccount.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
+            }
+            is GeneralResult.DeleteAccount.Failure -> {
+                scene.setGeneralDialogWithInputError(result.message)
             }
         }
     }

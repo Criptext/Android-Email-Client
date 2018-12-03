@@ -16,10 +16,8 @@ import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.MessageAndProgressDialog
-import com.criptext.mail.utils.ui.ViewPagerAdapter
+import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 
@@ -30,9 +28,12 @@ interface SettingsScene{
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
-    fun showLoginOutDialog()
+    fun showGeneralDialogWithInput(dialogData: DialogData)
+    fun setGeneralDialogWithInputError(message: UIMessage)
+    fun toggleGeneralDialogLoad(isLoading: Boolean)
+    fun showMessageAndProgressDialog(message: UIMessage)
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
-    fun dismissLoginOutDialog()
+    fun dismissMessageAndProgressDialog()
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun getLabelListView(): VirtualListView
@@ -84,10 +85,12 @@ interface SettingsScene{
                     context.getString(R.string.general))
         }
 
+        private var generalDialogWithInputDelay: GeneralDialogWithInputDelay? = null
+
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
-        private val settingLoginOutDialog = MessageAndProgressDialog(context, UIMessage(R.string.login_out_dialog_message))
+        private var messageAndProgressDialog: MessageAndProgressDialog? = null
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
@@ -129,16 +132,30 @@ interface SettingsScene{
             settingLogoutDialog.showLogoutDialog(settingsUIObserver, isLastDeviceWith2FA)
         }
 
-        override fun showLoginOutDialog() {
-            settingLoginOutDialog.showDialog()
+        override fun showMessageAndProgressDialog(message: UIMessage) {
+            messageAndProgressDialog = MessageAndProgressDialog(context, message)
+            messageAndProgressDialog?.showDialog()
+        }
+
+        override fun showGeneralDialogWithInput(dialogData: DialogData) {
+            generalDialogWithInputDelay = GeneralDialogWithInputDelay(context, dialogData)
+            generalDialogWithInputDelay?.showDialog(settingsUIObserver)
+        }
+
+        override fun setGeneralDialogWithInputError(message: UIMessage) {
+            generalDialogWithInputDelay?.setPasswordError(message)
+        }
+
+        override fun toggleGeneralDialogLoad(isLoading: Boolean) {
+            generalDialogWithInputDelay?.toggleLoad(isLoading)
         }
 
         override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {
             settingRemoveDeviceDialog.showRemoveDeviceDialog(settingsUIObserver, deviceId, position)
         }
 
-        override fun dismissLoginOutDialog() {
-            settingLoginOutDialog.dismiss()
+        override fun dismissMessageAndProgressDialog() {
+            messageAndProgressDialog?.dismiss()
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
