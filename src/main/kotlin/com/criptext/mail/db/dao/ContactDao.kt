@@ -22,6 +22,9 @@ interface ContactDao {
     @Query("SELECT * FROM contact")
     fun getAll() : List<Contact>
 
+    @Query("""SELECT * FROM contact WHERE id > :lastId ORDER BY id LIMIT :limit""")
+    fun getAllForLinkFile(limit: Int, lastId: Long) : List<Contact>
+
     @Query("SELECT * FROM contact where email=:email")
     fun getContact(email : String) : Contact?
 

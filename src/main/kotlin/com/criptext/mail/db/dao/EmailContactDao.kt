@@ -44,8 +44,9 @@ interface EmailContactJoinDao {
         AND email.id = email_contact.emailId)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = email_contact.emailId
-        AND email_label.labelId=6)""")
-    fun getAllForLinkFile() : List<EmailContact>
+        AND email_label.labelId=6)
+        LIMIT :limit OFFSET :offset""")
+    fun getAllForLinkFile(limit: Int, offset: Int) : List<EmailContact>
 
     @Insert
     fun insert(emailContact : EmailContact)

@@ -19,14 +19,17 @@ interface FileKeyDao {
     fun getAll() : List<FileKey>
 
     @Query("""SELECT * FROM file_key
-        WHERE EXISTS
+        WHERE id > :lastId
+        AND EXISTS
         (SELECT * FROM email WHERE delivered NOT IN (1, 4)
         AND email.id = file_key.emailId)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = file_key.emailId
         AND email_label.labelId=6)
+        ORDER BY id
+        LIMIT :limit
     """)
-    fun getAllForLinkFile() : List<FileKey>
+    fun getAllForLinkFile(limit: Int, lastId: Long) : List<FileKey>
 
     @Query("SELECT * FROM file_key where id=:id")
     fun getFileById(id : Long) : FileKey?

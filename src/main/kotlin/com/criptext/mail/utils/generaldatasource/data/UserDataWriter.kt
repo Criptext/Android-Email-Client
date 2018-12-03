@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.data
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
+import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
@@ -17,13 +18,13 @@ class UserDataWriter(private val db: AppDatabase)
 
             val tmpFileLinkData = createTempFile()
 
-            addContactsToFile(db.contactDao().getAll(), tmpFileLinkData)
-            addLabelsToFile(db.labelDao().getAll(), tmpFileLinkData)
-            addMailsToFile(db.emailDao().getAllForLinkFile(), tmpFileLinkData)
-            addFilesToFile(db.fileDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsAndLabelsRelationToFile(db.emailLabelDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsAndContactsRelationToFile(db.emailContactDao().getAllForLinkFile(), tmpFileLinkData)
-            addMailsFileKey(db.fileKeyDao().getAllForLinkFile(), tmpFileLinkData)
+            addContactsToFile(db.contactDao(), tmpFileLinkData)
+            addLabelsToFile(db.labelDao(), tmpFileLinkData)
+            addMailsToFile(db.emailDao(), tmpFileLinkData)
+            addFilesToFile(db.fileDao(), tmpFileLinkData)
+            addMailsAndLabelsRelationToFile(db.emailLabelDao(), tmpFileLinkData)
+            addMailsAndContactsRelationToFile(db.emailContactDao(), tmpFileLinkData)
+            addMailsFileKey(db.fileKeyDao(), tmpFileLinkData)
 
             return tmpFileLinkData.absolutePath
         }catch (ex:Exception){
@@ -68,83 +69,145 @@ class UserDataWriter(private val db: AppDatabase)
         db.endTransaction()
     }
 
-    private fun addContactsToFile(allContacts: List<Contact>, tmpFile: File)
+    private fun addContactsToFile(contactDao: ContactDao, tmpFile: File)
     {
-        val jsonArrayAllContacts = mutableListOf<String>()
-        for (contact in allContacts){
-            val jsonObject = JSONObject()
-            jsonObject.put("id", contact.id)
-            jsonObject.put("email", contact.email)
-            jsonObject.put("name", contact.name)
-            jsonArrayAllContacts.add(jsonObject.toString())
-            tmpFile.appendText("${JSONObject("{table: contact, object: $jsonObject}")}\n")
-        }
-    }
-
-    private fun addLabelsToFile(allLabels: List<Label>, tmpFile: File)
-    {
-        val jsonArrayAllLabels = mutableListOf<String>()
-        for (label in allLabels){
-            if(label.type == LabelTypes.CUSTOM) {
+        fun flushContacts(allContacts: List<Contact>): Long {
+            var lastId = 0L
+            val jsonArrayAllContacts = mutableListOf<String>()
+            for (contact in allContacts){
+                if(contact == allContacts.last())
+                    lastId = contact.id
                 val jsonObject = JSONObject()
-                jsonObject.put("id", label.id)
-                jsonObject.put("color", label.color)
-                jsonObject.put("text", label.text)
-                jsonObject.put("type", label.type.name.toLowerCase())
-                jsonObject.put("visible", label.visible)
-                jsonArrayAllLabels.add(jsonObject.toString())
-                tmpFile.appendText("${JSONObject("{table: label, object: $jsonObject}")}\n")
+                jsonObject.put("id", contact.id)
+                jsonObject.put("email", contact.email)
+                jsonObject.put("name", contact.name)
+                jsonArrayAllContacts.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: contact, object: $jsonObject}")}\n")
             }
+            return lastId
         }
+        var lastId = 0L
+        do {
+            val contacts = contactDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            if(contacts.isNotEmpty()) {
+                lastId = flushContacts(contacts)
+            }
+        }while (contacts.isNotEmpty())
     }
 
-    private fun addFilesToFile(allFiles: List<CRFile>, tmpFile: File)
+    private fun addLabelsToFile(labelDao: LabelDao, tmpFile: File)
     {
-        val jsonArrayAllFiles = mutableListOf<String>()
-        for (file in allFiles){
-            val jsonObject = JSONObject()
-            jsonObject.put("id", file.id)
-            jsonObject.put("token", file.token)
-            jsonObject.put("name", file.name)
-            jsonObject.put("size", file.size)
-            jsonObject.put("status", file.status)
-            jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(file.date))
-            jsonObject.put("readOnly", file.readOnly)
-            jsonObject.put("emailId", file.emailId)
-            jsonObject.put("mimeType", com.criptext.mail.utils.file.FileUtils.getMimeType(file.name))
-            jsonArrayAllFiles.add(jsonObject.toString())
-            tmpFile.appendText("${JSONObject("{table: file, object: $jsonObject}")}\n")
+        fun flushLabels(allLabels: List<Label>): Long {
+            var lastId = 0L
+            val jsonArrayAllLabels = mutableListOf<String>()
+            for (label in allLabels){
+                if(label == allLabels.last())
+                    lastId = label.id
+                if(label.type == LabelTypes.CUSTOM) {
+                    val jsonObject = JSONObject()
+                    jsonObject.put("id", label.id)
+                    jsonObject.put("color", label.color)
+                    jsonObject.put("text", label.text)
+                    jsonObject.put("type", label.type.name.toLowerCase())
+                    jsonObject.put("visible", label.visible)
+                    jsonArrayAllLabels.add(jsonObject.toString())
+                    tmpFile.appendText("${JSONObject("{table: label, object: $jsonObject}")}\n")
+                }
+            }
+            return lastId
         }
+        var lastId = 0L
+        do {
+            val labels = labelDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            if(labels.isNotEmpty()) {
+                lastId = flushLabels(labels)
+            }
+        }while (labels.isNotEmpty())
+
     }
 
-    private fun addMailsToFile(allMails: List<Email>, tmpFile: File)
+    private fun addFilesToFile(fileDao: FileDao, tmpFile: File)
     {
-        val jsonArrayAllMails = mutableListOf<String>()
-        for (mail in allMails){
-            val jsonObject = JSONObject()
-            jsonObject.put("id", mail.id)
-            jsonObject.put("messageId", mail.messageId)
-            jsonObject.put("threadId", mail.threadId)
-            jsonObject.put("unread", mail.unread)
-            jsonObject.put("secure", mail.secure)
-            jsonObject.put("content", mail.content)
-            jsonObject.put("preview", mail.preview)
-            jsonObject.put("subject", mail.subject)
-            jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
-            jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
-            jsonObject.put("key", mail.metadataKey)
-            jsonObject.put("isMuted", mail.isMuted)
-            if(mail.unsentDate != null)
-                jsonObject.put("unsentDate",DateAndTimeUtils.printDateWithServerFormat(mail.unsentDate!!))
-            if(mail.trashDate != null)
-                jsonObject.put("trashDate", DateAndTimeUtils.printDateWithServerFormat(mail.trashDate!!))
-            jsonArrayAllMails.add(jsonObject.toString())
-            tmpFile.appendText("${JSONObject("{table: email, object: $jsonObject}")}\n")
+        fun flushFiles(allFiles: List<CRFile>): Long {
+            var lastId = 0L
+            val jsonArrayAllFiles = mutableListOf<String>()
+            for (file in allFiles){
+                if(file == allFiles.last())
+                    lastId = file.id
+                val jsonObject = JSONObject()
+                jsonObject.put("id", file.id)
+                jsonObject.put("token", file.token)
+                jsonObject.put("name", file.name)
+                jsonObject.put("size", file.size)
+                jsonObject.put("status", file.status)
+                jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(file.date))
+                jsonObject.put("readOnly", file.readOnly)
+                jsonObject.put("emailId", file.emailId)
+                jsonObject.put("mimeType", com.criptext.mail.utils.file.FileUtils.getMimeType(file.name))
+                jsonArrayAllFiles.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: file, object: $jsonObject}")}\n")
+            }
+            return lastId
         }
+        var lastId = 0L
+        do {
+            val files = fileDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            if(files.isNotEmpty()) {
+                lastId = flushFiles(files)
+            }
+        }while (files.isNotEmpty())
     }
 
-    private fun addMailsAndLabelsRelationToFile(allMailsAndLabelsRelation: List<EmailLabel>, tmpFile: File)
+    private fun addMailsToFile(emailDao: EmailDao, tmpFile: File)
     {
+        fun flushMails(allMails: List<Email>): Long {
+            var lastId = 0L
+            val jsonArrayAllMails = mutableListOf<String>()
+            for (mail in allMails) {
+                if(mail == allMails.last())
+                    lastId = mail.id
+                val jsonObject = JSONObject()
+                jsonObject.put("id", mail.id)
+                jsonObject.put("messageId", mail.messageId)
+                jsonObject.put("threadId", mail.threadId)
+                jsonObject.put("unread", mail.unread)
+                jsonObject.put("secure", mail.secure)
+                jsonObject.put("content", mail.content)
+                jsonObject.put("preview", mail.preview)
+                jsonObject.put("subject", mail.subject)
+                jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
+                jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
+                jsonObject.put("key", mail.metadataKey)
+                jsonObject.put("isMuted", mail.isMuted)
+                if (mail.unsentDate != null)
+                    jsonObject.put("unsentDate", DateAndTimeUtils.printDateWithServerFormat(mail.unsentDate!!))
+                if (mail.trashDate != null)
+                    jsonObject.put("trashDate", DateAndTimeUtils.printDateWithServerFormat(mail.trashDate!!))
+                jsonArrayAllMails.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: email, object: $jsonObject}")}\n")
+            }
+            return lastId
+        }
+        var lastId = 0L
+        do {
+            val emails = emailDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            if(emails.isNotEmpty()) {
+                lastId = flushMails(emails)
+            }
+        }while (emails.isNotEmpty())
+    }
+
+    private fun addMailsAndLabelsRelationToFile(emailLabelDao: EmailLabelDao, tmpFile: File)
+    {
+        val allMailsAndLabelsRelation = mutableListOf<EmailLabel>()
+        var offset = 0
+        do {
+            val emailLabels = emailLabelDao.getAllForLinkFile(DB_READING_LIMIT, offset)
+            if(emailLabels.isNotEmpty()) {
+                allMailsAndLabelsRelation.addAll(emailLabels)
+                offset += DB_READING_LIMIT
+            }
+        }while (emailLabels.isNotEmpty())
         val jsonArrayAllMails = mutableListOf<String>()
         for (mail_label in allMailsAndLabelsRelation){
             val jsonObject = JSONObject()
@@ -155,10 +218,19 @@ class UserDataWriter(private val db: AppDatabase)
         }
     }
 
-    private fun addMailsAndContactsRelationToFile(allMails: List<EmailContact>, tmpFile: File)
+    private fun addMailsAndContactsRelationToFile(emailContactJoinDao: EmailContactJoinDao, tmpFile: File)
     {
+        val allMailsAndContacts = mutableListOf<EmailContact>()
+        var offset = 0
+        do {
+            val mailContacts = emailContactJoinDao.getAllForLinkFile(DB_READING_LIMIT, offset)
+            if(mailContacts.isNotEmpty()) {
+                allMailsAndContacts.addAll(mailContacts)
+                offset += DB_READING_LIMIT
+            }
+        }while (mailContacts.isNotEmpty())
         val jsonArrayAllMails = mutableListOf<String>()
-        for (mail_contact in allMails){
+        for (mail_contact in allMailsAndContacts){
             val jsonObject = JSONObject()
             jsonObject.put("id", mail_contact.id)
             jsonObject.put("emailId", mail_contact.emailId)
@@ -169,24 +241,38 @@ class UserDataWriter(private val db: AppDatabase)
         }
     }
 
-    private fun addMailsFileKey(allFileKeys: List<FileKey>, tmpFile: File)
+    private fun addMailsFileKey(fileKeyDao: FileKeyDao, tmpFile: File)
     {
-        val jsonArrayAllMails = mutableListOf<String>()
-        for (file_key in allFileKeys){
-            val jsonObject = JSONObject()
-            val key = if(file_key.key != null)
-                file_key.key
-            else
-                null
-            if(key != null && key.contains(":")) {
-                jsonObject.put("id", file_key.id)
-                jsonObject.put("key", key.substringBefore(":"))
-                jsonObject.put("iv", key.substringAfter(":"))
-                jsonObject.put("emailId", file_key.emailId)
-                jsonArrayAllMails.add(jsonObject.toString())
-                tmpFile.appendText("${JSONObject("{table: filekey, object: $jsonObject}")}\n")
+        fun flushFileKey(allFileKeys: List<FileKey>): Long {
+            var lastId = 0L
+            val jsonArrayAllMails = mutableListOf<String>()
+            for (file_key in allFileKeys){
+                if(file_key == allFileKeys.last())
+                    lastId = file_key.id
+                val jsonObject = JSONObject()
+                val key = if(file_key.key != null)
+                    file_key.key
+                else
+                    null
+                if(key != null && key.contains(":")) {
+                    jsonObject.put("id", file_key.id)
+                    jsonObject.put("key", key.substringBefore(":"))
+                    jsonObject.put("iv", key.substringAfter(":"))
+                    jsonObject.put("emailId", file_key.emailId)
+                    jsonArrayAllMails.add(jsonObject.toString())
+                    tmpFile.appendText("${JSONObject("{table: filekey, object: $jsonObject}")}\n")
+                }
             }
+            return lastId
         }
+        var lastId = 0L
+        do {
+            val fileKeys = fileKeyDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            if(fileKeys.isNotEmpty()) {
+                lastId = flushFileKey(fileKeys)
+            }
+        }while (fileKeys.isNotEmpty())
+
     }
 
     companion object {
@@ -194,5 +280,6 @@ class UserDataWriter(private val db: AppDatabase)
         const val EMAIL_BATCH_SIZE = 10
         const val RELATIONS_BATCH_SIZE = 100
 
+        const val DB_READING_LIMIT = 500
     }
 }

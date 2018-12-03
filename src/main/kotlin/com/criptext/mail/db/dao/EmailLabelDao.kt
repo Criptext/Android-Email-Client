@@ -42,8 +42,9 @@ interface EmailLabelDao {
         WHERE EXISTS
         (SELECT * FROM email WHERE delivered NOT IN (1, 4)
         AND email.id = email_label.emailId)
-        AND email_label.labelId != 6""")
-    fun getAllForLinkFile() : List<EmailLabel>
+        AND email_label.labelId != 6
+        LIMIT :limit OFFSET :offset""")
+    fun getAllForLinkFile(limit: Int, offset: Int) : List<EmailLabel>
 
     @Delete
     fun deleteAll(emailLabels: List<EmailLabel>)
