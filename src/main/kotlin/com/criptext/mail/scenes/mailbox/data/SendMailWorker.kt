@@ -285,7 +285,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         for (attachment in this.attachments){
             val mimeTypeSource = HTMLUtils.getMimeTypeSourceForUnencryptedEmail(
                     FileUtils.getMimeType(FileUtils.getName(attachment.filepath)))
-            val encodedParams = Encoding.byteArrayToString((attachment.filetoken+":"+fileKey).toByteArray())
+            val encodedParams = if(fileKey != null) Encoding.byteArrayToString((attachment.filetoken+":"+fileKey).toByteArray()) + "?e=1"
+            else attachment.filetoken
             bodyWithAttachments.append(HTMLUtils.createAttchmentForUnencryptedEmailToNonCriptextUsers(
                     attachmentName = FileUtils.getName(attachment.filepath), attachmentSize = attachment.size,
                     encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
