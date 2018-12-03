@@ -234,6 +234,11 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
             }
+            is ComposerResult.UploadFile.PayloadTooLarge -> {
+                removeAttachmentByPath(result.filepath)
+                scene.showPayloadTooLargeDialog(result.filepath, result.headers.getLong("Max-Size"))
+                handleNextUpload()
+            }
         }
         scene.notifyAttachmentSetChanged()
     }

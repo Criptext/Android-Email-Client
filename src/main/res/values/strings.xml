@@ -525,6 +525,7 @@
     <string name="too_many_requests_exception_hour">Too many consecutive attempts. Please try again in %1$d hour(s).</string>
     <string name="too_many_requests_exception_minute">Too many consecutive attempts. Please try again in %1$d minutes.</string>
     <string name="too_many_requests_exception_no_time_found">Too many consecutive attempts. Please try again.</string>
+    <string name="payload_too_large">The file %1$s exceeds %2$dMBs</string>
 
     <!-- WEB SOCKET ERROR -->
     <string name="web_socket_error">Unrecognized server event. Event code: %1$d</string>

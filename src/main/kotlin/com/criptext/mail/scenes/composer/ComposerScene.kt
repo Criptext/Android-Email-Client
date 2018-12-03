@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.EditText
@@ -50,6 +51,7 @@ interface ComposerScene {
     fun setContactSuggestionList(contacts: Array<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showAttachmentErrorDialog(filename: String)
+    fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
@@ -75,7 +77,7 @@ interface ComposerScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
-
+        private val MEGABYTE = 1024L * 1024L
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
         private val toInput: ContactCompletionView by lazy({
@@ -264,6 +266,13 @@ interface ComposerScene {
         override fun showAttachmentErrorDialog(filename: String){
             val builder = AlertDialog.Builder(ctx)
             builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
+                    .show()
+        }
+
+        override fun showPayloadTooLargeDialog(filename: String, maxsize: Long){
+            val builder = AlertDialog.Builder(ctx)
+            val size = (maxsize + MEGABYTE - 1) / MEGABYTE
+            builder.setMessage(ctx.resources.getString(R.string.payload_too_large, filename, size))
                     .show()
         }
 

@@ -5,6 +5,7 @@ object ServerErrorCodes{
     const val Unauthorized = 401
     const val Forbidden = 403
     const val MethodNotAllowed = 405
+    const val PayloadTooLarge = 413
     const val TooManyRequests = 429
     const val TooManyDevices = 439
     const val InternalServerError = 500

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.composer.data
 
+import com.criptext.mail.api.ResultHeaders
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.UIMessage
 
@@ -32,6 +33,7 @@ sealed class ComposerResult {
         data class Success(val filepath: String): UploadFile()
         data class Register(val filepath: String, val filetoken: String): UploadFile()
         data class Progress(val filepath: String, val percentage: Int): UploadFile()
+        data class PayloadTooLarge(val filepath: String, val headers: ResultHeaders): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
         data class Unauthorized(val message: UIMessage): UploadFile()
         class Forbidden: UploadFile()

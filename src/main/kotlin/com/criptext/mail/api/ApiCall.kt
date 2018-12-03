@@ -19,7 +19,8 @@ class ApiCall {
             val response = client.newCall(req).execute()
             if (!response.isSuccessful) {
                 val rateLimitHeader = response.header("Retry-After")?.toLong()
-                throw(ServerErrorException(response.code(), rateLimitHeader))
+                val resultHeaders = ResultHeaders(response.headers())
+                throw(ServerErrorException(response.code(), rateLimitHeader, resultHeaders))
             }
             return response.body()!!.string()
         }
