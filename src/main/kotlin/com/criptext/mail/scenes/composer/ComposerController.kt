@@ -278,6 +278,10 @@ class ComposerController(private val storage: KeyValueStorage,
                 scene.showError(UIMessage(R.string.error_getting_contacts))
             }
         }
+        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
+            scene.showStartGuideAttachments()
+            storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
+        }
     }
 
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
@@ -475,10 +479,6 @@ class ComposerController(private val storage: KeyValueStorage,
 
         dataSourceController.getAllContacts()
         scene.observer = observer
-        if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
-            scene.showStartGuideAttachments()
-            storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
-        }
         return handleActivityMessage(activityMessage)
     }
 
