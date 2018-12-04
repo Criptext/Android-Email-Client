@@ -75,9 +75,15 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
 
     fun setProgress(message: UIMessage, progress: Int) {
         textViewStatus.text = view.context.getLocalizedUIMessage(message)
-        val anim = UIUtils.animationForProgressBar(progressBar, progress,
-                progressBarNumber, 1000)
-        anim.start()
+        if (progress >= 96) {
+            progressBar.progress = 100
+            progressBarNumber.text = 100.toString().plus("%")
+        }
+        else {
+            val anim = UIUtils.animationForProgressBar(progressBar, progress,
+                    progressBarNumber, 1000)
+            anim.start()
+        }
     }
 
     fun disableCancelSync(){

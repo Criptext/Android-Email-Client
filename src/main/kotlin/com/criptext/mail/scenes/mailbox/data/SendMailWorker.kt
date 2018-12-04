@@ -155,8 +155,8 @@ class SendMailWorker(private val signalClient: SignalClient,
     private fun getFileKey(): String?{
         if(fileKey == null) return null
         val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
-        return if(attachments.containsAll(attachmentsThatNeedDuplicate)) {
-            db.getFileKeyByFileId(attachments.first().id)
+        return if(attachmentsThatNeedDuplicate.isNotEmpty() && attachments.containsAll(attachmentsThatNeedDuplicate)) {
+            db.getFileKeyByFileId(attachmentsThatNeedDuplicate.first().id)
         }else{
             fileKey
         }
@@ -176,6 +176,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                     finalAttachments.add(file)
                 }
             }
+        }else if(attachments.isNotEmpty()){
+            finalAttachments.addAll(attachments)
         }
         return finalAttachments.map { attachment ->
             PostEmailBody.CriptextAttachment(token = attachment.filetoken,

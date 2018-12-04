@@ -146,9 +146,15 @@ interface LinkingScene{
 
         override fun setProgress(message: UIMessage, progress: Int) {
             textViewStatus.text = context.getLocalizedUIMessage(message)
-            val anim = UIUtils.animationForProgressBar(progressBar, progress,
-                    progressBarNumber, 1000)
-            anim.start()
+            if (progress >= 96) {
+                progressBar.progress = 100
+                progressBarNumber.text = 100.toString().plus("%")
+            }
+            else {
+                val anim = UIUtils.animationForProgressBar(progressBar, progress,
+                        progressBarNumber, 1000)
+                anim.start()
+            }
         }
 
         override fun showRetrySyncDialog(result: GeneralResult) {
