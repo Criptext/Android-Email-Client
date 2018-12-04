@@ -24,6 +24,7 @@ import com.criptext.mail.scenes.composer.ui.*
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
@@ -77,7 +78,6 @@ interface ComposerScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
-        private val MEGABYTE = 1024L * 1024L
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
         private val toInput: ContactCompletionView by lazy({
@@ -270,9 +270,11 @@ interface ComposerScene {
         }
 
         override fun showPayloadTooLargeDialog(filename: String, maxsize: Long){
+            val fullName = FileUtils.getName(filename)
             val builder = AlertDialog.Builder(ctx)
-            val size = (maxsize + MEGABYTE - 1) / MEGABYTE
-            builder.setMessage(ctx.resources.getString(R.string.payload_too_large, filename, size))
+            val size = FileUtils.readableFileSize(maxsize, 1000)
+            builder.setTitle(ctx.resources.getString(R.string.error_attach_file))
+                    .setMessage(ctx.resources.getString(R.string.payload_too_large, fullName, size))
                     .show()
         }
 

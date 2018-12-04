@@ -7,6 +7,5 @@ import okhttp3.Headers
  */
 class ServerErrorException(
         val errorCode: Int,
-        val rateLimitTime: Long? = null,
         val headers: ResultHeaders? = null
 ): Exception("Server error code: $errorCode")

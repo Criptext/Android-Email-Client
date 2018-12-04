@@ -30,7 +30,7 @@ class AttachmentViewHolder(val view: View, val observer: AttachmentViewObserver?
 
     fun setFields(name: String, size: Long, type: AttachmentTypes){
         filename.text = name
-        filesize.text = FileUtils.readableFileSize(size)
+        filesize.text = FileUtils.readableFileSize(size, 1024)
         typeView.setImageResource(type.getDrawableImage())
     }
 

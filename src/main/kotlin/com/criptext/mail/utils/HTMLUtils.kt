@@ -51,7 +51,7 @@ class HTMLUtils {
                       </div>
                       <div style="padding-top: 1px; display: flex; flex-grow: 1; height: 100%; margin-left: 10px; width: calc(100% - 32px);">
                         <span style="color: black; padding-top: 1px; width: 160px; flex-grow: 1; font-size: 14px; font-weight: 700; overflow: hidden; padding-right: 5px; text-overflow: ellipsis; white-space: nowrap;">$attachmentName</span>
-                        <span style="color: #9b9b9b; flex-grow: 0; font-size: 13px; white-space: nowrap; line-height: 21px;">${FileUtils.readableFileSize(attachmentSize)}</span>
+                        <span style="color: #9b9b9b; flex-grow: 0; font-size: 13px; white-space: nowrap; line-height: 21px;">${FileUtils.readableFileSize(attachmentSize, 1024)}</span>
                       </div>
                     </div>
                   </a>

@@ -12,8 +12,7 @@ object UIUtils{
         anim.addUpdateListener { valueAnimator ->
             val `val` = valueAnimator.animatedValue as Int
             progressBarNumber.text = (`val`).toString().plus("%")
-            if (progress >= 90) progressBar.progress = 100
-            else progressBar.progress = progress
+            progressBar.progress = progress
         }
         anim.duration = duration
         return anim

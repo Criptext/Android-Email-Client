@@ -55,7 +55,7 @@ class ConfirmPasswordWorker(private val password: String,
                 when {
                     ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
                     ex.errorCode == ServerErrorCodes.TooManyRequests -> {
-                        val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.rateLimitTime)
+                        val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {
                             if(timeLeft.first != 0L)
                             UIMessage(resId = R.string.too_many_requests_exception_hour,
