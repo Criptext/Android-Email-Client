@@ -260,8 +260,8 @@ interface MailboxScene{
 
         override fun showStartGuideMultiple(){
             if(recyclerView.adapter.itemCount > 2) {
-                val view = recyclerView.findViewHolderForAdapterPosition(0).itemView.mail_item_left_name
-                observer?.showStartGuideMultiple(view)
+                val view = recyclerView.findViewHolderForAdapterPosition(0) ?: return
+                observer?.showStartGuideMultiple(view.itemView.mail_item_left_name)
             }
         }
 

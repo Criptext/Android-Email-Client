@@ -238,8 +238,7 @@ class FileUtils {
             return type
         }
 
-        fun readableFileSize(size: Long): String{
-            val unit = 1024
+        fun readableFileSize(size: Long, unit: Int): String{
             if (size < unit) return "$size B"
             val exp = (Math.log(size.toDouble()) / Math.log(unit.toDouble())).toInt()
             val pre = ("KMGTPE")[exp - 1]
