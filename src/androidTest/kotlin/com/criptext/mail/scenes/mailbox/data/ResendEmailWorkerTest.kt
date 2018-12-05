@@ -80,7 +80,7 @@ class ResendEmailWorkerTest {
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null)
+                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null, originalId = null)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
@@ -106,7 +106,7 @@ class ResendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
 
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
@@ -146,7 +146,7 @@ class ResendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
