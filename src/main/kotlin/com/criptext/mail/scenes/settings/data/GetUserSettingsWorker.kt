@@ -11,6 +11,8 @@ import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class GetUserSettingsWorker(
@@ -45,7 +47,9 @@ class GetUserSettingsWorker(
                 val devices = settings.devices.map { if(it.id == activeAccount.deviceId) it.copy(
                         isCurrent = true
                 ) else it }
-                SettingsResult.GetUserSettings.Success(settings.copy(devices = devices))
+                SettingsResult.GetUserSettings.Success(settings.copy(
+                        devices = (devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }).sorted()
+                ))
             }
             is Result.Failure -> {
                 catchException(getSettingsOperation.error)

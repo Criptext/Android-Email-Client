@@ -246,7 +246,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         if(composerInputData.passwordForNonCriptextUsers == null) {
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    getAttachmentsForUnencryptedGuestEmails(composerInputData.body), null, null, null)
+                    HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey)
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
             val sessionToEncrypt = getSignalSessionJSON(tempSignalUser,
@@ -260,7 +260,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             db.saveExternalSession(externalSession)
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    encryptedBody, salt, iv, encryptedSession)
+                    encryptedBody, salt, iv, encryptedSession, null)
             tempSignalUser.store.deleteAllSessions(composerInputData.passwordForNonCriptextUsers)
             rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
             rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
@@ -276,25 +276,6 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         signalClient.createSessionsFromBundles(listOf(keyBundleFromTempUser))
         return tempUser
-    }
-
-
-    private fun getAttachmentsForUnencryptedGuestEmails(body: String): String{
-
-        val bodyWithAttachments = StringBuilder()
-        bodyWithAttachments.append(body)
-
-        for (attachment in this.attachments){
-            val mimeTypeSource = HTMLUtils.getMimeTypeSourceForUnencryptedEmail(
-                    FileUtils.getMimeType(FileUtils.getName(attachment.filepath)))
-            val encodedParams = if(fileKey != null) Encoding.byteArrayToString((attachment.filetoken+":"+fileKey).toByteArray()) + "?e=1"
-            else attachment.filetoken
-            bodyWithAttachments.append(HTMLUtils.createAttchmentForUnencryptedEmailToNonCriptextUsers(
-                    attachmentName = FileUtils.getName(attachment.filepath), attachmentSize = attachment.size,
-                    encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
-            )
-        }
-        return HTMLUtils.addCriptextFooter(bodyWithAttachments.toString())
     }
 
     private fun getSignalSessionJSON(tempUser: DummyUser, keyBundleFromTempUser: PreKeyBundleShareData.DownloadBundle):JSONObject{

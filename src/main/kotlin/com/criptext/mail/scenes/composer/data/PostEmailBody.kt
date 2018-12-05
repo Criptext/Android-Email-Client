@@ -62,7 +62,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
 
     data class GuestEmail(val to: List<String>, val cc: List<String>, val bcc: List<String>,
                           val body: String, val salt: String? , val iv: String?,
-                          val session: String?):JSONData{
+                          val session: String?, val fileKey: String?):JSONData{
         override fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("to", JSONArray(to))
@@ -76,8 +76,11 @@ class PostEmailBody(val threadId: String?, val subject: String,
                 val newEncodedSession = Encoding.byteArrayToString(
                         saltBytes + ivBytes + sessionBytes)
                 json.put("session", newEncodedSession)
-            }else
+            }else {
                 json.put("session", null)
+                if(fileKey != null)
+                    json.put("fileKey", fileKey)
+            }
             return json
         }
     }

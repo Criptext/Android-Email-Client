@@ -6,7 +6,15 @@ import org.json.JSONArray
 import java.util.*
 
 data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String, val name: String,
-                      val isCurrent: Boolean, val lastActivity: Date?) {
+                      val isCurrent: Boolean, val lastActivity: Date?): Comparable<DeviceItem> {
+    override fun compareTo(other: DeviceItem): Int {
+        return when {
+            other.lastActivity == null -> 1
+            other.lastActivity == lastActivity -> 0
+            other.lastActivity < lastActivity -> -1
+            else -> 1
+        }
+    }
 
     constructor() : this(0, DeviceUtils.getDeviceType().ordinal,
             DeviceUtils.getDeviceFriendlyName(), DeviceUtils.getDeviceName(), true, null)

@@ -41,10 +41,7 @@ import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.PhotoUtil
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
@@ -54,6 +51,7 @@ import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
