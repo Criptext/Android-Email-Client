@@ -16,7 +16,7 @@
 
     <string name="subject_colon">Subject : </string>
     <string name="not_encrypted_warning">Warning: 1 or more attachments are not encrypted. Eliminate them and attach them securely using the button</string>
-
+    <string name="error_no_app_for_file">You may not have a proper app for viewing this content</string>
     <!-- ATTACHMENT ERRORS -->
     <string name="attachment_limit_reached">Only %1$d attachments per email allowed.</string>
 

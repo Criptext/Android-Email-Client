@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.emaildetail
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.view.View
 import com.criptext.mail.BaseActivity
@@ -327,7 +328,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun openFile(filepath: String){
         val mimeType = FileUtils.getMimeType(filepath)
         val params = ExternalActivityParams.FilePresent(filepath, mimeType)
-        host.launchExternalActivityForResult(params)
+        try {
+            host.launchExternalActivityForResult(params)
+        }catch (e: ActivityNotFoundException){
+            scene.showMessage(UIMessage(R.string.error_no_app_for_file))
+        }
     }
 
     private val onMoveThreadsListener = object : OnMoveThreadsListener {
