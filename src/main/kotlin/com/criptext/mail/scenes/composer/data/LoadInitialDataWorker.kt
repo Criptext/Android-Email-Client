@@ -29,9 +29,12 @@ class LoadInitialDataWorker(
     }
 
     private fun convertDraftToInputData(fullEmail: FullEmail): ComposerInputData {
+        val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map { ComposerAttachment(0,it.name, 100,
+                it.token, com.criptext.mail.utils.file.FileUtils.getAttachmentTypeFromPath(it.name),
+                it.size) })
         return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
                 body = fullEmail.email.content, subject = fullEmail.email.subject,
-                passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                passwordForNonCriptextUsers = null, attachments = attachments, fileKey = fullEmail.fileKey)
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
