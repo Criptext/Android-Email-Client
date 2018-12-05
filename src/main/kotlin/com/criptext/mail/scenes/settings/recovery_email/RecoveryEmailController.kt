@@ -20,6 +20,7 @@ import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
@@ -57,6 +58,9 @@ class RecoveryEmailController(
     }
 
     private val recoveryEmailUIObserver = object: RecoveryEmailUIObserver{
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))

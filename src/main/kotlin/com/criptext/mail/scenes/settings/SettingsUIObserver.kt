@@ -15,6 +15,7 @@ interface SettingsUIObserver: UIObserver {
     fun onTermsOfServiceClicked()
     fun onOpenSourceLibrariesClicked()
     fun onLogoutClicked()
+    fun onDeleteAccountClicked()
     fun onPinLockClicked()
     fun onTwoFASwitched(isChecked: Boolean)
     fun onReadReceiptsSwitched(isChecked: Boolean)

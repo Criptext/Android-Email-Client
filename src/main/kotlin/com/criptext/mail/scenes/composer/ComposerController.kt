@@ -28,6 +28,7 @@ import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
 
 
 /**
@@ -46,6 +47,9 @@ class ComposerController(private val storage: KeyValueStorage,
     private val dataSourceController = DataSourceController(dataSource)
 
     private val observer = object: ComposerUIObserver {
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
         override fun leaveComposer() {
             checkForDraft()

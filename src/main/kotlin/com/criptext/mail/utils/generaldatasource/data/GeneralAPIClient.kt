@@ -18,6 +18,12 @@ class GeneralAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.post(path = "/user/logout", authToken = token, body = JSONObject())
     }
 
+    fun deleteAccount(password: String): String{
+        val json = JSONObject()
+        json.put("password", password)
+        return httpClient.delete(path = "/user", authToken = token, body = json)
+    }
+
     fun postForgotPassword(recipientId: String): String{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)

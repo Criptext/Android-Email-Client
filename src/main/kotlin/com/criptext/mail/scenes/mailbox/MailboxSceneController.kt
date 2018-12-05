@@ -38,6 +38,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import android.database.ContentObserver
 import android.provider.ContactsContract
 import android.view.View
+import com.criptext.mail.utils.ui.data.DialogResult
 
 
 /**
@@ -229,6 +230,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
         override fun onWelcomeTourHasFinished() {
             scene.showSyncPhonebookDialog(this)

@@ -39,6 +39,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -80,6 +81,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))

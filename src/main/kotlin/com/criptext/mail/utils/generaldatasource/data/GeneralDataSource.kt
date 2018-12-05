@@ -90,6 +90,14 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
+            is GeneralRequest.DeleteAccount -> DeleteAccountWorker(
+                    password = params.password,
+                    db = eventLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount!!,
+                    storage = storage,
+                    publishFn = { res -> flushResults(res)}
+            )
         }
     }
 }

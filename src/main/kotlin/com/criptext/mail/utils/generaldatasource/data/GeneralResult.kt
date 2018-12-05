@@ -100,4 +100,9 @@ sealed class GeneralResult {
         class Success: Logout()
         class Failure: Logout()
     }
+
+    sealed class DeleteAccount: GeneralResult() {
+        class Success: DeleteAccount()
+        data class Failure(val message: UIMessage): DeleteAccount()
+    }
 }
