@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.pinlock
+package com.criptext.mail.scenes.settings.privacyandsecurity
 
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -23,10 +23,10 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 
-class PinLockController(
+class PrivacyAndSecurityController(
         private val activeAccount: ActiveAccount,
-        private val model: PinLockModel,
-        private val scene: PinLockScene,
+        private val model: PrivacyAndSecurityModel,
+        private val scene: PrivacyAndSecurityScene,
         private val host: IHostActivity,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
@@ -41,10 +41,21 @@ class PinLockController(
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.SetReadReceipts -> onReadReceipts(result)
         }
     }
 
-    private val uiObserver = object: PinLockUIObserver{
+    private val uiObserver = object: PrivacyAndSecurityUIObserver{
+
+        override fun onEmailPreviewSwitched(isChecked: Boolean) {
+            storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
+        }
+
+        override fun onReadReceiptsSwitched(isChecked: Boolean) {
+            scene.enableReadReceiptsSwitch(false)
+            generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
@@ -124,6 +135,9 @@ class PinLockController(
         scene.setPinLockStatus(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false))
         scene.togglePinOptions(storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false))
 
+        val emailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
+        scene.setEmailPreview(emailPreview)
+
 
         return handleMessage
     }
@@ -153,6 +167,19 @@ class PinLockController(
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
+            }
+        }
+    }
+
+    private fun onReadReceipts(result: GeneralResult.SetReadReceipts){
+        when(result) {
+            is GeneralResult.SetReadReceipts.Success -> {
+                scene.enableReadReceiptsSwitch(true)
+            }
+            is GeneralResult.SetReadReceipts.Failure -> {
+                scene.showMessage(result.message)
+                scene.enableReadReceiptsSwitch(true)
+                scene.updateReadReceipts(!result.readReceiptAttempt)
             }
         }
     }

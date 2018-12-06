@@ -110,9 +110,9 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.linking.LinkingActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.settings.pinlock.pinscreen.LockScreenActivity"
+        <activity android:name=".scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.settings.pinlock.PinLockActivity"
+        <activity android:name=".scenes.settings.privacyandsecurity.PrivacyAndSecurityActivity"
             android:screenOrientation="portrait"/>
 
         <service

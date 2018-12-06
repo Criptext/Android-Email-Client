@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.pinlock
+package com.criptext.mail.scenes.settings.privacyandsecurity
 
 import android.content.Intent
 import android.view.ViewGroup
@@ -20,15 +20,15 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 
 
-class PinLockActivity: BaseActivity(){
+class PrivacyAndSecurityActivity: BaseActivity(){
 
-    override val layoutId = R.layout.activity_pin_lock
+    override val layoutId = R.layout.activity_privacy
     override val toolbarId = R.id.mailbox_toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val model = receivedModel as PinLockModel
+        val model = receivedModel as PrivacyAndSecurityModel
         val view = findViewById<ViewGroup>(R.id.main_content)
-        val scene = PinLockScene.Default(view)
+        val scene = PrivacyAndSecurityScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val activeAccount = ActiveAccount.loadFromStorage(this)
@@ -44,7 +44,7 @@ class PinLockActivity: BaseActivity(){
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default()
         )
-        return PinLockController(
+        return PrivacyAndSecurityController(
                 activeAccount = activeAccount,
                 model = model,
                 scene = scene,

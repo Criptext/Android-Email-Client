@@ -70,7 +70,6 @@ class SettingsController(
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.Set2FA -> onSet2FA(result)
-            is SettingsResult.SetReadReceipts -> onReadReceipts(result)
         }
     }
 
@@ -96,11 +95,6 @@ class SettingsController(
             }
         }
 
-        override fun onReadReceiptsSwitched(isChecked: Boolean) {
-            scene.enableReadReceiptsSwitch(false)
-            dataSource.submitRequest(SettingsRequest.SetReadReceipts(isChecked))
-        }
-
         override fun onSyncPhonebookContacts() {
             if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
@@ -113,11 +107,7 @@ class SettingsController(
         }
 
         override fun onPinLockClicked() {
-            host.goToScene(PinLockParams(), false)
-        }
-
-        override fun onEmailPreviewSwitched(isChecked: Boolean) {
-            storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
+            host.goToScene(PrivacyAndSecurityParams(model.hasReadReceipts), false)
         }
 
         override fun onTwoFASwitched(isChecked: Boolean) {
@@ -267,8 +257,6 @@ class SettingsController(
                     model = model,
                     settingsUIObserver = settingsUIObserver,
                     devicesListItemListener = onDevicesListItemListener)
-            val emailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
-            scene.setEmailPreview(emailPreview)
 
             dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
@@ -422,6 +410,7 @@ class SettingsController(
                 model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
                 model.recoveryEmail = result.userSettings.recoveryEmail
                 model.hasTwoFA = result.userSettings.hasTwoFA
+                model.hasReadReceipts = result.userSettings.hasReadReceipts
                 deviceWrapperListController.update()
                 scene.updateUserSettings(result.userSettings)
             }
@@ -474,19 +463,6 @@ class SettingsController(
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(!result.twoFAAttempt)
                 model.hasTwoFA = !result.twoFAAttempt
-            }
-        }
-    }
-
-    private fun onReadReceipts(result: SettingsResult.SetReadReceipts){
-        when(result) {
-            is SettingsResult.SetReadReceipts.Success -> {
-                scene.enableReadReceiptsSwitch(true)
-            }
-            is SettingsResult.SetReadReceipts.Failure -> {
-                scene.showMessage(result.message)
-                scene.enableReadReceiptsSwitch(true)
-                scene.updateReadReceipts(!result.twoFAAttempt)
             }
         }
     }

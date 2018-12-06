@@ -359,6 +359,47 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingStart="17dp"
+                android:id="@+id/settings_privacy"
+                android:visibility="visible"
+                android:clickable="false"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/text_view_privacy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_privacy"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical" />
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
                 android:id="@+id/settings_sync_contacts"
                 android:visibility="visible"
                 android:clickable="true"
@@ -383,133 +424,6 @@
                     android:layout_gravity="end|center_vertical"/>
 
             </FrameLayout>
-
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:background="#f4f4f4"
-                android:text="@string/separator_privacy"
-                android:textSize="14sp"
-                android:gravity="center_vertical"
-                android:textColor="#000000"
-                android:paddingStart="17dp" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/settings__preview"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <TextView
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/title_allow_preview"
-                    android:textSize="@dimen/drawer_text_item"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
-
-                <Switch
-                    android:id="@+id/switch_preview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="end|center_vertical"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="17dp"
-                    android:enabled="false"
-                    android:checked="true"/>
-
-            </FrameLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#d8d8d8"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="22dp"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="17dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/settings_read_receipts"
-                android:clickable="false"
-                android:foreground="?attr/selectableItemBackground"
-                >
-
-                <TextView
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/title_read_receipts"
-                    android:textSize="@dimen/drawer_text_item"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
-
-                <Switch
-                    android:id="@+id/switch_read_receipts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="end|center_vertical"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="17dp"
-                    android:enabled="false"
-                    android:checked="false"/>
-
-            </FrameLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#d8d8d8"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="22dp"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="17dp"
-                android:id="@+id/settings_pin_lock"
-                android:visibility="visible"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <TextView
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/title_pin_lock"
-                    android:textSize="@dimen/drawer_text_item"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="end|center_vertical"
-                    android:padding="12dp"
-                    android:tint="#e3e3e3"
-                    android:src="@drawable/arrow_right"/>
-
-            </FrameLayout>
-
 
             <FrameLayout
                 android:layout_width="match_parent"

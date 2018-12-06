@@ -105,4 +105,9 @@ sealed class GeneralResult {
         class Success: DeleteAccount()
         data class Failure(val message: UIMessage): DeleteAccount()
     }
+
+    sealed class SetReadReceipts: GeneralResult() {
+        data class Success(val readReceipts: Boolean): SetReadReceipts()
+        data class Failure(val message: UIMessage, val readReceiptAttempt: Boolean): SetReadReceipts()
+    }
 }
