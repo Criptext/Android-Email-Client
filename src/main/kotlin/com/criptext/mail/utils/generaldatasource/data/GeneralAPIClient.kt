@@ -71,4 +71,11 @@ class GeneralAPIClient(private val httpClient: HttpClient, private val token: St
         return httpClient.get(path = "/keybundle/$deviceId", authToken = token)
     }
 
+    fun putReadReceipts(readReceipts: Boolean): String {
+        val jsonPut = JSONObject()
+        jsonPut.put("enable", readReceipts)
+
+        return httpClient.put(path = "/user/readtracking", authToken = token, body = jsonPut)
+    }
+
 }

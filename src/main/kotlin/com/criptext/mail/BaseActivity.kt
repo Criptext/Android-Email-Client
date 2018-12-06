@@ -4,10 +4,8 @@ import android.app.NotificationManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.OpenableColumns
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.Toolbar
@@ -31,8 +29,8 @@ import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
-import com.criptext.mail.scenes.settings.pinlock.PinLockModel
-import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.privacyandsecurity.PrivacyAndSecurityModel
+import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
 import com.criptext.mail.scenes.signin.SignInActivity
@@ -46,7 +44,6 @@ import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
-import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
@@ -191,7 +188,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
-            is PinLockParams -> PinLockModel()
+            is PrivacyAndSecurityParams -> PrivacyAndSecurityModel(params.hasReadReceipts)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_height="match_parent"
-                android:text="@string/pin_lock_toolbar_title"
+                android:text="@string/privacy_toolbar_title"
                 android:gravity="left|center_vertical"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
@@ -92,7 +92,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pin_lock_message_1"
-                android:textColor="@color/drawer_text"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
@@ -103,7 +102,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pin_lock_message_2"
-                android:textColor="@color/drawer_text"
                 android:layout_marginBottom="20dp"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -111,6 +109,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:background="#d8d8d8"/>
 
         <FrameLayout
@@ -149,6 +149,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:background="#d8d8d8"/>
 
         <FrameLayout
@@ -178,6 +180,119 @@
                 android:layout_height="wrap_content"/>
 
         </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="#d8d8d8"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="17dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/settings__preview"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/title_allow_preview"
+                android:textSize="@dimen/drawer_text_item"
+                android:gravity="center_vertical"
+                android:textColor="@color/drawer_text"/>
+
+            <Switch
+                android:id="@+id/switch_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="17dp"
+                android:enabled="false"
+                android:checked="true"/>
+
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#f4f4f4">
+            <TextView
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_preview_message"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#d8d8d8"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="17dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/settings_read_receipts"
+            android:clickable="false"
+            android:foreground="?attr/selectableItemBackground"
+            >
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/title_read_receipts"
+                android:textSize="@dimen/drawer_text_item"
+                android:gravity="center_vertical"
+                android:textColor="@color/drawer_text"/>
+
+            <Switch
+                android:id="@+id/switch_read_receipts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="17dp"
+                android:enabled="false"
+                android:checked="false"/>
+
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#f4f4f4">
+            <TextView
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/read_receipts_message"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

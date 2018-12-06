@@ -10,5 +10,4 @@ sealed class SettingsRequest{
     data class CreateCustomLabel(val labelName: String): SettingsRequest()
     data class ChangeVisibilityLabel(val labelId: Long, val isVisible: Boolean): SettingsRequest()
     data class Set2FA(val twoFA: Boolean): SettingsRequest()
-    data class SetReadReceipts(val readReceipts: Boolean): SettingsRequest()
 }

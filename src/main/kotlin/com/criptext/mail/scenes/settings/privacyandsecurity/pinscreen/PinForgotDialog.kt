@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.pinlock.pinscreen
+package com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen
 
 import android.content.Context
 import android.os.CountDownTimer
