@@ -28,7 +28,7 @@ data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: St
             val recoveryEmailConfirmationState = general.getInt("recoveryEmailConfirmed") == 1
             val twoFactorAuth = general.getInt("twoFactorAuth") == 1
             val trackEmailRead = general.getInt("trackEmailRead") == 1
-            return UserSettingsData(devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }, recoveryEmail,
+            return UserSettingsData(devices, recoveryEmail,
                     recoveryEmailConfirmationState, twoFactorAuth, trackEmailRead)
         }
     }

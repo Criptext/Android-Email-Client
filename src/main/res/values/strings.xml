@@ -168,6 +168,7 @@
     <string name="title_two_fa">Two-Factor Authentication</string>
     <string name="title_read_receipts">Read Receipts</string>
     <string name="title_pin_lock">PIN Lock</string>
+    <string name="title_privacy">Privacy and Security</string>
     <string name="title_badges">Badge App Icon</string>
     <string name="title_sounds">Sounds</string>
     <string name="separator_account">ACCOUNT</string>
@@ -233,7 +234,7 @@
     <!-- LOGOUT DIALOG -->
     <string name="logout_dialog_message">Are you sure you want to sign out?</string>
     <string name="logout_dialog_message_2_fa">Since this is your only active device, <b>2FA will be turned off</b> if you sign out. Would you like to continue?</string>
-    <string name="login_out_dialog_message">Login out…</string>
+    <string name="login_out_dialog_message">Signing out…</string>
 
     <!-- DELETE ACCOUNT DIALOG -->
     <string name="delete_account_dialog_title">Delete Account</string>
@@ -244,8 +245,8 @@
     <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
     <string name="removing_device_dialog_message">Removing device…</string>
 
-    <!-- PIN LOCK -->
-    <string name="pin_lock_toolbar_title">PIN SETTINGS</string>
+    <!-- PRIVACY SCREEN -->
+    <string name="privacy_toolbar_title">PRIVACY AND SECURITY</string>
     <string name="pin_lock_switch_text">Use PIN Lock</string>
     <string name="pin_lock_change">Change PIN Code</string>
     <string name="pin_lock_auto">Auto-Lock</string>
@@ -269,6 +270,8 @@
     <string name="pin_code_step_change">Enter your current PIN Code</string>
     <string name="pin_code_step_unlock">Enter your PIN Code to unlock Inbox</string>
     <string name="pin_code_step_enable_confirm">Confirm your PIN Code</string>
+    <string name="notification_preview_message">Preview the content of emails in Push notifications.</string>
+    <string name="read_receipts_message">If disabled, you won\'t be able to know when others read your emails.</string>
 
     <string name="pin_code_fingerprint_text">Fingerprint</string>
     <string name="pin_code_fingerprint_success">Fingerprint recognized</string>
@@ -455,7 +458,7 @@
     <string name="error_getting_email">Error getting email. Please try again</string>
     <string name="error_getting_account">Error getting user account. Please try again</string>
     <string name="error_updating_account">Error updating user account. Please try again</string>
-    <string name="error_login_out">Error login out. Please try again</string>
+    <string name="error_login_out">Error signing out. Please try again</string>
     <string name="error_listing_devices">Error getting your device list from the server.</string>
     <string name="error_removing_device">Error removing the selected device. Please try again</string>.
     <string name="error_updating_signature">Error updating user signature. Please try again</string>

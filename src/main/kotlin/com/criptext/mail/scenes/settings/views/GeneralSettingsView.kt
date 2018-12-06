@@ -28,8 +28,6 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsSyncPhonebookProgress: ProgressBar
     private lateinit var versionText: TextView
     private lateinit var twoFASwitch: Switch
-    private lateinit var readReceiptsSwitch: Switch
-    private lateinit var emailPreview: Switch
 
     private var settingsUIObserver: SettingsUIObserver? = null
 
@@ -45,7 +43,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsLogout = view.findViewById(R.id.settings_logout)
         settingsDeleteAccount = view.findViewById(R.id.settings_delete_account)
         settingsChangePassword = view.findViewById(R.id.settings_change_password)
-        settingsPin = view.findViewById(R.id.settings_pin_lock)
+        settingsPin = view.findViewById(R.id.settings_privacy)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
         settingsSyncPhonebookContacts = view.findViewById(R.id.settings_sync_contacts)
         settingsRecoveryEmailLoading = view.findViewById(R.id.settings_recovery_loading)
@@ -54,8 +52,6 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
         twoFASwitch = view.findViewById(R.id.switch_two_fa)
-        readReceiptsSwitch = view.findViewById(R.id.switch_read_receipts)
-        emailPreview = view.findViewById(R.id.switch_preview)
 
         settingsRecoveryEmail.visibility = View.GONE
         settingsRecoveryEmailLoading.visibility = View.VISIBLE
@@ -92,21 +88,14 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         twoFASwitch.isEnabled = isEnabled
     }
 
-    fun setReadReceipts(hasReadReceipts: Boolean){
-        readReceiptsSwitch.setOnCheckedChangeListener { _, _ ->  }
-        readReceiptsSwitch.isChecked = hasReadReceipts
-        setSwitchListener()
-    }
-
-    fun enableReadReceiptsSwitch(isEnabled: Boolean){
-        readReceiptsSwitch.isEnabled = isEnabled
-    }
-
-    fun setEmailPreview(showPreview: Boolean){
-        emailPreview.setOnCheckedChangeListener { _, _ ->  }
-        emailPreview.isEnabled = true
-        emailPreview.isChecked = showPreview
-        setSwitchListener()
+    fun enablePrivacyOption(isEnabled: Boolean){
+        settingsPin.isEnabled = isEnabled
+        settingsPin.isClickable = isEnabled
+        settingsPin.findViewById<TextView>(R.id.text_view_privacy).setTextColor(ContextCompat.getColor(
+                view.context, R.color.drawer_text))
+        settingsPin.setOnClickListener {
+            settingsUIObserver?.onPinLockClicked()
+        }
     }
 
     fun setSyncContactsProgressVisisble(isVisible: Boolean){
@@ -145,23 +134,12 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsSyncPhonebookContacts.setOnClickListener {
             settingsUIObserver?.onSyncPhonebookContacts()
         }
-        settingsPin.setOnClickListener {
-            settingsUIObserver?.onPinLockClicked()
-        }
         setSwitchListener()
     }
 
     private fun setSwitchListener(){
         twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
             settingsUIObserver?.onTwoFASwitched(isChecked)
-        }
-
-        readReceiptsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsUIObserver?.onReadReceiptsSwitched(isChecked)
-        }
-
-        emailPreview.setOnCheckedChangeListener {_, isChecked ->
-            settingsUIObserver?.onEmailPreviewSwitched(isChecked)
         }
     }
 

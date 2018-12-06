@@ -102,6 +102,9 @@ dependencies {
     implementation 'android.arch.persistence.room:rxjava2:1.1.1'
     kapt "android.arch.persistence.room:compiler:1.1.1"
 
+    //sqlite-android
+    implementation 'io.requery:sqlite-android:3.25.2'
+
     // Robolectric
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.5.1'

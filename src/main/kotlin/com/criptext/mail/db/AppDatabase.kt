@@ -18,6 +18,7 @@ import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.db.typeConverters.*
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.migration.Migration
+import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.*
 
 
@@ -66,6 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                        .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
             return INSTANCE!!

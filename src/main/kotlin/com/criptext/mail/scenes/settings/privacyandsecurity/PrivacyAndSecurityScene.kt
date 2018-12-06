@@ -1,11 +1,10 @@
-package com.criptext.mail.scenes.settings.pinlock
+package com.criptext.mail.scenes.settings.privacyandsecurity
 
 import android.view.View
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.scenes.linking.LinkingActivity
-import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.splash.SplashActivity
@@ -19,10 +18,10 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 
-interface PinLockScene{
+interface PrivacyAndSecurityScene{
 
-    fun attachView(uiObserver: PinLockUIObserver,
-                   keyboardManager: KeyboardManager, model: PinLockModel)
+    fun attachView(uiObserver: PrivacyAndSecurityUIObserver,
+                   keyboardManager: KeyboardManager, model: PrivacyAndSecurityModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showConfirmPasswordDialog(observer: UIObserver)
@@ -32,9 +31,12 @@ interface PinLockScene{
     fun setPinLockStatus(isEnabled: Boolean)
     fun togglePinOptions(isEnabled: Boolean)
     fun setupPINLock()
+    fun updateReadReceipts(isChecked: Boolean)
+    fun enableReadReceiptsSwitch(isEnabled: Boolean)
+    fun setEmailPreview(isChecked: Boolean)
 
-    class Default(val view: View): PinLockScene{
-        private lateinit var pinLockUIObserver: PinLockUIObserver
+    class Default(val view: View): PrivacyAndSecurityScene{
+        private lateinit var privacyAndSecurityUIObserver: PrivacyAndSecurityUIObserver
 
         private val context = view.context
 
@@ -62,12 +64,20 @@ interface PinLockScene{
            view.findViewById(R.id.auto_lock_spinner) as Spinner
         }
 
+        private val emailPreview: Switch by lazy {
+            view.findViewById(R.id.switch_preview) as Switch
+        }
+
+        private val readReceiptsSwitch: Switch by lazy {
+            view.findViewById(R.id.switch_read_receipts) as Switch
+        }
+
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
 
         private val selectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                pinLockUIObserver.onAutoTimeSelected(p2)
+                privacyAndSecurityUIObserver.onAutoTimeSelected(p2)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -75,21 +85,21 @@ interface PinLockScene{
             }
         }
 
-        override fun attachView(uiObserver: PinLockUIObserver, keyboardManager: KeyboardManager,
-                                model: PinLockModel) {
+        override fun attachView(uiObserver: PrivacyAndSecurityUIObserver, keyboardManager: KeyboardManager,
+                                model: PrivacyAndSecurityModel) {
 
-            pinLockUIObserver = uiObserver
+            privacyAndSecurityUIObserver = uiObserver
 
             backButton.setOnClickListener {
-                pinLockUIObserver.onBackButtonPressed()
+                privacyAndSecurityUIObserver.onBackButtonPressed()
             }
 
             pinEnableSwitch.setOnCheckedChangeListener {_, isChecked ->
-                pinLockUIObserver.onPinSwitchChanged(isChecked)
+                privacyAndSecurityUIObserver.onPinSwitchChanged(isChecked)
             }
 
             changePinButton.setOnClickListener {
-                pinLockUIObserver.onPinChangePressed()
+                privacyAndSecurityUIObserver.onPinChangePressed()
             }
 
             ArrayAdapter.createFromResource(
@@ -104,6 +114,9 @@ interface PinLockScene{
             }
             autoLockSpinner.setSelection(model.pinTimeOut)
             autoLockSpinner.onItemSelectedListener = selectedListener
+
+            enableReadReceiptsSwitch(true)
+            updateReadReceipts(model.hasReadReceipts)
         }
 
         override fun setupPINLock(){
@@ -137,7 +150,7 @@ interface PinLockScene{
             pinEnableSwitch.setOnCheckedChangeListener { _, _ ->  }
             pinEnableSwitch.isChecked = isEnabled
             pinEnableSwitch.setOnCheckedChangeListener {_, isChecked ->
-                pinLockUIObserver.onPinSwitchChanged(isChecked)
+                privacyAndSecurityUIObserver.onPinSwitchChanged(isChecked)
             }
         }
 
@@ -148,11 +161,38 @@ interface PinLockScene{
             changeText.isEnabled = isEnabled
         }
 
+        override fun enableReadReceiptsSwitch(isEnabled: Boolean) {
+            readReceiptsSwitch.isEnabled = isEnabled
+        }
+
+        override fun updateReadReceipts(isChecked: Boolean) {
+            readReceiptsSwitch.setOnCheckedChangeListener { _, _ ->  }
+            readReceiptsSwitch.isChecked = isChecked
+            setSwitchListener()
+        }
+
+        private fun setSwitchListener(){
+            readReceiptsSwitch.setOnCheckedChangeListener { _, isChecked ->
+                privacyAndSecurityUIObserver.onReadReceiptsSwitched(isChecked)
+            }
+
+            emailPreview.setOnCheckedChangeListener {_, isChecked ->
+                privacyAndSecurityUIObserver.onEmailPreviewSwitched(isChecked)
+            }
+        }
+
+        override fun setEmailPreview(isChecked: Boolean) {
+            emailPreview.setOnCheckedChangeListener { _, _ ->  }
+            emailPreview.isEnabled = true
+            emailPreview.isChecked = isChecked
+            setSwitchListener()
+        }
+
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
-                linkAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, untrustedDeviceInfo)
+                linkAuthDialog.showLinkDeviceAuthDialog(privacyAndSecurityUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
-                linkAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, untrustedDeviceInfo)
+                linkAuthDialog.showLinkDeviceAuthDialog(privacyAndSecurityUIObserver, untrustedDeviceInfo)
         }
 
         override fun showMessage(message: UIMessage) {

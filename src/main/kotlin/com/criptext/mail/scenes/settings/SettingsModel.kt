@@ -17,5 +17,6 @@ class SettingsModel{
 
     var isEmailConfirmed: Boolean = false
     var hasTwoFA: Boolean = false
+    var hasReadReceipts: Boolean = false
     var recoveryEmail: String = ""
 }

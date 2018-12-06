@@ -98,6 +98,12 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
+            is GeneralRequest.SetReadReceipts -> ReadReceiptsWorker(
+                    activeAccount = activeAccount!!,
+                    readReceipts = params.readReceipts,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

@@ -52,9 +52,4 @@ sealed class SettingsResult{
         data class Success(val hasTwoFA: Boolean): Set2FA()
         data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
     }
-
-    sealed class SetReadReceipts: SettingsResult() {
-        data class Success(val readReceipts: Boolean): SetReadReceipts()
-        data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): SetReadReceipts()
-    }
 }

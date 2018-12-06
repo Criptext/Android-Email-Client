@@ -18,8 +18,6 @@ interface SettingsUIObserver: UIObserver {
     fun onDeleteAccountClicked()
     fun onPinLockClicked()
     fun onTwoFASwitched(isChecked: Boolean)
-    fun onReadReceiptsSwitched(isChecked: Boolean)
-    fun onEmailPreviewSwitched(isChecked: Boolean)
     fun onLogoutConfirmedClicked()
     fun onRemoveDeviceConfirmed(deviceId: Int, position: Int, password: String)
     fun onRemoveDeviceCancel()
