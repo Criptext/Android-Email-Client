@@ -228,30 +228,14 @@ class ResendEmailsWorker(
         return if(externalData == null) {
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    getAttachmentsForUnencryptedGuestEmails(fullEmail), null, null, null)
+                    HTMLUtils.addCriptextFooter(fullEmail.email.content), null, null, null,
+                    fullEmail.fileKey)
         }else {
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    externalData.encryptedBody, externalData.salt, externalData.iv, externalData.encryptedSession)
+                    externalData.encryptedBody, externalData.salt, externalData.iv,
+                    externalData.encryptedSession, null)
         }
-    }
-
-    private fun getAttachmentsForUnencryptedGuestEmails(fullEmail: FullEmail): String{
-
-        val bodyWithAttachments = StringBuilder()
-        bodyWithAttachments.append(fullEmail.email.content)
-
-        for (attachment in fullEmail.files){
-            val mimeTypeSource = HTMLUtils.getMimeTypeSourceForUnencryptedEmail(
-                    FileUtils.getMimeType(attachment.name))
-            val encodedParams = Encoding.byteArrayToString((attachment.token+":"+fullEmail.fileKey)
-                    .toByteArray())
-            bodyWithAttachments.append(HTMLUtils.createAttchmentForUnencryptedEmailToNonCriptextUsers(
-                    attachmentName = attachment.name, attachmentSize = attachment.size,
-                    encodedParams = encodedParams, mimeTypeSource = mimeTypeSource)
-            )
-        }
-        return HTMLUtils.addCriptextFooter(bodyWithAttachments.toString())
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

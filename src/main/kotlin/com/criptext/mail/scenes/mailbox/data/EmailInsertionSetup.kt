@@ -187,10 +187,9 @@ object EmailInsertionSetup {
     }
 
     private fun getSenderId(metadata: EmailMetadata): Pair<Int?, String>{
-        var senderDeviceId = metadata.senderDeviceId
+        val senderDeviceId = metadata.senderDeviceId
         var senderRecipientId = metadata.senderRecipientId
         if (metadata.isExternal != null && metadata.isExternal) {
-            senderDeviceId = SignalExternalAddress.deviceId
             senderRecipientId = SignalExternalAddress.recipientId
         }
         return Pair(senderDeviceId, senderRecipientId)
