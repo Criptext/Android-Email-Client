@@ -35,6 +35,7 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -565,6 +566,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.enablePinLock()
+
         dataSource.listener = dataSourceListener
         generalDataSource.listener = remoteChangeDataSourceListener
         websocketEvents.setListener(webSocketEventListener)

@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.linking.data.LinkingResult
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -110,6 +111,8 @@ class LinkingController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.enablePinLock()
+
         websocketEvents.setListener(webSocketEventListener)
         scene.attachView(model = model, linkingUIObserver = linkingUIObserver)
         scene.setProgress(UIMessage(R.string.preparing_mailbox), PREPARING_MAILBOX_PERCENTAGE)

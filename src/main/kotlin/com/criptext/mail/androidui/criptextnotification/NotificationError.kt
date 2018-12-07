@@ -47,14 +47,13 @@ class NotificationError(override val ctx: Context): CriptextNotification(ctx) {
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ERROR)
                 .setContentTitle(ctx.getLocalizedUIMessage(notificationData.title))
                 .setContentText(ctx.getLocalizedUIMessage(notificationData.body))
+                .setContentIntent(clickIntent)
                 .setAutoCancel(true)
-                .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
                 .setGroup(ACTION_ERROR)
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(ctx.getLocalizedUIMessage(notificationData.body)))
-        if(clickIntent != null) builder.setContentIntent(clickIntent)
 
         return buildNotification(builder)
     }

@@ -126,7 +126,6 @@ interface PrivacyAndSecurityScene{
                 lockManager.appLock.addIgnoredActivity(SplashActivity::class.java)
                 lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
                 lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
-                lockManager.appLock.addIgnoredActivity(LinkingActivity::class.java)
             }
         }
 
