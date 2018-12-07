@@ -6,18 +6,20 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AttachmentTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.FileKey
+import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.SaveEmailWorker
 import com.criptext.mail.signal.*
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.MockedResponse
-import com.criptext.mail.utils.enqueueResponses
+import com.criptext.mail.utils.*
 import io.mockk.mockk
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
@@ -26,6 +28,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.rules.TemporaryFolder
+import java.io.File
+
+
+
+
 
 /**
  * Created by gabriel on 6/30/18.
@@ -69,18 +77,19 @@ class SendEmailWorkerTest {
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
     }
 
-    private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData): SendMailWorker =
+    private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData,
+                          attachments: List<ComposerAttachment>, fileKey: String?): SendMailWorker =
         SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                 rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                 composerInputData = inputData, activeAccount = activeAccount,
-                attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao())
+                attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao())
 
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
-                    attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null)
+                    attachments = inputData.attachments!!, onlySave = false, account = activeAccount,
+                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = inputData.fileKey, originalId = null)
 
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
@@ -106,7 +115,8 @@ class SendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!",
+                passwordForNonCriptextUsers = null, attachments = ArrayList() , fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
@@ -122,7 +132,7 @@ class SendEmailWorkerTest {
 
         // now send it
         val sendEmailWorker = newWorker(emailId = saveResult.emailId, threadId = saveResult.threadId,
-                inputData = saveResult.composerInputData)
+                inputData = saveResult.composerInputData, attachments = emptyList(), fileKey = null)
         sendEmailWorker.work(mockk(relaxed = true)) as MailboxResult.SendMail.Success
 
         // assert that bob could decrypt it
@@ -137,7 +147,8 @@ class SendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!",
+                passwordForNonCriptextUsers = null, attachments = ArrayList(), fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
@@ -153,7 +164,7 @@ class SendEmailWorkerTest {
 
         // now send it
         val sendEmailWorker = newWorker(emailId = saveResult.emailId, threadId = saveResult.threadId,
-                inputData = saveResult.composerInputData)
+                inputData = saveResult.composerInputData, attachments = emptyList(), fileKey = null)
         sendEmailWorker.work(mockk(relaxed = true)) as MailboxResult.SendMail.Success
 
         // assert that email got updated correctly in DB
@@ -165,6 +176,59 @@ class SendEmailWorkerTest {
         sentEmail.messageId `shouldEqual` "__MESSAGE_ID__"
         sentEmail.threadId `shouldEqual` "__THREAD_ID__"
 
+    }
+
+    @get:Rule
+    var folder = TemporaryFolder()
+
+    @Test
+    fun should_send_same_number_of_attachments_as_the_email_has(){
+        // create in memory user that will receive and decrypt the email
+        val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
+        // create the Composer Attachment list with mock files
+        val attachmentList = ArrayList<ComposerAttachment>()
+        for (i in 1..4){
+            val file = folder.newFile(String.format("file_%s.png", i))
+            attachmentList.add(ComposerAttachment(
+                    id=0,
+                    filepath=file.name,
+                    uploadProgress=100,
+                    filetoken="__FILE_TOKEN__",
+                    type= AttachmentTypes.IMAGE,
+                    size=file.totalSpace
+            ))
+        }
+        // first we need to store the email to send in the DB
+        val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
+                bcc = emptyList(), subject = "Test Message", body = "",
+                passwordForNonCriptextUsers = null, attachments = attachmentList, fileKey = "__FILE_KEY__")
+        val saveEmailWorker = newSaveEmailWorker(newComposedData)
+        val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
+
+        // prepare server mocks to send email
+        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
+                messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
+        mockWebServer.enqueueResponses(listOf(
+                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(postEmailResponse) /* /email */
+        ))
+
+        // now send it
+        val sendEmailWorker = newWorker(emailId = saveResult.emailId, threadId = saveResult.threadId,
+                inputData = saveResult.composerInputData, attachments = saveResult.attachments, fileKey = saveResult.fileKey)
+        sendEmailWorker.work(mockk(relaxed = true)) as MailboxResult.SendMail.Success
+        // get request from mockwebserver
+        mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
+        val req = mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
+        // get send email
+        val bodyString = req.body.readUtf8()
+        val bodyJSON = JSONObject(bodyString)
+        val filesEmailSend = bodyJSON.getJSONArray("files")
+        // compare send files with save files
+        saveResult.attachments.size `shouldEqual` 4
+        saveResult.attachments.size `shouldEqual` filesEmailSend.length()
     }
 
 }

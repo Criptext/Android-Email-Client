@@ -92,7 +92,7 @@ class DownloadAttachmentWorkerTest {
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
                     downloadPath = mActivityRule.activity.cacheDir.absolutePath,
                     httpClient = httpClient, activeAccount = activeAccount,
-                    publishFn = {}, fileKey = null)
+                    publishFn = {}, fileKey = null, fileName = "", fileSize = 0)
 
     private fun sendPermanentRequest(filetoken: String){
         val filejson = JSONObject()

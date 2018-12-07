@@ -42,9 +42,9 @@ class UserDataWriterTest {
             trashDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
 
     private val fileOne = CRFile(id = 1, date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"), emailId = 1, name = "this.txt",
-            readOnly = true, size = 12, status = 0, token = "txt")
+            readOnly = true, size = 12, status = 0, token = "txt", shouldDuplicate = false)
     private val fileTwo = CRFile(id = 2, date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"), emailId = 2, name = "that.txt",
-            readOnly = true, size = 14, status = 0, token = "txt")
+            readOnly = true, size = 14, status = 0, token = "txt", shouldDuplicate = false)
 
     private val emailLabel1 = EmailLabel(emailId = 1, labelId = 1)
     private val emailLabel2 = EmailLabel(emailId = 2, labelId = 2)
