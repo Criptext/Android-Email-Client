@@ -43,8 +43,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 35
-        versionName "0.14.4"
+        versionCode 36
+        versionName "0.14.5"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

@@ -18,14 +18,14 @@ sealed class ErrorNotifier(val data: PushData.Error): Notifier {
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = NotificationError(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_OPEN)
+        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification, CriptextNotification.ACTION_ERROR)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
         val cn = NotificationError(ctx)
         cn.showHeaderNotification(ctx.getLocalizedUIMessage(data.title), R.drawable.push_icon,
-                CriptextNotification.ACTION_OPEN)
+                CriptextNotification.ACTION_ERROR)
     }
 
     protected abstract fun buildNotification(ctx: Context, cn: NotificationError): Notification
