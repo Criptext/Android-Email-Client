@@ -25,10 +25,12 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 
 /**
@@ -64,15 +66,18 @@ class ComposerController(private val storage: KeyValueStorage,
         }
 
         override fun onNewCamAttachmentRequested() {
+            PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
             host.launchExternalActivityForResult(ExternalActivityParams.Camera())
         }
 
         override fun onNewFileAttachmentRequested() {
+            PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
             val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
             host.launchExternalActivityForResult(ExternalActivityParams.FilePicker(remaining))
         }
 
         override fun onNewGalleryAttachmentRequested() {
+            PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
             val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
             host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker(remaining))
         }
@@ -430,6 +435,8 @@ class ComposerController(private val storage: KeyValueStorage,
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.resetLastMillisPin()
+        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
         if (activityMessage is ActivityMessage.AddAttachments) {
             generateEmailFileKey()
             addNewAttachments(activityMessage.filesMetadata)
@@ -477,6 +484,7 @@ class ComposerController(private val storage: KeyValueStorage,
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.enablePinLock()
 
         dataSourceController.setDataSourceListener()
         generalDataSource.listener = remoteChangeDataSourceListener

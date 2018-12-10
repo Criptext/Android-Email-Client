@@ -234,6 +234,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun getIntentExtras(): IntentExtrasData? {
         if(intent.extras != null && !intent.extras.isEmpty) {
+            PinLockUtils.disablePinLock()
             when(intent.action){
                 Intent.ACTION_MAIN ->    {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()

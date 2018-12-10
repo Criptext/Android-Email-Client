@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -63,17 +64,7 @@ class PrivacyAndSecurityController(
         override fun onAutoTimeSelected(position: Int) {
             if(model.pinActive) {
                 storage.putInt(KeyValueStorage.StringKey.PINTimeout, position)
-                val lockManager = LockManager.getInstance()
-                if(lockManager.appLock != null) {
-                    lockManager.appLock.timeout = when (position) {
-                        0 -> 500
-                        1 -> 60000
-                        2 -> 5 * 60000
-                        3 -> 15 * 60000
-                        4 -> 60 * 60000
-                        else -> 24 * 60 * 60000
-                    }
-                }
+                PinLockUtils.setPinLockTimeoutPosition(position)
             }
 
         }
@@ -146,8 +137,9 @@ class PrivacyAndSecurityController(
         if (activityMessage is ActivityMessage.ActivatePin) {
             if(activityMessage.isSuccess) {
                 scene.setupPINLock()
+                model.pinActive = true
                 uiObserver.onAutoTimeSelected(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
-                storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, true)
+                storage.putBool(KeyValueStorage.StringKey.HasLockPinActive, model.pinActive)
             }else{
                 scene.setPinLockStatus(false)
                 scene.togglePinOptions(false)
