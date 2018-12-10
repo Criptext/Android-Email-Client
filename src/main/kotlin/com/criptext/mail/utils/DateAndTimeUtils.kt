@@ -93,7 +93,7 @@ class DateAndTimeUtils {
             return formattedDate
         }
 
-        fun getFormattedDate(timestamp: Long): String {
+        fun getFormattedDate(timestamp: Long, context: Context): String {
 
             var formattedDate: String
             val fechaMsj = java.util.Date(timestamp)
@@ -103,7 +103,7 @@ class DateAndTimeUtils {
             fechaMensaje.time = fechaMsj
             fechaActual.time = fechaAct
 
-            val strAyer = "Yesterday"
+            val strAyer = context.resources.getString(R.string.mk_label_yesterday)
             val diferenciaDias = Math.abs(fechaMensaje.get(Calendar.DAY_OF_MONTH) - fechaActual.get(Calendar.DAY_OF_MONTH))
             val diferenciaMeses = fechaMensaje.get(Calendar.MONTH) - fechaActual.get(Calendar.MONTH)
 

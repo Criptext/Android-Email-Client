@@ -56,7 +56,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             bodyView.text = fullEmail.email.preview
         }
 
-        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time)
+        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time, view.context)
 
         headerView.text =
                 if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {

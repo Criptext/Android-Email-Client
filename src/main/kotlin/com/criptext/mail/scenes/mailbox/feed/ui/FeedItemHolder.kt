@@ -20,7 +20,7 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
  * Created by danieltigse on 2/7/18.
  */
 
-class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLayout.SwipeListener{
+class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), SwipeRevealLayout.SwipeListener{
 
     private val swipeView: SwipeRevealLayout
     private val containerView: LinearLayout
@@ -57,7 +57,7 @@ class FeedItemHolder(view: View) : RecyclerView.ViewHolder(view), SwipeRevealLay
 
         textViewTitle.text = "${activityFeedItem.contactName} ${getTitle(activityFeedItem.type)}"
         textViewDetail.text = getSubtitle(activityFeedItem)
-        textViewDate.text = DateAndTimeUtils.getFormattedDate(activityFeedItem.date.time)
+        textViewDate.text = DateAndTimeUtils.getFormattedDate(activityFeedItem.date.time, view.context)
 
         checkIsNew(lastTimeFeedOpened, position, activityFeedItem)
         checkFeedType(activityFeedItem)

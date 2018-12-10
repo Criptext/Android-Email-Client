@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Criptext</string>
 
-    <string name="tour_title1">Welcome to Criptext</string>
+    <string name="tour_title1">Welcome to Criptext!</string>
     <string name="tour_content1">This is your safe zone. Everything you say here is private and secure so you can have peace of mind in every word.</string>
 
     <string name="tour_title2">Welcome to Criptext 2</string>
@@ -12,13 +12,18 @@
 
     <string name="need_auth_permission">You must give account permissions to proceed</string>
     <string name="need_sign_in">You need to sign in to proceed</string>
-    <string name="gg_google_connection">Connection with google is broken. Please try again later</string>
 
     <string name="subject_colon">Subject : </string>
     <string name="not_encrypted_warning">Warning: 1 or more attachments are not encrypted. Eliminate them and attach them securely using the button</string>
     <string name="error_no_app_for_file">You may not have a proper app for viewing this content</string>
+
+    <string name="web_view_open_in_chrome">Open in Chrome</string>
+
     <!-- ATTACHMENT ERRORS -->
     <string name="attachment_limit_reached">Only %1$d attachments per email allowed.</string>
+
+    <!-- ATTACHMENTS -->
+    <string name="attachment_history_opened">opened:</string>
 
     <!-- SYNC -->
     <string name="title_sync">Mailbox Sync</string>
@@ -326,12 +331,15 @@
     <string name="email_invalid_error">Invalid email address.</string>
     <string name="fullname_length_error">Name is too long.</string>
     <string name="fullname_empty_error">Name cannot be empty.</string>
+    <string name="fullname_hint">Full Name</string>
+    <string name="recovery_optional_hint">Recovery email (optional)</string>
 
     <!-- LOGIN -->
+    <string name="username_hint">Username</string>
     <string name="login">Sign In</string>
     <string name="two_fa">Two-Factor Authentication</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
-    <string name="didnt_get_prompt">Didn’t get the prompt?</string>
+    <string name="didnt_get_prompt">Didn\'t get the prompt?</string>
     <string name="not_approved">Warning: Multiple rejections could lead your device to be blacklisted from Criptext.</string>
     <string name="button_resendit">Resend it</string>
     <string name="cant_access_device"><u>Sign in with password?</u></string>
@@ -395,8 +403,15 @@
     <string name="email_will_expire_in">Email will expire in:</string>
     <string name="no_emails_found">No emails found</string>
     <string name="titulo_mailbox">INBOX</string>
+    <string name="titulo_mailbox_sent">SENT</string>
+    <string name="titulo_mailbox_draft">DRAFT</string>
+    <string name="titulo_mailbox_starred">STARRED</string>
+    <string name="titulo_mailbox_spam">SPAM</string>
+    <string name="titulo_mailbox_trash">TRASH</string>
+    <string name="titulo_mailbox_all_mail">ALL MAIL</string>
     <string name="title_settings">SETTINGS</string>
     <string name="spam">Spam</string>
+    <string name="continue_btn">Continue</string>
     <string name="cancel">Cancel</string>
     <string name="skip">Skip</string>
     <string name="retry">Retry</string>
@@ -419,6 +434,7 @@
     <string name="sign_up_terms_and_conditions_end">Terms and Conditions</string>
     <string name="btn_create_account">Sign Up</string>
     <string name="txt_create_criptext_account">Create your Criptext account</string>
+    <string name="password_login_title">Password Login</string>
     <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -431,6 +447,7 @@
     <string name="search_email">Search email</string>
 
     <!-- ACTIVITY FEED -->
+    <string name="activity_feed">ACTIVITY FEED</string>
     <string name="noactivity">There\'s nothing new yet</string>
     <string name="enjoy_your_day">Enjoy your day</string>
     <string name="mute">Mute</string>

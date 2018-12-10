@@ -7,7 +7,7 @@ android:layout_height="wrap_content">
 <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Move to"
+    android:text="@string/mailbox_move_to"
     fontPath="fonts/NunitoSans-Bold.ttf"
     android:gravity="start"
     android:layout_marginLeft="5dp"

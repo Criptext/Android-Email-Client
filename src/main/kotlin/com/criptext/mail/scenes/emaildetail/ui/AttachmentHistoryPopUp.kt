@@ -117,7 +117,8 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
 
         fun bindAttachmentContact(contact: MockedAttachmentContact){
             name.text = contact.name
-            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time)
+            date.text = DateAndTimeUtils.getFormattedDate(contact.date.time, context)
+
             action.text = when(contact.action) {
                 MockedAttachmentContact.ContactActionTypes.DOWNLOAD -> {
                     "Downloaded: "

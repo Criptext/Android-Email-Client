@@ -74,7 +74,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
             containerBCC.visibility = View.GONE
         }
 
-        date.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time)
+        date.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time, context)
         subject.text = fullEmail.email.subject
     }
 

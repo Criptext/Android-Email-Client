@@ -1,45 +1,47 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.ContentObserver
+import android.os.Handler
+import android.provider.ContactsContract
+import android.view.View
+import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.*
+import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.push.services.LinkDeviceActionService
+import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.ActivityMessage
-import com.criptext.mail.scenes.label_chooser.LabelDataHandler
-import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
+import com.criptext.mail.scenes.label_chooser.LabelDataHandler
+import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
-import com.criptext.mail.scenes.mailbox.data.*
+import com.criptext.mail.scenes.mailbox.data.LoadParams
+import com.criptext.mail.scenes.mailbox.data.MailboxRequest
+import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Handler
-import com.criptext.mail.BaseActivity
-import com.criptext.mail.ExternalActivityParams
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.push.data.IntentExtrasData
-import com.criptext.mail.push.services.LinkDeviceActionService
-import com.criptext.mail.push.services.NewMailActionService
-import com.criptext.mail.scenes.signin.data.LinkStatusData
-import android.database.ContentObserver
-import android.provider.ContactsContract
-import android.view.View
-import com.criptext.mail.utils.ui.data.DialogResult
-
 
 /**
  * Created by sebas on 1/30/18.
@@ -84,7 +86,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun getTitleForMailbox() : String{
-        return model.selectedLabel.text
+        val uiMessage = UIUtils.getLocalizedToolbarTitle(model.selectedLabel.text)
+        return host.getLocalizedString(uiMessage)
     }
 
     private val toolbarTitle: String

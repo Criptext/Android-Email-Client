@@ -193,7 +193,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             deactivateElementsForUnsend()
         }
 
-        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time)
+        dateView.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time, context)
         headerView.text =
                 if(EmailThreadValidator.isLabelInList(fullEmail.labels, Label.LABEL_DRAFT)) {
                     headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.colorUnsent))
