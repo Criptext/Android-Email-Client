@@ -14,6 +14,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.EventLoader
@@ -61,12 +62,13 @@ class UpdateMailboxWorker(
         else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
 
 
-    private fun processFailure(failure: Result.Failure<List<EmailPreview>, Exception>): GeneralResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<Pair<List<EmailPreview>, UpdateBannerData?>, Exception>): GeneralResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
             GeneralResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
-                    mailboxThreads = null)
+                    mailboxThreads = null,
+                    updateBannerData = null)
         else
             catchException(failure.error)
     }
@@ -84,7 +86,8 @@ class UpdateMailboxWorker(
                 return GeneralResult.UpdateMailbox.Success(
                         mailboxLabel = label,
                         isManual = true,
-                        mailboxThreads = operationResult.value
+                        mailboxThreads = operationResult.value.first,
+                        updateBannerData = operationResult.value.second
                 )
             }
 

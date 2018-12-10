@@ -1,6 +1,7 @@
 package com.criptext.mail.utils
 
 import com.criptext.mail.api.EmailInsertionAPIClient
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
@@ -9,10 +10,13 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.github.kittinunf.result.Result
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.IOException
+import java.util.*
 
 class EventHelper(private val db: EventLocalDB,
                   httpClient: HttpClient,
@@ -24,24 +28,63 @@ class EventHelper(private val db: EventLocalDB,
     private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
     private val eventsToAcknowldege = mutableListOf<Long>()
 
+    private val newsHttpClient = HttpClient.Default(Hosts.newsRepository, HttpClient.AuthScheme.jwt,
+            14000L, 7000L)
+
+    private val newsClient = MailboxAPIClient(newsHttpClient, activeAccount.jwt)
+
     private lateinit var label: Label
     private var loadedThreadsCount: Int? = null
+    private var updateBannerData: UpdateBannerData? = null
 
     fun setupForMailbox(label: Label, threadCount: Int?){
         this.label = label
         loadedThreadsCount = threadCount
     }
 
-    val processEvents: (List<Event>) -> Result<List<EmailPreview>, Exception> = { events ->
+    val processEvents: (List<Event>) -> Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> = { events ->
         Result.of {
             val shouldReload = processTrackingUpdates(events).or(processNewEmails(events))
                     .or(processThreadReadStatusChanged(events)).or(processUnsendEmailStatusChanged(events))
                     .or(processPeerUsernameChanged(events)).or(processEmailLabelChanged(events))
                     .or(processThreadLabelChanged(events)).or(processEmailDeletedPermanently(events))
                     .or(processThreadDeletedPermanently(events)).or(processLabelCreated(events))
-                    .or(processOnError(events)).or(processEmailReadStatusChanged(events))
-            reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege)))
+                    .or(processOnError(events)).or(processEmailReadStatusChanged(events)).or(processUpdateBannerData(events))
+            Pair(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
+                    updateBannerData)
         }
+    }
+
+    private fun processUpdateBannerData(events: List<Event>): Boolean {
+        val isUpdateBannerEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.updateBannerEvent }
+        val toIdAndMetadataPair: (Event) -> Pair<Long, UpdateBannerEventData> =
+                { Pair( it.rowid, UpdateBannerEventData.fromJSON(it.params)) }
+        val updateBannerDataList = mutableListOf<UpdateBannerData>()
+        val getBannerDataSuccessfully: (Pair<Long, UpdateBannerEventData>) -> Boolean =
+                { (_, updateEventData) ->
+                    val operation = getImageFromCdn(updateEventData)
+                    when(operation){
+                        is Result.Success ->{
+                            updateBannerDataList.add(operation.value)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+        val toEventId: (Pair<Long, UpdateBannerEventData>) -> Long =
+                { (eventId, _) -> eventId }
+
+        val eventIdsToAcknowledge = events
+                .filter(isUpdateBannerEvent)
+                .map(toIdAndMetadataPair)
+                .filter(getBannerDataSuccessfully)
+                .map(toEventId)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+
+        updateBannerData = if(updateBannerDataList.isEmpty()) null else updateBannerDataList.last()
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
 
@@ -388,6 +431,15 @@ class EventHelper(private val db: EventLocalDB,
                     userEmail = activeAccount.userEmail)
                     .map { EmailPreview.fromEmailThread(it) }
         else throw EventHelper.NothingNewException()
+    }
+
+    private fun getImageFromCdn(metadata: UpdateBannerEventData): Result<UpdateBannerData, java.lang.Exception> {
+        return Result.of {
+            UpdateBannerData.fromJSON(newsClient.getUpdateBannerData(
+                    metadata.messageCode,
+                    Locale.getDefault().toString().toLowerCase())
+            )
+        }
     }
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =

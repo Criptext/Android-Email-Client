@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 
@@ -30,6 +31,7 @@ sealed class GeneralResult {
         data class Success(
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
+                val updateBannerData: UpdateBannerData?,
                 val isManual: Boolean) : UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {

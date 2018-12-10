@@ -13,6 +13,7 @@ interface MailboxUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onFeedDrawerClosed()
     fun onEmptyTrashPressed()
+    fun onUpdateBannerXPressed()
     fun onWelcomeTourHasFinished()
     fun onSyncPhonebookYes()
     fun onStartGuideEmail()
