@@ -25,6 +25,9 @@ class Account(
         @ColumnInfo(name = "jwt")
         var jwt : String,
 
+        @ColumnInfo(name = "refreshToken")
+        var refreshToken : String,
+
         @ColumnInfo(name = "identityKeyPairB64")
         var identityKeyPairB64: String,
 

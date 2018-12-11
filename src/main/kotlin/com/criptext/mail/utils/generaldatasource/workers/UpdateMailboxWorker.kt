@@ -9,6 +9,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -29,14 +30,15 @@ import com.github.kittinunf.result.mapError
 import org.whispersystems.libsignal.DuplicateMessageException
 
 class UpdateMailboxWorker(
-        signalClient: SignalClient,
+        private val signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         private val loadedThreadsCount: Int,
         private val label: Label,
-        httpClient: HttpClient,
-        storage: KeyValueStorage,
+        private val httpClient: HttpClient,
+        private val storage: KeyValueStorage,
+        private val accountDao: AccountDao,
         override val publishFn: (
                 GeneralResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<GeneralResult.UpdateMailbox> {
@@ -46,13 +48,13 @@ class UpdateMailboxWorker(
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
     private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-    private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
-    private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingEventDao)
+    private var eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
+    private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao, storage, accountDao)
 
     override fun catchException(ex: Exception): GeneralResult.UpdateMailbox =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
                     GeneralResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     GeneralResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
@@ -76,27 +78,60 @@ class UpdateMailboxWorker(
     override fun work(reporter: ProgressReporter<GeneralResult.UpdateMailbox>)
             : GeneralResult.UpdateMailbox? {
         eventHelper.setupForMailbox(label, loadedThreadsCount)
-        val operationResult = EventLoader.getEvents(mailboxApiClient)
-                .flatMap(eventHelper.processEvents)
+        val operationResult = workOperation()
 
         checkTrashDates()
 
-        return when(operationResult) {
+
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operationResult)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation()
+        else
+            operationResult
+
+
+        return when(finalResult) {
             is Result.Success -> {
                 return GeneralResult.UpdateMailbox.Success(
                         mailboxLabel = label,
                         isManual = true,
-                        mailboxThreads = operationResult.value.first,
-                        updateBannerData = operationResult.value.second
+                        mailboxThreads = finalResult.value.first,
+                        updateBannerData = finalResult.value.second
                 )
             }
 
-            is Result.Failure -> processFailure(operationResult)
+            is Result.Failure -> processFailure(finalResult)
         }
     }
 
     override fun cancel() {
         TODO("CANCEL IS NOT IMPLEMENTED")
+    }
+
+    private fun workOperation() : Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> =
+            EventLoader.getEvents(mailboxApiClient)
+            .flatMap(eventHelper.processEvents)
+
+    private fun newRetryWithNewSessionOperation()
+            : Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.token = account.jwt
+                mailboxApiClient.token = account.jwt
+
+                eventHelper = EventHelper(dbEvents, httpClient, account, signalClient, true)
+                eventHelper.setupForMailbox(label, loadedThreadsCount)
+                workOperation()
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 
     private fun checkTrashDates(){

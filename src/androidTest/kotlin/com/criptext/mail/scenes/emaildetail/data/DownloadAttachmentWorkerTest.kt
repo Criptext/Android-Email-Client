@@ -11,7 +11,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
-import com.criptext.mail.scenes.composer.data.UploadAttachmentWorker
+import com.criptext.mail.scenes.composer.workers.UploadAttachmentWorker
 import com.criptext.mail.scenes.emaildetail.workers.DownloadAttachmentWorker
 import com.criptext.mail.utils.FileDownloader
 import com.criptext.mail.utils.MockedResponse

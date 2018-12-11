@@ -14,6 +14,7 @@ import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -80,9 +81,9 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         }
     }
 
-    fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao){
+    fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
         handleNotificationCountForNewEmail(notificationId)
-        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val operation = Result.of {
             val email = emailDao.getEmailByMetadataKey(metadataKey)
             email
@@ -108,9 +109,9 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         }
     }
 
-    fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao){
+    fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
         handleNotificationCountForNewEmail(notificationId)
-        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
         val selectedLabels = SelectedLabels()

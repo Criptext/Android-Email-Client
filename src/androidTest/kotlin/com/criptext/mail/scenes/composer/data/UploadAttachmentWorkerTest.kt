@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.composer.workers.UploadAttachmentWorker
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.AndroidFs

@@ -8,6 +8,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
+import com.criptext.mail.scenes.composer.workers.SaveEmailWorker
 import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before

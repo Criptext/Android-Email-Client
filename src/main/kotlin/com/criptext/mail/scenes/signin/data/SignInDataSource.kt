@@ -98,6 +98,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     key = params.key,
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
                     db = db,
+                    storage = keyValueStorage,
                     publishFn = {
                         result -> flushResults(result)
                     }

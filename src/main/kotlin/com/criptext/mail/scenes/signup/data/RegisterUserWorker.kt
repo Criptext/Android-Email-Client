@@ -22,6 +22,7 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Sets up a new account. Generates a new key bundle and uploads it along with the user data to
@@ -53,17 +54,21 @@ class RegisterUserWorker(
     }
 
     private fun postNewUserToServer(keyBundle: PreKeyBundleShareData.UploadBundle)
-            : Result<String, Exception> =
+            : Result<Pair<String, String>, Exception> =
             Result.of { apiClient.createUser(incompleteAccount, keyBundle) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                .flatMap { Result.of {
+                    val json = JSONObject(it)
+                    Pair(json.getString("token"), json.getString("refreshToken"))
+                } }
 
     private fun persistNewUserData(keyBundle: SignalKeyGenerator.PrivateBundle)
-            :(String) -> Result<Unit, Exception> {
-        return { jwtoken: String ->
+            :(Pair<String, String>) -> Result<Unit, Exception> {
+        return { tokens: Pair<String, String> ->
             Result.of {
-                val newAccount = incompleteAccount.complete(keyBundle, jwtoken)
+                val newAccount = incompleteAccount.complete(keyBundle, tokens.first, tokens.second)
                 if(messagingInstance.token != null)
-                    apiClient.putFirebaseToken(messagingInstance.token ?: "", jwtoken)
+                    apiClient.putFirebaseToken(messagingInstance.token ?: "", tokens.first)
                 storeAccountTransaction.run(account = newAccount, keyBundle = keyBundle)
             }
 

@@ -9,6 +9,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.ServerErrorCodes
@@ -22,9 +23,10 @@ import com.github.kittinunf.result.mapError
 import java.io.File
 
 class DeleteAccountWorker(private val db: EventLocalDB,
+                          private val accountDao: AccountDao,
                           private val password: String,
                           private val storage: KeyValueStorage,
-                          httpClient: HttpClient,
+                          private val httpClient: HttpClient,
                           private val activeAccount: ActiveAccount,
                           override val publishFn: (
                                 GeneralResult.DeleteAccount) -> Unit)
@@ -38,28 +40,55 @@ class DeleteAccountWorker(private val db: EventLocalDB,
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.DeleteAccount>): GeneralResult.DeleteAccount? {
-        val deleteOperation = Result.of {apiClient.deleteAccount(password.sha256())}
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap { Result.of {
-                        db.logoutNukeDB()
-                } }
-                .flatMap {
-                    Result.of {
-                        storage.clearAll()
-                    }
-                }
-        return when (deleteOperation){
+        val deleteOperation = workOperation()
+
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(deleteOperation)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation()
+        else
+            deleteOperation
+
+        return when (finalResult){
             is Result.Success -> {
                 GeneralResult.DeleteAccount.Success()
             }
             is Result.Failure -> {
-                catchException(deleteOperation.error)
+                catchException(finalResult.error)
             }
         }
     }
 
     override fun cancel() {
         TODO("CANCEL IS NOT IMPLEMENTED")
+    }
+
+    private fun workOperation() : Result<Unit, Exception> = Result.of {apiClient.deleteAccount(password.sha256())}
+            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+            .flatMap { Result.of {
+                db.logoutNukeDB()
+            } }
+            .flatMap {
+                Result.of {
+                    storage.clearAll()
+                }
+            }
+
+    private fun newRetryWithNewSessionOperation()
+            : Result<Unit, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.token = account.jwt
+                workOperation()
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

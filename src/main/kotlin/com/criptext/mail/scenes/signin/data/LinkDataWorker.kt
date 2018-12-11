@@ -4,9 +4,11 @@ import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.signal.SignalClient
@@ -15,8 +17,10 @@ import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.mapError
 import com.google.android.gms.common.util.IOUtils
 import java.nio.file.StandardCopyOption
 import java.io.File
@@ -35,10 +39,11 @@ import java.util.zip.GZIPInputStream
 
 
 class LinkDataWorker(private val authorizerId: Int,
-                     val activeAccount: ActiveAccount,
+                     private var activeAccount: ActiveAccount,
                      private val key: String,
                      private val dataAddress: String,
                      private val signalClient: SignalClient,
+                     private val storage: KeyValueStorage,
                      private val db: AppDatabase,
                      override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.LinkData> {
@@ -90,49 +95,75 @@ class LinkDataWorker(private val authorizerId: Int,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkData>): SignInResult.LinkData? {
-        val params = mutableMapOf<String, String>()
-        params["id"] = dataAddress
-        val result =  Result.of {
-            reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.downloading_mailbox), 70))
-            apiClient.getFileStream(activeAccount.jwt, params)
-        }
-                .flatMap { readIntoFile(it) }
-                .flatMap { Result.of {
-                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80))
-                    Pair(signalClient.decryptBytes(activeAccount.recipientId,
-                        authorizerId,
-                        SignalEncryptedData(key, SignalEncryptedData.Type.preKey)),
-                        it
-                )
-                }}
-                .flatMap { Result.of {
-                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 85))
-                    AESUtil.decryptFileByChunks(it.second, it.first)
-                } }
-                .flatMap { Result.of {
-                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 90))
-                    decompress(it)
-                } }
-                .flatMap { Result.of {
-                    reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
-                    val decryptedFile = File(it)
-                    dataWriter.createDBFromFile(decryptedFile)
-                }}
+        val result =  workOperation(reporter)
+
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation(reporter)
+        else
+            result
 
 
-        return when (result) {
+        return when (finalResult) {
             is Result.Success ->{
                 SignInResult.LinkData.Success()
             }
             is Result.Failure -> {
-                result.error.printStackTrace()
-                catchException(result.error)
+                finalResult.error.printStackTrace()
+                catchException(finalResult.error)
             }
         }
     }
 
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
+    }
+
+    private fun workOperation(reporter: ProgressReporter<SignInResult.LinkData>) : Result<Unit, Exception> = Result.of {
+        val params = mutableMapOf<String, String>()
+        params["id"] = dataAddress
+        reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.downloading_mailbox), 70))
+        apiClient.getFileStream(activeAccount.jwt, params)
+    }
+            .flatMap { readIntoFile(it) }
+            .flatMap { Result.of {
+                reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80))
+                Pair(signalClient.decryptBytes(activeAccount.recipientId,
+                        authorizerId,
+                        SignalEncryptedData(key, SignalEncryptedData.Type.preKey)),
+                        it
+                )
+            }}
+            .flatMap { Result.of {
+                reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 85))
+                AESUtil.decryptFileByChunks(it.second, it.first)
+            } }
+            .flatMap { Result.of {
+                reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 90))
+                decompress(it)
+            } }
+            .flatMap { Result.of {
+                reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
+                val decryptedFile = File(it)
+                dataWriter.createDBFromFile(decryptedFile)
+            }}
+
+    private fun newRetryWithNewSessionOperation(reporter: ProgressReporter<SignInResult.LinkData>)
+            : Result<Unit, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, db.accountDao())
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                activeAccount = account
+                workOperation(reporter)
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

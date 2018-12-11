@@ -50,250 +50,255 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/pin_content"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp">
-
-        <TextView
-            fontPath="fonts/NunitoSans-Regular.ttf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pin_lock_switch_text"
-            android:textColor="#373a45"
-            android:layout_marginBottom="10dp"
-            android:textSize="18sp" />
-
-        <Switch
-            android:id="@+id/pin_lock_switch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        </LinearLayout>
-
-        <LinearLayout
+            android:id="@+id/pin_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#f4f4f4">
-            <TextView
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pin_lock_message_1"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="15dp"
-                android:textSize="14sp" />
-            <TextView
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pin_lock_message_2"
-                android:layout_marginBottom="20dp"
-                android:textSize="14sp" />
-        </LinearLayout>
+            android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="#d8d8d8"/>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingStart="17dp"
-            android:id="@+id/change_pin"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:id="@+id/change_pin_option_text"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/pin_lock_change"
-                android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
-                android:textColor="@color/button_text_color"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="40dp"
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pin_lock_switch_text"
+                android:textColor="#373a45"
+                android:layout_marginBottom="10dp"
+                android:textSize="18sp" />
+
+            <Switch
+                android:id="@+id/pin_lock_switch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f4f4f4">
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pin_lock_message_1"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="14sp" />
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pin_lock_message_2"
+                    android:layout_marginBottom="20dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:scaleType="fitCenter"
-                android:layout_gravity="end|center_vertical"
-                android:padding="12dp"
-                android:tint="#e3e3e3"
-                android:src="@drawable/arrow_right"/>
+                android:background="#d8d8d8"/>
 
-        </FrameLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="#d8d8d8"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/change_pin"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingStart="17dp"
-            android:id="@+id/pin_time">
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/change_pin_option_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/pin_lock_change"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/button_text_color"/>
 
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:id="@+id/pin_auto_option_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/pin_lock_auto"
-                android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
-                android:textColor="@color/button_text_color"/>
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="12dp"
+                    android:tint="#e3e3e3"
+                    android:src="@drawable/arrow_right"/>
 
-            <Spinner
-                android:id="@+id/auto_lock_spinner"
-                android:layout_width="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                android:layout_height="wrap_content"/>
+            </FrameLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="#d8d8d8"/>
 
-        </FrameLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/pin_time">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="#d8d8d8"/>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/pin_auto_option_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/pin_lock_auto"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/button_text_color"/>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="17dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
-            android:id="@+id/settings__preview"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground">
+                <Spinner
+                    android:id="@+id/auto_lock_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_height="wrap_content"/>
 
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/title_allow_preview"
-                android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
-                android:textColor="@color/drawer_text"/>
+            </FrameLayout>
 
-            <Switch
-                android:id="@+id/switch_preview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end|center_vertical"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="17dp"
-                android:enabled="false"
-                android:checked="true"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="#d8d8d8"/>
 
-        </FrameLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#f4f4f4">
-            <TextView
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/notification_preview_message"
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="15dp"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:id="@+id/settings__preview"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#d8d8d8"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_allow_preview"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="17dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
-            android:id="@+id/settings_read_receipts"
-            android:clickable="false"
-            android:foreground="?attr/selectableItemBackground"
-            >
+                <Switch
+                    android:id="@+id/switch_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="17dp"
+                    android:enabled="false"
+                    android:checked="true"/>
 
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/title_read_receipts"
-                android:textSize="@dimen/drawer_text_item"
-                android:gravity="center_vertical"
-                android:textColor="@color/drawer_text"/>
-
-            <Switch
-                android:id="@+id/switch_read_receipts"
-                android:layout_width="wrap_content"
+            </FrameLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end|center_vertical"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="17dp"
-                android:enabled="false"
-                android:checked="false"/>
+                android:orientation="vertical"
+                android:background="#f4f4f4">
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notification_preview_message"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-        </FrameLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#f4f4f4">
-            <TextView
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/read_receipts_message"
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#d8d8d8"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="15dp"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:id="@+id/settings_read_receipts"
+                android:clickable="false"
+                android:foreground="?attr/selectableItemBackground"
+                >
 
-    </LinearLayout>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_read_receipts"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/drawer_text"/>
+
+                <Switch
+                    android:id="@+id/switch_read_receipts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="17dp"
+                    android:enabled="false"
+                    android:checked="false"/>
+
+            </FrameLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f4f4f4">
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/read_receipts_message"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

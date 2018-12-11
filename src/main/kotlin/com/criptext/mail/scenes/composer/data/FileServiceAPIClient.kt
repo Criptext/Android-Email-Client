@@ -5,7 +5,7 @@ import com.criptext.mail.api.models.MultipartFormItem
 import org.json.JSONObject
 
 
-class FileServiceAPIClient(private val client: HttpClient, private val authToken: String) {
+class FileServiceAPIClient(private val client: HttpClient, var authToken: String) {
 
     fun registerFile(fileName: String, fileSize: Int, chunkSize: Int, totalChunks: Int): String {
         val json = JSONObject()

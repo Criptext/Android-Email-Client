@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
@@ -12,7 +13,7 @@ import org.json.JSONObject
  */
 
 
-class MailboxAPIClient(private val httpClient: HttpClient, private val token: String) {
+class MailboxAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun getPendingEvents(): String {
         return httpClient.get(

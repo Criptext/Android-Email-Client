@@ -1,6 +1,12 @@
 package com.criptext.mail.api
 
 import android.accounts.NetworkErrorException
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.ServerErrorCodes
+import com.github.kittinunf.result.Result
+import org.json.JSONObject
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -26,6 +32,39 @@ object HttpErrorHandlingHelper {
             else
                 exception
         }
+
+    private fun isSessionExpiredError(errorCode: Int): Boolean = errorCode == ServerErrorCodes.Unauthorized
+
+    fun didFailBecauseInvalidSession(operation: Result<*, Exception>): Boolean {
+        return if (operation is Result.Failure) {
+            val error = operation.error as? ServerErrorException
+            if (error != null)
+                HttpErrorHandlingHelper.isSessionExpiredError(error.errorCode)
+            else
+                false
+        } else
+            false
+    }
+
+    fun newRefreshSessionOperation(apiClient: CriptextAPIClient, account: ActiveAccount, storage: KeyValueStorage,
+                                   accountDao: AccountDao)
+            : Result<Unit, Exception> {
+        return Result.of {
+            val accountInDB = accountDao.getLoggedInAccount()
+            if(accountInDB != null){
+                if(accountInDB.refreshToken.isEmpty()){
+                    val refreshAndSession = apiClient.getRefreshToken(account.jwt)
+                    account.updateUserWithTokensData(storage, refreshAndSession)
+                    accountDao.updateJwt(account.recipientId, JSONObject(refreshAndSession).getString("token"))
+                    accountDao.updateRefreshToken(account.recipientId, JSONObject(refreshAndSession).getString("refreshToken"))
+                }else{
+                    val sessionToken = apiClient.refreshSession(account.refreshToken)
+                    account.updateUserWithSessionData(storage, sessionToken)
+                    accountDao.updateJwt(account.recipientId, sessionToken)
+                }
+            }
+        }
+    }
 
 
 }

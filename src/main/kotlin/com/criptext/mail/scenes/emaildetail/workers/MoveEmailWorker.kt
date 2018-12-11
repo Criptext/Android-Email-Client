@@ -8,6 +8,8 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -29,6 +31,8 @@ import com.github.kittinunf.result.Result
 class MoveEmailWorker(
         private val db: EmailDetailLocalDB,
         private val emailDao: EmailDao,
+        private val accountDao: AccountDao,
+        private val storage: KeyValueStorage,
         private val pendingDao: PendingEventDao,
         private val chosenLabel: String?,
         private val emailId: Long,
@@ -39,8 +43,8 @@ class MoveEmailWorker(
                 EmailDetailResult.MoveEmailThread) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
 
-    private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+            storage, accountDao)
 
     override val canBeParallelized = false
 

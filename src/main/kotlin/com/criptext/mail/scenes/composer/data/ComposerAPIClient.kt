@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.composer.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import org.json.JSONArray
 import org.json.JSONObject
@@ -8,7 +9,7 @@ import org.json.JSONObject
  * Created by gabriel on 3/15/18.
  */
 
-class ComposerAPIClient(private val httpClient: HttpClient, private val token: String) {
+class ComposerAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun findKeyBundles(recipients: List<String>, knownAddresses: Map<String, List<Int>>): String {
         val jsonObject = JSONObject()

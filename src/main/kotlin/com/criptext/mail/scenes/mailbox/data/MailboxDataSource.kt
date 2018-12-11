@@ -11,6 +11,7 @@ import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.mailbox.workers.*
 import com.criptext.mail.signal.SignalClient
 
 /**
@@ -60,6 +61,8 @@ class MailboxDataSource(
                         flushResults(result)
                     })
             is MailboxRequest.SendMail -> SendMailWorker(
+                    storage = storage,
+                    accountDao = accountDao,
                     signalClient = signalClient,
                     activeAccount = activeAccount,
                     rawSessionDao = rawSessionDao,
@@ -82,6 +85,8 @@ class MailboxDataSource(
                     shouldRemoveCurrentLabel = params.shouldRemoveCurrentLabel,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -94,6 +99,8 @@ class MailboxDataSource(
                     currentLabel = params.currentLabel,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -112,6 +119,8 @@ class MailboxDataSource(
                     currentLabel = params.currentLabel,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     }
@@ -130,10 +139,14 @@ class MailboxDataSource(
                     pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })
             is MailboxRequest.ResendEmails -> ResendEmailsWorker(
+                    accountDao = accountDao,
+                    storage = storage,
                     rawSessionDao = rawSessionDao,
                     signalClient = signalClient,
                     db = mailboxLocalDB,
@@ -143,6 +156,8 @@ class MailboxDataSource(
                         flushResults(result)
                     })
             is MailboxRequest.GetPendingLinkRequest -> GetPendingLinkRequestWorker(
+                    storage = storage,
+                    accountDao = accountDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     publishFn = { result ->
@@ -152,6 +167,8 @@ class MailboxDataSource(
                     pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })

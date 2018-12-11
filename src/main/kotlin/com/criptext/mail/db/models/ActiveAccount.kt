@@ -10,7 +10,7 @@ import org.json.JSONObject
  */
 
 data class ActiveAccount(val name: String, val recipientId: String,
-                         val deviceId: Int, val jwt: String, val signature: String) : JSONData {
+                         val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String) : JSONData {
 
     val userEmail = "$recipientId@${Contact.mainDomain}"
 
@@ -20,6 +20,7 @@ data class ActiveAccount(val name: String, val recipientId: String,
         json.put("recipientId", recipientId)
         json.put("deviceId", deviceId)
         json.put("jwt", jwt)
+        json.put("refreshToken", refreshToken)
         json.put("signature", signature)
         return json
     }
@@ -36,6 +37,19 @@ data class ActiveAccount(val name: String, val recipientId: String,
         storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
     }
 
+    fun updateUserWithSessionData(storage: KeyValueStorage, sessionData: String){
+        val account = toJSON()
+        account.put("jwt", sessionData)
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+    }
+
+    fun updateUserWithTokensData(storage: KeyValueStorage, sessionData: String){
+        val account = toJSON()
+        account.put("jwt", JSONObject(sessionData).get("token"))
+        account.put("refreshToken", JSONObject(sessionData).get("refreshToken"))
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+    }
+
     companion object {
         fun fromJSONString(jsonString: String): ActiveAccount {
             val json = JSONObject(jsonString)
@@ -43,15 +57,16 @@ data class ActiveAccount(val name: String, val recipientId: String,
             val recipientId = json.getString("recipientId")
             val deviceId = json.getInt("deviceId")
             val jwt = json.getString("jwt")
+            val refreshToken = json.optString("refreshToken") ?: ""
             val signature = json.getString("signature")
 
             return ActiveAccount(name = name, recipientId = recipientId, deviceId = deviceId,
-                    jwt = jwt, signature = signature)
+                    jwt = jwt, signature = signature, refreshToken = refreshToken)
         }
 
         fun loadFromDB(account: Account): ActiveAccount? {
             return ActiveAccount(name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
-                    jwt = account.jwt, signature = account.signature)
+                    jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

@@ -5,8 +5,10 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.composer.workers.*
 
 /**
  * Created by gabriel on 2/26/18.
@@ -16,6 +18,7 @@ class ComposerDataSource(
         private val httpClient: HttpClient,
         private val composerLocalDB: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
+        private val storage: KeyValueStorage,
         private val emailInsertionDao: EmailInsertionDao,
         override val runner: WorkRunner)
     : BackgroundWorkManager<ComposerRequest, ComposerResult>() {
@@ -42,17 +45,18 @@ class ComposerDataSource(
                     publishFn = { res -> flushResults(res) })
             is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,
-                    publishFn = { res -> flushResults(res)}, fileKey = params.fileKey)
+                    publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
+                    accountDao = composerLocalDB.accountDao, storage = storage)
             is ComposerRequest.LoadInitialData -> LoadInitialDataWorker(db = composerLocalDB,
                     emailId = params.emailId,
                     composerType = params.composerType,
                     userEmailAddress = activeAccount.userEmail,
                     signature = activeAccount.signature,
-                    publishFn = { res -> flushResults(res)})
+                    publishFn = { res -> flushResults(res) })
             is ComposerRequest.GetRemoteFile -> GetRemoteFileWorker(
                     uris = params.uris,
                     contentResolver = params.contentResolver,
-                    publishFn = { res -> flushResults(res)}
+                    publishFn = { res -> flushResults(res) }
             )
         }
     }

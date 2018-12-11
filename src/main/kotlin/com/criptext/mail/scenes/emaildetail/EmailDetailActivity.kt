@@ -73,6 +73,8 @@ class  EmailDetailActivity: BaseActivity() {
                         activeAccount = activeAccount,
                         filesHttpClient= filesHttpClient,
                         emailDetailLocalDB = db,
+                        storage = KeyValueStorage.SharedPrefs(this),
+                        accountDao = appDB.accountDao(),
                         downloadDir = downloadDir
                 )
         )

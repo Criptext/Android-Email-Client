@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
@@ -7,7 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
 
-class GeneralAPIClient(private val httpClient: HttpClient, private val token: String) {
+class GeneralAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun postUnlockDevice(password: String): String {
         val json = JSONObject()
