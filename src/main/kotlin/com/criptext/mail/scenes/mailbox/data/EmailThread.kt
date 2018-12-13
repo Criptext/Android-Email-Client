@@ -23,7 +23,7 @@ class EmailThread(val latestEmail: FullEmail,
     val timestamp: Date
         get() = latestEmail.email.date
     var isSelected = false
-    val headerPreview: String = participants.joinToString { it.name }
+    val headerPreview: String = participants.joinToString { it.name.substringBefore(" ") }
     val id: Long
         get() = latestEmail.email.id
     val metadataKey: Long
