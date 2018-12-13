@@ -37,7 +37,7 @@ class PushRequestHandlerTest {
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__")
 
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>
@@ -87,7 +87,7 @@ class PushRequestHandlerTest {
 
         val requestHandler = newHandler()
         requestHandler.trashEmail(loadedEmails.last().email.metadataKey, 0,
-                emailDetailLocalDB, db.emailDao(), db.pendingEventDao())
+                emailDetailLocalDB, db.emailDao(), db.pendingEventDao(), db.accountDao())
 
         val trashEmails = db.emailDao().getMetadataKeysFromLabel(Label.defaultItems.trash.id)
 
@@ -107,7 +107,7 @@ class PushRequestHandlerTest {
 
         val requestHandler = newHandler()
         requestHandler.openEmail(loadedEmails.last().email.metadataKey, 0, db.emailDao(),
-                db.pendingEventDao())
+                db.pendingEventDao(), db.accountDao())
 
         val readEmails = db.emailDao().getAll().filter { !it.unread }
 

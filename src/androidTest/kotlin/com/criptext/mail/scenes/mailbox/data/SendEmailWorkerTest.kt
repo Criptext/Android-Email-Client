@@ -11,15 +11,14 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.ComposerResult
-import com.criptext.mail.scenes.composer.data.SaveEmailWorker
+import com.criptext.mail.scenes.composer.workers.SaveEmailWorker
+import com.criptext.mail.scenes.mailbox.workers.SendMailWorker
 import com.criptext.mail.signal.*
 import com.criptext.mail.utils.*
 import io.mockk.mockk
-import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
@@ -29,10 +28,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.rules.TemporaryFolder
-import java.io.File
-
-
-
 
 
 /**
@@ -79,17 +74,17 @@ class SendEmailWorkerTest {
 
     private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData,
                           attachments: List<ComposerAttachment>, fileKey: String?): SendMailWorker =
-        SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
-                rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
-                composerInputData = inputData, activeAccount = activeAccount,
-                attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao())
+            SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
+                    rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
+                    composerInputData = inputData, activeAccount = activeAccount,
+                    attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao())
 
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = inputData.attachments!!, onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = inputData.fileKey, originalId = null)
+                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = inputData.fileKey, originalId = null)
 
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {

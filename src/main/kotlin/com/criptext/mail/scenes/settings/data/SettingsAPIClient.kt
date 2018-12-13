@@ -1,11 +1,12 @@
 package com.criptext.mail.scenes.settings.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
 import org.json.JSONObject
 
 
-class SettingsAPIClient(private val httpClient: HttpClient, private val token: String) {
+class SettingsAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun postLabelCreatedEvent(text: String, color: String): String {
         val json = JSONObject()

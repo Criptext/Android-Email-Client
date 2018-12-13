@@ -15,13 +15,14 @@ data class IncompleteAccount(
         val recoveryEmail: String?
         ) {
 
-        fun complete(privateBundle: SignalKeyGenerator.PrivateBundle, jwt: String) =
+        fun complete(privateBundle: SignalKeyGenerator.PrivateBundle, jwt: String, refreshToken: String) =
                 Account(
                         name = this.name,
                         recipientId = this.username,
                         deviceId = this.deviceId,
                         signature = "",
                         jwt = jwt,
+                        refreshToken = refreshToken,
                         registrationId = privateBundle.registrationId,
                         identityKeyPairB64 = privateBundle.identityKeyPair
                 )

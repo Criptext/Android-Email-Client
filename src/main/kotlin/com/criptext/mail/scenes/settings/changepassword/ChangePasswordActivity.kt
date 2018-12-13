@@ -38,7 +38,8 @@ class ChangePasswordActivity: BaseActivity(){
                 httpClient = HttpClient.Default(),
                 activeAccount = activeAccount,
                 runner = AsyncTaskWorkRunner(),
-                storage = KeyValueStorage.SharedPrefs(this))
+                storage = KeyValueStorage.SharedPrefs(this),
+                accountDao = appDB.accountDao())
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB),

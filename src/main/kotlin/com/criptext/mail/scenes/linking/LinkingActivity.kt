@@ -37,6 +37,7 @@ class LinkingActivity: BaseActivity(){
                 httpClient = HttpClient.Default(),
                 activeAccount = activeAccount!!,
                 runner = AsyncTaskWorkRunner(),
+                accountDao = appDB.accountDao(),
                 storage = KeyValueStorage.SharedPrefs(this))
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,

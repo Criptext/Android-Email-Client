@@ -5,13 +5,11 @@ import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.models.EmailMetadata
-import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
+import com.criptext.mail.scenes.mailbox.workers.MoveEmailThreadWorker
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
 import io.mockk.mockk

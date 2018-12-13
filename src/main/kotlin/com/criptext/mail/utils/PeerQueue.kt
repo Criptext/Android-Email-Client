@@ -43,8 +43,12 @@ abstract class PeerQueue{
             val array = JSONArray(picks.map { it.data })
             val jsonObj = JSONObject()
             jsonObj.put("peerEvents", array)
-            return Result.of { apiClient.postPeerEvents(jsonObj) }
-                    .flatMap { _ -> Result.of { dequeue(picks.map { it.id }) } }
+            return Result.of {
+                if(picks.isEmpty())
+                    throw EventHelper.NothingNewException()
+                apiClient.postPeerEvents(jsonObj)
+            }
+            .flatMap { _ -> Result.of { dequeue(picks.map { it.id }) } }
         }
     }
 }

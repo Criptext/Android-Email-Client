@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
@@ -11,10 +12,11 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.mapError
 
 class DeviceRemovedWorker(private val letAPIKnow: Boolean,
                           private val activeAccount: ActiveAccount,
-                          httpClient: HttpClient,
+                          private val httpClient: HttpClient,
                           private val db: AppDatabase,
                           private val storage: KeyValueStorage,
                           override val publishFn: (GeneralResult.DeviceRemoved) -> Unit
@@ -30,11 +32,17 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
     override fun work(reporter: ProgressReporter<GeneralResult.DeviceRemoved>)
             : GeneralResult.DeviceRemoved? {
 
-        val deleteOperation = if(letAPIKnow) { Result.of { apiClient.postLogout() }
-                .flatMap { Result.of { RemoveDeviceUtils.clearAllData(db, storage) }}}
+        val deleteOperation = workOperation()
+
+
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(deleteOperation)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation()
         else
-            Result.of { RemoveDeviceUtils.clearAllData(db, storage) }
-        return when (deleteOperation){
+            deleteOperation
+
+        return when (finalResult){
             is Result.Success -> {
                 GeneralResult.DeviceRemoved.Success()
             }
@@ -46,5 +54,29 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
 
     override fun cancel() {
         TODO("not implemented")
+    }
+
+    private fun workOperation() : Result<Unit, Exception> = if(letAPIKnow) {
+            Result.of { apiClient.postLogout()
+        }
+        .flatMap { Result.of { RemoveDeviceUtils.clearAllData(db, storage) }}}
+    else
+        Result.of { RemoveDeviceUtils.clearAllData(db, storage) }
+
+    private fun newRetryWithNewSessionOperation()
+            : Result<Unit, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, db.accountDao())
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.token = account.jwt
+                workOperation()
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 }

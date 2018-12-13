@@ -3,8 +3,11 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
@@ -13,6 +16,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.mapError
 import org.json.JSONObject
 
 class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle?,
@@ -22,6 +26,8 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                      private val deviceId: Int,
                      private val fileKey: ByteArray,
                      private val activeAccount: ActiveAccount,
+                     private val storage: KeyValueStorage,
+                     private val accountDao: AccountDao,
                      private val signalClient: SignalClient,
                      override val publishFn: (GeneralResult.PostUserData) -> Unit
                           ) : BackgroundWorker<GeneralResult.PostUserData> {
@@ -58,18 +64,16 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
     override fun work(reporter: ProgressReporter<GeneralResult.PostUserData>)
             : GeneralResult.PostUserData? {
 
-        val operation = getKeyBundle()
-        .flatMap { Result.of {
-            fileApiClient.postFileStream(filePath, randomId)
-        } }
-        .flatMap { Result.of {
-            signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey)
-        } }
-        .flatMap { Result.of {
-            apiClient.postLinkDataReady(deviceId, it.encryptedB64)
-        } }
+        val operation = workOperation()
 
-        return when (operation){
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation()
+        else
+            operation
+
+        return when (finalResult){
             is Result.Success -> {
                 GeneralResult.PostUserData.Success()
             }
@@ -81,5 +85,34 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
 
     override fun cancel() {
         TODO("not implemented")
+    }
+
+    private fun workOperation() : Result<String, Exception> = getKeyBundle()
+            .flatMap { Result.of {
+                fileApiClient.postFileStream(filePath, randomId)
+            } }
+            .flatMap { Result.of {
+                signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey)
+            } }
+            .flatMap { Result.of {
+                apiClient.postLinkDataReady(deviceId, it.encryptedB64)
+            } }
+
+    private fun newRetryWithNewSessionOperation()
+            : Result<String, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.token = account.jwt
+                fileApiClient.token = account.jwt
+                workOperation()
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 }

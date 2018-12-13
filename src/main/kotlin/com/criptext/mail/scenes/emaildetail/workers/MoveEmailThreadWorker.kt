@@ -7,6 +7,8 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
@@ -31,14 +33,16 @@ class MoveEmailThreadWorker(
         private val chosenLabel: String?,
         private val threadId: String,
         private val currentLabel: Label,
+        private val accountDao: AccountDao,
+        private val storage: KeyValueStorage,
         httpClient: HttpClient,
         activeAccount: ActiveAccount,
         override val publishFn: (
                 EmailDetailResult.MoveEmailThread) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
 
-    private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+            storage, accountDao)
 
     override val canBeParallelized = false
 
@@ -46,7 +50,7 @@ class MoveEmailThreadWorker(
     override fun catchException(ex: Exception): EmailDetailResult.MoveEmailThread =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
                     EmailDetailResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     EmailDetailResult.MoveEmailThread.Forbidden()

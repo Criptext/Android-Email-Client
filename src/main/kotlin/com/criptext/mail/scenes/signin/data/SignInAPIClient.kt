@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.signal.PreKeyBundleShareData
@@ -12,7 +13,7 @@ import java.io.InputStream
  * Created by sebas on 2/28/18.
  */
 
-class SignInAPIClient(private val httpClient: HttpClient) {
+class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(httpClient) {
 
     fun authenticateUser(
             username: String,

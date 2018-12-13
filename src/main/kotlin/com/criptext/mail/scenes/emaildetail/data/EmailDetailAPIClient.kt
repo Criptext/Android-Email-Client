@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.data
 
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
@@ -11,7 +12,7 @@ import org.json.JSONObject
  * Created by sebas on 3/12/18.
  */
 
-class EmailDetailAPIClient(private val httpClient: HttpClient, private val authToken: String) {
+class EmailDetailAPIClient(private val httpClient: HttpClient, var authToken: String): CriptextAPIClient(httpClient) {
 
     fun postOpenEvent(metadataKeys: List<Long>): String {
         val json = JSONObject()

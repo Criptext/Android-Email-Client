@@ -6,6 +6,8 @@ import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.EmailLabel
@@ -24,6 +26,8 @@ import com.github.kittinunf.result.Result
 class UpdateEmailThreadLabelsWorker(
         httpClient: HttpClient,
         activeAccount: ActiveAccount,
+        storage: KeyValueStorage,
+        accountDao: AccountDao,
         private val db: EmailDetailLocalDB,
         private val pendingDao: PendingEventDao,
         private val currentLabel: Label,
@@ -34,9 +38,8 @@ class UpdateEmailThreadLabelsWorker(
                 EmailDetailResult.UpdateEmailThreadsLabelsRelations) -> Unit)
     : BackgroundWorker<EmailDetailResult.UpdateEmailThreadsLabelsRelations> {
 
-    private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
     private val peerEventHandler = PeerEventsApiHandler.Default(httpClient,
-            activeAccount.jwt, pendingDao)
+            activeAccount, pendingDao, storage, accountDao)
 
     override val canBeParallelized = false
 

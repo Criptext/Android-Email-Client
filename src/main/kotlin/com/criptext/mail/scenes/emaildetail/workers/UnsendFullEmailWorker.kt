@@ -8,6 +8,8 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ContactTypes
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailContactJoinDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -31,8 +33,10 @@ class UnsendFullEmailWorker(
         private val emailContactDao: EmailContactJoinDao,
         private val emailId: Long,
         private val position: Int,
-        httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val accountDao: AccountDao,
+        private val storage: KeyValueStorage,
+        private val httpClient: HttpClient,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (EmailDetailResult.UnsendFullEmailFromEmailId) -> Unit)
     : BackgroundWorker<EmailDetailResult.UnsendFullEmailFromEmailId> {
 
@@ -45,7 +49,7 @@ class UnsendFullEmailWorker(
 
         if(ex is ServerErrorException) {
             return when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden()
@@ -64,23 +68,48 @@ class UnsendFullEmailWorker(
             : EmailDetailResult.UnsendFullEmailFromEmailId {
 
         val unsentEmail = emailDao.findEmailById(emailId)
-        val result = Result.of {
-            apiClient.postUnsendEvent(unsentEmail!!.metadataKey,
-                    getMailRecipients(unsentEmail))
-        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        val result = workOperation(unsentEmail)
 
-        return when (result) {
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation(unsentEmail)
+        else
+            result
+
+        return when (finalResult) {
             is Result.Success -> {
                 db.unsendEmail(emailId)
                 EmailDetailResult.UnsendFullEmailFromEmailId.Success(position)
             }
             is Result.Failure -> {
-                catchException(result.error)
+                catchException(finalResult.error)
             }
         }
     }
 
     override fun cancel() {
+    }
+
+    private fun workOperation(unsentEmail: Email?) : Result<String, Exception> = Result.of {
+        apiClient.postUnsendEvent(unsentEmail!!.metadataKey,
+                getMailRecipients(unsentEmail))
+    }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+
+    private fun newRetryWithNewSessionOperation(unsentEmail: Email?)
+            : Result<String, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient, activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.authToken = account.jwt
+                workOperation(unsentEmail)
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 
     private fun getMailRecipients(email: Email): List<String> {

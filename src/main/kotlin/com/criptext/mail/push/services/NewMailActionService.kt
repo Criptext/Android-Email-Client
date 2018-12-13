@@ -37,11 +37,11 @@ class NewMailActionService : IntentService("New Mail Action Service") {
 
         when (data.action){
             READ -> {
-                requestHandler.openEmail(data.metadataKey, data.notificationId, db.emailDao(), db.pendingEventDao())
+                requestHandler.openEmail(data.metadataKey, data.notificationId, db.emailDao(), db.pendingEventDao(), db.accountDao())
             }
             TRASH -> {
                 requestHandler.trashEmail(data.metadataKey, data.notificationId,
-                        EmailDetailLocalDB.Default(db), db.emailDao(), db.pendingEventDao())
+                        EmailDetailLocalDB.Default(db), db.emailDao(), db.pendingEventDao(), db.accountDao())
             }
             DELETE -> {
                 val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)

@@ -12,7 +12,9 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.ComposerResult
-import com.criptext.mail.scenes.composer.data.SaveEmailWorker
+import com.criptext.mail.scenes.composer.workers.SaveEmailWorker
+import com.criptext.mail.scenes.mailbox.workers.ResendEmailsWorker
+import com.criptext.mail.scenes.mailbox.workers.SendMailWorker
 import com.criptext.mail.signal.*
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.MockedResponse
@@ -67,9 +69,9 @@ class ResendEmailWorkerTest {
     }
 
     private fun newResendWorker(): ResendEmailsWorker =
-        ResendEmailsWorker(signalClient = signalClient, rawSessionDao = db.rawSessionDao(),
-                httpClient = httpClient, db = mailboxLocalDB,
-                activeAccount = activeAccount, publishFn = {})
+            ResendEmailsWorker(signalClient = signalClient, rawSessionDao = db.rawSessionDao(),
+                    httpClient = httpClient, db = mailboxLocalDB,
+                    activeAccount = activeAccount, publishFn = {})
 
     private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData): SendMailWorker =
             SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
@@ -80,7 +82,7 @@ class ResendEmailWorkerTest {
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(),  publishFn = {}, fileKey = null, originalId = null)
+                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

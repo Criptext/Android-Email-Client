@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.composer.workers.LoadInitialDataWorker
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import io.mockk.mockk
 import org.amshove.kluent.shouldContain

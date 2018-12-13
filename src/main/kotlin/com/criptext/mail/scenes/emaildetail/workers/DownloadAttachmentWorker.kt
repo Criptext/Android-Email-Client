@@ -1,20 +1,23 @@
 package com.criptext.mail.scenes.emaildetail.workers
 
 import android.accounts.NetworkErrorException
-import android.util.Log
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.AndroidFs
+import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -29,20 +32,23 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                                private val emailId: Long,
                                private val fileKey: String?,
                                private val downloadPath: String,
-                               httpClient: HttpClient,
-                               activeAccount: ActiveAccount,
+                               private val accountDao: AccountDao,
+                               private val storage: KeyValueStorage,
+                               private val httpClient: HttpClient,
+                               private val activeAccount: ActiveAccount,
                              override val publishFn: (EmailDetailResult.DownloadFile) -> Unit)
     : BackgroundWorker<EmailDetailResult.DownloadFile> {
 
     override val canBeParallelized = false
     var filepath = ""
 
+    private lateinit var apiClient: CriptextAPIClient
     private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): EmailDetailResult.DownloadFile =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
                     EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     EmailDetailResult.DownloadFile.Forbidden()
@@ -121,18 +127,46 @@ class DownloadAttachmentWorker(private val fileSize: Long,
             filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
             return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
         }
-        val result = downloadFileMetadata(fileToken)
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-                .flatMap(getMetaDataFromJSONResponse)
-                .flatMap(downloadFile(reporter))
+        val result = workOperation(reporter)
 
-        return when (result) {
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation(reporter)
+        else
+            result
+
+        return when (finalResult) {
             is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
-            is Result.Failure -> catchException(result.error)
+            is Result.Failure -> catchException(finalResult.error)
         }
     }
 
     override fun cancel() {
+    }
+
+    private fun workOperation(reporter: ProgressReporter<EmailDetailResult.DownloadFile>) :
+            Result<Unit, Exception> = downloadFileMetadata(fileToken)
+            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+            .flatMap(getMetaDataFromJSONResponse)
+            .flatMap(downloadFile(reporter))
+
+    private fun newRetryWithNewSessionOperation(reporter: ProgressReporter<EmailDetailResult.DownloadFile>)
+            : Result<Unit, Exception> {
+        apiClient = GeneralAPIClient(HttpClient.Default(), activeAccount.jwt)
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                fileServiceAPIClient.authToken = account.jwt
+                workOperation(reporter)
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

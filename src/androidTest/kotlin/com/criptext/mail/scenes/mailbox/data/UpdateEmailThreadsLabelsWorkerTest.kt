@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.scenes.mailbox.workers.UpdateEmailThreadsLabelsWorker
 import com.criptext.mail.utils.*
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
@@ -53,7 +54,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
 
     private fun newWorker(selectedThreadIds: List<String>, currentLabel: Label, selectedLabels: SelectedLabels):
             UpdateEmailThreadsLabelsWorker =
-            UpdateEmailThreadsLabelsWorker( activeAccount = activeAccount,
+            UpdateEmailThreadsLabelsWorker(activeAccount = activeAccount,
                     publishFn = {}, httpClient = httpClient, shouldRemoveCurrentLabel = false,
                     selectedThreadIds = selectedThreadIds, currentLabel = currentLabel, db = mailboxLocalDB,
                     selectedLabels = selectedLabels, pendingDao = db.pendingEventDao())

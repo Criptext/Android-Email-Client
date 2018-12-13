@@ -7,8 +7,8 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.scenes.settings.workers.ChangeVisibilityLabelWorker
 import io.mockk.mockk
-import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule

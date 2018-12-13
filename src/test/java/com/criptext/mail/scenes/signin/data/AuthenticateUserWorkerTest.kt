@@ -64,12 +64,15 @@ class AuthenticateUserWorkerTest {
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
                     .toJSON().toString()
+        val jsonObject = JSONObject()
+        jsonObject.put("token", "__JWTOKEN__")
+        jsonObject.put("refreshToken", "__REFRESH__")
         every {
             httpClient.post("/user/auth", null, capture(authRequestSlot))
         } returns mockedAuthResponse
         every {
             httpClient.post("/keybundle", "__JWTOKEN__", capture(postKeyBundleRequestSlot))
-        } returns "__JWTOKEN__"
+        } returns jsonObject.toString()
 
         every {
             httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
@@ -88,6 +91,7 @@ class AuthenticateUserWorkerTest {
         } answers { extraStepsSlot.captured.run() }
 
         every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
+        every { accountDao.updateRefreshToken("tester", "__REFRESH__") } just Runs
 
         val result = worker.work(mockk())
 
@@ -99,7 +103,7 @@ class AuthenticateUserWorkerTest {
         }
         verify {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","deviceId":2}""")
+                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","deviceId":2,"refreshToken":"__REFRESH__"}""")
         }
 
         // request snapshots

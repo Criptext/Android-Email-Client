@@ -5,6 +5,8 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailContactJoinDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.PendingEventDao
@@ -18,6 +20,8 @@ import com.criptext.mail.scenes.emaildetail.workers.*
 class EmailDetailDataSource(override val runner: WorkRunner,
                             private val pendingDao: PendingEventDao,
                             private val emailDao: EmailDao,
+                            private val accountDao: AccountDao,
+                            private val storage: KeyValueStorage,
                             private val emailContactDao: EmailContactJoinDao,
                             private val httpClient: HttpClient,
                             private val activeAccount: ActiveAccount,
@@ -47,6 +51,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     position = params.position,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -67,6 +73,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     selectedLabels = params.selectedLabels,
                     currentLabel = params.currentLabel,
                     removeCurrentLabel = params.removeCurrentLabel,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -79,6 +87,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     currentLabel = params.currentLabel,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -91,6 +101,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     currentLabel = params.currentLabel,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -104,6 +116,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount,
                     emailDao = emailDao,
                     httpClient = httpClient,
+                    accountDao = accountDao,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -115,6 +129,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount,
                     emailIds = params.emailIds,
                     metadataKeys = params.metadataKeys,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -127,6 +143,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     downloadPath = downloadDir,
                     httpClient = filesHttpClient,
                     activeAccount = activeAccount,
+                    storage = storage,
+                    accountDao = accountDao,
                     publishFn = { result ->
                         flushResults(result)
                     })

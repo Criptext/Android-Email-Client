@@ -53,14 +53,17 @@ class RegisterUserWorkerTest {
     @Test
     fun `should post a new user to the server`() {
         val bodySlot = CapturingSlot<JSONObject>()
+        val returnJson = JSONObject()
+        returnJson.put("token", "__JWT__")
+        returnJson.put("refreshToken", "__REFRESH__")
 
         every {
             keyGenerator.register("tester", 1)
         } returns RegisterUserTestUtils.createRegistrationBundles("tester", 1)
-        every { httpClient.post("/user", null, capture(bodySlot)) } returns "OK"
+        every { httpClient.post("/user", null, capture(bodySlot)) } returns returnJson.toString()
         every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
         every {
-            httpClient.put("/keybundle/pushtoken", "OK", any<JSONObject>())
+            httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>())
         } returns "OK"
         every { db.clearAllTables() } just Runs
 

@@ -89,7 +89,7 @@ class AuthenticateUserWorker(
             val account = Account(recipientId = username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
-                    signature = "")
+                    signature = "", refreshToken = "")
             Pair(registrationBundles, account)
         }
     }
@@ -99,11 +99,15 @@ class AuthenticateUserWorker(
         (registrationBundles, account) ->
         Result.of {
             val postKeyBundleStep = Runnable {
-                account.jwt = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
+                val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
+                val json = JSONObject(response)
+                account.jwt = json.getString("token")
+                account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
                 accountDao.updateJwt(username, account.jwt)
+                accountDao.updateRefreshToken(username, account.refreshToken)
             }
 
             storeAccountTransaction.run(account = account,

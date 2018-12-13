@@ -2,19 +2,26 @@ package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.mapError
 import org.json.JSONObject
 
 class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
                            private val activeAccount: ActiveAccount,
                            private val httpClient: HttpClient,
+                           private val accountDao: AccountDao,
+                           private val storage: KeyValueStorage,
                            override val publishFn: (GeneralResult.LinkAccept) -> Unit
                           ) : BackgroundWorker<GeneralResult.LinkAccept> {
 
@@ -31,13 +38,18 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
         if(untrustedDeviceInfo.recipientId != activeAccount.recipientId)
             return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
 
-        val operation = Result.of {
-            JSONObject(apiClient.postLinkAccept(untrustedDeviceInfo.deviceId)).getInt("deviceId")
-        }
+        val operation = workOperation()
 
-        return when (operation){
+        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
+
+        val finalResult = if(sessionExpired)
+            newRetryWithNewSessionOperation()
+        else
+            operation
+
+        return when (finalResult){
             is Result.Success -> {
-                GeneralResult.LinkAccept.Success(operation.value, untrustedDeviceInfo.deviceId, untrustedDeviceInfo.deviceType)
+                GeneralResult.LinkAccept.Success(finalResult.value, untrustedDeviceInfo.deviceId, untrustedDeviceInfo.deviceType)
             }
             is Result.Failure -> {
                 GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
@@ -47,5 +59,26 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
 
     override fun cancel() {
         TODO("not implemented")
+    }
+
+    private fun workOperation() : Result<Int, Exception> = Result.of {
+        JSONObject(apiClient.postLinkAccept(untrustedDeviceInfo.deviceId)).getInt("deviceId")
+    }
+
+    private fun newRetryWithNewSessionOperation()
+            : Result<Int, Exception> {
+        val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
+                activeAccount, storage, accountDao)
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        return when(refreshOperation){
+            is Result.Success -> {
+                val account = ActiveAccount.loadFromStorage(storage)!!
+                apiClient.token = account.jwt
+                workOperation()
+            }
+            is Result.Failure -> {
+                Result.of { throw refreshOperation.error }
+            }
+        }
     }
 }

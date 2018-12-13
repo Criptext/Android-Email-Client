@@ -17,6 +17,7 @@ import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
+import org.json.JSONObject
 
 
 class CreateSessionWorker(val httpClient: HttpClient,
@@ -69,7 +70,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
             val account = Account(recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "")
+                    signature = "", refreshToken = "")
             Pair(registrationBundles, account)
         }
     }
@@ -79,11 +80,15 @@ class CreateSessionWorker(val httpClient: HttpClient,
         (registrationBundles, account) ->
         Result.of {
             val postKeyBundleStep = Runnable {
-                account.jwt = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
+                val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
+                val json = JSONObject(response)
+                account.jwt = json.getString("token")
+                account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
                 accountDao.updateJwt(username, account.jwt)
+                accountDao.updateRefreshToken(username, account.refreshToken)
             }
 
             storeAccountTransaction.run(account = account,

@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.settings.workers.*
 
 class SettingsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
@@ -26,6 +27,7 @@ class SettingsDataSource(
                     settingsLocalDB = settingsLocalDB,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
+                    storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.GetCustomLabels -> GetCustomLabelsWorker(
@@ -37,6 +39,7 @@ class SettingsDataSource(
                     settingsLocalDB = settingsLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
+                    storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.ChangeVisibilityLabel -> ChangeVisibilityLabelWorker(
@@ -53,24 +56,32 @@ class SettingsDataSource(
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.GetUserSettings -> GetUserSettingsWorker(
+                    storage = storage,
+                    accountDao = settingsLocalDB.accountDao,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.RemoveDevice -> RemoveDeviceWorker(
+                    storage = storage,
+                    accountDao = settingsLocalDB.accountDao,
                     password = params.password,
                     deviceId = params.deviceId,
                     position = params.position,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
-                    publishFn = {res -> flushResults(res)}
+                    publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.ResetPassword -> ForgotPasswordWorker(
+                    storage = storage,
+                    accountDao = settingsLocalDB.accountDao,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.Set2FA -> TwoFAWorker(
+                    storage = storage,
+                    accountDao = settingsLocalDB.accountDao,
                     activeAccount = activeAccount,
                     twoFA = params.twoFA,
                     httpClient = httpClient,

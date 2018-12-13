@@ -7,6 +7,8 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -24,6 +26,8 @@ import com.github.kittinunf.result.flatMap
  */
 class ReadEmailsWorker(private val dao: EmailDao,
                        private val pendingDao: PendingEventDao,
+                       accountDao: AccountDao,
+                       storage: KeyValueStorage,
                        httpClient: HttpClient,
                        activeAccount: ActiveAccount,
                        override val publishFn: (EmailDetailResult.ReadEmails) -> Unit,
@@ -32,8 +36,8 @@ class ReadEmailsWorker(private val dao: EmailDao,
                        ) : BackgroundWorker<EmailDetailResult.ReadEmails> {
 
     override val canBeParallelized = false
-    private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount.jwt, pendingDao)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+            storage, accountDao)
 
 
     override fun catchException(ex: Exception): EmailDetailResult.ReadEmails {

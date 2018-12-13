@@ -7,6 +7,8 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -28,20 +30,21 @@ class UpdateUnreadStatusWorker(
         private val updateUnreadStatus: Boolean,
         httpClient: HttpClient,
         activeAccount: ActiveAccount,
+        storage: KeyValueStorage,
+        accountDao: AccountDao,
         private val currentLabel: Label,
         override val publishFn: (EmailDetailResult.UpdateUnreadStatus) -> Unit)
     : BackgroundWorker<EmailDetailResult.UpdateUnreadStatus> {
 
-    private val apiClient = EmailDetailAPIClient(httpClient, activeAccount.jwt)
     private val peerEventHandler = PeerEventsApiHandler.Default(httpClient,
-            activeAccount.jwt, pendingDao)
+            activeAccount, pendingDao, storage, accountDao)
 
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): EmailDetailResult.UpdateUnreadStatus =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
                     EmailDetailResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     EmailDetailResult.UpdateUnreadStatus.Forbidden()

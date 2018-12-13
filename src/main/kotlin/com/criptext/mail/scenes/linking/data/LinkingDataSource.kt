@@ -6,9 +6,11 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 
 class LinkingDataSource(
+        private val accountDao: AccountDao,
         private val storage: KeyValueStorage,
         private val activeAccount: ActiveAccount,
         private val httpClient: HttpClient,
@@ -20,6 +22,8 @@ class LinkingDataSource(
 
         return when(params){
             is LinkingRequest.CheckForKeyBundle -> CheckForKeyBundleWorker(
+                    storage = storage,
+                    accountDao = accountDao,
                     deviceId = params.deviceId,
                     activeAccount = activeAccount,
                     httpClient = httpClient,

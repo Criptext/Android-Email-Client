@@ -1,13 +1,14 @@
 package com.criptext.mail.scenes.settings.recovery_email.data
 
 import android.accounts.NetworkErrorException
+import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.utils.sha256
 import org.json.JSONObject
 
 
-class RecoveryEmailAPIClient(private val httpClient: HttpClient, private val token: String) {
+class RecoveryEmailAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun putChangerecoveryEmail(email: String, password: String): String{
         val json = JSONObject()

@@ -29,7 +29,8 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = db, storage = storage, publishFn = flushResults
             )
             is GeneralRequest.ConfirmPassword -> ConfirmPasswordWorker(
-                    activeAccount = activeAccount!!, httpClient = httpClient,
+                    activeAccount = activeAccount!!, httpClient = httpClient, storage = storage,
+                    accountDao = db.accountDao(),
                     password = params.password, publishFn = flushResults
             )
             is GeneralRequest.ResetPassword -> ForgotPasswordWorker(
@@ -45,16 +46,18 @@ class GeneralDataSource(override val runner: WorkRunner,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,
                     storage = storage,
+                    accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.LinkAccept -> LinkAuthAcceptWorker(
-                    activeAccount = activeAccount!!, httpClient = httpClient,
-                    untrustedDeviceInfo = params.untrustedDeviceInfo,
+                    activeAccount = activeAccount!!, httpClient = httpClient, accountDao = db.accountDao(),
+                    untrustedDeviceInfo = params.untrustedDeviceInfo, storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.LinkDenied -> LinkAuthDenyWorker(
                     activeAccount = activeAccount!!, httpClient = httpClient,
-                    untrustedDeviceInfo = params.untrustedDeviceInfo,
+                    untrustedDeviceInfo = params.untrustedDeviceInfo, accountDao = db.accountDao(),
+                    storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.DataFileCreation -> DataFileCreationWorker(
@@ -70,6 +73,8 @@ class GeneralDataSource(override val runner: WorkRunner,
                     fileKey = params.key,
                     keyBundle = params.keyBundle,
                     signalClient = signalClient,
+                    accountDao = db.accountDao(),
+                    storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.TotalUnreadEmails -> GetTotalUnreadMailsByLabelWorker(
@@ -88,6 +93,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
                     storage = storage,
+                    accountDao = db.accountDao(),
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.DeleteAccount -> DeleteAccountWorker(
@@ -96,12 +102,15 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
                     storage = storage,
+                    accountDao = db.accountDao(),
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.SetReadReceipts -> ReadReceiptsWorker(
                     activeAccount = activeAccount!!,
                     readReceipts = params.readReceipts,
                     httpClient = httpClient,
+                    accountDao = db.accountDao(),
+                    storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
         }
