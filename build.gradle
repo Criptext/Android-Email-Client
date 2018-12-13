@@ -41,10 +41,10 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
-        versionCode 37
-        versionName "0.14.7"
+        versionCode 39
+        versionName "0.15.0"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

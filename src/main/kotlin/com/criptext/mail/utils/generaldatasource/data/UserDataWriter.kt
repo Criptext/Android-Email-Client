@@ -285,5 +285,6 @@ class UserDataWriter(private val db: AppDatabase)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
+        const val FILE_SYNC_VERSION = 1
     }
 }

@@ -45,4 +45,7 @@ interface FileKeyDao {
     @Delete
     fun deleteAll(files: List<FileKey>)
 
+    @Query("DELETE FROM file_key")
+    fun nukeTable()
+
 }

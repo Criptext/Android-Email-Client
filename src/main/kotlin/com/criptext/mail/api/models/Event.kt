@@ -48,6 +48,11 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
             const val recoveryEmailChanged = 311
             const val recoveryEmailConfirmed = 312
 
+            //Sync Devices
+            const val syncBeginRequest = 211
+            const val syncAccept = 212
+            const val syncDeny = 216
+
             //Get Events
             const val newEvent = 400
 

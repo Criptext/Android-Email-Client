@@ -401,6 +401,7 @@
   <string name="feed_older">VIEJO</string>
   <string name="new_email_notification">Notificación de Correo Nuevo</string>
   <string name="link_device_notification">Notificación de Autenticación de Dispositivo</string>
+  <string name="sync_device_notification">Notificación de Sincronización Manual</string>
   <string name="error_notification">Notificación de Error</string>
   <string name="email_open_notification">Notificación de Correo Leído</string>
   <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
@@ -411,4 +412,9 @@
   <string name="mail_template_at">a las</string>
   <string name="feed_someone">Alguien</string>
   <string name="see">Ver</string>
+  <string name="manual_sync_dialog_message_1">Revisa y aprueba esta sincronización desde uno de tus dispositivos Criptext existentes.</string>
+  <string name="sync_version_incorrect">No puedes sincronizar tu buzón desde este dispositivo, asegurate que ambos dispositivos esten actualizados.</string>
+  <string name="sync_confirmation_dialog_title">Advertencia de Sincronización</string>
+  <string name="sync_confirmation_dialog_message">Todos los datos de tu bandeja de correos serán borrados y reemplazados con los datos de tu otro dispositivo. \n\n<b>¿Estás seguro que deseas continuar?</b></string>
+  <string name="mailbox_sync_complete">Sincronización de Buzón Completa</string>
 </resources>

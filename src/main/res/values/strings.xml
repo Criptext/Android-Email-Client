@@ -401,6 +401,7 @@
   <string name="feed_older">OLDER</string>
   <string name="new_email_notification">New Email Notification</string>
   <string name="link_device_notification">Device Authentication Notification</string>
+  <string name="sync_device_notification">Manual Sync Authentication Notification</string>
   <string name="error_notification">Error Notification</string>
   <string name="email_open_notification">Email Open Notification</string>
   <string name="error_email_max_size">The email has surpassed the attachment limit of %1$s</string>
@@ -411,4 +412,9 @@
   <string name="mail_template_at">at</string>
   <string name="feed_someone">Someone</string>
   <string name="see">See</string>
+  <string name="manual_sync_dialog_message_1">Check and approve this sync from your existing Criptext devices.</string>
+  <string name="sync_version_incorrect">You can\'t sync your mailbox from this device, make sure that both devices are up to date.</string>
+  <string name="sync_confirmation_dialog_title">Sync Warning</string>
+  <string name="sync_confirmation_dialog_message">Your entire mailbox data will be erased and replaced with the mailbox data from your other device. \n\n<b>Are you sure you want to continue?</b></string>
+  <string name="mailbox_sync_complete">Mailbox Sync Complete</string>
 </resources>

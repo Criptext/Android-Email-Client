@@ -7,7 +7,8 @@ import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.signup.data.SignUpAPIClient
+import com.criptext.mail.scenes.signin.data.SignInAPIClient
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result

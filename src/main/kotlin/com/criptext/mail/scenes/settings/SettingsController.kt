@@ -9,6 +9,8 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
@@ -22,12 +24,14 @@ import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
+import com.criptext.mail.scenes.settings.syncing.SyncingScene
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
@@ -58,9 +62,11 @@ class SettingsController(
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.DeleteAccount -> onDeleteAccount(result)
+            is GeneralResult.SyncStatus -> onSyncStatus(result)
         }
     }
 
@@ -73,29 +79,58 @@ class SettingsController(
             is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.Set2FA -> onSet2FA(result)
+            is SettingsResult.SyncBegin -> onSyncBegin(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun onSyncMailboxCanceled() {
+            model.isWaitingForSync = false
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onDarkThemeSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
             model.devices.clear()
             model.hasChangedTheme = true
-            if(isChecked) {
+            if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 host.setAppTheme(R.style.DarkAppTheme)
-            }else {
+            } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 host.setAppTheme(R.style.AppTheme)
             }
         }
 
+        override fun onResendDeviceLinkAuth() {
+            dataSource.submitRequest(SettingsRequest.SyncBegin())
+        }
+
+        override fun onSyncMailbox() {
+            scene.showGeneralDialogConfirmation(DialogData.DialogConfirmationData(
+                        title = UIMessage(R.string.sync_confirmation_dialog_title),
+                        message = listOf(UIMessage(R.string.sync_confirmation_dialog_message)),
+                        type = DialogType.ManualSyncConfirmation()
+                ))
+        }
+
         override fun onDeleteAccountClicked() {
-            scene.showGeneralDialogWithInput(DialogData(
+            scene.showGeneralDialogWithInput(DialogData.DialogMessageData(
                     title = UIMessage(R.string.delete_account_dialog_title),
                     message = listOf(UIMessage(R.string.delete_account_dialog_message)),
                     type = DialogType.DeleteAccount()
@@ -109,6 +144,15 @@ class SettingsController(
                         is DialogType.DeleteAccount -> {
                             scene.toggleGeneralDialogLoad(true)
                             generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
+                        }
+                    }
+                }
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.ManualSyncConfirmation -> {
+                            scene.showSyncBeginDialog()
+                            dataSource.submitRequest(SettingsRequest.SyncBegin())
+                            model.isWaitingForSync = true
                         }
                     }
                 }
@@ -143,7 +187,10 @@ class SettingsController(
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
         override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
@@ -350,6 +397,19 @@ class SettingsController(
         }
     }
 
+    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
+        when (resultData) {
+            is GeneralResult.SyncAccept.Success -> {
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
+                        false, true)
+            }
+            is GeneralResult.SyncAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
+
     private fun onSyncPhonebook(resultData: GeneralResult.SyncPhonebook){
         scene.setSyncContactsProgressVisisble(false)
         when (resultData) {
@@ -437,6 +497,18 @@ class SettingsController(
         }
     }
 
+    private fun onSyncBegin(result: SettingsResult.SyncBegin){
+        scene.enableSyncBeginResendButton()
+        when(result) {
+            is SettingsResult.SyncBegin.Success -> {
+                generalDataSource.submitRequest(GeneralRequest.SyncStatus())
+            }
+            is SettingsResult.SyncBegin.Failure -> {
+                scene.setGeneralDialogWithInputError(result.message)
+            }
+        }
+    }
+
     private fun onGetUserSettings(result: SettingsResult.GetUserSettings){
         when(result) {
             is SettingsResult.GetUserSettings.Success -> {
@@ -502,7 +574,60 @@ class SettingsController(
         }
     }
 
+    private fun onSyncStatus(result: GeneralResult.SyncStatus) {
+        if(model.isWaitingForSync) {
+            when (result) {
+                is GeneralResult.SyncStatus.Success -> {
+                    model.isWaitingForSync = false
+                    model.retryTimeLinkStatus = 0
+                    host.goToScene(SyncingParams(activeAccount.userEmail, result.syncStatusData.authorizerId,
+                            result.syncStatusData.randomId, result.syncStatusData.authorizerType,
+                            result.syncStatusData.authorizerName), true)
+                }
+                is GeneralResult.SyncStatus.Waiting -> {
+                    host.postDelay(Runnable {
+                        if (model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                            generalDataSource.submitRequest(GeneralRequest.SyncStatus())
+                            model.retryTimeLinkStatus++
+                        }
+                    }, RETRY_TIME_DEFAULT)
+                }
+                is GeneralResult.SyncStatus.Denied -> {
+                    scene.syncBeginDialogDenied()
+                    model.retryTimeLinkStatus = 0
+                }
+            }
+        }
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+            if (!model.isWaitingForSync){
+                host.runOnUiThread(Runnable {
+                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+                })
+            }
+        }
+
+        override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
+            if(model.isWaitingForSync){
+                model.isWaitingForSync = false
+                host.getHandler()?.removeCallbacks(null)
+                host.goToScene(SyncingParams(activeAccount.userEmail, syncStatusData.authorizerId,
+                        syncStatusData.randomId, syncStatusData.authorizerType,
+                        syncStatusData.authorizerName), true)
+            }
+        }
+
+        override fun onSyncRequestDeny() {
+            if(model.isWaitingForSync){
+                model.isWaitingForSync = false
+                host.runOnUiThread(Runnable {
+                    scene.syncBeginDialogDenied()
+                })
+            }
+        }
+
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }
@@ -550,6 +675,10 @@ class SettingsController(
         override fun onError(uiMessage: UIMessage) {
             scene.showMessage(uiMessage)
         }
+    }
+    companion object {
+        const val RETRY_TIME_DEFAULT = 5000L
+        const val RETRY_TIMES_DEFAULT = 12
     }
 
 }

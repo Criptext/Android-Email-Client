@@ -11,6 +11,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
@@ -50,12 +51,22 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
+
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun leaveComposer() {

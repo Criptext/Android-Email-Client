@@ -3,6 +3,7 @@ package com.criptext.mail.scenes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
+import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -23,4 +24,5 @@ sealed class ActivityMessage {
     class DraftSaved: ActivityMessage()
     data class ShowUIMessage(val message: UIMessage): ActivityMessage()
     data class ActivatePin(val isSuccess: Boolean): ActivityMessage()
+    class SyncMailbox: ActivityMessage()
 }

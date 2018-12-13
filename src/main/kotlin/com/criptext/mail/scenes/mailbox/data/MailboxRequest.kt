@@ -55,4 +55,6 @@ sealed class MailboxRequest{
 
     class GetPendingLinkRequest: MailboxRequest()
 
+    class GetPendingSyncRequest: MailboxRequest()
+
 }

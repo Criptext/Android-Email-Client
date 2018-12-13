@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
@@ -30,6 +31,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -64,6 +66,7 @@ interface EmailDetailScene {
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
     fun showStartGuideEmailIsRead(view: View)
     fun showStartGuideMenu(view: View)
 
@@ -82,6 +85,7 @@ interface EmailDetailScene {
         private val deleteEmailDialog = DeleteEmailDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -182,6 +186,13 @@ interface EmailDetailScene {
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
         }
 
         override fun setConfirmPasswordError(message: UIMessage) {

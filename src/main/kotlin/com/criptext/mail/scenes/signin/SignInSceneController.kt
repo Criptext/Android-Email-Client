@@ -2,6 +2,8 @@ package com.criptext.mail.scenes.signin
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -342,6 +344,18 @@ class SignInSceneController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
+
+        }
+
+        override fun onSyncRequestDeny() {
+
+        }
+
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
             host.runOnUiThread(Runnable {
                 if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {

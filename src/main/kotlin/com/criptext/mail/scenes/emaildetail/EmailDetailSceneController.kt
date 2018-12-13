@@ -8,6 +8,8 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
@@ -37,6 +39,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
@@ -65,6 +68,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.UpdateMailbox -> onMailboxUpdate(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.SyncAccept -> onSyncAccept(result)
         }
     }
 
@@ -82,16 +86,31 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
+
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
         override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
@@ -160,6 +179,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showError(resultData.message)
+            }
+        }
+    }
+
+    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
+        when (resultData) {
+            is GeneralResult.SyncAccept.Success -> {
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
+                        false, true)
+            }
+            is GeneralResult.SyncAccept.Failure -> {
+                scene.showMessage(resultData.message)
             }
         }
     }
@@ -730,6 +762,20 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+            host.runOnUiThread(Runnable {
+                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+            })
+        }
+
+        override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
+
+        }
+
+        override fun onSyncRequestDeny() {
+
+        }
+
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }

@@ -10,6 +10,8 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signin.OnPasswordLoginDialogListener
 import com.criptext.mail.scenes.signin.PasswordLoginDialog
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 
 /**
  * Created by sebas on 3/8/18.
@@ -114,8 +116,8 @@ class LoginValidationHolder(
 
         buttonResend.visibility = View.GONE
         textViewPrompt.visibility = View.GONE
-        textViewTitle.text = view.context.getText(R.string.title_failed)
-        textViewBody.text = view.context.getText(R.string.login_failed_body)
+        textViewTitle.text = view.context.getLocalizedUIMessage(UIMessage(R.string.title_failed))
+        textViewBody.text = view.context.getLocalizedUIMessage(UIMessage(R.string.login_failed_body))
         textViewNotApproved.visibility = View.VISIBLE
         animLoading?.cancel()
         loadingImageLayout.visibility = View.GONE

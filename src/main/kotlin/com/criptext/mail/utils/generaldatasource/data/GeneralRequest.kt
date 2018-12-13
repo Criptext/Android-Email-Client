@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 import android.content.ContentResolver
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.signal.PreKeyBundleShareData
@@ -23,4 +24,10 @@ sealed class GeneralRequest {
     data class Logout(val shouldDeleteAllData: Boolean): GeneralRequest()
     data class DeleteAccount(val password: String): GeneralRequest()
     data class SetReadReceipts(val readReceipts: Boolean): GeneralRequest()
+    data class CheckForKeyBundle(val deviceId: Int): GeneralRequest()
+    data class LinkData(val key: String, val dataAddress: String, val authorizerId: Int): GeneralRequest()
+    class LinkDataReady: GeneralRequest()
+    class SyncStatus: GeneralRequest()
+    data class SyncAccept(val trustedDeviceInfo: TrustedDeviceInfo): GeneralRequest()
+    data class SyncDenied(val trustedDeviceInfo: TrustedDeviceInfo): GeneralRequest()
 }

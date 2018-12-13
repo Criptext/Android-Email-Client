@@ -25,18 +25,21 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val ACTION_OPEN = "open_activity"
         const val ACTION_INBOX = "open_thread"
         const val ACTION_LINK_DEVICE = "link_device"
+        const val ACTION_SYNC_DEVICE = "sync_device"
         const val ACTION_ERROR = "error"
 
         //Channel Id's for the Notifications
         const val CHANNEL_ID_NEW_EMAIL = "new_email_channel"// The id of the channel.
         const val CHANNEL_ID_OPEN_EMAIL = "open_email_channel"// The id of the channel.
         const val CHANNEL_ID_LINK_DEVICE = "link_device_channel"// The id of the channel.
+        const val CHANNEL_ID_SYNC_DEVICE = "sync_device_channel"// The id of the channel.
         const val CHANNEL_ID_ERROR = "error_channel"// The id of the channel.
 
         //Notification ID
         const val OPEN_ID = 0
         const val INBOX_ID = 1
         const val LINK_DEVICE_ID = 2
+        const val SYNC_DEVICE_ID = 4
         const val ERROR_ID = 3
     }
 
@@ -57,6 +60,7 @@ abstract class CriptextNotification(open val ctx: Context) {
             ACTION_OPEN -> CHANNEL_ID_OPEN_EMAIL
             ACTION_INBOX -> CHANNEL_ID_NEW_EMAIL
             ACTION_LINK_DEVICE -> CHANNEL_ID_LINK_DEVICE
+            ACTION_SYNC_DEVICE -> CHANNEL_ID_SYNC_DEVICE
             ACTION_ERROR -> CHANNEL_ID_ERROR
             else -> "DEFAULT_CHANNEL"
         }
@@ -88,6 +92,7 @@ abstract class CriptextNotification(open val ctx: Context) {
             ACTION_INBOX -> notManager.notify(INBOX_ID, finalNotification)
             ACTION_OPEN -> notManager.notify(OPEN_ID, finalNotification)
             ACTION_LINK_DEVICE -> notManager.notify(LINK_DEVICE_ID, finalNotification)
+            ACTION_SYNC_DEVICE -> notManager.notify(SYNC_DEVICE_ID, finalNotification)
             ACTION_ERROR -> notManager.notify(ERROR_ID, finalNotification)
         }
 
@@ -106,6 +111,10 @@ abstract class CriptextNotification(open val ctx: Context) {
             }
             ACTION_LINK_DEVICE -> {
                 val channelInfo = Pair("link_device_channel", ctx.getString(R.string.link_device_notification))
+                NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+            }
+            ACTION_SYNC_DEVICE -> {
+                val channelInfo = Pair("sync_device_channel", ctx.getString(R.string.sync_device_notification))
                 NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
             }
             ACTION_ERROR -> {

@@ -81,6 +81,42 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         }
     }
 
+    fun syncAccept(deviceId: String, notificationId: Int): Int {
+        val operation = Result.of {
+            JSONObject(apiClient.postSyncAccept(deviceId)).getInt("deviceId")
+        }
+        return when(operation){
+            is Result.Success -> {
+                manager.cancel(notificationId)
+                operation.value
+            }
+            is Result.Failure -> {
+                manager.cancel(notificationId)
+                val data = PushData.Error(UIMessage(R.string.push_link_error_title),
+                        UIMessage(R.string.push_link_error_message_approve), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data)
+                notifyPushEvent(data = data, cn = not, notification = errorNot)
+                -1
+            }
+        }
+    }
+
+    fun syncDeny(deviceId: String, notificationId: Int){
+        val operation = Result.of { apiClient.postSyncDeny(deviceId) }
+        when(operation){
+            is Result.Success -> manager.cancel(notificationId)
+            is Result.Failure -> {
+                manager.cancel(notificationId)
+                val data = PushData.Error(UIMessage(R.string.push_link_error_title),
+                        UIMessage(R.string.push_link_error_message_deny), isPostNougat, true)
+                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                        null, data)
+                notifyPushEvent(data = data, cn = not, notification = errorNot)
+            }
+        }
+    }
+
     fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
         handleNotificationCountForNewEmail(notificationId)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
@@ -150,13 +186,17 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
             }
             is Result.Failure -> {
-                val data = PushData.Error(UIMessage(R.string.push_email_error_title),
-                        UIMessage(R.string.push_mail_error_message_trash), isPostNougat, true)
-                val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
-                        null, data = data)
-                notifyPushEvent(data = data, cn = not, notification = errorNot)
+                showErrorNotification(UIMessage(R.string.push_email_error_title),
+                        UIMessage(R.string.push_mail_error_message_trash))
             }
         }
+    }
+
+    fun showErrorNotification(title: UIMessage, body: UIMessage){
+        val data = PushData.Error(title, body, isPostNougat, true)
+        val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
+                null, data = data)
+        notifyPushEvent(data = data, cn = not, notification = errorNot)
     }
 
     private fun handleNotificationCountForNewEmail(notificationId: Int){

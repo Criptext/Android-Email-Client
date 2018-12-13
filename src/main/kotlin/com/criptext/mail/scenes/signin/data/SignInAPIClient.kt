@@ -5,6 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -43,6 +44,7 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
     fun postLinkBegin(recipientId: String): String{
         val jsonPut = JSONObject()
         jsonPut.put("targetUsername", recipientId)
+        jsonPut.put("version", UserDataWriter.FILE_SYNC_VERSION)
 
         return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
     }

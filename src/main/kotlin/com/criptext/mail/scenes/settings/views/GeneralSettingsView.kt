@@ -23,6 +23,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsRecoveryEmail: View
     private lateinit var settingsRecoveryEmailLoading: View
     private lateinit var settingsSyncPhonebookContacts: View
+    private lateinit var settingsSyncMailbox: View
     private lateinit var settingsPin: View
     private lateinit var settingsRecoveryEmailConfirmText: TextView
     private lateinit var settingsSyncPhonebookProgress: ProgressBar
@@ -47,6 +48,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsPin = view.findViewById(R.id.settings_privacy)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
         settingsSyncPhonebookContacts = view.findViewById(R.id.settings_sync_contacts)
+        settingsSyncMailbox = view.findViewById(R.id.settings_sync_mailbox)
         settingsRecoveryEmailLoading = view.findViewById(R.id.settings_recovery_loading)
         settingsRecoveryEmailConfirmText = view.findViewById(R.id.not_confirmed_text) as TextView
         settingsSyncPhonebookProgress = view.findViewById(R.id.sync_phonebook_progress) as ProgressBar
@@ -90,6 +92,16 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         darkThemeSwitch.setOnCheckedChangeListener { _, _ ->  }
         darkThemeSwitch.isChecked = hasDarkTheme
         setSwitchListener()
+    }
+
+    fun enableSyncMailbox() {
+        settingsSyncMailbox.isEnabled = true
+        settingsSyncMailbox.isClickable = true
+        settingsSyncMailbox.findViewById<TextView>(R.id.text_view_privacy).setTextColor(ContextCompat.getColor(
+                view.context, R.color.drawer_text))
+        settingsSyncMailbox.setOnClickListener {
+            settingsUIObserver?.onSyncMailbox()
+        }
     }
 
     fun enable2FASwitch(isEnabled: Boolean){
@@ -140,6 +152,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsSyncPhonebookContacts.setOnClickListener {
             settingsUIObserver?.onSyncPhonebookContacts()
         }
+        settingsSyncMailbox.setOnClickListener {
+            settingsUIObserver?.onSyncMailbox()
+        }
+        setSwitchListener()
     }
 
     private fun setSwitchListener(){

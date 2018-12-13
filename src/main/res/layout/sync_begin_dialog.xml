@@ -1,0 +1,146 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewRoot"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_out_dialog_message"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/textViewBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/manual_sync_dialog_message_1"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="14sp"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/failed_x"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/warning"
+            android:paddingBottom="15dp"
+            android:paddingTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:tint="#dc4d48"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:id="@+id/sign_in_anim">
+
+        <ImageView
+            android:id="@+id/imageViewCircularArrow"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/circular_arrow"
+            android:tint="@color/light_blue"/>
+
+        <ImageView
+            android:id="@+id/imageViewWatch"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/sandwatch"
+            android:padding="10dp"
+            android:rotation="20"
+            android:tint="@color/light_blue"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/textViewNotAproved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:text="@string/not_approved"/>
+
+    <TextView
+        android:id="@+id/textViewPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/didnt_get_prompt"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/resend_button"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/azure"
+        android:text="@string/button_resendit"
+        android:textSize="14sp"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+
+
+        <Button
+            android:textColor="@color/button_text_color"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/cancel_button"
+            android:stateListAnimator="@null"
+            android:background="@drawable/mailbox_button_move_to_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

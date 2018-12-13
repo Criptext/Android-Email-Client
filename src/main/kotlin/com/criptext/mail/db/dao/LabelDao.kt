@@ -54,4 +54,7 @@ interface LabelDao {
             where id=:id""")
     fun updateVisibility(id: Long, visibility: Boolean)
 
+    @Query("DELETE FROM label")
+    fun nukeTable()
+
 }

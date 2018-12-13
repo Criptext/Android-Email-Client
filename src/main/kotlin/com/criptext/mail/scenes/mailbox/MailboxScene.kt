@@ -16,12 +16,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -77,6 +75,7 @@ interface MailboxScene{
     fun refreshMails()
     fun clearRefreshing()
     fun showMessage(message : UIMessage, showAction: Boolean = false)
+    fun showToastMessage(message : UIMessage)
     fun hideDrawer()
     fun showRefresh()
     fun scrollTop()
@@ -92,6 +91,7 @@ interface MailboxScene{
     fun hideUpdateBanner()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
@@ -124,6 +124,7 @@ interface MailboxScene{
         private val welcomeDialog = WelcomeTourDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
@@ -215,6 +216,13 @@ interface MailboxScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
         }
 
         override fun onBackPressed(): Boolean {
@@ -363,6 +371,15 @@ interface MailboxScene{
                     context.getLocalizedUIMessage(message), observer as UIObserver,
                     showAction
                     )
+        }
+
+        override fun showToastMessage(message: UIMessage) {
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(
+                    context,
+                    context.getLocalizedUIMessage(message),
+                    duration)
+            toast.show()
         }
 
         override fun hideDrawer() {

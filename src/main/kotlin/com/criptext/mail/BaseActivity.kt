@@ -17,6 +17,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
+import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
@@ -35,6 +36,7 @@ import com.criptext.mail.scenes.settings.privacyandsecurity.PrivacyAndSecurityMo
 import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
+import com.criptext.mail.scenes.settings.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpActivity
@@ -202,6 +204,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
             is PrivacyAndSecurityParams -> PrivacyAndSecurityModel(params.hasReadReceipts)
+            is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
+                    params.deviceType, params.authorizerName)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -261,12 +265,26 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 LinkDeviceActionService.APPROVE ->    {
                     val uuid = intent.extras.get("randomId").toString()
                     val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
+                    val version = intent.extras.getInt("version")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType)
+                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType, version)
+                }
+                SyncDeviceActionService.APPROVE ->    {
+                    val uuid = intent.extras.get("randomId").toString()
+                    val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
+                    val version = intent.extras.getInt("version")
+                    val deviceId = intent.extras.getInt("deviceId")
+                    val deviceName = intent.extras.getString("deviceName")
+                    if(intent.extras != null) {
+                        for (key in intent.extras.keySet()){
+                            intent.removeExtra(key)
+                        }
+                    }
+                    return IntentExtrasData.IntentExtrasSyncDevice(intent.action, uuid, deviceId, deviceName, deviceType, version)
                 }
                 NewMailActionService.REPLY -> {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()

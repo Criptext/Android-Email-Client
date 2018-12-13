@@ -7,13 +7,14 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
 import com.criptext.mail.scenes.settings.views.DevicesSettingsView
 import com.criptext.mail.scenes.settings.views.GeneralSettingsView
 import com.criptext.mail.scenes.settings.views.LabelSettingsView
 import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
+import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -30,7 +31,9 @@ interface SettingsScene{
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
-    fun showGeneralDialogWithInput(dialogData: DialogData)
+    fun showGeneralDialogWithInput(dialogData: DialogData.DialogMessageData)
+    fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
+    fun showSyncBeginDialog()
     fun setGeneralDialogWithInputError(message: UIMessage)
     fun toggleGeneralDialogLoad(isLoading: Boolean)
     fun showMessageAndProgressDialog(message: UIMessage)
@@ -49,9 +52,13 @@ interface SettingsScene{
     fun removeDeviceDialogToggleLoad(loading: Boolean)
     fun removeDeviceDialogDismiss()
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun setSyncContactsProgressVisisble(isVisible: Boolean)
     fun getLabelLocalizedName(name: String): String
+    fun enableSyncBeginResendButton()
+    fun dismissSyncBeginDialog()
+    fun syncBeginDialogDenied()
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -86,6 +93,7 @@ interface SettingsScene{
         }
 
         private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
+        private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
@@ -95,6 +103,8 @@ interface SettingsScene{
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
+        private val syncBeginDialog = SyncBeginDialog(context, UIMessage(R.string.title_sync))
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -137,9 +147,14 @@ interface SettingsScene{
             messageAndProgressDialog?.showDialog()
         }
 
-        override fun showGeneralDialogWithInput(dialogData: DialogData) {
+        override fun showGeneralDialogWithInput(dialogData: DialogData.DialogMessageData) {
             generalDialogWithInputPassword = GeneralDialogWithInputPassword(context, dialogData)
             generalDialogWithInputPassword?.showDialog(settingsUIObserver)
+        }
+
+        override fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData) {
+            generalDialogConfirmation = GeneralDialogConfirmation(context, dialogData)
+            generalDialogConfirmation?.showDialog(settingsUIObserver)
         }
 
         override fun setGeneralDialogWithInputError(message: UIMessage) {
@@ -185,6 +200,13 @@ interface SettingsScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
         }
 
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, trustedDeviceInfo)
+        }
+
         override fun removeDeviceDialogDismiss() {
 
             settingRemoveDeviceDialog.dismissDialog()
@@ -200,6 +222,22 @@ interface SettingsScene{
 
         override fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean) {
             twoFADialog.showLogoutDialog(hasRecoveryEmailConfirmed)
+        }
+
+        override fun showSyncBeginDialog() {
+            syncBeginDialog.showDialog(settingsUIObserver)
+        }
+
+        override fun dismissSyncBeginDialog() {
+            syncBeginDialog.dismiss()
+        }
+
+        override fun syncBeginDialogDenied() {
+            syncBeginDialog.showFailedSync()
+        }
+
+        override fun enableSyncBeginResendButton() {
+            syncBeginDialog.enableResendButton()
         }
 
         override fun setSyncContactsProgressVisisble(isVisible: Boolean) {
@@ -219,6 +257,8 @@ interface SettingsScene{
             generalView.setDarkTheme(
                     AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
             )
+            if(model.devices.size == 1)
+                generalView.enable2FASwitch(true)
         }
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {

@@ -23,6 +23,10 @@ sealed class PushData {
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
 
     data class LinkDevice(val title: String, val body: String, val randomId: String,
-                          val deviceType: DeviceUtils.DeviceType, val deviceName: String,
+                          val deviceType: DeviceUtils.DeviceType, val deviceName: String, val syncFileVersion: Int,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
+
+    data class SyncDevice(val title: String, val body: String, val randomId: String, val deviceId: Int,
+                          val deviceType: DeviceUtils.DeviceType, val deviceName: String, val syncFileVersion: Int,
+                          val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
 }

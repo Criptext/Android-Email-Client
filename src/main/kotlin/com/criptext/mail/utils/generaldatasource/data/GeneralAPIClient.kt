@@ -57,6 +57,21 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
         return httpClient.post(path = "/link/deny", authToken = token, body = jsonPost)
     }
 
+    fun postSyncAccept(randomId: String): String {
+        val jsonPost = JSONObject()
+        jsonPost.put("randomId", randomId)
+        jsonPost.put("version", UserDataWriter.FILE_SYNC_VERSION)
+
+        return httpClient.post(path = "/sync/accept", authToken = token, body = jsonPost)
+    }
+
+    fun postSyncDeny(deviceId: String): String {
+        val jsonPost = JSONObject()
+        jsonPost.put("randomId", deviceId)
+
+        return httpClient.post(path = "/sync/deny", authToken = token, body = jsonPost)
+    }
+
     fun postFileStream(filePath: String, randomId: String): String {
         return httpClient.postFileStream(path = "/userdata", authToken = token, filePath = filePath,
                 randomId = randomId)
@@ -82,5 +97,20 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
 
     fun downloadNewsImageFile(imageUrl: Int): InputStream {
         return httpClient.getFileStream(path = "/news/security.png", authToken = token, params = emptyMap())
+    }
+
+    fun postSyncBegin(version: Int): String{
+        val jsonPut = JSONObject()
+        jsonPut.put("version", version)
+
+        return httpClient.post(path = "/sync/begin", authToken = token, body = jsonPut)
+    }
+
+    fun getSyncStatus(): String{
+        return httpClient.get(path = "/sync/status", authToken = token)
+    }
+
+    fun getFileStream(params: Map<String,String>): InputStream {
+        return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
     }
 }

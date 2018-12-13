@@ -62,4 +62,7 @@ interface FileDao {
     @Delete
     fun deleteAll(files: List<CRFile>)
 
+    @Query("DELETE FROM file")
+    fun nukeTable()
+
 }
