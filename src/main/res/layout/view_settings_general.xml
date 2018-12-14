@@ -271,13 +271,12 @@
 
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/title_recovery_email"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"
-                    android:layout_weight="1"/>
+                    android:textColor="@color/drawer_text"/>
 
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"

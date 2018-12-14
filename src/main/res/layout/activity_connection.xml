@@ -12,9 +12,10 @@
         android:id="@+id/titleSync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="130dp"
         android:layout_marginBottom="60dp"
         android:textSize="24sp"
+        android:textAlignment="center"
         android:textColor="#373a45"
         android:layout_centerHorizontal="true"
         android:text="@string/title_sync"/>
