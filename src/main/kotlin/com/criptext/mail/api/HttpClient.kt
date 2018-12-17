@@ -64,7 +64,7 @@ interface HttpClient {
                 this.addHeader("criptext-api-version", apiVersion)
 
         private fun Request.Builder.addLanguageHeader() =
-                this.addHeader("system-language", Locale.getDefault().language)
+                this.addHeader("Accept-Language", Locale.getDefault().toString().toLowerCase())
 
         private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()

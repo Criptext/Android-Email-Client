@@ -441,9 +441,9 @@
   <string name="not_implemented">Not Implemented</string>
   <string name="email_sent">Email Sent</string>
   <string name="from_popup">From:</string>
-  <string name="to_popup">To:</string>
-  <string name="cc_popup">CC:</string>
-  <string name="bcc_popup">BCC:</string>
+  <string name="to_popup">To:\u0020\u0020</string>
+  <string name="cc_popup">CC:\u0020\u0020</string>
+  <string name="bcc_popup">BCC:\u0020</string>
   <string name="reply_popup">Reply To:</string>
   <string name="date_popup">Date:</string>
   <string name="subject_popup">Subject:</string>
