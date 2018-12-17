@@ -1,9 +1,8 @@
 package com.criptext.mail.scenes.composer.ui
 
 import android.graphics.Color
-import android.support.v7.app.AppCompatDelegate
 import android.view.View
-import com.criptext.mail.R
+import androidx.appcompat.app.AppCompatDelegate
 import jp.wasabeef.richeditor.RichEditor
 
 /**

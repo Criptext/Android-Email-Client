@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.res.ColorStateList
 import android.os.Build
-import android.support.annotation.RequiresApi
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
+import androidx.annotation.RequiresApi
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher

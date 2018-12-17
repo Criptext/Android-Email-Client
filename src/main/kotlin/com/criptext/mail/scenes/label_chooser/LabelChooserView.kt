@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.label_chooser
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.androidui.labelwrapper.LabelWrapperListView
 import com.criptext.mail.androidui.labelwrapper.LabelWrapperRecyclerView
 import com.criptext.mail.R

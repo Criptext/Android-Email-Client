@@ -33,7 +33,7 @@
             android:textColor="?attr/criptextSecondaryTextColor"
             android:text="@string/delete_email_warning"
             />
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             />

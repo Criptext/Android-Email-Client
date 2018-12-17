@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.composer.ui.holders
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.*
 import com.criptext.mail.R

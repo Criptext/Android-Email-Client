@@ -1,10 +1,11 @@
 package com.criptext.mail.scenes.emaildetail
 
-import android.support.v7.widget.RecyclerView
+
 import android.view.View
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
@@ -13,19 +14,19 @@ import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.ui.EmailDetailUIObserver
-import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.criptext.mail.scenes.emaildetail.ui.holders.FullEmailHolder
+import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
 import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.criptext.mail.utils.virtuallist.VirtualList
 
 /**
  * Created by sebas on 3/12/18.

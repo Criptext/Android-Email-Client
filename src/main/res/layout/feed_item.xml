@@ -6,9 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeView"
     android:foreground="?attr/selectableItemBackground"
-    app:mode="same_level"
+    app:swipeMode="same_level"
     app:dragEdge="right"
     android:background="?attr/criptextColorBackground">
+
 
     <!-- RIGHT VIEW -->
     <LinearLayout

@@ -1,6 +1,6 @@
 package com.criptext.mail.utils.ui
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ProgressBar
 import com.criptext.mail.R

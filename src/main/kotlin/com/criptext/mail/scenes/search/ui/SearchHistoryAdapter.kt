@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.search.ui
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.criptext.mail.R

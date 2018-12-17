@@ -2,9 +2,6 @@ package com.criptext.mail.utils
 
 import android.content.Context
 import android.print.PrintAttributes
-import android.print.PrintDocumentAdapter
-import android.content.Context.PRINT_SERVICE
-import android.support.v4.content.ContextCompat.getSystemService
 import android.print.PrintManager
 import android.webkit.WebView
 import com.criptext.mail.R

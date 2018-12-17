@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.settings.views
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.criptext.mail.R
 import com.criptext.mail.scenes.settings.SettingsUIObserver

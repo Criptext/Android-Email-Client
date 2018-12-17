@@ -2,9 +2,9 @@ package com.criptext.mail.scenes.signup.holders
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatEditText
 import android.view.View
 import com.criptext.mail.R
 import com.criptext.mail.validation.FormInputState

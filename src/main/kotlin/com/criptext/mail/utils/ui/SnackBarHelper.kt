@@ -1,7 +1,7 @@
 package com.criptext.mail.utils.ui
 
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.content.ContextCompat
 import android.view.View
 import com.criptext.mail.R
 import com.criptext.mail.utils.getColorFromAttr
@@ -20,7 +20,7 @@ class SnackBarHelper{
                     sb.dismiss()
                 }
             }
-            val snackbarTextId = android.support.design.R.id.snackbar_text
+            val snackbarTextId = R.id.snackbar_text
             val textView = sb.view.findViewById(snackbarTextId) as TextView
             textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
             sb.show()

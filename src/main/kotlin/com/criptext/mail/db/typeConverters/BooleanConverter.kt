@@ -1,6 +1,6 @@
 package com.criptext.mail.db.typeConverters
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 
 /**
  * Created by sebas on 2/7/18.

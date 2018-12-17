@@ -3,16 +3,17 @@ package com.criptext.mail.scenes.composer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
 import com.criptext.mail.utils.UIMessage
@@ -104,6 +105,9 @@ class NonCriptextEmailSendDialog(val context: Context) {
         passwordInput = view.findViewById(R.id.password_input)
         passwordSuccessImage = view.findViewById(R.id.success_password)
         passwordErrorImage = view.findViewById(R.id.error_password)
+        passwordInput.isPasswordVisibilityToggleEnabled = true
+        passwordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
 
         btnSend = (view.findViewById(R.id.non_criptext_email_send) as Button)
         btnCancel = (view.findViewById(R.id.non_criptext_email_cancel) as Button)

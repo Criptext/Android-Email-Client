@@ -2,7 +2,7 @@ package com.criptext.mail.utils.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.support.v4.view.ViewPager
+import androidx.viewpager.widget.ViewPager
 
 
 class DeactivatedViewPager : ViewPager {

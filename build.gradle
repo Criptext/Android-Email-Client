@@ -1,5 +1,7 @@
 buildscript {
+
     ext.kotlin_version = '1.2.71'
+
 
     repositories {
         google()
@@ -46,7 +48,7 @@ android {
         versionCode 40
         versionName "0.15.1"
         applicationId "com.criptext.mail"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
 
@@ -89,21 +91,22 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // instrumentation tests
-    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+
 
     //Firebase
     implementation 'com.google.firebase:firebase-messaging:17.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.3'
 
     // Room
-    implementation 'android.arch.persistence.room:runtime:1.1.1'
-    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
-    kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'androidx.room:room-runtime:2.1.0-alpha03'
+    implementation 'androidx.room:room-rxjava2:2.1.0-alpha03'
+    kapt "androidx.room:room-compiler:2.1.0-alpha03"
 
     //sqlite-android
-    implementation 'io.requery:sqlite-android:3.25.2'
+    implementation 'io.requery:sqlite-android:3.26.0'
 
     // Robolectric
     testImplementation 'junit:junit:4.12'
@@ -119,11 +122,12 @@ dependencies {
     androidTestImplementation 'org.amshove.kluent:kluent-android:1.41'
 
     // Support v4
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
 
     //easy dialog
     implementation 'com.github.michaelye.easydialog:easydialog:1.4'
@@ -147,7 +151,7 @@ dependencies {
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
 
     //Swipe Option
-    implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
+    implementation 'com.github.jorgeblacio:SwipeRevealLayout:android_x-SNAPSHOT'
 
     //Http client
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
@@ -182,7 +186,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.10.1'
 
     // constraint layout
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
 
     //Rich Editor
     implementation 'jp.wasabeef:richeditor-android:1.2.2'
@@ -197,7 +201,7 @@ dependencies {
 
     implementation 'com.github.danieltigse:TimeDurationPicker:0.3'
 
-    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     // file picker
 

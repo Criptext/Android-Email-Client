@@ -3,12 +3,12 @@ package com.criptext.mail.scenes.settings.syncing
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.utils.DeviceUtils

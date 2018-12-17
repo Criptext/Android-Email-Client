@@ -10,7 +10,7 @@
     <include layout="@layout/include_mailbox"/>
 
     <!-- Lef Menu -->
-    <android.support.design.widget.NavigationView
+    <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_left_view"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
         android:fitsSystemWindows="true"
         android:background="?attr/criptextLeftMenuBackground">
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -32,12 +32,12 @@
 
             </LinearLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
-    </android.support.design.widget.NavigationView>
+    </com.google.android.material.navigation.NavigationView>
 
     <!-- Right Menu -->
-    <android.support.design.widget.NavigationView
+    <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_right_view"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
@@ -54,6 +54,6 @@
 
         </LinearLayout>
 
-    </android.support.design.widget.NavigationView>
+    </com.google.android.material.navigation.NavigationView>
 
 </com.criptext.mail.utils.ui.MyDrawerLayout>

@@ -1,7 +1,7 @@
 package com.criptext.mail.utils.ui
 
 import android.content.Context
-import android.support.v4.widget.DrawerLayout
+import androidx.drawerlayout.widget.DrawerLayout
 import android.util.AttributeSet
 
 /**

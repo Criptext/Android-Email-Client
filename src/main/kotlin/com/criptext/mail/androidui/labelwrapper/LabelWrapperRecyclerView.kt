@@ -1,8 +1,8 @@
 package com.criptext.mail.androidui.labelwrapper
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.scenes.label_chooser.LabelWrapperAdapter
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.virtuallist.VirtualList

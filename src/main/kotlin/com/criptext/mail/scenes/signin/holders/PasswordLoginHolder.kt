@@ -1,15 +1,17 @@
 package com.criptext.mail.scenes.signin.holders
 
-import android.support.design.widget.TextInputEditText
+import com.google.android.material.textfield.TextInputEditText
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.validation.ProgressButtonState
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Created by sebas on 3/8/18.
@@ -23,6 +25,7 @@ class PasswordLoginHolder(
     private val title: TextView = view.findViewById(R.id.textViewTitle)
     private val username: TextView = view.findViewById(R.id.username)
     private val forgotPassword : TextView = view.findViewById(R.id.forgot_password)
+    private val passwordInput: TextInputLayout = view.findViewById(R.id.password_input)
     private val password: TextInputEditText = view.findViewById(R.id.password)
     private val buttonConfirm: Button = view.findViewById(R.id.buttonConfirm)
     private val backButton: View = view.findViewById(R.id.icon_back)
@@ -31,6 +34,9 @@ class PasswordLoginHolder(
     init {
         username.text  = "${initialState.username}@${Contact.mainDomain}"
         password.text = SpannableStringBuilder(initialState.password)
+        passwordInput.isPasswordVisibilityToggleEnabled = true
+        passwordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(view.context, R.color.login_password_eye))
         setListeners()
         setSubmitButtonState(initialState.buttonState)
     }

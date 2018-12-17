@@ -5,7 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.Animation
@@ -26,7 +26,7 @@ import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Build.VERSION
 import android.os.Build.VERSION.SDK_INT
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.Gravity

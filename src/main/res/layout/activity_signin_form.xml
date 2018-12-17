@@ -74,14 +74,14 @@ android:focusableInTouchMode="true" >
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/input_username_layout"
                         android:textColorHint="@color/signup_hint_color"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp">
 
-                        <android.support.design.widget.TextInputEditText
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/input_username"
                             app:backgroundTint="@color/white"
                             android:textSize="16sp"
@@ -91,7 +91,7 @@ android:focusableInTouchMode="true" >
                             android:inputType="text"
                             android:hint="@string/username_hint" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         fontPath="fonts/NunitoSans-Regular.ttf"

@@ -2,13 +2,14 @@ package com.criptext.mail.scenes.signup.holders
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signup.RecoveryEmailWarningDialog
 import com.criptext.mail.scenes.signup.OnRecoveryEmailWarningListener
@@ -68,6 +69,7 @@ class SignUpFormHolder(val view: View) {
     var uiObserver: SignUpSceneController.SignUpUIObserver? = null
 
     init {
+        setPasswordEyeToggle()
         setHintAppearences()
         setBackgroundTintLists()
     }
@@ -266,6 +268,15 @@ class SignUpFormHolder(val view: View) {
                 ContextCompat.getColor(view.context, R.color.signup_hint_color))
         recoveryEmail.supportBackgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(view.context, R.color.signup_hint_color))
+    }
+
+    private fun setPasswordEyeToggle(){
+        passwordInput.isPasswordVisibilityToggleEnabled = true
+        passwordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(view.context, R.color.login_password_eye))
+        confirmPasswordInput.isPasswordVisibilityToggleEnabled = true
+        confirmPasswordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(view.context, R.color.login_password_eye))
     }
 
     private fun setHintAppearences(){
