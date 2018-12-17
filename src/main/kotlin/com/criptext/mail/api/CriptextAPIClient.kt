@@ -6,6 +6,6 @@ open class CriptextAPIClient(val client: HttpClient) {
     }
 
     fun getRefreshToken(sessionToken: String): String {
-        return client.get(path = "/user/tokens", authToken = sessionToken)
+        return client.get(path = "/user/refresh/upgrade", authToken = sessionToken)
     }
 }

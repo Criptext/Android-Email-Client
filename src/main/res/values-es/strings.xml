@@ -44,7 +44,8 @@
   <string name="retry_sync_message">Parece que tienes problemas de conexión. ¿Te gustaría volver a intentar Sincronización de Buzón?</string>
   <string name="push_approve">Aprobar</string>
   <string name="push_deny">Rechazar</string>
-  <string name="push_link_error_title">Autenticación de Dispositivo</string>
+  <string name="push_link_error_title">Validación de dispositivo</string>
+  <string name="push_link_device_message">¿Quieres aprobar a: %1$s?</string>
   <string name="push_link_error_message_approve">Error al aprobar dispositivo, reenvía una petición de autenticación de nuevo.</string>
   <string name="push_link_error_message_deny">Error al desactivar dispositivo. Comprueba tu conexión de internet.</string>
   <string name="push_read">Marcar como Leído</string>
@@ -186,7 +187,7 @@
   <string name="logout_dialog_message_2_fa">Dado que este es tu único dispositivo activo, <b> A2F será desactivado</b> si cierras sesión. ¿Deseas continuar?</string>
   <string name="login_out_dialog_message">Cerrando sesión…</string>
   <string name="delete_account_dialog_title">Eliminar Cuenta</string>
-  <string name="delete_account_dialog_message">Al eliminar tu cuenta <b>se borrarán todos los datos de todos tus dispositivos</b> y se deshabilitará este Nombre de Usuario permanentemente. ¿Estás seguro que quieres eliminar tu cuenta?</string>
+  <string name="delete_account_dialog_message"><b>ADVERTENCIA: </b> Eliminar tu cuenta borrará todos los datos personales y de tu bandeja de entrada en todos tus dispositivos y a demás deshabilitará el uso de este nombre de usuario.\n¿Estás seguro que deseas eliminar tu cuenta?</string>
   <string name="delete_account_toast_message">Cuenta fue eliminada exitosamente.</string>
   <string name="remove_device_dialog_message">Eliminar este dispositivo hará que se cierre la sesión de forma remota.</string>
   <string name="removing_device_dialog_message">Eliminando dispositivo…</string>

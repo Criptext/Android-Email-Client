@@ -73,8 +73,11 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
 
 
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_LINK_DEVICE)
-                .setContentTitle(pushData.title)
-                .setContentText(pushData.body)
+                .setContentTitle(ctx.getLocalizedUIMessage(UIMessage(R.string.push_link_error_title)))
+                .setContentText(
+                        ctx.getLocalizedUIMessage(UIMessage(R.string.push_link_device_message,
+                                arrayOf(data.deviceName)))
+                )
                 .setAutoCancel(true)
                 .setSound(defaultSound)
                 .setContentIntent(clickIntent)

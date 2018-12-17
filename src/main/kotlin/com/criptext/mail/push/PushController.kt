@@ -65,8 +65,9 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val title = pushData["title"] ?: ""
         val deviceId = pushData["randomId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""
+        val deviceName = pushData["deviceName"] ?: ""
 
-        return PushData.LinkDevice(title = title, body = body,
+        return PushData.LinkDevice(title = title, body = body, deviceName = deviceName,
                 shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat, randomId = deviceId,
                 deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))

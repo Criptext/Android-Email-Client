@@ -54,7 +54,7 @@ class UpdateMailboxWorker(
     override fun catchException(ex: Exception): GeneralResult.UpdateMailbox =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
                     GeneralResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     GeneralResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)

@@ -46,7 +46,7 @@ interface PeerEventsApiHandler {
         private fun ServerErrorException.isQueueableError(): Boolean{
             if(errorCode >= ServerErrorCodes.InternalServerError) return true
             when(errorCode){
-                ServerErrorCodes.DeviceRemoved,
+                ServerErrorCodes.Unauthorized,
                 ServerErrorCodes.Forbidden,
                 ServerErrorCodes.TooManyRequests -> return true
             }

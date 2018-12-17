@@ -23,6 +23,6 @@ sealed class PushData {
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
 
     data class LinkDevice(val title: String, val body: String, val randomId: String,
-                          val deviceType: DeviceUtils.DeviceType,
+                          val deviceType: DeviceUtils.DeviceType, val deviceName: String,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
 }

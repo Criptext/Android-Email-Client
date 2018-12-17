@@ -49,7 +49,7 @@ class UnsendFullEmailWorker(
 
         if(ex is ServerErrorException) {
             return when {
-                ex.errorCode == ServerErrorCodes.DeviceRemoved ->
+                ex.errorCode == ServerErrorCodes.Unauthorized ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerErrorCodes.Forbidden ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden()

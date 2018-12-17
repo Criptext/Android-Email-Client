@@ -8,6 +8,7 @@ import okhttp3.*
 import org.json.JSONObject
 import java.io.FileInputStream
 import java.io.InputStream
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -62,6 +63,9 @@ interface HttpClient {
         private fun Request.Builder.addApiVersionHeader(apiVersion: String = API_VERSION) =
                 this.addHeader("criptext-api-version", apiVersion)
 
+        private fun Request.Builder.addLanguageHeader() =
+                this.addHeader("system-language", Locale.getDefault().language)
+
         private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
             val url = newUrl.build()
@@ -69,6 +73,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .delete(body)
                     .build()
@@ -79,6 +84,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .post(body)
                     .build()
@@ -100,6 +106,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .put(body)
                     .build()
@@ -138,6 +145,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .post(multipartBody)
                     .build()
@@ -160,6 +168,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .put(multipartBody)
                     .build()
@@ -169,6 +178,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
+                    .addLanguageHeader()
                     .url(url)
                     .get()
                     .build()
