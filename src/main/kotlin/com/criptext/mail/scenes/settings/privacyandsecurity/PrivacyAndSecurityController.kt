@@ -87,7 +87,7 @@ class PrivacyAndSecurityController(
         }
 
         override fun onPinChangePressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(true))
+            host.launchExternalActivityForResult(ExternalActivityParams.PinScreen(false))
         }
 
         override fun onOkButtonPressed(password: String) {

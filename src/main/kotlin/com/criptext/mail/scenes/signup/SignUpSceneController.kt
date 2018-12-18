@@ -236,6 +236,11 @@ class SignUpSceneController(
                     scene.setUsernameState(newState)
                 }
             }
+            is SignUpResult.CheckUsernameAvailability.Failure -> {
+                val newState = FormInputState.Error(UIMessage(R.string.taken_username_error))
+                model.username = model.username.copy(state = newState)
+                scene.setUsernameState(newState)
+            }
         }
     }
 

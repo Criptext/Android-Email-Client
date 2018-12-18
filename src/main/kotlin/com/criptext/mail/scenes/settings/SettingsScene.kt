@@ -82,7 +82,7 @@ interface SettingsScene{
                     context.getString(R.string.general))
         }
 
-        private var generalDialogWithInputDelay: GeneralDialogWithInputDelay? = null
+        private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
 
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
@@ -135,16 +135,16 @@ interface SettingsScene{
         }
 
         override fun showGeneralDialogWithInput(dialogData: DialogData) {
-            generalDialogWithInputDelay = GeneralDialogWithInputDelay(context, dialogData)
-            generalDialogWithInputDelay?.showDialog(settingsUIObserver)
+            generalDialogWithInputPassword = GeneralDialogWithInputPassword(context, dialogData)
+            generalDialogWithInputPassword?.showDialog(settingsUIObserver)
         }
 
         override fun setGeneralDialogWithInputError(message: UIMessage) {
-            generalDialogWithInputDelay?.setPasswordError(message)
+            generalDialogWithInputPassword?.setPasswordError(message)
         }
 
         override fun toggleGeneralDialogLoad(isLoading: Boolean) {
-            generalDialogWithInputDelay?.toggleLoad(isLoading)
+            generalDialogWithInputPassword?.toggleLoad(isLoading)
         }
 
         override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {

@@ -48,8 +48,12 @@ class UserDataWriter(private val db: AppDatabase)
             when (json.getString("table")) {
                 "contact" -> contactWriter.insert(json.get("object").toString())
                 "label" -> labelWriter.insert(json.get("object").toString())
-                "email" -> emailWriter.insert(json.get("object").toString())
-                "file" ->  fileWriter.insert(json.get("object").toString())
+                "email" -> {
+                    emailWriter.insert(json.get("object").toString())
+                }
+                "file" ->  {
+                    fileWriter.insert(json.get("object").toString())
+                }
                 "email_label" -> emailLabelWriter.insert(json.get("object").toString())
                 "email_contact" -> emailContactWriter.insert(json.get("object").toString())
                 "filekey" -> fileKeyWriter.insert(json.get("object").toString())

@@ -23,7 +23,7 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 
-class GeneralDialogWithInputDelay(val context: Context, val data: DialogData) {
+class GeneralDialogWithInputPassword(val context: Context, val data: DialogData) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
@@ -80,9 +80,6 @@ class GeneralDialogWithInputDelay(val context: Context, val data: DialogData) {
                                    observer: UIObserver?) {
 
         btnOk = view.findViewById(R.id.btn_ok) as Button
-        btnOk.isEnabled = false
-        timerListener(btnOk,10000)
-
         btnCancel = view.findViewById(R.id.btn_cancel) as Button
         progressBar = view.findViewById(R.id.check_password_progress) as ProgressBar
 
@@ -140,22 +137,6 @@ class GeneralDialogWithInputDelay(val context: Context, val data: DialogData) {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
-    }
-
-    private fun timerListener(button: Button, startTime: Long) {
-        object : CountDownTimer(startTime, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                val sec = ((millisUntilFinished / 1000) % 60).toInt()
-                button.text = context.getString(R.string.yes_with_time, sec)
-            }
-
-            override fun onFinish() {
-                button.setText(R.string.yes)
-                button.isEnabled = true
-                isWaiting = false
-            }
-        }.start()
     }
 
     fun toggleLoad(loading: Boolean){

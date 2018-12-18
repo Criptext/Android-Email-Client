@@ -359,9 +359,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 startActivity(newIntent)
             }
             is ExternalActivityParams.PinScreen -> {
-                val intent = Intent(this, LockScreenActivity::class.java)
-                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK)
-                startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
+                if(params.isFirstTime) {
+                    val intent = Intent(this, LockScreenActivity::class.java)
+                    intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK)
+                    startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
+                }else{
+                    val intent = Intent(this, LockScreenActivity::class.java)
+                    intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN)
+                    startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
+                }
             }
             is ExternalActivityParams.InviteFriend -> {
                 val share = Intent(android.content.Intent.ACTION_SEND)
