@@ -301,9 +301,9 @@ interface ComposerScene {
             bccInput.setTokenListener(onTokenChanged)
 
             if (firstTime) {
-                toInput.setPrefix("To:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
-                ccInput.setPrefix("Cc:   ",ContextCompat.getColor(toInput.context, R.color.inputHint))
-                bccInput.setPrefix("Bcc: ",ContextCompat.getColor(toInput.context, R.color.inputHint))
+                toInput.setPrefix(ctx.getLocalizedUIMessage(UIMessage(R.string.to_popup)),ContextCompat.getColor(toInput.context, R.color.inputHint))
+                ccInput.setPrefix(ctx.getLocalizedUIMessage(UIMessage(R.string.cc_popup)),ContextCompat.getColor(toInput.context, R.color.inputHint))
+                bccInput.setPrefix(ctx.getLocalizedUIMessage(UIMessage(R.string.bcc_popup)),ContextCompat.getColor(toInput.context, R.color.inputHint))
                 fillRecipients(toContacts, bccContacts, ccContacts)
             }
 

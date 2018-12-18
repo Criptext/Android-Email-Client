@@ -31,6 +31,7 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
+import java.util.*
 
 class SettingsController(
         private val model: SettingsModel,
@@ -158,21 +159,21 @@ class SettingsController(
         override fun onPrivacyPoliciesClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/privacy")
+            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/privacy")
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onTermsOfServiceClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/terms")
+            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/terms")
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
         override fun onOpenSourceLibrariesClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/open-source-android")
+            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/open-source-android")
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
