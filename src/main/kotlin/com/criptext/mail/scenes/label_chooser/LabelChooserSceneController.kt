@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.label_chooser
 
+import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.UIUtils
 
 /**
  * Created by sebas on 2/2/18.
@@ -69,8 +71,18 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
             }
         }
 
+        val localizedLabels = labelWrappers.map {
+            if(it.type == LabelTypes.SYSTEM) {
+                val label = it.label.copy(
+                    text = scene.getLabelLocalizedName(it.text)
+                )
+                it.copy(label = label)
+            }else
+                it
+        }
+
         model.selectedLabels.addMultipleSelected(selectedLabelWrappers)
-        model.labels.addAll(labelWrappers)
+        model.labels.addAll(localizedLabels)
 
         scene.onFetchedLabels()
     }

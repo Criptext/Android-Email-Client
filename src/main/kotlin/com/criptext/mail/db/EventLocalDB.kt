@@ -176,10 +176,10 @@ class EventLocalDB(private val db: AppDatabase){
         db.accountDao().updateProfileName(name, recipientId)
     }
 
-    fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: String) {
+    fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: Date) {
         db.emailDao().changeDeliveryTypeByMetadataKey(metadataKey, DeliveryTypes.UNSEND)
         db.emailDao().unsendEmailByMetadataKey(metadataKey, "", "",
-                DateAndTimeUtils.getDateFromString(unsentDate, null))
+                unsentDate)
         db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey).id, 0)
     }
 

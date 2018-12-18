@@ -3,7 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/ac_done"
-          android:title="@string/done"
+          android:title="@string/done_signature"
           android:orderInCategory="100"
           app:showAsAction="always"/>
 

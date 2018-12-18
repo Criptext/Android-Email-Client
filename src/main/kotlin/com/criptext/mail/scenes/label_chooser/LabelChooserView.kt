@@ -7,6 +7,8 @@ import com.criptext.mail.R
 import android.view.View
 import android.widget.ProgressBar
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.utils.UIUtils
+import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.virtuallist.VirtualList
 
 
@@ -17,6 +19,7 @@ import com.criptext.mail.utils.virtuallist.VirtualList
 interface LabelChooserScene: LabelWrapperListView {
     fun attachView(labelThreadEventListener: LabelWrapperAdapter.OnLabelWrapperEventListener)
     fun onFetchedLabels()
+    fun getLabelLocalizedName(name: String): String
 
     class LabelChooserView(private val labelChooserView: View,
                            private val labelsList: VirtualList<LabelWrapper>)
@@ -61,6 +64,12 @@ interface LabelChooserScene: LabelWrapperListView {
 
             val recycler = labelChooserView.findViewById<RecyclerView>(R.id.label_recycler)
             recycler.visibility = View.VISIBLE
+        }
+
+        override fun getLabelLocalizedName(name: String): String {
+            return labelChooserView.context.getLocalizedUIMessage(
+                    UIUtils.getLocalizedSystemLabelName(name)
+            )
         }
     }
 

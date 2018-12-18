@@ -14,7 +14,7 @@ interface EmailDetailLocalDB {
 
     fun getLabelsFromThreadId(threadId: String): List<Label>
     fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>): List<FullEmail>
-    fun unsendEmail(emailId: Long)
+    fun unsendEmail(emailId: Long): Date
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelByName(labelName: String): Label
     fun getLabelsByName(labelName: List<String>): List<Label>
@@ -31,11 +31,13 @@ interface EmailDetailLocalDB {
             db.emailDao().updateEmailTrashDate(Date(), emailIds)
         }
 
-        override fun unsendEmail(emailId: Long) {
+        override fun unsendEmail(emailId: Long): Date {
+            val date = Date()
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)
             db.emailDao().unsendEmailById(emailId, "", "",
-                    DateAndTimeUtils.getDateFromString(DateAndTimeUtils.printDateWithServerFormat(Date()), "yyyy-MM-dd HH:mm:ss"))
+                    date)
             db.fileDao().changeFileStatusByEmailid(emailId, 0)
+            return date
         }
 
         override fun getFullEmailsFromThreadId(selectedLabel: String,

@@ -401,6 +401,10 @@ class EventHelper(private val db: EventLocalDB,
 
         createFeedItems(trackingUpdates)
         changeDeliveryTypes(trackingUpdates)
+        trackingUpdates.forEach {
+            if(it.type == DeliveryTypes.UNSEND)
+                updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(it.metadataKey, it.date))
+        }
         if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
