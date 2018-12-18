@@ -1,5 +1,6 @@
 package com.criptext.mail.api
 
+import android.content.res.Resources
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
@@ -62,9 +63,13 @@ interface PeerEventsApiHandler {
                     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             return when(refreshOperation){
                 is Result.Success -> {
-                    val account = ActiveAccount.loadFromStorage(storage)!!
-                    apiClient.token = account.jwt
-                    workOperation(picks)
+                    val account = ActiveAccount.loadFromStorage(storage)
+                    if(account != null) {
+                        apiClient.token = account.jwt
+                        workOperation(picks)
+                    }else{
+                        Result.of { throw Resources.NotFoundException() }
+                    }
                 }
                 is Result.Failure -> {
                     Result.of { throw refreshOperation.error }

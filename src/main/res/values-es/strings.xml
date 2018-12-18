@@ -24,7 +24,7 @@
   <string name="done_exclamation">¡Hecho!</string>
   <string name="sync_failed">Fallo de Sincronización</string>
   <string name="link_auth_title">Autenticación de Dispositivo</string>
-  <string name="link_auth_sub_title">¿Quieres aprobar?</string>
+  <string name="link_auth_sub_title">Autenticación de Dispositovo</string>
   <string name="link_auth_message">¿Quieres aprobar a %1$s?</string>
   <string name="establishing">Estableciendo conexión segura</string>
   <string name="cancel_sync">Cancelar Sincronización</string>
@@ -76,7 +76,7 @@
   <string name="mailbox_move_to">Mover a</string>
   <string name="empty_trash_banner">Correos que estén en la papelera más de 30 días serán eliminados automáticamente.</string>
   <string name="empty_trash">Vaciar Papelera</string>
-  <string name="reply_all">Responder a Todos</string>
+  <string name="reply_all">A Todos</string>
   <string name="slider_inbox">Recibidos</string>
   <string name="slider_draft">Borradores</string>
   <string name="slider_starred">Favoritos</string>
@@ -126,7 +126,7 @@
   <string name="title_allow_notifications">Permitir Notificaciones</string>
   <string name="title_allow_preview">Vista Previa en Notificaciones</string>
   <string name="title_two_fa">Autenticación de Dos Factores</string>
-  <string name="title_read_receipts">Confirmaciones de Leído</string>
+  <string name="title_read_receipts">Confirmaciones de Lectura</string>
   <string name="title_pin_lock">Bloqueo PIN</string>
   <string name="title_privacy">Seguridad y Privacidad</string>
   <string name="title_badges">Notificación en icono de la aplicación</string>
@@ -174,7 +174,7 @@
   </string>
   <string name="forgot_password_title">Restablecer Contraseña</string>
   <string name="forgot_password_title_no_recovery">No Existe Correo de Recuperación</string>
-  <string name="forgot_password_message"><![CDATA[Se ha enviado un enlace para restablecer tu contraseña a tu correo:\n\n<b>%1$s</b> \n\nEl enlace expirará en 30 minutos.]]></string>
+  <string name="forgot_password_message">Se ha enviado un enlace para restablecer tu contraseña a tu correo:\n\n<b>%1$s</b> \n\nEl enlace expirará en 30 minutos.</string>
   <string name="forgot_password_message_no_recovery">Recuperación de contraseña imposible dado a que\n        configuradaste un correo de recuperación en tu cuenta. Para solicitar ayuda escribenos a: \n\n <b>support@criptext.com</b></string>
   <string name="forgot_password_error">Error conectando al servidor. Inténtalo de nuevo más tarde</string>
   <string name="forgot_password_error_400">No se ha establecido o verificado ningún correo de recuperación para esta cuenta, por lo que no se puede restablecer tu contraseña</string>
@@ -198,7 +198,7 @@
   <string name="pin_lock_message_1">Si olvidaste tú PIN, tendrás que cerrar sesión y volver a iniciar sesión de nuevo.</string>
   <string name="pin_lock_message_2"><b>Advertencia:</b> 10 intentos fallidos resultará en un borrado permanente de los datos de este dispositivo por seguridad.</string>
   <string name="attempts_remaining">PIN incorrecto, te quedan %1$d intentos.</string>
-  <string name="attempts_remaining_critical"><![CDATA[<b>ADVERTENCIA:</b> quedan %1$d intentos fallidos para hacer un borrado seguro de los datos.]]></string>
+  <string name="attempts_remaining_critical"><b>ADVERTENCIA:</b> quedan %1$d intentos fallidos para hacer un borrado seguro de los datos.</string>
   <string name="pin_forgot_dialog_title">Cerrar sesión</string>
   <string name="pin_forgot_dialog_message">¿Estás seguro que quieres cerrar sesión?</string>
   <string name="pin_code_forgot_text">
@@ -259,7 +259,7 @@
   <string name="too_many_login_attempts">Demasiados intentos de acceso, intenta de nuevo después.</string>
   <string name="too_many_devices">Demasiados dispositivos autorizados.</string>
   <string name="no_devices_available">No hay dispositivos autorizados para aprobar este dispositivo.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n        <b>borrara todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n        ¿Deseas continuar?]]></string>
+  <string name="sign_in_warning_dialog_message">Iniciar sesión con otra cuenta de usuario\n <b>borrara todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?</string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
   <string name="password_warning_dialog_title">Advertencia</string>
   <string name="password_warning_dialog_message">Si inicias sesión usando tú contraseña\n        <b>tú historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
@@ -405,7 +405,7 @@
   <string name="button_confirm">Confirmar</string>
   <string name="button_next">Siguiente</string>
   <string name="forgot_password">¿Olvidaste tu contraseña?</string>
-  <string name="to_me_4_others"><![CDATA[Para mí & N otros]]></string>
+  <string name="to_me_4_others">Para mí &amp; N otros</string>
   <string name="reply">Responder</string>
   <string name="mark_as_read">Marcar como leído</string>
   <string name="mark_as_spam">Marcar como Spam</string>
@@ -462,7 +462,7 @@
   <string name="signature_updated">Firma actualizada</string>
   <string name="show_label_in_list">Mostrar en lista de etiquetas</string>
   <string name="new_label">Crear nueva etiqueta</string>
-  <string name="current_device">Dispositivo Actual</string>
+  <string name="current_device">Actual</string>
   <string name="general">General</string>
   <string name="labels">Etiquetas</string>
   <string name="devices">Dispositivos</string>

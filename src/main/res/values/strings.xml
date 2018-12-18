@@ -23,7 +23,7 @@
   <string name="title_sync">Mailbox Sync</string>
   <string name="done_exclamation">Done!</string>
   <string name="sync_failed">Sync Failed</string>
-  <string name="link_auth_title">Sign In Verification</string>
+  <string name="link_auth_title">Device Authentication</string>
   <string name="link_auth_sub_title">Do you want to approve?</string>
   <string name="link_auth_message">Do you want to approve %1$s?</string>
   <string name="establishing">Establishing secure connection</string>
@@ -174,7 +174,7 @@
   </string>
   <string name="forgot_password_title">Password Reset</string>
   <string name="forgot_password_title_no_recovery">No Recovery Email</string>
-  <string name="forgot_password_message"><![CDATA[A password reset link was sent to:\n\n <b>%1$s</b> \n\n Link will expire in 30 mins.]]></string>
+  <string name="forgot_password_message">A password reset link was sent to:\n\n <b>%1$s</b> \n\n Link will expire in 30 mins.</string>
   <string name="forgot_password_message_no_recovery">Password recovery is imposible since no\n        recovery email was set on your account. For further assistance contact as: \n\n <b>support@criptext.com</b></string>
   <string name="forgot_password_error">Error contacting the server, try again later</string>
   <string name="forgot_password_error_400">A recovery email address has not been set up or confirmed for this account, without it you cannot reset password</string>
@@ -198,7 +198,7 @@
   <string name="pin_lock_message_1">If you forget your PIN code you\'ll have to sign out and sign back in again.</string>
   <string name="pin_lock_message_2"><b>Warning:</b> 10 failed attempts will result in all data to be erased from the app for security purposes.</string>
   <string name="attempts_remaining">Incorrect PIN, %1$d attempts remaining.</string>
-  <string name="attempts_remaining_critical"><![CDATA[<b>WARNING:</b> %1$d attempts until secure data wipe.]]></string>
+  <string name="attempts_remaining_critical"><b>WARNING:</b> %1$d attempts until secure data wipe.</string>
   <string name="pin_forgot_dialog_title">Sign Out</string>
   <string name="pin_forgot_dialog_message">Are you sure you want to sign out?</string>
   <string name="pin_code_forgot_text">
@@ -259,7 +259,7 @@
   <string name="too_many_login_attempts">Too many login attempts, try again later.</string>
   <string name="too_many_devices">Too many devices already logged in.</string>
   <string name="no_devices_available">No devices available to authenticate this device.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Signing in with a different email account\n        <b>will erase all mailbox data</b> stored on this device for account \n\n <b>%1$s</b>\n\n\n        Would you like to continue?]]></string>
+  <string name="sign_in_warning_dialog_message">Signing in with a different email account\n        <b>will erase all mailbox data</b> stored on this device for account \n\n <b>%1$s</b>\n\n\n        Would you like to continue?</string>
   <string name="sign_in_warning_dialog_title">Sign In Warning</string>
   <string name="password_warning_dialog_title">Warning</string>
   <string name="password_warning_dialog_message">If you sign in using your password your\n        <b>mailbox history from other devices won\'t be available</b> on this device. Would you like to continue?</string>
@@ -405,7 +405,7 @@
   <string name="button_confirm">Confirm</string>
   <string name="button_next">Next</string>
   <string name="forgot_password">Forgot password?</string>
-  <string name="to_me_4_others"><![CDATA[To me & N others]]></string>
+  <string name="to_me_4_others">To me &amp; N others</string>
   <string name="reply">Reply</string>
   <string name="mark_as_read">Mark as read</string>
   <string name="mark_as_spam">Mark as Spam</string>

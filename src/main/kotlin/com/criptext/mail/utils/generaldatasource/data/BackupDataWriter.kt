@@ -75,7 +75,7 @@ class EmailDataWriter(private val emailDao: EmailDao,
 
 class FileDataWriter(private val fileDao: FileDao,
                      private val dependencies: List<Flushable> = listOf()):
-        BackupDataWriter<CRFile>(1){
+        BackupDataWriter<CRFile>(UserDataWriter.DEFAULT_BATCH_SIZE){
     override fun deserialize(item: String): CRFile {
         return CRFile.fromJSON(item)
     }
