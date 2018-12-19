@@ -78,7 +78,7 @@ object UIUtils{
         v.startAnimation(a)
     }
 
-    fun getLocalizedToolbarTitle(title: String): UIMessage{
+    fun getLocalizedSystemLabelName(title: String): UIMessage{
         return when(title){
             Label.LABEL_SENT -> UIMessage(R.string.titulo_mailbox_sent)
             Label.LABEL_STARRED -> UIMessage(R.string.titulo_mailbox_starred)

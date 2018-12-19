@@ -5,6 +5,7 @@ import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.UIMessage
+import java.util.*
 
 /**
  * Created by sebas on 3/12/18.
@@ -24,7 +25,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class UnsendFullEmailFromEmailId: EmailDetailResult() {
-        data class Success(val position: Int): UnsendFullEmailFromEmailId()
+        data class Success(val position: Int, val unsentDate: Date): UnsendFullEmailFromEmailId()
         data class Failure(
                 val position: Int,
                 val message: UIMessage,

@@ -25,7 +25,7 @@
   <string name="sync_failed">Sync Failed</string>
   <string name="link_auth_title">Device Authentication</string>
   <string name="link_auth_sub_title">Do you want to approve?</string>
-  <string name="link_auth_message">Do you want to approve %1$s?</string>
+  <string name="link_auth_message">%1$s</string>
   <string name="establishing">Establishing secure connection</string>
   <string name="cancel_sync">Cancel Sync</string>
   <string name="device_ready">Device Ready</string>
@@ -120,6 +120,7 @@
   <string name="title_recovery_email">Recovery Email</string>
   <string name="title_signature">Signature</string>
   <string name="title_signature_cap">SIGNATURE</string>
+  <string name="done_signature">DONE</string>
   <string name="title_recovery_email_cap">RECOVERY EMAIL</string>
   <string name="title_change_email_cap">CHANGE EMAIL</string>
   <string name="title_change_password_cap">CHANGE PASSWORD</string>
@@ -231,6 +232,7 @@
   <string name="camera_attachs_rationale">To access photos taken with your camera, Criptext needs extra permissions. Do you wish to grant Criptext read access to your external storage?</string>
   <string name="link_friends">Criptext - Invitation</string>
   <string name="unsent">Unsent</string>
+  <string name="unsent_at">Unsent At:</string>
   <string name="password_length_error">Password must be at least 8 characters.</string>
   <string name="password_mismatch_error">Passwords do not match.</string>
   <string name="taken_username_error">This username is not available.</string>
@@ -303,13 +305,13 @@
   <string name="please_change_account_prop">Please change account properly</string>
   <string name="email_will_expire_in">Email will expire in:</string>
   <string name="no_emails_found">No emails found</string>
-  <string name="titulo_mailbox">INBOX</string>
-  <string name="titulo_mailbox_sent">SENT</string>
-  <string name="titulo_mailbox_draft">DRAFT</string>
-  <string name="titulo_mailbox_starred">STARRED</string>
-  <string name="titulo_mailbox_spam">SPAM</string>
-  <string name="titulo_mailbox_trash">TRASH</string>
-  <string name="titulo_mailbox_all_mail">ALL MAIL</string>
+  <string name="titulo_mailbox">Inbox</string>
+  <string name="titulo_mailbox_sent">Sent</string>
+  <string name="titulo_mailbox_draft">Draft</string>
+  <string name="titulo_mailbox_starred">Starred</string>
+  <string name="titulo_mailbox_spam">Spam</string>
+  <string name="titulo_mailbox_trash">Trash</string>
+  <string name="titulo_mailbox_all_mail">All Mail</string>
   <string name="title_settings">SETTINGS</string>
   <string name="spam">Spam</string>
   <string name="continue_btn">Continue</string>

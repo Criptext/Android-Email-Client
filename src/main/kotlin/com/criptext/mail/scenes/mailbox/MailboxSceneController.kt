@@ -86,8 +86,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private fun getTitleForMailbox() : String{
-        val uiMessage = UIUtils.getLocalizedToolbarTitle(model.selectedLabel.text)
-        return host.getLocalizedString(uiMessage)
+        val uiMessage = UIUtils.getLocalizedSystemLabelName(model.selectedLabel.text)
+        return host.getLocalizedString(uiMessage).toUpperCase()
     }
 
     private val toolbarTitle: String

@@ -55,9 +55,9 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         else
             emailPreview.bodyPreview
 
-        if(emailPreview.deliveryStatus == DeliveryTypes.UNSEND) {
-            val previewText = subjectView.context.getString(R.string.unsent).plus(" At: " +
-                    emailPreview.latestEmailUnsentDate.toString())
+        if(emailPreview.deliveryStatus == DeliveryTypes.UNSEND && emailPreview.latestEmailUnsentDate != null) {
+            val previewText = subjectView.context.getString(R.string.unsent_at).plus(
+                    DateAndTimeUtils.getFormattedDate(emailPreview.latestEmailUnsentDate.time, context))
             previewView.text = previewText
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.unsent_content))
         }else {

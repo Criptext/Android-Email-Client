@@ -8,7 +8,7 @@
         android:id="@+id/welcome_animation"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:paddingTop="30dp"
+        android:paddingTop="20dp"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:gravity="center_horizontal" />
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="20dp"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"

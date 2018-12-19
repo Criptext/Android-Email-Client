@@ -245,6 +245,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.UnsendFullEmailFromEmailId.Success -> {
                 if(result.position > -1){
                     model.emails[result.position].isUnsending = false
+                    model.emails[result.position].email.unsentDate = result.unsentDate
                     scene.notifyFullEmailChanged(result.position + 1)
                 }
                 setEmailAtPositionAsUnsend(result.position)

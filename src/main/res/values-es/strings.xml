@@ -24,8 +24,8 @@
   <string name="done_exclamation">¡Hecho!</string>
   <string name="sync_failed">Fallo de Sincronización</string>
   <string name="link_auth_title">Autenticación de Dispositivo</string>
-  <string name="link_auth_sub_title">Autenticación de Dispositovo</string>
-  <string name="link_auth_message">¿Quieres aprobar a %1$s?</string>
+  <string name="link_auth_sub_title">¿Quieres aprobar?</string>
+  <string name="link_auth_message">%1$s</string>
   <string name="establishing">Estableciendo conexión segura</string>
   <string name="cancel_sync">Cancelar Sincronización</string>
   <string name="device_ready">Dispositivo preparado</string>
@@ -119,6 +119,7 @@
   <string name="title_reset_password">Restablecer Contraseña</string>
   <string name="title_recovery_email">Correo de Recuperación</string>
   <string name="title_signature">Firma</string>
+  <string name="done_signature">LISTO</string>
   <string name="title_signature_cap">FIRMA</string>
   <string name="title_recovery_email_cap">CORREO DE RECUPERACIÓN</string>
   <string name="title_change_email_cap">CAMBIAR CORREO</string>
@@ -162,7 +163,7 @@
   <string name="recovery_email_change_fail_same">Correo de recuperación ya es %1$s</string>
   <string name="two_fa_button">¡Listo!</string>
   <string name="title_warning_two_fa">
-    <b>Correo de Recuperacion no establecido.</b>
+    <b>Correo de Recuperación no establecido.</b>
   </string>
   <string name="title_enabled_two_fa">
     <b>¡A2F Habilitada!</b>
@@ -175,7 +176,7 @@
   <string name="forgot_password_title">Restablecer Contraseña</string>
   <string name="forgot_password_title_no_recovery">No Existe Correo de Recuperación</string>
   <string name="forgot_password_message">Se ha enviado un enlace para restablecer tu contraseña a tu correo:\n\n<b>%1$s</b> \n\nEl enlace expirará en 30 minutos.</string>
-  <string name="forgot_password_message_no_recovery">Recuperación de contraseña imposible dado a que\n        configuradaste un correo de recuperación en tu cuenta. Para solicitar ayuda escribenos a: \n\n <b>support@criptext.com</b></string>
+  <string name="forgot_password_message_no_recovery">No se puede restablecer la contraseña porque no hay un correo de recuperación verificado. \n\nPara solicitar ayuda escribenos a: \n\n <b>support@criptext.com</b></string>
   <string name="forgot_password_error">Error conectando al servidor. Inténtalo de nuevo más tarde</string>
   <string name="forgot_password_error_400">No se ha establecido o verificado ningún correo de recuperación para esta cuenta, por lo que no se puede restablecer tu contraseña</string>
   <string name="change_password_current">Actual</string>
@@ -195,7 +196,7 @@
   <string name="pin_lock_switch_text">Usar PIN</string>
   <string name="pin_lock_change">Cambiar Codigo PIN</string>
   <string name="pin_lock_auto">Auto-Bloqueo</string>
-  <string name="pin_lock_message_1">Si olvidaste tú PIN, tendrás que cerrar sesión y volver a iniciar sesión de nuevo.</string>
+  <string name="pin_lock_message_1">Si olvidaste tu PIN, tendrás que cerrar sesión y volver a iniciar sesión de nuevo.</string>
   <string name="pin_lock_message_2"><b>Advertencia:</b> 10 intentos fallidos resultará en un borrado permanente de los datos de este dispositivo por seguridad.</string>
   <string name="attempts_remaining">PIN incorrecto, te quedan %1$d intentos.</string>
   <string name="attempts_remaining_critical"><b>ADVERTENCIA:</b> quedan %1$d intentos fallidos para hacer un borrado seguro de los datos.</string>
@@ -207,7 +208,7 @@
   <string name="pin_code_step_disable">Deshabilitar PIN</string>
   <string name="pin_code_step_create">Crea un código PIN</string>
   <string name="pin_code_step_change">Ingresa tu código PIN actual</string>
-  <string name="pin_code_step_unlock">Ingresa tu código PIN para desbloquear tú bandeja</string>
+  <string name="pin_code_step_unlock">Ingresa tu código PIN para desbloquear tu bandeja</string>
   <string name="pin_code_step_enable_confirm">Confirma tu código PIN</string>
   <string name="notification_preview_message">Vista previa del contenido del correo en las notificaciones.</string>
   <string name="read_receipts_message">Si lo deshabilitas, no podrás saber cuando otras personas lean tus correos.</string>
@@ -231,6 +232,7 @@
   <string name="camera_attachs_rationale">Para acceder a fotos tomadas con tu cámara, Criptext necesita permisos adicionales. ¿Concedes permiso a Criptext para acceder a tu almacenamiento externo?</string>
   <string name="link_friends">Criptext - Invitación</string>
   <string name="unsent">Retractado</string>
+  <string name="unsent_at">Retractado a las:</string>
   <string name="password_length_error">Contraseña debe contener al menos 8 caracteres.</string>
   <string name="password_mismatch_error">Las contraseñas no coinciden.</string>
   <string name="taken_username_error">Nombre de Usuario no disponible.</string>
@@ -241,8 +243,8 @@
   <string name="fullname_length_error">El nombre es demasiado largo.</string>
   <string name="fullname_empty_error">Nombre Completo no puede estar vacío.</string>
   <string name="fullname_hint">Nombre Completo</string>
-  <string name="recovery_optional_hint">Email de Recuperación (opcional)</string>
-  <string name="username_hint">Nombre de Usuario</string>
+  <string name="recovery_optional_hint">Correo de Recuperación (opcional)</string>
+  <string name="username_hint">Usuario</string>
   <string name="login">Iniciar Sesión</string>
   <string name="two_fa">Autenticación de dos factores</string>
   <string name="login_body">Revisa y aprueba desde un dispositivo existente de Criptext para continuar.</string>
@@ -259,10 +261,10 @@
   <string name="too_many_login_attempts">Demasiados intentos de acceso, intenta de nuevo después.</string>
   <string name="too_many_devices">Demasiados dispositivos autorizados.</string>
   <string name="no_devices_available">No hay dispositivos autorizados para aprobar este dispositivo.</string>
-  <string name="sign_in_warning_dialog_message">Iniciar sesión con otra cuenta de usuario\n <b>borrara todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?</string>
+  <string name="sign_in_warning_dialog_message">Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?</string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
   <string name="password_warning_dialog_title">Advertencia</string>
-  <string name="password_warning_dialog_message">Si inicias sesión usando tú contraseña\n        <b>tú historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
+  <string name="password_warning_dialog_message">Si inicias sesión usando tu contraseña\n        <b>tu historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
   <string name="slide_1_title">
     <b>¡Bienvenido!</b>
   </string>
@@ -303,13 +305,13 @@
   <string name="please_change_account_prop">Por favor, cambia de cuenta correctamente</string>
   <string name="email_will_expire_in">El correo expirará en:</string>
   <string name="no_emails_found">No se encontraron correos</string>
-  <string name="titulo_mailbox">RECIBIDOS</string>
-  <string name="titulo_mailbox_sent">ENVIADOS</string>
-  <string name="titulo_mailbox_draft">BORRADORES</string>
-  <string name="titulo_mailbox_starred">FAVORITOS</string>
-  <string name="titulo_mailbox_spam">SPAM</string>
-  <string name="titulo_mailbox_trash">PAPELERA</string>
-  <string name="titulo_mailbox_all_mail">TODOS</string>
+  <string name="titulo_mailbox">Recibidos</string>
+  <string name="titulo_mailbox_sent">Enviados</string>
+  <string name="titulo_mailbox_draft">Borradores</string>
+  <string name="titulo_mailbox_starred">Favoritos</string>
+  <string name="titulo_mailbox_spam">Spam</string>
+  <string name="titulo_mailbox_trash">Papelera</string>
+  <string name="titulo_mailbox_all_mail">Todos</string>
   <string name="title_settings">CONFIGURACIÓN</string>
   <string name="spam">Spam</string>
   <string name="continue_btn">Continuar</string>
@@ -322,7 +324,7 @@
   <string name="more">Más Opciones</string>
   <string name="only_more">más</string>
   <string name="criptext_com">\@criptext.com</string>
-  <string name="sign_up">Registrarme</string>
+  <string name="sign_up">Crear Cuenta</string>
   <string name="not_registered">¿No estás registrado?</string>
   <string name="recover_email_warning_content_start_title">¡Advertencia!</string>
   <string name="recover_email_warning_content_start">No estableciste un correo de recuperación,\n<b>lo que imposibilita la recuperación de tu cuenta</b>\n si olvidas tu contraseña</string>
@@ -333,8 +335,8 @@
   <string name="recover_email_warning_content_end">¿Continuar sin correo de recuperación?</string>
   <string name="sign_up_terms_and_conditions_start">He leído y estoy de acuerdo con los</string>
   <string name="sign_up_terms_and_conditions_end">Términos y Condiciones</string>
-  <string name="btn_create_account">Registrarse</string>
-  <string name="txt_create_criptext_account">Crear tu cuenta Criptext</string>
+  <string name="btn_create_account">Crear Cuenta</string>
+  <string name="txt_create_criptext_account">Registrate en Criptext</string>
   <string name="password_login_title">Acceder con Contraseña</string>
   <string name="yes">Sí</string>
   <string name="no">No</string>
@@ -475,9 +477,9 @@
   <string name="error_notification">Notificación de Error</string>
   <string name="email_open_notification">Notificación de Correo Leído</string>
   <string name="unknown_notification">Notificación desconocida</string>
-  <string name="tour_content1">Esta es tú zona segura. Todo lo que digas aquí es privado y seguro, por lo que puedes estar tranquilo en cada palabra que utilices.</string>
+  <string name="tour_content1">Esta es tu zona segura. Todo lo que digas aquí es privado y seguro, por lo que puedes estar tranquilo en cada palabra que utilices.</string>
   <string name="tour_title2">Bienvenido a Criptext 2</string>
-  <string name="tour_content2">Esta es tú zona segura</string>
+  <string name="tour_content2">Esta es tu zona segura</string>
   <string name="unsend_anytime">Retractar envío en cualquier momento</string>
   <string name="set_timers">Establecer Temporizador\n de Expiración</string>
   <string name="trach_open">Trazar apertura \nde Adjunto</string>

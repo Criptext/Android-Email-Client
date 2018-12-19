@@ -185,10 +185,16 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             setDefaultBackgroundColors()
         }
         else {
+            val unsentDate = fullEmail.email.unsentDate
+            val finalDate = if(unsentDate != null){
+                "Unsent: " + DateAndTimeUtils.getFormattedDate(unsentDate.time, context)
+            }else{
+                "Unsent"
+            }
             rootView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.background_cardview_unsend)
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml("Unsent: " + fullEmail.email.unsentDate.toString()),
+                    changedHeaderHtml(finalDate),
                     "text/html", "utf-8", "")
             deactivateElementsForUnsend()
         }
