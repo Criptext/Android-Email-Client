@@ -6,35 +6,20 @@
     <color name="colorSplashStart">#00c4ff</color>
     <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
-    <color name="textColorSecondary">#373a45</color>
     <color name="colorBackground">#ffffff</color>
     <color name="colorSecondaryBackground">#fcfcfc</color>
     <color name="colorNavBodyBackground">#f7f7f7</color>
     <color name="colorHighlight">#0091ff</color>
-    <color name="colorTour">#0075ab</color>
-    <color name="tour_below">#2d92eb</color>
     <color name="sent">#d5d5d5</color>
-    <color name="colorSent">#999999</color>
-    <color name="colorToggleOff">#d4d4d4</color>
     <color name="colorOpened">#0091ff</color>
     <color name="softBlue">#edf5ff</color>
     <color name="colorUnsent">#ef4646</color>
-    <color name="unsend_button_red">#da4931</color>
     <color name="unsent_content">#e36666</color>
     <color name="mail_preview">#6a707e</color>
-    <color name="colorOpen">#0091FF</color>
     <color name="colorSubject">#000000</color>
     <color name="colorLabels">#8A8A8A</color>
     <color name="label_buttons_text">#30323c</color>
-    <color name="colorLabels2">#626262</color>
-    <color name="colorActivityOpen">#E8F5FD</color>
-    <color name="unreadMailItemBg">#F5FAFE</color>
-    <color name="modifyTitle">#efeff4</color>
-    <color name="modifyTitleText">#6d6d72</color>
-    <color name="modifyContent">#fff</color>
     <color name="drawer_text">#373a45</color>
-    <color name="progress_grey_tint">#bebebe</color>
-    <color name="lightgray">#ddd</color>
     <color name="menu_selected">#f2f8ff</color>
     <color name="light_blue">#65bdff</color>
     <color name="drawer_icon_unselected">#D3D3D3</color>
@@ -46,74 +31,24 @@
     <color name="attachment_background">#fafafa</color>
     <color name="dividerColor">#f4f4f4</color>
     <color name="mail_item_date">#6a707e</color>
-    <color name="nav_button">#4f515b</color>
-    <color name="login_background">#0091ff</color>
     <color name="customBlack">#4a4a4a</color>
     <color name="black">#000000</color>
     <color name="black_transparent">#80000000</color>
-    <color name="gray">#626262</color>
     <color name="signup_hint_color">#90ffffff</color>
     <color name="non_criptext_email_send_text_line">#cdcdcd</color>
     <color name="non_criptext_email_send_text_line_focus">#0091ff</color>
-    <color name="non_criptext_email_send_eye">#dcdcdc</color>
     <color name="non_criptext_email_send_detail_text">#8d8d8d</color>
     <color name="bell">#FF3366</color>
     <color name="attachmentGray">#cecece</color>
     <color name="full_mail_cc">#0091ff</color>
-    <color name="full_mail_date">#9b9b9b</color>
     <color name="azure">#0091ff</color>
     <color name="green">#a0d06e</color>
-    <color name="yellow">#ffe137</color>
-    <color name="orange">#ffbb63</color>
-    <color name="purple">#ed63ff</color>
-    <color name="unsendBtn">#dd4040</color>
     <color name="inputHint">#a6a6a6</color>
     <color name="starred">#ffc729</color>
     <color name="starred_empty">#b9b9b9</color>
     <color name="grayFeed">#899dad</color>
     <color name="snackBarColor">#1c1d22</color>
-    <!-- TOOLBAR -->
-    <color name="format_bar_background">@color/white</color>
-    <color name="format_bar_divider_horizontal">@color/white</color>
     <color name="format_bar_divider_vertical">#d8d8d8</color>
-    <color name="format_bar_button">#6e6e6e</color>
-    <color name="format_bar_button_disabled">#b6b6b6</color>
-    <color name="format_bar_button_highlighted">#353535</color>
-    <color name="quote">@color/white</color>
-    <color name="quote_background">@color/white</color>
-
-    <!-- Screens background color-->
-    <color name="bg_screen1">#f64c73</color>
-    <color name="bg_screen2">#20d2bb</color>
-    <color name="bg_screen3">#3395ff</color>
-    <color name="bg_screen4">#c873f4</color>
-
-    <!-- dots inactive colors -->
-    <color name="dot_dark_screen1">#d1395c</color>
-    <color name="dot_dark_screen2">#14a895</color>
-    <color name="dot_dark_screen3">#2278d4</color>
-    <color name="dot_dark_screen4">#a854d4</color>
-
-    <!-- dots active colors -->
-    <color name="dot_light_screen1">#f98da5</color>
-    <color name="dot_light_screen2">#8cf9eb</color>
-    <color name="dot_light_screen3">#93c6fd</color>
-    <color name="dot_light_screen4">#e4b5fc</color>
-
-    <array name="array_dot_active">
-        <item>@color/dot_light_screen1</item>
-        <item>@color/dot_light_screen2</item>
-        <item>@color/dot_light_screen3</item>
-        <item>@color/dot_light_screen4</item>
-    </array>
-
-    <array name="array_dot_inactive">
-        <item>@color/dot_dark_screen1</item>
-        <item>@color/dot_dark_screen2</item>
-        <item>@color/dot_dark_screen3</item>
-        <item>@color/dot_dark_screen4</item>
-    </array>
-
     <color name="warning_color">#000000</color>
     <color name="success_color">#FFFFFF</color>
     <color name="hint_color">#FFFFFF</color>

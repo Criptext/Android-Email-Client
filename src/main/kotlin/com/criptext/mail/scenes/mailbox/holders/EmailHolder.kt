@@ -89,7 +89,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             dateView.typeface = TypefaceUtils.load(
                     view.resources.assets,
                     "fonts/NunitoSans-Regular.ttf")
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
 
 

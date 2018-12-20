@@ -1,6 +1,0 @@
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/mailbox_move_to"
-    android:clickable="false"
-    xmlns:android="http://schemas.android.com/apk/res/android" />

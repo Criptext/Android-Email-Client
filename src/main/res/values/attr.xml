@@ -10,4 +10,5 @@
     <attr name="criptextSettingsOptionsTextColor" format="reference|color"/>
     <attr name="criptextButtonTextColor" format="reference|color"/>
     <attr name="criptextAttachmentBackgroundColor" format="reference|color"/>
+    <attr name="criptextMailItemColorBg" format="reference|color"/>
 </resources>
