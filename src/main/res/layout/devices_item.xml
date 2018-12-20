@@ -43,7 +43,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Google Android SDK built for x86"
-                    android:textColor="@android:color/black"
+                    android:textColor="?attr/criptextPrimaryTextColor"
                     android:textSize="15sp" />
                 <LinearLayout
                     android:id="@+id/lastActivityLayout"
@@ -56,7 +56,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/device_last_activity"
-                        android:textColor="@android:color/black"
+                        android:textColor="?attr/criptextPrimaryTextColor"
                         android:textSize="13sp" />
                     <TextView
                         android:id="@+id/textViewDeviceLastActive"
@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/device_last_activity_time"
-                        android:textColor="@color/non_criptext_email_send_detail_text"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>

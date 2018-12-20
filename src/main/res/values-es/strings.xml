@@ -127,6 +127,7 @@
   <string name="title_allow_notifications">Permitir Notificaciones</string>
   <string name="title_allow_preview">Vista Previa en Notificaciones</string>
   <string name="title_two_fa">Autenticación de Dos Factores</string>
+  <string name="title_dark_theme">Tema Oscuro</string>
   <string name="title_read_receipts">Confirmaciones de Lectura</string>
   <string name="title_pin_lock">Bloqueo PIN</string>
   <string name="title_privacy">Seguridad y Privacidad</string>
@@ -136,6 +137,7 @@
   <string name="separator_notifications">NOTIFICACIONES</string>
   <string name="separator_privacy">PRIVACIDAD</string>
   <string name="separator_about">ACERCA DE</string>
+  <string name="separator_appearance">APARIENCIA</string>
   <string name="status_not_confirmed">(no verificado)</string>
   <string name="status_confirmed">(verificado)</string>
   <string name="criptext_version">Criptext Beta </string>

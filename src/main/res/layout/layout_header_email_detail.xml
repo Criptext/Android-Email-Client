@@ -18,7 +18,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="20sp"
                 fontPath="fonts/NunitoSans-Bold.ttf" />
 

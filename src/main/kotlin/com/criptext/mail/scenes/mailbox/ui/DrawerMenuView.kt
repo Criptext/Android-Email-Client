@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
@@ -215,11 +216,20 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     private fun setResourcesSelected(slider: LinearLayout, textView: TextView, imageView: ImageView){
-        slider.setBackgroundColor(ContextCompat.getColor(slider.context, R.color.menu_selected))
-        textView.typeface = TypefaceUtils.load(textView.resources.assets,
-                "fonts/NunitoSans-Bold.ttf")
-        DrawableCompat.setTint(imageView.drawable,
-                ContextCompat.getColor(imageView.context, R.color.drawer_icon_selected))
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            slider.setBackgroundColor(ContextCompat.getColor(slider.context, R.color.gray))
+            textView.typeface = TypefaceUtils.load(textView.resources.assets,
+                    "fonts/NunitoSans-Bold.ttf")
+            DrawableCompat.setTint(imageView.drawable,
+                    ContextCompat.getColor(imageView.context, R.color.white))
+        }else{
+            slider.setBackgroundColor(ContextCompat.getColor(slider.context, R.color.menu_selected))
+            textView.typeface = TypefaceUtils.load(textView.resources.assets,
+                    "fonts/NunitoSans-Bold.ttf")
+            DrawableCompat.setTint(imageView.drawable,
+                    ContextCompat.getColor(imageView.context, R.color.drawer_icon_selected))
+        }
+
     }
 
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int){

@@ -1,19 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="textColorError"> @color/colorUnsent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
+        <item name="criptextColorBackground">@color/colorBackground</item>
+        <item name="criptextLeftMenuBackground">@color/colorSecondaryBackground</item>
+        <item name="criptextLeftMenuHeader">@color/colorNavBodyBackground</item>
+        <item name="criptextLeftMenuSelected">@color/menu_selected</item>
+        <item name="criptextSettingsDividerBackground">@color/dividerColor</item>
+        <item name="criptextPrimaryTextColor">@color/textColorPrimary</item>
+        <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
+        <item name="criptextSettingsOptionsTextColor">@color/drawer_text</item>
+        <item name="criptextButtonTextColor">@color/label_buttons_text</item>
+        <item name="criptextAttachmentBackgroundColor">@color/attachment_background</item>
+    </style>
+
+    <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+        <item name="criptextColorBackground">@color/colorPrimaryDark</item>
+        <item name="criptextLeftMenuBackground">@color/colorPrimary</item>
+        <item name="criptextLeftMenuHeader">@color/colorPrimaryDark</item>
+        <item name="criptextLeftMenuSelected">@color/gray</item>
+        <item name="criptextSettingsDividerBackground">@color/colorPrimary</item>
+        <item name="criptextPrimaryTextColor">@color/white</item>
+        <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
+        <item name="criptextSettingsOptionsTextColor">@color/mailbox_mail_unread</item>
+        <item name="criptextButtonTextColor">@color/white</item>
+        <item name="criptextAttachmentBackgroundColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="textColorError"> @color/colorUnsent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -133,7 +163,7 @@
         <!-- Hint color and label color in FALSE state -->
         <item name="android:fontFamily">@font/nunito_sans_regular</item>
         <item name="android:textColorHint">@color/non_criptext_email_send_text_line</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">?attr/criptextPrimaryTextColor</item>
         <item name="android:textSize">12sp</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/non_criptext_email_send_text_line</item>

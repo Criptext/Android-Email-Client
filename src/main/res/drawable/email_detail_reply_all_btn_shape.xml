@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <solid
-        android:color="#ffffff"/>
+        android:color="?attr/criptextLeftMenuBackground"/>
 
     <padding
         android:left="10dp"

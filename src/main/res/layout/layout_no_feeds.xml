@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textSize="18sp"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:gravity="center_horizontal"
         android:text="@string/noactivity"/>
 
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="#9b9b9b"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:gravity="center_horizontal"
         android:text="@string/enjoy_your_day"
         fontPath="fonts/NunitoSans-Italic.ttf"/>

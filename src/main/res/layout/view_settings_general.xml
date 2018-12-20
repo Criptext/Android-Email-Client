@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/criptextColorBackground">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,7 +36,7 @@
                     android:text="@string/title_swipe"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -53,11 +54,11 @@
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:background="#f4f4f4"
+                android:background="?attr/criptextSettingsDividerBackground"
                 android:text="@string/separator_account"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="#000000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -79,7 +80,7 @@
                     android:text="@string/title_profile_name"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -119,7 +120,7 @@
                     android:text="@string/title_signature"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -161,7 +162,7 @@
                     android:text="@string/title_profile_photo"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -202,7 +203,7 @@
                     android:text="@string/title_change_password"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -243,7 +244,7 @@
                     android:text="@string/title_recovery_email"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"
                     android:layout_weight="1"/>
 
                 <ProgressBar
@@ -276,7 +277,7 @@
                     android:text="@string/title_recovery_email"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"
@@ -329,7 +330,7 @@
                     android:text="@string/title_two_fa"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_two_fa"
@@ -370,6 +371,7 @@
                     android:layout_height="match_parent"
                     android:text="@string/title_privacy"
                     android:textSize="@dimen/drawer_text_item"
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"
                     android:gravity="center_vertical" />
 
                 <ImageView
@@ -411,7 +413,7 @@
                     android:text="@string/title_sync_phonebook"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ProgressBar
                     android:id="@+id/sync_phonebook_progress"
@@ -444,7 +446,7 @@
                     android:text="@string/title_allow_notifications"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_notifications"
@@ -461,11 +463,55 @@
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:background="#f4f4f4"
+                android:background="?attr/criptextSettingsDividerBackground"
+                android:text="@string/separator_appearance"
+                android:textSize="14sp"
+                android:gravity="center_vertical"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:paddingStart="17dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="17dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/settings_dark_theme"
+                android:clickable="false"
+                android:foreground="?attr/selectableItemBackground"
+                >
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_dark_theme"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                <Switch
+                    android:id="@+id/switch_dark_theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="17dp"
+                    android:checked="false"/>
+
+            </FrameLayout>
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="?attr/criptextSettingsDividerBackground"
                 android:text="@string/separator_about"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="#000000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -487,7 +533,7 @@
                     android:text="@string/title_privacy_policy"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -527,7 +573,7 @@
                     android:text="@string/title_terms_of_service"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -567,7 +613,7 @@
                     android:text="@string/title_open_source_libraries"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -607,7 +653,7 @@
                     android:text="@string/title_logout"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <ImageView
                     android:layout_width="32dp"
@@ -680,7 +726,7 @@
                     android:text="@string/title_sounds"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_sounds"
@@ -711,7 +757,7 @@
                     android:text="@string/title_badges"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_badge"

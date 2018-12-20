@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/include_emails_detail"
-    android:background="#f7f7f8"
+    android:background="?attr/criptextColorBackground"
     android:title="@string/titulo_mailbox"
     android:orientation="vertical">
 

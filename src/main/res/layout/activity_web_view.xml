@@ -5,11 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.criptext.mail.scenes.WebViewActivity">
+    tools:context="com.criptext.mail.scenes.WebViewActivity"
+    android:background="?attr/criptextAttachmentBackgroundColor">
 
     <WebView
         android:id="@+id/webViewCriptext"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="?attr/criptextAttachmentBackgroundColor"/>
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.settings
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.support.v7.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
@@ -75,6 +76,18 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+
+        override fun onDarkThemeSwitched(isChecked: Boolean) {
+            storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
+            if(isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                host.setAppTheme(R.style.DarkAppTheme)
+            }else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                host.setAppTheme(R.style.AppTheme)
+            }
+        }
+
         override fun onDeleteAccountClicked() {
             scene.showGeneralDialogWithInput(DialogData(
                     title = UIMessage(R.string.delete_account_dialog_title),

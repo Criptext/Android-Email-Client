@@ -6,7 +6,10 @@
     <color name="colorSplashStart">#00c4ff</color>
     <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#373a45</color>
     <color name="colorBackground">#ffffff</color>
+    <color name="colorSecondaryBackground">#fcfcfc</color>
+    <color name="colorNavBodyBackground">#f7f7f7</color>
     <color name="colorHighlight">#0091ff</color>
     <color name="colorTour">#0075ab</color>
     <color name="tour_below">#2d92eb</color>
@@ -40,6 +43,8 @@
     <color name="mail_item_not_selected">#ffffff</color>
     <color name="label_buttons">#f2f2f2</color>
     <color name="mailbox_mail_unread">#f4f4f4</color>
+    <color name="attachment_background">#fafafa</color>
+    <color name="dividerColor">#f4f4f4</color>
     <color name="mail_item_date">#6a707e</color>
     <color name="nav_button">#4f515b</color>
     <color name="login_background">#0091ff</color>

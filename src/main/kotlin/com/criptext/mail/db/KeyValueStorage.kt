@@ -39,6 +39,7 @@ interface KeyValueStorage {
         StartGuideShowNotification("StartGuideShowNotification"),
         StartGuideShowOptions("StartGuideShowOptions"),
         StartGuideShowEmailRead("StartGuideShowEmailRead"),
+        HasDarkTheme("HasDarkTheme"),
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

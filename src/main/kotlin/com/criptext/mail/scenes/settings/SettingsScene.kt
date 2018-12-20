@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings
 
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -213,6 +214,9 @@ interface SettingsScene{
             generalView.enable2FASwitch(true)
             generalView.enablePrivacyOption(true)
             generalView.set2FA(userData.hasTwoFA)
+            generalView.setDarkTheme(
+                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            )
         }
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {

@@ -45,6 +45,7 @@ interface IHostActivity {
     fun postDelay(runnable: Runnable, delayMilliseconds: Long)
     fun getContentResolver(): ContentResolver?
     fun getHandler(): Handler?
+    fun setAppTheme(themeResource: Int)
     /**
      * Launch an activity for a result, and then pass that result as an ActivityMessage
      * @param params Object with the necessary data to launch the correct activity.

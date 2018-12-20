@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fcfcfc">
+    android:background="?attr/criptextLeftMenuHeader">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:id="@+id/slider_inbox"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:background="@color/menu_selected">
+        android:background="?attr/criptextLeftMenuSelected">
 
         <ImageView
             android:id="@+id/imageViewInbox"
@@ -37,7 +37,7 @@
             android:text="@string/slider_inbox"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="#000"
+            android:textColor="?attr/criptextPrimaryTextColor"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:layout_weight="1"/>
 
@@ -87,7 +87,7 @@
             android:text="@string/slider_sent"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -122,7 +122,7 @@
             android:text="@string/slider_draft"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
         <TextView
@@ -170,7 +170,7 @@
             android:text="@string/slider_starred"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -205,7 +205,7 @@
             android:text="@string/slider_junk"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
         <TextView
@@ -253,7 +253,7 @@
             android:text="@string/slider_trash"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -288,7 +288,7 @@
             android:text="@string/slider_allmail"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -331,7 +331,7 @@
             android:text="@string/slider_labels"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
         <ImageView
@@ -392,7 +392,7 @@
             android:text="@string/slider_settings"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -425,7 +425,7 @@
             android:text="@string/slider_invite_friend"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -459,7 +459,7 @@
             android:text="@string/slider_support"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:layout_weight="1"/>
 
     </LinearLayout>

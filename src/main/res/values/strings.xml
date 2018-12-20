@@ -127,6 +127,7 @@
   <string name="title_allow_notifications">Allow Notifications</string>
   <string name="title_allow_preview">Notification Preview</string>
   <string name="title_two_fa">Two-Factor Authentication</string>
+  <string name="title_dark_theme">Dark Theme</string>
   <string name="title_read_receipts">Read Receipts</string>
   <string name="title_pin_lock">PIN Lock</string>
   <string name="title_privacy">Privacy and Security</string>
@@ -136,6 +137,7 @@
   <string name="separator_notifications">NOTIFICATIONS</string>
   <string name="separator_privacy">PRIVACY</string>
   <string name="separator_about">ABOUT</string>
+  <string name="separator_appearance">APPEARANCE</string>
   <string name="status_not_confirmed">(not verified)</string>
   <string name="status_confirmed">(verified)</string>
   <string name="criptext_version">Criptext Beta </string>

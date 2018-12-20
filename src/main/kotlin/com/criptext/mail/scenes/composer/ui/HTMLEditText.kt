@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.composer.ui
 
 import android.graphics.Color
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
+import com.criptext.mail.R
 import jp.wasabeef.richeditor.RichEditor
 
 /**
@@ -23,6 +25,10 @@ class HTMLEditText(private val richEditor: RichEditor, hint: String){
         richEditor.settings.allowFileAccess = true
         richEditor.setPlaceholder(hint)
         richEditor.setEditorFontSize(17)
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            richEditor.setEditorFontColor(R.color.white)
+            richEditor.setTextColor(R.color.white)
+        }
     }
 
     fun setMinHeight(){

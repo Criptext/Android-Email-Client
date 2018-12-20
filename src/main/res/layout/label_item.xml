@@ -28,7 +28,7 @@
         android:layout_toStartOf="@+id/label_checkbox"
         android:layout_marginStart="8dp"
         android:layout_centerVertical="true"
-        android:textColor="@color/label_buttons_text"/>
+        android:textColor="?attr/criptextPrimaryTextColor"/>
 
     <CheckBox
         android:id="@+id/label_checkbox"
