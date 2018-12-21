@@ -5,7 +5,8 @@
     android:id="@+id/main_content"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/criptextColorBackground">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

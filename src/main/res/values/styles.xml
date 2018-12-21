@@ -7,8 +7,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorBackground</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:itemBackground">@color/colorBackground</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextColorBackground">@color/colorBackground</item>
         <item name="criptextLeftMenuBackground">@color/colorSecondaryBackground</item>
@@ -20,6 +20,10 @@
         <item name="criptextSettingsOptionsTextColor">@color/drawer_text</item>
         <item name="criptextButtonTextColor">@color/label_buttons_text</item>
         <item name="criptextAttachmentBackgroundColor">@color/attachment_background</item>
+        <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected</item>
+        <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected</item>
+        <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread</item>
+        <item name="criptextMailItemSquareColorBg">@color/mail_item_square</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -27,8 +31,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:itemBackground">@color/colorPrimaryDark</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextColorBackground">@color/colorPrimaryDark</item>
         <item name="criptextLeftMenuBackground">@color/colorPrimary</item>
@@ -40,6 +44,10 @@
         <item name="criptextSettingsOptionsTextColor">@color/mailbox_mail_unread</item>
         <item name="criptextButtonTextColor">@color/white</item>
         <item name="criptextAttachmentBackgroundColor">@color/colorPrimary</item>
+         <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected_dark</item>
+        <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected_dark</item>
+        <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread_dark</item>
+        <item name="criptextMailItemSquareColorBg">@color/mail_item_square_dark</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -59,10 +67,6 @@
     <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
         <item name="contentInsetStart">0dp</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
-    </style>
-
-    <style name="ProgressBarThread" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/progress_grey_tint</item>
     </style>
 
     <style name="editTextSearch" parent="@style/Widget.AppCompat.EditText">
@@ -98,15 +102,6 @@
         <item name="colorControlActivated">@android:color/black</item>
     </style>
 
-    <style name="ErrorTextAppearanceUsernameInput" parent="TextAppearance.AppCompat">
-        <item name="android:textColorHint">@android:color/black</item>
-        <item name="android:textSize">12sp</item>
-        <item name="colorAccent">@android:color/black</item>
-        <item name="colorControlNormal">@android:color/black</item>
-        <item name="colorControlActivated">@android:color/black</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
     <style name="NormalTextAppearenceUsernameInput">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@color/signup_hint_color</item>
@@ -129,27 +124,6 @@
     <style name="CriptextTabText" parent="@android:style/TextAppearance.Widget.TabWidget">
         <item name="android:fontFamily">@font/nunito_sans_bold</item>
         <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="PickerTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="PickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorBackground">@android:color/background_light</item>
-        <item name="android:windowBackground">@android:color/white</item>
-    </style>
-
-    <style name="PickerTabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabBackground">@color/colorPrimary</item>
-        <item name="tabSelectedTextColor">@color/white</item>
-        <item name="tabTextAppearance">@style/PickerTabTextAppearance</item>
-        <item name="tabGravity">fill</item>
-        <item name="tabMaxWidth">0dp</item>
     </style>
 
     <style name="SmoothCheckBoxStyle">
@@ -181,7 +155,5 @@
         <item name="colorControlNormal">@color/non_criptext_email_send_text_line</item>
         <item name="colorControlActivated">@color/non_criptext_email_send_text_line_focus</item>
     </style>
-
-
 
 </resources>

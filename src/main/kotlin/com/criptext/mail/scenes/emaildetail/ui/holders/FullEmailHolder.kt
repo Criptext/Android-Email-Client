@@ -206,7 +206,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     headerView.context.getString(R.string.draft)
                 }
                 else {
-                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.textColorPrimary))
+                    headerView.setTextColor(context.getColorFromAttr(R.attr.criptextPrimaryTextColor))
                     fullEmail.from.name
                 }
 

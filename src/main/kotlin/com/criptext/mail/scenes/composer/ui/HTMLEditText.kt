@@ -26,8 +26,8 @@ class HTMLEditText(private val richEditor: RichEditor, hint: String){
         richEditor.setPlaceholder(hint)
         richEditor.setEditorFontSize(17)
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
-            richEditor.setEditorFontColor(R.color.white)
-            richEditor.setTextColor(R.color.white)
+            richEditor.setEditorFontColor(R.color.red)
+            richEditor.setTextColor(R.color.red)
         }
     }
 

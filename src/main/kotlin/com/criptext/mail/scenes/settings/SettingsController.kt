@@ -86,6 +86,7 @@ class SettingsController(
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 host.setAppTheme(R.style.AppTheme)
             }
+            host.exitToScene(SettingsParams(), null,false)
         }
 
         override fun onDeleteAccountClicked() {
@@ -242,7 +243,7 @@ class SettingsController(
         }
     }
 
-    private val onDevicesListItemListener = object: DevicesListItemListener {
+    private val onDevicesListItemListener:DevicesListItemListener = object: DevicesListItemListener {
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             settingsUIObserver.onRemoveDevice(device.id, position)
             return true

@@ -1,6 +1,5 @@
 package com.criptext.mail
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.os.Handler
 import android.view.MenuItem
@@ -8,8 +7,9 @@ import android.view.View
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
+import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.uiobserver.UIObserver
+import kotlin.reflect.KClass
 
 /**
  * Created by sebas on 1/29/18.
