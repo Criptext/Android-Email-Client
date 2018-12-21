@@ -11,4 +11,8 @@
     <attr name="criptextButtonTextColor" format="reference|color"/>
     <attr name="criptextAttachmentBackgroundColor" format="reference|color"/>
     <attr name="criptextMailItemColorBg" format="reference|color"/>
+    <attr name="criptextMailItemSelectedColorBg" format="reference|color"/>
+    <attr name="criptextMailItemUnselectedColorBg" format="reference|color"/>
+    <attr name="criptextMailItemUnreadColorBg" format="reference|color"/>
+    <attr name="criptextMailItemSquareColorBg" format="reference|color"/>
 </resources>

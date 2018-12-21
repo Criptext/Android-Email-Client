@@ -19,6 +19,10 @@
         <item name="criptextSettingsOptionsTextColor">@color/drawer_text</item>
         <item name="criptextButtonTextColor">@color/label_buttons_text</item>
         <item name="criptextAttachmentBackgroundColor">@color/attachment_background</item>
+        <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected</item>
+        <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected</item>
+        <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread</item>
+        <item name="criptextMailItemSquareColorBg">@color/mail_item_square</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -39,6 +43,10 @@
         <item name="criptextSettingsOptionsTextColor">@color/mailbox_mail_unread</item>
         <item name="criptextButtonTextColor">@color/white</item>
         <item name="criptextAttachmentBackgroundColor">@color/colorPrimary</item>
+        <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected_dark</item>
+        <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected_dark</item>
+        <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread_dark</item>
+        <item name="criptextMailItemSquareColorBg">@color/mail_item_square_dark</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

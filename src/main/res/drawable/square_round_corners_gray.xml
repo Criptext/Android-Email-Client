@@ -4,6 +4,6 @@
     android:shape="rectangle">
 
     <corners android:radius="6dp" />
-    <solid android:color="#c3c1c6" />
+    <solid android:color="?attr/criptextMailItemSquareColorBg" />
 
 </shape>
