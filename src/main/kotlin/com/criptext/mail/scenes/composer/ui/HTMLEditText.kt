@@ -29,6 +29,11 @@ class HTMLEditText(private val richEditor: RichEditor, hint: String){
             richEditor.setEditorFontColor(Color.WHITE)
             richEditor.setTextColor(Color.WHITE)
         }
+        richEditor.setOnInitialLoadListener {
+            if(it){
+                richEditor.evaluateJavascript("javascript:RE.setBackgroundColor('transparent');", null)
+            }
+        }
     }
 
     fun setMinHeight(){
