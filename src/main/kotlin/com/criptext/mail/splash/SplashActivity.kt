@@ -29,13 +29,13 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            setTheme(R.style.DarkAppTheme)
-        }else{
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            setTheme(R.style.AppTheme)
-        }
+//        if (storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//            setTheme(R.style.DarkAppTheme)
+//        }else{
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//            setTheme(R.style.AppTheme)
+//        }
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

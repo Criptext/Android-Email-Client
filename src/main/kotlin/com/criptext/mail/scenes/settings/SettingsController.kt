@@ -79,6 +79,8 @@ class SettingsController(
 
         override fun onDarkThemeSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
+            model.devices.clear()
+            model.hasChangedTheme = true
             if(isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 host.setAppTheme(R.style.DarkAppTheme)
@@ -86,7 +88,6 @@ class SettingsController(
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 host.setAppTheme(R.style.AppTheme)
             }
-            host.exitToScene(SettingsParams(), null,false)
         }
 
         override fun onDeleteAccountClicked() {
@@ -217,7 +218,12 @@ class SettingsController(
         }
 
         override fun onBackButtonPressed() {
-            host.finishScene()
+            if(model.hasChangedTheme) {
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+            else{
+                host.finishScene()
+            }
         }
 
         override fun onSignatureOptionClicked() {
@@ -272,9 +278,9 @@ class SettingsController(
                     model = model,
                     settingsUIObserver = settingsUIObserver,
                     devicesListItemListener = onDevicesListItemListener)
-
             dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
+
         return false
     }
 
@@ -283,7 +289,8 @@ class SettingsController(
     }
 
     override fun onBackPressed(): Boolean {
-        return true
+        settingsUIObserver.onBackButtonPressed()
+        return false
     }
 
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
@@ -427,7 +434,7 @@ class SettingsController(
                 model.hasTwoFA = result.userSettings.hasTwoFA
                 model.hasReadReceipts = result.userSettings.hasReadReceipts
                 deviceWrapperListController.update()
-                scene.updateUserSettings(result.userSettings)
+                scene.updateUserSettings(model)
             }
             is SettingsResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)

@@ -171,6 +171,7 @@
   <string name="delete_account_dialog_message"><b>WARNING:</b> Deleting your account will erase all mailbox and account data on all devices as well as disable your username from being used in the future.\nAre you sure you want to delete your account?</string>
   <string name="delete_account_toast_message">Account was deleted successfully.</string>
   <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
+    <string name="removing_device_dialog_message">Removing device…</string>
     <string name="privacy_toolbar_title">PRIVACY AND SECURITY</string>
   <string name="pin_lock_switch_text">Use PIN Lock</string>
   <string name="pin_lock_change">Change PIN Code</string>
@@ -193,7 +194,6 @@
   <string name="read_receipts_message">If disabled, you won\'t be able to know when others read your emails.</string>
   <string name="pin_code_fingerprint_text">Fingerprint</string>
   <string name="pin_code_fingerprint_success">Fingerprint recognized</string>
-  <string name="removing_device_dialog_message">Removing device…</string>
   <string name="pin_code_fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
   <string name="title_non_criptext_mail_dialog">Non-Criptext Recipient</string>
   <string name="set_pass_non_criptext_mail_dialog">Send Encrypted</string>

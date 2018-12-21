@@ -21,6 +21,7 @@
     <color name="drawer_text">#373a45</color>
     <color name="menu_selected">#f2f8ff</color>
     <color name="light_blue">#65bdff</color>
+    <color name="drawer_icon_unselected_dark">#808188</color>
     <color name="drawer_icon_unselected">#D3D3D3</color>
     <color name="drawer_icon_selected">#30323c</color>
     <color name="mail_item_selected">#FFFBE8</color>
@@ -57,4 +58,9 @@
     <color name="warning_color">#000000</color>
     <color name="success_color">#FFFFFF</color>
     <color name="hint_color">#FFFFFF</color>
+    <color name="menu_header_dark">#24272b</color>
+    <color name="menu_body_dark">#2a2d32</color>
+    <color name="menu_selected_dark">#34363c</color>
+    <color name="menu_separator">#d8d8d8</color>
+    <color name="menu_separator_dark">#4b4c4d</color>
 </resources>

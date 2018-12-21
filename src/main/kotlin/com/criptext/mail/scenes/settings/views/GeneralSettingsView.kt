@@ -140,7 +140,6 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsSyncPhonebookContacts.setOnClickListener {
             settingsUIObserver?.onSyncPhonebookContacts()
         }
-        setSwitchListener()
     }
 
     private fun setSwitchListener(){
