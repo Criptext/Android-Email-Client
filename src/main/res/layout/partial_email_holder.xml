@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:id="@+id/mail_item_layout"
-        android:background="?attr/criptextLeftMenuBackground"
+        android:background="?attr/criptextEmailDetailBgColor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

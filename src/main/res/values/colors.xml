@@ -63,4 +63,10 @@
     <color name="menu_selected_dark">#34363c</color>
     <color name="menu_separator">#d8d8d8</color>
     <color name="menu_separator_dark">#4b4c4d</color>
+    <color name="email_detail_border">#c4c4c4</color>
+    <color name="email_detail_border_dark">#383a3f</color>
+    <color name="email_detail_bg">#fff</color>
+    <color name="email_detail_bg_dark">#34363c</color>
+    <color name="email_detail_activity">#f7f7f8</color>
+    <color name="email_detail_activity_dark">#1f2228</color>
 </resources>

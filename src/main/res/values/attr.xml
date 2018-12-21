@@ -19,4 +19,7 @@
     <attr name="criptextMailItemUnreadColorBg" format="reference|color"/>
     <attr name="criptextMailItemSquareColorBg" format="reference|color"/>
     <attr name="criptextWebViewBackground" format="reference|color"/>
+    <attr name="criptextEmailDetailBorderColor" format="reference|color"/>
+    <attr name="criptextEmailDetailBgColor" format="reference|color"/>
+    <attr name="criptextEmailDetailBgActivityColor" format="reference|color"/>
 </resources>
