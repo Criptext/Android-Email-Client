@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <solid
-        android:color="?attr/criptextSettingsDividerBackground"/>
+        android:color="?attr/criptextDialogButtonBg"/>
     <corners
         android:bottomLeftRadius="15dp"
         />

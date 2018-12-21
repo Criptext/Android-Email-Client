@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/device_last_activity_time"
-                        android:textColor="?attr/criptextSettingsOptionsTextColor"
+                        android:textColor="?attr/criptextSecondaryTextColor"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>

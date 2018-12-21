@@ -11,6 +11,10 @@
     <attr name="criptextPrimaryTextColor" format="reference|color"/>
     <attr name="criptextSecondaryTextColor" format="reference|color"/>
     <attr name="criptextSettingsOptionsTextColor" format="reference|color"/>
+    <attr name="criptextSettingsHeadersTextColor" format="reference|color"/>
+    <attr name="criptextSettingsTabsTextColor" format="reference|color"/>
+    <attr name="criptextSettingsTabsBgColor" format="reference|color"/>
+    <attr name="criptextSettingsBgColor" format="reference|color"/>
     <attr name="criptextButtonTextColor" format="reference|color"/>
     <attr name="criptextAttachmentBackgroundColor" format="reference|color"/>
     <attr name="criptextMailItemColorBg" format="reference|color"/>
@@ -19,4 +23,18 @@
     <attr name="criptextMailItemUnreadColorBg" format="reference|color"/>
     <attr name="criptextMailItemSquareColorBg" format="reference|color"/>
     <attr name="criptextWebViewBackground" format="reference|color"/>
+    <attr name="criptextEmailDetailBorderColor" format="reference|color"/>
+    <attr name="criptextEmailDetailBgColor" format="reference|color"/>
+    <attr name="criptextEmailDetailBgActivityColor" format="reference|color"/>
+    <attr name="criptextContactTokenBgColor" format="reference|color"/>
+    <attr name="criptextContactTokenTextColor" format="reference|color"/>
+    <attr name="criptextContactExternalTokenBgColor" format="reference|color"/>
+    <attr name="criptextContactExternalTokenTextColor" format="reference|color"/>
+    <attr name="criptextContactInvalidTokenBgColor" format="reference|color"/>
+    <attr name="criptextContactInvalidTokenTextColor" format="reference|color"/>
+    <attr name="criptextLeftMenuBadgeColor" format="reference|color"/>
+    <attr name="criptextSnackBarBackground" format="reference|color"/>
+    <attr name="criptextAttachmentsXButtonBorder" format="reference|color"/>
+    <attr name="criptextAttachmentsXButtonBg" format="reference|color"/>
+    <attr name="criptextDialogButtonBg" format="reference|color"/>
 </resources>

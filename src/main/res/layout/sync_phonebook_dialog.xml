@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:paddingTop="10dp"
         android:layout_gravity="center"
-        android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content">
 
         <Button

@@ -13,7 +13,7 @@
         android:paddingBottom="30dp"
         android:paddingTop="15dp"
         android:text="@string/title_non_criptext_mail_dialog"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textStyle="bold"
         android:textSize="18sp" />
 
@@ -25,6 +25,7 @@
         android:layout_weight="1"
         android:checked="true"
         android:text="@string/set_pass_non_criptext_mail_dialog"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="17sp" />
 
     <TextView
@@ -36,7 +37,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:text="@string/set_pass_detail_non_criptext_mail_dialog"
-        android:textColor="@color/non_criptext_email_send_detail_text"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="14sp" />
 
     <RelativeLayout
@@ -109,7 +110,7 @@
         android:paddingTop="10dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/subtitle_expiration_dialog"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="14sp"
         android:visibility="gone"/>
 
@@ -122,7 +123,7 @@
         android:paddingBottom="60dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/switch_off_non_criptext_email_dialog"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="14sp"
         android:visibility="gone"/>
 
@@ -144,7 +145,7 @@
             android:stateListAnimator="@null"
             android:text="@string/cancel"
             android:textAllCaps="false"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp" />
 
         <Button

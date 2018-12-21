@@ -23,7 +23,7 @@
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:padding="15dp"
-        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         />
 

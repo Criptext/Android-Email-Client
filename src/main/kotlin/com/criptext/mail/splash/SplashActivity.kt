@@ -29,13 +29,6 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            setTheme(R.style.Splash_Criptext_Dark)
-        }else{
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            setTheme(R.style.Splash_Criptext)
-        }
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -48,7 +41,6 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
-
     }
 
     private fun hasActiveAccount(): Boolean =

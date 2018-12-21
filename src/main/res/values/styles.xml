@@ -19,15 +19,33 @@
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColor</item>
+        <item name="criptextDialogButtonBg">@color/dividerColor</item>
         <item name="criptextPrimaryTextColor">@color/textColorPrimary</item>
         <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
         <item name="criptextSettingsOptionsTextColor">@color/drawer_text</item>
+        <item name="criptextSettingsHeadersTextColor">@color/black</item>
+        <item name="criptextSettingsTabsTextColor">@color/black</item>
+        <item name="criptextSettingsTabsBgColor">@color/white</item>
+        <item name="criptextSettingsBgColor">@color/white</item>
         <item name="criptextButtonTextColor">@color/label_buttons_text</item>
         <item name="criptextAttachmentBackgroundColor">@color/attachment_background</item>
         <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected</item>
         <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected</item>
         <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread</item>
         <item name="criptextMailItemSquareColorBg">@color/mail_item_square</item>
+        <item name="criptextEmailDetailBorderColor">@color/email_detail_border</item>
+        <item name="criptextEmailDetailBgColor">@color/email_detail_bg</item>
+        <item name="criptextEmailDetailBgActivityColor">@color/email_detail_activity</item>
+        <item name="criptextContactTokenBgColor">@color/contact_token_background</item>
+        <item name="criptextContactTokenTextColor">@color/contact_token_text</item>
+        <item name="criptextContactExternalTokenBgColor">@color/contact_external_token_background</item>
+        <item name="criptextContactExternalTokenTextColor">@color/contact_external_token_text</item>
+        <item name="criptextContactInvalidTokenBgColor">@color/contact_invalid_token_background</item>
+        <item name="criptextContactInvalidTokenTextColor">@color/contact_invalid_token_text</item>
+        <item name="criptextLeftMenuBadgeColor">@color/light_blue</item>
+        <item name="criptextSnackBarBackground">@color/snackBarColor</item>
+        <item name="criptextAttachmentsXButtonBorder">@color/attachment_x_button_border</item>
+        <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -46,16 +64,34 @@
         <item name="criptextLeftMenuIconSelected">@color/white</item>
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected_dark</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator_dark</item>
-        <item name="criptextSettingsDividerBackground">@color/colorPrimary</item>
+        <item name="criptextSettingsDividerBackground">@color/dividerColorDark</item>
+        <item name="criptextDialogButtonBg">@color/colorPrimary</item>
         <item name="criptextPrimaryTextColor">@color/white</item>
         <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
-        <item name="criptextSettingsOptionsTextColor">@color/mailbox_mail_unread</item>
+        <item name="criptextSettingsOptionsTextColor">@color/settings_options_text_dark</item>
+        <item name="criptextSettingsHeadersTextColor">@color/settings_headers_text_dark</item>
+        <item name="criptextSettingsTabsTextColor">@color/settings_options_text_dark</item>
+        <item name="criptextSettingsTabsBgColor">@color/menu_body_dark</item>
+        <item name="criptextSettingsBgColor">@color/settings_bg_color_dark</item>
         <item name="criptextButtonTextColor">@color/white</item>
-        <item name="criptextAttachmentBackgroundColor">@color/colorPrimary</item>
+        <item name="criptextAttachmentBackgroundColor">@color/attachment_background_dark</item>
          <item name="criptextMailItemSelectedColorBg">@color/mail_item_selected_dark</item>
         <item name="criptextMailItemUnselectedColorBg">@color/mail_item_not_selected_dark</item>
         <item name="criptextMailItemUnreadColorBg">@color/mailbox_mail_unread_dark</item>
         <item name="criptextMailItemSquareColorBg">@color/mail_item_square_dark</item>
+        <item name="criptextEmailDetailBorderColor">@color/email_detail_border_dark</item>
+        <item name="criptextEmailDetailBgColor">@color/email_detail_bg_dark</item>
+        <item name="criptextEmailDetailBgActivityColor">@color/email_detail_activity_dark</item>
+        <item name="criptextContactTokenBgColor">@color/contact_token_background_dark</item>
+        <item name="criptextContactTokenTextColor">@color/contact_token_text_dark</item>
+        <item name="criptextContactExternalTokenBgColor">@color/contact_external_token_background_dark</item>
+        <item name="criptextContactExternalTokenTextColor">@color/contact_external_token_text_dark</item>
+        <item name="criptextContactInvalidTokenBgColor">@color/contact_invalid_token_background_dark</item>
+        <item name="criptextContactInvalidTokenTextColor">@color/contact_invalid_token_text_dark</item>
+        <item name="criptextLeftMenuBadgeColor">@color/badge_dark</item>
+        <item name="criptextSnackBarBackground">@color/black</item>
+        <item name="criptextAttachmentsXButtonBorder">@color/attachment_x_button_border_dark</item>
+        <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg_dark</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -79,11 +115,6 @@
     <style name="Splash.Criptext" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="colorPrimaryDark">@color/colorSplashStart</item>
-    </style>
-
-    <style name="Splash.Criptext.Dark" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_bg_dark</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
     <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/criptextColorBackground">
+    android:background="?attr/criptextSettingsBgColor">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -58,7 +58,7 @@
                 android:text="@string/separator_account"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="?attr/criptextPrimaryTextColor"
+                android:textColor="?attr/criptextSettingsHeadersTextColor"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -467,7 +467,7 @@
                 android:text="@string/separator_appearance"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="?attr/criptextPrimaryTextColor"
+                android:textColor="?attr/criptextSettingsHeadersTextColor"
                 android:paddingStart="17dp"/>
 
             <FrameLayout
@@ -511,7 +511,7 @@
                 android:text="@string/separator_about"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:textColor="?attr/criptextPrimaryTextColor"
+                android:textColor="?attr/criptextSettingsHeadersTextColor"
                 android:paddingStart="17dp"/>
 
             <FrameLayout

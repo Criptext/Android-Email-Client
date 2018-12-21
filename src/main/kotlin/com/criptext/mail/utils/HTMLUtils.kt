@@ -26,7 +26,7 @@ class HTMLUtils {
 
         fun changedHeaderHtml(htmlText: String): String {
             val style = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#373a45;}</style>"
+            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;}</style>"
             else "<style type=\"text/css\">body{color:#000;background-color:#fff;}</style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"

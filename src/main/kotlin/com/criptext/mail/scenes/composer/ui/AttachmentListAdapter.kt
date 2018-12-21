@@ -1,14 +1,17 @@
 package com.criptext.mail.scenes.composer.ui
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import com.criptext.mail.R
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewHolder
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.getColorFromAttr
 
 class AttachmentListAdapter(private val mContext: Context, private val attachmentsList: List<ComposerAttachment>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
@@ -16,6 +19,8 @@ class AttachmentListAdapter(private val mContext: Context, private val attachmen
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val mView = LayoutInflater.from(mContext).inflate(R.layout.attachment, parent, false)
+        mView.findViewById<RelativeLayout>(R.id.attachment_wrapper).setBackgroundColor(
+                mContext.getColorFromAttr(R.attr.criptextColorBackground))
         return AttachmentViewHolder(mView, observer)
     }
 
