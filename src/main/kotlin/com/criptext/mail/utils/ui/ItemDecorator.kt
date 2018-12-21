@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.criptext.mail.R
+import com.criptext.mail.utils.getColorFromAttr
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
 class ItemDecorator(private val context: Context,
@@ -20,7 +21,7 @@ class ItemDecorator(private val context: Context,
 
     init {
         paint.textSize = context.resources.getDimension(R.dimen.drawer_text_item)
-        paint.color = ContextCompat.getColor(context, R.color.grayFeed)
+        paint.color = context.getColorFromAttr(R.attr.criptextPrimaryTextColor)
         paint.typeface = TypefaceUtils.load(context.resources.assets, "fonts/NunitoSans-Regular.ttf")
     }
 

@@ -171,6 +171,7 @@
   <string name="delete_account_dialog_message"><b>ADVERTENCIA: </b> Eliminar tu cuenta borrará todos los datos personales y de tu bandeja de entrada en todos tus dispositivos y a demás deshabilitará el uso de este nombre de usuario.\n¿Estás seguro que deseas eliminar tu cuenta?</string>
   <string name="delete_account_toast_message">Cuenta fue eliminada exitosamente.</string>
   <string name="remove_device_dialog_message">Eliminar este dispositivo hará que se cierre la sesión de forma remota.</string>
+  <string name="removing_device_dialog_message">Eliminando dispositivo…</string>
   <string name="privacy_toolbar_title">SEGURIDAD Y PRIVACIDAD</string>
   <string name="pin_lock_switch_text">Usar PIN</string>
   <string name="pin_lock_change">Cambiar Codigo PIN</string>
@@ -193,7 +194,6 @@
   <string name="read_receipts_message">Si lo deshabilitas, no podrás saber cuando otras personas lean tus correos.</string>
   <string name="pin_code_fingerprint_text">Huella</string>
   <string name="pin_code_fingerprint_success">Huella reconocida</string>
-  <string name="removing_device_dialog_message">Removiendo dispositivo…</string>
   <string name="pin_code_fingerprint_not_recognized">Huella no reconocida. Intenta de nuevo.</string>
     <string name="title_non_criptext_mail_dialog">Destinatario No-Criptext</string>
   <string name="set_pass_non_criptext_mail_dialog">Enviar Encriptado</string>

@@ -401,6 +401,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun setAppTheme(themeResource: Int) {
         setTheme(themeResource)
+        recreate()
     }
 
     override fun checkPermissions(requestCode: Int, permission: String): Boolean =

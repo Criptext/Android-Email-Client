@@ -97,7 +97,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -137,7 +137,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:visibility="gone"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
@@ -179,7 +179,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -220,7 +220,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -306,7 +306,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -347,7 +347,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -389,7 +389,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -550,7 +550,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -590,7 +590,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -630,7 +630,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -670,7 +670,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 
@@ -773,7 +773,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="17dp"
                 android:layout_marginEnd="22dp"/>
 

@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"
         />
 
@@ -23,7 +23,7 @@
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:padding="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         />
 
@@ -46,11 +46,11 @@
             android:stateListAnimator="@null"
             android:text="@string/no"
             android:textAllCaps="false"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp" />
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:textSize="15sp"
             android:textAllCaps="false"

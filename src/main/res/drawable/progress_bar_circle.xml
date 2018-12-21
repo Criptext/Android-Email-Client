@@ -2,7 +2,7 @@
     android:shape="rectangle"
     >
     <solid
-        android:color="@color/white"
+        android:color="?attr/criptextColorBackground"
         />
     <corners android:radius="20dp" />
 

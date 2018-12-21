@@ -14,14 +14,13 @@ android:layout_height="wrap_content">
     android:paddingTop="15dp"
     android:paddingBottom="5dp"
     android:paddingStart="20dp"
-    android:textColor="@color/textColorPrimary"
+    android:textColor="?attr/criptextPrimaryTextColor"
     android:textSize="17sp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_gravity="center"
-        android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp">
 
@@ -42,7 +41,7 @@ android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/move_to_spam"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="14sp"
             android:stateListAnimator="@null"
             android:background="@drawable/mailbox_buttons_move_to"
@@ -56,7 +55,7 @@ android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/move_to_trash"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="14sp"
             android:stateListAnimator="@null"
             android:layout_gravity="start"
@@ -75,11 +74,10 @@ android:layout_height="wrap_content">
         android:layout_width="match_parent"
 
         android:layout_gravity="center"
-        android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content">
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp"
             android:textAllCaps="false"
             android:id="@+id/move_to_cancel"

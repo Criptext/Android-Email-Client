@@ -2,18 +2,22 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:itemBackground">@color/colorBackground</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextColorBackground">@color/colorBackground</item>
-        <item name="criptextLeftMenuBackground">@color/colorSecondaryBackground</item>
         <item name="criptextLeftMenuHeader">@color/colorNavBodyBackground</item>
+        <item name="criptextLeftMenuBackground">@color/colorSecondaryBackground</item>
         <item name="criptextLeftMenuSelected">@color/menu_selected</item>
+        <item name="criptextLeftMenuIconSelected">@color/drawer_icon_selected</item>
+        <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected</item>
+        <item name="criptextLeftMenuSeparator">@color/menu_separator</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColor</item>
         <item name="criptextPrimaryTextColor">@color/textColorPrimary</item>
         <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
@@ -31,13 +35,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:itemBackground">@color/colorPrimaryDark</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextColorBackground">@color/colorPrimaryDark</item>
-        <item name="criptextLeftMenuBackground">@color/colorPrimary</item>
-        <item name="criptextLeftMenuHeader">@color/colorPrimaryDark</item>
-        <item name="criptextLeftMenuSelected">@color/gray</item>
+        <item name="criptextLeftMenuHeader">@color/menu_header_dark</item>
+        <item name="criptextLeftMenuBackground">@color/menu_body_dark</item>
+        <item name="criptextLeftMenuSelected">@color/menu_selected_dark</item>
+        <item name="criptextLeftMenuIconSelected">@color/white</item>
+        <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected_dark</item>
+        <item name="criptextLeftMenuSeparator">@color/menu_separator_dark</item>
         <item name="criptextSettingsDividerBackground">@color/colorPrimary</item>
         <item name="criptextPrimaryTextColor">@color/white</item>
         <item name="criptextSecondaryTextColor">@color/non_criptext_email_send_detail_text</item>
@@ -59,9 +67,24 @@
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
     </style>
 
+    <style name="AppThemeWithActionBarDark" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+    </style>
+
     <style name="Splash.Criptext" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="colorPrimaryDark">@color/colorSplashStart</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+    </style>
+
+    <style name="Splash.Criptext.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_bg_dark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
     </style>
 

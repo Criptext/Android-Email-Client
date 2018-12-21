@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.emaildetail.ui.holders
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Matrix
 import android.os.Build
 import android.support.v4.content.ContextCompat
@@ -182,6 +183,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
                     changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
+            bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             setDefaultBackgroundColors()
         }
         else {

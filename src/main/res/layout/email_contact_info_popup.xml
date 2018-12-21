@@ -214,7 +214,7 @@
                 android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
                 android:text="Yesterday"
-                android:textColor="#000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
         </LinearLayout>
@@ -249,7 +249,7 @@
                 android:layout_toEndOf="@id/title_subject"
                 android:gravity="center_vertical"
                 android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
-                android:textColor="#000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
         </LinearLayout>

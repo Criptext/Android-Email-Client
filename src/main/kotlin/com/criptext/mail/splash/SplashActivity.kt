@@ -31,10 +31,10 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         if (storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            setTheme(R.style.DarkAppTheme)
+            setTheme(R.style.Splash_Criptext_Dark)
         }else{
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            setTheme(R.style.AppTheme)
+            setTheme(R.style.Splash_Criptext)
         }
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())

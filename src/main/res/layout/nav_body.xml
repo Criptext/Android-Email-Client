@@ -26,7 +26,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/inbox"
-            android:tint="@color/drawer_icon_selected"
+            android:tint="?attr/criptextLeftMenuIconSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -76,7 +76,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/sent"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -111,7 +111,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/draft"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -159,7 +159,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/starred"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -194,7 +194,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/spam"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -242,7 +242,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/trash_black"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -277,7 +277,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/all_mail"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -296,7 +296,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#d8d8d8"
+        android:background="?attr/criptextLeftMenuSeparator"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
@@ -321,7 +321,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/label"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -342,7 +342,7 @@
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:padding="12dp"
-            android:tint="#d8d8d8"
+            android:tint="?attr/criptextLeftMenuSeparator"
             android:src="@drawable/arrow_down"/>
 
     </LinearLayout>
@@ -357,7 +357,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#d8d8d8"
+        android:background="?attr/criptextLeftMenuSeparator"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
@@ -382,7 +382,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/settings"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -415,7 +415,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/invite"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -449,7 +449,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/support"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
