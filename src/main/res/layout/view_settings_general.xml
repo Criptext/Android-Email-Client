@@ -788,7 +788,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="17dp"
                     android:text="@string/criptext_version"
-                    android:textColor="#b9b9b9"
+                    android:textColor="?attr/criptextAppVersionTextColor"
                     android:textSize="@dimen/drawer_text_item" />
             <TextView
                 fontPath="fonts/NunitoSans-Regular.ttf"
@@ -797,7 +797,7 @@
                 android:gravity="end"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/drawer_text_item"
-                android:textColor="#b9b9b9"
+                android:textColor="?attr/criptextAppVersionTextColor"
                 android:layout_margin="17dp"/>
             </LinearLayout>
 

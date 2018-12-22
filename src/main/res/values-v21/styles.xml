@@ -18,6 +18,7 @@
         <item name="criptextLeftMenuIconSelected">@color/drawer_icon_selected</item>
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator</item>
+        <item name="criptextLeftMenuText">@color/menu_text_color</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColor</item>
         <item name="criptextDialogButtonBg">@color/dividerColor</item>
         <item name="criptextPrimaryTextColor">@color/textColorPrimary</item>
@@ -46,6 +47,7 @@
         <item name="criptextSnackBarBackground">@color/snackBarColor</item>
         <item name="criptextAttachmentsXButtonBorder">@color/attachment_x_button_border</item>
         <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg</item>
+        <item name="criptextAppVersionTextColor">#b9b9b9</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -57,13 +59,14 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:itemBackground">@color/colorPrimaryDark</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
-        <item name="criptextColorBackground">@color/colorPrimaryDark</item>
+        <item name="criptextColorBackground">@color/settings_bg_color_dark</item>
         <item name="criptextLeftMenuHeader">@color/menu_header_dark</item>
         <item name="criptextLeftMenuBackground">@color/menu_body_dark</item>
         <item name="criptextLeftMenuSelected">@color/menu_selected_dark</item>
         <item name="criptextLeftMenuIconSelected">@color/white</item>
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected_dark</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator_dark</item>
+        <item name="criptextLeftMenuText">@color/menu_text_color_dark</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColorDark</item>
         <item name="criptextDialogButtonBg">@color/colorPrimary</item>
         <item name="criptextPrimaryTextColor">@color/white</item>
@@ -92,6 +95,7 @@
         <item name="criptextSnackBarBackground">@color/black</item>
         <item name="criptextAttachmentsXButtonBorder">@color/attachment_x_button_border_dark</item>
         <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg_dark</item>
+        <item name="criptextAppVersionTextColor">#6B6F76</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

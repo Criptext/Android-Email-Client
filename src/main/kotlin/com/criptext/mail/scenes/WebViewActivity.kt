@@ -73,11 +73,6 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            setTheme(R.style.AppThemeWithActionBarDark)
-        }else{
-            setTheme(R.style.AppThemeWithActionBar)
-        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_view)
 
