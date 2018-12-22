@@ -8,6 +8,7 @@
     <attr name="criptextLeftMenuIconSelected" format="reference|color"/>
     <attr name="criptextLeftMenuIconUnSelected" format="reference|color"/>
     <attr name="criptextLeftMenuSeparator" format="reference|color"/>
+    <attr name="criptextLeftMenuText" format="reference|color"/>
     <attr name="criptextPrimaryTextColor" format="reference|color"/>
     <attr name="criptextSecondaryTextColor" format="reference|color"/>
     <attr name="criptextSettingsOptionsTextColor" format="reference|color"/>

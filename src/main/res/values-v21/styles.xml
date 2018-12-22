@@ -18,6 +18,7 @@
         <item name="criptextLeftMenuIconSelected">@color/drawer_icon_selected</item>
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator</item>
+        <item name="criptextLeftMenuText">@color/menu_text_color</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColor</item>
         <item name="criptextDialogButtonBg">@color/dividerColor</item>
         <item name="criptextPrimaryTextColor">@color/textColorPrimary</item>
@@ -64,6 +65,7 @@
         <item name="criptextLeftMenuIconSelected">@color/white</item>
         <item name="criptextLeftMenuIconUnSelected">@color/drawer_icon_unselected_dark</item>
         <item name="criptextLeftMenuSeparator">@color/menu_separator_dark</item>
+        <item name="criptextLeftMenuText">@color/menu_text_color_dark</item>
         <item name="criptextSettingsDividerBackground">@color/dividerColorDark</item>
         <item name="criptextDialogButtonBg">@color/colorPrimary</item>
         <item name="criptextPrimaryTextColor">@color/white</item>
