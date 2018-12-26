@@ -218,6 +218,7 @@ class DrawerMenuView(navigationView: NavigationView,
         slider.setBackgroundColor(imageView.context.getColorFromAttr(R.attr.criptextLeftMenuSelected))
         textView.typeface = TypefaceUtils.load(textView.resources.assets,
                 "fonts/NunitoSans-Bold.ttf")
+        textView.setTextColor(textView.context.getColorFromAttr(R.attr.criptextLeftMenuSelectedText))
         DrawableCompat.setTint(imageView.drawable,
                 imageView.context.getColorFromAttr(R.attr.criptextLeftMenuIconSelected))
     }
@@ -270,6 +271,14 @@ class DrawerMenuView(navigationView: NavigationView,
         DrawableCompat.setTint(imageViewSpam.drawable, color)
         DrawableCompat.setTint(imageViewTrash.drawable, color)
         DrawableCompat.setTint(imageViewAllMail.drawable, color)
+        val colorText = imageViewInbox.context.getColorFromAttr(R.attr.criptextLeftMenuText)
+        textViewTitleInbox.setTextColor(colorText)
+        textViewTitleSent.setTextColor(colorText)
+        textViewTitleDraft.setTextColor(colorText)
+        textViewTitleStarred.setTextColor(colorText)
+        textViewTitleSpam.setTextColor(colorText)
+        textViewTitleTrash.setTextColor(colorText)
+        textViewTitleAllMail.setTextColor(colorText)
     }
 
     inner class VirtualLabelWrapperList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper>{
