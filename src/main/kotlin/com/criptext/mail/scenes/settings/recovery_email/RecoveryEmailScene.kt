@@ -132,7 +132,8 @@ interface RecoveryEmailScene{
                     resendLinkButton.isEnabled = false
                     timerListener(RecoveryEmailController.RESEND_TIME - lastResend)
                 }else {
-                    resendLinkButton.visibility = View.VISIBLE
+                    if(model.recoveryEmail.isNotEmpty())
+                        resendLinkButton.visibility = View.VISIBLE
                 }
             }
         }

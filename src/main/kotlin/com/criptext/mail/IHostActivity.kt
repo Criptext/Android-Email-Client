@@ -7,9 +7,8 @@ import android.view.View
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
-import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.utils.UIMessage
-import kotlin.reflect.KClass
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 
 /**
  * Created by sebas on 1/29/18.
@@ -59,4 +58,6 @@ interface IHostActivity {
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?
     }
+
+    fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate?
 }

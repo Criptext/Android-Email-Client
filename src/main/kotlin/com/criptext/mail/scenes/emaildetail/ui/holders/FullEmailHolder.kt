@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Matrix
@@ -189,9 +188,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         else {
             val unsentDate = fullEmail.email.unsentDate
             val finalDate = if(unsentDate != null){
-                "Unsent: " + DateAndTimeUtils.getFormattedDate(unsentDate.time, context)
+                DateAndTimeUtils.getUnsentDate(unsentDate.time, context)
             }else{
-                "Unsent"
+                context.getLocalizedUIMessage(UIMessage(R.string.unsent))
             }
             rootView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.background_cardview_unsend)

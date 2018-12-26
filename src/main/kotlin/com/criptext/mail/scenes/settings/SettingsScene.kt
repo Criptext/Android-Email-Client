@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.settings.views.LabelSettingsView
 import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
@@ -50,6 +51,7 @@ interface SettingsScene{
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun setSyncContactsProgressVisisble(isVisible: Boolean)
+    fun getLabelLocalizedName(name: String): String
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -225,6 +227,12 @@ interface SettingsScene{
 
         override fun updateTwoFa(isChecked: Boolean) {
             generalView.set2FA(isChecked)
+        }
+
+        override fun getLabelLocalizedName(name: String): String {
+            return context.getLocalizedUIMessage(
+                    UIUtils.getLocalizedSystemLabelName(name)
+            )
         }
 
         private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,

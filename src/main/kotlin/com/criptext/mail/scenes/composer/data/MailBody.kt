@@ -1,5 +1,9 @@
 package com.criptext.mail.scenes.composer.data
 
+import com.criptext.mail.db.models.FullEmail
+import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.mailtemplates.FWMailTemplate
+import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import java.text.SimpleDateFormat
 
 
@@ -25,13 +29,20 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             return builder.toString()
         }
 
-        fun createNewForwardMessageBody(originMessageHtml: String, signature: String): String {
+        fun createNewForwardMessageBody(fullEmail: FullEmail, template: FWMailTemplate, signature: String): String {
 
             val builder = StringBuilder("")
+            builder.append("<br/><br/>----------${template.message}----------<br/>")
+            builder.append("${template.from} ${fullEmail.from}<br/>")
+            builder.append("${template.date} ${DateAndTimeUtils.getHoraVerdadera(fullEmail.email.date.time,
+                    template.at)}<br/>")
+            builder.append("${template.subject} ${fullEmail.email.subject}<br/>")
+            val to = fullEmail.to + fullEmail.cc
+            if(to.isNotEmpty())
+                builder.append("${template.to} ${to.joinToString()}<br/>")
             builder.append(replyBodyContainerTagStart)
-            builder.append("<br/>Begin forwarded message:<br/>")
             builder.append(blockQuoteStart)
-            builder.append(originMessageHtml)
+            builder.append(fullEmail.email.content)
             builder.append(blockQuoteEnd)
             builder.append(replyBodyContainerTagEnd)
             if(signature.isNotEmpty()) {
@@ -41,9 +52,9 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
             return builder.toString()
         }
 
-        fun createNewReplyMessageBody(originMessageHtml: String, date: Long, senderName: String, signature: String): String {
-            val formattedDate = SimpleDateFormat("E, d MMM yyyy 'at' h:mm a").format(date)
-            val dateString = "<br/>on $formattedDate $senderName wrote:<br/>"
+        fun createNewReplyMessageBody(originMessageHtml: String, date: Long, template: REMailTemplate, senderName: String, signature: String): String {
+            val formattedDate = DateAndTimeUtils.getHoraVerdadera(date, template.at)
+            val dateString = "<br/>${template.on} $formattedDate $senderName ${template.wrote}<br/>"
 
             val builder = StringBuilder("")
             builder.append(replyBodyContainerTagStart)
