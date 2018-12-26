@@ -31,6 +31,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.github.omadahealth.lollipin.lib.managers.LockManager
+import java.io.File
 
 
 /**
@@ -47,7 +48,6 @@ class ComposerController(private val storage: KeyValueStorage,
     : SceneController() {
 
     private val dataSourceController = DataSourceController(dataSource)
-
     private val observer = object: ComposerUIObserver {
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -124,6 +124,8 @@ class ComposerController(private val storage: KeyValueStorage,
         }
 
         override fun onAttachmentRemoveClicked(position: Int) {
+            val file = File(model.attachments[position].filepath)
+            model.filesSize -= file.length()
             model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
         }
@@ -230,6 +232,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 val composerAttachment = getAttachmentByPath(result.filepath)
                 composerAttachment?.uploadProgress = 100
                 model.isUploadingAttachments = false
+                model.filesSize = result.filesSize
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Failure -> {
@@ -242,6 +245,11 @@ class ComposerController(private val storage: KeyValueStorage,
             }
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
+            }
+            is ComposerResult.UploadFile.MaxFilesExceeds -> {
+                removeAttachmentByPath(result.filepath)
+                scene.showMaxFilesExceedsDialog()
+                handleNextUpload()
             }
             is ComposerResult.UploadFile.PayloadTooLarge -> {
                 removeAttachmentByPath(result.filepath)
@@ -347,7 +355,11 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun uploadSelectedFile(filepath: String){
         model.isUploadingAttachments = true
         scene.dismissPreparingFileDialog()
-        dataSource.submitRequest(ComposerRequest.UploadAttachment(filepath = filepath, fileKey = model.fileKey))
+        dataSource.submitRequest(ComposerRequest.UploadAttachment(
+                filepath = filepath,
+                fileKey = model.fileKey,
+                filesSize = model.filesSize
+        ))
     }
 
     private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean) {

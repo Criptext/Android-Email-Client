@@ -516,4 +516,5 @@
   <string name="logout5">Unable to retrieve mails from Criptext. Please try again later</string>
   <string name="password_login_content">You can also login using your\npassword, however you won\'t have\naccess to any email history that\'s\nstored on your verified devices.</string>
   <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="error_email_max_size">The email has surpassed the attachment limit of %1$s</string>
 </resources>

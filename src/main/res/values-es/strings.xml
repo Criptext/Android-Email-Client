@@ -516,4 +516,5 @@
   <string name="logout5">No se pudo obtener mensajes de Criptext. Por favor, inténtalo en unos minutos</string>
   <string name="password_login_content">También te puedes identificar usando tu contraseña,\n aunque no tendrás acceso a ningún historial\n de mensajes almacenado en tus otros\n dispositivos verificados.</string>
   <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="error_email_max_size">El correo ha excedido el limite de %1$s por archivos</string>
 </resources>

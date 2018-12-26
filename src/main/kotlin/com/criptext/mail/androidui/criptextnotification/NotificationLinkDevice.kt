@@ -66,8 +66,9 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val deviceIcon = when(pushData.deviceType){
-            DeviceUtils.DeviceType.PC ->
-                BitmapFactory.decodeResource(ctx.resources, R.drawable.device_pc_push)
+            DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
+            DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
+            DeviceUtils.DeviceType.LinuxInstaller -> BitmapFactory.decodeResource(ctx.resources, R.drawable.device_pc_push)
             else -> BitmapFactory.decodeResource(ctx.resources, R.drawable.device_m_push)
         }
 

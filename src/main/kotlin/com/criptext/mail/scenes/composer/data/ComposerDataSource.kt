@@ -43,7 +43,8 @@ class ComposerDataSource(
                     emailId = params.emailId,
                     db = composerLocalDB,
                     publishFn = { res -> flushResults(res) })
-            is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filepath = params.filepath,
+            is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filesSize = params.filesSize,
+                    filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
                     accountDao = composerLocalDB.accountDao, storage = storage)

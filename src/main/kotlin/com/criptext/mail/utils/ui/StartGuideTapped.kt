@@ -13,7 +13,8 @@ class StartGuideTapped(val context: Context) {
         when (title) {
             R.string.start_guide_email -> showTapViewTarget(view, activity, title, dimension, 300f, android.R.color.white, R.dimen.focal_radius)
             R.string.start_guide_notification -> showTapViewTarget(view, activity, title, dimension, 260f, android.R.color.transparent, R.dimen.focal_radius_small_views)
-            R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 440f, R.color.white, R.dimen.focal_radius)
+            R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 320f, R.color.white, R.dimen.focal_radius)
+            R.string.start_guide_secure_attachments -> showTapViewTarget(view, activity, title)
             else -> showTapViewTarget(view, activity, title, dimension, 260f, R.color.white, R.dimen.focal_radius)
         }
     }
@@ -30,6 +31,17 @@ class StartGuideTapped(val context: Context) {
                 .setPrimaryText(res.getString(title))
                 .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))
                 .setTextPadding(padding)
+                .show()
+    }
+
+    private fun showTapViewTarget(view: View, activity: Activity, title: Int){
+        MaterialTapTargetPrompt.Builder(activity)
+                .setTarget(view)
+                .setFocalColour(res.getColor(R.color.white))
+                .setBackgroundColour(res.getColor(android.R.color.transparent))
+                .setPromptBackground(DimmedPromptBackground())
+                .setPrimaryText(res.getString(title))
+                .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))
                 .show()
     }
 }

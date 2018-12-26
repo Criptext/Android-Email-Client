@@ -30,9 +30,10 @@ sealed class ComposerResult {
     }
 
     sealed class UploadFile : ComposerResult() {
-        data class Success(val filepath: String): UploadFile()
+        data class Success(val filepath: String, val filesSize: Long): UploadFile()
         data class Register(val filepath: String, val filetoken: String): UploadFile()
         data class Progress(val filepath: String, val percentage: Int): UploadFile()
+        data class MaxFilesExceeds(val filepath: String): UploadFile()
         data class PayloadTooLarge(val filepath: String, val headers: ResultHeaders): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()
         data class Unauthorized(val message: UIMessage): UploadFile()

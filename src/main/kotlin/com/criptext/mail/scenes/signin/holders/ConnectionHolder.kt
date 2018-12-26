@@ -122,7 +122,9 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
         oldDevice = view.findViewById(R.id.imageViewDevice1)
 
         when (authorizerType){
-            DeviceUtils.DeviceType.PC -> oldDevice.setImageResource(R.drawable.device_pc)
+            DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
+            DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
+            DeviceUtils.DeviceType.LinuxInstaller -> oldDevice.setImageResource(R.drawable.device_pc)
             else -> oldDevice.setImageResource(R.drawable.device_m)
         }
 
