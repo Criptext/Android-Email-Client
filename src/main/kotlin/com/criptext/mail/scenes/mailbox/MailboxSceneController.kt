@@ -39,6 +39,8 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -193,7 +195,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Support()), true)
+            host.goToScene(ComposerParams(type = ComposerType.Support(
+                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate)),
+                    true)
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {

@@ -5,12 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import com.criptext.mail.R
 import com.criptext.mail.push.PushData
+import com.criptext.mail.push.services.NewMailActionService
 
 /**
  * Builds Notifications used in the Criptext App.
@@ -67,6 +69,12 @@ abstract class CriptextNotification(open val ctx: Context) {
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setGroup(group)
 
+        if(channelId == CHANNEL_ID_NEW_EMAIL) {
+            val deleteAction = Intent(ctx, NewMailActionService::class.java)
+            deleteAction.action = NewMailActionService.DELETE
+            val deletePendingIntent = PendingIntent.getService(ctx, INBOX_ID, deleteAction,0)
+            builder.setDeleteIntent(deletePendingIntent)
+        }
 
         if(pendingIntent != null) builder.setContentIntent(pendingIntent)
 

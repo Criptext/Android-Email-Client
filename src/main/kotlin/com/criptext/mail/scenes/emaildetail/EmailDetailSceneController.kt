@@ -40,6 +40,9 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.mailtemplates.FWMailTemplate
+import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -370,6 +373,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
         override fun onStarredButtonPressed(isStarred: Boolean) {
+            model.threadPreview.isStarred = isStarred
             val selectedLabels = SelectedLabels()
             val nonSelectedLabels = SelectedLabels()
             val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
@@ -407,19 +411,22 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
         override fun onForwardBtnClicked() {
             val type = ComposerType.Forward(originalId = model.emails.last().email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.FW) as FWMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyBtnClicked() {
             val type = ComposerType.Reply(originalId = model.emails.last().email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyAllBtnClicked() {
             val type = ComposerType.ReplyAll(originalId = model.emails.last().email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 
@@ -430,19 +437,22 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         override fun onReplyOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Reply(originalId = fullEmail.email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.ReplyAll(originalId = fullEmail.email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Forward(originalId = fullEmail.email.id,
-                    threadPreview = model.threadPreview, currentLabel = model.currentLabel)
+                    threadPreview = model.threadPreview, currentLabel = model.currentLabel,
+                    template = host.getMailTemplate(CriptextMailTemplate.TemplateType.FW) as FWMailTemplate)
             host.goToScene(ComposerParams(type), false)
         }
 

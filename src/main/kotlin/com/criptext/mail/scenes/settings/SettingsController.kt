@@ -12,6 +12,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
@@ -387,9 +388,18 @@ class SettingsController(
         when(result) {
             is SettingsResult.GetCustomLabels.Success -> {
                 model.labels.addAll(result.labels.map {
-                    val labelWrapper = LabelWrapper(it)
-                    labelWrapper.isSelected = it.visible
-                    labelWrapper
+                    if(it.type == LabelTypes.SYSTEM) {
+                        val label = it.copy(
+                                text = scene.getLabelLocalizedName(it.text)
+                        )
+                        val labelWrapper = LabelWrapper(label)
+                        labelWrapper.isSelected = it.visible
+                        labelWrapper
+                    }else {
+                        val labelWrapper = LabelWrapper(it)
+                        labelWrapper.isSelected = it.visible
+                        labelWrapper
+                    }
                 })
                 labelWrapperListController.notifyDataSetChange()
             }
