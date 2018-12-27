@@ -5,7 +5,8 @@
     android:id="@+id/main_content"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/criptextSettingsBgColor">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -61,9 +62,9 @@
             android:id="@+id/sliding_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="?attr/criptextSettingsTabsBgColor"
             app:tabTextAppearance="@style/CriptextTabText"
-            app:tabTextColor="@color/black"
+            app:tabTextColor="?attr/criptextSettingsTabsTextColor"
             app:tabSelectedTextColor="@color/azure"
             app:tabIndicatorColor="@color/azure"/>
 

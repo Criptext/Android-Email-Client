@@ -3,6 +3,7 @@ package com.criptext.mail.utils
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.support.v7.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.scenes.WebViewActivity
@@ -12,7 +13,10 @@ class WebViewUtils {
 
     companion object {
 
-        const val imageUri = "file:///android_asset/showmore.png"
+        private val imageUri = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            "file:///android_asset/showmore_dark.png"
+        else
+            "file:///android_asset/showmore.png"
 
         fun collapseScript() : String{
             val sb = StringBuilder()

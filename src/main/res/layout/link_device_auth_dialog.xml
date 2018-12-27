@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"
         />
 
@@ -24,7 +24,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="16sp"
         />
 
@@ -51,7 +51,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Google Android"
-            android:textColor="@color/non_criptext_email_send_detail_text"
+            android:textColor="?attr/criptextSecondaryTextColor"
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -76,11 +76,11 @@
             android:stateListAnimator="@null"
             android:text="@string/push_deny"
             android:textAllCaps="false"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp" />
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:textSize="15sp"
             android:textAllCaps="false"

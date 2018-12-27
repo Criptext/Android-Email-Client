@@ -11,9 +11,9 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.scenes.MailItemHolder
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.utils.getColorFromAttr
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
@@ -23,7 +23,7 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
  * Created by sebas on 1/24/18.
  */
 
-class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener , MailItemHolder {
+class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
     private val headerView : TextView
     private val layout : LinearLayout
@@ -89,7 +89,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             dateView.typeface = TypefaceUtils.load(
                     view.resources.assets,
                     "fonts/NunitoSans-Regular.ttf")
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
         }
 
 
@@ -156,31 +155,20 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             clickInAvatar()
         }
     }
-    override fun fillIcons() {
-        TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
-    }
-
-    override fun drawInMultiSelectMode() {
-        view.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
-    }
-
-    override fun drawInNormalMode() {
-        view.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
-    }
 
     private fun toggleStatus(selected: Boolean, unread: Boolean) {
         if(selected) {
-            view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_selected))
+            view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemSelectedColorBg))
             avatarView.visibility = View.GONE
             iconBack.visibility = View.VISIBLE
         }else {
-            view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
+            view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemUnselectedColorBg))
             avatarView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
             if(unread) {
-                view.setBackgroundColor(ContextCompat.getColor(context, R.color.mail_item_not_selected))
+                view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemUnreadColorBg))
             } else {
-                view.setBackgroundColor(ContextCompat.getColor(context, R.color.mailbox_mail_unread))
+                view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemUnselectedColorBg))
             }
         }
     }

@@ -67,11 +67,11 @@ interface FeedScene {
 
         private fun addItemDecoratorRecyclerView(totalNewFeeds: Int){
             if(itemDecorator != null){
-                recyclerViewFeed.removeItemDecoration(itemDecorator)
+                recyclerViewFeed.removeItemDecoration(itemDecorator!!)
             }
             if(totalNewFeeds > 0){
                 itemDecorator = ItemDecorator(recyclerViewFeed.context, totalNewFeeds)
-                recyclerViewFeed.addItemDecoration(itemDecorator)
+                recyclerViewFeed.addItemDecoration(itemDecorator!!)
             }
         }
 

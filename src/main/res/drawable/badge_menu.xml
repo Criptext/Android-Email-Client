@@ -4,6 +4,6 @@
     android:shape="rectangle">
 
     <corners android:radius="25dp" />
-    <solid android:color="@color/light_blue" />
+    <solid android:color="?attr/criptextLeftMenuBadgeColor" />
 
 </shape>

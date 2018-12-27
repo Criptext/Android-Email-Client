@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.VisibleForTesting
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
@@ -110,6 +111,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            setTheme(R.style.DarkAppTheme)
+        }else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            setTheme(R.style.AppTheme)
+        }
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
 
@@ -389,6 +397,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun getHandler(): Handler? {
         return handler
+    }
+
+    override fun setAppTheme(themeResource: Int) {
+        setTheme(themeResource)
+        recreate()
     }
 
     override fun checkPermissions(requestCode: Int, permission: String): Boolean =

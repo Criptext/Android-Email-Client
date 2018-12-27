@@ -1,5 +1,6 @@
 package com.criptext.mail.utils
 
+import android.support.v7.app.AppCompatDelegate
 import android.text.Html
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
@@ -24,7 +25,10 @@ class HTMLUtils {
         }
 
         fun changedHeaderHtml(htmlText: String): String {
-            val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
+            val style = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;}</style>"
+            else "<style type=\"text/css\">body{color:#000;background-color:#fff;}</style>"
+            val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
             return head + htmlText + collapseScript() + closedTag
         }

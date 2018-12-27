@@ -1,8 +1,10 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
+import android.graphics.Color
 import android.os.Handler
 import android.support.design.widget.NavigationView
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
@@ -31,6 +33,7 @@ import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
+import com.criptext.mail.utils.getColorFromAttr
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -186,6 +189,10 @@ interface MailboxScene{
 
             adapter = EmailThreadAdapter(threadListener = threadEventListener,
                                          threadList = threadList)
+
+            refreshLayout.setProgressBackgroundColorSchemeColor(context.getColorFromAttr(R.attr.criptextColorBackground))
+            refreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorAccent))
+
             virtualListView.setAdapter(adapter)
             this.observer = observer
             this.threadEventListener = threadEventListener
@@ -273,7 +280,7 @@ interface MailboxScene{
         }
 
         override fun showStartGuideMultiple(){
-            if(recyclerView.adapter.itemCount > 2) {
+            if(recyclerView.adapter != null && recyclerView.adapter!!.itemCount > 2) {
                 val view = recyclerView.findViewHolderForAdapterPosition(0) ?: return
                 observer?.showStartGuideMultiple(view.itemView.mail_item_left_name)
             }

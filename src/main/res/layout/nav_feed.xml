@@ -3,20 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="?attr/criptextLeftMenuBackground">
 
     <LinearLayout
         android:id="@+id/viewHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#f7f7f8">
+        android:background="?attr/criptextLeftMenuHeader">
 
         <ImageView
             android:layout_width="18dp"
             android:layout_height="20dp"
             android:src="@drawable/activity_feed"
-            android:tint="#30323c"
+            android:tint="?attr/criptextPrimaryTextColor"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="12dp"
             android:layout_marginTop="41dp"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:textSize="16sp"
-            android:textColor="#000000"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:text="@string/activity_feed"
             fontPath="fonts/NunitoSans-Bold.ttf"/>
 

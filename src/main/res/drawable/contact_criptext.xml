@@ -4,6 +4,6 @@
     android:shape="rectangle">
 
     <corners android:radius="18dp" />
-    <solid android:color="#e8f5ff" />
+    <solid android:color="?attr/criptextContactTokenBgColor" />
 
 </shape>

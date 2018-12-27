@@ -17,7 +17,7 @@
         android:paddingBottom="15dp"
         android:paddingEnd="15dp"
         android:paddingStart="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="15sp"/>
     <include layout="@layout/progress_item"/>
 </LinearLayout>

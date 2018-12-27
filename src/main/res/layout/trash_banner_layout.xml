@@ -8,7 +8,7 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#f2f8ff">
+        android:background="?attr/criptextSettingsDividerBackground">
         <TextView
             android:id="@+id/banner_message"
             android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
             android:text="@string/empty_trash_banner"
             android:layout_marginTop="7dp"
             android:padding="17dp"
-            android:textColor="#424c52"
+            android:textColor="?attr/criptextSecondaryTextColor"
             android:textSize="15sp"
             fontPath="fonts/NunitoSans-Regular.ttf"/>
         <TextView

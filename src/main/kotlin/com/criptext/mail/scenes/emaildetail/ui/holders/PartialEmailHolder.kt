@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.utils.getColorFromAttr
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
@@ -64,7 +65,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                     headerView.context.getString(R.string.draft)
                 }
                 else {
-                    headerView.setTextColor(ContextCompat.getColor(headerView.context, R.color.textColorPrimary))
+                    headerView.setTextColor(view.context.getColorFromAttr(R.attr.criptextPrimaryTextColor))
                     fullEmail.from.name
                 }
 

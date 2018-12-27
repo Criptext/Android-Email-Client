@@ -6,7 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import com.crashlytics.android.Crashlytics
+import com.criptext.mail.R
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
@@ -39,7 +41,6 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         welcomeTimeout = WelcomeTimeout(2000L, this)
         welcomeTimeout!!.start()
-
     }
 
     private fun hasActiveAccount(): Boolean =

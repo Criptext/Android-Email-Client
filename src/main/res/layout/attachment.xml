@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:id="@+id/attachment_wrapper">
+    android:layout_height="70dp"
+    android:id="@+id/attachment_wrapper"
+    android:background="?attr/criptextEmailDetailBgColor">
 
     <RelativeLayout
         android:layout_height="match_parent"
@@ -13,8 +14,8 @@
         android:id="@+id/attachment_container">
 
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="9dp"
             android:src="@drawable/pdf"
@@ -39,7 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="7dp"
             android:layout_toEndOf="@id/attachment_type_image"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/attachment_filename"
@@ -50,7 +52,7 @@
                 android:layout_marginEnd="5dp"
                 android:text="This is sunny afternoon rondo my sheep.pdf"
                 android:textSize="14sp"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:singleLine="true"
                 fontPath="fonts/NunitoSans-Bold.ttf"/>
 
@@ -61,7 +63,7 @@
                 android:layout_marginEnd="9dp"
                 android:text="25 MB"
                 android:textSize="14sp"
-                android:textColor="#9b9b9b"
+                android:textColor="?attr/criptextSecondaryTextColor"
                 android:maxLines="1"
                 fontPath="fonts/NunitoSans-Regular.ttf"/>
 
@@ -92,7 +94,7 @@
         android:layout_marginEnd="-10dp"
         android:layout_marginTop="-10dp"
         android:src="@drawable/icon_fail"
-        android:tint="#a8a8a8"
+        android:tint="?attr/criptextAttachmentsXButtonBorder"
         android:background="@drawable/bg_white_circle"/>
 
     <Button

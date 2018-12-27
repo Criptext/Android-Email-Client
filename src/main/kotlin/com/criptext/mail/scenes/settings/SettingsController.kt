@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.settings
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.support.v7.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
@@ -75,6 +76,20 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+
+        override fun onDarkThemeSwitched(isChecked: Boolean) {
+            storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
+            model.devices.clear()
+            model.hasChangedTheme = true
+            if(isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                host.setAppTheme(R.style.DarkAppTheme)
+            }else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                host.setAppTheme(R.style.AppTheme)
+            }
+        }
+
         override fun onDeleteAccountClicked() {
             scene.showGeneralDialogWithInput(DialogData(
                     title = UIMessage(R.string.delete_account_dialog_title),
@@ -203,7 +218,12 @@ class SettingsController(
         }
 
         override fun onBackButtonPressed() {
-            host.finishScene()
+            if(model.hasChangedTheme) {
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+            else{
+                host.finishScene()
+            }
         }
 
         override fun onSignatureOptionClicked() {
@@ -229,7 +249,7 @@ class SettingsController(
         }
     }
 
-    private val onDevicesListItemListener = object: DevicesListItemListener {
+    private val onDevicesListItemListener:DevicesListItemListener = object: DevicesListItemListener {
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             settingsUIObserver.onRemoveDevice(device.id, position)
             return true
@@ -258,9 +278,9 @@ class SettingsController(
                     model = model,
                     settingsUIObserver = settingsUIObserver,
                     devicesListItemListener = onDevicesListItemListener)
-
             dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
+
         return false
     }
 
@@ -269,7 +289,8 @@ class SettingsController(
     }
 
     override fun onBackPressed(): Boolean {
-        return true
+        settingsUIObserver.onBackButtonPressed()
+        return false
     }
 
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
@@ -413,7 +434,7 @@ class SettingsController(
                 model.hasTwoFA = result.userSettings.hasTwoFA
                 model.hasReadReceipts = result.userSettings.hasReadReceipts
                 deviceWrapperListController.update()
-                scene.updateUserSettings(result.userSettings)
+                scene.updateUserSettings(model)
             }
             is SettingsResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)

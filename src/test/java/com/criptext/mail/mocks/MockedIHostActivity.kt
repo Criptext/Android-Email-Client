@@ -15,6 +15,10 @@ import com.criptext.mail.utils.UIMessage
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun setAppTheme(themeResource: Int) {
+        
+    }
+
     override fun getHandler(): Handler? {
         return null
     }

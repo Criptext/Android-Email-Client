@@ -168,7 +168,7 @@ interface ComposerScene {
         }
 
         override fun notifyAttachmentSetChanged() {
-            attachmentRecyclerView.adapter.notifyDataSetChanged()
+            attachmentRecyclerView.adapter?.notifyDataSetChanged()
         }
 
         private fun setListeners() {
