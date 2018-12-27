@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.criptext.mail.R
+import com.criptext.mail.utils.getColorFromAttr
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
 class ItemDecorator(private val context: Context,
@@ -20,11 +21,11 @@ class ItemDecorator(private val context: Context,
 
     init {
         paint.textSize = context.resources.getDimension(R.dimen.drawer_text_item)
-        paint.color = ContextCompat.getColor(context, R.color.grayFeed)
+        paint.color = context.getColorFromAttr(R.attr.criptextPrimaryTextColor)
         paint.typeface = TypefaceUtils.load(context.resources.assets, "fonts/NunitoSans-Regular.ttf")
     }
 
-    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
 
         for (i in 0 until parent.childCount) {
             val view = parent.getChildAt(i)
@@ -44,7 +45,7 @@ class ItemDecorator(private val context: Context,
                 view.top.toFloat() - groupSpacing/2 , paint)
     }
 
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val position = parent.getChildAdapterPosition(view)
         if (position % totalNewFeeds == 0 && position <= totalNewFeeds) {
             outRect.set(0, groupSpacing.toInt() * 2, 0, 0)

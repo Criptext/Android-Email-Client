@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fcfcfc">
+    android:background="?attr/criptextLeftMenuBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:id="@+id/slider_inbox"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:background="@color/menu_selected">
+        android:background="?attr/criptextLeftMenuSelected">
 
         <ImageView
             android:id="@+id/imageViewInbox"
@@ -26,7 +26,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/inbox"
-            android:tint="@color/drawer_icon_selected"
+            android:tint="?attr/criptextLeftMenuIconSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -37,7 +37,7 @@
             android:text="@string/slider_inbox"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="#000"
+            android:textColor="?attr/criptextLeftMenuSelectedText"
             fontPath="fonts/NunitoSans-Bold.ttf"
             android:layout_weight="1"/>
 
@@ -76,7 +76,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/sent"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -87,7 +87,7 @@
             android:text="@string/slider_sent"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -111,7 +111,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/draft"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -122,7 +122,7 @@
             android:text="@string/slider_draft"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
         <TextView
@@ -159,7 +159,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/starred"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -170,7 +170,7 @@
             android:text="@string/slider_starred"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -194,7 +194,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/spam"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -205,7 +205,7 @@
             android:text="@string/slider_junk"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
         <TextView
@@ -242,7 +242,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/trash_black"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -253,7 +253,7 @@
             android:text="@string/slider_trash"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -277,7 +277,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/all_mail"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -288,7 +288,7 @@
             android:text="@string/slider_allmail"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -296,7 +296,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#d8d8d8"
+        android:background="?attr/criptextLeftMenuSeparator"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
@@ -321,7 +321,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/label"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -331,7 +331,7 @@
             android:text="@string/slider_labels"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
         <ImageView
@@ -342,7 +342,7 @@
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:padding="12dp"
-            android:tint="#d8d8d8"
+            android:tint="?attr/criptextLeftMenuSeparator"
             android:src="@drawable/arrow_down"/>
 
     </LinearLayout>
@@ -357,7 +357,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#d8d8d8"
+        android:background="?attr/criptextLeftMenuSeparator"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="17dp"
@@ -382,7 +382,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/settings"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -392,7 +392,7 @@
             android:text="@string/slider_settings"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -415,7 +415,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/invite"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -425,7 +425,7 @@
             android:text="@string/slider_invite_friend"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -449,7 +449,7 @@
             android:layout_height="@dimen/square_icon"
             android:layout_gravity="center_vertical"
             android:src="@drawable/support"
-            android:tint="@color/drawer_icon_unselected"
+            android:tint="?attr/criptextLeftMenuIconUnSelected"
             android:padding="3dp"
             android:layout_marginRight="15dp"/>
 
@@ -459,7 +459,7 @@
             android:text="@string/slider_support"
             android:textSize="@dimen/drawer_text_item"
             android:gravity="center_vertical"
-            android:textColor="@color/drawer_text"
+            android:textColor="?attr/criptextLeftMenuText"
             android:layout_weight="1"/>
 
     </LinearLayout>

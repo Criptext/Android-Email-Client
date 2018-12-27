@@ -13,7 +13,7 @@
         android:layout_marginBottom="15dp"
         android:layout_marginEnd="30dp"
         android:layout_gravity="end"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="16sp"
         fontPath="fonts/NunitoSans-Bold.ttf"/>
 

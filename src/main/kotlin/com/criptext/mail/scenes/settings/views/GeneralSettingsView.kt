@@ -28,6 +28,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsSyncPhonebookProgress: ProgressBar
     private lateinit var versionText: TextView
     private lateinit var twoFASwitch: Switch
+    private lateinit var darkThemeSwitch: Switch
 
     private var settingsUIObserver: SettingsUIObserver? = null
 
@@ -52,6 +53,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         versionText = view.findViewById(R.id.version_text) as TextView
         versionText.text = BuildConfig.VERSION_NAME
         twoFASwitch = view.findViewById(R.id.switch_two_fa)
+        darkThemeSwitch = view.findViewById(R.id.switch_dark_theme)
 
         settingsRecoveryEmail.visibility = View.GONE
         settingsRecoveryEmailLoading.visibility = View.VISIBLE
@@ -84,6 +86,12 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         setSwitchListener()
     }
 
+    fun setDarkTheme(hasDarkTheme: Boolean){
+        darkThemeSwitch.setOnCheckedChangeListener { _, _ ->  }
+        darkThemeSwitch.isChecked = hasDarkTheme
+        setSwitchListener()
+    }
+
     fun enable2FASwitch(isEnabled: Boolean){
         twoFASwitch.isEnabled = isEnabled
     }
@@ -91,8 +99,6 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     fun enablePrivacyOption(isEnabled: Boolean){
         settingsPin.isEnabled = isEnabled
         settingsPin.isClickable = isEnabled
-        settingsPin.findViewById<TextView>(R.id.text_view_privacy).setTextColor(ContextCompat.getColor(
-                view.context, R.color.drawer_text))
         settingsPin.setOnClickListener {
             settingsUIObserver?.onPinLockClicked()
         }
@@ -134,12 +140,14 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsSyncPhonebookContacts.setOnClickListener {
             settingsUIObserver?.onSyncPhonebookContacts()
         }
-        setSwitchListener()
     }
 
     private fun setSwitchListener(){
         twoFASwitch.setOnCheckedChangeListener {_, isChecked ->
             settingsUIObserver?.onTwoFASwitched(isChecked)
+        }
+        darkThemeSwitch.setOnCheckedChangeListener {_, isChecked ->
+            settingsUIObserver?.onDarkThemeSwitched(isChecked)
         }
     }
 

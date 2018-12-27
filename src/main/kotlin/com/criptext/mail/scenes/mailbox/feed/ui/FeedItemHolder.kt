@@ -13,6 +13,7 @@ import com.criptext.mail.db.FeedType
 import com.criptext.mail.db.models.Email
 import com.criptext.mail.scenes.mailbox.feed.data.ActivityFeedItem
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.getColorFromAttr
 import com.squareup.picasso.Picasso
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
@@ -93,8 +94,7 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
     }
 
     private fun setViewAsNew(){
-        containerView.setBackgroundColor(ContextCompat.getColor(containerView.context,
-                R.color.menu_selected))
+        containerView.setBackgroundColor(containerView.context.getColorFromAttr(R.attr.criptextLeftMenuSelected))
         textViewDate.typeface = TypefaceUtils.load(textViewDate.resources.assets,
                 "fonts/NunitoSans-Bold.ttf")
         textViewTitle.typeface = TypefaceUtils.load(textViewTitle.resources.assets,
@@ -102,7 +102,7 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
     }
 
     private fun setViewAsOlder(){
-        containerView.setBackgroundColor(Color.WHITE)
+        containerView.setBackgroundColor(containerView.context.getColorFromAttr(R.attr.criptextColorBackground))
         textViewDate.typeface = TypefaceUtils.load(textViewDate.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
         textViewTitle.typeface = TypefaceUtils.load(textViewTitle.resources.assets,

@@ -16,7 +16,7 @@
         android:layout_marginBottom="60dp"
         android:textSize="24sp"
         android:textAlignment="center"
-        android:textColor="#373a45"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:layout_centerHorizontal="true"
         android:text="@string/title_sync"/>
 
@@ -149,7 +149,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textSize="14sp"
-        android:textColor="#373a45"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:gravity="center_horizontal"
         android:layout_centerHorizontal="true"
         android:text="@string/establishing"/>
@@ -164,7 +164,7 @@
         android:alpha="0.4"
         android:gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:textColor="#373a45"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="12sp" />
 
     <TextView

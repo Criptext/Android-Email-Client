@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.criptext.mail.R
+import com.criptext.mail.utils.getColorFromAttr
 import com.michael.easydialog.EasyDialog
 
 /**
@@ -37,8 +38,9 @@ class PopupUtils {
             val popup = EasyDialog(context)
                     .setLayout(contentView)
                     .setBackgroundColor(
-                            ContextCompat.getColor(
-                                    context, R.color.white))
+                            context.getColorFromAttr(
+                                    R.attr.criptextColorBackground
+                            ))
                     .setLocationByAttachedView(anchorView)
                     .setAnimationAlphaShow(200, 0.3f, 1.0f)
                     .setAnimationAlphaDismiss(200, 1.0f, 0.0f)

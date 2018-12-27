@@ -18,6 +18,7 @@ interface SettingsUIObserver: UIObserver {
     fun onDeleteAccountClicked()
     fun onPinLockClicked()
     fun onTwoFASwitched(isChecked: Boolean)
+    fun onDarkThemeSwitched(isChecked: Boolean)
     fun onLogoutConfirmedClicked()
     fun onRemoveDeviceConfirmed(deviceId: Int, position: Int, password: String)
     fun onRemoveDeviceCancel()

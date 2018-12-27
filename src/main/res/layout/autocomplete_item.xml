@@ -41,7 +41,7 @@
                 android:maxLines="1"
                 android:text="AUTOCOMPLETE NOMBRE"
                 android:textSize="14sp"
-                android:textColor="#4a4a4a"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:layout_gravity="center"
                 android:visibility="visible"/>
 

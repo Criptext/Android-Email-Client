@@ -12,7 +12,7 @@
         android:id="@+id/open_full_mail_item_container"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:paddingStart="14dp"
-        android:background="@color/white"
+        android:background="?attr/criptextEmailDetailBgColor"
         android:layout_width="fill_parent"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
@@ -52,7 +52,7 @@
 
                     <TextView
                         fontPath="fonts/NunitoSans-Regular.ttf"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/criptextPrimaryTextColor"
                         android:id="@+id/email_header"
                         android:layout_height="wrap_content"
                         android:text="Gianni Carlo"
@@ -160,13 +160,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="85dp"
-            android:layout_marginRight="20dp">
+            android:layout_marginRight="20dp"
+            android:background="?attr/criptextColorBackground">
 
             <com.criptext.mail.utils.ui.MyZoomLayout
                 android:id="@+id/zoomLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:scrollbars="vertical|horizontal"
+                android:background="?attr/criptextColorBackground"
                 app:overScrollHorizontal="true"
                 app:overScrollVertical="true"
                 app:horizontalPanEnabled="true"
@@ -183,6 +185,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/email_body"
+                    android:background="?attr/criptextColorBackground"
                     android:scrollbars="none"/>
 
             </com.criptext.mail.utils.ui.MyZoomLayout>

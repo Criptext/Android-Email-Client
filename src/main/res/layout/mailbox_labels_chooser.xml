@@ -14,7 +14,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="5dp"
         android:paddingStart="20dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         fontPath="fonts/NunitoSans-Bold.ttf"
         android:textSize="17sp"/>
 
@@ -52,7 +52,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp"
             android:id="@+id/label_cancel"
             android:stateListAnimator="@null"
@@ -67,7 +67,7 @@
         <Button
             android:textSize="15sp"
             android:textAllCaps="false"
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:id="@+id/label_add"
             android:background="@drawable/label_button_right_bg"
             android:stateListAnimator="@null"

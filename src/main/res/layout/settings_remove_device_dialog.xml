@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="@drawable/label_chooser_shape"
@@ -13,7 +14,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"/>
 
     <TextView
@@ -25,7 +26,7 @@
         android:paddingBottom="15dp"
         android:paddingEnd="15dp"
         android:paddingStart="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="15sp"/>
 
     <RelativeLayout
@@ -99,7 +100,7 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:textColor="@color/label_buttons_text"
+            android:textColor="@color/button_text_color"
             android:textSize="15sp"
             android:textAllCaps="false"
             android:id="@+id/settings_remove_cancel"

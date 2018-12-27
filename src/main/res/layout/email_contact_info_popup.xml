@@ -2,7 +2,8 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/criptextColorBackground">
 
     <LinearLayout
         android:id="@+id/email_contact_info_popup"
@@ -27,7 +28,7 @@
                 android:layout_alignParentStart="true"
                 android:gravity="center_vertical"
                 android:text="@string/from_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <TextView
@@ -38,7 +39,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_toEndOf="@+id/title_from"
                 android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
-                android:textColor="#000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:layout_weight="1"
                 android:textSize="13sp"/>
 
@@ -74,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/reply_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <TextView
@@ -119,7 +120,7 @@
                 android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/to_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <android.support.v7.widget.RecyclerView
@@ -146,7 +147,7 @@
                 android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/cc_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <android.support.v7.widget.RecyclerView
@@ -173,7 +174,7 @@
                 android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/bcc_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <android.support.v7.widget.RecyclerView
@@ -200,7 +201,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:text="@string/date_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <TextView
@@ -213,7 +214,7 @@
                 android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
                 android:text="Yesterday"
-                android:textColor="#000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
         </LinearLayout>
@@ -235,7 +236,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:text="@string/subject_popup"
-                android:textColor="@color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
             <TextView
@@ -248,7 +249,7 @@
                 android:layout_toEndOf="@id/title_subject"
                 android:gravity="center_vertical"
                 android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
-                android:textColor="#000"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"/>
 
         </LinearLayout>

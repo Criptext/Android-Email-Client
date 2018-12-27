@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/main_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/criptextColorBackground">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/mailbox_toolbar"
@@ -74,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pin_lock_switch_text"
-                android:textColor="#373a45"
+                android:textColor="?attr/criptextSettingsOptionsTextColor"
                 android:layout_marginBottom="10dp"
                 android:textSize="18sp" />
 
@@ -88,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#f4f4f4">
+                android:background="?attr/criptextSettingsDividerBackground">
                 <TextView
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -96,6 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/pin_lock_message_1"
+                    android:textColor="?attr/criptextSecondaryTextColor"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="15dp"
                     android:textSize="14sp" />
@@ -107,6 +109,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pin_lock_message_2"
                     android:layout_marginBottom="20dp"
+                    android:textColor="?attr/criptextSecondaryTextColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -115,7 +118,7 @@
                 android:layout_height="0.5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="#d8d8d8"/>
+                android:background="?attr/criptextLeftMenuSeparator"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -155,7 +158,7 @@
                 android:layout_height="0.5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="#d8d8d8"/>
+                android:background="?attr/criptextLeftMenuSeparator"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -190,7 +193,7 @@
                 android:layout_height="0.5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="#d8d8d8"/>
+                android:background="?attr/criptextLeftMenuSeparator"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -211,7 +214,7 @@
                     android:text="@string/title_allow_preview"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_preview"
@@ -228,7 +231,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#f4f4f4">
+                android:background="?attr/criptextSettingsDividerBackground">
                 <TextView
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -236,6 +239,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/notification_preview_message"
+                    android:textColor="?attr/criptextSecondaryTextColor"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="15dp"
                     android:textSize="14sp" />
@@ -244,7 +248,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#d8d8d8"
+                android:background="?attr/criptextLeftMenuSeparator"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"/>
 
@@ -268,7 +272,7 @@
                     android:text="@string/title_read_receipts"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
-                    android:textColor="@color/drawer_text"/>
+                    android:textColor="?attr/criptextSettingsOptionsTextColor"/>
 
                 <Switch
                     android:id="@+id/switch_read_receipts"
@@ -285,7 +289,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#f4f4f4">
+                android:background="?attr/criptextSettingsDividerBackground">
                 <TextView
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
@@ -293,6 +297,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/read_receipts_message"
+                    android:textColor="?attr/criptextSecondaryTextColor"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="15dp"
                     android:textSize="14sp" />

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings
 
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -38,7 +39,7 @@ interface SettingsScene{
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun getLabelListView(): VirtualListView
     fun getDeviceListView(): VirtualListView
-    fun updateUserSettings(userData: UserSettingsData)
+    fun updateUserSettings(model: SettingsModel)
     fun updateTwoFa(isChecked: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun dismissConfirmPasswordDialog()
@@ -208,11 +209,14 @@ interface SettingsScene{
             tabs.setupWithViewPager(mViewPager)
         }
 
-        override fun updateUserSettings(userData: UserSettingsData) {
-            generalView.setRecoveryEmailConfirmationText(userData.recoveryEmailConfirmationState)
+        override fun updateUserSettings(model: SettingsModel) {
+            generalView.setRecoveryEmailConfirmationText(model.isEmailConfirmed)
             generalView.enable2FASwitch(true)
             generalView.enablePrivacyOption(true)
-            generalView.set2FA(userData.hasTwoFA)
+            generalView.set2FA(model.hasTwoFA)
+            generalView.setDarkTheme(
+                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            )
         }
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {

@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.mailbox.ui
 
 import android.graphics.Color
 import android.support.design.widget.NavigationView
-import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -14,6 +13,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
 import com.criptext.mail.scenes.mailbox.NavigationMenuOptions
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.utils.getColorFromAttr
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.squareup.picasso.Picasso
@@ -215,11 +215,12 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     private fun setResourcesSelected(slider: LinearLayout, textView: TextView, imageView: ImageView){
-        slider.setBackgroundColor(ContextCompat.getColor(slider.context, R.color.menu_selected))
+        slider.setBackgroundColor(imageView.context.getColorFromAttr(R.attr.criptextLeftMenuSelected))
         textView.typeface = TypefaceUtils.load(textView.resources.assets,
                 "fonts/NunitoSans-Bold.ttf")
+        textView.setTextColor(textView.context.getColorFromAttr(R.attr.criptextLeftMenuSelectedText))
         DrawableCompat.setTint(imageView.drawable,
-                ContextCompat.getColor(imageView.context, R.color.drawer_icon_selected))
+                imageView.context.getColorFromAttr(R.attr.criptextLeftMenuIconSelected))
     }
 
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int){
@@ -253,34 +254,31 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderTrash.setBackgroundColor(Color.TRANSPARENT)
         sliderStarred.setBackgroundColor(Color.TRANSPARENT)
         sliderAllMail.setBackgroundColor(Color.TRANSPARENT)
-        textViewTitleInbox.typeface = TypefaceUtils.load(textViewTitleInbox.resources.assets,
+        val font = TypefaceUtils.load(textViewTitleInbox.resources.assets,
                 "fonts/NunitoSans-Regular.ttf")
-        textViewTitleSent.typeface = TypefaceUtils.load(textViewTitleSent.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleDraft.typeface = TypefaceUtils.load(textViewTitleDraft.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleStarred.typeface = TypefaceUtils.load(textViewTitleStarred.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleSpam.typeface = TypefaceUtils.load(textViewTitleSpam.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleTrash.typeface = TypefaceUtils.load(textViewTitleTrash.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        textViewTitleAllMail.typeface = TypefaceUtils.load(textViewTitleAllMail.resources.assets,
-                "fonts/NunitoSans-Regular.ttf")
-        DrawableCompat.setTint(imageViewInbox.drawable,
-                ContextCompat.getColor(imageViewInbox.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewSent.drawable,
-                ContextCompat.getColor(imageViewSent.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewDraft.drawable,
-                ContextCompat.getColor(imageViewDraft.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewStarred.drawable,
-                ContextCompat.getColor(imageViewStarred.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewSpam.drawable,
-                ContextCompat.getColor(imageViewSpam.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewTrash.drawable,
-                ContextCompat.getColor(imageViewTrash.context, R.color.drawer_icon_unselected))
-        DrawableCompat.setTint(imageViewAllMail.drawable,
-                ContextCompat.getColor(imageViewAllMail.context, R.color.drawer_icon_unselected))
+        textViewTitleInbox.typeface = font
+        textViewTitleSent.typeface = font
+        textViewTitleDraft.typeface = font
+        textViewTitleStarred.typeface = font
+        textViewTitleSpam.typeface = font
+        textViewTitleTrash.typeface = font
+        textViewTitleAllMail.typeface = font
+        val color = imageViewInbox.context.getColorFromAttr(R.attr.criptextLeftMenuIconUnSelected)
+        DrawableCompat.setTint(imageViewInbox.drawable, color)
+        DrawableCompat.setTint(imageViewSent.drawable, color)
+        DrawableCompat.setTint(imageViewDraft.drawable, color)
+        DrawableCompat.setTint(imageViewStarred.drawable, color)
+        DrawableCompat.setTint(imageViewSpam.drawable, color)
+        DrawableCompat.setTint(imageViewTrash.drawable, color)
+        DrawableCompat.setTint(imageViewAllMail.drawable, color)
+        val colorText = imageViewInbox.context.getColorFromAttr(R.attr.criptextLeftMenuText)
+        textViewTitleInbox.setTextColor(colorText)
+        textViewTitleSent.setTextColor(colorText)
+        textViewTitleDraft.setTextColor(colorText)
+        textViewTitleStarred.setTextColor(colorText)
+        textViewTitleSpam.setTextColor(colorText)
+        textViewTitleTrash.setTextColor(colorText)
+        textViewTitleAllMail.setTextColor(colorText)
     }
 
     inner class VirtualLabelWrapperList(val labels: List<LabelWrapper>): VirtualList<LabelWrapper>{

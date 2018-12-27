@@ -7,7 +7,8 @@
     android:id="@+id/swipeView"
     android:foreground="?attr/selectableItemBackground"
     app:mode="same_level"
-    app:dragEdge="right">
+    app:dragEdge="right"
+    android:background="?attr/criptextColorBackground">
 
     <!-- RIGHT VIEW -->
     <LinearLayout
@@ -78,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:orientation="horizontal"
-        android:background="@android:color/white"
+        android:background="?attr/criptextColorBackground"
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
@@ -105,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:text="Daniel Tigse downloaded:"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="13sp"
                 android:maxLines="1"
                 android:ellipsize="end"/>
@@ -117,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="This_is.pdf"
-                android:textColor="#9b9b9b"
+                android:textColor="?attr/criptextSecondaryTextColor"
                 android:textSize="13sp"
                 android:maxLines="1"
                 android:ellipsize="end"/>
@@ -138,7 +139,7 @@
                 android:layout_height="14dp"
                 android:layout_gravity="right"
                 android:layout_marginRight="10dp"
-                android:tint="#d4d4d4"
+                android:tint="?attr/criptextSecondaryTextColor"
                 android:src="@drawable/mute"/>
 
             <TextView
@@ -148,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Yesterday"
-                android:textColor="#9b9b9b"
+                android:textColor="?attr/criptextSecondaryTextColor"
                 android:textSize="12sp"
                 android:maxLines="1"
                 android:ellipsize="end"
