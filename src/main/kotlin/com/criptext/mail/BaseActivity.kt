@@ -20,6 +20,7 @@ import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
+import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
@@ -45,6 +46,10 @@ import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.mailtemplates.FWMailTemplate
+import com.criptext.mail.utils.mailtemplates.REMailTemplate
+import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
@@ -411,6 +416,14 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
             false
         }
+
+    override fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate {
+        return when (type) {
+            CriptextMailTemplate.TemplateType.SUPPORT -> SupportMailTemplate(this)
+            CriptextMailTemplate.TemplateType.FW -> FWMailTemplate(this)
+            CriptextMailTemplate.TemplateType.RE -> REMailTemplate(this)
+        }
+    }
 
     protected fun setActivityMessage(message: ActivityMessage?) {
         activityMessage = message

@@ -31,6 +31,7 @@ class FeedDataSource(override val runner: WorkRunner,
                     contactDao,
                     fileDao,
                     params.lastTimeFeedOpened,
+                    params.defaultContactName,
                     activeAccount,
                     { result -> flushResults(result) }
             )

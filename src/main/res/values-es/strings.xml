@@ -55,6 +55,7 @@
   <string name="delete">Eliminar</string>
   <string name="delete_permanent">Eliminar Permanentemente</string>
   <string name="forward">Reenviar</string>
+  <string name="forwarded_message">Mensaje reenviado</string>
   <string name="unsend">Retractar</string>
   <string name="mailbox_add_labels">Agregar etiquetas</string>
   <string name="mailbox_not_spam">No es spam</string>
@@ -394,8 +395,8 @@
   <string name="general">General</string>
   <string name="labels">Etiquetas</string>
   <string name="devices">Dispositivos</string>
-  <string name="feed_opened">abierto:</string>
-  <string name="feed_downloaded">descargado:</string>
+  <string name="feed_opened">ha abierto:</string>
+  <string name="feed_downloaded">ha descargado:</string>
   <string name="feed_new">NUEVO</string>
   <string name="feed_older">VIEJO</string>
   <string name="new_email_notification">Notificación de Correo Nuevo</string>
@@ -404,4 +405,9 @@
   <string name="email_open_notification">Notificación de Correo Leído</string>
   <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
   <string name="error_email_max_size">El correo ha excedido el limite de %1$s por archivos</string>
+  <string name="support_mail_line">No escribir debajo de esta línea.</string>
+  <string name="reply_on">El</string>
+  <string name="reply_wrote">escribió:</string>
+  <string name="mail_template_at">a las</string>
+  <string name="feed_someone">Alguien</string>
 </resources>

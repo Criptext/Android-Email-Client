@@ -18,6 +18,7 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
                       private val contactDao: ContactDao,
                       private val fileDao: FileDao,
                       private val lastTimeFeedOpened: Long,
+                      private val defaultContactName: String,
                       private val activeAccount: ActiveAccount,
                       override val publishFn: (FeedResult.LoadFeed) -> Unit)
     : BackgroundWorker<FeedResult.LoadFeed> {
@@ -48,7 +49,7 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
     private fun getContactForFeed(id: Long) : Contact {
         val contact = contactDao.getContactById(id)!!
         if(contact.email == activeAccount.userEmail){
-            contact.name = "Someone"
+            contact.name = defaultContactName
             return contact
         }
         return contact

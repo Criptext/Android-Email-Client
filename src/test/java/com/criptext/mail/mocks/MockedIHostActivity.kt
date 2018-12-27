@@ -9,12 +9,17 @@ import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 
 /**
  * Created by gabriel on 3/1/18.
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate? {
+        return null
+    }
+
     override fun setAppTheme(themeResource: Int) {
         
     }

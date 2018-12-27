@@ -7,10 +7,12 @@ import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.composer.data.*
-import com.criptext.mail.scenes.mailbox.SupportMailTemplate
+import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
+import java.lang.StringBuilder
 
 /**
  * Created by gabriel on 7/2/18.
@@ -56,6 +58,10 @@ class LoadInitialDataWorker(
                 listOf(fullEmail.from)
         }
 
+        val template = if(replyToAll) (composerType as ComposerType.ReplyAll).template
+        else
+            (composerType as ComposerType.Reply).template
+
         val cc = if (replyToAll) fullEmail.cc.filter { it.email != userEmailAddress } else emptyList()
 
         val subject = (if(fullEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
@@ -64,14 +70,16 @@ class LoadInitialDataWorker(
                 originMessageHtml = fullEmail.email.content,
                 date = System.currentTimeMillis(),
                 senderName = fullEmail.from.name,
-                signature = signature)
+                signature = signature,
+                template = template)
         return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
                 body = body, subject = subject, passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
         val body = MailBody.createNewForwardMessageBody(
-                originMessageHtml = fullEmail.email.content,
+                fullEmail = fullEmail,
+                template = (composerType as ComposerType.Forward).template,
                 signature = signature)
         val subject = (if(fullEmail.email.subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())) "" else "FW: ") +
                 fullEmail.email.subject
@@ -80,6 +88,7 @@ class LoadInitialDataWorker(
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
                     it.size)
         })
+
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
                 body = body, subject = subject, passwordForNonCriptextUsers = null,
                 attachments = if (attachments.isEmpty()) null else attachments, fileKey = fullEmail.fileKey)
@@ -87,7 +96,7 @@ class LoadInitialDataWorker(
     }
 
     private fun createSupportInputData(): ComposerInputData {
-        val supportTemplate = SupportMailTemplate()
+        val supportTemplate = (composerType as ComposerType.Support).template
         val supportContact= db.contactDao.getContact(supportTemplate.contact)
 
         return if(supportContact != null){

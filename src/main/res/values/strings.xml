@@ -55,6 +55,7 @@
   <string name="delete">Delete</string>
   <string name="delete_permanent">Delete Permanently</string>
   <string name="forward">Forward</string>
+  <string name="forwarded_message">Forwarded message</string>
   <string name="unsend">Unsend</string>
   <string name="mailbox_add_labels">Add labels</string>
   <string name="mailbox_not_spam">Not spam</string>
@@ -402,6 +403,11 @@
   <string name="link_device_notification">Device Authentication Notification</string>
   <string name="error_notification">Error Notification</string>
   <string name="email_open_notification">Email Open Notification</string>
-    <string name="error_email_max_size">The email has surpassed the attachment limit of %1$s</string>
-    <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="error_email_max_size">The email has surpassed the attachment limit of %1$s</string>
+  <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="support_mail_line">Do not write below this line.</string>
+  <string name="reply_on">On</string>
+  <string name="reply_wrote">wrote:</string>
+  <string name="mail_template_at">at</string>
+  <string name="feed_someone">Someone</string>
 </resources>
