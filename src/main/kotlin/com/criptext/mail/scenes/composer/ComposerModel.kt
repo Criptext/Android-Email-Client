@@ -37,4 +37,6 @@ class ComposerModel(val type: ComposerType) {
     var passwordForNonCriptextUsers: String? = null
 
     var fileKey: String? = null
+
+    var filesSize: Long = 0L
 }

@@ -9,7 +9,17 @@ import com.github.kittinunf.result.Result
 
 class DeviceUtils{
 
-    enum class DeviceType { NONE, PC, iOS, Android}
+    enum class DeviceType {
+        NONE,
+        PC,
+        iOS,
+        Android,
+        MacInstaller,
+        MacStore,
+        WindowsInstaller,
+        WindowsStore,
+        LinuxInstaller
+    }
 
     companion object {
         fun getDeviceName(): String {
@@ -62,6 +72,11 @@ class DeviceUtils{
                 1 -> DeviceType.PC
                 2 -> DeviceType.iOS
                 3 -> DeviceType.Android
+                4 -> DeviceType.MacInstaller
+                5 -> DeviceType.MacStore
+                6 -> DeviceType.WindowsInstaller
+                7 -> DeviceType.WindowsStore
+                8 -> DeviceType.LinuxInstaller
                 else -> DeviceType.NONE
             }
         }

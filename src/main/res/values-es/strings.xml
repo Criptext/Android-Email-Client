@@ -366,9 +366,9 @@
   <string name="nocontent">(Sin Contenido)</string>
   <string name="unknown">Desconocido</string>
   <string name="to">Para</string>
-    <string name="to_me">Para mí</string>
+  <string name="to_me">Para mí</string>
   <string name="label_as">Etiquetar como</string>
-    <string name="email_sent">Correo Enviado</string>
+  <string name="email_sent">Correo Enviado</string>
   <string name="from_popup">De:</string>
   <string name="to_popup">Para:\u0020</string>
   <string name="cc_popup">CC:\u0020\u0020\u0020</string>
@@ -388,7 +388,7 @@
   <string name="write_signature">Escribe tu firma aquí…</string>
   <string name="draft_saved">Borrador guardado</string>
   <string name="profile_name_updated">Nombre de perfil actualizado</string>
-    <string name="show_label_in_list">Mostrar en lista de etiquetas</string>
+  <string name="show_label_in_list">Mostrar en lista de etiquetas</string>
   <string name="new_label">Crear nueva etiqueta</string>
   <string name="current_device">Actual</string>
   <string name="general">General</string>
@@ -402,5 +402,6 @@
   <string name="link_device_notification">Notificación de Autenticación de Dispositivo</string>
   <string name="error_notification">Notificación de Error</string>
   <string name="email_open_notification">Notificación de Correo Leído</string>
-    <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
+  <string name="error_email_max_size">El correo ha excedido el limite de %1$s por archivos</string>
 </resources>

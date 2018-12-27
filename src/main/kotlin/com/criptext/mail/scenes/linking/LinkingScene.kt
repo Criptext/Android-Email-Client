@@ -75,7 +75,9 @@ interface LinkingScene{
             this.linkingUIObserver = linkingUIObserver
             textViewEmail.text = model.email
             when (model.deviceType){
-                DeviceUtils.DeviceType.PC -> newDevice.setImageResource(R.drawable.device_pc)
+                DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
+                DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
+                DeviceUtils.DeviceType.LinuxInstaller -> newDevice.setImageResource(R.drawable.device_pc)
                 else -> newDevice.setImageResource(R.drawable.device_m)
             }
             cancelSyncText.setOnClickListener {

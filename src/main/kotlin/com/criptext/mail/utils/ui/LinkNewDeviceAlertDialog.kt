@@ -53,7 +53,9 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         textView.text = context.getString(R.string.link_auth_message,
                 untrustedDeviceInfo.deviceFriendlyName)
         when(untrustedDeviceInfo.deviceType){
-            DeviceUtils.DeviceType.PC -> imageView.setImageResource(R.drawable.device_pc)
+            DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
+            DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
+            DeviceUtils.DeviceType.LinuxInstaller -> imageView.setImageResource(R.drawable.device_pc)
             else -> imageView.setImageResource(R.drawable.device_m)
         }
 

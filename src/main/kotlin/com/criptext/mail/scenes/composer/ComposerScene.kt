@@ -22,6 +22,7 @@ import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.MailBody
 import com.criptext.mail.scenes.composer.ui.*
 import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
@@ -53,6 +54,7 @@ interface ComposerScene {
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showAttachmentErrorDialog(filename: String)
     fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
+    fun showMaxFilesExceedsDialog()
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
@@ -275,6 +277,14 @@ interface ComposerScene {
             val size = FileUtils.readableFileSize(maxsize, 1000)
             builder.setTitle(ctx.resources.getString(R.string.error_attach_file))
                     .setMessage(ctx.resources.getString(R.string.payload_too_large, fullName, size))
+                    .show()
+        }
+
+        override fun showMaxFilesExceedsDialog(){
+            val builder = AlertDialog.Builder(ctx)
+            val size = FileUtils.readableFileSize(EmailUtils.ATTACHMENT_SIZE_LIMIT.toLong(), 1000)
+            builder.setTitle(ctx.resources.getString(R.string.error_attach_file))
+                    .setMessage(ctx.resources.getString(R.string.error_email_max_size, size))
                     .show()
         }
 

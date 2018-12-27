@@ -14,6 +14,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.ServerErrorCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.ChunkFileReader
@@ -25,7 +26,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 
-class UploadAttachmentWorker(private val filepath: String,
+class UploadAttachmentWorker(private val filesSize: Long,
+                             private val filepath: String,
                              private val httpClient: HttpClient,
                              private val activeAccount: ActiveAccount,
                              private val storage: KeyValueStorage,
@@ -34,7 +36,6 @@ class UploadAttachmentWorker(private val filepath: String,
                              override val publishFn: (ComposerResult.UploadFile) -> Unit)
     : BackgroundWorker<ComposerResult.UploadFile> {
     override val canBeParallelized = false
-
     private lateinit var apiClient: CriptextAPIClient
     private val fileServiceAPIClient = FileServiceAPIClient(httpClient, activeAccount.jwt)
 
@@ -52,6 +53,9 @@ class UploadAttachmentWorker(private val filepath: String,
             }
             else ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
 
+
+    private fun MaxFilesExceeds(): ComposerResult.UploadFile =
+            ComposerResult.UploadFile.MaxFilesExceeds(filepath)
 
 
     private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
@@ -92,6 +96,10 @@ class UploadAttachmentWorker(private val filepath: String,
     override fun work(reporter: ProgressReporter<ComposerResult.UploadFile>)
             : ComposerResult.UploadFile? {
         val file = File(filepath)
+        val size = filesSize + file.length()
+        if(size > EmailUtils.ATTACHMENT_SIZE_LIMIT){
+            return MaxFilesExceeds()
+        }
         val result = workOperation(file, reporter)
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
@@ -103,7 +111,7 @@ class UploadAttachmentWorker(private val filepath: String,
 
 
         return when (finalResult) {
-            is Result.Success -> ComposerResult.UploadFile.Success(filepath)
+            is Result.Success -> ComposerResult.UploadFile.Success(filepath, size)
             is Result.Failure -> catchException(finalResult.error)
         }
     }

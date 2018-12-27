@@ -1,5 +1,6 @@
 package com.criptext.mail.api
 
+import android.os.Build
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.api.models.MultipartFormItem
 import com.criptext.mail.utils.LoggingInterceptor
@@ -63,8 +64,12 @@ interface HttpClient {
         private fun Request.Builder.addApiVersionHeader(apiVersion: String = API_VERSION) =
                 this.addHeader("criptext-api-version", apiVersion)
 
-        private fun Request.Builder.addLanguageHeader() =
-                this.addHeader("Accept-Language", Locale.getDefault().toString().toLowerCase())
+        private fun Request.Builder.addSystemHeader(): Request.Builder {
+            this.addHeader("Accept-Language", Locale.getDefault().toString().toLowerCase())
+            this.addHeader("App-Version", BuildConfig.VERSION_NAME)
+            this.addHeader("OS", Build.VERSION.RELEASE)
+            return this.head()
+        }
 
         private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
@@ -73,7 +78,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .delete(body)
                     .build()
@@ -84,7 +89,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .post(body)
                     .build()
@@ -106,7 +111,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .put(body)
                     .build()
@@ -145,7 +150,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .post(multipartBody)
                     .build()
@@ -168,7 +173,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .put(multipartBody)
                     .build()
@@ -178,7 +183,7 @@ interface HttpClient {
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
-                    .addLanguageHeader()
+                    .addSystemHeader()
                     .url(url)
                     .get()
                     .build()
