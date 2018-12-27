@@ -2,6 +2,9 @@ package com.criptext.mail.push
 
 import android.app.Notification
 import android.content.Context
+import android.media.AudioManager
+import android.media.RingtoneManager
+import android.os.Vibrator
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.criptextnotification.NotificationNewMail
@@ -30,6 +33,25 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
                 CriptextNotification.ACTION_INBOX, pendingIntent)
     }
 
+    private fun postForegroundrNotification(ctx: Context){
+        val am = ctx.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
+
+        when (am!!.ringerMode) {
+            AudioManager.RINGER_MODE_VIBRATE -> setNotification(false, ctx)
+            AudioManager.RINGER_MODE_NORMAL -> setNotification(true, ctx)
+        }
+    }
+
+    private fun setNotification(sound: Boolean, ctx: Context){
+        val vibrate: Vibrator = ctx.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrate.vibrate(400)
+        if(sound){
+            val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val ringtone = RingtoneManager.getRingtone(ctx.applicationContext, defaultSound)
+            ringtone.play()
+        }
+    }
+
     protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
 
     override fun notifyPushEvent(ctx: Context) {
@@ -38,6 +60,8 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
                 postHeaderNotification(ctx)
             }
             postNotification(ctx, data.isPostNougat)
+        }else{
+            postForegroundrNotification(ctx)
         }
     }
 

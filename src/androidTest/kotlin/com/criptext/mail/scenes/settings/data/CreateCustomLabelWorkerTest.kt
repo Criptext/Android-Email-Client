@@ -6,6 +6,7 @@ import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -28,11 +29,12 @@ class CreateCustomLabelWorkerTest{
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var settingsLocalDB: SettingsLocalDB
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private lateinit var httpClient: HttpClient
 
     @Before
@@ -40,6 +42,7 @@ class CreateCustomLabelWorkerTest{
         // mock http requests
         mockWebServer = MockWebServer()
         mockWebServer.start()
+        storage = mockk(relaxed = true)
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
@@ -71,7 +74,8 @@ class CreateCustomLabelWorkerTest{
                     settingsLocalDB = settingsLocalDB,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
-                    publishFn = {})
+                    publishFn = {},
+                    storage = storage)
 
     @After
     fun teardown() {

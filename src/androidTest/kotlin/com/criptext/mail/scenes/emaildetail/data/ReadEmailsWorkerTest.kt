@@ -6,6 +6,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.emaildetail.workers.ReadEmailsWorker
 import com.criptext.mail.utils.DateAndTimeUtils
@@ -27,11 +28,12 @@ class ReadEmailsWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private val mockedThreadId = Timestamp(System.currentTimeMillis()).toString()
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
 
     private lateinit var httpClient: HttpClient
 
@@ -41,7 +43,7 @@ class ReadEmailsWorkerTest {
         db.resetDao().deleteAllData(1)
         mockWebServer = MockWebServer()
         mockWebServer.start()
-
+        storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServer.url("/mock").toString(), connectionTimeout = 7000L,
                 readTimeout = 7000L)
@@ -55,7 +57,8 @@ class ReadEmailsWorkerTest {
     private fun newWorker(emailIds: List<Long>, metadataKeys: List<Long>): ReadEmailsWorker =
             ReadEmailsWorker(dao = db.emailDao(), activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, emailIds = emailIds,
-                    metadataKeys = metadataKeys, pendingDao = db.pendingEventDao())
+                    metadataKeys = metadataKeys, pendingDao = db.pendingEventDao(), accountDao = db.accountDao(),
+                    storage = storage)
 
 
     @Test

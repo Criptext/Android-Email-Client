@@ -34,7 +34,7 @@ class LogoutWorkerTest{
     private lateinit var settingsLocalDB: SettingsLocalDB
     private lateinit var storage: KeyValueStorage
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 

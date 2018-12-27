@@ -24,9 +24,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.workers.UpdateMailboxWorker
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeTrue
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -48,7 +46,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var storage: KeyValueStorage
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase
@@ -77,7 +75,7 @@ class UpdateMailboxWorkerTest {
             UpdateMailboxWorker(signalClient = signalClient, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
-                    pendingEventDao = db.pendingEventDao())
+                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao())
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
@@ -169,15 +167,16 @@ class UpdateMailboxWorkerTest {
         // assert that emails got inserted correctly in DB
         val newLocalEmails = db.emailDao().getAll()
         newLocalEmails.size `shouldBe` 5
-        val getEmailBody: (Email) -> String = { it.content }
-
         // assert that the new emails got in
         val latestEmails = newLocalEmails.subList(3, 5)
-        latestEmails.map(getEmailBody).shouldEqual(
-                listOf("Unable to decrypt message.", // emails cant be decrypted because they are fake
-                        "Unable to decrypt message.")
-        )
-
+        latestEmails.forEach { email ->
+            email.content.shouldBeEqualTo("<html>\n" +
+                    " <head></head>\n" +
+                    " <body>\n" +
+                    "  Unable to decrypt message.\n" +
+                    " </body>\n" +
+                    "</html>")
+        }
     }
 
     @Test

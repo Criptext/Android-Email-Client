@@ -35,7 +35,7 @@ class LoadInitialDataWorkerTest {
     private lateinit var db: TestDatabase
     private lateinit var composerLocalDB: ComposerLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1)
     private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2)
     private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3)

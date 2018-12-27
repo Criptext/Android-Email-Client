@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -28,12 +29,13 @@ class UpdateEmailThreadsLabelsWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
 
     @Before
     fun setup() {
@@ -46,6 +48,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
         // mock http requests
         mockWebServer = MockWebServer()
         mockWebServer.start()
+        storage = mockk(relaxed = true)
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
@@ -57,7 +60,8 @@ class UpdateEmailThreadsLabelsWorkerTest {
             UpdateEmailThreadsLabelsWorker(activeAccount = activeAccount,
                     publishFn = {}, httpClient = httpClient, shouldRemoveCurrentLabel = false,
                     selectedThreadIds = selectedThreadIds, currentLabel = currentLabel, db = mailboxLocalDB,
-                    selectedLabels = selectedLabels, pendingDao = db.pendingEventDao())
+                    selectedLabels = selectedLabels, pendingDao = db.pendingEventDao(), accountDao = db.accountDao(),
+                    storage = storage)
 
     @Test
     fun when_marked_as_star_should_send_only_star_to_added_labels_and_nothing_on_removed() {

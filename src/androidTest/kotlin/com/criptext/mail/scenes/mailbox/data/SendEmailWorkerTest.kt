@@ -8,6 +8,7 @@ import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AttachmentTypes
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -39,6 +40,7 @@ class SendEmailWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var signalClient: SignalClient
@@ -48,7 +50,7 @@ class SendEmailWorkerTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
     @Before
     fun setup() {
@@ -60,7 +62,7 @@ class SendEmailWorkerTest {
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
 
         // create tester user so that signal store is initialized.
-        val storage = TestSharedPrefs(mActivityRule.activity)
+        storage = mockk(relaxed = true)
         tester = InDBUser(db = db, storage = storage, generator = keyGenerator,
                 recipientId = "tester", deviceId = 1).setup()
 
@@ -77,7 +79,8 @@ class SendEmailWorkerTest {
             SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
-                    attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao())
+                    attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao(),
+                    accountDao = db.accountDao(), storage = storage)
 
 
 
