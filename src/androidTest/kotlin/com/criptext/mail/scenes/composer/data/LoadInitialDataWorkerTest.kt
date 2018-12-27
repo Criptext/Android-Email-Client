@@ -13,6 +13,8 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.workers.LoadInitialDataWorker
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
+import com.criptext.mail.utils.mailtemplates.FWMailTemplate
+import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import io.mockk.mockk
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
@@ -32,6 +34,8 @@ class LoadInitialDataWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var reTemplate: REMailTemplate
+    private lateinit var fwmTemplate: FWMailTemplate
     private lateinit var db: TestDatabase
     private lateinit var composerLocalDB: ComposerLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
@@ -49,7 +53,8 @@ class LoadInitialDataWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-
+        reTemplate = REMailTemplate(mActivityRule.activity)
+        fwmTemplate = FWMailTemplate(mActivityRule.activity)
         db.contactDao().insertAll(listOf(testerContact, mayerContact, danielContact))
 
         composerLocalDB = ComposerLocalDB(contactDao = db.contactDao(), emailDao = db.emailDao(),
@@ -100,7 +105,7 @@ class LoadInitialDataWorkerTest {
                 subject = "Hello", decryptedBody = "Please reply to me.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Reply(originalId = emailId,
-                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview, template = reTemplate))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "RE: Hello"
@@ -115,7 +120,7 @@ class LoadInitialDataWorkerTest {
                 decryptedBody = "Please reply to all.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.ReplyAll(originalId = emailId,
-                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview, template = reTemplate))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "RE: Hello"
@@ -130,7 +135,7 @@ class LoadInitialDataWorkerTest {
                 decryptedBody = "This is something you should forward.", isDraft = false, fileKey = null)
 
         val worker = newWorker(emailId = emailId, type = ComposerType.Forward(originalId = emailId,
-                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview))
+                currentLabel = Label.defaultItems.inbox, threadPreview = emailPreview, template = fwmTemplate))
         val result = worker.work(mockk()) as ComposerResult.LoadInitialData.Success
 
         result.initialData.subject `shouldEqual` "FW: Hello"

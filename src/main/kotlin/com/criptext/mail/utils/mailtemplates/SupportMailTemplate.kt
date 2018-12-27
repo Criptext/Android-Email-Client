@@ -1,11 +1,15 @@
-package com.criptext.mail.scenes.mailbox
+package com.criptext.mail.utils.mailtemplates
 
+import android.content.Context
 import com.criptext.mail.BuildConfig
+import com.criptext.mail.R
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 
-class SupportMailTemplate {
-    private val doNotWrite = "Do not write below this line."
+class SupportMailTemplate(ctx: Context) : CriptextMailTemplate(ctx) {
+    private val doNotWrite = ctx.getLocalizedUIMessage(UIMessage(R.string.support_mail_line))
     private val deviceName: String = DeviceUtils.getDeviceName()
     private val deviceOS: String = DeviceUtils.getDeviceOS()
     private val version: String = BuildConfig.VERSION_NAME

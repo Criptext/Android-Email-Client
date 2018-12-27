@@ -8,7 +8,7 @@ import com.criptext.mail.db.models.FeedItem
  */
 sealed class FeedRequest {
     data class GetEmailPreview(val email: Email, val userEmail: String): FeedRequest()
-    data class LoadFeed(val lastTimeFeedOpened: Long): FeedRequest()
+    data class LoadFeed(val lastTimeFeedOpened: Long, val defaultContactName: String): FeedRequest()
     data class DeleteFeedItem(val item: ActivityFeedItem, val position: Int): FeedRequest()
     data class MuteFeedItem(val id: Long, val position: Int, val isMuted: Boolean): FeedRequest()
 }

@@ -17,6 +17,7 @@ import com.criptext.mail.scenes.mailbox.feed.ui.FeedItemHolder
 import com.criptext.mail.scenes.mailbox.feed.ui.FeedListController
 import com.criptext.mail.scenes.mailbox.feed.ui.FeedScene
 import com.criptext.mail.scenes.params.EmailDetailParams
+import com.criptext.mail.utils.UIMessage
 
 /**
  * Created by danieltigse on 2/15/18.
@@ -162,6 +163,6 @@ open class FeedController(private val model: FeedModel,
     }
 
     fun reloadFeeds(){
-        feedDataSource.submitRequest(FeedRequest.LoadFeed(lastTimeFeedOpened))
+        feedDataSource.submitRequest(FeedRequest.LoadFeed(lastTimeFeedOpened, host.getLocalizedString(UIMessage(R.string.feed_someone))))
     }
 }
