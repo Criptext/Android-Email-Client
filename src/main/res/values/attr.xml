@@ -40,4 +40,5 @@
     <attr name="criptextAttachmentsXButtonBg" format="reference|color"/>
     <attr name="criptextDialogButtonBg" format="reference|color"/>
     <attr name="criptextAppVersionTextColor" format="reference|color"/>
+    <attr name="criptextAttachmentDialogTextColor" format="reference|color"/>
 </resources>
