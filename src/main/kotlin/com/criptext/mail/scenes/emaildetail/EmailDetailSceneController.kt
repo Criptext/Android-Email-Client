@@ -85,6 +85,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailDetailUIObserver = object: EmailDetailUIObserver{
+        override fun onSnackbarClicked() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }

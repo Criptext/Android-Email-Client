@@ -1,8 +1,10 @@
 package com.criptext.mail.api
 
 import android.os.Build
+import android.util.Log
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.api.models.MultipartFormItem
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.LoggingInterceptor
 import com.criptext.mail.utils.file.FileUtils
 import okhttp3.*
@@ -67,7 +69,7 @@ interface HttpClient {
         private fun Request.Builder.addSystemHeader(): Request.Builder {
             this.addHeader("Accept-Language", Locale.getDefault().toString().toLowerCase())
             this.addHeader("App-Version", BuildConfig.VERSION_NAME)
-            this.addHeader("OS", Build.VERSION.RELEASE)
+            this.addHeader("OS", String.format("%s %s", DeviceUtils.getDeviceName(), DeviceUtils.getDeviceOS()))
             return this.head()
         }
 

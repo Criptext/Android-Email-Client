@@ -1,8 +1,12 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
+import android.media.AudioManager
+import android.media.RingtoneManager
 import android.os.Handler
+import android.os.Vibrator
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
@@ -72,7 +76,7 @@ interface MailboxScene{
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
     fun refreshMails()
     fun clearRefreshing()
-    fun showMessage(message : UIMessage)
+    fun showMessage(message : UIMessage, showAction: Boolean = false)
     fun hideDrawer()
     fun showRefresh()
     fun scrollTop()
@@ -91,6 +95,7 @@ interface MailboxScene{
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
+    fun showNotification()
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -352,8 +357,12 @@ interface MailboxScene{
             refreshLayout.isRefreshing = false
         }
 
-        override fun showMessage(message: UIMessage) {
-            SnackBarHelper.show(openComposerButton, context.getLocalizedUIMessage(message))
+        override fun showMessage(message: UIMessage, showAction: Boolean) {
+            SnackBarHelper.show(
+                    openComposerButton,
+                    context.getLocalizedUIMessage(message), observer as UIObserver,
+                    showAction
+                    )
         }
 
         override fun hideDrawer() {
@@ -407,5 +416,23 @@ interface MailboxScene{
             drawerMenuView.clearActiveLabel()
         }
 
+        override fun showNotification() {
+            val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
+
+            when (am!!.ringerMode) {
+                AudioManager.RINGER_MODE_VIBRATE -> setNotification(false)
+                AudioManager.RINGER_MODE_NORMAL -> setNotification(true)
+            }
+        }
+
+        private fun setNotification(sound: Boolean){
+            val vibrate: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            vibrate.vibrate(400)
+            if(sound){
+                val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val ringtone = RingtoneManager.getRingtone(context.applicationContext, defaultSound)
+                ringtone.play()
+            }
+        }
     }
 }

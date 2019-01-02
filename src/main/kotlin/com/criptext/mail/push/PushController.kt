@@ -74,8 +74,9 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     }
 
     fun parsePushPayload(pushData: Map<String, String>, shouldPostNotification: Boolean) {
-        dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
-                pushData, shouldPostNotification))
+        if(shouldPostNotification)
+            dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+                    pushData, shouldPostNotification))
     }
 
     private fun createAndNotifyPush(pushData: Map<String, String>, shouldPostNotification: Boolean,

@@ -9,4 +9,5 @@ interface UIObserver{
     fun onCancelButtonPressed()
     fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo)
     fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun onSnackbarClicked()
 }

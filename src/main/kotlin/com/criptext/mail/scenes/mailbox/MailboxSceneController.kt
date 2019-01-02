@@ -238,6 +238,11 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+
+        override fun onSnackbarClicked() {
+            scene.scrollTop()
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
@@ -485,6 +490,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         dataSourceController.updateEmailThreadsLabelsRelations(
                 selectedLabels = SelectedLabels(),
                 removeCurrentLabel = true)
+        reloadMailboxThreads()
     }
 
     private fun deleteSelectedEmailThreads() {
@@ -591,12 +597,14 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onDeleteThreadListener = object : OnDeleteThreadListener {
         override fun onDeleteConfirmed() {
             dataSourceController.moveEmailThread(chosenLabel = null)
+            reloadMailboxThreads()
         }
     }
 
     private val onEmptyTrashListener = object : OnEmptyTrashListener {
         override fun onDeleteConfirmed() {
             dataSource.submitRequest(MailboxRequest.EmptyTrash())
+            reloadMailboxThreads()
         }
     }
 
@@ -708,7 +716,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                             val oldEmails = model.threads.filter { it in result.emailPreviews }
                             threadListController.updateThreadsAndAddNew(newEmails, oldEmails)
                             if(newEmails.isNotEmpty() && !threadListController.isOnTopOfList())
-                                scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)))
+                                scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)), true)
                         }
                     }
 
@@ -866,6 +874,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             feedController.reloadFeeds()
             dataSource.submitRequest(MailboxRequest.ResendEmails())
+            if(!model.threads.isEmpty()){
+                if(model.selectedLabel.text== Label.LABEL_INBOX && model.threads[0].unread){
+                    scene.showNotification()
+                }
+            }
         }
         if(resultData.updateBannerData != null){
             scene.showUpdateBanner(resultData.updateBannerData)
