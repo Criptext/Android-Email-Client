@@ -46,7 +46,7 @@ interface EmailDetailScene {
             fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
             observer: EmailDetailUIObserver)
     fun showError(message : UIMessage)
-    fun showMessage(message : UIMessage)
+    fun showMessage(message : UIMessage, showAction: Boolean = false)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
     fun notifyLabelsChanged(updatedLabels: List<Label>)
@@ -209,8 +209,12 @@ interface EmailDetailScene {
             toast.show()
         }
 
-        override fun showMessage(message: UIMessage) {
-            SnackBarHelper.show(emailDetailView, context.getLocalizedUIMessage(message))
+        override fun showMessage(message: UIMessage, showAction: Boolean) {
+            SnackBarHelper.show(
+                    emailDetailView,
+                    context.getLocalizedUIMessage(message), observer as UIObserver,
+                    showAction
+            )
         }
 
         override fun showStartGuideEmailIsRead(view: View) {

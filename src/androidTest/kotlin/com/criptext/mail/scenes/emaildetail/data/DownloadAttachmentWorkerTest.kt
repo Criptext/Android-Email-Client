@@ -9,6 +9,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.workers.UploadAttachmentWorker
@@ -38,10 +39,11 @@ class DownloadAttachmentWorkerTest {
     @get:Rule
     var mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
 
     private var filetoken = ""
     private val reporter: ProgressReporter<ComposerResult.UploadFile> =
@@ -72,7 +74,7 @@ class DownloadAttachmentWorkerTest {
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
-
+        storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
                 readTimeout = 7000L)
@@ -86,13 +88,15 @@ class DownloadAttachmentWorkerTest {
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
-                    httpClient = httpClient, publishFn = {}, fileKey = null)
+                    httpClient = httpClient, publishFn = {}, fileKey = null, accountDao = db.accountDao(),
+                    storage = storage, filesSize = 0L)
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
                     downloadPath = mActivityRule.activity.cacheDir.absolutePath,
                     httpClient = httpClient, activeAccount = activeAccount,
-                    publishFn = {}, fileKey = null, fileName = "", fileSize = 0)
+                    publishFn = {}, fileKey = null, fileName = "", fileSize = 0L,
+                    accountDao = db.accountDao(), storage = storage)
 
     private fun sendPermanentRequest(filetoken: String){
         val filejson = JSONObject()

@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -35,6 +36,7 @@ class ResendEmailWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private lateinit var signalClient: SignalClient
@@ -44,7 +46,7 @@ class ResendEmailWorkerTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
     @Before
     fun setup() {
@@ -54,9 +56,8 @@ class ResendEmailWorkerTest {
 
         mailboxLocalDB = MailboxLocalDB.Default(db)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
-
+        storage = mockk(relaxed = true)
         // create tester user so that signal store is initialized.
-        val storage = TestSharedPrefs(mActivityRule.activity)
         tester = InDBUser(db = db, storage = storage, generator = keyGenerator,
                 recipientId = "tester", deviceId = 1).setup()
 
@@ -71,13 +72,15 @@ class ResendEmailWorkerTest {
     private fun newResendWorker(): ResendEmailsWorker =
             ResendEmailsWorker(signalClient = signalClient, rawSessionDao = db.rawSessionDao(),
                     httpClient = httpClient, db = mailboxLocalDB,
-                    activeAccount = activeAccount, publishFn = {})
+                    activeAccount = activeAccount, publishFn = {}, accountDao = db.accountDao(),
+                    storage = storage)
 
     private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData): SendMailWorker =
             SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
-                    attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao())
+                    attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao(),
+                    accountDao = db.accountDao(), storage = storage)
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,

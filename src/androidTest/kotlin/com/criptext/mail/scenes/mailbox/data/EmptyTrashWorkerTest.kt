@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -27,10 +28,11 @@ class EmptyTrashWorkerTest{
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 
@@ -46,7 +48,7 @@ class EmptyTrashWorkerTest{
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
         mailboxLocalDB = MailboxLocalDB.Default(db)
-
+        storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash))
     }
 
@@ -79,7 +81,9 @@ class EmptyTrashWorkerTest{
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     pendingDao = db.pendingEventDao(),
-                    publishFn = {})
+                    publishFn = {},
+                    accountDao = db.accountDao(),
+                    storage = storage)
 
     @After
     fun teardown() {

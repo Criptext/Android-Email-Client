@@ -49,6 +49,10 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
+        override fun onSnackbarClicked() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }

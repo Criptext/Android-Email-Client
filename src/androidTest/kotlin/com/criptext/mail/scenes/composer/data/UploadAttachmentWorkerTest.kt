@@ -6,6 +6,7 @@ import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.workers.UploadAttachmentWorker
 import com.criptext.mail.utils.Encoding
@@ -23,10 +24,11 @@ class UploadAttachmentWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
+    private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
     private val fileServiceAuthToken =
             Encoding.byteArrayToString(
                     "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(
@@ -50,7 +52,7 @@ class UploadAttachmentWorkerTest {
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
-
+        storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
                 readTimeout = 7000L)
@@ -64,7 +66,8 @@ class UploadAttachmentWorkerTest {
 
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
-                    httpClient = httpClient, publishFn = {}, fileKey = null)
+                    httpClient = httpClient, publishFn = {}, fileKey = null,
+                    accountDao =  db.accountDao(), filesSize = 0L, storage = storage)
 
     @Test
     fun should_upload_file_without_errors() {
