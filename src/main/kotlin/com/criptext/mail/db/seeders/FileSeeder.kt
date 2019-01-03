@@ -35,7 +35,8 @@ class FileSeeder {
                         date = sdf.parse("1992-05-23 20:12:58"),
                         emailId = 1,
                         readOnly = false,
-                        shouldDuplicate = false
+                        shouldDuplicate = false,
+                        fileKey = "__FILE_KEY__"
                 )
 
                 2 -> file = CRFile( id = 0, token = "XXXXXXXXXX2312XXXXX2",
@@ -45,7 +46,8 @@ class FileSeeder {
                         date = sdf.parse("1993-05-23 20:12:58"),
                         emailId = 1,
                         readOnly = true,
-                        shouldDuplicate = false
+                        shouldDuplicate = false,
+                        fileKey = "__FILE_KEY__"
                 )
             }
             return file

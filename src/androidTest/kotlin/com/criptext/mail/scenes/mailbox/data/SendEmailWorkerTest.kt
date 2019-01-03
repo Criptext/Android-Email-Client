@@ -193,7 +193,8 @@ class SendEmailWorkerTest {
                     uploadProgress=100,
                     filetoken="__FILE_TOKEN__",
                     type= AttachmentTypes.IMAGE,
-                    size=file.totalSpace
+                    size=file.totalSpace,
+                    fileKey = "__FILE_KEY__"
             ))
         }
         // first we need to store the email to send in the DB

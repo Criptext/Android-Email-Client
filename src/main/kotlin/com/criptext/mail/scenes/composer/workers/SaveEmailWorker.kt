@@ -46,7 +46,8 @@ class SaveEmailWorker(
         val (newEmailId, savedMailThreadId) = saveEmail()
         val attachmentsSaved = dao.findFilesByEmailId(newEmailId).map {
             ComposerAttachment(
-                    id = it.id, size = it.size, filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
+                    id = it.id, fileKey = it.fileKey, size = it.size,
+                    filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
                     filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
                     uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress
             )
@@ -123,7 +124,8 @@ class SaveEmailWorker(
                     date = Date(),
                     readOnly = false,
                     emailId = 0,
-                    shouldDuplicate = shouldDuplicateFile(it.filetoken)
+                    shouldDuplicate = shouldDuplicateFile(it.filetoken),
+                    fileKey = fileKey!!
             )
         }
 

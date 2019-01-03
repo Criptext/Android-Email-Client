@@ -46,7 +46,10 @@ class CRFile(
         var emailId : Long,
 
         @ColumnInfo(name = "shouldDuplicate")
-        var shouldDuplicate : Boolean
+        var shouldDuplicate : Boolean,
+
+        @ColumnInfo(name = "fileKey")
+        var fileKey: String
 
 ) {
 
@@ -76,7 +79,8 @@ class CRFile(
                         Date(),
                         false,
                         0,
-                        false))
+                        false,
+                        file.getString("fileKey")))
             }
             return files
         }
@@ -92,7 +96,11 @@ class CRFile(
                     date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
                     emailId = json.getLong("emailId"),
                     readOnly = json.getBoolean("readOnly"),
-                    shouldDuplicate = false
+                    shouldDuplicate = false,
+                    fileKey = when {
+                        json.has("fileKey") -> json.getString("fileKey")
+                        else -> ""
+                    }
             )
         }
     }

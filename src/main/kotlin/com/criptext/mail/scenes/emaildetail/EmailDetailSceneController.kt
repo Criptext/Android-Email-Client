@@ -400,7 +400,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
             if(attachment.status != 0) {
-                downloadFile(email.email.id, attachment.token, email.fileKey, attachment.name,
+                downloadFile(email.email.id, attachment.token, attachment.fileKey, attachment.name,
                         attachment.size)
             }
         }
