@@ -66,10 +66,28 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val deviceId = pushData["randomId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""
         val deviceName = pushData["deviceName"] ?: ""
+        val syncFileVersion = pushData["version"] ?: ""
 
         return PushData.LinkDevice(title = title, body = body, deviceName = deviceName,
                 shouldPostNotification = shouldPostNotification,
-                isPostNougat = isPostNougat, randomId = deviceId,
+                isPostNougat = isPostNougat, randomId = deviceId, syncFileVersion = syncFileVersion.toInt(),
+                deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))
+    }
+
+    private fun parseSyncDevicePush(pushData: Map<String, String>,
+                                    shouldPostNotification: Boolean): PushData.SyncDevice {
+        val body = pushData["body"] ?: ""
+        val title = pushData["title"] ?: ""
+        val randomId = pushData["randomId"] ?: ""
+        val deviceId = pushData["deviceId"] ?: ""
+        val deviceType = pushData["deviceType"] ?: ""
+        val deviceName = pushData["deviceName"] ?: ""
+        val syncFileVersion = pushData["version"] ?: ""
+
+        return PushData.SyncDevice(title = title, body = body, deviceName = deviceName,
+                shouldPostNotification = shouldPostNotification,
+                isPostNougat = isPostNougat, randomId = randomId, deviceId = deviceId.toInt(),
+                syncFileVersion = syncFileVersion.toInt(),
                 deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))
     }
 
@@ -102,6 +120,10 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                 PushTypes.openActivity -> {
                     val data = parseNewOpenMailbox(pushData, shouldPostNotification)
                     OpenMailboxNotifier.Open(data)
+                }
+                PushTypes.syncDevice -> {
+                    val data = parseSyncDevicePush(pushData, shouldPostNotification)
+                    SyncDeviceNotifier.Open(data)
                 }
 
             }

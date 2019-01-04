@@ -38,4 +38,7 @@ interface ContactDao {
             SET name=:name
             where email=:email""")
     fun updateContactName(email: String, name: String)
+
+    @Query("DELETE FROM contact")
+    fun nukeTable()
 }

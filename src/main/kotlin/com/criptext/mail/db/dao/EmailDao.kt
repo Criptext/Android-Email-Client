@@ -386,4 +386,7 @@ import java.util.*
     """)
     fun deleteThreads(threadIds: List<String>, labels: List<Long>)
 
+    @Query("DELETE FROM email")
+    fun nukeTable()
+
 }

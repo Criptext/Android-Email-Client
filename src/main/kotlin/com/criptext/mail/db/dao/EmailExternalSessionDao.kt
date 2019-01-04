@@ -18,4 +18,7 @@ interface EmailExternalSessionDao {
     @Query("""SELECT * FROM email_external_session""")
     fun getAll(): List<EmailExternalSession>
 
+    @Query("DELETE FROM email_external_session")
+    fun nukeTable()
+
 }

@@ -52,4 +52,10 @@ sealed class SettingsResult{
         data class Success(val hasTwoFA: Boolean): Set2FA()
         data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
     }
+
+    sealed class SyncBegin: SettingsResult() {
+        class Success: SyncBegin()
+        data class NoDevicesAvailable(val message: UIMessage): SyncBegin()
+        data class Failure(val message: UIMessage): SyncBegin()
+    }
 }

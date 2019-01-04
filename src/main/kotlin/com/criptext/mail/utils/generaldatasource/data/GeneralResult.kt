@@ -1,9 +1,12 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 
+import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
+import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 
@@ -111,5 +114,39 @@ sealed class GeneralResult {
     sealed class SetReadReceipts: GeneralResult() {
         data class Success(val readReceipts: Boolean): SetReadReceipts()
         data class Failure(val message: UIMessage, val readReceiptAttempt: Boolean): SetReadReceipts()
+    }
+
+    sealed class CheckForKeyBundle: GeneralResult() {
+        data class Success(val keyBundle: PreKeyBundleShareData.DownloadBundle): CheckForKeyBundle()
+        data class Failure(val message: UIMessage): CheckForKeyBundle()
+    }
+
+    sealed class LinkDataReady: GeneralResult() {
+        data class Success(val key: String, val dataAddress: String): LinkDataReady()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): LinkDataReady()
+    }
+
+    sealed class LinkData: GeneralResult() {
+        class Success: LinkData()
+        data class Progress(val message: UIMessage, val progress: Int): LinkData()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): LinkData()
+    }
+
+    sealed class SyncStatus: GeneralResult() {
+        data class Success(val syncStatusData: SyncStatusData): SyncStatus()
+        class Waiting: SyncStatus()
+        class Denied: SyncStatus()
+    }
+
+    sealed class SyncAccept: GeneralResult() {
+        data class Success(val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): SyncAccept()
+        data class Failure(val message: UIMessage): SyncAccept()
+    }
+
+    sealed class SyncDeny: GeneralResult() {
+        class Success: SyncDeny()
+        data class Failure(val message: UIMessage): SyncDeny()
     }
 }

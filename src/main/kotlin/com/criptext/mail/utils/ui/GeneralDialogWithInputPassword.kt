@@ -23,7 +23,7 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 
-class GeneralDialogWithInputPassword(val context: Context, val data: DialogData) {
+class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.DialogMessageData) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
@@ -96,6 +96,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData)
         return when(data.type){
             is DialogType.DeleteAccount ->
                 DialogResult.DialogWithInput(password.text.toString(), data.type)
+            is DialogType.ManualSyncConfirmation ->
+                DialogResult.DialogConfirmation(data.type)
         }
     }
 

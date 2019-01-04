@@ -163,6 +163,14 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is MailboxRequest.GetPendingSyncRequest -> GetPendingSyncRequestWorker(
+                    storage = storage,
+                    accountDao = accountDao,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
             is MailboxRequest.ResendPeerEvents -> ResendPeerEventsWorker(
                     pendingDao = pendingDao,
                     httpClient = httpClient,

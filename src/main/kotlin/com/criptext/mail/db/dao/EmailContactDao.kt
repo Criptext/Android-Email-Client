@@ -54,4 +54,7 @@ interface EmailContactJoinDao {
     @Delete
     fun deleteAll(emailUsers: List<EmailContact>)
 
+    @Query("DELETE FROM email_contact")
+    fun nukeTable()
+
 }

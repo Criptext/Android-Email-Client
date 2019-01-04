@@ -73,6 +73,23 @@ interface WebSocketEventListener {
     fun onKeyBundleUploaded(deviceId: Int)
 
     /**
+     * Invoked when there is a manual mailbox sync request.
+     */
+    fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo)
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onSyncRequestAccept(syncStatusData: SyncStatusData)
+
+    /**
+     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onSyncRequestDeny()
+
+    /**
      * Called when something went wrong processing the event. Subscribers may want to display an
      * error message.
      * @param uiMessage: Object with localized error message

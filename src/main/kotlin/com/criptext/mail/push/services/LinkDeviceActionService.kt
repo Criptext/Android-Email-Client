@@ -15,8 +15,8 @@ import com.criptext.mail.push.data.PushAPIRequestHandler
 class LinkDeviceActionService : IntentService("Link Device Action Service") {
 
     companion object {
-        const val APPROVE = "Approve"
-        const val DENY = "Deny"
+        const val APPROVE = "Approve Link"
+        const val DENY = "Deny Link"
     }
 
 

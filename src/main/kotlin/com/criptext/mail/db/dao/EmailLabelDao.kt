@@ -67,4 +67,7 @@ interface EmailLabelDao {
 
     @Query("DELETE from email_label WHERE emailId = :id")
     fun deleteByEmailId(id: Long)
+
+    @Query("DELETE FROM email_label")
+    fun nukeTable()
 }

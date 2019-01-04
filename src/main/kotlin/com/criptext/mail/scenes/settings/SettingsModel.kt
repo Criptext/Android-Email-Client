@@ -20,4 +20,9 @@ class SettingsModel{
     var hasReadReceipts: Boolean = false
     var recoveryEmail: String = ""
     var hasChangedTheme: Boolean = false
+
+    var isWaitingForSync = false
+
+    var retryTimeLinkDataReady = 0
+    var retryTimeLinkStatus = 0
 }

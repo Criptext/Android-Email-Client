@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 
 data class UntrustedDeviceInfo (val deviceId: String, val recipientId: String, val deviceName: String, val deviceFriendlyName: String,
-                                val deviceType: DeviceUtils.DeviceType) {
+                                val deviceType: DeviceUtils.DeviceType, val syncFileVersion: Int) {
     companion object {
 
         fun fromJSON(jsonString: String): UntrustedDeviceInfo {
@@ -17,7 +17,8 @@ data class UntrustedDeviceInfo (val deviceId: String, val recipientId: String, v
                     recipientId = json.getString("recipientId"),
                     deviceName = json.getString("deviceName"),
                     deviceFriendlyName = json.getString("deviceFriendlyName"),
-                    deviceType = DeviceUtils.getDeviceType(json.getInt("deviceType"))
+                    deviceType = DeviceUtils.getDeviceType(json.getInt("deviceType")),
+                    syncFileVersion = JSONObject(jsonString).getInt("version")
             )
         }
     }

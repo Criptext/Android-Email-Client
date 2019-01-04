@@ -113,6 +113,52 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.CheckForKeyBundle -> CheckForKeyBundleWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    accountDao = db.accountDao(),
+                    storage = storage,
+                    deviceId = params.deviceId,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.LinkData -> LinkDataWorker(
+                    activeAccount = activeAccount!!,
+                    storage = storage,
+                    authorizerId = params.authorizerId,
+                    db = db,
+                    signalClient = signalClient,
+                    dataAddress = params.dataAddress,
+                    key = params.key,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.LinkDataReady -> LinkDataReadyWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.SyncStatus -> SyncStatusWorker(
+                    activeAccount = activeAccount!!,
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.SyncAccept -> SyncAuthAcceptWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    trustedDeviceInfo = params.trustedDeviceInfo,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.SyncDenied -> SyncAuthDenyWorker(
+                    activeAccount = activeAccount!!,
+                    accountDao = db.accountDao(),
+                    trustedDeviceInfo = params.trustedDeviceInfo,
+                    storage = storage,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

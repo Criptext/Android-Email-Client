@@ -3,6 +3,8 @@ package com.criptext.mail.websocket
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.Event
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
@@ -56,6 +58,17 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
                 val key = JSONObject(event.params).getString("key")
                 val authorizerId = JSONObject(event.params).getInt("authorizerId")
                 currentListener?.onDeviceDataUploaded(key, dataAddress, authorizerId)
+            }
+            Event.Cmd.syncAccept -> {
+                val syncStatusData = SyncStatusData.fromJSON(event.params)
+                currentListener?.onSyncRequestAccept(syncStatusData)
+            }
+            Event.Cmd.syncDeny -> {
+                currentListener?.onSyncRequestDeny()
+            }
+            Event.Cmd.syncBeginRequest -> {
+                val trustedDeviceInfo = TrustedDeviceInfo.fromJSON(event.params)
+                currentListener?.onSyncBeginRequest(trustedDeviceInfo)
             }
 
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,

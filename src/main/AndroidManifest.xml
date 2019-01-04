@@ -107,6 +107,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.settings.privacyandsecurity.PrivacyAndSecurityActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.syncing.SyncingActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".services.InstanceIdService"
@@ -128,6 +130,7 @@
             </intent-filter>
         </service>
         <service android:name=".push.services.NewMailActionService" />
+        <service android:name=".push.services.SyncDeviceActionService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

@@ -2,6 +2,8 @@ package com.criptext.mail.scenes.settings.changepassword
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
@@ -17,6 +19,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -44,16 +47,29 @@ class ChangePasswordController(
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.SyncAccept -> onSyncAccept(result)
         }
     }
 
     private val changePasswordUIObserver = object: ChangePasswordUIObserver{
+
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -65,7 +81,10 @@ class ChangePasswordController(
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+            else
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
         override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
@@ -180,6 +199,19 @@ class ChangePasswordController(
         }
     }
 
+    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
+        when (resultData) {
+            is GeneralResult.SyncAccept.Success -> {
+                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
+                        false, true)
+            }
+            is GeneralResult.SyncAccept.Failure -> {
+                scene.showMessage(resultData.message)
+            }
+        }
+    }
+
     private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
@@ -208,6 +240,18 @@ class ChangePasswordController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
+
+        }
+
+        override fun onSyncRequestDeny() {
+
+        }
+
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }

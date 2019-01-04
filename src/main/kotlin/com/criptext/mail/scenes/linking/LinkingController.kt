@@ -2,6 +2,8 @@ package com.criptext.mail.scenes.linking
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.api.models.TrustedDeviceInfo
 import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
@@ -53,11 +55,19 @@ class LinkingController(
 
     private val linkingUIObserver = object: LinkingUIObserver{
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onRetrySyncOk(result: GeneralResult) {
@@ -122,11 +132,25 @@ class LinkingController(
         scene.setProgress(UIMessage(R.string.preparing_mailbox), PREPARING_MAILBOX_PERCENTAGE)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        if(activityMessage != null && activityMessage is ActivityMessage.SyncMailbox)
+            model.untrustedDevicePostedKeyBundle = true
         generalDataSource.submitRequest(GeneralRequest.DataFileCreation())
         return false
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
+
+        }
+
+        override fun onSyncRequestDeny() {
+
+        }
+
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
 
         }

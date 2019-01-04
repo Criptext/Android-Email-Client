@@ -106,8 +106,8 @@ class SignInDataSource(override val runner: WorkRunner,
             is SignInRequest.LinkDataReady -> LinkDataReadyWorker(
                     activeAccount = ActiveAccount.loadFromStorage(keyValueStorage)!!,
                     httpClient = httpClient,
-                    publishFn = {
-                        result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
         }

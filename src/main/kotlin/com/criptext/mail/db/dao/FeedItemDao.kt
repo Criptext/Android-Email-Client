@@ -25,4 +25,7 @@ interface FeedItemDao {
     @Query("""DELETE FROM feedItem
            WHERE id=:id""")
     fun deleteFeedItemById(id: Long)
+
+    @Query("DELETE FROM feedItem")
+    fun nukeTable()
 }

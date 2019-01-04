@@ -8,6 +8,7 @@ import com.criptext.mail.utils.uiobserver.UIObserver
  */
 
 interface SettingsUIObserver: UIObserver {
+    fun onResendDeviceLinkAuth()
     fun onBackButtonPressed()
     fun onSignatureOptionClicked()
     fun onProfileNameClicked()
@@ -30,4 +31,6 @@ interface SettingsUIObserver: UIObserver {
     fun onCreateLabelClicked()
     fun onToggleLabelSelection(label: LabelWrapper)
     fun onSyncPhonebookContacts()
+    fun onSyncMailbox()
+    fun onSyncMailboxCanceled()
 }

@@ -21,4 +21,7 @@ interface PendingEventDao {
                     WHERE id IN (:ids)""")
     fun deleteByBatch(ids: List<Long>)
 
+    @Query("DELETE FROM pendingEvent")
+    fun nukeTable()
+
 }
