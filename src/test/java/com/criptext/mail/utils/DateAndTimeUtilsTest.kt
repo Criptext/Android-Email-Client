@@ -19,7 +19,7 @@ class DateAndTimeUtilsTest {
 
         val input = "2018-05-30 16:14:48"
         val output = DateAndTimeUtils.printDateWithServerFormat(
-                DateAndTimeUtils.parseDateWithServerFormat(input, isUTC = false))
+                DateAndTimeUtils.parseDateWithServerFormat(input, isUTC = true))
 
         output `should equal` input
 

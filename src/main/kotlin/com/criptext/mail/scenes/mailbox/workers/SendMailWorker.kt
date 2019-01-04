@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.workers
 
 import android.accounts.NetworkErrorException
+import android.util.Log
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.Hosts
@@ -114,7 +115,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                         type = type, body = encryptedData.encryptedB64,
                         messageType = encryptedData.type, fileKey = if(getFileKey() != null)
                                 signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
-                                else null)
+                                else null, fileKeys = getFileKeys())
             }
         }.flatten()
     }
@@ -166,6 +167,13 @@ class SendMailWorker(private val signalClient: SignalClient,
         }else{
             fileKey
         }
+    }
+
+    private fun getFileKeys(): ArrayList<String>?{
+        if(attachments.isEmpty()) return null
+        val fileKeys: ArrayList<String> = ArrayList()
+        attachments.mapTo(fileKeys) { it.fileKey }
+        return fileKeys
     }
 
     private fun createCriptextAttachment(attachments: List<ComposerAttachment>)
@@ -279,7 +287,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         if(composerInputData.passwordForNonCriptextUsers == null) {
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey)
+                    HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
+                    fileKeys = getFileKeys())
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
             val sessionToEncrypt = getSignalSessionJSON(tempSignalUser,
@@ -293,7 +302,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             db.saveExternalSession(externalSession)
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    encryptedBody, salt, iv, encryptedSession, null)
+                    encryptedBody, salt, iv, encryptedSession, null, fileKeys = getFileKeys())
             tempSignalUser.store.deleteAllSessions(composerInputData.passwordForNonCriptextUsers)
             rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
             rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)

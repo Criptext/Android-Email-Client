@@ -46,7 +46,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
 
     data class CriptextEmail(val recipientId: String, val deviceId: Int,
                              val messageType: SignalEncryptedData.Type,
-                             val type: RecipientTypes, val body: String, val fileKey: String?): JSONData {
+                             val type: RecipientTypes, val body: String, val fileKey: String?,
+                             val fileKeys: List<String>?): JSONData {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
@@ -56,13 +57,15 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("body", body)
             json.put("messageType", messageType.toInt())
             json.put("fileKey", fileKey)
+            json.put("fileKeys", JSONArray(fileKeys))
             return json
         }
     }
 
     data class GuestEmail(val to: List<String>, val cc: List<String>, val bcc: List<String>,
                           val body: String, val salt: String? , val iv: String?,
-                          val session: String?, val fileKey: String?):JSONData{
+                          val session: String?, val fileKey: String?,
+                          val fileKeys: List<String>?):JSONData{
         override fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("to", JSONArray(to))
@@ -78,8 +81,10 @@ class PostEmailBody(val threadId: String?, val subject: String,
                 json.put("session", newEncodedSession)
             }else {
                 json.put("session", null)
-                if(fileKey != null)
+                if(fileKey != null) {
                     json.put("fileKey", fileKey)
+                    json.put("fileKeys", JSONArray(fileKeys))
+                }
             }
             return json
         }

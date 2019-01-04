@@ -27,6 +27,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
@@ -467,7 +468,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun generateEmailFileKey(){
         if(model.fileKey != null)  return
         model.fileKey = if(model.type is ComposerType.Empty) {
-            AESUtil.generateAesKey()
+            FileUtils.generateFileKey()
         } else null
     }
 

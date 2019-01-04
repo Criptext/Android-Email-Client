@@ -5,6 +5,8 @@ import com.criptext.mail.utils.file.FileUtils
 
 data class FileDetail(val file: CRFile){
 
+    val fileKey: String
+        get() = file.fileKey
     val name: String
         get() = file.name
     val token: String

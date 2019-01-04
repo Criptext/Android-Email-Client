@@ -30,7 +30,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class],
-        version = 6,
+        version = 7,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -67,7 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                                MIGRATION_5_6)
+                                MIGRATION_5_6, MIGRATION_6_7)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -123,6 +123,12 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_5_6: Migration = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE account ADD COLUMN refreshToken TEXT NOT NULL DEFAULT ''""")
+            }
+        }
+
+        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE file ADD COLUMN fileKey TEXT NOT NULL DEFAULT ''""")
             }
         }
     }

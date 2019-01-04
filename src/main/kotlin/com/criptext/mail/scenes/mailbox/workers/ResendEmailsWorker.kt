@@ -76,6 +76,13 @@ class ResendEmailsWorker(
         }
     }
 
+    private fun getFileKeys(attachments: List<CRFile>): ArrayList<String>?{
+        if(attachments.isEmpty()) return null
+        val fileKeys: ArrayList<String> = ArrayList()
+        attachments.mapTo(fileKeys) { it.fileKey }
+        return fileKeys
+    }
+
     private fun createCriptextAttachment(attachments: List<CRFile>)
             : List<PostEmailBody.CriptextAttachment> {
         val finalAttachments = mutableListOf<CRFile>()
@@ -217,7 +224,7 @@ class ResendEmailsWorker(
                         type = type, body = encryptedData.encryptedB64,
                         messageType = encryptedData.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
                     signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
-                else null)
+                else null, fileKeys = getFileKeys(fullEmail.files))
             }
         }.flatten()
     }
@@ -260,12 +267,12 @@ class ResendEmailsWorker(
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     HTMLUtils.addCriptextFooter(fullEmail.email.content), null, null, null,
-                    fullEmail.fileKey)
+                    fullEmail.fileKey, fileKeys = getFileKeys(fullEmail.files))
         }else {
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     externalData.encryptedBody, externalData.salt, externalData.iv,
-                    externalData.encryptedSession, null)
+                    externalData.encryptedSession, null, fileKeys = getFileKeys(fullEmail.files))
         }
     }
 

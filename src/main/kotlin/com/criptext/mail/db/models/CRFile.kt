@@ -5,6 +5,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 import java.util.*
 import android.support.annotation.NonNull
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
@@ -46,7 +47,10 @@ class CRFile(
         var emailId : Long,
 
         @ColumnInfo(name = "shouldDuplicate")
-        var shouldDuplicate : Boolean
+        var shouldDuplicate : Boolean,
+
+        @ColumnInfo(name = "fileKey")
+        var fileKey: String
 
 ) {
 
@@ -76,7 +80,12 @@ class CRFile(
                         Date(),
                         false,
                         0,
-                        false))
+                        false,
+                        fileKey = when {
+                            file.has("fileKey") -> file.getString("fileKey")
+                            else -> ""
+                        }
+                ))
             }
             return files
         }
@@ -92,7 +101,11 @@ class CRFile(
                     date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
                     emailId = json.getLong("emailId"),
                     readOnly = json.getBoolean("readOnly"),
-                    shouldDuplicate = false
+                    shouldDuplicate = false,
+                    fileKey = when {
+                        json.has("fileKey") -> json.getString("fileKey")
+                        else -> ""
+                    }
             )
         }
     }

@@ -130,7 +130,8 @@ class ReadEmailsWorkerTest {
                                     null),
                             readOnly = false,
                             emailId = it.toLong(),
-                            shouldDuplicate = false
+                            shouldDuplicate = false,
+                            fileKey = "__FILE_KEY__"
                     )),
                     cc = emptyList(),
                     bcc = emptyList(),

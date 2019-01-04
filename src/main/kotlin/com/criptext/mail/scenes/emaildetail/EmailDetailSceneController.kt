@@ -12,10 +12,7 @@ import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.FileDetail
-import com.criptext.mail.db.models.FullEmail
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -400,9 +397,14 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val email = model.emails[emailPosition]
             val attachment = email.files[attachmentPosition]
             if(attachment.status != 0) {
-                downloadFile(email.email.id, attachment.token, email.fileKey, attachment.name,
+                downloadFile(email.email.id, attachment.token, getFileKey(attachment, email), attachment.name,
                         attachment.size)
             }
+        }
+
+        fun getFileKey(attachment: CRFile, email: FullEmail): String?{
+            return if (attachment.fileKey.isEmpty()) email.fileKey
+            else attachment.fileKey
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {

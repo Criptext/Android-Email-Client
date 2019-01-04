@@ -87,7 +87,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         fullEmailEventListener.captured.onAttachmentSelected(0, 0)
 
         verify { dataSource.submitRequest(EmailDetailRequest.DownloadFile(fileName = selectedFile.name,
-                fileSize = selectedFile.size, fileKey = null, emailId = selectedFile.emailId,
+                fileSize = selectedFile.size, fileKey = "__FILE_KEY__", emailId = selectedFile.emailId,
                 fileToken = selectedFile.token)) }
     }
 
