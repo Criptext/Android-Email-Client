@@ -5,6 +5,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 import java.util.*
 import android.support.annotation.NonNull
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
@@ -80,7 +81,11 @@ class CRFile(
                         false,
                         0,
                         false,
-                        file.getString("fileKey")))
+                        fileKey = when {
+                            file.has("fileKey") -> file.getString("fileKey")
+                            else -> ""
+                        }
+                ))
             }
             return files
         }

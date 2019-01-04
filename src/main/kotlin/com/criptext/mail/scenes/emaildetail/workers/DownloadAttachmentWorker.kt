@@ -79,11 +79,11 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                 reporter.report( EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
                         index * 100 / fileMetadata.chunks))
 
-                val data = if(fileKey != null)
-                                        AESUtil(fileKey).decrypt(fileServiceAPIClient
-                                                .downloadChunk(fileMetadata.fileToken, index + 1))
-                                    else
-                                        fileServiceAPIClient.downloadChunk(fileMetadata.fileToken, index + 1)
+                val data = if(fileKey != null) {
+                    AESUtil(fileKey).decrypt(fileServiceAPIClient
+                            .downloadChunk(fileMetadata.fileToken, index + 1))
+                } else
+                    fileServiceAPIClient.downloadChunk(fileMetadata.fileToken, index + 1)
 
                 val channel = fileStream.channel
                 channel.position(index * fileMetadata.chunkSize)

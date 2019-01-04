@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.db.AttachmentTypes
 import java.io.File
 import java.net.URLConnection
@@ -259,6 +260,10 @@ class FileUtils {
                 }
             }
             return null
+        }
+
+        fun generateFileKey(): String{
+            return AESUtil.generateAesKey()
         }
     }
 }
