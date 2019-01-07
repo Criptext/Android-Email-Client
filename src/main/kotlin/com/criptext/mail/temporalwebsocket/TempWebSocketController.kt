@@ -3,14 +3,10 @@ package com.criptext.mail.temporalwebsocket
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.Event
-import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.websocket.WebSocketClient
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
-import org.json.JSONObject
 
 /**
  * Manages the web socket, exposes methods to connect, disconnect, reconnect and subscribe/unsubscribe

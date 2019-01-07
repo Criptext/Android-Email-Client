@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.composer
 
 
 import android.Manifest
-import android.app.Activity
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.view.View
@@ -10,9 +9,7 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.aes.AESUtil
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -32,7 +29,6 @@ import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
-import com.github.omadahealth.lollipin.lib.managers.LockManager
 import java.io.File
 
 
@@ -56,11 +52,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
-        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
 
         }
@@ -73,11 +69,11 @@ class ComposerController(private val storage: KeyValueStorage,
             checkForDraft()
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
         }
 
-        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 

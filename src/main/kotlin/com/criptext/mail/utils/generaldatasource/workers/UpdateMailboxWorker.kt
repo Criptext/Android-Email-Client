@@ -5,6 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.PeerEventsApiHandler
 import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
@@ -64,13 +65,14 @@ class UpdateMailboxWorker(
         else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
 
 
-    private fun processFailure(failure: Result.Failure<Pair<List<EmailPreview>, UpdateBannerData?>, Exception>): GeneralResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception>): GeneralResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
             GeneralResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
                     mailboxThreads = null,
-                    updateBannerData = null)
+                    updateBannerData = null,
+                    syncEventsList = listOf())
         else
             catchException(failure.error)
     }
@@ -97,7 +99,8 @@ class UpdateMailboxWorker(
                         mailboxLabel = label,
                         isManual = true,
                         mailboxThreads = finalResult.value.first,
-                        updateBannerData = finalResult.value.second
+                        updateBannerData = finalResult.value.second,
+                        syncEventsList = finalResult.value.third
                 )
             }
 
@@ -109,12 +112,12 @@ class UpdateMailboxWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> =
+    private fun workOperation() : Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> =
             EventLoader.getEvents(mailboxApiClient)
             .flatMap(eventHelper.processEvents)
 
     private fun newRetryWithNewSessionOperation()
-            : Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> {
+            : Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
                 activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)

@@ -2,9 +2,8 @@ package com.criptext.mail.scenes.linking
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -58,11 +57,11 @@ class LinkingController(
 
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
-        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
@@ -107,11 +106,11 @@ class LinkingController(
 
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 
         }
 
-        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 
         }
 
@@ -139,7 +138,7 @@ class LinkingController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
@@ -173,7 +172,7 @@ class LinkingController(
             })
         }
 
-        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 
         }
 

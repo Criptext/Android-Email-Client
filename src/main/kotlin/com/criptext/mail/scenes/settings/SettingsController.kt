@@ -9,9 +9,8 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
@@ -24,7 +23,6 @@ import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
 import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
-import com.criptext.mail.scenes.settings.syncing.SyncingScene
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
@@ -93,14 +91,14 @@ class SettingsController(
             model.isWaitingForSync = false
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                 generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
             else
                 scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
-        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
@@ -186,14 +184,14 @@ class SettingsController(
                 scene.showTwoFADialog(model.isEmailConfirmed)
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                 generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
             else
                 scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
-        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
@@ -601,7 +599,7 @@ class SettingsController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if (!model.isWaitingForSync){
                 host.runOnUiThread(Runnable {
                     scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
@@ -644,7 +642,7 @@ class SettingsController(
 
         }
 
-        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
             })

@@ -36,13 +36,14 @@ class EventHelper(private val db: EventLocalDB,
     private lateinit var label: Label
     private var loadedThreadsCount: Int? = null
     private var updateBannerData: UpdateBannerData? = null
+    private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
 
     fun setupForMailbox(label: Label, threadCount: Int?){
         this.label = label
         loadedThreadsCount = threadCount
     }
 
-    val processEvents: (List<Event>) -> Result<Pair<List<EmailPreview>, UpdateBannerData?>, Exception> = { events ->
+    val processEvents: (List<Event>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
         Result.of {
             val shouldReload = processTrackingUpdates(events).or(processNewEmails(events))
                     .or(processThreadReadStatusChanged(events)).or(processUnsendEmailStatusChanged(events))
@@ -50,9 +51,54 @@ class EventHelper(private val db: EventLocalDB,
                     .or(processThreadLabelChanged(events)).or(processEmailDeletedPermanently(events))
                     .or(processThreadDeletedPermanently(events)).or(processLabelCreated(events))
                     .or(processOnError(events)).or(processEmailReadStatusChanged(events)).or(processUpdateBannerData(events))
-            Pair(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
-                    updateBannerData)
+                    .or(processLinkRequestEvents(events)).or(processSyncRequestEvents(events))
+            Triple(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
+                    updateBannerData, linkDevicesEvents)
         }
+    }
+
+    private fun processLinkRequestEvents(events: List<Event>): Boolean {
+        val isDeviceLinkRequest: (Event) -> Boolean = { it.cmd == Event.Cmd.deviceAuthRequest }
+        val toIdAndDeviceInfoPair: (Event) -> Pair<Long, DeviceInfo.UntrustedDeviceInfo> =
+                { Pair( it.rowid, DeviceInfo.UntrustedDeviceInfo.fromJSON(it.params)) }
+
+        val eventIdsToAcknowledge = events
+                .filter(isDeviceLinkRequest)
+                .map(toIdAndDeviceInfoPair)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it.first })
+
+        val deviceInfo = eventIdsToAcknowledge.map { it.second }
+        linkDevicesEvents.add(if(deviceInfo.isEmpty())
+            null
+                else
+            eventIdsToAcknowledge.map { it.second }.last()
+        )
+
+        return eventIdsToAcknowledge.isNotEmpty()
+    }
+
+    private fun processSyncRequestEvents(events: List<Event>): Boolean {
+        val isDeviceLinkRequest: (Event) -> Boolean = { it.cmd == Event.Cmd.syncBeginRequest }
+        val toIdAndDeviceInfoPair: (Event) -> Pair<Long, DeviceInfo.TrustedDeviceInfo> =
+                { Pair( it.rowid, DeviceInfo.TrustedDeviceInfo.fromJSON(it.params)) }
+
+        val eventIdsToAcknowledge = events
+                .filter(isDeviceLinkRequest)
+                .map(toIdAndDeviceInfoPair)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it.first })
+
+        val deviceInfo = eventIdsToAcknowledge.map { it.second }
+        linkDevicesEvents.add(if(deviceInfo.isEmpty())
+            null
+                else
+            eventIdsToAcknowledge.map { it.second }.last()
+        )
+
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
     private fun processUpdateBannerData(events: List<Event>): Boolean {

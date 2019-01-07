@@ -1,8 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.media.AudioManager
 import android.media.RingtoneManager
 import android.os.Handler
@@ -19,8 +17,7 @@ import android.view.*
 import android.widget.*
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.criptext.mail.db.models.Label
@@ -90,8 +87,8 @@ interface MailboxScene{
     fun showUpdateBanner(bannerData: UpdateBannerData)
     fun hideUpdateBanner()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
-    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
@@ -211,14 +208,14 @@ interface MailboxScene{
             }
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
-        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)

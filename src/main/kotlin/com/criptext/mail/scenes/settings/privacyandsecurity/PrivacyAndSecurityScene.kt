@@ -3,8 +3,7 @@ package com.criptext.mail.scenes.settings.privacyandsecurity
 import android.view.View
 import android.widget.*
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
-import com.criptext.mail.scenes.linking.LinkingActivity
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.splash.SplashActivity
@@ -23,7 +22,7 @@ interface PrivacyAndSecurityScene{
     fun attachView(uiObserver: PrivacyAndSecurityUIObserver,
                    keyboardManager: KeyboardManager, model: PrivacyAndSecurityModel)
     fun showMessage(message: UIMessage)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -187,7 +186,7 @@ interface PrivacyAndSecurityScene{
             setSwitchListener()
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(privacyAndSecurityUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)

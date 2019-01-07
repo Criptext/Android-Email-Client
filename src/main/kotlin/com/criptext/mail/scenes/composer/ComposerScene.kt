@@ -1,21 +1,18 @@
 package com.criptext.mail.scenes.composer
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -68,7 +65,7 @@ interface ComposerScene {
     fun dismissConfirmPasswordDialog()
     fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun setConfirmPasswordError(message: UIMessage)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showStartGuideAttachments()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
@@ -261,7 +258,7 @@ interface ComposerScene {
             confirmPassword.setPasswordError(message)
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 

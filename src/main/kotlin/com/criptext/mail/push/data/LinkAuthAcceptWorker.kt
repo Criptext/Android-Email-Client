@@ -2,14 +2,11 @@ package com.criptext.mail.push.data
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
-import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 
 class LinkAuthAcceptWorker(private val deviceId: String,

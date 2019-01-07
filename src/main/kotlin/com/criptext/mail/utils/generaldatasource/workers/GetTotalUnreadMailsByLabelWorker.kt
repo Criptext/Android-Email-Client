@@ -1,18 +1,13 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.dao.EmailDao
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
-import org.json.JSONObject
 
 class GetTotalUnreadMailsByLabelWorker(private val emailDao: EmailDao,
                                        private val currentLabel: String,

@@ -1,8 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 import android.content.ContentResolver
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.signal.PreKeyBundleShareData
 
@@ -13,8 +12,8 @@ sealed class GeneralRequest {
     data class UpdateMailbox(
             val label: Label,
             val loadedThreadsCount: Int): GeneralRequest()
-    data class LinkAccept(val untrustedDeviceInfo: UntrustedDeviceInfo): GeneralRequest()
-    data class LinkDenied(val untrustedDeviceInfo: UntrustedDeviceInfo): GeneralRequest()
+    data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
+    data class LinkDenied(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     class DataFileCreation: GeneralRequest()
     data class PostUserData(val deviceID: Int, val filePath: String, val key: ByteArray,
                             val randomId: String,
@@ -28,6 +27,6 @@ sealed class GeneralRequest {
     data class LinkData(val key: String, val dataAddress: String, val authorizerId: Int): GeneralRequest()
     class LinkDataReady: GeneralRequest()
     class SyncStatus: GeneralRequest()
-    data class SyncAccept(val trustedDeviceInfo: TrustedDeviceInfo): GeneralRequest()
-    data class SyncDenied(val trustedDeviceInfo: TrustedDeviceInfo): GeneralRequest()
+    data class SyncAccept(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
+    data class SyncDenied(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
 }

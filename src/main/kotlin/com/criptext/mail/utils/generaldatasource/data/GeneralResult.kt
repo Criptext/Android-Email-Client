@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -35,6 +36,7 @@ sealed class GeneralResult {
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
                 val updateBannerData: UpdateBannerData?,
+                val syncEventsList: List<DeviceInfo?>,
                 val isManual: Boolean) : UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
