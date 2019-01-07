@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import com.criptext.mail.R
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -149,6 +150,7 @@ class FullEmailListAdapter(private val mContext : Context,
                                    position: Int)
         fun onSpamOptionSelected(fullEmail: FullEmail,
                                    position: Int)
+        fun onPrintOptionSelected(fullEmail: FullEmail)
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
         fun onForwardBtnClicked()
         fun onReplyBtnClicked()

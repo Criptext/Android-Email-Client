@@ -6,6 +6,8 @@ import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
+import java.lang.StringBuilder
+import java.util.*
 
 class HTMLUtils {
     companion object {
@@ -31,6 +33,52 @@ class HTMLUtils {
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
             return head + htmlText + collapseScript() + closedTag
+        }
+
+        fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String, message: String): String {
+            val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
+            val fileUrl = "file:///android_asset/logo.png"
+            val printHeader = "<img src=\"$fileUrl\" alt=\"Criptext Logo\" width=\"8%\" height=\"10%\"> <hr> <p><b>${printData.subject}</b></br>1 $message</p> <hr>" +
+                    "<table style=\"width:100%\">\n" +
+                    "  <td><b>${printData.fromName}</b> &lt;${printData.fromMail}&gt;</td>\n" +
+                    "    <td style=\"text-align:right\">${DateAndTimeUtils.getHoraVerdadera(printData.date.time, at)}</td>\n" +
+                    "  </tr>\n" +
+                    "  <tr>\n" +
+                    "    <td>$to: ${printData.toList}</td>\n" +
+                    "  </tr>\n" +
+                    "</table> <br>"
+            val closedTag = "</body></html>"
+            return head + printHeader + htmlText + collapseScript() + closedTag
+        }
+
+        fun headerForPrintingAll(htmlText: List<String>, printData: List<PrintHeaderInfo>, to: String, at: String, message: String): String {
+            val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
+            val fileUrl = "file:///android_asset/logo.png"
+            val printHeader = "<img src=\"$fileUrl\" alt=\"Criptext Logo\" width=\"8%\" height=\"10%\"> <hr> <p><b>${printData[0].subject}</b> </br>${printData.size} $message</p> <hr>" +
+                    "<table style=\"width:100%\">\n" +
+                    "  <td><b>${printData[0].fromName}</b> &lt;${printData[0].fromMail}&gt;</td>\n" +
+                    "    <td style=\"text-align:right\">${DateAndTimeUtils.getHoraVerdadera(printData[0].date.time, at)}</td>\n" +
+                    "  </tr>\n" +
+                    "  <tr>\n" +
+                    "    <td>$to: ${printData[0].toList}</td>\n" +
+                    "  </tr>\n" +
+                    "</table> <br>"
+            val closedTag = "</body></html>"
+            val concatOtherMails = StringBuilder()
+            for(i in 1..(htmlText.size - 1)){
+                val secondaryHeader = "<hr>" +
+                        "<table style=\"width:100%\">\n" +
+                        "  <td><b>${printData[i].fromName}</b> &lt;${printData[i].fromMail}&gt;</td>\n" +
+                        "    <td style=\"text-align:right\">${DateAndTimeUtils.getHoraVerdadera(printData[i].date.time, at)}</td>\n" +
+                        "  </tr>\n" +
+                        "  <tr>\n" +
+                        "    <td>$to: ${printData[i].toList}</td>\n" +
+                        "  </tr>\n" +
+                        "</table> <br>"
+                concatOtherMails.append(secondaryHeader + htmlText[i] + "<br>")
+            }
+            
+            return head + printHeader + htmlText[0] + concatOtherMails.toString() + collapseScript() + closedTag
         }
 
         fun createEmailPreview(emailBody: String): String {
@@ -85,6 +133,7 @@ class HTMLUtils {
         }
     }
 
-
+    data class PrintHeaderInfo(val subject: String, val toList: String,
+                               val fromName: String, val fromMail: String, val date: Date)
 
 }

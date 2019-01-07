@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mailbox_delete_selected_messages_4ever"
+        app:showAsAction="always"
+        android:icon="@drawable/trash_forever"
+        android:title="@string/delete"/>
+
+    <item
+        android:id="@+id/mailbox_message_toggle_read"
+        android:icon="@drawable/mail_close"
+        app:showAsAction="always"
+        android:title="@string/mark_as_read"/>
+
+    <item
+        app:showAsAction="always"
+        android:icon="@drawable/more"
+        android:title="@string/more">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto" >
+            <item
+                app:showAsAction="always"
+                android:id="@+id/mailbox_add_labels"
+                android:title="@string/mailbox_add_labels"/>
+            <item
+                app:showAsAction="always"
+                android:id="@+id/mailbox_not_spam"
+                android:title="@string/mailbox_not_spam"/>
+            <item
+                app:showAsAction="always"
+                android:id="@+id/mailbox_print_all"
+                android:title="@string/print_all"/>
+        </menu>
+    </item>
+</menu>
+

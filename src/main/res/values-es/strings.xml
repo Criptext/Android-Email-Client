@@ -303,6 +303,7 @@
   <string name="stay_in_composer_message">Algunos archivos se siguen subiendo.\n¿Quieres descartarlos y avanzar?</string>
   <string name="wait_for_attachments">Por favor espera a que los adjuntos terminen de procesarse.</string>
   <string name="message">Mensaje</string>
+  <string name="messages">Mensajes</string>
   <string name="subject">Asunto</string>
     <string name="error_moving_threads">Error al mover conversaciones. Por favor, intenta de nuevo</string>
   <string name="error_updating_labels">Error actualizando etiquetas. Por favor, intenta de nuevo</string>
@@ -344,6 +345,7 @@
   <string name="mark_as_read">Marcar como leído</string>
   <string name="mark_as_spam">Marcar como Spam</string>
   <string name="print">Imprimir</string>
+  <string name="print_all">Imprimir Todo</string>
   <string name="mark_as_unread">Marcar como No Leído</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>
   <string name="failed_getting_labels">Fallo al obtener etiquetas.</string>
