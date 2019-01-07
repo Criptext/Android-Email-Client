@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -24,10 +25,8 @@ import com.criptext.mail.scenes.emaildetail.ui.holders.FullEmailHolder
 import com.criptext.mail.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
-import com.criptext.mail.utils.EmailThreadValidator
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.virtuallist.VirtualList
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
@@ -69,6 +68,8 @@ interface EmailDetailScene {
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
     fun showStartGuideEmailIsRead(view: View)
     fun showStartGuideMenu(view: View)
+    fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String)
+    fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -196,7 +197,39 @@ interface EmailDetailScene {
         }
 
         override fun setConfirmPasswordError(message: UIMessage) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        }
+
+        override fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String) {
+            val newWebView = WebView(context)
+            newWebView.loadDataWithBaseURL("", HTMLUtils.
+                    headerForPrinting(htmlText = content,
+                            printData = info,
+                            to = context.getLocalizedUIMessage(UIMessage(R.string.to)),
+                            at = context.getLocalizedUIMessage(UIMessage(R.string.mail_template_at)),
+                            message = context.getLocalizedUIMessage(UIMessage(R.string.message))),
+                    "text/html", "utf-8", "")
+            PrintUtils.createWebPrintJob(
+                    webView = newWebView,
+                    documentName = documentName,
+                    context = context
+            )
+        }
+
+        override fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String) {
+            val newWebView = WebView(context)
+            newWebView.loadDataWithBaseURL("", HTMLUtils.
+                    headerForPrintingAll(htmlText = content,
+                            printData = info,
+                            to = context.getLocalizedUIMessage(UIMessage(R.string.to)),
+                            at = context.getLocalizedUIMessage(UIMessage(R.string.mail_template_at)),
+                            message = context.getLocalizedUIMessage(UIMessage(R.string.messages))),
+                    "text/html", "utf-8", "")
+            PrintUtils.createWebPrintJob(
+                    webView = newWebView,
+                    documentName = documentName,
+                    context = context
+            )
         }
 
         override fun notifyLabelsChanged(updatedLabels: List<Label>) {

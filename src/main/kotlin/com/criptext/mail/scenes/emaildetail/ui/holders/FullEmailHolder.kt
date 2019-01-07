@@ -131,6 +131,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     emailListener?.onSpamOptionSelected(
                             fullEmail = fullEmail,
                             position = position )
+                R.id.print ->
+                    emailListener?.onPrintOptionSelected(
+                            fullEmail = fullEmail)
 
             }
             false

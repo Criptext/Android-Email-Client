@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.view.View
+import android.webkit.WebView
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -33,6 +34,7 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.HTMLUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
@@ -512,6 +514,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             moveEmail(fullEmail, Label.LABEL_SPAM)
         }
 
+        override fun onPrintOptionSelected(fullEmail: FullEmail) {
+            val toList = fullEmail.to.map { it.toString() }.joinToString().replace("<", "&lt;").replace(">", "&gt;")
+            val info = HTMLUtils.PrintHeaderInfo(subject = fullEmail.email.subject, toList = toList,
+                    date = fullEmail.email.date, fromMail = fullEmail.from.email, fromName = fullEmail.from.name)
+            scene.printFullEmail(info, fullEmail.email.content,fullEmail.email.subject + "-" + fullEmail.email.metadataKey)
+        }
+
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
             val type = ComposerType.Draft(draftId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel)
@@ -680,6 +689,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             R.id.mailbox_add_labels -> {
                 showLabelsDialog()
             }
+            R.id.mailbox_print_all -> {
+                printAllEmails()
+            }
         }
     }
 
@@ -696,6 +708,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         val req = EmailDetailRequest.GetSelectedLabels(model.threadId)
         dataSource.submitRequest(req)
         scene.showDialogLabelsChooser(LabelDataHandler(this))
+    }
+
+    private fun printAllEmails(){
+        if(model.emails.size == 1){
+            emailHolderEventListener.onPrintOptionSelected(model.emails[0])
+        }else {
+            val toList = model.emails.map { it.to.map { it.toString() }.joinToString().replace("<", "&lt;").replace(">", "&gt;") }
+            val info = model.emails.map {
+                HTMLUtils.PrintHeaderInfo(subject = it.email.subject, toList = toList[model.emails.indexOf(it)],
+                        date = it.email.date, fromMail = it.from.email, fromName = it.from.name)
+            }
+            scene.printAllFullEmail(info, model.emails.map { it.email.content }, model.emails[0].email.subject + "-" + model.emails[0].email.metadataKey)
+        }
     }
 
     fun moveEmail(fullEmail: FullEmail, chosenLabel: String?){
@@ -739,11 +764,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     override val menuResourceId: Int?
         get() = when {
-            model.currentLabel == Label.defaultItems.draft -> R.menu.mailbox_menu_multi_mode_read_draft
-            model.currentLabel == Label.defaultItems.spam -> R.menu.mailbox_menu_multi_mode_read_spam
-            model.currentLabel == Label.defaultItems.trash -> R.menu.mailbox_menu_multi_mode_read_trash
+            model.currentLabel == Label.defaultItems.draft -> R.menu.email_detail_menu_multi_mode_read_draft
+            model.currentLabel == Label.defaultItems.spam -> R.menu.email_detail_menu_multi_mode_read_spam
+            model.currentLabel == Label.defaultItems.trash -> R.menu.email_detail_menu_multi_mode_read_trash
             model.currentLabel.id < 0 -> R.menu.mailbox_menu_multi_mode_read_allmail
-            else -> R.menu.mailbox_menu_multi_mode_read
+            else -> R.menu.email_detail_menu_multi_mode_read
         }
 
     private fun findEmailPositionByEmailId(emailId: Long): Int {

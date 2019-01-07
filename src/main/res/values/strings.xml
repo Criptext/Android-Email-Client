@@ -303,6 +303,7 @@
   <string name="stay_in_composer_message">Some attachments are being uploaded.\nWould you like to discard them and proceed?</string>
   <string name="wait_for_attachments">Please wait for your attachments to finish processing.</string>
   <string name="message">Message</string>
+  <string name="messages">Messages</string>
   <string name="subject">Subject</string>
     <string name="error_moving_threads">Error moving threads. Please try again</string>
   <string name="error_updating_labels">Error updating email labels. Please try again</string>
@@ -344,6 +345,7 @@
   <string name="mark_as_read">Mark as read</string>
   <string name="mark_as_spam">Mark as Spam</string>
   <string name="print">Print</string>
+  <string name="print_all">Print All</string>
   <string name="mark_as_unread">Mark as Unread</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>
   <string name="failed_getting_labels">Failed to get labels.</string>
