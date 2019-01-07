@@ -345,7 +345,7 @@
   <string name="mark_as_read">Marcar como leído</string>
   <string name="mark_as_spam">Marcar como Spam</string>
   <string name="print">Imprimir</string>
-  <string name="print_all">Imprimir Todos</string>
+  <string name="print_all">Imprimir Todo</string>
   <string name="mark_as_unread">Marcar como No Leído</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>
   <string name="failed_getting_labels">Fallo al obtener etiquetas.</string>
