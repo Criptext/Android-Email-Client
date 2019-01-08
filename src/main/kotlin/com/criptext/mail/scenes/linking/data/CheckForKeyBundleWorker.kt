@@ -58,7 +58,7 @@ class CheckForKeyBundleWorker(
     }
 
     private fun workOperation() : Result<PreKeyBundleShareData.DownloadBundle, Exception> = Result.of {
-        apiClient.getKeyBundle(deviceId)
+        apiClient.getKeyBundle(deviceId).body
     }
     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     .flatMap { Result.of {

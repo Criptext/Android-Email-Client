@@ -15,13 +15,13 @@ class ApiCall {
 
     companion object {
 
-        fun executeRequest(client: OkHttpClient, req: Request): String {
+        fun executeRequest(client: OkHttpClient, req: Request): HttpResponseData {
             val response = client.newCall(req).execute()
             if (!response.isSuccessful) {
                 val resultHeaders = ResultHeaders(response.headers())
                 throw(ServerErrorException(response.code(), resultHeaders))
             }
-            return response.body()!!.string()
+            return HttpResponseData(response.code(), response.body()!!.string())
         }
 
         fun executeFileRequest(client: OkHttpClient, req: Request): ByteArray {

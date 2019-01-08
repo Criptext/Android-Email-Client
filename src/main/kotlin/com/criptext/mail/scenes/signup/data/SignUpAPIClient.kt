@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signup.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpResponseData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.utils.DeviceUtils
@@ -16,7 +17,7 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
     fun createUser(
             account: IncompleteAccount,
             keyBundle : PreKeyBundleShareData.UploadBundle
-    ): String {
+    ): HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("name", account.name)
         jsonObject.put("password", account.password)
@@ -28,18 +29,18 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post("/user", null, jsonObject)
     }
 
-    fun isUsernameAvailable(username: String): String {
+    fun isUsernameAvailable(username: String): HttpResponseData {
         return httpClient.get("/user/available?username=$username", null)
     }
 
-    fun postForgotPassword(recipientId: String): String{
+    fun postForgotPassword(recipientId: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
 
         return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
     }
 
-    fun putFirebaseToken(pushToken: String, jwt: String): String {
+    fun putFirebaseToken(pushToken: String, jwt: String): HttpResponseData {
         val jsonPut = JSONObject()
         jsonPut.put("devicePushToken", pushToken)
 

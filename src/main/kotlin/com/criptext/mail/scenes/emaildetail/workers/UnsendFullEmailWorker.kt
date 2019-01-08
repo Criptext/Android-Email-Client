@@ -17,7 +17,7 @@ import com.criptext.mail.db.models.Email
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -49,9 +49,9 @@ class UnsendFullEmailWorker(
 
         if(ex is ServerErrorException) {
             return when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerCodes.Unauthorized ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                ex.errorCode == ServerErrorCodes.Forbidden ->
+                ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden()
                 else -> {
                     val message = createErrorMessage(ex)
@@ -93,7 +93,7 @@ class UnsendFullEmailWorker(
 
     private fun workOperation(unsentEmail: Email?) : Result<String, Exception> = Result.of {
         apiClient.postUnsendEvent(unsentEmail!!.metadataKey,
-                getMailRecipients(unsentEmail))
+                getMailRecipients(unsentEmail)).body
     }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation(unsentEmail: Email?)
@@ -127,7 +127,7 @@ class UnsendFullEmailWorker(
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex){
             is ServerErrorException ->  when(ex.errorCode) {
-                ServerErrorCodes.MethodNotAllowed ->
+                ServerCodes.MethodNotAllowed ->
                    UIMessage(resId = R.string.fail_unsend_email_expired)
                 else -> UIMessage(resId = R.string.server_error_exception)
             }

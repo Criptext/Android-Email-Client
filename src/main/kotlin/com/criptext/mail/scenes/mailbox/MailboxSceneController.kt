@@ -7,10 +7,7 @@ import android.database.ContentObserver
 import android.os.Handler
 import android.provider.ContactsContract
 import android.view.View
-import com.criptext.mail.BaseActivity
-import com.criptext.mail.ExternalActivityParams
-import com.criptext.mail.IHostActivity
-import com.criptext.mail.R
+import com.criptext.mail.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
@@ -32,6 +29,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
@@ -902,7 +900,19 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
         if(resultData.updateBannerData != null){
-            scene.showUpdateBanner(resultData.updateBannerData)
+            if(resultData.updateBannerData.version == BuildConfig.VERSION_NAME) {
+                scene.clearUpdateBannerClick()
+                scene.showUpdateBanner(resultData.updateBannerData)
+            }else{
+                val newBannerData = UpdateBannerData(
+                        title = host.getLocalizedString(UIMessage(R.string.update_now_title)),
+                        message = host.getLocalizedString(UIMessage(R.string.update_now_message)),
+                        image = resultData.updateBannerData.image,
+                        version = resultData.updateBannerData.version
+                )
+                scene.showUpdateBanner(newBannerData)
+                scene.setUpdateBannerClick()
+            }
         }
         if(resultData.syncEventsList.isNotEmpty()){
             resultData.syncEventsList.forEach {
@@ -967,6 +977,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         when (resultData) {
             is GeneralResult.UpdateMailbox.Success -> {
                 handleSuccessfulMailboxUpdate(resultData)
+            }
+            is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
+                val success = GeneralResult.UpdateMailbox.Success(
+                        mailboxLabel = resultData.mailboxLabel,
+                        syncEventsList = resultData.syncEventsList,
+                        updateBannerData = resultData.updateBannerData,
+                        isManual = resultData.isManual,
+                        mailboxThreads = resultData.mailboxThreads
+                )
+                handleSuccessfulMailboxUpdate(success)
+                dataSourceController.updateMailbox(model.selectedLabel)
             }
             is GeneralResult.UpdateMailbox.Failure -> {
                 handleFailedMailboxUpdate(resultData)

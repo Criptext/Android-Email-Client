@@ -9,14 +9,11 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.data.SettingsAPIClient
-import com.criptext.mail.scenes.settings.data.SettingsResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
 
@@ -35,7 +32,7 @@ class ReadReceiptsWorker(val httpClient: HttpClient,
     override fun catchException(ex: Exception): GeneralResult.SetReadReceipts {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerErrorCodes.MethodNotAllowed ->
+                ServerCodes.MethodNotAllowed ->
                     GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.message_warning_two_fa), readReceipts)
                 else -> GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.server_error_exception), readReceipts)
             }
@@ -65,7 +62,7 @@ class ReadReceiptsWorker(val httpClient: HttpClient,
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of { apiClient.putReadReceipts(readReceipts) }
+    private fun workOperation() : Result<String, Exception> = Result.of { apiClient.putReadReceipts(readReceipts).body }
 
     private fun newRetryWithNewSessionOperation()
             : Result<String, Exception> {

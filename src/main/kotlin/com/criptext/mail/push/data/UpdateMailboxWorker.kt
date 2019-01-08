@@ -46,6 +46,7 @@ class UpdateMailboxWorker(
 
     private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, false)
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private var shouldCallAgain = false
 
     override fun catchException(ex: Exception): PushResult.UpdateMailbox {
         val message = createErrorMessage(ex)
@@ -73,7 +74,9 @@ class UpdateMailboxWorker(
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
             : PushResult.UpdateMailbox? {
         eventHelper.setupForMailbox(label, loadedThreadsCount)
-        val operationResult = EventLoader.getEvents(apiClient)
+        val requestEvents = EventLoader.getEvents(apiClient)
+        shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
+        val operationResult = requestEvents
                 .flatMap(eventHelper.processEvents)
 
         val newData = mutableMapOf<String, String>()
@@ -90,13 +93,23 @@ class UpdateMailboxWorker(
                         newData["body"] = email.subject
                         newData["title"] = dbEvents.getFromContactByEmailId(email.id)[0].name
 
-                        PushResult.UpdateMailbox.Success(
-                                mailboxLabel = label,
-                                isManual = true,
-                                mailboxThreads = operationResult.value.first,
-                                pushData = newData,
-                                shouldPostNotification = shouldPostNotification
-                        )
+                        if(shouldCallAgain) {
+                            PushResult.UpdateMailbox.Success(
+                                    mailboxLabel = label,
+                                    isManual = true,
+                                    mailboxThreads = operationResult.value.first,
+                                    pushData = newData,
+                                    shouldPostNotification = shouldPostNotification
+                            )
+                        }else{
+                            PushResult.UpdateMailbox.SuccessAndRepeat(
+                                    mailboxLabel = label,
+                                    isManual = true,
+                                    mailboxThreads = operationResult.value.first,
+                                    pushData = newData,
+                                    shouldPostNotification = shouldPostNotification
+                            )
+                        }
                     }else{
                         PushResult.UpdateMailbox.Failure(
                                 mailboxLabel = label,

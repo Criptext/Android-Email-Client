@@ -6,12 +6,9 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.settings.devices.DeviceItem
-import com.criptext.mail.scenes.signup.data.SignUpAPIClient
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
 
 
 class LinkAuthWorker(val httpClient: HttpClient,
@@ -28,7 +25,7 @@ class LinkAuthWorker(val httpClient: HttpClient,
     override fun catchException(ex: Exception): SignInResult.LinkAuth {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerErrorCodes.BadRequest -> SignInResult.LinkAuth.Failure(UIMessage(R.string.password_enter_error), ex)
+                ServerCodes.BadRequest -> SignInResult.LinkAuth.Failure(UIMessage(R.string.password_enter_error), ex)
                 else -> SignInResult.LinkAuth.Failure(UIMessage(R.string.server_error_exception), ex)
             }
         }else {

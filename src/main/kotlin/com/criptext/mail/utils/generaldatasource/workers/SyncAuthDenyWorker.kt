@@ -58,7 +58,7 @@ class SyncAuthDenyWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevice
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.postSyncDeny(trustedDeviceInfo.randomId)
+        apiClient.postSyncDeny(trustedDeviceInfo.randomId).body
     }
 
     private fun newRetryWithNewSessionOperation()

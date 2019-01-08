@@ -31,7 +31,7 @@ class FileServiceAPIClientTest {
     fun `should send request to register file with correct shape`() {
         val bodySlot = CapturingSlot<JSONObject>()
         every {
-            httpClient.post("/file/upload", authToken = "__TOKEN__", body = capture(bodySlot))
+            httpClient.post("/file/upload", authToken = "__TOKEN__", body = capture(bodySlot)).body
         } returns "Ok"
 
         fileServiceClient.registerFile(fileName = "my_photo.png", fileSize =
@@ -45,7 +45,7 @@ class FileServiceAPIClientTest {
     fun `should send request to upload chunk with correct shape`() {
         val bodySlot = CapturingSlot<Map<String, MultipartFormItem>>()
         every {
-            httpClient.post("/file/chunk", authToken = "__TOKEN__", body = capture(bodySlot))
+            httpClient.post("/file/chunk", authToken = "__TOKEN__", body = capture(bodySlot)).body
         } returns "Ok"
 
         fileServiceClient.uploadChunk(chunk = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 127),

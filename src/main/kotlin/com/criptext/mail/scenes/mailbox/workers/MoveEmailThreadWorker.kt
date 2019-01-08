@@ -16,7 +16,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.criptext.mail.utils.peerdata.PeerDeleteThreadData
@@ -49,9 +49,9 @@ class MoveEmailThreadWorker(
     override fun catchException(ex: Exception): MailboxResult.MoveEmailThread =
             if(ex is ServerErrorException) {
                 when {
-                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    ex.errorCode == ServerCodes.Unauthorized ->
                         MailboxResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                    ex.errorCode == ServerCodes.Forbidden ->
                         MailboxResult.MoveEmailThread.Forbidden()
                     else -> MailboxResult.MoveEmailThread.Failure(
                             message = createErrorMessage(ex),

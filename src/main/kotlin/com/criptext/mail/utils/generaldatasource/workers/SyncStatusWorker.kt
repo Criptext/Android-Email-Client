@@ -61,7 +61,7 @@ class SyncStatusWorker(val httpClient: HttpClient,
     }
 
     private fun workOperation() : Result<SyncStatusData, Exception> = Result.of { apiClient.getSyncStatus() }
-            .flatMap { Result.of { SyncStatusData.fromJSON(it) } }
+            .flatMap { Result.of { SyncStatusData.fromJSON(it.body) } }
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()

@@ -61,7 +61,7 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: DeviceInfo.Untrusted
     }
 
     private fun workOperation() : Result<Int, Exception> = Result.of {
-        JSONObject(apiClient.postLinkAccept(untrustedDeviceInfo.deviceId)).getInt("deviceId")
+        JSONObject(apiClient.postLinkAccept(untrustedDeviceInfo.deviceId).body).getInt("deviceId")
     }
 
     private fun newRetryWithNewSessionOperation()

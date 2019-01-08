@@ -60,10 +60,10 @@ class RegisterUserWorkerTest {
         every {
             keyGenerator.register("tester", 1)
         } returns RegisterUserTestUtils.createRegistrationBundles("tester", 1)
-        every { httpClient.post("/user", null, capture(bodySlot)) } returns returnJson.toString()
+        every { httpClient.post("/user", null, capture(bodySlot)).body } returns returnJson.toString()
         every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
         every {
-            httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>())
+            httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>()).body
         } returns "OK"
         every { db.clearAllTables() } just Runs
 

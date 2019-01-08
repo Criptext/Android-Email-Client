@@ -11,7 +11,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -54,7 +54,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
     }
 
     private fun workOperation() : Result<String, Exception> =
-            Result.of { apiClient.postForgotPassword(activeAccount.recipientId) }
+            Result.of { apiClient.postForgotPassword(activeAccount.recipientId).body }
 
     private fun newRetryWithNewSessionOperation()
             : Result<String, Exception> {
@@ -76,7 +76,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
             is ServerErrorException ->
-                if(ex.errorCode == ServerErrorCodes.BadRequest)
+                if(ex.errorCode == ServerCodes.BadRequest)
                 UIMessage(resId = R.string.forgot_password_error_400)
                 else
                     UIMessage(resId = R.string.forgot_password_error)

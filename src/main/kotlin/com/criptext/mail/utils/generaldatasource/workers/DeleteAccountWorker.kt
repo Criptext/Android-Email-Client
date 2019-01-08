@@ -8,11 +8,9 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -20,7 +18,6 @@ import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import java.io.File
 
 class DeleteAccountWorker(private val db: EventLocalDB,
                           private val accountDao: AccountDao,
@@ -95,7 +92,7 @@ class DeleteAccountWorker(private val db: EventLocalDB,
         when (ex) {
             is ServerErrorException -> {
                 when {
-                    ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
+                    ex.errorCode == ServerCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
                     else -> UIMessage(resId = R.string.server_error_exception)
                 }
             }

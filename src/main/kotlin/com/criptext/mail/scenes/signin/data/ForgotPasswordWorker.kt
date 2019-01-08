@@ -1,17 +1,14 @@
 package com.criptext.mail.scenes.signin.data
 
-import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
-import com.criptext.mail.scenes.signup.data.SignUpResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
-import org.json.JSONException
 import org.json.JSONObject
 
 
@@ -33,7 +30,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
 
         return when (result) {
             is Result.Success ->{
-                val address = JSONObject(result.value).getString("address")
+                val address = JSONObject(result.value.body).getString("address")
                 SignInResult.ForgotPassword.Success(address)
             }
             is Result.Failure -> catchException(result.error)
@@ -48,7 +45,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
             is ServerErrorException ->
-                if(ex.errorCode == ServerErrorCodes.BadRequest)
+                if(ex.errorCode == ServerCodes.BadRequest)
                 UIMessage(resId = R.string.forgot_password_error_400)
                 else
                     UIMessage(resId = R.string.forgot_password_error)

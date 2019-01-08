@@ -3,7 +3,7 @@ package com.criptext.mail.api
 import org.json.JSONObject
 
 class PeerAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient){
-    fun postPeerEvents(jsonPost: JSONObject): String{
+    fun postPeerEvents(jsonPost: JSONObject): HttpResponseData{
         return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
     }
 }

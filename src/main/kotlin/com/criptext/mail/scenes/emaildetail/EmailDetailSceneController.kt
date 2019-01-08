@@ -203,6 +203,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
                         model.threadId, model.currentLabel))
             }
+            is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
+                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+            }
             is GeneralResult.UpdateMailbox.Unauthorized ->
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             is GeneralResult.UpdateMailbox.Forbidden ->

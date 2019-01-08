@@ -1,9 +1,11 @@
 package com.criptext.mail
 
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.VisibleForTesting
@@ -410,6 +412,49 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 val bundle = Bundle()
                 bundle.putString("app_source", "Unknown")
                 mFirebaseAnalytics?.logEvent("invite_friend", bundle)
+            }
+            is ExternalActivityParams.OpenGooglePlay -> {
+                // you can also use BuildConfig.APPLICATION_ID
+                val appId = getPackageName()
+                val rateIntent = Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$appId"))
+                var marketFound = false
+
+                // find all applications able to handle our rateIntent
+                val otherApps = getPackageManager()
+                        .queryIntentActivities(rateIntent, 0)
+                for (otherApp in otherApps) {
+                    // look for Google Play application
+                    if (otherApp.activityInfo.applicationInfo.packageName == "com.android.vending") {
+
+                        val otherAppActivity = otherApp.activityInfo
+                        val componentName = ComponentName(
+                                otherAppActivity.applicationInfo.packageName,
+                                otherAppActivity.name
+                        )
+                        // make sure it does NOT open in the stack of your activity
+                        rateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        // task reparenting if needed
+                        rateIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                        // if the Google Play was already open in a search result
+                        //  this make sure it still go to the app page you requested
+                        rateIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        // this make sure only the Google Play app is allowed to
+                        // intercept the intent
+                        rateIntent.component = componentName
+                        startActivity(rateIntent)
+                        marketFound = true
+                        break
+
+                    }
+                }
+
+                // if GP not present on device, open web browser
+                if (!marketFound) {
+                    val webIntent = Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$appId"))
+                    startActivity(webIntent)
+                }
             }
         }
     }

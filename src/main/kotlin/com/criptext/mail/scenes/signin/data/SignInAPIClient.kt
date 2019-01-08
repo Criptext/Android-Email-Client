@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpResponseData
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
@@ -19,18 +20,18 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
     fun authenticateUser(
             username: String,
             password: String)
-            : String {
+            : HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("username", username)
         jsonObject.put("password", password)
         return httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
     }
 
-    fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): String {
+    fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): HttpResponseData {
         return httpClient.post(path = "/keybundle", body = bundle.toJSON(), authToken = jwt)
     }
 
-    fun putFirebaseToken(pushToken: String, jwt: String): String {
+    fun putFirebaseToken(pushToken: String, jwt: String): HttpResponseData {
         val jsonPut = JSONObject()
         jsonPut.put("devicePushToken", pushToken)
 
@@ -41,7 +42,7 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
     }
 
-    fun postLinkBegin(recipientId: String): String{
+    fun postLinkBegin(recipientId: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("targetUsername", recipientId)
         jsonPut.put("version", UserDataWriter.FILE_SYNC_VERSION)
@@ -49,11 +50,11 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
     }
 
-    fun getLinkStatus(jwt: String): String{
+    fun getLinkStatus(jwt: String): HttpResponseData{
         return httpClient.get(path = "/link/status", authToken = jwt)
     }
 
-    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem, password: String?): String{
+    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem, password: String?): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
         jsonPut.put("deviceName", device.name)
@@ -64,11 +65,11 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.post(path = "/link/auth", authToken = jwt, body = jsonPut)
     }
 
-    fun isLinkDataReady(token: String): String {
+    fun isLinkDataReady(token: String): HttpResponseData {
         return httpClient.get("/link/data/ready", authToken = token)
     }
 
-    fun acknowledgeEvents(eventIds: List<Long>, token: String): String {
+    fun acknowledgeEvents(eventIds: List<Long>, token: String): HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("ids", JSONArray(eventIds))
 

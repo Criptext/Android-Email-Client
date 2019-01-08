@@ -40,7 +40,8 @@
                 android:text="Two-Factor Authentication is here, to add a new layer of security"
                 android:textColor="#fff"
                 android:textSize="14sp"
-                fontPath="fonts/NunitoSans-Regular.ttf"/>
+                android:clickable="true"
+                fontPath="fonts/NunitoSans-Regular.ttf" />
         </LinearLayout>
         <ImageView
             android:id="@+id/x_button"

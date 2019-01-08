@@ -16,7 +16,7 @@ import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -58,7 +58,7 @@ class RegisterUserWorker(
             Result.of { apiClient.createUser(incompleteAccount, keyBundle) }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
                 .flatMap { Result.of {
-                    val json = JSONObject(it)
+                    val json = JSONObject(it.body)
                     Pair(json.getString("token"), json.getString("refreshToken"))
                 } }
 
@@ -104,8 +104,8 @@ class RegisterUserWorker(
             is JSONException -> UIMessage(resId = R.string.json_error_exception)
             is ServerErrorException -> {
                 when {
-                    ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.taken_username_error)
-                    ex.errorCode == ServerErrorCodes.TooManyRequests -> {
+                    ex.errorCode == ServerCodes.BadRequest -> UIMessage(resId = R.string.taken_username_error)
+                    ex.errorCode == ServerCodes.TooManyRequests -> {
                         val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {
                             if(timeLeft.first == 0L)

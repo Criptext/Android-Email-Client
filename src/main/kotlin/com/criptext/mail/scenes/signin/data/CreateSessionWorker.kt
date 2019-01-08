@@ -82,7 +82,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
             val postKeyBundleStep = Runnable {
                 val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
-                val json = JSONObject(response)
+                val json = JSONObject(response.body)
                 account.jwt = json.getString("token")
                 account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)

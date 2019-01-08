@@ -58,8 +58,10 @@ class RemoveDeviceWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.deleteDevice(deviceId, password.sha256())}
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    private fun workOperation() : Result<String, Exception> = Result.of {
+        apiClient.deleteDevice(deviceId, password.sha256()).body
+    }
+    .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()
             : Result<String, Exception> {

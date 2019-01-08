@@ -253,7 +253,7 @@ object EmailInsertionSetup {
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
-        val body = apiClient.getBodyFromEmail(metadata.metadataKey)
+        val body = apiClient.getBodyFromEmail(metadata.metadataKey).body
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
 

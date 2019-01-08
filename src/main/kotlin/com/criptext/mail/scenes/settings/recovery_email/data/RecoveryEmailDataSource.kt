@@ -8,7 +8,6 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.recovery_email.workers.ChangeRecoveryEmailWorker
-import com.criptext.mail.scenes.settings.recovery_email.workers.CheckPasswordWorker
 import com.criptext.mail.scenes.settings.recovery_email.workers.ResendLinkWorker
 
 class RecoveryEmailDataSource(
@@ -29,14 +28,6 @@ class RecoveryEmailDataSource(
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = flushResults
-            )
-            is RecoveryEmailRequest.CheckPassword -> CheckPasswordWorker(
-                    storage = storage,
-                    accountDao = accountDao,
-                    password = params.password,
-                    publishFn = flushResults,
-                    httpClient = httpClient,
-                    activeAccount = activeAccount
             )
             is RecoveryEmailRequest.ChangeRecoveryEmail -> ChangeRecoveryEmailWorker(
                     storage = storage,

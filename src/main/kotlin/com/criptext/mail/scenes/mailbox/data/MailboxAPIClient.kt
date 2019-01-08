@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.CriptextAPIClient
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.HttpResponseData
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.toJSONLongArray
 import com.criptext.mail.scenes.composer.data.PostEmailBody
@@ -15,86 +16,20 @@ import org.json.JSONObject
 
 class MailboxAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
-    fun getPendingEvents(): String {
+    fun getPendingEvents(): HttpResponseData {
         return httpClient.get(
                 authToken = token,
                 path =  "/event")
     }
 
-    fun getEmailBody(uuid: String): String {
-        return httpClient.get(
-                authToken = token,
-                path =  "/email/body/$uuid")
-    }
-
-
-    fun postEmailReadChangedEvent(metadataKeys: List<Long>, unread: Boolean): String {
-        val json = JSONObject()
-        val jsonPost = JSONObject()
-        jsonPost.put("cmd", Event.Cmd.peerEmailReadStatusUpdate)
-        json.put("metadataKeys", JSONArray(metadataKeys))
-        json.put("unread", if(unread) 1 else 0)
-        jsonPost.put("params", json)
-
-        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
-    }
-
-    fun postThreadReadChangedEvent(threadIds: List<String>, unread: Boolean): String {
-        val json = JSONObject()
-        val jsonPost = JSONObject()
-        jsonPost.put("cmd", Event.Cmd.peerEmailThreadReadStatusUpdate)
-        json.put("threadIds", JSONArray(threadIds))
-        json.put("unread", if(unread) 1 else 0)
-        jsonPost.put("params", json)
-
-        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
-    }
-
-    fun postThreadDeletedPermanentlyEvent(threadIds: List<String>): String {
-        val json = JSONObject()
-        val jsonPost = JSONObject()
-        jsonPost.put("cmd", Event.Cmd.peerThreadDeleted)
-        json.put("threadIds", JSONArray(threadIds))
-        jsonPost.put("params", json)
-
-        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
-    }
-
-    fun postThreadLabelChangedEvent(threadIds: List<String>, labelsRemoved: List<String>,
-                                    labelsAdded: List<String>): String {
-        val json = JSONObject()
-        val jsonPost = JSONObject()
-        jsonPost.put("cmd", Event.Cmd.peerThreadChangedLabels)
-        json.put("threadIds", JSONArray(threadIds))
-        json.put("labelsRemoved", JSONArray(labelsRemoved))
-        json.put("labelsAdded", JSONArray(labelsAdded))
-        jsonPost.put("params", json)
-
-        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
-    }
-
-    fun postEmail(postEmailBody: PostEmailBody): String {
-        return httpClient.post(authToken = token, path = "/email", body = postEmailBody.toJSON())
-    }
-
-    fun acknowledgeEvents(eventIds: List<Long>): String {
+    fun acknowledgeEvents(eventIds: List<Long>): HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("ids", JSONArray(eventIds))
 
         return httpClient.post(authToken = token, path = "/event/ack", body = jsonObject)
     }
 
-    fun postEmailDeleteEvent(metadataKeys: List<Long>): String {
-        val json = JSONObject()
-        val jsonPost = JSONObject()
-        jsonPost.put("cmd", Event.Cmd.peerEmailDeleted)
-        json.put("metadataKeys", metadataKeys.toJSONLongArray())
-        jsonPost.put("params", json)
-
-        return httpClient.post(path = "/event/peers", authToken = token, body = jsonPost)
-    }
-
-    fun getUpdateBannerData(code: Int, language: String): String {
+    fun getUpdateBannerData(code: Int, language: String): HttpResponseData {
         return httpClient.get(path = "/news/$language/$code", authToken = null)
     }
 

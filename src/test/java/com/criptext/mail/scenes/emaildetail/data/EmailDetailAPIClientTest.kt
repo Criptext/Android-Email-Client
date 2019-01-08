@@ -29,7 +29,7 @@ class EmailDetailAPIClientTest {
     fun `should send request to post open events with correct shape`() {
         val bodySlot = CapturingSlot<JSONObject>()
         every {
-            httpClient.post("/event/open", authToken = "__TOKEN__", body = capture(bodySlot))
+            httpClient.post("/event/open", authToken = "__TOKEN__", body = capture(bodySlot)).body
         } returns "Ok"
 
         apiClient.postOpenEvent(metadataKeys = listOf(1L, 3L, 7L))

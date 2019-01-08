@@ -91,7 +91,7 @@ class ResendEmailsWorker(
             finalAttachments.addAll(attachments.filter { it !in attachmentsThatNeedDuplicate })
             val op = Result.of { fileApiClient.duplicateAttachments(attachmentsThatNeedDuplicate.map { it.token }) }
                     .flatMap { Result.of {
-                        val httpReturn = JSONObject(it)
+                        val httpReturn = JSONObject(it.body)
                         for(file in attachmentsThatNeedDuplicate){
                             db.updateFileToken(file.id, httpReturn.getString(file.token))
                             finalAttachments.add(file)
@@ -245,7 +245,7 @@ class ResendEmailsWorker(
                                             activeAccount.recipientId
                                     )),
                             attachments = createCriptextAttachment(currentFullEmail!!.files))
-                    apiClient.postEmail(requestBody)
+                    apiClient.postEmail(requestBody).body
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }
 

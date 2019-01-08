@@ -7,9 +7,7 @@ import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.signin.data.SignInAPIClient
-import com.criptext.mail.scenes.signin.data.SignInResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -31,7 +29,7 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkDataReady>): SignInResult.LinkDataReady? {
         val result = Result.of { apiClient.isLinkDataReady(activeAccount.jwt) }
-                .flatMap { Result.of { Event.fromJSON(it) } }
+                .flatMap { Result.of { Event.fromJSON(it.body) } }
                 .flatMap { Result.of {
                     Pair(Pair(
                             JSONObject(it.params).getString("key"),
@@ -59,9 +57,9 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
         when(ex){
             is ServerErrorException -> {
                 when(ex.errorCode){
-                    ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.no_devices_available)
-                    ServerErrorCodes.TooManyRequests -> UIMessage(resId = R.string.too_many_login_attempts)
-                    ServerErrorCodes.TooManyDevices -> UIMessage(resId = R.string.too_many_devices)
+                    ServerCodes.BadRequest -> UIMessage(resId = R.string.no_devices_available)
+                    ServerCodes.TooManyRequests -> UIMessage(resId = R.string.too_many_login_attempts)
+                    ServerCodes.TooManyDevices -> UIMessage(resId = R.string.too_many_devices)
                     else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }

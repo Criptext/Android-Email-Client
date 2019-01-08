@@ -53,7 +53,7 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
         return Result.of { apiClient.getKeyBundle(deviceId) }
                 .flatMap {
                     Result.of {
-                        val bundleJSON = JSONObject(it)
+                        val bundleJSON = JSONObject(it.body)
                         val downloadedBundle =
                                 PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON)
                         signalClient.createSessionsFromBundles(listOf(downloadedBundle))
@@ -95,7 +95,7 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                 signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey)
             } }
             .flatMap { Result.of {
-                apiClient.postLinkDataReady(deviceId, it.encryptedB64)
+                apiClient.postLinkDataReady(deviceId, it.encryptedB64).body
             } }
 
     private fun newRetryWithNewSessionOperation()

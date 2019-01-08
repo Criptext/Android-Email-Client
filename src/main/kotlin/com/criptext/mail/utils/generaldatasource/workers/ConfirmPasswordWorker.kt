@@ -10,7 +10,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -62,7 +62,7 @@ class ConfirmPasswordWorker(private val password: String,
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.postUnlockDevice(password.sha256())
+        apiClient.postUnlockDevice(password.sha256()).body
     }
 
     private fun newRetryWithNewSessionOperation()
@@ -86,8 +86,8 @@ class ConfirmPasswordWorker(private val password: String,
         when (ex) {
             is ServerErrorException -> {
                 when {
-                    ex.errorCode == ServerErrorCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
-                    ex.errorCode == ServerErrorCodes.TooManyRequests -> {
+                    ex.errorCode == ServerCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
+                    ex.errorCode == ServerCodes.TooManyRequests -> {
                         val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {
                             if(timeLeft.first != 0L)

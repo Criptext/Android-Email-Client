@@ -47,7 +47,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
     fun linkAccept(deviceId: String, notificationId: Int): Int {
         val operation = Result.of {
-            JSONObject(apiClient.postLinkAccept(deviceId)).getInt("deviceId")
+            JSONObject(apiClient.postLinkAccept(deviceId).body).getInt("deviceId")
         }
         return when(operation){
             is Result.Success -> {
@@ -83,7 +83,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
     fun syncAccept(deviceId: String, notificationId: Int): Int {
         val operation = Result.of {
-            JSONObject(apiClient.postSyncAccept(deviceId)).getInt("deviceId")
+            JSONObject(apiClient.postSyncAccept(deviceId).body).getInt("deviceId")
         }
         return when(operation){
             is Result.Success -> {

@@ -57,7 +57,8 @@ class ChangeContactNameWorker(
     override fun cancel() {
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of { apiClient.putUsernameChange(fullName)
+    private fun workOperation() : Result<String, Exception> = Result.of {
+        apiClient.putUsernameChange(fullName).body
     }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()

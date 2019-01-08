@@ -1,6 +1,12 @@
 package com.criptext.mail.utils
 
-object ServerErrorCodes{
+object ServerCodes{
+    //Success Codes
+    const val Success = 200
+    const val SuccessAndRepeat = 201
+
+
+    //Error Codes
     const val BadRequest = 400
     const val Unauthorized = 401
     const val Forbidden = 403

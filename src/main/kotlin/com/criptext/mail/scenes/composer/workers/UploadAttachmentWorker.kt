@@ -15,7 +15,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
 import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.ChunkFileReader
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -42,11 +42,11 @@ class UploadAttachmentWorker(private val filesSize: Long,
     override fun catchException(ex: Exception): ComposerResult.UploadFile =
             if(ex is ServerErrorException) {
                 when {
-                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    ex.errorCode == ServerCodes.Unauthorized ->
                         ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                    ex.errorCode == ServerCodes.Forbidden ->
                         ComposerResult.UploadFile.Forbidden()
-                    ex.errorCode == ServerErrorCodes.PayloadTooLarge ->
+                    ex.errorCode == ServerCodes.PayloadTooLarge ->
                         ComposerResult.UploadFile.PayloadTooLarge(filepath, ex.headers!!)
                     else -> ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
                 }
@@ -90,7 +90,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
             val totalChunks = (fileSize / chunkSize).toInt() + 1
 
             fileServiceAPIClient.registerFile(fileName = file.name,
-                    chunkSize = chunkSize, fileSize = fileSize.toInt(), totalChunks = totalChunks)
+                    chunkSize = chunkSize, fileSize = fileSize.toInt(), totalChunks = totalChunks).body
         }
 
     override fun work(reporter: ProgressReporter<ComposerResult.UploadFile>)
