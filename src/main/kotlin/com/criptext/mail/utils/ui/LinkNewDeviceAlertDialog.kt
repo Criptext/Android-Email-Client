@@ -10,9 +10,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.uiobserver.UIObserver
 
@@ -20,7 +19,7 @@ class LinkNewDeviceAlertDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLinkDeviceAuthDialog(observer: UIObserver?, untrustedDeviceInfo: UntrustedDeviceInfo) {
+    fun showLinkDeviceAuthDialog(observer: UIObserver?, untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.link_device_auth_dialog, null)
@@ -33,7 +32,7 @@ class LinkNewDeviceAlertDialog(val context: Context) {
 
     private fun createDialog(observer: UIObserver?, dialogView: View,
                              dialogBuilder: AlertDialog.Builder,
-                             untrustedDeviceInfo: UntrustedDeviceInfo)
+                             untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
             : AlertDialog? {
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLinkDeviceAuthDialog = dialogBuilder.create()
@@ -70,7 +69,7 @@ class LinkNewDeviceAlertDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(observer: UIObserver?, view: View,
-                                   dialog: AlertDialog, untrustedDeviceInfo: UntrustedDeviceInfo) {
+                                   dialog: AlertDialog, untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 
         val btnOk = view.findViewById(R.id.link_auth_yes) as Button
 

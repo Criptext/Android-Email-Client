@@ -2,10 +2,7 @@ package com.criptext.mail.websocket
 
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
-import com.criptext.mail.api.models.Event
-import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import org.json.JSONObject
@@ -46,7 +43,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
             Event.Cmd.deviceRemoved -> currentListener?.onDeviceRemoved()
             Event.Cmd.deviceLock -> currentListener?.onDeviceLocked()
             Event.Cmd.deviceAuthRequest -> {
-                val untrustedDevice = UntrustedDeviceInfo.fromJSON(event.params)
+                val untrustedDevice = DeviceInfo.UntrustedDeviceInfo.fromJSON(event.params)
                 currentListener?.onDeviceLinkAuthRequest(untrustedDevice)
             }
             Event.Cmd.deviceKeyBundleUploaded ->{
@@ -67,7 +64,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
                 currentListener?.onSyncRequestDeny()
             }
             Event.Cmd.syncBeginRequest -> {
-                val trustedDeviceInfo = TrustedDeviceInfo.fromJSON(event.params)
+                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo.fromJSON(event.params)
                 currentListener?.onSyncBeginRequest(trustedDeviceInfo)
             }
 

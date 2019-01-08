@@ -11,9 +11,8 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -87,8 +86,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
             is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
-            is MailboxResult.GetPendingLinkRequest -> dataSourceController.getPendingLinkRequest(result)
-            is MailboxResult.GetPendingSyncRequest -> dataSourceController.getPendingSyncRequest(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
         }
     }
@@ -250,14 +247,14 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.scrollTop()
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                 generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
             else
                 scene.showToastMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
-        override fun onSyncAuthDenied(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
@@ -291,14 +288,14 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                 generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
             else
                 scene.showMessage(UIMessage(R.string.sync_version_incorrect))
         }
 
-        override fun onLinkAuthDenied(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
@@ -448,7 +445,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
                 LinkDeviceActionService.APPROVE -> {
                     val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
-                    val untrustedDeviceInfo = UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
+                    val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
                             "", "", extrasDevice.deviceType, extrasDevice.syncFileVersion)
                     if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                         generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
@@ -457,7 +454,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
                 SyncDeviceActionService.APPROVE -> {
                     val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
-                    val trustedDeviceInfo = TrustedDeviceInfo(extrasDevice.deviceId, extrasDevice.deviceName,
+                    val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.deviceId, extrasDevice.deviceName,
                             extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
                     if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                         generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
@@ -698,24 +695,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        fun getPendingLinkRequest(resultData: MailboxResult.GetPendingLinkRequest) {
-            when (resultData) {
-                is MailboxResult.GetPendingLinkRequest.Success ->
-                {
-                    scene.showLinkDeviceAuthConfirmation(resultData.deviceInfo)
-                }
-            }
-        }
-
-        fun getPendingSyncRequest(resultData: MailboxResult.GetPendingSyncRequest) {
-            when (resultData) {
-                is MailboxResult.GetPendingSyncRequest.Success ->
-                {
-                    scene.showSyncDeviceAuthConfirmation(resultData.deviceInfo)
-                }
-            }
-        }
-
         fun onResendPeerEvents(resultData: MailboxResult.ResendPeerEvents){
             when(resultData){
                 is MailboxResult.ResendPeerEvents.Success -> {
@@ -925,6 +904,16 @@ class MailboxSceneController(private val scene: MailboxScene,
         if(resultData.updateBannerData != null){
             scene.showUpdateBanner(resultData.updateBannerData)
         }
+        if(resultData.syncEventsList.isNotEmpty()){
+            resultData.syncEventsList.forEach {
+                when(it){
+                    is DeviceInfo.TrustedDeviceInfo ->
+                        scene.showSyncDeviceAuthConfirmation(it)
+                    is DeviceInfo.UntrustedDeviceInfo ->
+                        scene.showLinkDeviceAuthConfirmation(it)
+                }
+            }
+        }
     }
 
     private fun handleFailedMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Failure) {
@@ -978,13 +967,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         when (resultData) {
             is GeneralResult.UpdateMailbox.Success -> {
                 handleSuccessfulMailboxUpdate(resultData)
-                dataSource.submitRequest(MailboxRequest.GetPendingLinkRequest())
-                dataSource.submitRequest(MailboxRequest.GetPendingSyncRequest())
             }
             is GeneralResult.UpdateMailbox.Failure -> {
                 handleFailedMailboxUpdate(resultData)
-                dataSource.submitRequest(MailboxRequest.GetPendingLinkRequest())
-                dataSource.submitRequest(MailboxRequest.GetPendingSyncRequest())
             }
             is GeneralResult.UpdateMailbox.Unauthorized ->
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
@@ -1016,7 +1001,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
-        override fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
             })
@@ -1046,7 +1031,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         }
 
-        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
             })

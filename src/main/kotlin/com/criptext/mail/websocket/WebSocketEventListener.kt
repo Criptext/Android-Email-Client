@@ -46,7 +46,7 @@ interface WebSocketEventListener {
      * Invoked when the recovery email has been confirmed. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
-    fun onDeviceLinkAuthRequest(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
 
     /**
      * Invoked when the recovery email has been confirmed. Subscribers should try to
@@ -75,7 +75,7 @@ interface WebSocketEventListener {
     /**
      * Invoked when there is a manual mailbox sync request.
      */
-    fun onSyncBeginRequest(trustedDeviceInfo: TrustedDeviceInfo)
+    fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
 
     /**
      * Invoked when the recovery email has been confirmed. Subscribers should try to

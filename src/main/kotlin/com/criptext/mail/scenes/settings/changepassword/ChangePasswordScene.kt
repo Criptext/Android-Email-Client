@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
@@ -32,7 +32,7 @@ interface ChangePasswordScene{
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
 
     class Default(val view: View): ChangePasswordScene{
         private lateinit var changePasswordUIObserver: ChangePasswordUIObserver
@@ -177,7 +177,7 @@ interface ChangePasswordScene{
             confirmPasswordDialog.showDialog(observer)
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)

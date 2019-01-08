@@ -4,6 +4,7 @@ import android.content.res.Resources
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
@@ -51,7 +52,7 @@ class UpdateMailboxWorker(
         return PushResult.UpdateMailbox.Failure(label, message, ex, pushData, shouldPostNotification)
     }
 
-    private fun processFailure(failure: Result.Failure<Pair<List<EmailPreview>, UpdateBannerData?>,
+    private fun processFailure(failure: Result.Failure<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>,
             Exception>): PushResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
             PushResult.UpdateMailbox.Success(

@@ -1,18 +1,13 @@
 package com.criptext.mail.scenes.emaildetail
 
-import android.app.Activity
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.webkit.WebView
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -22,7 +17,6 @@ import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailRecyclerView
 import com.criptext.mail.scenes.emaildetail.ui.holders.FullEmailHolder
-import com.criptext.mail.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
 import com.criptext.mail.utils.*
@@ -32,8 +26,6 @@ import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SnackBarHelper
 import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 
 /**
  * Created by sebas on 3/12/18.
@@ -64,8 +56,8 @@ interface EmailDetailScene {
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
-    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showStartGuideEmailIsRead(view: View)
     fun showStartGuideMenu(view: View)
     fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String)
@@ -182,14 +174,14 @@ interface EmailDetailScene {
             confirmPassword.showDialog(observer)
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
-        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)

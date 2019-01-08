@@ -1,7 +1,5 @@
 package com.criptext.mail.scenes.mailbox.data
 
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -104,15 +102,5 @@ sealed class MailboxResult {
     sealed class ResendPeerEvents: MailboxResult() {
         data class Success(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class Failure(val queueIsEmpty: Boolean): ResendPeerEvents()
-    }
-
-    sealed class GetPendingLinkRequest: MailboxResult() {
-        data class Success(val deviceInfo: UntrustedDeviceInfo): GetPendingLinkRequest()
-        class Failure: GetPendingLinkRequest()
-    }
-
-    sealed class GetPendingSyncRequest: MailboxResult() {
-        data class Success(val deviceInfo: TrustedDeviceInfo): GetPendingSyncRequest()
-        class Failure: GetPendingSyncRequest()
     }
 }

@@ -117,7 +117,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
                 mailboxThreads = threadsFromUpdate,
                 mailboxLabel = model.selectedLabel,
                 isManual = false,
-                updateBannerData = null))
+                updateBannerData = null,
+                syncEventsList = listOf()))
 
         model.threads.size `should be` 20
         verify { virtualListView.notifyDataSetChanged() }
@@ -135,7 +136,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         // trigger load complete event
         generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
                 mailboxLabel = model.selectedLabel, isManual = false,
-                updateBannerData = null))
+                updateBannerData = null,
+                syncEventsList = listOf()))
 
         model.threads.size `should be` 40
         verify(inverse = true) { virtualListView.notifyDataSetChanged() }
@@ -153,7 +155,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         // trigger load complete event
         generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
                 mailboxLabel = model.selectedLabel, isManual = true,
-                updateBannerData = null))
+                updateBannerData = null,
+                syncEventsList = listOf()))
 
         verify { scene.clearRefreshing() }
     }

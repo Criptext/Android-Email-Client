@@ -3,7 +3,7 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -15,7 +15,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 
-class LinkAuthDenyWorker(private val untrustedDeviceInfo: UntrustedDeviceInfo,
+class LinkAuthDenyWorker(private val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo,
                          private val activeAccount: ActiveAccount,
                          private val httpClient: HttpClient,
                          private val accountDao: AccountDao,

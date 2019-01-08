@@ -7,8 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import com.criptext.mail.R
-import com.criptext.mail.api.models.TrustedDeviceInfo
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
 import com.criptext.mail.scenes.settings.views.DevicesSettingsView
 import com.criptext.mail.scenes.settings.views.GeneralSettingsView
@@ -51,8 +50,8 @@ interface SettingsScene{
     fun setRemoveDeviceError(message: UIMessage)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
     fun removeDeviceDialogDismiss()
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
-    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun setSyncContactsProgressVisisble(isVisible: Boolean)
     fun getLabelLocalizedName(name: String): String
@@ -193,14 +192,14 @@ interface SettingsScene{
             settingRemoveDeviceDialog.toggleLoad(loading)
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
         }
 
-        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: TrustedDeviceInfo) {
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
                 syncAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)

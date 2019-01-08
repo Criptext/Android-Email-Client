@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
-import com.criptext.mail.api.models.UntrustedDeviceInfo
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHolder
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -43,7 +43,7 @@ interface RecoveryEmailScene{
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
-    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -175,7 +175,7 @@ interface RecoveryEmailScene{
             enterPasswordDialog.showDialog(recoveryEmailUIObserver)
         }
 
-        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: UntrustedDeviceInfo) {
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)

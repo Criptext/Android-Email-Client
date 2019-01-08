@@ -52,9 +52,4 @@ sealed class MailboxRequest{
     class ResendEmails: MailboxRequest()
 
     class ResendPeerEvents: MailboxRequest()
-
-    class GetPendingLinkRequest: MailboxRequest()
-
-    class GetPendingSyncRequest: MailboxRequest()
-
 }
