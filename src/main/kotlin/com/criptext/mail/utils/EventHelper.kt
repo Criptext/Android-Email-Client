@@ -37,21 +37,22 @@ class EventHelper(private val db: EventLocalDB,
     private var loadedThreadsCount: Int? = null
     private var updateBannerData: UpdateBannerData? = null
     private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
+    private var shouldCallAgain = false
 
     fun setupForMailbox(label: Label, threadCount: Int?){
         this.label = label
         loadedThreadsCount = threadCount
     }
 
-    val processEvents: (List<Event>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
+    val processEvents: (Pair<List<Event>, Boolean>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
         Result.of {
-            val shouldReload = processTrackingUpdates(events).or(processNewEmails(events))
-                    .or(processThreadReadStatusChanged(events)).or(processUnsendEmailStatusChanged(events))
-                    .or(processPeerUsernameChanged(events)).or(processEmailLabelChanged(events))
-                    .or(processThreadLabelChanged(events)).or(processEmailDeletedPermanently(events))
-                    .or(processThreadDeletedPermanently(events)).or(processLabelCreated(events))
-                    .or(processOnError(events)).or(processEmailReadStatusChanged(events)).or(processUpdateBannerData(events))
-                    .or(processLinkRequestEvents(events)).or(processSyncRequestEvents(events))
+            val shouldReload = processTrackingUpdates(events.first).or(processNewEmails(events.first))
+                    .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
+                    .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
+                    .or(processThreadLabelChanged(events.first)).or(processEmailDeletedPermanently(events.first))
+                    .or(processThreadDeletedPermanently(events.first)).or(processLabelCreated(events.first))
+                    .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
+                    .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first))
             Triple(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
                     updateBannerData, linkDevicesEvents)
         }
@@ -487,8 +488,8 @@ class EventHelper(private val db: EventLocalDB,
         return Result.of {
             UpdateBannerData.fromJSON(newsClient.getUpdateBannerData(
                     metadata.messageCode,
-                    Locale.getDefault().toString().toLowerCase())
-            )
+                    Locale.getDefault().toString().toLowerCase()).body
+            ).copy(version = metadata.version)
         }
     }
 

@@ -16,7 +16,7 @@ import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -54,7 +54,7 @@ class AuthenticateUserWorker(
     }
 
     private fun authenticateUser(): String {
-        val responseString = apiClient.authenticateUser(username, password)
+        val responseString = apiClient.authenticateUser(username, password).body
         keyValueStorage.putString(KeyValueStorage.StringKey.SignInSession, responseString)
         return responseString
     }
@@ -101,7 +101,7 @@ class AuthenticateUserWorker(
             val postKeyBundleStep = Runnable {
                 val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                         jwt = account.jwt)
-                val json = JSONObject(response)
+                val json = JSONObject(response.body)
                 account.jwt = json.getString("token")
                 account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
@@ -147,7 +147,7 @@ class AuthenticateUserWorker(
                     UIMessage(resId = R.string.login_json_error_exception)
             is ServerErrorException ->{
                 when(ex.errorCode){
-                    ServerErrorCodes.TooManyRequests -> {
+                    ServerCodes.TooManyRequests -> {
                         val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {
                             if(timeLeft.first == 0L)
@@ -159,9 +159,9 @@ class AuthenticateUserWorker(
                         }else
                             UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
                     }
-                    ServerErrorCodes.TooManyDevices ->
+                    ServerCodes.TooManyDevices ->
                         UIMessage(R.string.too_many_devices)
-                    ServerErrorCodes.BadRequest ->
+                    ServerCodes.BadRequest ->
                         UIMessage(R.string.password_enter_error)
                     else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)
                 }

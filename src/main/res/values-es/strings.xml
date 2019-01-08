@@ -419,4 +419,6 @@
   <string name="sync_confirmation_dialog_title">Advertencia de Sincronización</string>
   <string name="sync_confirmation_dialog_message">Todos los datos de tu bandeja de correos serán borrados y reemplazados con los datos de tu otro dispositivo. \n\n<b>¿Estás seguro que deseas continuar?</b></string>
   <string name="mailbox_sync_complete">Sincronización de Buzón Completa</string>
+  <string name="update_now_title">¡Actualiza Ahora!</string>
+  <string name="update_now_message"><b>Presiona aquí</b> para actualizar Criptext a su última versión y disfrutar de  sus nuevas características.</string>
 </resources>

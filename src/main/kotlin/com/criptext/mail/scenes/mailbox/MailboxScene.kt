@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.*
 import android.widget.*
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
@@ -86,6 +87,8 @@ interface MailboxScene{
     fun hideEmptyTrashBanner()
     fun showUpdateBanner(bannerData: UpdateBannerData)
     fun hideUpdateBanner()
+    fun setUpdateBannerClick()
+    fun clearUpdateBannerClick()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -338,6 +341,21 @@ interface MailboxScene{
 
         override fun hideUpdateBanner() {
             UIUtils.collapse(updateBanner)
+        }
+
+        override fun setUpdateBannerClick(){
+            val bannerMessage = updateBanner.findViewById<TextView>(R.id.banner_message)
+            bannerMessage.isClickable = true
+            bannerMessage.setOnClickListener {
+                hostActivity.launchExternalActivityForResult(ExternalActivityParams.OpenGooglePlay())
+                hideUpdateBanner()
+            }
+        }
+
+        override fun clearUpdateBannerClick() {
+            val bannerMessage = updateBanner.findViewById<TextView>(R.id.banner_message)
+            bannerMessage.setOnClickListener { }
+            bannerMessage.isClickable = false
         }
 
         override fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {

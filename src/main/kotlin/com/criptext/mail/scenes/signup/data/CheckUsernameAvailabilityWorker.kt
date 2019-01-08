@@ -4,7 +4,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.github.kittinunf.result.Result
 
 /**
@@ -32,7 +32,7 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
             is Result.Success -> SignUpResult.CheckUsernameAvailability.Success(isAvailable = true)
             is Result.Failure -> {
                 val error = result.error
-                if (error is ServerErrorException && error.errorCode == ServerErrorCodes.BadRequest)
+                if (error is ServerErrorException && error.errorCode == ServerCodes.BadRequest)
                     SignUpResult.CheckUsernameAvailability.Success(isAvailable = false)
                 else
                     SignUpResult.CheckUsernameAvailability.Failure()

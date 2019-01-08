@@ -5,7 +5,7 @@ package com.criptext.mail.api
  */
 
 class EmailInsertionAPIClient(private val httpClient: HttpClient, private val token: String) {
-    fun getBodyFromEmail(metadataKey: Long): String {
+    fun getBodyFromEmail(metadataKey: Long): HttpResponseData {
         return httpClient.get("/email/body/$metadataKey", token)
     }
 }

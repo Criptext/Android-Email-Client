@@ -60,7 +60,7 @@ class LinkAuthDenyWorker(private val untrustedDeviceInfo: DeviceInfo.UntrustedDe
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.postLinkDeny(untrustedDeviceInfo.deviceId)
+        apiClient.postLinkDeny(untrustedDeviceInfo.deviceId).body
     }
 
     private fun newRetryWithNewSessionOperation()

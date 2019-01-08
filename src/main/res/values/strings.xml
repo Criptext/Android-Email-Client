@@ -419,4 +419,6 @@
   <string name="sync_confirmation_dialog_title">Sync Warning</string>
   <string name="sync_confirmation_dialog_message">Your entire mailbox data will be erased and replaced with the mailbox data from your other device. \n\n<b>Are you sure you want to continue?</b></string>
   <string name="mailbox_sync_complete">Mailbox Sync Complete</string>
+  <string name="update_now_title">Update Now!</string>
+  <string name="update_now_message"><b>Click here</b> to update Criptext to it\'s latest version and enjoy it\'s new features.</string>
 </resources>

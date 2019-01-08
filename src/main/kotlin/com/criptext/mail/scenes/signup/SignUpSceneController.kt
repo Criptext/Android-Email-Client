@@ -15,7 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
 import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
@@ -251,14 +251,14 @@ class SignUpSceneController(
         {
             is ServerErrorException -> {
                 when(result.exception.errorCode){
-                    ServerErrorCodes.BadRequest -> {
+                    ServerCodes.BadRequest -> {
                         val newState = FormInputState.Error(result.message)
                         model.username = model.username.copy(state = newState)
 
                         scene.setUsernameState(newState)
                         scene.disableCreateAccountButton()
                     }
-                    ServerErrorCodes.TooManyRequests -> {
+                    ServerCodes.TooManyRequests -> {
                         scene.showError(result.message)
                         host.exitToScene(
                                 params = SignInParams(),

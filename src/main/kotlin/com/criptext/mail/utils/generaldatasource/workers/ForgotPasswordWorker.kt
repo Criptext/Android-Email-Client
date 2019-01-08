@@ -5,8 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -31,7 +30,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
         val result = Result.of { apiClient.postForgotPassword(recipientId) }
 
         return when (result) {
-            is Result.Success -> GeneralResult.ResetPassword.Success(JSONObject(result.value).getString("address"))
+            is Result.Success -> GeneralResult.ResetPassword.Success(JSONObject(result.value.body).getString("address"))
             is Result.Failure -> catchException(result.error)
         }
 
@@ -44,7 +43,7 @@ class ForgotPasswordWorker(val httpClient: HttpClient,
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
             is ServerErrorException ->
-                if(ex.errorCode == ServerErrorCodes.BadRequest)
+                if(ex.errorCode == ServerCodes.BadRequest)
                 UIMessage(resId = R.string.forgot_password_error_400)
                 else
                     UIMessage(resId = R.string.forgot_password_error)

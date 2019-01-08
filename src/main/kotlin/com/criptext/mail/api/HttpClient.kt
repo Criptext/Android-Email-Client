@@ -19,14 +19,14 @@ import java.util.concurrent.TimeUnit
  */
 
 interface HttpClient {
-    fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
-    fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String
-    fun post(path: String, authToken: String?, body: JSONObject): String
-    fun put(path: String, authToken: String?, body: JSONObject): String
-    fun get(path: String, authToken: String?): String
-    fun delete(path: String, authToken: String?, body: JSONObject): String
+    fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData
+    fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData
+    fun post(path: String, authToken: String?, body: JSONObject): HttpResponseData
+    fun put(path: String, authToken: String?, body: JSONObject): HttpResponseData
+    fun get(path: String, authToken: String?): HttpResponseData
+    fun delete(path: String, authToken: String?, body: JSONObject): HttpResponseData
     fun getFile(path: String, authToken: String?): ByteArray
-    fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): String
+    fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): HttpResponseData
     fun getFileStream(path: String, authToken: String?, params: Map<String, String>): InputStream
 
     enum class AuthScheme { basic, jwt }
@@ -203,32 +203,32 @@ interface HttpClient {
                     .build()
         }
 
-        override fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String {
+        override fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData {
             val request = postMultipartFormData(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): String {
+        override fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData {
             val request = postMultipartFormData(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun post(path: String, authToken: String?, body: JSONObject): String {
+        override fun post(path: String, authToken: String?, body: JSONObject): HttpResponseData {
             val request = postJSON(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun put(path: String, authToken: String?, body: JSONObject): String {
+        override fun put(path: String, authToken: String?, body: JSONObject): HttpResponseData {
             val request = putJSON(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun get(path: String, authToken: String?): String {
+        override fun get(path: String, authToken: String?): HttpResponseData {
             val request = getUrl(url = baseUrl + path, authToken = authToken)
             return ApiCall.executeRequest(client, request)
         }
 
-        override fun delete(path: String, authToken: String?, body: JSONObject): String {
+        override fun delete(path: String, authToken: String?, body: JSONObject): HttpResponseData {
             val request = deleteJSON(url = baseUrl + path, authToken = authToken, json = body)
             return ApiCall.executeRequest(client, request)
         }
@@ -238,7 +238,7 @@ interface HttpClient {
             return ApiCall.executeFileRequest(client, request)
         }
 
-        override fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): String {
+        override fun postFileStream(path: String, authToken: String?, filePath: String, randomId: String): HttpResponseData {
             val request = postStream(url = baseUrl + path, authToken = authToken,
                     filePath = filePath, randomId = randomId)
             return ApiCall.executeRequest(client, request)

@@ -57,7 +57,7 @@ class ResendLinkWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.putResendLink()}
+    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.putResendLink().body}
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()

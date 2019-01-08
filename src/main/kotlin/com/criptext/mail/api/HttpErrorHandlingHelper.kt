@@ -4,7 +4,7 @@ import android.accounts.NetworkErrorException
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.github.kittinunf.result.Result
 import org.json.JSONObject
 import java.io.IOException
@@ -33,7 +33,7 @@ object HttpErrorHandlingHelper {
                 exception
         }
 
-    private fun isSessionExpiredError(errorCode: Int): Boolean = errorCode == ServerErrorCodes.Unauthorized
+    private fun isSessionExpiredError(errorCode: Int): Boolean = errorCode == ServerCodes.Unauthorized
 
     fun didFailBecauseInvalidSession(operation: Result<*, Exception>): Boolean {
         return if (operation is Result.Failure) {
@@ -53,12 +53,12 @@ object HttpErrorHandlingHelper {
             val accountInDB = accountDao.getLoggedInAccount()
             if(accountInDB != null){
                 if(accountInDB.refreshToken.isEmpty()){
-                    val refreshAndSession = apiClient.getRefreshToken(account.jwt)
+                    val refreshAndSession = apiClient.getRefreshToken(account.jwt).body
                     account.updateUserWithTokensData(storage, refreshAndSession)
                     accountDao.updateJwt(account.recipientId, JSONObject(refreshAndSession).getString("token"))
                     accountDao.updateRefreshToken(account.recipientId, JSONObject(refreshAndSession).getString("refreshToken"))
                 }else{
-                    val sessionToken = apiClient.refreshSession(account.refreshToken)
+                    val sessionToken = apiClient.refreshSession(account.refreshToken).body
                     account.updateUserWithSessionData(storage, sessionToken)
                     accountDao.updateJwt(account.recipientId, sessionToken)
                 }

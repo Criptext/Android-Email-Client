@@ -11,7 +11,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailAPIClient
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
@@ -39,9 +39,9 @@ class ChangeRecoveryEmailWorker(
     override fun catchException(ex: Exception): RecoveryEmailResult.ChangeRecoveryEmail {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerErrorCodes.MethodNotAllowed ->
+                ServerCodes.MethodNotAllowed ->
                     RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.recovery_email_change_fail_same, arrayOf(newEmail)))
-                ServerErrorCodes.BadRequest -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.password_enter_error))
+                ServerCodes.BadRequest -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.password_enter_error))
                 else -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.server_error_exception))
             }
         }else {
@@ -74,7 +74,7 @@ class ChangeRecoveryEmailWorker(
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.putChangerecoveryEmail(newEmail, password.sha256())
+        apiClient.putChangerecoveryEmail(newEmail, password.sha256()).body
     }
     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 

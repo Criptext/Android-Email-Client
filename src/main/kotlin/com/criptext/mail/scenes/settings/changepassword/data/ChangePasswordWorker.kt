@@ -56,9 +56,9 @@ class ChangePasswordWorker(
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.putChangePassword(oldPassword.sha256(), password.sha256())
+        apiClient.putChangePassword(oldPassword.sha256(), password.sha256()).body
     }
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()
             : Result<String, Exception> {

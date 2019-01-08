@@ -33,7 +33,7 @@ class LinkStatusWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkStatus>): SignInResult.LinkStatus? {
-        val result =  Result.of { apiClient.getLinkStatus(jwt) }
+        val result =  Result.of { apiClient.getLinkStatus(jwt).body }
                 .flatMap { Result.of { LinkStatusData.fromJSON(it) } }
 
         return when (result) {

@@ -58,7 +58,7 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.postSyncAccept(trustedDeviceInfo.randomId)
+        apiClient.postSyncAccept(trustedDeviceInfo.randomId).body
     }
 
     private fun newRetryWithNewSessionOperation()

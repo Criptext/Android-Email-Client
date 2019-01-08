@@ -7,7 +7,7 @@ import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.PendingEvent
 import com.criptext.mail.utils.PeerQueue
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 import org.json.JSONObject
@@ -45,11 +45,11 @@ interface PeerEventsApiHandler {
         }
 
         private fun ServerErrorException.isQueueableError(): Boolean{
-            if(errorCode >= ServerErrorCodes.InternalServerError) return true
+            if(errorCode >= ServerCodes.InternalServerError) return true
             when(errorCode){
-                ServerErrorCodes.Unauthorized,
-                ServerErrorCodes.Forbidden,
-                ServerErrorCodes.TooManyRequests -> return true
+                ServerCodes.Unauthorized,
+                ServerCodes.Forbidden,
+                ServerCodes.TooManyRequests -> return true
             }
             return false
         }

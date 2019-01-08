@@ -21,6 +21,18 @@ sealed class PushResult {
             }
         }
 
+        data class SuccessAndRepeat(
+                val mailboxLabel: Label,
+                val mailboxThreads: List<EmailPreview>?,
+                val isManual: Boolean,
+                val pushData: Map<String, String>,
+                val shouldPostNotification: Boolean): UpdateMailbox() {
+
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
         data class Failure(
                 val mailboxLabel: Label,
                 val message: UIMessage,

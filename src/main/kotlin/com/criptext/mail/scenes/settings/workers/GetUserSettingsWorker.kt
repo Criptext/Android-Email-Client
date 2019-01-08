@@ -12,7 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -33,9 +33,9 @@ class GetUserSettingsWorker(
     override fun catchException(ex: Exception): SettingsResult.GetUserSettings {
         return if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerCodes.Unauthorized ->
                     SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                ex.errorCode == ServerErrorCodes.Forbidden ->
+                ex.errorCode == ServerCodes.Forbidden ->
                     SettingsResult.GetUserSettings.Forbidden()
                 else -> SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
             }
@@ -73,7 +73,7 @@ class GetUserSettingsWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.getSettings()}
+    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.getSettings().body}
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()

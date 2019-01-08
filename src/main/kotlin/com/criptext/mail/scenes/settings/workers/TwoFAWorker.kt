@@ -11,7 +11,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -32,7 +32,7 @@ class TwoFAWorker(val httpClient: HttpClient,
     override fun catchException(ex: Exception): SettingsResult.Set2FA {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerErrorCodes.MethodNotAllowed -> SettingsResult.Set2FA.Failure(UIMessage(R.string.message_warning_two_fa), twoFA)
+                ServerCodes.MethodNotAllowed -> SettingsResult.Set2FA.Failure(UIMessage(R.string.message_warning_two_fa), twoFA)
                 else -> SettingsResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
             }
         }else {
@@ -57,7 +57,9 @@ class TwoFAWorker(val httpClient: HttpClient,
         }
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of { apiClient.putTwoFA(twoFA) }
+    private fun workOperation() : Result<String, Exception> = Result.of {
+        apiClient.putTwoFA(twoFA).body
+    }
 
     private fun newRetryWithNewSessionOperation()
             : Result<String, Exception> {

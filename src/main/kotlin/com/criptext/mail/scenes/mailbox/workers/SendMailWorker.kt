@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.mailbox.workers
 
 import android.accounts.NetworkErrorException
-import android.util.Log
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.Hosts
@@ -136,11 +135,11 @@ class SendMailWorker(private val signalClient: SignalClient,
     override fun catchException(ex: Exception): MailboxResult.SendMail {
         return if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerCodes.Unauthorized ->
                     MailboxResult.SendMail.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                ex.errorCode == ServerErrorCodes.Forbidden ->
+                ex.errorCode == ServerCodes.Forbidden ->
                     MailboxResult.SendMail.Forbidden()
-                ex.errorCode == ServerErrorCodes.TooManyRequests ->
+                ex.errorCode == ServerCodes.TooManyRequests ->
                     MailboxResult.SendMail.Failure(UIMessage(R.string.send_limit_reached))
 
                 else -> MailboxResult.SendMail.Failure(createErrorMessage(ex))
@@ -184,7 +183,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             finalAttachments.addAll(attachments.filter { it !in attachmentsThatNeedDuplicate })
             val op = Result.of { fileApiClient.duplicateAttachments(attachmentsThatNeedDuplicate.map { it.filetoken }) }
             if(op is Result.Success){
-                val httpReturn = JSONObject(op.value).getJSONObject("duplicates")
+                val httpReturn = JSONObject(op.value.body).getJSONObject("duplicates")
                 for(file in attachmentsThatNeedDuplicate){
                     db.updateFileToken(file.id, httpReturn.getString(file.filetoken))
                     finalAttachments.add(file)
@@ -209,7 +208,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                             criptextEmails = criptextEmails,
                             guestEmail = guestEmails,
                             attachments = createCriptextAttachment(this.attachments))
-                    apiClient.postEmail(requestBody)
+                    apiClient.postEmail(requestBody).body
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }
 

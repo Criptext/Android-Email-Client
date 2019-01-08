@@ -17,7 +17,7 @@ import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailReques
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -197,7 +197,7 @@ class RecoveryEmailController(
             is RecoveryEmailResult.ChangeRecoveryEmail.Failure -> {
                 if(result.ex is ServerErrorException){
                     when(result.ex.errorCode){
-                        ServerErrorCodes.BadRequest -> {
+                        ServerCodes.BadRequest -> {
                             scene.enterPasswordDialogError(result.message)
                             scene.dialogToggleLoad(false)
                         }

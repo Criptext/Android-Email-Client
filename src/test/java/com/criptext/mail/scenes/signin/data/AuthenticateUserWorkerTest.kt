@@ -68,14 +68,14 @@ class AuthenticateUserWorkerTest {
         jsonObject.put("token", "__JWTOKEN__")
         jsonObject.put("refreshToken", "__REFRESH__")
         every {
-            httpClient.post("/user/auth", null, capture(authRequestSlot))
+            httpClient.post("/user/auth", null, capture(authRequestSlot)).body
         } returns mockedAuthResponse
         every {
-            httpClient.post("/keybundle", "__JWTOKEN__", capture(postKeyBundleRequestSlot))
+            httpClient.post("/keybundle", "__JWTOKEN__", capture(postKeyBundleRequestSlot)).body
         } returns jsonObject.toString()
 
         every {
-            httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
+            httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>()).body
         } returns mockedAuthResponse
 
 
@@ -123,14 +123,14 @@ class AuthenticateUserWorkerTest {
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
                     .toJSON().toString()
         every {
-            httpClient.post("/user/auth", null, any<JSONObject>())
+            httpClient.post("/user/auth", null, any<JSONObject>()).body
         } returns mockedAuthResponse
         every {
             httpClient.post("/keybundle", "__JWTOKEN__", any<JSONObject>())
         } throws SocketTimeoutException()
 
          every {
-             httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>())
+             httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>()).body
          } returns mockedAuthResponse
 
 

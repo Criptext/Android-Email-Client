@@ -14,7 +14,7 @@ import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.peerdata.PeerThreadReadData
 import com.github.kittinunf.result.Result
@@ -44,9 +44,9 @@ class UpdateUnreadStatusWorker(
     override fun catchException(ex: Exception): MailboxResult.UpdateUnreadStatus =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerCodes.Unauthorized ->
                     MailboxResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                ex.errorCode == ServerErrorCodes.Forbidden ->
+                ex.errorCode == ServerCodes.Forbidden ->
                     MailboxResult.UpdateUnreadStatus.Forbidden()
                 else -> MailboxResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))
             }

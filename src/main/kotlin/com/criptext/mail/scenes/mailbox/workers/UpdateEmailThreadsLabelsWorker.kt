@@ -15,7 +15,7 @@ import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.github.kittinunf.result.Result
@@ -48,9 +48,9 @@ class UpdateEmailThreadsLabelsWorker(
     override fun catchException(ex: Exception): MailboxResult.UpdateEmailThreadsLabelsRelations =
             if(ex is ServerErrorException) {
                 when {
-                    ex.errorCode == ServerErrorCodes.Unauthorized ->
+                    ex.errorCode == ServerCodes.Unauthorized ->
                         MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                    ex.errorCode == ServerErrorCodes.Forbidden ->
+                    ex.errorCode == ServerCodes.Forbidden ->
                         MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden()
                     else -> MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
                             message = createErrorMessage(ex),

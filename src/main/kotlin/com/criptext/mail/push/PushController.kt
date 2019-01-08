@@ -136,6 +136,9 @@ class PushController(private val dataSource: PushDataSource, private val host: M
             is PushResult.UpdateMailbox.Success -> {
                 createAndNotifyPush(result.pushData, result.shouldPostNotification, true)
             }
+            is PushResult.UpdateMailbox.SuccessAndRepeat -> {
+                parsePushPayload(result.pushData, result.shouldPostNotification)
+            }
             is PushResult.UpdateMailbox.Failure -> {
                 createAndNotifyPush(result.pushData, result.shouldPostNotification, false)
             }

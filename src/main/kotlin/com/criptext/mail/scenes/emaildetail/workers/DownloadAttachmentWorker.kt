@@ -14,7 +14,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.FileServiceAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
-import com.criptext.mail.utils.ServerErrorCodes
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.AndroidFs
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -48,9 +48,9 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     override fun catchException(ex: Exception): EmailDetailResult.DownloadFile =
         if(ex is ServerErrorException) {
             when {
-                ex.errorCode == ServerErrorCodes.Unauthorized ->
+                ex.errorCode == ServerCodes.Unauthorized ->
                     EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
-                ex.errorCode == ServerErrorCodes.Forbidden ->
+                ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.DownloadFile.Forbidden()
                 else -> EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
             }
@@ -61,7 +61,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
 
     private fun downloadFileMetadata(fileToken: String): Result<String, Exception> =
         Result.of {
-            fileServiceAPIClient.getFileMetadata(fileToken)
+            fileServiceAPIClient.getFileMetadata(fileToken).body
         }
 
     private val getMetaDataFromJSONResponse: (String) -> Result<FileMetadata, Exception> = { stringResponse ->
