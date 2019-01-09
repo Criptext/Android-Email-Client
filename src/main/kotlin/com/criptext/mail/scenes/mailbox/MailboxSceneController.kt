@@ -45,6 +45,7 @@ import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.g00fy2.versioncompare.Version
 
 /**
  * Created by sebas on 1/30/18.
@@ -904,18 +905,56 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
         if(resultData.updateBannerData != null){
-            if(resultData.updateBannerData.version == BuildConfig.VERSION_NAME) {
-                scene.clearUpdateBannerClick()
-                scene.showUpdateBanner(resultData.updateBannerData)
-            }else{
+
+            fun sendUpdateNowBanner(){
                 val newBannerData = UpdateBannerData(
                         title = host.getLocalizedString(UIMessage(R.string.update_now_title)),
                         message = host.getLocalizedString(UIMessage(R.string.update_now_message)),
                         image = resultData.updateBannerData.image,
-                        version = resultData.updateBannerData.version
+                        version = resultData.updateBannerData.version,
+                        operator = resultData.updateBannerData.operator
                 )
                 scene.showUpdateBanner(newBannerData)
                 scene.setUpdateBannerClick()
+            }
+
+            fun sendUpdateBanner(){
+                scene.clearUpdateBannerClick()
+                scene.showUpdateBanner(resultData.updateBannerData)
+            }
+
+            when(resultData.updateBannerData.operator){
+                1 -> {
+                    if(Version(BuildConfig.VERSION_NAME).isLowerThan(resultData.updateBannerData.version)){
+                        sendUpdateBanner()
+                    }
+                }
+                2 -> {
+                    if(Version(BuildConfig.VERSION_NAME).isLowerThan(resultData.updateBannerData.version)
+                    || BuildConfig.VERSION_NAME == resultData.updateBannerData.version){
+                        sendUpdateBanner()
+                    }
+                }
+                3 -> {
+                    if(BuildConfig.VERSION_NAME == resultData.updateBannerData.version){
+                        sendUpdateBanner()
+                    }
+                }
+                4 -> {
+                    if(Version(BuildConfig.VERSION_NAME).isHigherThan(resultData.updateBannerData.version)
+                            || BuildConfig.VERSION_NAME == resultData.updateBannerData.version){
+                        sendUpdateBanner()
+                    }else{
+                        sendUpdateNowBanner()
+                    }
+                }
+                5 -> {
+                    if(Version(BuildConfig.VERSION_NAME).isHigherThan(resultData.updateBannerData.version)){
+                        sendUpdateBanner()
+                    }else{
+                        sendUpdateNowBanner()
+                    }
+                }
             }
         }
         if(resultData.syncEventsList.isNotEmpty()){

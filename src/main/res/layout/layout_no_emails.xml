@@ -10,7 +10,7 @@
         android:id="@+id/envelope_opened"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/envelope_opened"/>
+        android:src="@drawable/inbox_light"/>
 
     <TextView
         android:id="@+id/no_results_label"
@@ -29,6 +29,7 @@
         android:textColor="#9b9b9b"
         android:gravity="center_horizontal"
         android:text="@string/no_mails_subtitle"
+        android:layout_marginBottom="30dp"
         fontPath="fonts/NunitoSans-Italic.ttf"/>
 
 </LinearLayout>
