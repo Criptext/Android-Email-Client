@@ -43,8 +43,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 39
-        versionName "0.15.0"
+        versionCode 40
+        versionName "0.15.1"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -220,6 +220,9 @@ dependencies {
 
     // Tap view target for Start Guide
     implementation 'uk.co.samuelwall:material-tap-target-prompt:2.14.0'
+
+    //SemVer comparator
+    implementation 'com.g00fy2:versioncompare:1.2.8'
 }
 
 

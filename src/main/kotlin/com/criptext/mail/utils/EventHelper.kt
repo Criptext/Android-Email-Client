@@ -489,7 +489,7 @@ class EventHelper(private val db: EventLocalDB,
             UpdateBannerData.fromJSON(newsClient.getUpdateBannerData(
                     metadata.messageCode,
                     Locale.getDefault().toString().toLowerCase()).body
-            ).copy(version = metadata.version)
+            ).copy(version = metadata.version, operator = metadata.operator)
         }
     }
 
