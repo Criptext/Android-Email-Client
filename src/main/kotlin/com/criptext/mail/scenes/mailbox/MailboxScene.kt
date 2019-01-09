@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -96,6 +97,7 @@ interface MailboxScene{
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
     fun showNotification()
+    fun setEmtpyMailboxBackground(label: Label)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -356,6 +358,69 @@ interface MailboxScene{
             val bannerMessage = updateBanner.findViewById<TextView>(R.id.banner_message)
             bannerMessage.setOnClickListener { }
             bannerMessage.isClickable = false
+        }
+
+        override fun setEmtpyMailboxBackground(label: Label) {
+            val image = mailboxView.findViewById<ImageView>(R.id.envelope_opened)
+            val messageTop = mailboxView.findViewById<TextView>(R.id.no_results_label)
+            val messageBottom = mailboxView.findViewById<TextView>(R.id.no_results_label_bottom)
+            if(image != null){
+                when(label){
+                    Label.defaultItems.starred -> {
+                        messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_starred_message_top))
+                        messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_starred_message_bottom))
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.starred_dark)
+                        else
+                            image.setImageResource(R.drawable.starred_light)
+                    }
+                    Label.defaultItems.sent -> {
+                        messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_sent_message_top))
+                        messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_sent_message_bottom))
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.sent_dark)
+                        else
+                            image.setImageResource(R.drawable.sent_light)
+                    }
+                    Label.defaultItems.spam -> {
+                        messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_spam_message_top))
+                        messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_spam_message_bottom))
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.spam_dark)
+                        else
+                            image.setImageResource(R.drawable.spam_light)
+                    }
+                    Label.defaultItems.trash -> {
+                        messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_trash_message_top))
+                        messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_trash_message_bottom))
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.trash_dark)
+                        else
+                            image.setImageResource(R.drawable.trash_light)
+                    }
+                    Label.defaultItems.draft -> {
+                        messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_draft_message_top))
+                        messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_draft_message_bottom))
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.draft_dark)
+                        else
+                            image.setImageResource(R.drawable.draft_light)
+                    }
+                    else -> {
+                        if(label.text == Label.LABEL_ALL_MAIL){
+                            messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_allmail_message_top))
+                            messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_allmail_message_bottom))
+                        }else{
+                            messageTop.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_inbox_message_top))
+                            messageBottom.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_inbox_message_bottom))
+                        }
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                            image.setImageResource(R.drawable.inbox_dark)
+                        else
+                            image.setImageResource(R.drawable.inbox_light)
+                    }
+                }
+            }
         }
 
         override fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>) {

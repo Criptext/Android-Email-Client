@@ -184,6 +184,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.hideDrawer()
             scene.showRefresh()
             model.selectedLabel = label
+            scene.setEmtpyMailboxBackground(Label.defaultItems.inbox)
             reloadMailboxThreads()
         }
 
@@ -215,6 +216,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.ALL_MAIL -> {
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
+                    scene.setEmtpyMailboxBackground(model.selectedLabel)
                     reloadMailboxThreads()
                 }
                 else -> { /* do nothing */ }
@@ -431,6 +433,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model))
         scene.initDrawerLayout()
+        scene.setEmtpyMailboxBackground(model.selectedLabel)
 
         val extras = host.getIntentExtras()
 
@@ -750,6 +753,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
                 }
             }
+            scene.setEmtpyMailboxBackground(model.selectedLabel)
         }
 
         fun onUpdatedLabels(result: MailboxResult.UpdateEmailThreadsLabelsRelations) {
@@ -998,6 +1002,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showConfirmPasswordDialog(observer)
         }
         dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+        scene.setEmtpyMailboxBackground(model.selectedLabel)
     }
 
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){

@@ -173,7 +173,7 @@ class ResendEmailsWorker(
         val knownAddresses = findKnownAddresses(criptextRecipients)
 
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
-        val bundlesJSONArray = JSONArray(findKeyBundlesResponse)
+        val bundlesJSONArray = JSONArray(findKeyBundlesResponse.body)
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)

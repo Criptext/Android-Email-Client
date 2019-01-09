@@ -11,13 +11,11 @@ import android.widget.TextView
 import android.widget.Toast
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
-import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
 import com.criptext.mail.utils.ui.RetryManualSyncAlertDialogNewDevice
 
 
@@ -49,14 +47,16 @@ interface SyncingScene{
         private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
         private val retrySyncDialog: RetryManualSyncAlertDialogNewDevice = RetryManualSyncAlertDialogNewDevice(context)
-        private val newDevice: ImageView = view.findViewById(R.id.imageViewDevice2)
+        private val oldDevice: ImageView = view.findViewById(R.id.imageViewDevice1)
 
         override fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver) {
             this.syncingUIObserver = syncingUIObserver
             textViewEmail.text = model.email
             when (model.deviceType){
-                DeviceUtils.DeviceType.PC -> newDevice.setImageResource(R.drawable.device_pc)
-                else -> newDevice.setImageResource(R.drawable.device_m)
+                DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
+                DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
+                DeviceUtils.DeviceType.LinuxInstaller -> oldDevice.setImageResource(R.drawable.device_pc)
+                else -> oldDevice.setImageResource(R.drawable.device_m)
             }
             cancelSyncText.setOnClickListener {
                 this.syncingUIObserver?.onCancelSync()
