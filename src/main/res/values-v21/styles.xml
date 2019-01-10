@@ -50,6 +50,9 @@
         <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg</item>
         <item name="criptextAppVersionTextColor">#b9b9b9</item>
         <item name="criptextAttachmentDialogTextColor">#009eff</item>
+        <item name="criptextEmptyFeedImage">@drawable/campanita</item>
+        <item name="criptextEmptySearchImage">@drawable/search_sad</item>
+        <item name="criptextSearchImage">@drawable/search_happy</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -100,6 +103,9 @@
         <item name="criptextAttachmentsXButtonBg">@color/attachment_x_button_bg_dark</item>
         <item name="criptextAppVersionTextColor">#6B6F76</item>
         <item name="criptextAttachmentDialogTextColor">@color/white</item>
+        <item name="criptextEmptyFeedImage">@drawable/belldark</item>
+        <item name="criptextEmptySearchImage">@drawable/search_sad_dark</item>
+        <item name="criptextSearchImage">@drawable/searchdark</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

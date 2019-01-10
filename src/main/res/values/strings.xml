@@ -424,11 +424,11 @@
   <string name="empty_inbox_message_top">Inbox is empty</string>
   <string name="empty_inbox_message_bottom">Relax and enjoy</string>
   <string name="empty_spam_message_top">No Spam Email</string>
-  <string name="empty_spam_message_bottom">That\'s great! Let\'s keep it like that</string>
+  <string name="empty_spam_message_bottom">Let\'s try and keep it that way ;)</string>
   <string name="empty_sent_message_top">No Sent Emails</string>
-  <string name="empty_sent_message_bottom">Let\'s start with some</string>
+  <string name="empty_sent_message_bottom">Send something ;)</string>
   <string name="empty_starred_message_top">No starred emails</string>
-  <string name="empty_starred_message_bottom">Highlight your relevant emails</string>
+  <string name="empty_starred_message_bottom">Nothing\'s highlighted yet</string>
   <string name="empty_trash_message_top">Trash is empty</string>
   <string name="empty_trash_message_bottom">This place is really clean!</string>
   <string name="empty_draft_message_top">No Drafts</string>

@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="78dp"
         android:layout_height="86dp"
-        android:src="@drawable/campanita"/>
+        android:src="?attr/criptextEmptyFeedImage"/>
 
     <TextView
         android:layout_width="wrap_content"

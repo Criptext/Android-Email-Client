@@ -10,7 +10,7 @@
         android:id="@+id/envelope_opened"
         android:layout_width="78dp"
         android:layout_height="77dp"
-        android:src="@drawable/search_happy"/>
+        android:src="?attr/criptextSearchImage"/>
 
     <TextView
         android:id="@+id/no_results_label"

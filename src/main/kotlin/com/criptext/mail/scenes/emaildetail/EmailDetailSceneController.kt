@@ -232,6 +232,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success ->  {
                 model.threadPreview.isStarred = result.selectedLabels.contains(Label.defaultItems.starred)
                 scene.notifyLabelsChanged(result.selectedLabels)
+                if(result.exitAndReload)
+                    host.exitToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.UpdateMailBox(),
+                            forceAnimation = false
+                    )
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_labels))
             }
@@ -655,8 +661,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
 
-    private fun removeCurrentLabelThread() {
+    private fun removeCurrentLabelThread(exitAndReload: Boolean = false) {
         val req = EmailDetailRequest.UpdateEmailThreadsLabelsRelations(
+                exitAndReload = exitAndReload,
                 threadId = model.threadId,
                 selectedLabels = SelectedLabels(),
                 currentLabel = model.currentLabel,
@@ -678,11 +685,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     override fun onOptionsItemSelected(itemId: Int) {
         when(itemId) {
-            R.id.mailbox_archive_selected_messages -> removeCurrentLabelThread()
+            R.id.mailbox_archive_selected_messages -> removeCurrentLabelThread(true)
             R.id.mailbox_delete_selected_messages -> deleteThread()
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
-            R.id.mailbox_not_spam -> removeCurrentLabelThread()
-            R.id.mailbox_not_trash -> removeCurrentLabelThread()
+            R.id.mailbox_not_spam -> removeCurrentLabelThread(true)
+            R.id.mailbox_not_trash -> removeCurrentLabelThread(true)
             R.id.mailbox_spam -> moveEmailThread(Label.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
@@ -738,6 +745,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     fun updateThreadLabelsRelation(selectedLabels: SelectedLabels) {
 
         val req = EmailDetailRequest.UpdateEmailThreadsLabelsRelations(
+                exitAndReload = false,
                 threadId = model.threadId,
                 selectedLabels = selectedLabels,
                 currentLabel = model.currentLabel,
