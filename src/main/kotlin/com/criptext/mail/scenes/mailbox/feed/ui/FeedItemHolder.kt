@@ -1,7 +1,5 @@
 package com.criptext.mail.scenes.mailbox.feed.ui
 
-import android.graphics.Color
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
@@ -143,12 +141,11 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
             swipeView.close(true)
         }
 
-        viewDate.setOnClickListener({
+        viewDate.setOnClickListener {
             swipeView.close(true)
-        })
+        }
 
         containerView.setOnClickListener {
-            containerView.setBackgroundColor(Color.WHITE)
             listener?.onFeedItemClicked(activityFeedItem.email)
         }
 

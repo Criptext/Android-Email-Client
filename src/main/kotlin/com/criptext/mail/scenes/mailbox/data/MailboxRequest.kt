@@ -29,6 +29,7 @@ sealed class MailboxRequest{
 
     data class LoadEmailThreads(
             val label: String,
+            val filterUnread: Boolean,
             val loadParams: LoadParams,
             val userEmail: String
             ): MailboxRequest()

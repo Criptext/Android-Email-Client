@@ -23,4 +23,5 @@ class MailboxSceneModel(var showWelcome: Boolean = false) : SceneModel {
     var isInMultiSelect = false
     var hasReachedEnd = true
     var lastSync = 0L
+    var showOnlyUnread = false
 }

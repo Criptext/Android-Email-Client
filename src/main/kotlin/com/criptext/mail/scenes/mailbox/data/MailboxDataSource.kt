@@ -55,6 +55,7 @@ class MailboxDataSource(
             is MailboxRequest.LoadEmailThreads -> LoadEmailThreadsWorker(
                     db = mailboxLocalDB,
                     loadParams = params.loadParams,
+                    filterUnread = params.filterUnread,
                     labelNames = params.label,
                     userEmail = params.userEmail,
                     publishFn = { result ->

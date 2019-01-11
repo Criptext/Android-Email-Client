@@ -160,6 +160,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         sentRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.trash.text,
                 loadParams = LoadParams.Reset(size = 20),
-                userEmail = "gabriel@${Contact.mainDomain}")
+                userEmail = "gabriel@${Contact.mainDomain}",
+                filterUnread = false)
     }
 }

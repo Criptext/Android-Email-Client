@@ -22,6 +22,7 @@ interface MailboxLocalDB {
     fun createLabelsForEmailInbox(insertedEmailId: Long)
     fun getThreadsFromMailboxLabel(
             userEmail: String,
+            filterUnread: Boolean,
             labelName: String,
             startDate: Date?,
             limit: Int,
@@ -197,7 +198,7 @@ interface MailboxLocalDB {
             return emailThread(email, rejectedLabels, selectedLabel, userEmail)
         }
 
-        override fun getThreadsFromMailboxLabel(userEmail: String, labelName: String,
+        override fun getThreadsFromMailboxLabel(userEmail: String, filterUnread: Boolean, labelName: String,
                                                 startDate: Date?, limit: Int,
                                                 rejectedLabels: List<Label>): List<EmailThread> {
 
@@ -212,7 +213,7 @@ interface MailboxLocalDB {
             }.map {
                 it.id
             }
-            val emails = if(startDate != null)
+            var emails = if(startDate != null)
                 db.emailDao().getEmailThreadsFromMailboxLabel(
                         isTrashOrSpam = (selectedLabel in conditionalLabels),
                         startDate = startDate,
@@ -226,6 +227,8 @@ interface MailboxLocalDB {
                         rejectedLabels = rejectedIdLabels,
                         selectedLabel = selectedLabel,
                         limit = limit )
+
+            emails = if(filterUnread) emails.filter { it.unread } else emails
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->

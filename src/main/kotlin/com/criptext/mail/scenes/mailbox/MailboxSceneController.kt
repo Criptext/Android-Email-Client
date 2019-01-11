@@ -130,6 +130,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun reloadMailboxThreads() {
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
+                filterUnread = model.showOnlyUnread,
                 loadParams = LoadParams.Reset(size = threadsPerPage),
                 userEmail = activeAccount.userEmail)
         dataSource.submitRequest(req)
@@ -139,6 +140,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onApproachingEnd() {
                 val req = MailboxRequest.LoadEmailThreads(
                         label = model.selectedLabel.text,
+                        filterUnread = model.showOnlyUnread,
                         loadParams = LoadParams.NewPage(size = threadsPerPage,
                         startDate = model.threads.lastOrNull()?.timestamp),
                         userEmail = activeAccount.userEmail)
@@ -181,6 +183,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
 
         override fun onCustomLabelClicked(label: Label) {
+            model.showOnlyUnread = false
             scene.clearMenuActiveLabel()
             scene.hideDrawer()
             scene.showRefresh()
@@ -215,6 +218,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.SPAM,
                 NavigationMenuOptions.TRASH,
                 NavigationMenuOptions.ALL_MAIL -> {
+                    model.showOnlyUnread = false
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
                     scene.setEmtpyMailboxBackground(model.selectedLabel)
@@ -330,6 +334,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onOpenComposerButtonClicked() {
+            model.showOnlyUnread = false
             if(model.isInMultiSelect){
                 changeMode(multiSelectON = false, silent = false)
                 threadListController.reRenderAll()
@@ -574,6 +579,16 @@ class MailboxSceneController(private val scene: MailboxScene,
     override fun onOptionsItemSelected(itemId: Int) {
         when (itemId) {
             R.id.mailbox_search -> host.goToScene(SearchParams(), true)
+            R.id.mailbox_filter_unread -> {
+                model.showOnlyUnread = true
+                model.threads.clear()
+                reloadMailboxThreads()
+            }
+            R.id.mailbox_filter_none -> {
+                model.showOnlyUnread = false
+                model.threads.clear()
+                reloadMailboxThreads()
+            }
             R.id.mailbox_archive_selected_messages -> removeCurrentLabelSelectedEmailThreads()
             R.id.mailbox_delete_selected_messages -> deleteSelectedEmailThreads()
             R.id.mailbox_delete_selected_messages_4ever -> deleteSelectedEmailThreads4Ever()
@@ -1131,6 +1146,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         private fun reloadViewAfterSocketEvent(){
             val req = MailboxRequest.LoadEmailThreads(
                     label = model.selectedLabel.text,
+                    filterUnread = model.showOnlyUnread,
                     loadParams = LoadParams.UpdatePage(size = model.threads.size,
                             mostRecentDate = model.threads.firstOrNull()?.timestamp),
                     userEmail = activeAccount.userEmail)
