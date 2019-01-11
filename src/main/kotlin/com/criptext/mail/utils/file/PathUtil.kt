@@ -1,5 +1,7 @@
 package com.criptext.mail.utils.file
 
+import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
@@ -7,7 +9,10 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import java.io.File
+import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
+import droidninja.filepicker.utils.FileUtils
+import java.io.*
 import java.net.URISyntaxException
 
 
@@ -30,7 +35,26 @@ object PathUtil {
                     val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     return Environment.getExternalStorageDirectory().absolutePath + "/" + split[1]
                 }
-                isDownloadsDocument(uri) -> return getDownloadPathFromUri(uri)
+                isDownloadsDocument(uri) -> {
+                    val id = DocumentsContract.getDocumentId(uri)
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        val name = context.contentResolver.query(uri, null, null, null, null)?.use {
+                            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                            it.moveToFirst()
+                            it.getString(nameIndex)
+                        }
+                        val tempFilePath = context.cacheDir.absolutePath + "/" + name
+                        val file = File(tempFilePath)
+                        if(inputStream == null)
+                            return null
+                        writeFile(inputStream, file)
+                        return file.absolutePath
+                    }else {
+                        uri = ContentUris.withAppendedId(
+                                Uri.parse("content://downloads/public_downloads"), id.toLong())
+                    }
+                }
                 isMediaDocument(uri) -> {
                     val docId = DocumentsContract.getDocumentId(uri)
                     val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -89,6 +113,50 @@ object PathUtil {
      */
     private fun isMediaDocument(uri: Uri): Boolean {
         return "com.android.providers.media.documents" == uri.authority
+    }
+
+    fun getDataColumn(context: Context, uri: Uri, selection: String?,
+                      selectionArgs: Array<String>?): String? {
+
+        var cursor: Cursor? = null
+        val column = "_data"
+        val projection = arrayOf(column)
+
+        try {
+            cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
+            if (cursor != null && cursor!!.moveToFirst()) {
+                val index = cursor!!.getColumnIndexOrThrow(column)
+                val path =  cursor!!.getString(index)
+                return path
+            }
+        } finally {
+            if (cursor != null)
+                cursor!!.close()
+        }
+        return null
+    }
+
+    private fun writeFile(`in`: InputStream, file: File) {
+        var out: OutputStream? = null
+        try {
+            out = FileOutputStream(file)
+            val buf = ByteArray(1024)
+            var len: Int = `in`.read(buf)
+            while (len > 0) {
+                out.write(buf, 0, len)
+                len = `in`.read(buf)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                out?.close()
+                `in`.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+        }
     }
 
     private fun getDownloadPathFromUri(uri: Uri): String{

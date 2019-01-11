@@ -28,6 +28,7 @@ class UpdateEmailThreadLabelsWorker(
         activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
+        private val exitAndReload: Boolean,
         private val db: EmailDetailLocalDB,
         private val pendingDao: PendingEventDao,
         private val currentLabel: Label,
@@ -117,7 +118,7 @@ class UpdateEmailThreadLabelsWorker(
                         peerRemovedLabels,
                         peerSelectedLabels).toJSON())
                 val labels = db.getLabelsFromThreadId(threadId)
-                EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, labels)
+                EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, labels, exitAndReload)
             }
             is Result.Failure -> {
                 catchException(result.error)

@@ -71,7 +71,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
                                                         else
                                                             chunk,
                         fileName = file.name,
-                        part = index + 1, fileToken = fileToken)
+                        part = index + 1, fileToken = fileToken).body
             }
             ChunkFileReader.read(file, chunkSize, onNewChunkRead)
         }

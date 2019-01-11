@@ -10,7 +10,7 @@
         android:id="@+id/envelope_opened"
         android:layout_width="78dp"
         android:layout_height="77dp"
-        android:src="@drawable/search_sad"/>
+        android:src="?attr/criptextEmptySearchImage"/>
 
     <TextView
         fontPath="fonts/NunitoSans-Regular.ttf"

@@ -20,6 +20,7 @@ sealed class EmailDetailRequest{
             val emailId: Long, val position: Int): EmailDetailRequest()
 
     data class UpdateEmailThreadsLabelsRelations(
+            val exitAndReload: Boolean,
             val selectedLabels: SelectedLabels,
             val threadId: String,
             val currentLabel: Label,
