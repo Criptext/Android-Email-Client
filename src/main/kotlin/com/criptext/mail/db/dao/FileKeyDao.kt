@@ -15,6 +15,9 @@ interface FileKeyDao {
     @Insert
     fun insertAll(files : List<FileKey>)
 
+    @Query("UPDATE file SET fileKey = :fileKey  WHERE file.emailId = :emailId")
+    fun insertFileKeyForFiles(fileKey: String, emailId: Long)
+
     @Query("SELECT * FROM file_key")
     fun getAll() : List<FileKey>
 
