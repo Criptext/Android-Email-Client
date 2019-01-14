@@ -1,9 +1,10 @@
 package com.criptext.mail.scenes.mailbox.ui
 
 import android.graphics.Color
-import android.support.design.widget.NavigationView
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -25,7 +26,7 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
  */
 
 class DrawerMenuView(navigationView: NavigationView,
-                        private val drawerMenuItemListener: DrawerMenuItemListener
+                     private val drawerMenuItemListener: DrawerMenuItemListener
                      ){
 
     //HEADER

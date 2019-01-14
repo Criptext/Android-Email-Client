@@ -74,7 +74,7 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_input"
             android:layout_width="206dp"
             android:layout_height="wrap_content"
@@ -82,11 +82,9 @@
             android:layout_gravity="top|center_horizontal"
             app:errorEnabled="true"
             app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
-            app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#dcdcdc">
+            app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,9 +93,10 @@
                 android:inputType="textVisiblePassword"
                 android:nextFocusDown="@+id/password_repeat"
                 android:singleLine="true"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
     </RelativeLayout>
 

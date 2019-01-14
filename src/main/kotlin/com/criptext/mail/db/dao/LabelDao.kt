@@ -1,6 +1,6 @@
 package com.criptext.mail.db.dao
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import com.criptext.mail.db.models.Label
 
 /**

@@ -1,8 +1,8 @@
 package com.criptext.mail.db.models
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.ForeignKey.CASCADE
-import android.support.annotation.NonNull
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
+import androidx.annotation.NonNull
 import java.util.*
 
 /**

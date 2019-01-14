@@ -1,8 +1,8 @@
 package com.criptext.mail.scenes.composer.ui
 
 import android.content.Context
-import android.support.design.widget.BottomSheetDialog
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout

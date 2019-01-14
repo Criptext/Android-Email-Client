@@ -3,7 +3,7 @@ package com.criptext.mail.utils
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.scenes.WebViewActivity

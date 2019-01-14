@@ -5,10 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatActivity
 import com.crashlytics.android.Crashlytics
-import com.criptext.mail.R
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity

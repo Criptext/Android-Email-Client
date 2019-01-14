@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.criptext.mail.R
 import com.criptext.mail.utils.getColorFromAttr
@@ -13,7 +13,7 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
 
 class ItemDecorator(private val context: Context,
                     private val totalNewFeeds: Int)
-    :RecyclerView.ItemDecoration(){
+    : RecyclerView.ItemDecoration(){
 
     private val groupSpacing = context.resources.getDimension(R.dimen.indicator_margin_top)
 

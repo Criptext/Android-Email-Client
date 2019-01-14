@@ -1,7 +1,7 @@
 package com.criptext.mail.db.models
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.ForeignKey.CASCADE
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 
 @Entity(tableName = "email_external_session",
         indices = [ (Index("emailId")) ],

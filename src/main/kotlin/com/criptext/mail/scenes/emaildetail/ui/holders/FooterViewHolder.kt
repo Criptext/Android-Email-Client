@@ -1,8 +1,9 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
-import android.support.v7.widget.RecyclerView
+
 import android.view.View
 import android.widget.Button
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 

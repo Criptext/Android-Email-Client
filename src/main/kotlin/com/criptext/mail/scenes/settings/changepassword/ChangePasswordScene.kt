@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.settings.changepassword
 
-import android.support.design.widget.TextInputLayout
-import android.support.v7.widget.AppCompatEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.KeyboardManager
@@ -51,6 +52,10 @@ interface ChangePasswordScene{
             view.findViewById<TextInputLayout>(R.id.password_old_input)
         }
 
+        private val passwordInput: TextInputLayout by lazy {
+            view.findViewById<TextInputLayout>(R.id.password_input)
+        }
+
         private val password: AppCompatEditText by lazy {
             view.findViewById<AppCompatEditText>(R.id.password)
         }
@@ -79,6 +84,8 @@ interface ChangePasswordScene{
 
             changePasswordUIObserver = uiObserver
 
+            setEyeOnInputLayouts()
+
             saveButton.setOnClickListener {
                 changePasswordUIObserver.onChangePasswordButtonPressed()
             }
@@ -95,6 +102,18 @@ interface ChangePasswordScene{
             assignPasswordTextListener()
             assignConfirmPasswordTextChangeListener()
 
+        }
+
+        private fun setEyeOnInputLayouts(){
+            passwordInput.isPasswordVisibilityToggleEnabled = true
+            passwordInput.setPasswordVisibilityToggleTintList(
+                    AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
+            oldPasswordInput.isPasswordVisibilityToggleEnabled = true
+            oldPasswordInput.setPasswordVisibilityToggleTintList(
+                    AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
+            confirmPasswordInput.isPasswordVisibilityToggleEnabled = true
+            confirmPasswordInput.setPasswordVisibilityToggleTintList(
+                    AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
         }
 
         private fun assignOldPasswordTextListener() {

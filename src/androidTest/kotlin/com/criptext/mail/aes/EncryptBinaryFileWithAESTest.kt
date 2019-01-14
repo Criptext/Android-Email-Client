@@ -1,7 +1,7 @@
 package com.criptext.mail.aes
 
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.mocks.MockLinkDeviceFile
 import com.criptext.mail.scenes.emaildetail.data.DownloadAttachmentWorkerTest

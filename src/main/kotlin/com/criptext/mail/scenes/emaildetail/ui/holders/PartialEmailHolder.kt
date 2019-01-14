@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout

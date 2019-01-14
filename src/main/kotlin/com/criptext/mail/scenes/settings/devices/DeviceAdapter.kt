@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.settings.devices
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.criptext.mail.R

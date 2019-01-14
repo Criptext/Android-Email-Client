@@ -1,8 +1,8 @@
 package com.criptext.mail.scenes.emaildetail.ui
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
 import com.criptext.mail.R
@@ -66,7 +66,7 @@ class ReadHistoryPopUp(private val anchorView: View) {
 
 
     class ContactsReadRecyclerView(val recyclerView: RecyclerView,
-                                       contactsToList: List<MockedContact>
+                                   contactsToList: List<MockedContact>
     ) {
 
         val ctx: Context = recyclerView.context

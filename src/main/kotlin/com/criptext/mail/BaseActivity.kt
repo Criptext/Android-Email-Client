@@ -8,13 +8,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.VisibleForTesting
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatDelegate
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.VisibleForTesting
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
@@ -23,7 +23,6 @@ import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.ComposerModel
-import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
@@ -58,7 +57,6 @@ import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
-import com.github.omadahealth.lollipin.lib.managers.LockManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst

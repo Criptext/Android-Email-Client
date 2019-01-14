@@ -2,11 +2,11 @@ package com.criptext.mail.utils.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
@@ -63,6 +64,9 @@ class ConfirmPasswordDialog(val context: Context) {
 
         password = dialogView.findViewById(R.id.input) as AppCompatEditText
         passwordInput = dialogView.findViewById(R.id.input_layout)
+        passwordInput.isPasswordVisibilityToggleEnabled = true
+        passwordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
         passwordSuccessImage = dialogView.findViewById(R.id.success)
         passwordErrorImage = dialogView.findViewById(R.id.error)
 

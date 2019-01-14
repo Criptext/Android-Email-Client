@@ -1,8 +1,8 @@
 package com.criptext.mail.scenes.settings.recovery_email
 
 import android.os.CountDownTimer
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View

@@ -1,19 +1,14 @@
 package com.criptext.mail.scenes.settings.syncing
 
+import android.app.AlertDialog
 import android.content.Context
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
-import com.criptext.mail.scenes.linking.LinkingUIObserver
-import com.criptext.mail.scenes.signin.SignInSceneController
-import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 
 class RetrySyncAlertDialogNewDevice(val context: Context) {

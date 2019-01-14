@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/rootView">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/mailbox_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -61,15 +61,15 @@
 
         </RelativeLayout>
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSearchResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/mailbox_toolbar"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewThreadsResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

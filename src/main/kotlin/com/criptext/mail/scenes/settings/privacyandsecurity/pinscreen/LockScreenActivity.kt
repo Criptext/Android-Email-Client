@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen
 
 import android.content.Intent
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient

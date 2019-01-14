@@ -3,7 +3,7 @@ package com.criptext.mail.utils.ui
 import android.view.View
 import android.view.ViewGroup
 import java.util.ArrayList
-import android.support.v4.view.PagerAdapter
+import androidx.viewpager.widget.PagerAdapter
 
 internal class ViewPagerAdapter : PagerAdapter() {
 

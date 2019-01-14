@@ -1,9 +1,9 @@
 package com.criptext.mail.db.models
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.ForeignKey.CASCADE
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 import java.util.*
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject

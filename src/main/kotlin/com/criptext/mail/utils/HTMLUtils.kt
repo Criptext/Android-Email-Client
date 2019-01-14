@@ -1,7 +1,7 @@
 package com.criptext.mail.utils
 
-import android.support.v7.app.AppCompatDelegate
 import android.text.Html
+import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
