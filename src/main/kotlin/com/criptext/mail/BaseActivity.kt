@@ -164,6 +164,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val itemId = item.itemId
+        if(item.isCheckable){
+            item.isChecked = true
+        }
         controller.onOptionsItemSelected(itemId)
         return true
     }

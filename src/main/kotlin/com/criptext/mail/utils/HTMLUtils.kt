@@ -38,7 +38,7 @@ class HTMLUtils {
         fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String, message: String): String {
             val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val fileUrl = "file:///android_asset/logo.png"
-            val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:8% !important; height:10% !important\"></div> <hr> <div><p><b>${printData.subject}</b></br>1 $message</p></div> <hr>" +
+            val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:120px !important\"></div> <hr> <div><p><b>${printData.subject}</b></br>1 $message</p></div> <hr>" +
                     "<table style=\"width:100%\">\n" +
                     "  <td><b>${printData.fromName}</b> &lt;${printData.fromMail}&gt;</td>\n" +
                     "    <td style=\"text-align:right\">${DateAndTimeUtils.getHoraVerdadera(printData.date.time, at)}</td>\n" +
@@ -54,7 +54,7 @@ class HTMLUtils {
         fun headerForPrintingAll(htmlText: List<String>, printData: List<PrintHeaderInfo>, to: String, at: String, message: String): String {
             val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val fileUrl = "file:///android_asset/logo.png"
-            val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:8% !important; height:10% !important\"></div> <hr> <div><p><b>${printData[0].subject}</b> </br>${printData.size} $message</p></div> <hr>" +
+            val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:120px !important\"></div> <hr> <div><p><b>${printData[0].subject}</b> </br>${printData.size} $message</p></div> <hr>" +
                     "<table style=\"width:100%\">\n" +
                     "  <td><b>${printData[0].fromName}</b> &lt;${printData[0].fromMail}&gt;</td>\n" +
                     "    <td style=\"text-align:right\">${DateAndTimeUtils.getHoraVerdadera(printData[0].date.time, at)}</td>\n" +

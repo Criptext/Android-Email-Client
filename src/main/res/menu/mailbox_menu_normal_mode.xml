@@ -10,6 +10,28 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/mailbox_filter"
+        android:title="Filter"
+        android:icon="@drawable/filter_light"
+        android:layout_height="@dimen/menu_item_icon_size"
+        android:layout_width="@dimen/menu_item_icon_size"
+        app:showAsAction="always" >
+        <menu xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto" >
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/mailbox_filter_unread"
+                    android:title="@string/filter_unread"
+                    app:showAsAction="always" />
+                <item
+                    app:showAsAction="always"
+                    android:id="@+id/mailbox_filter_none"
+                    android:checked="true"
+                    android:title="@string/filter_none"/>
+            </group>
+        </menu>
+    </item>
+    <item
         android:id="@+id/mailbox_bell_container"
         android:title="Notifications"
         app:actionLayout="@layout/view_alertsbadge"

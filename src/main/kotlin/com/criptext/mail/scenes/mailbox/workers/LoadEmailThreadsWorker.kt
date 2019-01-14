@@ -18,6 +18,7 @@ import com.criptext.mail.utils.UIMessage
 class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
         private val loadParams: LoadParams,
+        private val filterUnread: Boolean,
         private val labelNames: String,
         private val userEmail: String,
         override val publishFn: (
@@ -41,13 +42,15 @@ class LoadEmailThreadsWorker(
             startDate = loadParams.startDate,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
             limit = loadParams.size,
-            userEmail = userEmail)
+            userEmail = userEmail,
+            filterUnread = filterUnread)
         is LoadParams.Reset -> db.getThreadsFromMailboxLabel(
             labelName = labelNames,
             startDate = null,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
             limit = loadParams.size,
-            userEmail = userEmail)
+            userEmail = userEmail,
+            filterUnread = filterUnread)
         is LoadParams.UpdatePage -> {
             val newEmails = db.getNewThreadsFromMailboxLabel(
                     labelName = labelNames,
@@ -60,7 +63,8 @@ class LoadEmailThreadsWorker(
                     startDate = null,
                     rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
                     limit = loadParams.size + newEmails.size,
-                    userEmail = userEmail)
+                    userEmail = userEmail,
+                    filterUnread = filterUnread)
         }
     }
 

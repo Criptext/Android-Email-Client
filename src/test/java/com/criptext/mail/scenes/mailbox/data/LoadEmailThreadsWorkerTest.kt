@@ -24,11 +24,11 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         // prepare db mock
         every {
             db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
-                startDate = null, rejectedLabels = any(), userEmail = userEmail)
+                startDate = null, rejectedLabels = any(), userEmail = userEmail, filterUnread = false)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.NewPage(20, null), userEmail = userEmail))
+                loadParams = LoadParams.NewPage(20, null), userEmail = userEmail, filterUnread = false))
 
         runner._work(mockk()) // execute worker
 
@@ -50,12 +50,12 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         every {
             db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
                 startDate = currentThreads.last().timestamp, rejectedLabels = any(),
-                    userEmail = userEmail)
+                    userEmail = userEmail, filterUnread = false)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
                 loadParams = LoadParams.NewPage(20, currentThreads.last().timestamp),
-                userEmail = userEmail))
+                userEmail = userEmail, filterUnread = false))
 
         runner._work(mockk()) // execute worker
 
@@ -74,11 +74,11 @@ class LoadEmailThreadsWorkerTest: MailboxWorkerTest() {
         // prepare db mock
         every {
             db.getThreadsFromMailboxLabel(labelName = selectedFolder, limit = 20,
-                startDate = null, rejectedLabels = any(), userEmail = userEmail)
+                startDate = null, rejectedLabels = any(), userEmail = userEmail, filterUnread = false)
         } returns expectedThreads
 
         dataSource.submitRequest(MailboxRequest.LoadEmailThreads(Label.defaultItems.inbox.text,
-                loadParams = LoadParams.Reset(20), userEmail = userEmail))
+                loadParams = LoadParams.Reset(20), userEmail = userEmail, filterUnread = false))
 
         runner._work(mockk()) // execute worker
 

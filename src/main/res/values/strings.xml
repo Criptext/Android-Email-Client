@@ -419,8 +419,8 @@
   <string name="sync_confirmation_dialog_title">Sync Warning</string>
   <string name="sync_confirmation_dialog_message">Your entire mailbox data will be erased and replaced with the mailbox data from your other device. \n\n<b>Are you sure you want to continue?</b></string>
   <string name="mailbox_sync_complete">Mailbox Sync Complete</string>
-  <string name="update_now_title">Update Now!</string>
-  <string name="update_now_message"><b>Click here</b> to update Criptext to it\'s latest version and enjoy it\'s new features.</string>
+  <string name="update_now_title">Update Available!</string>
+  <string name="update_now_message"><b>Tap here</b> to update Criptext to it\'s latest version and enjoy it\'s new features.</string>
   <string name="empty_inbox_message_top">Inbox is empty</string>
   <string name="empty_inbox_message_bottom">Relax and enjoy</string>
   <string name="empty_spam_message_top">No Spam Email</string>
@@ -435,4 +435,6 @@
   <string name="empty_draft_message_bottom">Nothing to do here</string>
   <string name="empty_allmail_message_top">No Emails</string>
   <string name="empty_allmail_message_bottom">At all!</string>
+  <string name="filter_unread">Show Unread</string>
+  <string name="filter_none">Show All</string>
 </resources>

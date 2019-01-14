@@ -49,7 +49,8 @@ class MailboxControllerLifecycleTest: MailboxControllerTest() {
         secondRequest `should equal` MailboxRequest.LoadEmailThreads(
                 label = Label.defaultItems.inbox.text,
                 loadParams = LoadParams.Reset(size = 20),
-                userEmail = "gabriel@${Contact.mainDomain}"
+                userEmail = "gabriel@${Contact.mainDomain}",
+                filterUnread = false
         )
 
         thirdRequest`should be instance of` MailboxRequest.ResendPeerEvents::class.java
