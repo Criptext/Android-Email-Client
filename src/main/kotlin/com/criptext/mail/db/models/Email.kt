@@ -27,6 +27,12 @@ data class Email(
         @ColumnInfo(name = "threadId")
         var threadId: String,
 
+        @ColumnInfo(name = "fromAddress")
+        var fromAddress: String,
+
+        @ColumnInfo(name = "replyTo")
+        var replyTo: String?,
+
         @ColumnInfo(name = "unread")
         var unread : Boolean,
 
@@ -69,6 +75,8 @@ data class Email(
                         id = json.getLong("id"),
                         messageId = json.getString("messageId"),
                         threadId = json.getString("threadId"),
+                        fromAddress = if(json.has("fromAddress")) json.getString("fromAddress") else "",
+                        replyTo = if(json.has("replyTo")) json.getString("replyTo") else "",
                         unread = json.getBoolean("unread"),
                         secure = json.getBoolean("secure"),
                         content = json.getString("content"),

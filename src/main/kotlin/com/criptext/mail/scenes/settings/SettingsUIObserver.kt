@@ -12,6 +12,7 @@ interface SettingsUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onSignatureOptionClicked()
     fun onProfileNameClicked()
+    fun onReplyToChangeClicked()
     fun onPrivacyPoliciesClicked()
     fun onTermsOfServiceClicked()
     fun onOpenSourceLibrariesClicked()

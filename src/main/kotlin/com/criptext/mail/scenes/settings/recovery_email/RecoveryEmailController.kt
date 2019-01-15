@@ -108,7 +108,7 @@ class RecoveryEmailController(
             val newRecoveryEmail = if (text.isEmpty()) {
                 TextInput(value = text, state = FormInputState.Unknown())
             } else {
-                val userInput = AccountDataValidator.validateRecoveryEmailAddress(text)
+                val userInput = AccountDataValidator.validateEmailAddress(text)
                 when (userInput) {
                     is FormData.Valid -> {
                         TextInput(value = userInput.value,

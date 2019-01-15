@@ -94,7 +94,7 @@ class UpdateMailboxWorker(
                         newData["title"] = dbEvents.getFromContactByEmailId(email.id)[0].name
 
                         if(shouldCallAgain) {
-                            PushResult.UpdateMailbox.Success(
+                            PushResult.UpdateMailbox.SuccessAndRepeat(
                                     mailboxLabel = label,
                                     isManual = true,
                                     mailboxThreads = operationResult.value.first,
@@ -102,7 +102,7 @@ class UpdateMailboxWorker(
                                     shouldPostNotification = shouldPostNotification
                             )
                         }else{
-                            PushResult.UpdateMailbox.SuccessAndRepeat(
+                            PushResult.UpdateMailbox.Success(
                                     mailboxLabel = label,
                                     isManual = true,
                                     mailboxThreads = operationResult.value.first,

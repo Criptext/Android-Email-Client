@@ -28,7 +28,8 @@ class MessagingService : FirebaseMessagingService(){
                 pushController = PushController(
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),
-                                httpClient = HttpClient.Default()),
+                                httpClient = HttpClient.Default(),
+                                activeAccount = account),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
                         activeAccount = account)

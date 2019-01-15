@@ -98,7 +98,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
 
     private fun createResult(): DialogResult {
         return when(data.type){
-            is DialogType.DeleteAccount ->
+            is DialogType.DeleteAccount,
+            is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput(password.text.toString(), data.type)
             is DialogType.ManualSyncConfirmation ->
                 DialogResult.DialogConfirmation(data.type)

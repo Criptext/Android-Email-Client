@@ -94,6 +94,14 @@ class SettingsDataSource(
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.SetReplyToEmail -> ChangeReplyToEmailWorker(
+                    httpClient = httpClient,
+                    storage = storage,
+                    accountDao = settingsLocalDB.accountDao,
+                    activeAccount = activeAccount,
+                    newEmail = params.newEmail,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

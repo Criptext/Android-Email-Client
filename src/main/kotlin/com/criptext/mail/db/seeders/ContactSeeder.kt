@@ -29,18 +29,21 @@ class ContactSeeder {
                 1 -> contact = Contact(
                         id = 0,
                         name = "Daniel Tigse" ,
-                        email = "daniel@criptext.com"
+                        email = "daniel@criptext.com",
+                        isTrusted = true
                         )
 
                 2 -> contact = Contact(
                         id = 1,
                         name = "Sebastian Caceres" ,
-                        email = "ascacere92@gmail.com")
+                        email = "ascacere92@gmail.com",
+                        isTrusted = true)
 
                 3 -> contact = Contact(
                         id = 2,
                         name = "Gabriel Aumala" ,
-                        email = "gabriel@criptext.com")
+                        email = "gabriel@criptext.com",
+                        isTrusted = true)
             }
             return contact
         }

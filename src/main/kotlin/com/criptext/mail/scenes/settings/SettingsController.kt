@@ -78,6 +78,7 @@ class SettingsController(
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.Set2FA -> onSet2FA(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
+            is SettingsResult.SetReplyToEmail -> onReplyEmailChanged(result)
         }
     }
 
@@ -128,7 +129,7 @@ class SettingsController(
         }
 
         override fun onDeleteAccountClicked() {
-            scene.showGeneralDialogWithInput(DialogData.DialogMessageData(
+            scene.showGeneralDialogWithInputPassword(DialogData.DialogMessageData(
                     title = UIMessage(R.string.delete_account_dialog_title),
                     message = listOf(UIMessage(R.string.delete_account_dialog_message)),
                     type = DialogType.DeleteAccount()
@@ -142,6 +143,10 @@ class SettingsController(
                         is DialogType.DeleteAccount -> {
                             scene.toggleGeneralDialogLoad(true)
                             generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
+                        }
+                        is DialogType.ReplyToChange -> {
+                            scene.toggleGeneralDialogWithInputLoad(true)
+                            dataSource.submitRequest(SettingsRequest.SetReplyToEmail(result.textInput))
                         }
                     }
                 }
@@ -218,6 +223,15 @@ class SettingsController(
 
         override fun onProfileNameClicked() {
             scene.showProfileNameDialog(model.fullName)
+        }
+
+        override fun onReplyToChangeClicked() {
+            val data = DialogData.DialogDataForReplyToEmail(
+                    title = UIMessage(R.string.title_change_reply_to),
+                    replyToEmail = model.replyToEmail,
+                    type = DialogType.ReplyToChange()
+            )
+            scene.showGeneralDialogWithInput(model.recoveryEmail, data)
         }
 
         override fun onPrivacyPoliciesClicked() {
@@ -431,6 +445,20 @@ class SettingsController(
         }
     }
 
+    private fun onReplyEmailChanged(result: SettingsResult.SetReplyToEmail){
+        scene.toggleGeneralDialogWithInputLoad(false)
+        scene.dismissReplyToEmailDialog()
+        when(result) {
+            is SettingsResult.SetReplyToEmail.Success -> {
+                model.replyToEmail = result.replyToEmail
+                scene.showMessage(UIMessage(R.string.reply_to_email_has_changed))
+            }
+            is SettingsResult.SetReplyToEmail.Failure -> {
+                scene.showMessage(result.message)
+            }
+        }
+    }
+
     private fun onCreateCustomLabels(result: SettingsResult.CreateCustomLabel){
         when(result) {
             is SettingsResult.CreateCustomLabel.Success -> {
@@ -513,6 +541,7 @@ class SettingsController(
                 model.devices.clear()
                 model.devices.addAll(result.userSettings.devices)
                 model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
+                model.replyToEmail = result.userSettings.replyTo
                 model.recoveryEmail = result.userSettings.recoveryEmail
                 model.hasTwoFA = result.userSettings.hasTwoFA
                 model.hasReadReceipts = result.userSettings.hasReadReceipts

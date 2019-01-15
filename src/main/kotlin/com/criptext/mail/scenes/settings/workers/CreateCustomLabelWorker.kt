@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.utils.ColorUtils
 import com.criptext.mail.utils.peerdata.PeerCreateLabelData
 import com.github.kittinunf.result.Result
+import java.util.*
 
 class CreateCustomLabelWorker(
         private val labelName: String,
@@ -39,12 +40,13 @@ class CreateCustomLabelWorker(
                 text = labelName,
                 color = ColorUtils.colorStringByName(labelName),
                 visible = true,
-                type = LabelTypes.CUSTOM)
+                type = LabelTypes.CUSTOM,
+                uuid = UUID.randomUUID().toString())
         val operation = Result.of { settingsLocalDB.labelDao.insert(label) }
 
         return when(operation){
             is Result.Success -> {
-                peerApiClient.enqueueEvent(PeerCreateLabelData(label.text, label.color).toJSON())
+                peerApiClient.enqueueEvent(PeerCreateLabelData(label.text, label.color, label.uuid).toJSON())
                 SettingsResult.CreateCustomLabel.Success(settingsLocalDB.labelDao.getLabelById(operation.value))
             }
             is Result.Failure -> SettingsResult.CreateCustomLabel.Failure()

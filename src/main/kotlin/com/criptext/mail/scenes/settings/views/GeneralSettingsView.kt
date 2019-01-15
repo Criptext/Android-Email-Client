@@ -21,6 +21,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
     private lateinit var settingsDeleteAccount: View
     private lateinit var settingsChangePassword: View
     private lateinit var settingsRecoveryEmail: View
+    private lateinit var settingsReplyToEmail: View
     private lateinit var settingsRecoveryEmailLoading: View
     private lateinit var settingsSyncPhonebookContacts: View
     private lateinit var settingsSyncMailbox: View
@@ -47,6 +48,7 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         settingsChangePassword = view.findViewById(R.id.settings_change_password)
         settingsPin = view.findViewById(R.id.settings_privacy)
         settingsRecoveryEmail = view.findViewById(R.id.settings_recovery)
+        settingsReplyToEmail = view.findViewById(R.id.settings_change_reply_to)
         settingsSyncPhonebookContacts = view.findViewById(R.id.settings_sync_contacts)
         settingsSyncMailbox = view.findViewById(R.id.settings_sync_mailbox)
         settingsRecoveryEmailLoading = view.findViewById(R.id.settings_recovery_loading)
@@ -154,6 +156,9 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
         settingsSyncMailbox.setOnClickListener {
             settingsUIObserver?.onSyncMailbox()
+        }
+        settingsReplyToEmail.setOnClickListener {
+            settingsUIObserver?.onReplyToChangeClicked()
         }
         setSwitchListener()
     }

@@ -85,7 +85,8 @@ class SaveEmailWorker(
     private fun createMetadataColumns(): EmailMetadata.DBColumns {
         val draftMessageId = createDraftMessageId(account.deviceId)
         val sender = Contact(id = 0, name = account.name,
-                email = "${account.recipientId}@${Contact.mainDomain}")
+                email = "${account.recipientId}@${Contact.mainDomain}",
+                isTrusted = true)
 
         val tempThreadId = System.currentTimeMillis()
 
@@ -102,6 +103,7 @@ class SaveEmailWorker(
                 unread = meAsRecipient,
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
+                replyTo = null,
                 trashDate = DateAndTimeUtils.printDateWithServerFormat(Date()))
     }
 

@@ -105,7 +105,7 @@ class LoadInitialDataWorker(
                     passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
-                    name = "Criptext Support")
+                    name = "Criptext Support", isTrusted = true)
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
@@ -122,7 +122,7 @@ class LoadInitialDataWorker(
                     attachments = null)
         }else{
             val newContact = Contact(id = 0, email = to,
-                    name = EmailAddressUtils.extractName(to))
+                    name = EmailAddressUtils.extractName(to), isTrusted = false)
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
                     body = "", subject = "", passwordForNonCriptextUsers = null, attachments = null,

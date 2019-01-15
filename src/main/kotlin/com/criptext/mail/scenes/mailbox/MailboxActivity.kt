@@ -38,7 +38,7 @@ class MailboxActivity : BaseActivity() {
 
     // Only use this during development
     private fun seedEmails(appDB: AppDatabase) {
-        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi")
+        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true)
         (1..50)
           .forEach {
               val seconds = if (it < 10) "0$it" else it.toString()
@@ -46,7 +46,8 @@ class MailboxActivity : BaseActivity() {
                       fromContact = fromContact, messageId = "gabriel/1/$it",
                       date = "2018-02-21 14:00:$seconds",unsentDate = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                       subject = "Test #$it", unread = true, metadataKey = 1 + 100,
-                      status = DeliveryTypes.NONE, secure = true, trashDate = "2018-02-21 14:00:$seconds")
+                      status = DeliveryTypes.NONE, secure = true, trashDate = "2018-02-21 14:00:$seconds",
+                      replyTo = null)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction({

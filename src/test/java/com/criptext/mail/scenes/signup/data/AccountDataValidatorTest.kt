@@ -50,12 +50,12 @@ class AccountDataValidatorTest {
     @Test
     fun `validateEmailAddress should return valid if receives a valid address`() {
         val address = "somebody@gmail.com"
-        AccountDataValidator.validateRecoveryEmailAddress(address) `should equal` FormData.Valid(address)
+        AccountDataValidator.validateEmailAddress(address) `should equal` FormData.Valid(address)
     }
 
     @Test
     fun `validateEmailAddress should return error if receives angular brackets and spaces`() {
         val address = "Some User <somebody@gmail.com>"
-        AccountDataValidator.validateRecoveryEmailAddress(address) `should be instance of` FormData.Error::class.java
+        AccountDataValidator.validateEmailAddress(address) `should be instance of` FormData.Error::class.java
     }
 }

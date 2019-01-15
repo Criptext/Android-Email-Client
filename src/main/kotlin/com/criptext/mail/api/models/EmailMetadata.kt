@@ -19,6 +19,7 @@ data class EmailMetadata(
         val cc: List<String>,
         val bcc: List<String>,
         val from: String,
+        val replyTo: String?,
         val senderRecipientId: String,
         val senderDeviceId: Int?,
         val fromContact: Contact,
@@ -38,7 +39,7 @@ data class EmailMetadata(
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
                     fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true,
-                    trashDate = null)
+                    trashDate = null, replyTo = replyTo)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -52,7 +53,7 @@ data class EmailMetadata(
             val fromEmail = EmailAddressUtils.extractEmailAddress(from)
             val fromName = EmailAddressUtils.extractName(from)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
-            val fromContact = Contact(id = 0, email = fromEmail, name = fromName)
+            val fromContact = Contact(id = 0, email = fromEmail, name = fromName, isTrusted = false)
             val messageType = emailData.optInt("messageType")
             val senderDeviceId = emailData.optInt("senderDeviceId")
             val files = CRFile.listFromJSON(metadataJsonString)
@@ -65,6 +66,7 @@ data class EmailMetadata(
                     to = getToArray(emailData),
                     cc = getCCArray(emailData),
                     bcc = getBCCArray(emailData),
+                    replyTo = if(emailData.isNull("replyTo")) null else emailData.getString("replyTo"),
                     messageId = emailData.getString("messageId"),
                     metadataKey = emailData.getLong("metadataKey"),
                     date = emailData.getString("date"),
@@ -159,6 +161,7 @@ data class EmailMetadata(
         val unsentDate: String?,
         val threadId: String,
         val fromContact: Contact,
+        val replyTo: String?,
         val subject: String,
         val unread: Boolean,
         val status: DeliveryTypes,

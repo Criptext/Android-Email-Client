@@ -109,6 +109,8 @@ open class EmailDetailControllerTest {
                                 null),
                         delivered = DeliveryTypes.READ,
                         messageId = "key",
+                        replyTo = null,
+                        fromAddress = "Mayer Mizrachi <mayer@jigl.com>",
                         preview = "bodyPreview $it" ,
                         secure = true,
                         subject = "Subject $it",
@@ -136,7 +138,7 @@ open class EmailDetailControllerTest {
                             )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true),
                     fileKey = null)
         }.reversed()
     }

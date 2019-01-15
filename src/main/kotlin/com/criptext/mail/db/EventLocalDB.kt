@@ -76,13 +76,14 @@ class EventLocalDB(private val db: AppDatabase){
                 activeAccount = activeAccount)
     }
 
-    fun updateCreateLabel(text: String, color: String) {
+    fun updateCreateLabel(text: String, color: String, uuid: String) {
         db.labelDao().insert(Label(
                 id = 0,
                 text = text,
                 color = ColorUtils.colorStringByName(color),
                 visible = true,
-                type = LabelTypes.CUSTOM
+                type = LabelTypes.CUSTOM,
+                uuid = uuid
         ))
     }
 

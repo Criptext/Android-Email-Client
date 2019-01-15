@@ -20,7 +20,8 @@ object MailboxTestUtils {
                             content = "this is message #$number", preview = "message #$number",
                             subject = "message #$number", delivered = DeliveryTypes.DELIVERED,
                             date = Date(dateMilis + number), metadataKey = number + 100L,
-                            isMuted = false, unsentDate = Date(dateMilis + number), trashDate = null)
+                            isMuted = false, unsentDate = Date(dateMilis + number), trashDate = null,
+                            fromAddress = "Mayer Mizrachi <mayer@jigl.com>", replyTo = null)
 
     fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
 
@@ -30,9 +31,9 @@ object MailboxTestUtils {
                 .map {
                     val email = createNewEmail(dateMilis, it)
                     val fullEmail = FullEmail(email, labels = listOf(Label.defaultItems.inbox),
-                            to = listOf(Contact(1, "gabriel@criptext.com", "gabriel")),
+                            to = listOf(Contact(1, "gabriel@criptext.com", "gabriel", true)),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
-                            from = Contact(2, "mayer@criptext.com", name = "Mayer"), fileKey = null)
+                            from = Contact(2, "mayer@criptext.com", name = "Mayer", isTrusted = true), fileKey = null)
                     EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0, false)
                 }
     }
