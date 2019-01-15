@@ -522,7 +522,7 @@ class EventHelper(private val db: EventLocalDB,
             db.updateDeleteThreadPermanently(metadata.threadIds)
 
     private fun updateLabelCreatedStatus(metadata: PeerLabelCreatedStatusUpdate) =
-            db.updateCreateLabel(metadata.text, metadata.color)
+            db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid)
 
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =

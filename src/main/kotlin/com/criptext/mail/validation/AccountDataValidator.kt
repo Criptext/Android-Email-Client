@@ -28,7 +28,7 @@ object AccountDataValidator {
             FormData.Valid(sanitizedValue)
     }
 
-    fun validateRecoveryEmailAddress(emailAddress: String): FormData<String> {
+    fun validateEmailAddress(emailAddress: String): FormData<String> {
         val sanitizedValue = emailAddress.trim()
         return if (sanitizedValue.isNotEmpty()
                 && ! validEmailAddressPattern.matcher(emailAddress).matches())

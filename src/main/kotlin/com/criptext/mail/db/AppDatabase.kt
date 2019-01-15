@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
+import android.database.DatabaseUtils
+import android.util.Log
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawPreKeyDao
@@ -30,7 +32,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class],
-        version = 7,
+        version = 8,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -67,7 +69,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "encriptedMail1")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                                MIGRATION_5_6, MIGRATION_6_7)
+                                MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -129,6 +131,40 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_6_7: Migration = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE file ADD COLUMN fileKey TEXT NOT NULL DEFAULT ''""")
+            }
+        }
+
+        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE email ADD COLUMN fromAddress TEXT NOT NULL DEFAULT ''""")
+                database.execSQL("""ALTER TABLE email ADD COLUMN replyTo TEXT DEFAULT NULL""")
+                database.execSQL("""ALTER TABLE contact ADD COLUMN isTrusted INTEGER NOT NULL DEFAULT 0""")
+                database.execSQL("""ALTER TABLE label ADD COLUMN uuid TEXT NOT NULL DEFAULT ''""")
+                for(label in Label.defaultItems.toList()) {
+                    val labelId = label.id.toInt()
+                    database.execSQL("""UPDATE label SET uuid = '${label.uuid}' WHERE id = $labelId""")
+                }
+                val cursorCustomLabels = database.query("""SELECT * FROM label WHERE type = 'CUSTOM'""")
+                while (cursorCustomLabels.moveToNext()){
+                    val randomUUID = UUID.randomUUID()
+                    database.execSQL("""UPDATE label SET uuid = '$randomUUID' WHERE id =
+                        ${cursorCustomLabels.getString(cursorCustomLabels.getColumnIndex("id"))}""")
+                }
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")
+                val cursor = database.query("""SELECT contact.email, contact.name, email.id FROM contact, email
+                    INNER JOIN email_contact
+                    ON contact.id=email_contact.contactId
+                    WHERE email_contact.emailId = email.id
+                    AND email_contact.type = 2""")
+                while(cursor.moveToNext()){
+                    val fromEmail = if(cursor.getString(cursor.getColumnIndex("name")).isEmpty())
+                        cursor.getString(cursor.getColumnIndex("email"))
+                    else
+                        cursor.getString(cursor.getColumnIndex("name")).plus(" <" + cursor.getString(cursor.getColumnIndex("email")) + ">")
+                    database.execSQL("""UPDATE email SET fromAddress = '$fromEmail'
+                    WHERE email.id = ${cursor.getString(cursor.getColumnIndex("id"))}
+                """)
+                }
             }
         }
     }

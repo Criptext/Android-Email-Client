@@ -25,6 +25,9 @@ object EmailInsertionSetup {
         val preview = HTMLUtils.createEmailPreview(decryptedBody)
         return Email(
             id = 0,
+            fromAddress = if(metadata.fromContact.name.isEmpty()) metadata.fromContact.email
+                else metadata.fromContact.name + " <${metadata.fromContact.email}>",
+            replyTo = metadata.replyTo,
             unread = metadata.unread,
             date = DateAndTimeUtils.getDateFromString(
                     metadata.date,
@@ -66,7 +69,7 @@ object EmailInsertionSetup {
 
         val toContacts = mutableListOf<Contact>()
         for (i in 0..(toAddresses.size - 1))
-            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i]))
+            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false))
         val existingContacts = dao.findContactsByEmail(toContacts.toSet().map { it.email })
 
         val contactsMap = HashMap<String, Contact>()
@@ -83,7 +86,8 @@ object EmailInsertionSetup {
             val ids = dao.insertContacts(listOf(senderContact))
             Contact(id = ids.first(),
                     name = EmailAddressUtils.extractName(senderContact.name),
-                    email = EmailAddressUtils.extractEmailAddress(senderContact.email))
+                    email = EmailAddressUtils.extractEmailAddress(senderContact.email),
+                    isTrusted = false)
         } else {
             dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name))
             existingContacts.first()

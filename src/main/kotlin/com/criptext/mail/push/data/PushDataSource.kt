@@ -15,13 +15,13 @@ import com.criptext.mail.signal.SignalStoreCriptext
 class PushDataSource(
         private val httpClient: HttpClient,
         override val runner: WorkRunner,
-        private val db: AppDatabase)
+        private val db: AppDatabase,
+        private val activeAccount: ActiveAccount)
     : BackgroundWorkManager<PushRequest, PushResult>() {
     override fun createWorkerFromParams(
             params: PushRequest,
             flushResults: (PushResult) -> Unit)
             : BackgroundWorker<*> {
-        val activeAccount = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
         return when (params) {
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),

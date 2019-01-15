@@ -219,6 +219,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 NavigationMenuOptions.TRASH,
                 NavigationMenuOptions.ALL_MAIL -> {
                     model.showOnlyUnread = false
+                    host.refreshToolbarItems()
                     scene.showRefresh()
                     model.selectedLabel = navigationMenuOptions.toLabel()!!
                     scene.setEmtpyMailboxBackground(model.selectedLabel)

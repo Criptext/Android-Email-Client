@@ -12,10 +12,13 @@ import org.json.JSONObject
  */
 
 @Entity(tableName = "label",
-        indices = [(Index(value = "text", unique = true))])
+        indices = [(Index(value = "text", unique = true)),(Index(value = "uuid", unique = true))])
 data class Label (
         @PrimaryKey(autoGenerate = true)
         var id: Long,
+
+        @ColumnInfo(name = "uuid")
+        var uuid: String,
 
         @ColumnInfo(name = "color")
         var color: String,
@@ -55,12 +58,14 @@ data class Label (
             val text = json.getString("text")
             val type = json.getString("type")
             val visible = json.getBoolean("visible")
+            val uuid = json.getString("uuid")
             return Label(
                 id =  id,
                 color = color,
                 text = text,
                 type = LabelTypes.valueOf(type.toUpperCase()),
-                visible = visible
+                visible = visible,
+                uuid = uuid
             )
         }
     }
@@ -68,17 +73,17 @@ data class Label (
     class DefaultItems {
 
         val inbox = Label(id = 1, color = "0091ff", text = LABEL_INBOX,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000001")
         val spam = Label(id = 2, color = "f1453d", text = LABEL_SPAM,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000002")
         val sent = Label(id = 3, color = "a0d06e", text = LABEL_SENT,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000003")
         val starred = Label(id = 5, color = "ffe137", text = LABEL_STARRED,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000005")
         val draft = Label(id = 6, color = "626262", text = LABEL_DRAFT,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000006")
         val trash = Label(id = 7, color = "ed63ff", text = LABEL_TRASH,
-                type = LabelTypes.SYSTEM, visible = true)
+                type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000007")
 
         fun toList() = listOf(draft, inbox, sent, trash, starred, spam)
 

@@ -78,7 +78,8 @@ class FeedControllerTest {
             id = 1, isMuted = false, date = Date(), subject = "This is a subject",
             unread = false, threadId = "__THREAD_ID__", content = "Bla",
             delivered = DeliveryTypes.NONE, messageId = "__THREAD_ID__",
-            metadataKey = 1, preview = "__PREVIEW__", secure = false, unsentDate = Date(), trashDate = null)
+            metadataKey = 1, preview = "__PREVIEW__", secure = false, unsentDate = Date(), trashDate = null,
+            replyTo = null, fromAddress = "Mayer Mizrachi <mayer@jigl.com>")
 
     private fun createFeedItems(size: Int): List<ActivityFeedItem> {
         return (1..size).map {
@@ -87,7 +88,7 @@ class FeedControllerTest {
                         contactId = 1, date = Date(), seen = false, location = "", fileId = null),
                     email = testEmail,
                     file = null,
-                    contact = Contact(id = 1, email = "daniel@jigl.com", name = "Daniel"))
+                    contact = Contact(id = 1, email = "daniel@jigl.com", name = "Daniel", isTrusted = true))
 
         }.reversed()
     }

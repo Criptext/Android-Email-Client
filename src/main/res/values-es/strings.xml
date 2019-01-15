@@ -102,6 +102,7 @@
   <string name="hint_custom_dialog">Introduce el nombre</string>
   <string name="title_profile_photo">Foto de Perfil</string>
   <string name="title_change_password">Cambiar Contraseña</string>
+  <string name="title_change_reply_to">Cambiar Dirección de Respuesta</string>
   <string name="title_sync_phonebook">Sincronizar Contactos del Teléfono</string>
     <string name="title_recovery_email">Correo de Recuperación</string>
   <string name="title_signature">Firma</string>
@@ -137,10 +138,12 @@
   <string name="resend_confirmation_dialog_message">Busca el correo de Criptext en tu buzón y haz clic en el enlace para verificar tu nuevo Correo de Recuperación.</string>
   <string name="resend_confirmation_dialog_title">Enlace de confirmación enviado</string>
   <string name="recovery_email_hint">Introduce un nuevo correo de recuperación</string>
+    <string name="reply_to_email_hint">Introduce un nuevo correo de respuesta</string>
     <string name="change_email_title">Nuevo</string>
   <string name="change_email_note"><b>Nota: </b>Cambiar tu correo de recuperación deshabilitará la autenticación de dos factores.</string>
   <string name="button_change_email_confirm">Cambiar Correo</string>
   <string name="recovery_email_has_changed">Correo de confirmación modificado exitosamente</string>
+  <string name="reply_to_email_has_changed">Correo de respuesta modificado exitosamente</string>
   <string name="recovery_email_change_fail_same">Correo de recuperación ya es %1$s</string>
   <string name="two_fa_button">¡Listo!</string>
   <string name="title_warning_two_fa">

@@ -77,7 +77,8 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
 
     private fun createResult(): DialogResult {
         return when(data.type){
-            is DialogType.DeleteAccount ->
+            is DialogType.DeleteAccount,
+            is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput("", data.type)
             is DialogType.ManualSyncConfirmation ->
                 DialogResult.DialogConfirmation(data.type)

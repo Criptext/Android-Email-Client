@@ -19,6 +19,7 @@ class SettingsModel{
     var hasTwoFA: Boolean = false
     var hasReadReceipts: Boolean = false
     var recoveryEmail: String = ""
+    var replyToEmail: String? = null
     var hasChangedTheme: Boolean = false
 
     var isWaitingForSync = false

@@ -26,7 +26,10 @@ open class Contact(
         var email : String,
 
         @ColumnInfo(name = "name")
-        var name : String
+        var name : String,
+
+        @ColumnInfo(name = "isTrusted")
+        var isTrusted : Boolean
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -64,13 +67,18 @@ open class Contact(
             val email = json.getString("email")
             val name = if(json.has("name")) json.getString("name")
                                 else EmailAddressUtils.extractName(email)
+            val isTrusted = if(json.has("isTrusted")) json.getBoolean("isTrusted")
+            else false
+
+
             return Contact(
                     id =  id,
                     email = email,
-                    name = name
+                    name = name,
+                    isTrusted = isTrusted
             )
         }
     }
 
-    class Invalid(email: String, name: String): Contact(0, email, name)
+    class Invalid(email: String, name: String): Contact(0, email, name, false)
 }

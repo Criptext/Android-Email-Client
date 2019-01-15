@@ -31,11 +31,13 @@ interface SettingsScene{
     fun showMessage(message : UIMessage)
     fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
-    fun showGeneralDialogWithInput(dialogData: DialogData.DialogMessageData)
+    fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData)
+    fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail)
     fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
     fun showSyncBeginDialog()
     fun setGeneralDialogWithInputError(message: UIMessage)
     fun toggleGeneralDialogLoad(isLoading: Boolean)
+    fun toggleGeneralDialogWithInputLoad(isLoading: Boolean)
     fun showMessageAndProgressDialog(message: UIMessage)
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun dismissMessageAndProgressDialog()
@@ -58,6 +60,7 @@ interface SettingsScene{
     fun getLabelLocalizedName(name: String): String
     fun enableSyncBeginResendButton()
     fun dismissSyncBeginDialog()
+    fun dismissReplyToEmailDialog()
     fun syncBeginDialogDenied()
 
 
@@ -93,6 +96,7 @@ interface SettingsScene{
         }
 
         private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
+        private var generalDialogWithInput: GeneralDialogWithInput? = null
         private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
         private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
@@ -147,9 +151,14 @@ interface SettingsScene{
             messageAndProgressDialog?.showDialog()
         }
 
-        override fun showGeneralDialogWithInput(dialogData: DialogData.DialogMessageData) {
+        override fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData) {
             generalDialogWithInputPassword = GeneralDialogWithInputPassword(context, dialogData)
             generalDialogWithInputPassword?.showDialog(settingsUIObserver)
+        }
+
+        override fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail) {
+            generalDialogWithInput = GeneralDialogWithInput(context, dialogData)
+            generalDialogWithInput?.showDialog(settingsUIObserver)
         }
 
         override fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData) {
@@ -165,12 +174,20 @@ interface SettingsScene{
             generalDialogWithInputPassword?.toggleLoad(isLoading)
         }
 
+        override fun toggleGeneralDialogWithInputLoad(isLoading: Boolean) {
+            generalDialogWithInput?.toggleLoad(isLoading)
+        }
+
         override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {
             settingRemoveDeviceDialog.showRemoveDeviceDialog(settingsUIObserver, deviceId, position)
         }
 
         override fun dismissMessageAndProgressDialog() {
             messageAndProgressDialog?.dismiss()
+        }
+
+        override fun dismissReplyToEmailDialog() {
+            generalDialogWithInput?.dismiss()
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

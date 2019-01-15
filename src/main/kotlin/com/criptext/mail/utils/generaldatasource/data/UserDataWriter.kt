@@ -85,6 +85,7 @@ class UserDataWriter(private val db: AppDatabase)
                 jsonObject.put("id", contact.id)
                 jsonObject.put("email", contact.email)
                 jsonObject.put("name", contact.name)
+                jsonObject.put("isTrusted", contact.isTrusted)
                 jsonArrayAllContacts.add(jsonObject.toString())
                 tmpFile.appendText("${JSONObject("{table: contact, object: $jsonObject}")}\n")
             }
@@ -113,6 +114,7 @@ class UserDataWriter(private val db: AppDatabase)
                     jsonObject.put("color", label.color)
                     jsonObject.put("text", label.text)
                     jsonObject.put("type", label.type.name.toLowerCase())
+                    jsonObject.put("uuid", label.uuid)
                     jsonObject.put("visible", label.visible)
                     jsonArrayAllLabels.add(jsonObject.toString())
                     tmpFile.appendText("${JSONObject("{table: label, object: $jsonObject}")}\n")
@@ -178,6 +180,7 @@ class UserDataWriter(private val db: AppDatabase)
                 jsonObject.put("secure", mail.secure)
                 jsonObject.put("content", mail.content)
                 jsonObject.put("preview", mail.preview)
+                jsonObject.put("from", mail.fromAddress)
                 jsonObject.put("subject", mail.subject)
                 jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
@@ -285,6 +288,6 @@ class UserDataWriter(private val db: AppDatabase)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 1
+        const val FILE_SYNC_VERSION = 2
     }
 }
