@@ -129,7 +129,9 @@ class FileKeyDataWriter(private val fileKeyDao: FileKeyDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
-        fileKeyDao.insertAll(batch)
+        batch.forEach{
+            it.key?.let { it1 -> fileKeyDao.insertFileKeyForFiles(it1, it.emailId) }
+        }
     }
 }
 
