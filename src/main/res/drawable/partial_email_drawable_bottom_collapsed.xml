@@ -1,0 +1,8 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+   <item android:top="-2dp">
+      <shape android:shape="rectangle" >
+         <solid android:color="?attr/criptextEmailDetailBgColor" />
+         <stroke android:width="1dip" android:color="?attr/criptextEmailDetailBorderColor"/>
+      </shape>
+   </item>
+</layer-list>

@@ -13,8 +13,8 @@
         android:text="@string/title_profile_name"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"/>
 
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:layout_margin="20dp"
+        android:layout_margin="15dp"
         android:textColorHint="@color/signup_hint_color"
         android:hint="@string/reply_to_email_hint"
         app:errorEnabled="true"

@@ -97,4 +97,7 @@
     <color name="attachment_x_button_bg_dark">#454648</color>
     <color name="settings_options_text_dark">#b4b5be</color>
     <color name="settings_headers_text_dark">#6a707e</color>
+    <color name="collapsed_emails_circle_number">#a1a2a3</color>
+    <color name="collapsed_emails_circle_number_dark">#D5D5D5</color>
+    <color name="collapsed_emails_circle_border_dark">#87888F</color>
 </resources>

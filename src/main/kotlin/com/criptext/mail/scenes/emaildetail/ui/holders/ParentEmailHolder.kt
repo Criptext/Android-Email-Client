@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
+import android.graphics.drawable.Drawable
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
@@ -29,4 +30,6 @@ abstract class ParentEmailHolder(val view: View) : RecyclerView.ViewHolder(view)
     abstract fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                               adapter: FullEmailListAdapter, position: Int)
+    abstract fun setBackground(drawable: Drawable)
+    abstract fun setBottomMargin(marginBottom: Int)
 }

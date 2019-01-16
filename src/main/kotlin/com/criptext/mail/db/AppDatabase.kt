@@ -20,6 +20,7 @@ import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.db.typeConverters.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
+import com.criptext.mail.utils.sha256
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.*
 
@@ -146,8 +147,10 @@ abstract class AppDatabase : RoomDatabase() {
                 }
                 val cursorCustomLabels = database.query("""SELECT * FROM label WHERE type = 'CUSTOM'""")
                 while (cursorCustomLabels.moveToNext()){
-                    val randomUUID = UUID.randomUUID()
-                    database.execSQL("""UPDATE label SET uuid = '$randomUUID' WHERE id =
+                    val labelText = cursorCustomLabels.getString(cursorCustomLabels.getColumnIndex("text"))
+                    val shaChars = labelText
+                            .sha256("HEX").subSequence(0,4).toString()
+                    database.execSQL("""UPDATE label SET uuid = '00000000-0000-0000-0000-00000000$shaChars' WHERE id =
                         ${cursorCustomLabels.getString(cursorCustomLabels.getColumnIndex("id"))}""")
                 }
                 database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")

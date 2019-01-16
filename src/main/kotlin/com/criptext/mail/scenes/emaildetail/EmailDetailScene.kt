@@ -38,7 +38,7 @@ interface EmailDetailScene {
     fun attachView(
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
             fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
-            observer: EmailDetailUIObserver)
+            observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean)
     fun showError(message : UIMessage)
     fun showMessage(message : UIMessage, showAction: Boolean = false)
     fun notifyFullEmailListChanged()
@@ -63,6 +63,7 @@ interface EmailDetailScene {
     fun showStartGuideMenu(view: View)
     fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String)
     fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String)
+    fun expandAllThread()
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -94,7 +95,7 @@ interface EmailDetailScene {
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
-                observer: EmailDetailUIObserver){
+                observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean){
 
             this.observer = observer
             val isStarred = EmailThreadValidator.isLabelInList(fullEmailList[0].labels, Label.LABEL_STARRED)
@@ -105,7 +106,8 @@ interface EmailDetailScene {
                     fullEmailList,
                     fileDetailList,
                     getLabelsFromEmails(fullEmailList),
-                    isStarred
+                    isStarred,
+                    shouldOpenExpanded
                     )
 
             fullEmailsRecyclerView?.scrollToLast()
@@ -173,6 +175,10 @@ interface EmailDetailScene {
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
             confirmPassword.showDialog(observer)
+        }
+
+        override fun expandAllThread() {
+            fullEmailsRecyclerView?.expandAndNotify()
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

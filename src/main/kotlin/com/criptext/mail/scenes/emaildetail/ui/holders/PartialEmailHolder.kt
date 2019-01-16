@@ -1,10 +1,12 @@
 package com.criptext.mail.scenes.emaildetail.ui.holders
 
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
+import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.FileDetail
@@ -19,6 +21,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
+
 /**
  * Created by sebas on 3/14/18.
  */
@@ -29,6 +32,16 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     private val check: ImageView
     private val attachment: ImageView
     private val leftImageView: CircleImageView
+
+    override fun setBackground(drawable: Drawable) {
+        rootView.background = drawable
+    }
+
+    override fun setBottomMargin(marginBottom: Int) {
+        val params = view.layoutParams as MarginLayoutParams
+        params.bottomMargin = marginBottom
+        rootView.layoutParams = params
+    }
 
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {

@@ -15,6 +15,8 @@ import android.graphics.drawable.shapes.RoundRectShape;
 
 import java.util.Locale;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 /**
  * @author amulya
  *  datetime 14 Oct 2014, 3:53 PM
@@ -140,8 +142,8 @@ public class TextDrawable extends ShapeDrawable {
         return height;
     }
 
-    public static IShapeBuilder builder() {
-        return new Builder();
+    public static IShapeBuilder builder(int _textColor) {
+        return new Builder(_textColor);
     }
 
     public static class Builder implements IConfigBuilder, IShapeBuilder, IBuilder {
@@ -170,10 +172,10 @@ public class TextDrawable extends ShapeDrawable {
 
         public float radius;
 
-        private Builder() {
+        private Builder(int _textColor) {
             text = "";
             color = Color.GRAY;
-            textColor = Color.WHITE;
+            textColor = _textColor;
             borderThickness = 0;
             width = -1;
             height = -1;

@@ -38,6 +38,8 @@
         <item name="criptextMailItemSquareColorBg">@color/mail_item_square</item>
         <item name="criptextEmailDetailBorderColor">@color/email_detail_border</item>
         <item name="criptextEmailDetailBgColor">@color/email_detail_bg</item>
+        <item name="criptextCollapsedEmailsNumber">@color/collapsed_emails_circle_number</item>
+        <item name="criptextCollapsedEmailsCircleBorder">@color/email_detail_border</item>
         <item name="criptextEmailDetailBgActivityColor">@color/email_detail_activity</item>
         <item name="criptextContactTokenBgColor">@color/contact_token_background</item>
         <item name="criptextContactTokenTextColor">@color/contact_token_text</item>
@@ -92,6 +94,8 @@
         <item name="criptextMailItemSquareColorBg">@color/mail_item_square_dark</item>
         <item name="criptextEmailDetailBorderColor">@color/email_detail_border_dark</item>
         <item name="criptextEmailDetailBgColor">@color/email_detail_bg_dark</item>
+        <item name="criptextCollapsedEmailsNumber">@color/collapsed_emails_circle_number_dark</item>
+        <item name="criptextCollapsedEmailsCircleBorder">@color/collapsed_emails_circle_border_dark</item>
         <item name="criptextEmailDetailBgActivityColor">@color/email_detail_activity_dark</item>
         <item name="criptextContactTokenBgColor">@color/contact_token_background_dark</item>
         <item name="criptextContactTokenTextColor">@color/contact_token_text_dark</item>

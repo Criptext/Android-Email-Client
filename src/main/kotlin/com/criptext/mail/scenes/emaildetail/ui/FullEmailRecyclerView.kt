@@ -18,7 +18,8 @@ class FullEmailRecyclerView(
         val fullEmailList: VirtualList<FullEmail>,
         val fileDetailList: Map<Long, List<FileDetail>>,
         val labels: VirtualList<Label>,
-        val isStarred: Boolean) {
+        val isStarred: Boolean,
+        val shouldOpenExpanded: Boolean) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -27,7 +28,8 @@ class FullEmailRecyclerView(
             fullEmailListener = fullEmailEventListener,
             fileDetails = fileDetailList,
             labels = labels,
-            isStarred = isStarred)
+            isStarred = isStarred,
+            shouldOpenExpanded = shouldOpenExpanded)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -55,6 +57,11 @@ class FullEmailRecyclerView(
 
     fun notifyFullEmailRemoved(position: Int) {
         fullEmailListAdapter.notifyItemRemoved(position)
+    }
+
+    fun expandAndNotify(){
+        fullEmailListAdapter.isExpanded = true
+        fullEmailListAdapter.notifyDataSetChanged()
     }
 
     fun notifyFullEmailChanged(position: Int) {

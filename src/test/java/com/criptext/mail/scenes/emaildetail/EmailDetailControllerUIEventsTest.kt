@@ -30,7 +30,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     override fun setUp() {
         super.setUp()
         every {
-            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot))
+            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot), true)
         } just Runs
 
         listenerSlot = CapturingSlot()
@@ -44,7 +44,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     }
 
     private fun simulateLoadOfEmails(size: Int) {
-        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size)))
+        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size), 2))
     }
 
     @Test

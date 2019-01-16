@@ -20,7 +20,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class LoadFullEmailsFromThreadId: EmailDetailResult() {
-        data class Success(val fullEmailList: List<FullEmail>): LoadFullEmailsFromThreadId()
+        data class Success(val fullEmailList: List<FullEmail>, val unreadEmails: Int): LoadFullEmailsFromThreadId()
         class Failure: LoadFullEmailsFromThreadId()
     }
 

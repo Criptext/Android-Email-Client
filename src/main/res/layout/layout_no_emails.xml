@@ -9,8 +9,7 @@
     <ImageView
         android:id="@+id/envelope_opened"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/inbox_light"/>
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/no_results_label"
@@ -18,8 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textSize="18sp"
-        android:textColor="?attr/criptextPrimaryTextColor"
-        android:text="@string/no_mails"/>
+        android:textColor="?attr/criptextPrimaryTextColor"/>
 
     <TextView
         android:id="@+id/no_results_label_bottom"
@@ -28,7 +26,6 @@
         android:textSize="14sp"
         android:textColor="#9b9b9b"
         android:gravity="center_horizontal"
-        android:text="@string/no_mails_subtitle"
         android:layout_marginBottom="30dp"
         fontPath="fonts/NunitoSans-Italic.ttf"/>
 
