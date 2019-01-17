@@ -7,10 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.api.PeerAPIClient
-import com.criptext.mail.api.PeerEventsApiHandler
+import com.criptext.mail.api.*
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
@@ -26,6 +23,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.PeerQueue
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
 import com.criptext.mail.utils.peerdata.PeerOpenEmailData
@@ -56,8 +54,14 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
             }
             is Result.Failure -> {
                 manager.cancel(notificationId)
+                val exception = operation.error
+                val errorMessage = if(exception is ServerErrorException &&
+                        exception.errorCode == ServerCodes.MethodNotAllowed)
+                    UIMessage(R.string.sync_version_incorrect)
+                else
+                    UIMessage(R.string.push_link_error_message_approve)
                 val data = PushData.Error(UIMessage(R.string.push_link_error_title),
-                        UIMessage(R.string.push_link_error_message_approve), isPostNougat, true)
+                        errorMessage, isPostNougat, true)
                 val errorNot = not.createNotification(CriptextNotification.ERROR_ID,
                         null, data)
                 notifyPushEvent(data = data, cn = not, notification = errorNot)

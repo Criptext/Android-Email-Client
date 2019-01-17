@@ -23,6 +23,7 @@ import java.io.FileOutputStream
 
 
 class DataFileCreationWorker(
+        private val filesDir: File,
         private val db: AppDatabase,
         override val publishFn: (
                 GeneralResult.DataFileCreation) -> Unit)
@@ -62,7 +63,7 @@ class DataFileCreationWorker(
 
     override fun work(reporter: ProgressReporter<GeneralResult.DataFileCreation>)
             : GeneralResult.DataFileCreation? {
-        val dataWriter = UserDataWriter(db)
+        val dataWriter = UserDataWriter(db, filesDir)
         reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 40))
         val getFileResult = dataWriter.createFile()
         return if(getFileResult != null){

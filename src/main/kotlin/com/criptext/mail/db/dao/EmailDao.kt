@@ -40,6 +40,10 @@ import java.util.*
     fun getAllEmailsByMetadataKey(metadataKeys: List<Long>) : List<Email>
 
     @Query("""SELECT * FROM email
+                WHERE threadId=:threadId""")
+    fun getAllEmailsByThreadId(threadId: String) : List<Email>
+
+    @Query("""SELECT * FROM email
                 WHERE metadataKey in (:metadataKeys)
                 AND delivered=3""")
     fun getAllEmailsToOpenByMetadataKey(metadataKeys: List<Long>) : List<Email>

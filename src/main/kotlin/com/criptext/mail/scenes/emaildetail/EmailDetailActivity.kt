@@ -33,7 +33,7 @@ class  EmailDetailActivity: BaseActivity() {
         val appDB = AppDatabase.getAppDatabase(this.applicationContext)
         val filesHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val db: EmailDetailLocalDB.Default =
-                EmailDetailLocalDB.Default(appDB)
+                EmailDetailLocalDB.Default(appDB, this.filesDir)
         val emailDetailModel = receivedModel as EmailDetailSceneModel
         val httpClient = HttpClient.Default()
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
@@ -47,12 +47,13 @@ class  EmailDetailActivity: BaseActivity() {
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
-                httpClient = httpClient
+                httpClient = httpClient,
+                filesDir = this.filesDir
         )
 
         return  EmailDetailSceneController(

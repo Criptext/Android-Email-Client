@@ -30,6 +30,7 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
 
 
 /**
@@ -40,6 +41,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      private val rawIdentityKeyDao: RawIdentityKeyDao,
                      private val db: MailboxLocalDB,
+                     private val filesDir: File,
                      private val httpClient: HttpClient,
                      private val activeAccount: ActiveAccount,
                      private val emailId: Long,
@@ -215,12 +217,25 @@ class SendMailWorker(private val signalClient: SignalClient,
     private val updateSentMailInDB: (String) -> Result<Unit, Exception> =
             { response ->
                Result.of {
+                   val email = db.getEmailById(emailId)
+                   val emailContent = EmailUtils.getEmailContentFromFileSystem(
+                           filesDir = filesDir,
+                           metadataKey = email!!.metadataKey,
+                           recipientId = activeAccount.recipientId,
+                           dbContent = email.content
+                   )
                    val sentMailData = SentMailData.fromJSON(JSONObject(response))
                    db.updateEmailAndAddLabel(id = emailId, threadId = sentMailData.threadId,
                        messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                        status = getDeliveryType(),
                        date = DateAndTimeUtils.getDateFromString(sentMailData.date, null)
                    )
+
+                   EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent,
+                           recipientId = activeAccount.recipientId, metadataKey = sentMailData.metadataKey)
+
+                   EmailUtils.deleteEmailInFileSystem(filesDir = filesDir,
+                           metadataKey = email.metadataKey, recipientId = activeAccount.recipientId)
                }
             }
 

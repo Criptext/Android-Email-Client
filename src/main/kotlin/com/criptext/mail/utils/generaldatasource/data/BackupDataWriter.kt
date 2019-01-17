@@ -2,6 +2,8 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
+import com.criptext.mail.utils.EmailUtils
+import java.io.File
 
 abstract class BackupDataWriter<T>(private val batchSize: Int) : Flushable {
 
@@ -59,7 +61,9 @@ class LabelDataWriter(private val labelDao: LabelDao,
 }
 
 class EmailDataWriter(private val emailDao: EmailDao,
-                      private val dependencies: List<Flushable> = listOf()):
+                      private val dependencies: List<Flushable> = listOf(),
+                      private val activeRecipientId: String,
+                      private val filesDir: File):
         BackupDataWriter<Email>(UserDataWriter.EMAIL_BATCH_SIZE){
     override fun deserialize(item: String): Email {
         return Email.fromJSON(item)
@@ -69,7 +73,17 @@ class EmailDataWriter(private val emailDao: EmailDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
-        emailDao.insertAll(batch)
+        insertAllEmails(batch)
+    }
+
+    private fun insertAllEmails(batch: List<Email>){
+        batch.forEach {
+            EmailUtils.saveEmailInFileSystem(filesDir, activeRecipientId, it.metadataKey, it.content)
+        }
+
+        val emails = batch.map { it.copy(content = "") }
+
+        emailDao.insertAll(emails)
     }
 }
 

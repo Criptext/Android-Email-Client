@@ -29,7 +29,8 @@ class MessagingService : FirebaseMessagingService(){
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),
                                 httpClient = HttpClient.Default(),
-                                activeAccount = account),
+                                activeAccount = account,
+                                filesDir = this.filesDir),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
                         activeAccount = account)

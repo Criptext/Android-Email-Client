@@ -9,12 +9,14 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.workers.*
+import java.io.File
 
 /**
  * Created by gabriel on 2/26/18.
  */
 
 class ComposerDataSource(
+        private val filesDir: File,
         private val httpClient: HttpClient,
         private val composerLocalDB: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
@@ -34,7 +36,7 @@ class ComposerDataSource(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
                     account = activeAccount, dao = emailInsertionDao,
-
+                    filesDir = filesDir,
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
                     originalId = params.originalId)

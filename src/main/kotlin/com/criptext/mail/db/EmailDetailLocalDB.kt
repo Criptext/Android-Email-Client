@@ -5,6 +5,8 @@ import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.EmailUtils
+import java.io.File
 import java.util.*
 
 /**
@@ -27,17 +29,23 @@ interface EmailDetailLocalDB {
     fun getCustomLabels(): List<Label>
     fun setTrashDate(emailIds: List<Long>)
 
-    class Default(private val db: AppDatabase): EmailDetailLocalDB {
+    class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
         override fun setTrashDate(emailIds: List<Long>) {
             db.emailDao().updateEmailTrashDate(Date(), emailIds)
         }
 
         override fun unsendEmail(emailId: Long): Date {
             val date = Date()
+            val metadataKey = db.emailDao().findEmailById(emailId)!!.metadataKey
             db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND)
             db.emailDao().unsendEmailById(emailId, "", "",
                     date)
             db.fileDao().changeFileStatusByEmailid(emailId, 0)
+            EmailUtils.deleteEmailInFileSystem(
+                    filesDir = filesDir,
+                    recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                    metadataKey = metadataKey
+            )
             return date
         }
 
@@ -58,7 +66,11 @@ interface EmailDetailLocalDB {
                 val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
 
                 FullEmail(
-                        email = it,
+                        email = it.copy(
+                                content = EmailUtils.getEmailContentFromFileSystem(filesDir,
+                                        it.metadataKey, it.content,
+                                        db.accountDao().getLoggedInAccount()!!.recipientId)
+                        ),
                         bcc = contactsBCC,
                         cc = contactsCC,
                         from = db.contactDao().getContact(
@@ -99,6 +111,12 @@ interface EmailDetailLocalDB {
         }
 
         override fun deleteThread(threadId: String) {
+            db.emailDao().getAllEmailsByThreadId(threadId).forEach {
+                EmailUtils.deleteEmailInFileSystem(
+                        filesDir = filesDir,
+                        metadataKey = it.metadataKey,
+                        recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
+            }
             db.emailDao().deleteThreads(listOf(threadId))
         }
 
@@ -107,6 +125,12 @@ interface EmailDetailLocalDB {
         }
 
         override fun deleteEmail(emailId: Long) {
+            val email = db.emailDao().findEmailById(emailId)
+            EmailUtils.deleteEmailInFileSystem(
+                    filesDir = filesDir,
+                    recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                    metadataKey = email!!.metadataKey
+            )
             db.emailDao().deleteById(emailId)
         }
 

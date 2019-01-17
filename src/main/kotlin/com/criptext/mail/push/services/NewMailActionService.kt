@@ -41,7 +41,7 @@ class NewMailActionService : IntentService("New Mail Action Service") {
             }
             TRASH -> {
                 requestHandler.trashEmail(data.metadataKey, data.notificationId,
-                        EmailDetailLocalDB.Default(db), db.emailDao(), db.pendingEventDao(), db.accountDao())
+                        EmailDetailLocalDB.Default(db, this.filesDir), db.emailDao(), db.pendingEventDao(), db.accountDao())
             }
             DELETE -> {
                 val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)

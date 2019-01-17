@@ -111,13 +111,14 @@ class MailboxActivity : BaseActivity() {
                            model: MailboxSceneModel,
                            storage: KeyValueStorage): MailboxSceneController {
 
-            val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB)
+            val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB, activity.filesDir)
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
             val activeAccount = ActiveAccount.loadFromStorage(activity)
             val webSocketEvents = WebSocketSingleton.getInstance(
                     activeAccount = activeAccount!!)
 
             val mailboxDataSource = MailboxDataSource(
+                filesDir = activity.filesDir,
                 signalClient = signalClient,
                 storage = storage,
                 runner = AsyncTaskWorkRunner(),
@@ -137,7 +138,7 @@ class MailboxActivity : BaseActivity() {
                 labelDao = appDB.labelDao(),
                 emailLabelDao = appDB.emailLabelDao(),
                 emailContactJoinDao = appDB.emailContactDao(),
-                eventLocalDB = EventLocalDB(appDB))
+                eventLocalDB = EventLocalDB(appDB, activity.filesDir))
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
 
@@ -147,12 +148,13 @@ class MailboxActivity : BaseActivity() {
                 )
             val remoteChangeDataSource = GeneralDataSource(
                     signalClient = signalClient,
-                    eventLocalDB = EventLocalDB(appDB),
+                    eventLocalDB = EventLocalDB(appDB, activity.filesDir),
                     storage = storage,
                     db = appDB,
                     runner = AsyncTaskWorkRunner(),
                     activeAccount = activeAccount,
-                    httpClient = HttpClient.Default()
+                    httpClient = HttpClient.Default(),
+                    filesDir = activity.filesDir
             )
 
             return MailboxSceneController(

@@ -10,8 +10,10 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.generaldatasource.workers.*
+import java.io.File
 
 class GeneralDataSource(override val runner: WorkRunner,
+                        private val filesDir: File,
                         private val signalClient: SignalClient,
                         private val eventLocalDB: EventLocalDB,
                         private val db : AppDatabase,
@@ -61,6 +63,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.DataFileCreation -> DataFileCreationWorker(
+                    filesDir = filesDir,
                     db = db,
                     publishFn = { res -> flushResults(res)}
             )
@@ -125,6 +128,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount!!,
                     storage = storage,
                     authorizerId = params.authorizerId,
+                    filesDir = filesDir,
                     db = db,
                     signalClient = signalClient,
                     dataAddress = params.dataAddress,

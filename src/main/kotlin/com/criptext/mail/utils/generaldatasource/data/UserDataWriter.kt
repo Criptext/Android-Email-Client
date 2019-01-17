@@ -6,10 +6,11 @@ import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.EmailUtils
 import org.json.JSONObject
 import java.io.File
 
-class UserDataWriter(private val db: AppDatabase)
+class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
 
     fun createFile():String? {
@@ -35,7 +36,11 @@ class UserDataWriter(private val db: AppDatabase)
     fun createDBFromFile(file: File) {
         val contactWriter = ContactDataWriter(db.contactDao())
         val labelWriter = LabelDataWriter(db.labelDao())
-        val emailWriter = EmailDataWriter(db.emailDao())
+        val emailWriter = EmailDataWriter(
+                emailDao = db.emailDao(),
+                activeRecipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                filesDir = filesDir
+        )
         val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter))
         val emailLabelWriter = EmailLabelDataWriter(db.emailLabelDao(), listOf(labelWriter, emailWriter))
         val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter))
@@ -178,7 +183,9 @@ class UserDataWriter(private val db: AppDatabase)
                 jsonObject.put("threadId", mail.threadId)
                 jsonObject.put("unread", mail.unread)
                 jsonObject.put("secure", mail.secure)
-                jsonObject.put("content", mail.content)
+                jsonObject.put("content", EmailUtils.getEmailContentFromFileSystem(
+                        filesDir, mail.metadataKey, mail.content,
+                        db.accountDao().getLoggedInAccount()!!.recipientId))
                 jsonObject.put("preview", mail.preview)
                 jsonObject.put("from", mail.fromAddress)
                 jsonObject.put("subject", mail.subject)

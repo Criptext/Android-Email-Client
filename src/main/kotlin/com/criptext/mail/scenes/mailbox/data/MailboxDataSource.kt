@@ -13,6 +13,7 @@ import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.workers.*
 import com.criptext.mail.signal.SignalClient
+import java.io.File
 
 /**
  * Created by sebas on 1/24/18.
@@ -20,6 +21,7 @@ import com.criptext.mail.signal.SignalClient
 
 class MailboxDataSource(
         private val signalClient: SignalClient,
+        private val filesDir: File,
         private val storage: KeyValueStorage,
         override val runner: WorkRunner,
         private val activeAccount: ActiveAccount,
@@ -75,6 +77,7 @@ class MailboxDataSource(
                     composerInputData = params.data,
                     attachments = params.attachments,
                     fileKey = params.fileKey,
+                    filesDir = filesDir,
                     publishFn = { res -> flushResults(res) })
 
             is MailboxRequest.UpdateEmailThreadsLabelsRelations -> UpdateEmailThreadsLabelsWorker(
@@ -146,6 +149,7 @@ class MailboxDataSource(
                         flushResults(result)
                     })
             is MailboxRequest.ResendEmails -> ResendEmailsWorker(
+                    filesDir = filesDir,
                     accountDao = accountDao,
                     storage = storage,
                     rawSessionDao = rawSessionDao,

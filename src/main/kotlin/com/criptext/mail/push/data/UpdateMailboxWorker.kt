@@ -3,13 +3,10 @@ package com.criptext.mail.push.data
 import android.content.res.Resources
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -21,8 +18,8 @@ import com.criptext.mail.utils.EventLoader
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.mapError
 import org.whispersystems.libsignal.DuplicateMessageException
+import java.io.File
 
 /**
  * Created by sebas on 3/22/18.

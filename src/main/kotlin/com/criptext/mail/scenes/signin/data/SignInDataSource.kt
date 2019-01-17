@@ -14,12 +14,14 @@ import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.signal.SignalStoreCriptext
+import java.io.File
 
 /**
  * Created by sebas on 2/15/18.
  */
 
 class SignInDataSource(override val runner: WorkRunner,
+                       private val filesDir: File,
                        private val httpClient: HttpClient,
                        private val keyGenerator: SignalKeyGenerator,
                        private val keyValueStorage: KeyValueStorage,
@@ -92,6 +94,7 @@ class SignInDataSource(override val runner: WorkRunner,
             )
 
             is SignInRequest.LinkData -> LinkDataWorker(
+                    filesDir = filesDir,
                     activeAccount = ActiveAccount.loadFromStorage(keyValueStorage)!!,
                     authorizerId = params.authorizerId,
                     dataAddress = params.dataAddress,
