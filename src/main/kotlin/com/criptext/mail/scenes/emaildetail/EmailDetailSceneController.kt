@@ -594,7 +594,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 fileDetailList = model.fileDetails,
                                 observer = emailDetailUIObserver,
                                 shouldOpenExpanded = (fullEmailsList.size < 4
-                                || result.unreadEmails > 1 && fullEmailsList.size < 4))
+                                || result.unreadEmails > 1 && fullEmailsList.size >= 4))
 
                         readEmails(result.fullEmailList)
                     }else{
