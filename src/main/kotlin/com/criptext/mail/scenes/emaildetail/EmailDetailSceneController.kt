@@ -415,6 +415,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onCollapsedClicked() {
+            scene.expandAllThread()
+        }
+
         override fun onStarredButtonPressed(isStarred: Boolean) {
             model.threadPreview.isStarred = isStarred
             val selectedLabels = SelectedLabels()
@@ -588,7 +592,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 fullEmailList = fullEmailsList,
                                 fullEmailEventListener = emailHolderEventListener,
                                 fileDetailList = model.fileDetails,
-                                observer = emailDetailUIObserver)
+                                observer = emailDetailUIObserver,
+                                shouldOpenExpanded = (fullEmailsList.size < 4
+                                || result.unreadEmails > 1 && fullEmailsList.size >= 4))
 
                         readEmails(result.fullEmailList)
                     }else{

@@ -41,6 +41,8 @@
     <attr name="criptextDialogButtonBg" format="reference|color"/>
     <attr name="criptextAppVersionTextColor" format="reference|color"/>
     <attr name="criptextAttachmentDialogTextColor" format="reference|color"/>
+    <attr name="criptextCollapsedEmailsNumber" format="reference|color"/>
+    <attr name="criptextCollapsedEmailsCircleBorder" format="reference|color"/>
     <attr name="criptextEmptyFeedImage" format="reference"/>
     <attr name="criptextEmptySearchImage" format="reference"/>
     <attr name="criptextSearchImage" format="reference"/>

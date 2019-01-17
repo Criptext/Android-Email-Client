@@ -139,7 +139,7 @@ dependencies {
     implementation 'com.nex3z:notification-badge:0.2.0'
 
     //Circle Image View
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
 
     //Caligraphy
     implementation 'uk.co.chrisjenx:calligraphy:2.2.0'

@@ -12,6 +12,7 @@ import com.criptext.mail.scenes.mailbox.data.ExistingEmailUpdateSetup
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.ColorUtils
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import java.util.*
 
@@ -244,7 +245,9 @@ class EventLocalDB(private val db: AppDatabase){
                         email = email,
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = contactsFROM[0],
+                        from = db.contactDao().getContact(
+                                EmailAddressUtils.extractEmailAddress(email.fromAddress)
+                        )?: contactsFROM[0],
                         files = files,
                         labels = labels,
                         to = contactsTO,

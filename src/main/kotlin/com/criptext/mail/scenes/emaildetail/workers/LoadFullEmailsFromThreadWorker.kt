@@ -28,8 +28,9 @@ class LoadFullEmailsFromThreadWorker(
         val items = db.getFullEmailsFromThreadId(threadId = threadId,
                 rejectedLabels = rejectedLabels,
                 selectedLabel = currentLabel.text)
+        val unreadEmails = items.filter { it.email.unread }.size
         items.forEach { it.email.unread = false }
-        return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items)
+        return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items, unreadEmails)
     }
 
     override fun cancel() {

@@ -4,6 +4,7 @@ import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import java.util.*
 
 /**
@@ -60,7 +61,9 @@ interface EmailDetailLocalDB {
                         email = it,
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = contactsFROM[0],
+                        from = db.contactDao().getContact(
+                                EmailAddressUtils.extractEmailAddress(it.fromAddress)
+                        )?: contactsFROM[0],
                         files = files,
                         labels = labels,
                         to = contactsTO, fileKey = fileKey?.key)

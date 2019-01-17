@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -90,6 +91,16 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         setAttachments(fileDetails, emailListener)
 
+    }
+
+    override fun setBackground(drawable: Drawable) {
+        rootView.background = drawable
+    }
+
+    override fun setBottomMargin(marginBottom: Int) {
+        val params = view.layoutParams as ViewGroup.MarginLayoutParams
+        params.bottomMargin = marginBottom
+        rootView.layoutParams = params
     }
 
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,

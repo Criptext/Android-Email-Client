@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/collapsed_view"
+    android:clickable="true"
+    android:background="?attr/criptextEmailDetailBgColor">
+
+
+    <LinearLayout
+        android:id="@+id/mail_item_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/collapsed_email_drawable"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+    </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/collapsed_mails_number"
+        android:layout_marginStart="23dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        app:civ_border_color="?attr/criptextCollapsedEmailsCircleBorder"
+        app:civ_border_width="1dip"
+        android:visibility="visible" />
+
+</RelativeLayout>

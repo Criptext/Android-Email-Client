@@ -2,6 +2,7 @@ package com.criptext.mail.db
 
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
+import com.criptext.mail.utils.EmailAddressUtils
 
 /**
  * Created by danieltigse on 4/17/18.
@@ -25,7 +26,9 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                 email = email,
                 bcc = contactsBCC,
                 cc = contactsCC,
-                from = contactsFROM[0],
+                from = contactDao.getContact(
+                        EmailAddressUtils.extractEmailAddress(email.fromAddress)
+                )?: contactsFROM[0],
                 files = files,
                 labels = labels,
                 to = contactsTO,

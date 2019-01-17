@@ -2,6 +2,7 @@ package com.criptext.mail.db
 
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailThread
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import java.util.*
 
@@ -92,7 +93,9 @@ interface SearchLocalDB{
                             email = email,
                             bcc = contactsBCC,
                             cc = contactsCC,
-                            from = contactsFROM[0],
+                            from = db.contactDao().getContact(
+                                    EmailAddressUtils.extractEmailAddress(email.fromAddress)
+                            )?: contactsFROM[0],
                             files = files,
                             labels = labels,
                             to = contactsTO,
