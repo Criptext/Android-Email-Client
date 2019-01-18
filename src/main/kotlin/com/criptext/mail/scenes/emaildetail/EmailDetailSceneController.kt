@@ -28,15 +28,9 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.OnDeleteEmailListener
 import com.criptext.mail.scenes.mailbox.OnDeleteThreadListener
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
-import com.criptext.mail.scenes.params.ComposerParams
-import com.criptext.mail.scenes.params.LinkingParams
-import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.utils.HTMLUtils
-import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.PinLockUtils
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -415,6 +409,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onSourceOptionSelected(fullEmail: FullEmail) {
+            if(fullEmail.headers.isNullOrEmpty())
+                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
+            else
+                host.goToScene(EmailSourceParams(fullEmail.headers!!), true)
+        }
+
         override fun onCollapsedClicked() {
             scene.expandAllThread()
         }

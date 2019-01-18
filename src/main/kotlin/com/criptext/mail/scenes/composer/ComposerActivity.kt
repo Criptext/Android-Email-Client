@@ -44,7 +44,7 @@ class ComposerActivity : BaseActivity() {
         val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
-                fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao())
+                fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao(), filesDir = this.filesDir)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,

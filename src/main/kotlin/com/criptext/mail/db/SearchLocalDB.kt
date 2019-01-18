@@ -4,6 +4,8 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
+import com.criptext.mail.utils.EmailUtils
+import java.io.File
 import java.util.*
 
 /**
@@ -21,7 +23,7 @@ interface SearchLocalDB{
                            updateUnreadStatus: Boolean,
                            rejectedLabels: List<Long>)
 
-    class Default(private val db: AppDatabase): SearchLocalDB{
+    class Default(private val db: AppDatabase, val filesDir: File): SearchLocalDB{
 
         override fun searchMailsInDB(userEmail: String, queryText: String,
                                      startDate: Date?,
@@ -86,6 +88,7 @@ interface SearchLocalDB{
                 contacts
             }
 
+
             val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
                 contactsFROM[0]
             }else Contact(
@@ -94,6 +97,11 @@ interface SearchLocalDB{
                     name = EmailAddressUtils.extractName(email.fromAddress),
                     isTrusted = contactsFROM[0].isTrusted
             )
+
+            val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                    email.metadataKey, email.content,
+                    db.accountDao().getLoggedInAccount()!!.recipientId)
+
 
             return EmailThread(
                     participants = participants.distinctBy { it.id },
@@ -106,7 +114,8 @@ interface SearchLocalDB{
                             files = files,
                             labels = labels,
                             to = contactsTO,
-                            fileKey = fileKey?.key),
+                            fileKey = fileKey?.key,
+                            headers = emailContent.second),
                     totalEmails = emails.size,
                     hasFiles = totalFiles > 0
             )

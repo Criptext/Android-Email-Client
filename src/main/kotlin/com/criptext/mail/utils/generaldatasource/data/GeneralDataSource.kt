@@ -27,7 +27,7 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.DeviceRemoved -> DeviceRemovedWorker(
                     letAPIKnow = params.letAPIKnow,
                     activeAccount = activeAccount ?: ActiveAccount.loadFromStorage(storage)!!,
-                    httpClient = httpClient,
+                    httpClient = httpClient, filesDir = filesDir,
                     db = db, storage = storage, publishFn = flushResults
             )
             is GeneralRequest.ConfirmPassword -> ConfirmPasswordWorker(

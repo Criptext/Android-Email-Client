@@ -12,7 +12,8 @@ data class FullEmail(
         val bcc: List<Contact>,
         val from: Contact,
         val files: List<CRFile>,
-        val fileKey: String?) {
+        val fileKey: String?,
+        val headers: String?) {
 
     var viewOpen = false
     var isUnsending = false

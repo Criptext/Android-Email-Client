@@ -29,4 +29,9 @@
         android:id="@+id/print"
         app:showAsAction="collapseActionView"
         android:title="@string/print"/>
+    <item
+        android:id="@+id/source"
+        app:showAsAction="collapseActionView"
+        android:title="@string/email_source"
+        android:visible="false"/>
 </menu>

@@ -106,14 +106,18 @@ interface MailboxLocalDB {
                 val files = db.fileDao().getAttachmentsFromEmail(id)
                 val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
 
+                val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                        it.metadataKey, it.content,
+                        db.accountDao().getLoggedInAccount()!!.recipientId)
+
                 FullEmail(
-                        email = it,
+                        email = it.copy(content = emailContent.first),
                         bcc = contactsBCC,
                         cc = contactsCC,
                         from = contactsFROM[0],
                         files = files,
                         labels = labels,
-                        to = contactsTO, fileKey = fileKey?.key)
+                        to = contactsTO, fileKey = fileKey?.key, headers = emailContent.second)
             }
 
             fullEmails.lastOrNull()?.viewOpen = true
@@ -234,7 +238,7 @@ interface MailboxLocalDB {
             emails = if(filterUnread) emails.filter { it.unread } else emails
             emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                     filesDir, it.metadataKey, it.content,
-                    db.accountDao().getLoggedInAccount()!!.recipientId)) }
+                    db.accountDao().getLoggedInAccount()!!.recipientId).first) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -274,7 +278,7 @@ interface MailboxLocalDB {
             emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                     filesDir,
                     it.metadataKey, it.content,
-                    db.accountDao().getLoggedInAccount()!!.recipientId)) }
+                    db.accountDao().getLoggedInAccount()!!.recipientId).first) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -394,6 +398,7 @@ interface MailboxLocalDB {
                 contacts
             }
 
+
             val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
                 contactsFROM[0]
             }else Contact(
@@ -403,24 +408,24 @@ interface MailboxLocalDB {
                     isTrusted = contactsFROM[0].isTrusted
             )
 
+            val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                    email.metadataKey, email.content,
+                    db.accountDao().getLoggedInAccount()!!.recipientId)
+
             return EmailThread(
                     participants = participants.distinctBy { it.id },
                     currentLabel = selectedLabel,
                     latestEmail = FullEmail(
                             email = email.copy(
-                                    content = EmailUtils.getEmailContentFromFileSystem(
-                                            filesDir = filesDir,
-                                            metadataKey = email.metadataKey,
-                                            recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
-                                            dbContent = email.content
-                                    )),
+                                    content = emailContent.first),
                             bcc = contactsBCC,
                             cc = contactsCC,
                             from = fromContact,
                             files = files,
                             labels = labels,
                             to = contactsTO,
-                            fileKey = fileKey?.key),
+                            fileKey = fileKey?.key,
+                            headers = emailContent.second),
                     totalEmails = getEmailCount(emailsInSelectedLabel, emails.size, selectedLabel),
                     hasFiles = totalFiles > 0
             )

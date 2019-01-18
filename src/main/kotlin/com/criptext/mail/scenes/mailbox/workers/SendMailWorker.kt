@@ -231,8 +231,9 @@ class SendMailWorker(private val signalClient: SignalClient,
                        date = DateAndTimeUtils.getDateFromString(sentMailData.date, null)
                    )
 
-                   EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent,
-                           recipientId = activeAccount.recipientId, metadataKey = sentMailData.metadataKey)
+                   EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,
+                           recipientId = activeAccount.recipientId, metadataKey = sentMailData.metadataKey,
+                           headers = emailContent.second)
 
                    EmailUtils.deleteEmailInFileSystem(filesDir = filesDir,
                            metadataKey = email.metadataKey, recipientId = activeAccount.recipientId)

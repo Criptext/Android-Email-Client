@@ -7,14 +7,17 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.generaldatasource.RemoveDeviceUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import java.io.File
 
 class DeviceRemovedWorker(private val letAPIKnow: Boolean,
+                          private val filesDir: File,
                           private val activeAccount: ActiveAccount,
                           private val httpClient: HttpClient,
                           private val db: AppDatabase,
@@ -59,9 +62,15 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
     private fun workOperation() : Result<Unit, Exception> = if(letAPIKnow) {
             Result.of { apiClient.postLogout()
         }
-        .flatMap { Result.of { RemoveDeviceUtils.clearAllData(db, storage) }}}
+        .flatMap { Result.of {
+            EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
+            RemoveDeviceUtils.clearAllData(db, storage)
+        }}}
     else
-        Result.of { RemoveDeviceUtils.clearAllData(db, storage) }
+        Result.of {
+            EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
+            RemoveDeviceUtils.clearAllData(db, storage)
+        }
 
     private fun newRetryWithNewSessionOperation()
             : Result<Unit, Exception> {
