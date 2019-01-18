@@ -17,6 +17,7 @@ import java.util.*
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
 
     fun logoutNukeDB() {
+        EmailUtils.deleteEmailsInFileSystem(filesDir, db.accountDao().getLoggedInAccount()!!.recipientId)
         db.clearAllTables()
     }
 
@@ -261,19 +262,23 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
                 name = EmailAddressUtils.extractName(email.fromAddress),
                 isTrusted = contactsFROM[0].isTrusted
         )
+        val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                email.metadataKey, email.content,
+                db.accountDao().getLoggedInAccount()!!.recipientId)
 
         return EmailThread(
                 participants = participants.distinctBy { it.id },
                 currentLabel = selectedLabel,
                 latestEmail = FullEmail(
-                        email = email,
+                        email = email.copy(content = emailContent.first),
                         bcc = contactsBCC,
                         cc = contactsCC,
                         from = fromContact,
                         files = files,
                         labels = labels,
                         to = contactsTO,
-                        fileKey = fileKey?.key),
+                        fileKey = fileKey?.key,
+                        headers = emailContent.second),
                 totalEmails = emails.size,
                 hasFiles = totalFiles > 0
         )
@@ -311,7 +316,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
 
         emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                 filesDir, it.metadataKey, it.content,
-                db.accountDao().getLoggedInAccount()!!.recipientId)) }
+                db.accountDao().getLoggedInAccount()!!.recipientId).first) }
 
         return emails.map { email ->
             getEmailThreadFromEmail(email, labelName,

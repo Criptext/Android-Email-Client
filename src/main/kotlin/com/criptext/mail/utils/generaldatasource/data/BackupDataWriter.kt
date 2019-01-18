@@ -78,7 +78,7 @@ class EmailDataWriter(private val emailDao: EmailDao,
 
     private fun insertAllEmails(batch: List<Email>){
         batch.forEach {
-            EmailUtils.saveEmailInFileSystem(filesDir, activeRecipientId, it.metadataKey, it.content)
+            EmailUtils.saveEmailInFileSystem(filesDir, activeRecipientId, it.metadataKey, it.content, null)
         }
 
         val emails = batch.map { it.copy(content = "") }

@@ -177,6 +177,7 @@
   <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
     <string name="removing_device_dialog_message">Removing device…</string>
     <string name="privacy_toolbar_title">PRIVACY AND SECURITY</string>
+    <string name="email_source_toolbar_title">EMAIL SOURCE</string>
   <string name="pin_lock_switch_text">Use PIN Lock</string>
   <string name="pin_lock_change">Change PIN Code</string>
   <string name="pin_lock_auto">Auto-Lock</string>
@@ -348,6 +349,7 @@
   <string name="mark_as_read">Mark as read</string>
   <string name="mark_as_spam">Mark as Spam</string>
   <string name="print">Print</string>
+  <string name="email_source">Email Source</string>
   <string name="print_all">Print All</string>
   <string name="mark_as_unread">Mark as Unread</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>

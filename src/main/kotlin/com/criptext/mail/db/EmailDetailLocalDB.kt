@@ -66,13 +66,13 @@ interface EmailDetailLocalDB {
                 val files = db.fileDao().getAttachmentsFromEmail(id)
                 val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
 
-
+                val emailContent = EmailUtils.getEmailContentFromFileSystem(filesDir,
+                        it.metadataKey, it.content,
+                        db.accountDao().getLoggedInAccount()!!.recipientId)
 
                 FullEmail(
                         email = it.copy(
-                                content = EmailUtils.getEmailContentFromFileSystem(filesDir,
-                                        it.metadataKey, it.content,
-                                        db.accountDao().getLoggedInAccount()!!.recipientId)
+                                content = emailContent.first
                         ),
                         bcc = contactsBCC,
                         cc = contactsCC,
@@ -86,7 +86,7 @@ interface EmailDetailLocalDB {
                         ),
                         files = files,
                         labels = labels,
-                        to = contactsTO, fileKey = fileKey?.key)
+                        to = contactsTO, fileKey = fileKey?.key, headers = emailContent.second)
             }
 
             fullEmails.lastOrNull()?.viewOpen = true

@@ -145,6 +145,9 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 R.id.print ->
                     emailListener?.onPrintOptionSelected(
                             fullEmail = fullEmail)
+                R.id.source ->
+                    emailListener?.onSourceOptionSelected(
+                            fullEmail = fullEmail)
 
             }
             false

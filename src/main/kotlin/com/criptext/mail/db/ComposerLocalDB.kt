@@ -3,6 +3,8 @@ package com.criptext.mail.db
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.EmailUtils
+import java.io.File
 
 /**
  * Created by danieltigse on 4/17/18.
@@ -10,7 +12,7 @@ import com.criptext.mail.utils.EmailAddressUtils
 
 class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fileDao: FileDao,
                       val fileKeyDao: FileKeyDao, val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
-                      val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao) {
+                      val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val filesDir: File) {
 
     fun loadFullEmail(id: Long): FullEmail? {
         val email = emailDao.findEmailById(id) ?: return null
@@ -30,15 +32,19 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                 name = EmailAddressUtils.extractName(email.fromAddress),
                 isTrusted = contactsFROM[0].isTrusted
         )
+        val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                email.metadataKey, email.content,
+                accountDao.getLoggedInAccount()!!.recipientId)
 
         return FullEmail(
-                email = email,
+                email = email.copy(content = emailContent.first),
                 bcc = contactsBCC,
                 cc = contactsCC,
                 from = fromContact,
                 files = files,
                 labels = labels,
                 to = contactsTO,
-                fileKey = fileKey?.key)
+                fileKey = fileKey?.key,
+                headers = emailContent.second)
     }
 }

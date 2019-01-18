@@ -160,7 +160,8 @@ class SaveEmailWorker(
                 filesDir = filesDir,
                 recipientId = account.recipientId,
                 metadataKey = metadataColumns.metadataKey,
-                content = composerInputData.body)
+                content = composerInputData.body,
+                headers = null)
 
         return Pair(newEmailId, metadataColumns.threadId)
     }

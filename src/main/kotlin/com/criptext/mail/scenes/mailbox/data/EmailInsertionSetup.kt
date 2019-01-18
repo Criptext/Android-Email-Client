@@ -13,6 +13,7 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
+import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
 import kotlin.collections.HashMap
@@ -110,7 +111,7 @@ object EmailInsertionSetup {
                 cc = ccContactsRows,
                 bcc = bccContactsRows,
                 labels = labels,
-                from = senderContactRow, files = files, fileKey = fileKey)
+                from = senderContactRow, files = files, fileKey = fileKey, headers = null)
     }
 
     private fun createEmailContactRelation(newEmailId: Long, type: ContactTypes)
@@ -259,15 +260,19 @@ object EmailInsertionSetup {
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
-        val body = apiClient.getBodyFromEmail(metadata.metadataKey).body
+        val json = JSONObject(apiClient.getBodyFromEmail(metadata.metadataKey).body)
+        val body = json.getString("body")
+        val headers = json.getString("headers")
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
+        val decryptedHeaders = getDecryptedEmailBody(signalClient, headers, metadata)
 
         EmailUtils.saveEmailInFileSystem(
                 filesDir = filesDir,
                 recipientId = activeAccount.recipientId,
                 metadataKey = metadata.metadataKey,
-                content = decryptedBody)
+                content = decryptedBody,
+                headers = decryptedHeaders)
 
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 

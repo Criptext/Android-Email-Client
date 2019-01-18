@@ -4,6 +4,9 @@ import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Email
 import com.github.kittinunf.result.Result
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.ByteArrayInputStream
 import java.io.File
 
 
@@ -78,7 +81,20 @@ object EmailUtils {
         }
     }
 
-    fun saveEmailInFileSystem(filesDir: File, recipientId: String, metadataKey: Long, content: String){
+    fun deleteEmailsInFileSystem(filesDir: File, recipientId: String){
+        Result.of {
+            val emailDir = File(filesDir.path + "/$recipientId/emails/")
+            if (emailDir.isDirectory) {
+                val children = emailDir.list()
+                for (i in children.indices) {
+                    File(emailDir, children[i]).delete()
+                }
+            }
+            emailDir.delete()
+        }
+    }
+
+    fun saveEmailInFileSystem(filesDir: File, recipientId: String, metadataKey: Long, content: String, headers: String?){
         val dir = File(filesDir.path + "/$recipientId/emails/")
 
         if(!dir.exists())
@@ -87,22 +103,37 @@ object EmailUtils {
         val emailDir = File(filesDir.path + "/$recipientId/emails/$metadataKey")
         emailDir.mkdir()
 
-        val file = File(emailDir.path + "/body.txt")
-        file.createNewFile()
 
-        file.writeText(content)
+        writeToFile(emailDir.path + "/body.txt", content)
+        writeToFile(emailDir.path + "/headers.txt", headers)
     }
 
     fun getEmailContentFromFileSystem(filesDir: File, metadataKey: Long, dbContent: String,
-                                              recipientId: String): String {
+                                              recipientId: String): Pair<String, String?> {
         val dir = File(filesDir.path + "/$recipientId/emails/$metadataKey")
-        if(!dir.exists()) return dbContent
+        if(!dir.exists()) return Pair(dbContent, null)
 
         val content = File(dir.path + "/body.txt")
+        val headers = File(dir.path + "/headers.txt")
 
-        if(!content.exists()) return dbContent
+        if(!content.exists()) return Pair(dbContent, null)
 
-        return content.readText()
+        val text =  content.readText()
+        val textHeaders = if(headers.exists()) headers.readText() else null
+        return Pair(text, textHeaders)
+    }
+
+    private fun writeToFile(filePath: String, data: String?){
+        val file = File(filePath)
+        file.createNewFile()
+
+        val dataByteArray = (data ?: "").toByteArray()
+        val inputStream = BufferedInputStream(ByteArrayInputStream(dataByteArray))
+        val outputStream = BufferedOutputStream(file.outputStream())
+        inputStream.copyTo(outputStream)
+        inputStream.close()
+        outputStream.flush()
+        outputStream.close()
     }
 
     class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,

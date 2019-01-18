@@ -22,7 +22,7 @@ class SearchActivity : BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val appDB = AppDatabase.getAppDatabase(this)
-        val db : SearchLocalDB.Default = SearchLocalDB.Default(appDB)
+        val db : SearchLocalDB.Default = SearchLocalDB.Default(appDB, this.filesDir)
         val model = receivedModel as SearchSceneModel
         val scene = SearchScene.SearchSceneView(findViewById(R.id.rootView), KeyboardManager(this))
         return SearchSceneController(

@@ -190,7 +190,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("secure", mail.secure)
                 jsonObject.put("content", EmailUtils.getEmailContentFromFileSystem(
                         filesDir, mail.metadataKey, mail.content,
-                        db.accountDao().getLoggedInAccount()!!.recipientId))
+                        db.accountDao().getLoggedInAccount()!!.recipientId).first)
                 jsonObject.put("preview", mail.preview)
                 jsonObject.put("from", mail.fromAddress)
                 jsonObject.put("subject", mail.subject)

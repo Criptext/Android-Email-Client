@@ -27,6 +27,7 @@ import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
+import com.criptext.mail.scenes.mailbox.emailsource.EmailSourceModel
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.search.SearchSceneModel
 import com.criptext.mail.scenes.settings.SettingsActivity
@@ -209,6 +210,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is PrivacyAndSecurityParams -> PrivacyAndSecurityModel(params.hasReadReceipts)
             is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
                     params.deviceType, params.authorizerName)
+            is EmailSourceParams -> EmailSourceModel(params.emailSource)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

@@ -139,7 +139,8 @@ open class EmailDetailControllerTest {
                     cc = emptyList(),
                     bcc = emptyList(),
                     from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true),
-                    fileKey = null)
+                    fileKey = null,
+                    headers = null)
         }.reversed()
     }
 

@@ -236,6 +236,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onSpamOptionSelected(fullEmail: FullEmail,
                                    position: Int)
         fun onPrintOptionSelected(fullEmail: FullEmail)
+        fun onSourceOptionSelected(fullEmail: FullEmail)
         fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean)
         fun onCollapsedClicked()
         fun onForwardBtnClicked()
