@@ -22,13 +22,20 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
         val files = fileDao.getAttachmentsFromEmail(id)
         val fileKey = fileKeyDao.getAttachmentKeyFromEmail(id)
 
+        val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+            contactsFROM[0]
+        }else Contact(
+                id = 0,
+                email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
+                name = EmailAddressUtils.extractName(email.fromAddress),
+                isTrusted = contactsFROM[0].isTrusted
+        )
+
         return FullEmail(
                 email = email,
                 bcc = contactsBCC,
                 cc = contactsCC,
-                from = contactDao.getContact(
-                        EmailAddressUtils.extractEmailAddress(email.fromAddress)
-                )?: contactsFROM[0],
+                from = fromContact,
                 files = files,
                 labels = labels,
                 to = contactsTO,

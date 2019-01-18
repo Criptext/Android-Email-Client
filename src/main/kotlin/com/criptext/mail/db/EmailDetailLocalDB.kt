@@ -1,5 +1,6 @@
 package com.criptext.mail.db
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -65,6 +66,8 @@ interface EmailDetailLocalDB {
                 val files = db.fileDao().getAttachmentsFromEmail(id)
                 val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
 
+
+
                 FullEmail(
                         email = it.copy(
                                 content = EmailUtils.getEmailContentFromFileSystem(filesDir,
@@ -73,9 +76,14 @@ interface EmailDetailLocalDB {
                         ),
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = db.contactDao().getContact(
-                                EmailAddressUtils.extractEmailAddress(it.fromAddress)
-                        )?: contactsFROM[0],
+                        from = if(EmailAddressUtils.checkIfOnlyHasEmail(it.fromAddress)){
+                            contactsFROM[0]
+                        }else Contact(
+                                id = 0,
+                                email = EmailAddressUtils.extractEmailAddress(it.fromAddress),
+                                name = EmailAddressUtils.extractName(it.fromAddress),
+                                isTrusted = contactsFROM[0].isTrusted
+                        ),
                         files = files,
                         labels = labels,
                         to = contactsTO, fileKey = fileKey?.key)

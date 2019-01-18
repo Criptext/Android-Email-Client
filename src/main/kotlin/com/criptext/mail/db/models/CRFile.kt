@@ -82,7 +82,8 @@ class CRFile(
                         0,
                         false,
                         fileKey = when {
-                            file.has("fileKey") -> file.getString("fileKey")
+                            file.has("key") ->
+                                file.getString("key").plus(":".plus(file.getString("iv")))
                             else -> ""
                         }
                 ))
@@ -103,7 +104,8 @@ class CRFile(
                     readOnly = json.getBoolean("readOnly"),
                     shouldDuplicate = false,
                     fileKey = when {
-                        json.has("fileKey") -> json.getString("fileKey")
+                        json.has("key") ->
+                            json.getString("key").plus(":".plus(json.getString("iv")))
                         else -> ""
                     }
             )

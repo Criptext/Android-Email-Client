@@ -253,6 +253,15 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
             contacts
         }
 
+        val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+            contactsFROM[0]
+        }else Contact(
+                id = 0,
+                email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
+                name = EmailAddressUtils.extractName(email.fromAddress),
+                isTrusted = contactsFROM[0].isTrusted
+        )
+
         return EmailThread(
                 participants = participants.distinctBy { it.id },
                 currentLabel = selectedLabel,
@@ -260,9 +269,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
                         email = email,
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = db.contactDao().getContact(
-                                EmailAddressUtils.extractEmailAddress(email.fromAddress)
-                        )?: contactsFROM[0],
+                        from = fromContact,
                         files = files,
                         labels = labels,
                         to = contactsTO,
