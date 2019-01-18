@@ -41,12 +41,13 @@ class SettingsActivity: BaseActivity(){
                 storage = KeyValueStorage.SharedPrefs(this))
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
-                httpClient = HttpClient.Default()
+                httpClient = HttpClient.Default(),
+                filesDir = this.filesDir
         )
         return SettingsController(
                 model = model,

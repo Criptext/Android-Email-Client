@@ -40,12 +40,13 @@ class RecoveryEmailActivity: BaseActivity(){
                 accountDao = appDB.accountDao())
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
-                httpClient = HttpClient.Default()
+                httpClient = HttpClient.Default(),
+                filesDir = this.filesDir
         )
         return RecoveryEmailController(
                 model = model,

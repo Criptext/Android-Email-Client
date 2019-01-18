@@ -1013,7 +1013,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
+                scene.showToastMessage(resultData.message)
             }
         }
     }

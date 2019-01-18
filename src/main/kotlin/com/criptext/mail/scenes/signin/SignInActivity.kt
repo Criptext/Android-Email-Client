@@ -37,12 +37,13 @@ class SignInActivity : BaseActivity() {
         val signInSceneModel = receivedModel as SignInSceneModel
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir),
                 storage = KeyValueStorage.SharedPrefs(appCtx),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = null,
-                httpClient = HttpClient.Default()
+                httpClient = HttpClient.Default(),
+                filesDir = this.filesDir
         )
         return SignInSceneController(
                 webSocketFactory = CriptextWebSocketFactory(),
@@ -52,6 +53,7 @@ class SignInActivity : BaseActivity() {
                 storage = KeyValueStorage.SharedPrefs(appCtx),
                 generalDataSource = generalDataSource,
                 dataSource = SignInDataSource(
+                        filesDir = this.filesDir,
                         runner = AsyncTaskWorkRunner(),
                         keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType()),
                         httpClient = HttpClient.Default(),

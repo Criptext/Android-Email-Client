@@ -10,13 +10,11 @@ import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.mailbox.data.ExistingEmailUpdateSetup
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.utils.ColorUtils
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.EmailThreadValidator
+import com.criptext.mail.utils.*
+import java.io.File
 import java.util.*
 
-class EventLocalDB(private val db: AppDatabase){
+class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
 
     fun logoutNukeDB() {
         db.clearAllTables()
@@ -90,6 +88,12 @@ class EventLocalDB(private val db: AppDatabase){
 
     fun updateDeleteThreadPermanently(threadIds: List<String>) {
         if(threadIds.isNotEmpty()){
+            db.emailDao().getEmailsFromThreadIds(threadIds).forEach {
+                EmailUtils.deleteEmailInFileSystem(
+                        filesDir = filesDir,
+                        metadataKey = it.metadataKey,
+                        recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
+            }
             db.emailDao().deleteThreads(threadIds, listOf(Label.defaultItems.trash.id, Label.defaultItems.spam.id))
         }
     }
@@ -98,6 +102,12 @@ class EventLocalDB(private val db: AppDatabase){
         if(metadataKeys.isNotEmpty()){
             val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
             if(emails.isEmpty()) return
+            emails.forEach {
+                EmailUtils.deleteEmailInFileSystem(
+                        filesDir = filesDir,
+                        metadataKey = it.metadataKey,
+                        recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
+            }
             db.emailDao().deleteAll(emails)
         }
     }
@@ -183,6 +193,11 @@ class EventLocalDB(private val db: AppDatabase){
         db.emailDao().unsendEmailByMetadataKey(metadataKey, "", "",
                 unsentDate)
         db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey).id, 0)
+        EmailUtils.deleteEmailInFileSystem(
+                filesDir = filesDir,
+                metadataKey = metadataKey,
+                recipientId = db.accountDao().getLoggedInAccount()!!.recipientId
+        )
     }
 
     fun updateUnreadStatusByThreadId(emailThreads: List<String>, updateUnreadStatus: Boolean) {
@@ -197,7 +212,7 @@ class EventLocalDB(private val db: AppDatabase){
                                      metadata: EmailMetadata, activeAccount: ActiveAccount) {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                 dao = db.emailInsertionDao(), apiClient = apiClient, metadata = metadata,
-                activeAccount = activeAccount)
+                activeAccount = activeAccount, filesDir = filesDir)
     }
 
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
@@ -272,7 +287,7 @@ class EventLocalDB(private val db: AppDatabase){
         }.map {
             it.id
         }
-        val emails = if(startDate != null)
+        var emails = if(startDate != null)
             db.emailDao().getEmailThreadsFromMailboxLabel(
                     isTrashOrSpam = (selectedLabel in conditionalLabels),
                     startDate = startDate,
@@ -286,6 +301,10 @@ class EventLocalDB(private val db: AppDatabase){
                     rejectedLabels = rejectedIdLabels,
                     selectedLabel = selectedLabel,
                     limit = limit )
+
+        emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
+                filesDir, it.metadataKey, it.content,
+                db.accountDao().getLoggedInAccount()!!.recipientId)) }
 
         return emails.map { email ->
             getEmailThreadFromEmail(email, labelName,

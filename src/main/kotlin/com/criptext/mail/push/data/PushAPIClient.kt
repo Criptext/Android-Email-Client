@@ -15,6 +15,7 @@ class PushAPIClient(private val httpClient: HttpClient, private val token: Strin
     fun postLinkAccept(deviceId: String): HttpResponseData {
         val jsonPost = JSONObject()
         jsonPost.put("randomId", deviceId)
+        jsonPost.put("version", UserDataWriter.FILE_SYNC_VERSION)
 
         return httpClient.post(path = "/link/accept", authToken = token, body = jsonPost)
     }

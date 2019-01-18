@@ -11,8 +11,10 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
+import java.io.File
 
 class PushDataSource(
+        private val filesDir: File,
         private val httpClient: HttpClient,
         override val runner: WorkRunner,
         private val db: AppDatabase,
@@ -25,7 +27,7 @@ class PushDataSource(
         return when (params) {
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
-                    dbEvents = EventLocalDB(db),
+                    dbEvents = EventLocalDB(db, filesDir),
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     label = params.label,

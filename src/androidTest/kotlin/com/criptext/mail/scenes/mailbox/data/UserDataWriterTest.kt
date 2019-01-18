@@ -91,7 +91,7 @@ class UserDataWriterTest {
 
     @Test
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
-        val dataWriter = UserDataWriter(db)
+        val dataWriter = UserDataWriter(db, mActivityRule.activity.filesDir)
         val result = dataWriter.createFile()
 
         val lines: List<String> = File(result).readLines()

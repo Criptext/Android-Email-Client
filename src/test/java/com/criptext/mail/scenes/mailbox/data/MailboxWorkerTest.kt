@@ -13,6 +13,7 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.runTransactionsAsTheyAreInvoked
 import io.mockk.mockk
 import org.junit.Before
+import java.io.File
 
 /**
  * Created by gabriel on 5/8/18.
@@ -75,7 +76,7 @@ open class MailboxWorkerTest {
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
                 fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao,
-                eventLocalDB = eventDB, storage = storage, pendingDao = pendingDao)
+                eventLocalDB = eventDB, storage = storage, pendingDao = pendingDao, filesDir = File("mock"))
         dataSource.listener = { result -> lastResult = result }
     }
 

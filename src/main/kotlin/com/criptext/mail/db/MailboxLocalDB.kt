@@ -5,6 +5,7 @@ import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.EmailUtils
+import java.io.File
 import java.util.*
 
 /**
@@ -63,7 +64,7 @@ interface MailboxLocalDB {
     fun getFileKeyByFileId(id: Long): String?
 
 
-    class Default(private val db: AppDatabase): MailboxLocalDB {
+    class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
         override fun getFileKeyByFileId(id: Long): String? {
             val fileKey = db.fileKeyDao().getFileById(id)
             return if(fileKey != null && !fileKey.key.isNullOrEmpty())
@@ -231,6 +232,9 @@ interface MailboxLocalDB {
                         limit = limit )
 
             emails = if(filterUnread) emails.filter { it.unread } else emails
+            emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
+                    filesDir, it.metadataKey, it.content,
+                    db.accountDao().getLoggedInAccount()!!.recipientId)) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -257,7 +261,7 @@ interface MailboxLocalDB {
             }.map {
                 it.id
             }
-            val emails = if(mostRecentDate != null)
+            var emails = if(mostRecentDate != null)
                 db.emailDao().getNewEmailThreadsFromMailboxLabel(
                         isTrashOrSpam = (selectedLabel in conditionalLabels),
                         startDate = mostRecentDate,
@@ -266,6 +270,11 @@ interface MailboxLocalDB {
 
             else
                 emptyList()
+
+            emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
+                    filesDir,
+                    it.metadataKey, it.content,
+                    db.accountDao().getLoggedInAccount()!!.recipientId)) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -338,6 +347,12 @@ interface MailboxLocalDB {
         }
 
         override fun deleteThreads(threadIds: List<String>) {
+            db.emailDao().getEmailsFromThreadIds(threadIds).forEach {
+                EmailUtils.deleteEmailInFileSystem(
+                        filesDir = filesDir,
+                        metadataKey = it.metadataKey,
+                        recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
+            }
             db.emailDao().deleteThreads(threadIds)
         }
 
@@ -383,7 +398,13 @@ interface MailboxLocalDB {
                     participants = participants.distinctBy { it.id },
                     currentLabel = selectedLabel,
                     latestEmail = FullEmail(
-                            email = email,
+                            email = email.copy(
+                                    content = EmailUtils.getEmailContentFromFileSystem(
+                                            filesDir = filesDir,
+                                            metadataKey = email.metadataKey,
+                                            recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                                            dbContent = email.content
+                                    )),
                             bcc = contactsBCC,
                             cc = contactsCC,
                             from = db.contactDao().getContact(

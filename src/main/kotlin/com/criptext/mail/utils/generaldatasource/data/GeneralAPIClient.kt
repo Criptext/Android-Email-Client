@@ -37,6 +37,7 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
     fun postLinkAccept(deviceId: String): HttpResponseData {
         val jsonPost = JSONObject()
         jsonPost.put("randomId", deviceId)
+        jsonPost.put("version", UserDataWriter.FILE_SYNC_VERSION)
 
         return httpClient.post(path = "/link/accept", authToken = token, body = jsonPost)
     }

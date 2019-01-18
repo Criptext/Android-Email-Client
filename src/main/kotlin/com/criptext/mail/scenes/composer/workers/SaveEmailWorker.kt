@@ -13,13 +13,16 @@ import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.HTMLUtils
 import com.criptext.mail.utils.file.FileUtils
+import java.io.File
 import java.util.*
 
 /**
  * Created by danieltigse on 4/17/18.
  */
 class SaveEmailWorker(
+        private val filesDir: File,
         private val originalId: Long?,
         private val threadId: String?,
         private val emailId: Long?,
@@ -149,9 +152,15 @@ class SaveEmailWorker(
             if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
 
             EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
-                    decryptedBody = composerInputData.body, labels = labels, files = files, fileKey = fileKey)
+                    preview = HTMLUtils.createEmailPreview(composerInputData.body), labels = labels, files = files, fileKey = fileKey)
 
         }
+
+        EmailUtils.saveEmailInFileSystem(
+                filesDir = filesDir,
+                recipientId = account.recipientId,
+                metadataKey = metadataColumns.metadataKey,
+                content = composerInputData.body)
 
         return Pair(newEmailId, metadataColumns.threadId)
     }

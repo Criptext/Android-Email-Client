@@ -39,6 +39,7 @@ import java.util.zip.GZIPInputStream
 
 
 class LinkDataWorker(private val authorizerId: Int,
+                     private val filesDir: File,
                      private var activeAccount: ActiveAccount,
                      private val key: String,
                      private val dataAddress: String,
@@ -51,7 +52,7 @@ class LinkDataWorker(private val authorizerId: Int,
     private val fileHttpClient = HttpClient.Default(Hosts.fileTransferServer, HttpClient.AuthScheme.jwt,
             14000L, 7000L)
     private val apiClient = SignInAPIClient(fileHttpClient)
-    private val dataWriter = UserDataWriter(db)
+    private val dataWriter = UserDataWriter(db, filesDir)
 
     override val canBeParallelized = false
 

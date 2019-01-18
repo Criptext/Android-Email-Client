@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.github.kittinunf.result.Result
 import org.whispersystems.libsignal.DuplicateMessageException
+import java.io.File
 import java.io.IOException
 import java.util.*
 

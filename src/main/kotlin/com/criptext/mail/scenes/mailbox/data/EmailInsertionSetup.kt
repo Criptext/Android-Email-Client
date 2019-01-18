@@ -11,8 +11,10 @@ import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.signal.SignalExternalAddress
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
 import org.whispersystems.libsignal.DuplicateMessageException
+import java.io.File
 import kotlin.collections.HashMap
 
 /**
@@ -21,8 +23,7 @@ import kotlin.collections.HashMap
  * Created by gabriel on 4/26/18.
  */
 object EmailInsertionSetup {
-    private fun createEmailRow(metadata: EmailMetadata.DBColumns, decryptedBody: String): Email {
-        val preview = HTMLUtils.createEmailPreview(decryptedBody)
+    private fun createEmailRow(metadata: EmailMetadata.DBColumns, preview: String): Email {
         return Email(
             id = 0,
             fromAddress = if(metadata.fromContact.name.isEmpty()) metadata.fromContact.email
@@ -39,7 +40,7 @@ object EmailInsertionSetup {
             preview = preview,
             messageId = metadata.messageId,
             delivered = metadata.status,
-            content = decryptedBody,
+            content = "",
             metadataKey = metadata.metadataKey,
             isMuted = false,
             trashDate = null
@@ -96,11 +97,11 @@ object EmailInsertionSetup {
 
     private fun createFullEmailToInsert(dao: EmailInsertionDao,
                                         metadataColumns: EmailMetadata.DBColumns,
-                                        decryptedBody: String,
+                                        preview: String,
                                         labels: List<Label>,
                                         files: List<CRFile>, fileKey: String?): FullEmail {
         val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
-        val emailRow = createEmailRow(metadataColumns, decryptedBody)
+        val emailRow = createEmailRow(metadataColumns, preview)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
         val ccContactsRows = createContactRows(dao, metadataColumns.cc)
         val bccContactsRows = createContactRows(dao, metadataColumns.bcc)
@@ -161,10 +162,10 @@ object EmailInsertionSetup {
 
     fun exec(dao: EmailInsertionDao,
              metadataColumns: EmailMetadata.DBColumns,
-             decryptedBody: String,
+             preview: String,
              labels: List<Label>,
              files: List<CRFile>, fileKey: String?): Long {
-        val fullEmail = createFullEmailToInsert(dao, metadataColumns, decryptedBody, labels,
+        val fullEmail = createFullEmailToInsert(dao, metadataColumns, preview, labels,
                 files, fileKey)
         return exec(dao, fullEmail)
     }
@@ -237,7 +238,8 @@ object EmailInsertionSetup {
      * @param metadata metadata of the email to insert
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                       dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount) {
+                                       dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount,
+                                       filesDir: File) {
         val meAsSender = (metadata.senderRecipientId == activeAccount.recipientId)
                 && (metadata.from.contains(activeAccount.userEmail))
         val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
@@ -261,6 +263,12 @@ object EmailInsertionSetup {
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
 
+        EmailUtils.saveEmailInFileSystem(
+                filesDir = filesDir,
+                recipientId = activeAccount.recipientId,
+                metadataKey = metadata.metadataKey,
+                content = decryptedBody)
+
         val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
         val lonReturn = dao.runTransaction {
@@ -271,7 +279,7 @@ object EmailInsertionSetup {
                                 metadata.extractDBColumns().unread,
                     status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
             else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
-            else DeliveryTypes.NONE), decryptedBody, labels,
+            else DeliveryTypes.NONE), HTMLUtils.createEmailPreview(decryptedBody), labels,
                     metadata.files, decryptedFileKey)
         }
         println(lonReturn)
