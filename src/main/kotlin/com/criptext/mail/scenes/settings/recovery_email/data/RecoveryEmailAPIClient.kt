@@ -8,10 +8,10 @@ import org.json.JSONObject
 
 class RecoveryEmailAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
-    fun putChangeReplyToEmail(email: String): HttpResponseData {
+    fun putChangeReplyToEmail(email: String, enabled: Boolean): HttpResponseData {
         val json = JSONObject()
         json.put("address", email)
-        json.put("enable", true)
+        json.put("enable", enabled)
         return httpClient.put(path = "/user/replyto", authToken = token, body = json)
     }
 

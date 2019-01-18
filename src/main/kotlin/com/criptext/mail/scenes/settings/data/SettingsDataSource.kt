@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.settings.replyto.workers.ChangeReplyToEmailWorker
 import com.criptext.mail.scenes.settings.workers.*
 
 class SettingsDataSource(
@@ -92,14 +93,6 @@ class SettingsDataSource(
                     storage = storage,
                     accountDao = settingsLocalDB.accountDao,
                     activeAccount = activeAccount,
-                    publishFn = { res -> flushResults(res) }
-            )
-            is SettingsRequest.SetReplyToEmail -> ChangeReplyToEmailWorker(
-                    httpClient = httpClient,
-                    storage = storage,
-                    accountDao = settingsLocalDB.accountDao,
-                    activeAccount = activeAccount,
-                    newEmail = params.newEmail,
                     publishFn = { res -> flushResults(res) }
             )
         }

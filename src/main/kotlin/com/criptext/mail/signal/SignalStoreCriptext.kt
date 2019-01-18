@@ -136,7 +136,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
         }
 
         override fun saveIdentity(address: SignalProtocolAddress, identityKey: IdentityKey) {
-            if(address.name == SignalExternalAddress.recipientId) return
+            if(address.name == SignalUtils.externalRecipientId) return
             val identityKeySerialized = Encoding.byteArrayToString(identityKey.serialize())
             val newIdentityKey = CRIdentityKey(recipientId = address.name,
                     deviceId = address.deviceId, byteString = identityKeySerialized)
@@ -151,7 +151,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
         override fun isTrustedIdentity(address: SignalProtocolAddress, identityKey: IdentityKey)
                 : Boolean {
-            if(address.name == SignalExternalAddress.recipientId) return true
+            if(address.name == SignalUtils.externalRecipientId) return true
             val foundRawIdentity = rawIdentityKeyDao.find(recipientId = address.name, deviceId =
                                    address.deviceId) ?: return true
             val identityKeyBytes = Encoding.stringToByteArray(foundRawIdentity.byteString)

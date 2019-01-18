@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.workers
+package com.criptext.mail.scenes.settings.replyto.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -9,47 +9,42 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailAPIClient
-import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
+import com.criptext.mail.scenes.settings.replyto.data.ReplyToResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 
 
-/**
- * Created by danieltigse on 28/06/18.
- */
-
 class ChangeReplyToEmailWorker(
         private val newEmail: String,
+        private val enabled: Boolean,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
-                SettingsResult.SetReplyToEmail) -> Unit)
-    : BackgroundWorker<SettingsResult.SetReplyToEmail> {
+                ReplyToResult.SetReplyToEmail) -> Unit)
+    : BackgroundWorker<ReplyToResult.SetReplyToEmail> {
 
     override val canBeParallelized = true
     private val apiClient = RecoveryEmailAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): SettingsResult.SetReplyToEmail {
+    override fun catchException(ex: Exception): ReplyToResult.SetReplyToEmail {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
                 ServerCodes.MethodNotAllowed ->
-                    SettingsResult.SetReplyToEmail.Failure(UIMessage(R.string.recovery_email_change_fail_same))
-                ServerCodes.BadRequest -> SettingsResult.SetReplyToEmail.Failure(UIMessage(R.string.password_enter_error))
-                else -> SettingsResult.SetReplyToEmail.Failure(UIMessage(R.string.server_error_exception))
+                    ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.recovery_email_change_fail_same))
+                ServerCodes.BadRequest -> ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.password_enter_error))
+                else -> ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.server_error_exception))
             }
         }else {
-            SettingsResult.SetReplyToEmail.Failure(UIMessage(R.string.server_error_exception))
+            ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.server_error_exception))
         }
     }
 
-    override fun work(reporter: ProgressReporter<SettingsResult.SetReplyToEmail>): SettingsResult.SetReplyToEmail? {
+    override fun work(reporter: ProgressReporter<ReplyToResult.SetReplyToEmail>): ReplyToResult.SetReplyToEmail? {
         val changeEmailOperation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(changeEmailOperation)
@@ -61,7 +56,7 @@ class ChangeReplyToEmailWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                SettingsResult.SetReplyToEmail.Success(newEmail)
+                ReplyToResult.SetReplyToEmail.Success(newEmail, enabled)
             }
             is Result.Failure -> {
                 catchException(finalResult.error)
@@ -74,7 +69,7 @@ class ChangeReplyToEmailWorker(
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.putChangeReplyToEmail(newEmail).body
+        apiClient.putChangeReplyToEmail(newEmail, enabled).body
     }
     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 

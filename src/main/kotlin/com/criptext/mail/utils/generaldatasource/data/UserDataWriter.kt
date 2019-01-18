@@ -192,7 +192,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                         filesDir, mail.metadataKey, mail.content,
                         db.accountDao().getLoggedInAccount()!!.recipientId).first)
                 jsonObject.put("preview", mail.preview)
-                jsonObject.put("from", mail.fromAddress)
+                jsonObject.put("fromAddress", mail.fromAddress)
                 jsonObject.put("subject", mail.subject)
                 jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))

@@ -106,6 +106,11 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         }
     }
 
+    fun enableReplyTo(isEnabled: Boolean){
+        settingsReplyToEmail.isEnabled = isEnabled
+        settingsReplyToEmail.isClickable = isEnabled
+    }
+
     fun enable2FASwitch(isEnabled: Boolean){
         twoFASwitch.isEnabled = isEnabled
     }

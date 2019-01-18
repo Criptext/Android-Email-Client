@@ -8,7 +8,7 @@ import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
-import com.criptext.mail.signal.SignalExternalAddress
+import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
@@ -196,7 +196,7 @@ object EmailInsertionSetup {
         val senderDeviceId = metadata.senderDeviceId
         var senderRecipientId = metadata.senderRecipientId
         if (metadata.isExternal != null && metadata.isExternal) {
-            senderRecipientId = SignalExternalAddress.recipientId
+            senderRecipientId = SignalUtils.externalRecipientId
         }
         return Pair(senderDeviceId, senderRecipientId)
     }

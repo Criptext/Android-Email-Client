@@ -193,7 +193,7 @@
                 android:paddingStart="17dp"
                 android:id="@+id/settings_change_reply_to"
                 android:visibility="visible"
-                android:clickable="true"
+                android:clickable="false"
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
