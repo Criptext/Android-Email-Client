@@ -15,6 +15,16 @@ object EmailAddressUtils {
     val extractRecipientIdFromCriptextAddress: (String) -> String =
             { address -> address.substring(0, address.length - CRIPTEXT_DOMAIN_SUFFIX.length) }
 
+    fun checkIfOnlyHasEmail(contactAddress: String): Boolean{
+        if(contactAddress.contains("<") && contactAddress.lastIndexOf("<") == 0)
+            return true
+        if(!contactAddress.contains("<") && !contactAddress.contains(">"))
+            return true
+        if(contactAddress.contains("@") && !contactAddress.contains(" "))
+            return true
+        return false
+    }
+
     fun extractEmailAddress(contactAddress: String): String{
         val leftBracket = contactAddress.lastIndexOf("<")
         val rightBracket = contactAddress.lastIndexOf(">")

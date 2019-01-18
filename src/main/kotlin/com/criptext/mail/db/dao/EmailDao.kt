@@ -16,7 +16,7 @@ import java.util.*
 
     @Query("""SELECT * FROM email
             left join email_label on email.id = email_label.emailId
-            WHERE delivered in (:deliveryTypes)
+            WHERE delivered in (:deliveryTypes) AND (date > date('now') AND date <= date('now','-3 day'))
             AND NOT EXISTS
             (SELECT * FROM email_label WHERE email_label.emailId = email.id and email_label.labelId IN (:rejectedLabels))
             """)
