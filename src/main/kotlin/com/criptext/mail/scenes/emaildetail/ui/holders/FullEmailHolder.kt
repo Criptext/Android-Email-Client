@@ -106,6 +106,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
                                adapter: FullEmailListAdapter, position: Int){
         val popupMenu = createPopupMenu(fullEmail)
+        if(fullEmail.email.boundary == null)
+            popupMenu.menu.findItem(R.id.source).isVisible = false
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.reply_all ->

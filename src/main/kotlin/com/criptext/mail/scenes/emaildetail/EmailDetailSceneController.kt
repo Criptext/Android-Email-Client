@@ -410,10 +410,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
         override fun onSourceOptionSelected(fullEmail: FullEmail) {
-            if(fullEmail.headers.isNullOrEmpty())
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-            else
-                host.goToScene(EmailSourceParams(fullEmail.headers!!), true)
+            if(fullEmail.headers != null && fullEmail.email.boundary != null)
+                host.goToScene(EmailSourceParams(EmailUtils.getEmailSource(
+                        headers = fullEmail.headers!!,
+                        boundary = fullEmail.email.boundary!!,
+                        content = fullEmail.email.content
+                )), true)
         }
 
         override fun onCollapsedClicked() {

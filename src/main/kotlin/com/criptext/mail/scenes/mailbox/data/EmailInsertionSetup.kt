@@ -30,6 +30,7 @@ object EmailInsertionSetup {
             fromAddress = if(metadata.fromContact.name.isEmpty()) metadata.fromContact.email
                 else metadata.fromContact.name + " <${metadata.fromContact.email}>",
             replyTo = metadata.replyTo,
+            boundary = metadata.boundary,
             unread = metadata.unread,
             date = DateAndTimeUtils.getDateFromString(
                     metadata.date,

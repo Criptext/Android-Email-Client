@@ -33,13 +33,14 @@ data class EmailMetadata(
         val fileKey: String?,
         val secure: Boolean,
         val isSpam: Boolean,
-        val isExternal: Boolean?) {
+        val isExternal: Boolean?,
+        val boundary: String?) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
                     fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true,
-                    trashDate = null, replyTo = replyTo)
+                    trashDate = null, replyTo = replyTo, boundary = boundary)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -67,6 +68,7 @@ data class EmailMetadata(
                     cc = getCCArray(emailData),
                     bcc = getBCCArray(emailData),
                     replyTo = if(emailData.isNull("replyTo")) null else emailData.getString("replyTo"),
+                    boundary = if(emailData.isNull("boundary")) null else emailData.getString("boundary"),
                     messageId = emailData.getString("messageId"),
                     metadataKey = emailData.getLong("metadataKey"),
                     date = emailData.getString("date"),
@@ -166,5 +168,6 @@ data class EmailMetadata(
         val unread: Boolean,
         val status: DeliveryTypes,
         val secure: Boolean,
-        val trashDate: String?)
+        val trashDate: String?,
+        val boundary: String?)
 }

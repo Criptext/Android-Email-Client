@@ -79,7 +79,8 @@ class FeedControllerTest {
             unread = false, threadId = "__THREAD_ID__", content = "Bla",
             delivered = DeliveryTypes.NONE, messageId = "__THREAD_ID__",
             metadataKey = 1, preview = "__PREVIEW__", secure = false, unsentDate = Date(), trashDate = null,
-            replyTo = null, fromAddress = "Mayer Mizrachi <mayer@jigl.com>")
+            replyTo = null, fromAddress = "Mayer Mizrachi <mayer@jigl.com>",
+            boundary = null)
 
     private fun createFeedItems(size: Int): List<ActivityFeedItem> {
         return (1..size).map {
