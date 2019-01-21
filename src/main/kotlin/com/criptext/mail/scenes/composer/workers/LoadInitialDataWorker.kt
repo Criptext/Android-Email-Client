@@ -44,18 +44,23 @@ class LoadInitialDataWorker(
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
+        val replyTo = fullEmail.email.replyTo
+        val replyToCOntact = if(replyTo == null) null
+        else
+            Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
+                    isTrusted = false)
         val to = if (replyToAll) {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
             else
                 fullEmail.to.filter { it.email != userEmailAddress }
-                    .plus(fullEmail.from)
+                    .plus(replyToCOntact ?: fullEmail.from)
         }
         else {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
             else
-                listOf(fullEmail.from)
+                listOf(replyToCOntact ?: fullEmail.from)
         }
 
         val template = if(replyToAll) (composerType as ComposerType.ReplyAll).template
