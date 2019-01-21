@@ -76,7 +76,7 @@ data class Email(
                         messageId = json.getString("messageId"),
                         threadId = json.getString("threadId"),
                         fromAddress = if(json.has("fromAddress")) json.getString("fromAddress") else "",
-                        replyTo = if(json.has("replyTo")) json.getString("replyTo") else "",
+                        replyTo = if(json.has("replyTo")) json.getString("replyTo") else null,
                         unread = json.getBoolean("unread"),
                         secure = json.getBoolean("secure"),
                         content = json.getString("content"),
