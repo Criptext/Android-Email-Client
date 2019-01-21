@@ -23,6 +23,8 @@ interface SignalClient {
      */
     fun  createSessionsFromBundles(bundles: List<PreKeyBundleShareData.DownloadBundle>)
 
+    fun  deleteSessions(addresses: List<SignalProtocolAddress>)
+
     /**
      * encrypts a message using Signal.
      * @param recipientId the username of the only Criptext user that can decrypt this message
@@ -94,6 +96,10 @@ interface SignalClient {
 
         override fun createSessionsFromBundles(bundles: List<PreKeyBundleShareData.DownloadBundle>) {
             bundles.map(createNewSessionParams).forEach(buildNewSession)
+        }
+
+        override fun deleteSessions(addresses: List<SignalProtocolAddress>) {
+            addresses.forEach { store.deleteSession(it) }
         }
 
         override fun encryptMessage(recipientId: String, deviceId: Int, plainText: String): SignalEncryptedData {

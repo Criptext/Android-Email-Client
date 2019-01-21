@@ -111,6 +111,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.mailbox.emailsource.EmailSourceActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.replyto.ReplyToActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".services.InstanceIdService"

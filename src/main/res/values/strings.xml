@@ -107,6 +107,7 @@
   <string name="title_recovery_email">Recovery Email</string>
   <string name="title_signature">Signature</string>
   <string name="title_signature_cap">SIGNATURE</string>
+  <string name="title_reply_to_cap">REPLY TO EMAIL</string>
   <string name="done_signature">DONE</string>
   <string name="title_recovery_email_cap">RECOVERY EMAIL</string>
   <string name="title_change_password_cap">CHANGE PASSWORD</string>
@@ -144,6 +145,7 @@
   <string name="button_change_email_confirm">Change Email</string>
   <string name="recovery_email_has_changed">Recovery email changed successfully</string>
   <string name="reply_to_email_has_changed">Reply To email changed successfully</string>
+  <string name="reply_to_email_removed">Reply To email removed successfully</string>
   <string name="recovery_email_change_fail_same">Recovery email already is %1$s</string>
   <string name="two_fa_button">Got it!</string>
   <string name="title_warning_two_fa">

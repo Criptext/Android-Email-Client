@@ -33,5 +33,5 @@
         android:id="@+id/source"
         app:showAsAction="collapseActionView"
         android:title="@string/email_source"
-        android:visible="false"/>
+        android:visible="true"/>
 </menu>

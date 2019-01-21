@@ -269,6 +269,7 @@ interface SettingsScene{
         override fun updateUserSettings(model: SettingsModel) {
             generalView.setRecoveryEmailConfirmationText(model.isEmailConfirmed)
             generalView.enable2FASwitch(true)
+            generalView.enableReplyTo(true)
             generalView.enablePrivacyOption(true)
             generalView.set2FA(model.hasTwoFA)
             generalView.setDarkTheme(

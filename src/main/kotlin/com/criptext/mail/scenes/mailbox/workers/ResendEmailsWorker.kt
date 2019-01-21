@@ -19,6 +19,7 @@ import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.data.SentMailData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.*
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -26,6 +27,7 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
+import org.whispersystems.libsignal.SignalProtocolAddress
 import java.io.File
 
 class ResendEmailsWorker(
@@ -175,11 +177,19 @@ class ResendEmailsWorker(
         val knownAddresses = findKnownAddresses(criptextRecipients)
 
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
-        val bundlesJSONArray = JSONArray(findKeyBundlesResponse.body)
+        val bundlesJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("keyBundles")
+        val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
             signalClient.createSessionsFromBundles(downloadedBundles)
+        }
+        if (blackListedJSONArray.length() > 0) {
+            for (i in 0 until blackListedJSONArray.length())
+            {
+                val addresses = SignalUtils.getSignalAddressFromJSON(blackListedJSONArray[i].toString())
+                signalClient.deleteSessions(addresses)
+            }
         }
     }
 

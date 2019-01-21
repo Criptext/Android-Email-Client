@@ -30,6 +30,7 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.whispersystems.libsignal.SignalProtocolAddress
 import java.io.File
 
 
@@ -82,11 +83,19 @@ class SendMailWorker(private val signalClient: SignalClient,
         val knownAddresses = findKnownAddresses(criptextRecipients)
 
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
-        val bundlesJSONArray = JSONArray(findKeyBundlesResponse.body)
+        val bundlesJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("keyBundles")
+        val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
             signalClient.createSessionsFromBundles(downloadedBundles)
+        }
+        if (blackListedJSONArray.length() > 0) {
+            for (i in 0 until blackListedJSONArray.length())
+            {
+                val addresses = SignalUtils.getSignalAddressFromJSON(blackListedJSONArray[i].toString())
+                signalClient.deleteSessions(addresses)
+            }
         }
     }
 

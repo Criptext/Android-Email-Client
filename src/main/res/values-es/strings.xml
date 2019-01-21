@@ -108,6 +108,7 @@
   <string name="title_signature">Firma</string>
   <string name="done_signature">LISTO</string>
   <string name="title_signature_cap">FIRMA</string>
+  <string name="title_reply_to_cap">CORREO DE RESPUESTA</string>
   <string name="title_recovery_email_cap">CORREO DE RECUPERACIÓN</string>
     <string name="title_change_password_cap">CAMBIAR CONTRASEÑA</string>
   <string name="title_allow_notifications">Permitir Notificaciones</string>
@@ -144,6 +145,7 @@
   <string name="button_change_email_confirm">Cambiar Correo</string>
   <string name="recovery_email_has_changed">Correo de confirmación modificado exitosamente</string>
   <string name="reply_to_email_has_changed">Correo de respuesta modificado exitosamente</string>
+  <string name="reply_to_email_removed">Correo de respuesta removido exitosamente</string>
   <string name="recovery_email_change_fail_same">Correo de recuperación ya es %1$s</string>
   <string name="two_fa_button">¡Listo!</string>
   <string name="title_warning_two_fa">

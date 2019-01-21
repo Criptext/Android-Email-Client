@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    xmlns:aztec="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mailbox_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <LinearLayout
+            android:layout_toEndOf="@id/mailbox_nav_button"
+            android:layout_width="match_parent"
+            android:id="@+id/mailbox_title_layout"
+            android:layout_marginStart="-10dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:visibility="visible"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/mailbox_back_button"
+                android:src="@drawable/back"
+                android:gravity="center"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:padding="10dp"
+                android:layout_height="70dp"
+                android:layout_width="70dp" />
+
+            <TextView
+                android:id="@+id/mailbox_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_height="match_parent"
+                android:text="@string/title_reply_to_cap"
+                android:gravity="left|center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp">
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/textview_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/off"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"/>
+
+        <Switch
+            android:id="@+id/switch_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?attr/criptextLeftMenuSeparator"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/view_signature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_margin="15dp"
+            android:textColorHint="@color/signup_hint_color"
+            android:hint="@string/reply_to_email_hint"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+            app:hintTextAppearance="@style/NormalTextAppearence">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/change_email_button"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:background="@drawable/btn_welcome_tour"
+            android:enabled="false"
+            android:text="@string/button_change_email_confirm"
+            android:textAllCaps="false"
+            android:textColor="@drawable/btn_sign_in" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -78,7 +78,6 @@ class SettingsController(
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.Set2FA -> onSet2FA(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
-            is SettingsResult.SetReplyToEmail -> onReplyEmailChanged(result)
         }
     }
 
@@ -143,10 +142,6 @@ class SettingsController(
                         is DialogType.DeleteAccount -> {
                             scene.toggleGeneralDialogLoad(true)
                             generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
-                        }
-                        is DialogType.ReplyToChange -> {
-                            scene.toggleGeneralDialogWithInputLoad(true)
-                            dataSource.submitRequest(SettingsRequest.SetReplyToEmail(result.textInput))
                         }
                     }
                 }
@@ -226,12 +221,7 @@ class SettingsController(
         }
 
         override fun onReplyToChangeClicked() {
-            val data = DialogData.DialogDataForReplyToEmail(
-                    title = UIMessage(R.string.title_change_reply_to),
-                    replyToEmail = model.replyToEmail,
-                    type = DialogType.ReplyToChange()
-            )
-            scene.showGeneralDialogWithInput(model.recoveryEmail, data)
+            host.goToScene(ReplyToParams(model.replyToEmail ?: ""), false)
         }
 
         override fun onPrivacyPoliciesClicked() {
@@ -441,20 +431,6 @@ class SettingsController(
             }
             is SettingsResult.ChangeContactName.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_updating_account))
-            }
-        }
-    }
-
-    private fun onReplyEmailChanged(result: SettingsResult.SetReplyToEmail){
-        scene.toggleGeneralDialogWithInputLoad(false)
-        scene.dismissReplyToEmailDialog()
-        when(result) {
-            is SettingsResult.SetReplyToEmail.Success -> {
-                model.replyToEmail = result.replyToEmail
-                scene.showMessage(UIMessage(R.string.reply_to_email_has_changed))
-            }
-            is SettingsResult.SetReplyToEmail.Failure -> {
-                scene.showMessage(result.message)
             }
         }
     }

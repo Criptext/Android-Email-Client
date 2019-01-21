@@ -58,9 +58,4 @@ sealed class SettingsResult{
         data class NoDevicesAvailable(val message: UIMessage): SyncBegin()
         data class Failure(val message: UIMessage): SyncBegin()
     }
-
-    sealed class SetReplyToEmail: SettingsResult() {
-        data class Success(val replyToEmail: String): SetReplyToEmail()
-        data class Failure(val message: UIMessage): SetReplyToEmail()
-    }
 }
