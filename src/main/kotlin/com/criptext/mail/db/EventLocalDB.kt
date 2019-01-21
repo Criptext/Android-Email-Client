@@ -4,6 +4,8 @@ import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.api.models.TrackingUpdate
 import com.criptext.mail.db.models.*
+import com.criptext.mail.db.models.signal.CRPreKey
+import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
@@ -15,6 +17,14 @@ import java.io.File
 import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
+
+    fun getAllPreKeys(): List<CRPreKey> {
+        return db.rawPreKeyDao().getAll()
+    }
+
+    fun insertPreKeys(preKeys : List<CRPreKey>){
+        db.rawPreKeyDao().insertAll(preKeys)
+    }
 
     fun logoutNukeDB() {
         EmailUtils.deleteEmailsInFileSystem(filesDir, db.accountDao().getLoggedInAccount()!!.recipientId)
