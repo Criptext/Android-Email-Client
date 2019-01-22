@@ -160,11 +160,12 @@ abstract class AppDatabase : RoomDatabase() {
                     WHERE email_contact.emailId = email.id
                     AND email_contact.type = 2""")
                 while(cursor.moveToNext()){
-                    val fromEmail = if(cursor.getString(cursor.getColumnIndex("name")).isEmpty())
+                    val fromEmail = (if(cursor.getString(cursor.getColumnIndex("name")).isEmpty())
                         cursor.getString(cursor.getColumnIndex("email"))
                     else
-                        cursor.getString(cursor.getColumnIndex("name")).plus(" <" + cursor.getString(cursor.getColumnIndex("email")) + ">")
-                    database.execSQL("""UPDATE email SET fromAddress = '$fromEmail'
+                        cursor.getString(cursor.getColumnIndex("name")).plus(" <" + cursor.getString(cursor.getColumnIndex("email")) + ">"))
+                            .replace("\"", "")
+                    database.execSQL("""UPDATE email SET fromAddress = "$fromEmail"
                     WHERE email.id = ${cursor.getString(cursor.getColumnIndex("id"))}
                 """)
                 }
