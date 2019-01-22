@@ -8,6 +8,7 @@ import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.lang.StringBuilder
 
 
 object EmailUtils {
@@ -134,6 +135,21 @@ object EmailUtils {
         inputStream.close()
         outputStream.flush()
         outputStream.close()
+    }
+
+    fun getEmailSource(headers: String, boundary: String, content: String): String {
+        val builder = StringBuilder()
+        builder.append("$headers\n")
+        builder.append("--$boundary\n")
+        builder.append("Content-Type: text/plain; charset=UTF-8\n")
+        builder.append("Content-Transfer-Encoding: quoted-printable\n")
+        builder.append("${HTMLUtils.html2text(content)}\n")
+        builder.append("--$boundary\n")
+        builder.append("Content-Type: text/html; charset=UTF-8\n")
+        builder.append("Content-Transfer-Encoding: 7bit\n")
+        builder.append("$content\n")
+        builder.append("--$boundary\n")
+        return builder.toString()
     }
 
     class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,

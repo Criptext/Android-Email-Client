@@ -193,6 +193,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                         db.accountDao().getLoggedInAccount()!!.recipientId).first)
                 jsonObject.put("preview", mail.preview)
                 jsonObject.put("fromAddress", mail.fromAddress)
+                jsonObject.put("boundary", mail.boundary)
                 jsonObject.put("subject", mail.subject)
                 jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
@@ -268,6 +269,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 2
+        const val FILE_SYNC_VERSION = 3
     }
 }

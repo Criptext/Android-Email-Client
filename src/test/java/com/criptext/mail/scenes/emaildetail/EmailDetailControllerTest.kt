@@ -121,7 +121,8 @@ open class EmailDetailControllerTest {
                         trashDate = null,
                         unsentDate = DateAndTimeUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
-                                null)),
+                                null),
+                        boundary = null),
                     labels = emptyList(),
                     to = emptyList(),
                     files = arrayListOf(CRFile(id = 0, token = "efhgfdgdfsg$it",

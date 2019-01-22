@@ -107,7 +107,8 @@ class SaveEmailWorker(
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
                 replyTo = null,
-                trashDate = DateAndTimeUtils.printDateWithServerFormat(Date()))
+                trashDate = DateAndTimeUtils.printDateWithServerFormat(Date()),
+                boundary = null)
     }
 
     private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(account.userEmail)

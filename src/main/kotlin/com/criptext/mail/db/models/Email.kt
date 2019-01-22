@@ -33,6 +33,9 @@ data class Email(
         @ColumnInfo(name = "replyTo")
         var replyTo: String?,
 
+        @ColumnInfo(name = "boundary")
+        var boundary: String?,
+
         @ColumnInfo(name = "unread")
         var unread : Boolean,
 
@@ -79,6 +82,7 @@ data class Email(
                         replyTo = if(json.has("replyTo")) json.getString("replyTo") else null,
                         unread = json.getBoolean("unread"),
                         secure = json.getBoolean("secure"),
+                        boundary = if(json.has("boundary")) json.getString("boundary") else null,
                         content = json.getString("content"),
                         preview = if(json.has("preview")) json.getString("preview") else "",
                         subject = if(json.has("subject")) json.getString("subject") else "",

@@ -21,7 +21,8 @@ object MailboxTestUtils {
                             subject = "message #$number", delivered = DeliveryTypes.DELIVERED,
                             date = Date(dateMilis + number), metadataKey = number + 100L,
                             isMuted = false, unsentDate = Date(dateMilis + number), trashDate = null,
-                            fromAddress = "Mayer Mizrachi <mayer@jigl.com>", replyTo = null)
+                            fromAddress = "Mayer Mizrachi <mayer@jigl.com>", replyTo = null,
+                            boundary = null)
 
     fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
 
