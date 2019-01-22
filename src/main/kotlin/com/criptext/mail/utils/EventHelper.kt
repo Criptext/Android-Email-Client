@@ -47,7 +47,7 @@ class EventHelper(private val db: EventLocalDB,
 
     val processEvents: (Pair<List<Event>, Boolean>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
         Result.of {
-            val shouldReload = processTrackingUpdates(events.first).or(processNewEmails(events.first))
+            val shouldReload = processNewEmails(events.first).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
                     .or(processThreadLabelChanged(events.first)).or(processEmailDeletedPermanently(events.first))

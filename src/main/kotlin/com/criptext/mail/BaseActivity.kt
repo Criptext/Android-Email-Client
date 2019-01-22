@@ -184,6 +184,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if(!this::controller.isInitialized) return false
         val activeSceneMenu = controller.menuResourceId
         if(activeSceneMenu != null) menuInflater.inflate(activeSceneMenu, menu)
         controller.onMenuChanged(ActivityMenu(menu))
