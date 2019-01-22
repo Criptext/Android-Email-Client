@@ -108,6 +108,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val popupMenu = createPopupMenu(fullEmail)
         if(fullEmail.email.boundary == null)
             popupMenu.menu.findItem(R.id.source).isVisible = false
+
+        if(fullEmail.email.delivered in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING))
+            popupMenu.menu.findItem(R.id.retry)?.isVisible = true
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.reply_all ->
@@ -150,6 +154,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 R.id.source ->
                     emailListener?.onSourceOptionSelected(
                             fullEmail = fullEmail)
+                R.id.retry ->
+                    emailListener?.onRetrySendOptionSelected(
+                            fullEmail = fullEmail,
+                            position = position)
 
             }
             false

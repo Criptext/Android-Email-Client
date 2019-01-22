@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.generaldatasource.workers.*
@@ -162,6 +163,21 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.ResendEmail -> ResendEmailWorker(
+                    filesDir = filesDir,
+                    accountDao = db.accountDao(),
+                    storage = storage,
+                    rawSessionDao = db.rawSessionDao(),
+                    signalClient = signalClient,
+                    db = MailboxLocalDB.Default(db, filesDir),
+                    httpClient = httpClient,
+                    activeAccount = activeAccount!!,
+                    emailId = params.emailId,
+                    position = params.position,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
             )
         }
     }

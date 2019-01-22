@@ -29,4 +29,5 @@ sealed class GeneralRequest {
     class SyncStatus: GeneralRequest()
     data class SyncAccept(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
     data class SyncDenied(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
+    data class ResendEmail(val emailId: Long, val position: Int): GeneralRequest()
 }

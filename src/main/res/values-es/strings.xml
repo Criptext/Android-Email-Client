@@ -444,4 +444,5 @@
   <string name="empty_allmail_message_bottom">En lo absoluto</string>
   <string name="filter_unread">Mostrar no Leídos</string>
   <string name="filter_none">Mostrar Todos</string>
+  <string name="retry">Reintentar Envio</string>
 </resources>

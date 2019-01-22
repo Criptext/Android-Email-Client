@@ -182,17 +182,20 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
             for (mail in allMails) {
                 if(mail == allMails.last())
                     lastId = mail.id
+                val emailContent = EmailUtils.getEmailContentFromFileSystem(
+                        filesDir, mail.metadataKey, mail.content,
+                        db.accountDao().getLoggedInAccount()!!.recipientId)
                 val jsonObject = JSONObject()
                 jsonObject.put("id", mail.id)
                 jsonObject.put("messageId", mail.messageId)
                 jsonObject.put("threadId", mail.threadId)
                 jsonObject.put("unread", mail.unread)
                 jsonObject.put("secure", mail.secure)
-                jsonObject.put("content", EmailUtils.getEmailContentFromFileSystem(
-                        filesDir, mail.metadataKey, mail.content,
-                        db.accountDao().getLoggedInAccount()!!.recipientId).first)
+                jsonObject.put("content", emailContent.first)
                 jsonObject.put("preview", mail.preview)
                 jsonObject.put("fromAddress", mail.fromAddress)
+                if (emailContent.second != null)
+                    jsonObject.put("headers", emailContent.second)
                 jsonObject.put("boundary", mail.boundary)
                 jsonObject.put("subject", mail.subject)
                 jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
