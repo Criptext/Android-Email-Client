@@ -36,7 +36,8 @@ class FileSeeder {
                         emailId = 1,
                         readOnly = false,
                         shouldDuplicate = false,
-                        fileKey = "__FILE_KEY__"
+                        fileKey = "__FILE_KEY__",
+                        cid = null
                 )
 
                 2 -> file = CRFile( id = 0, token = "XXXXXXXXXX2312XXXXX2",
@@ -47,7 +48,8 @@ class FileSeeder {
                         emailId = 1,
                         readOnly = true,
                         shouldDuplicate = false,
-                        fileKey = "__FILE_KEY__"
+                        fileKey = "__FILE_KEY__",
+                        cid = null
                 )
             }
             return file

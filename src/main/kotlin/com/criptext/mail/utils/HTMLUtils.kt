@@ -3,6 +3,7 @@ package com.criptext.mail.utils
 import android.text.Html
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
+import com.criptext.mail.utils.WebViewUtils.Companion.replaceCIDScript
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -14,6 +15,7 @@ class HTMLUtils {
         private val whiteList = Whitelist.relaxed()
                 .addTags("style", "title", "head")
                 .addAttributes(":all", "class", "style")
+                .addProtocols("img", "src", "cid")
 
         fun html2text(html: String): String {
 
@@ -32,7 +34,7 @@ class HTMLUtils {
             else "<style type=\"text/css\">body{color:#000;background-color:#fff;} </style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
-            return head + htmlText + collapseScript() + closedTag
+            return head + htmlText + replaceCIDScript() + collapseScript() + closedTag
         }
 
         fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String, message: String): String {

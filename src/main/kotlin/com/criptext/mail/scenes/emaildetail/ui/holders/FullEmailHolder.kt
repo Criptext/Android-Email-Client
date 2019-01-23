@@ -56,9 +56,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val leftImageView: CircleImageView
     private val unsendProgressBar: ProgressBar
 
+    private var listener: FullEmailListAdapter.OnFullEmailEventListener? = null
+
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                      adapter: FullEmailListAdapter, position: Int) {
+        listener = emailListener
+
         view.setOnClickListener {
 
             emailListener?.ontoggleViewOpen(
@@ -362,6 +366,15 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 reSizeZoomLayout(view, true)
                 setupZoomLayout()
             }
+
+            override fun onLoadResource(view: WebView?, url: String?) {
+                if (url?.contains("cid") == true) {
+                    val cid = url.substringAfter("cid:")
+                    listener?.onResourceLoaded(cid)
+                } else {
+                    super.onLoadResource(view, url)
+                }
+            }
         }
         val javascriptInterface = WebviewJavascriptInterface(context, zoomLayout, bodyWebView)
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
@@ -417,8 +430,16 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     }
 
+    fun updateInlineImage(cid: String, filePath: String){
+        bodyWebView.evaluateJavascript("replace('cid:$cid', 'file://$filePath');", null)
+    }
+
     fun updateAttachmentProgress(attachmentPosition: Int){
         attachmentsRecyclerView.adapter?.notifyItemChanged(attachmentPosition)
+    }
+
+    fun removeAttachmentAt(attachmentPosition: Int){
+        attachmentsRecyclerView.adapter?.notifyItemRemoved(attachmentPosition)
     }
 
     private fun showStartGuideMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail){

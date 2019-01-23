@@ -102,7 +102,7 @@
   <string name="hint_custom_dialog">Introduce el nombre</string>
   <string name="title_profile_photo">Foto de Perfil</string>
   <string name="title_change_password">Cambiar Contraseña</string>
-  <string name="title_change_reply_to">Cambiar Dirección de Respuesta</string>
+  <string name="title_change_reply_to">Cambiar Correo de Respuesta</string>
   <string name="title_sync_phonebook">Sincronizar Contactos del Teléfono</string>
     <string name="title_recovery_email">Correo de Recuperación</string>
   <string name="title_signature">Firma</string>
@@ -179,7 +179,7 @@
   <string name="remove_device_dialog_message">Eliminar este dispositivo hará que se cierre la sesión de forma remota.</string>
   <string name="removing_device_dialog_message">Eliminando dispositivo…</string>
   <string name="privacy_toolbar_title">SEGURIDAD Y PRIVACIDAD</string>
-  <string name="email_source_toolbar_title">FUENTE DE EMAIL</string>
+  <string name="email_source_toolbar_title">FUENTE DEL CORREO</string>
   <string name="pin_lock_switch_text">Usar PIN</string>
   <string name="pin_lock_change">Cambiar Codigo PIN</string>
   <string name="pin_lock_auto">Auto-Bloqueo</string>
@@ -351,7 +351,7 @@
   <string name="mark_as_read">Marcar como leído</string>
   <string name="mark_as_spam">Marcar como Spam</string>
   <string name="print">Imprimir</string>
-  <string name="email_source">Fuente del Correo</string>
+  <string name="email_source">Mostrar Original</string>
   <string name="print_all">Imprimir Todo</string>
   <string name="mark_as_unread">Marcar como No Leído</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>

@@ -233,6 +233,25 @@ object EmailInsertionSetup {
         } else null
     }
 
+    private fun getDecryptedFileKeys(signalClient: SignalClient,
+                                    metadata: EmailMetadata): List<String> {
+        val senderId = getSenderId(metadata)
+        val fileKeys = mutableListOf<String>()
+
+        metadata.files.forEach {
+            if (metadata.messageType != null && senderId.first != null) {
+                val encryptedData = SignalEncryptedData(
+                        encryptedB64 = it.fileKey,
+                        type = metadata.messageType)
+
+                fileKeys.add(decryptMessage(signalClient = signalClient,
+                        recipientId = senderId.second, deviceId = senderId.first!!,
+                        encryptedData = encryptedData))
+            } else fileKeys.add("")
+        }
+        return fileKeys
+    }
+
     /**
      * Inserts all the rows and relations needed for a new email in a single transaction
      * @param apiClient Abstraction for the network calls needed
@@ -267,6 +286,11 @@ object EmailInsertionSetup {
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
         val decryptedHeaders = getDecryptedEmailBody(signalClient, headers, metadata)
+        val decryptedFileKeys = getDecryptedFileKeys(signalClient, metadata)
+        metadata.files.forEachIndexed { index, crFile ->
+            crFile.fileKey = decryptedFileKeys[index]
+        }
+
 
         EmailUtils.saveEmailInFileSystem(
                 filesDir = filesDir,
@@ -274,8 +298,6 @@ object EmailInsertionSetup {
                 metadataKey = metadata.metadataKey,
                 content = decryptedBody,
                 headers = decryptedHeaders)
-
-        val decryptedFileKey = getDecryptedFileKey(signalClient, metadata)
 
         val lonReturn = dao.runTransaction {
             EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(
@@ -286,7 +308,7 @@ object EmailInsertionSetup {
                     status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
             else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
             else DeliveryTypes.NONE), HTMLUtils.createEmailPreview(decryptedBody), labels,
-                    metadata.files, decryptedFileKey)
+                    metadata.files, metadata.files[0].fileKey)
         }
         println(lonReturn)
     }

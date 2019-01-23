@@ -154,6 +154,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("status", file.status)
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(file.date))
                 jsonObject.put("readOnly", file.readOnly)
+                if(file.cid != null)
+                    jsonObject.put("cid", file.cid)
                 jsonObject.put("emailId", file.emailId)
                 jsonObject.put("mimeType", com.criptext.mail.utils.file.FileUtils.getMimeType(file.name))
                 if(key != null && key.contains(":")) {

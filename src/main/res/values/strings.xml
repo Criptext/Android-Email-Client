@@ -102,7 +102,7 @@
   <string name="hint_custom_dialog">Enter the name</string>
   <string name="title_profile_photo">Profile Photo</string>
   <string name="title_change_password">Change Password</string>
-  <string name="title_change_reply_to">Change Reply To Address</string>
+  <string name="title_change_reply_to">Change Reply To Email</string>
   <string name="title_sync_phonebook">Sync Phonebook Contacts</string>
   <string name="title_recovery_email">Recovery Email</string>
   <string name="title_signature">Signature</string>
@@ -351,7 +351,7 @@
   <string name="mark_as_read">Mark as read</string>
   <string name="mark_as_spam">Mark as Spam</string>
   <string name="print">Print</string>
-  <string name="email_source">Email Source</string>
+  <string name="email_source">Show Source</string>
   <string name="print_all">Print All</string>
   <string name="mark_as_unread">Mark as Unread</string>
   <string name="criptextdotcom">gcarlo\@criptext.com</string>

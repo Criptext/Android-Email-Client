@@ -27,6 +27,7 @@ import java.io.*
 import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileSize: Long,
+                               private val cid: String?,
                                private val fileName: String,
                                private val fileToken: String,
                                private val emailId: Long,
@@ -76,8 +77,10 @@ class DownloadAttachmentWorker(private val fileSize: Long,
             val file = File(downloadPath, fileMetadata.name)
             val fileStream = FileOutputStream(file)
             val onNewChunkDownload: (Int) -> Unit = { index ->
-                reporter.report( EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
-                        index * 100 / fileMetadata.chunks))
+                if(cid == null) {
+                    reporter.report(EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
+                            index * 100 / fileMetadata.chunks))
+                }
 
                 val data = if(fileKey != null) {
                     AESUtil(fileKey).decrypt(fileServiceAPIClient
@@ -125,7 +128,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     override fun work(reporter: ProgressReporter<EmailDetailResult.DownloadFile>): EmailDetailResult.DownloadFile? {
         if(AndroidFs.fileExistsInDownloadsDir(fileName, fileSize)){
             filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
-            return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
+            return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
         }
         val result = workOperation(reporter)
 
@@ -137,7 +140,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
             result
 
         return when (finalResult) {
-            is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath)
+            is Result.Success -> EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
             is Result.Failure -> catchException(finalResult.error)
         }
     }

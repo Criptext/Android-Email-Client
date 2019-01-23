@@ -131,7 +131,8 @@ class SaveEmailWorker(
                     readOnly = false,
                     emailId = 0,
                     shouldDuplicate = shouldDuplicateFile(it.filetoken),
-                    fileKey = fileKey ?: ""
+                    fileKey = fileKey ?: "",
+                    cid = null
             )
         }
 

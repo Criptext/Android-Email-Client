@@ -249,6 +249,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onContinueDraftOptionSelected(fullEmail: FullEmail)
         fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int)
+        fun onResourceLoaded(cid: String)
         fun showStartGuideMenu(view: View)
         fun showStartGuideEmailIsRead(view: View)
     }
