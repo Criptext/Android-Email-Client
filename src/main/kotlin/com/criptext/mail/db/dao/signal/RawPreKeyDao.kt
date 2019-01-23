@@ -25,6 +25,9 @@ interface RawPreKeyDao {
     @Query("SELECT * from raw_prekey where id = :id")
     fun find(id: Int): CRPreKey?
 
+    @Query("SELECT * from raw_prekey")
+    fun getAll(): List<CRPreKey>
+
     @Insert
     fun insert(crPreKey: CRPreKey)
 }

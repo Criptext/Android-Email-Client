@@ -72,7 +72,7 @@ interface SignalKeyGenerator {
         }
     }
 
-    private class RegistrationData {
+    private class RegistrationData() {
         val registrationId: Int = KeyHelper.generateRegistrationId(false)
         val identityKeyPair: IdentityKeyPair = KeyHelper.generateIdentityKeyPair()
         val signedPreKeyId: Int = Random().nextInt(99) + 1

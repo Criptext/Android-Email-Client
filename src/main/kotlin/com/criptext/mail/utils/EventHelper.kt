@@ -8,12 +8,16 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.signal.CRPreKey
+import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalKeyGenerator
 import com.github.kittinunf.result.Result
+import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
 import java.io.IOException
@@ -47,7 +51,8 @@ class EventHelper(private val db: EventLocalDB,
 
     val processEvents: (Pair<List<Event>, Boolean>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
         Result.of {
-            val shouldReload = processNewEmails(events.first).or(processTrackingUpdates(events.first))
+
+            val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
                     .or(processThreadLabelChanged(events.first)).or(processEmailDeletedPermanently(events.first))
@@ -57,6 +62,41 @@ class EventHelper(private val db: EventLocalDB,
             Triple(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
                     updateBannerData, linkDevicesEvents)
         }
+    }
+
+    private fun processLowPreKeys(events: List<Event>): Boolean {
+        val isLowOnPreKeysEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.lowOnPreKeys }
+        val toEventIds: (Event) -> Long =
+                { it.rowid }
+
+        val eventIdsToAcknowledge = events
+                .filter(isLowOnPreKeysEvent)
+                .map(toEventIds)
+
+        if(eventIdsToAcknowledge.isNotEmpty()){
+            val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
+            val remainingKeys = db.getAllPreKeys().map { it.id }
+            val registrationBundles = keyGenerator.register(activeAccount.recipientId,
+                    activeAccount.deviceId)
+
+
+            val response = Result.of {
+                mailboxAPIClient.insertPreKeys(
+                        preKeys = registrationBundles.uploadBundle.preKeys,
+                        excludedKeys = remainingKeys)
+            }
+            if(response is Result.Success){
+                val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
+                    CRPreKey(id = key, byteString = value)
+                }.filter { it.id !in remainingKeys }
+                db.insertPreKeys(preKeyList)
+
+                if (acknoledgeEvents)
+                    acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it })
+            }
+        }
+
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
     private fun processLinkRequestEvents(events: List<Event>): Boolean {

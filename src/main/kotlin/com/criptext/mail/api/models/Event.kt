@@ -25,6 +25,7 @@ data class Event(val rowid: Long, val cmd: Int, val params: String) {
             const val newEmail = 101
             const val trackingUpdate = 102
             const val newError = 104
+            const val lowOnPreKeys = 107
 
             //Events triggered by link device feature
             const val deviceAuthRequest = 201
