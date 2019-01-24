@@ -33,5 +33,11 @@
         android:id="@+id/source"
         app:showAsAction="collapseActionView"
         android:title="@string/email_source"/>
+
+    <item
+        android:id="@+id/retry"
+        app:showAsAction="collapseActionView"
+        android:title="@string/retry"
+        android:visible="false"/>
 </menu>
 

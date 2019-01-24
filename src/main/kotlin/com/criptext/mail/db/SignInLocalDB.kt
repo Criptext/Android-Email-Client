@@ -30,7 +30,9 @@ interface SignInLocalDB {
         }
 
         override fun deleteDatabase() {
-            EmailUtils.deleteEmailsInFileSystem(filesDir, db.accountDao().getLoggedInAccount()!!.recipientId)
+            val account = db.accountDao().getLoggedInAccount()
+            if(account != null)
+                EmailUtils.deleteEmailsInFileSystem(filesDir, account.recipientId)
             db.clearAllTables()
         }
 

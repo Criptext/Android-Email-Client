@@ -1,10 +1,7 @@
 package com.criptext.mail.db.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
 import androidx.annotation.Nullable
+import androidx.room.*
 import com.criptext.mail.db.DeliveryTypes
 import org.json.JSONObject
 import java.util.Date
@@ -71,10 +68,13 @@ data class Email(
         @Nullable
         var trashDate: Date?
 ){
+        @Ignore
+        var headers : String? = null
+
         companion object {
             fun fromJSON(jsonString: String): Email{
                 val json = JSONObject(jsonString)
-                return Email(
+                val email = Email(
                         id = json.getLong("id"),
                         messageId = json.getString("messageId"),
                         threadId = json.getString("threadId"),
@@ -97,6 +97,8 @@ data class Email(
                                 json.getString("trashDate"), null) else null
 
                 )
+                email.headers = if(json.has("headers")) json.getString("headers") else null
+                return email
             }
         }
 }

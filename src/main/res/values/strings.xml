@@ -444,4 +444,5 @@
   <string name="empty_allmail_message_bottom">At all!</string>
   <string name="filter_unread">Show Unread</string>
   <string name="filter_none">Show All</string>
+  <string name="retry">Retry Send</string>
 </resources>

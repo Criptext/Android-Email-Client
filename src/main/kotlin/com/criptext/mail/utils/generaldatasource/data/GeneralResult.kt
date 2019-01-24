@@ -163,4 +163,9 @@ sealed class GeneralResult {
         class Success: SyncDeny()
         data class Failure(val message: UIMessage): SyncDeny()
     }
+
+    sealed class ResendEmail: GeneralResult() {
+        data class Success(val position: Int): ResendEmail()
+        class Failure: ResendEmail()
+    }
 }

@@ -48,6 +48,7 @@ interface MailboxLocalDB {
     fun getTotalCounterLabel(labelId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
     fun getEmailById(id: Long): Email?
+    fun getFullEmailById(emailId: Long): FullEmail?
     fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail>
     fun deleteThreads(threadIds: List<String>)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
@@ -65,6 +66,33 @@ interface MailboxLocalDB {
 
 
     class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
+        override fun getFullEmailById(emailId: Long): FullEmail? {
+            val email = db.emailDao().getEmailById(emailId) ?: return null
+            val id = email.id
+            val labels = db.emailLabelDao().getLabelsFromEmail(id)
+            val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+            val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+            val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+            val files = db.fileDao().getAttachmentsFromEmail(id)
+            val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+
+            val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                    email.metadataKey, email.content,
+                    db.accountDao().getLoggedInAccount()!!.recipientId)
+
+            return FullEmail(
+                        email = email.copy(content = emailContent.first),
+                        bcc = contactsBCC,
+                        cc = contactsCC,
+                        from = contactsFROM[0],
+                        files = files,
+                        labels = labels,
+                        to = contactsTO, fileKey = fileKey?.key, headers = emailContent.second)
+
+
+        }
+
         override fun getFileKeyByFileId(id: Long): String? {
             val fileKey = db.fileKeyDao().getFileById(id)
             return if(fileKey != null && !fileKey.key.isNullOrEmpty())

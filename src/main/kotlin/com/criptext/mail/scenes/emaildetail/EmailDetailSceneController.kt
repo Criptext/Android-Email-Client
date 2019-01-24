@@ -64,6 +64,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.UpdateMailbox -> onMailboxUpdate(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
+            is GeneralResult.ResendEmail -> onResendEmail(result)
         }
     }
 
@@ -187,6 +188,24 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
+            }
+        }
+    }
+
+    private fun onResendEmail(resultData: GeneralResult.ResendEmail){
+        when (resultData) {
+            is GeneralResult.ResendEmail.Success -> {
+                model.emails[resultData.position].email.delivered = DeliveryTypes.SENT
+                scene.notifyFullEmailChanged(resultData.position + 1)
+
+                val latestEmailWasUpdated = resultData.position == model.emails.size - 1
+                if (latestEmailWasUpdated) {
+
+                    model.threadPreview = model.threadPreview.copy(
+                            deliveryStatus = DeliveryTypes.SENT)
+                }
+
+                scene.showMessage(UIMessage(R.string.email_sent))
             }
         }
     }
@@ -409,6 +428,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onRetrySendOptionSelected(fullEmail: FullEmail, position: Int) {
+            generalDataSource.submitRequest(GeneralRequest.ResendEmail(fullEmail.email.id, position))
+        }
+
         override fun onSourceOptionSelected(fullEmail: FullEmail) {
             if(fullEmail.headers != null && fullEmail.email.boundary != null)
                 host.goToScene(EmailSourceParams(EmailUtils.getEmailSource(
