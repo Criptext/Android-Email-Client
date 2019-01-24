@@ -46,8 +46,13 @@ class CreateSessionWorker(val httpClient: HttpClient,
     override fun work(reporter: ProgressReporter<SignInResult.CreateSessionFromLink>): SignInResult.CreateSessionFromLink? {
 
         val result = Result.of {
+                    val lastLoggedUser = keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
+                    if(lastLoggedUser.isNotEmpty())
+                        db.deleteDatabase(lastLoggedUser)
+                    else
+                        db.deleteDatabase()
                     keyValueStorage.clearAll()
-                    db.deleteDatabase()
+
                 }
                 .flatMap { signalRegistrationOperation() }
                 .flatMap(storeAccountOperation)

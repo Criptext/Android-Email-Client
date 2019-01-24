@@ -501,6 +501,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 model.hasAskedForPermissions = true
+                model.fileToDownload = Pair(emailPosition, attachmentPosition)
                 return
             }
             val email = model.emails[emailPosition]
@@ -782,6 +783,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             model.hasAskedForPermissions = false
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
         }else{
+            if(model.fileToDownload.first != -1){
+                emailHolderEventListener.onAttachmentSelected(model.fileToDownload.first, model.fileToDownload.second)
+            }
             if(model.inlineImages.isNotEmpty()){
                 model.inlineImages.forEach { inlineFile ->
                     dataSource.submitRequest(EmailDetailRequest.DownloadFile(

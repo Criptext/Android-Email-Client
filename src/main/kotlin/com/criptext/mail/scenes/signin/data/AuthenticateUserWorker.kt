@@ -65,7 +65,7 @@ class AuthenticateUserWorker(
         if(lastLoggedUser.isNotEmpty()) {
             if(!shouldKeepData){
                 keyValueStorage.clearAll()
-                db.deleteDatabase()
+                db.deleteDatabase(lastLoggedUser)
             }
             storedValue = ""
         }
