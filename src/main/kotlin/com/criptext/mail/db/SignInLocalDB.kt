@@ -12,6 +12,7 @@ import java.io.File
 interface SignInLocalDB {
     fun login(): Boolean
     fun accountExistsLocally(username: String): Boolean
+    fun deleteDatabase(user: String)
     fun deleteDatabase()
 
     class Default(applicationContext: Context, private val filesDir: File): SignInLocalDB {
@@ -30,9 +31,11 @@ interface SignInLocalDB {
         }
 
         override fun deleteDatabase() {
-            val account = db.accountDao().getLoggedInAccount()
-            if(account != null)
-                EmailUtils.deleteEmailsInFileSystem(filesDir, account.recipientId)
+            db.clearAllTables()
+        }
+
+        override fun deleteDatabase(user: String) {
+            EmailUtils.deleteEmailsInFileSystem(filesDir, user)
             db.clearAllTables()
         }
 
