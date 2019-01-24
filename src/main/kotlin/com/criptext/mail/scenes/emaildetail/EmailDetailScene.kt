@@ -54,6 +54,8 @@ interface EmailDetailScene {
 
     fun onDecryptedBody(decryptedText: String)
     fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
+    fun updateInlineImage(emailPosition: Int, cid: String, filePath: String)
+    fun removeAttachmentAt(emailPosition: Int, attachmentPosition: Int)
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
@@ -241,6 +243,18 @@ interface EmailDetailScene {
             val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
                     as? FullEmailHolder ?: return
             holder.updateAttachmentProgress(attachmentPosition)
+        }
+
+        override fun updateInlineImage(emailPosition: Int, cid: String, filePath: String) {
+            val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
+                    as? FullEmailHolder ?: return
+            holder.updateInlineImage(cid, filePath)
+        }
+
+        override fun removeAttachmentAt(emailPosition: Int, attachmentPosition: Int) {
+            val holder = recyclerView.findViewHolderForAdapterPosition(emailPosition)
+                    as? FullEmailHolder ?: return
+            holder.removeAttachmentAt(attachmentPosition)
         }
 
         override fun showError(message: UIMessage) {

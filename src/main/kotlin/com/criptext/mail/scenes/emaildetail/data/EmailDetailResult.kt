@@ -63,7 +63,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class DownloadFile : EmailDetailResult() {
-        data class Success(val emailId: Long, val filetoken: String, val filepath: String): DownloadFile()
+        data class Success(val emailId: Long, val filetoken: String, val filepath: String, val cid: String?): DownloadFile()
         data class Failure(val fileToken: String, val message: UIMessage): DownloadFile()
         data class Unauthorized(val message: UIMessage): DownloadFile()
         class Forbidden: DownloadFile()

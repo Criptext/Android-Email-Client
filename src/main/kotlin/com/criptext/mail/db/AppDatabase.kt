@@ -175,6 +175,7 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_8_9: Migration = object : Migration(8, 9) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE email ADD COLUMN boundary TEXT DEFAULT NULL""")
+                database.execSQL("""ALTER TABLE file ADD COLUMN cid TEXT DEFAULT NULL""")
             }
         }
     }

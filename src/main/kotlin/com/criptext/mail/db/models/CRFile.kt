@@ -46,6 +46,9 @@ class CRFile(
         @NonNull
         var emailId : Long,
 
+        @ColumnInfo(name = "cid")
+        var cid : String?,
+
         @ColumnInfo(name = "shouldDuplicate")
         var shouldDuplicate : Boolean,
 
@@ -68,9 +71,11 @@ class CRFile(
             val emailData = JSONObject(metadataString)
             if (!emailData.has("files")) return emptyList()
             val jsonFiles = emailData.getJSONArray("files")
+            val jsonKeys = emailData.getJSONArray("fileKeys")
             val files = ArrayList<CRFile>()
             for (i in 0 until jsonFiles.length()) {
                 val file = jsonFiles.getJSONObject(i)
+                val fileKey = jsonKeys.optString(i)
                 files.add(CRFile(
                         0,
                         file.getString("token"),
@@ -80,11 +85,11 @@ class CRFile(
                         Date(),
                         false,
                         0,
+                        file.optString("cid")?: null,
                         false,
-                        fileKey = when {
-                            file.has("key") ->
-                                file.getString("key").plus(":".plus(file.getString("iv")))
-                            else -> ""
+                        fileKey = when (fileKey) {
+                            null -> ""
+                            else -> fileKey
                         }
                 ))
             }
@@ -100,6 +105,7 @@ class CRFile(
                     size = json.getLong("size"),
                     status = json.getInt("status"),
                     date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
+                    cid = json.optString("cid")?: null,
                     emailId = json.getLong("emailId"),
                     readOnly = json.getBoolean("readOnly"),
                     shouldDuplicate = false,

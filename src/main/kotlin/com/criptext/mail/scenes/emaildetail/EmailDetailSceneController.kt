@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.view.View
-import android.webkit.WebView
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
@@ -20,6 +19,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
+import com.criptext.mail.scenes.emaildetail.data.EmailInlineDownloadData
 import com.criptext.mail.scenes.emaildetail.ui.EmailDetailUIObserver
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -352,8 +352,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onDownloadedFile(result: EmailDetailResult){
         when(result){
             is EmailDetailResult.DownloadFile.Success -> {
-                updateAttachmentProgress(result.emailId, result.filetoken, 100)
-                openFile(result.filepath)
+                if(result.cid == null) {
+                    updateAttachmentProgress(result.emailId, result.filetoken, 100)
+                    openFile(result.filepath)
+                }else{
+                    updateInlineImage(result.emailId, result.cid, result.filepath)
+                }
             }
             is EmailDetailResult.DownloadFile.Failure -> {
                 scene.showError(UIMessage(R.string.error_downloading_file))
@@ -388,6 +392,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         if(model.fileDetails[emailId]!![attachmentIndex].progress != 100)
             model.fileDetails[emailId]!![attachmentIndex].progress = progress
         scene.updateAttachmentProgress(emailIndex + 1, attachmentIndex)
+    }
+
+    private fun updateInlineImage(emailId: Long, cid: String, filePath: String){
+        val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
+        if (emailIndex < 0) return
+        scene.updateInlineImage(emailIndex + 1, cid, filePath)
     }
 
     private fun openFile(filepath: String){
@@ -428,8 +438,34 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        
         override fun onRetrySendOptionSelected(fullEmail: FullEmail, position: Int) {
             generalDataSource.submitRequest(GeneralRequest.ResendEmail(fullEmail.email.id, position))
+        }
+
+        override fun onResourceLoaded(cid: String) {
+            val inlineFile = model.emails.map { email -> email.files }.map { files -> files.find { it.cid == cid } }.first()
+
+            if(inlineFile != null) {
+                model.inlineImages.add(inlineFile)
+
+                if(!model.hasAskedForPermissions) {
+                    if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        model.hasAskedForPermissions = true
+                        return
+                    }
+
+                    dataSource.submitRequest(EmailDetailRequest.DownloadFile(
+                            fileName = inlineFile.name,
+                            cid = inlineFile.cid,
+                            fileToken = inlineFile.token,
+                            fileSize = inlineFile.size,
+                            fileKey = inlineFile.fileKey,
+                            emailId = inlineFile.emailId
+                    ))
+                }
+            }
         }
 
         override fun onSourceOptionSelected(fullEmail: FullEmail) {
@@ -464,6 +500,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
             if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                model.hasAskedForPermissions = true
                 return
             }
             val email = model.emails[emailPosition]
@@ -741,8 +778,23 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         if (requestCode != BaseActivity.RequestCode.writeAccess.ordinal) return
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
-        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED)
+        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+            model.hasAskedForPermissions = false
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
+        }else{
+            if(model.inlineImages.isNotEmpty()){
+                model.inlineImages.forEach { inlineFile ->
+                    dataSource.submitRequest(EmailDetailRequest.DownloadFile(
+                            fileName = inlineFile.name,
+                            cid = inlineFile.cid,
+                            fileToken = inlineFile.token,
+                            fileSize = inlineFile.size,
+                            fileKey = inlineFile.fileKey,
+                            emailId = inlineFile.emailId
+                    ))
+                }
+            }
+        }
     }
 
     private fun showLabelsDialog() {

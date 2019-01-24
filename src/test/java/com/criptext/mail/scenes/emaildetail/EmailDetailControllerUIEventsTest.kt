@@ -112,7 +112,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         sentRequests.clear()
 
         simulateDownloadEvent(EmailDetailResult.DownloadFile.Success(1L,
-                "__FILE_TOKEN__", "/test.pdf"))
+                "__FILE_TOKEN__", "/test.pdf", null))
         verify { host.launchExternalActivityForResult(any()) }
     }
 

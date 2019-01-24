@@ -139,16 +139,16 @@ object EmailUtils {
 
     fun getEmailSource(headers: String, boundary: String, content: String): String {
         val builder = StringBuilder()
-        builder.append("$headers\n")
-        builder.append("--$boundary\n")
+        builder.append("$headers\n\n")
+        builder.append("--$boundary\n\n")
         builder.append("Content-Type: text/plain; charset=UTF-8\n")
-        builder.append("Content-Transfer-Encoding: quoted-printable\n")
-        builder.append("${HTMLUtils.html2text(content)}\n")
-        builder.append("--$boundary\n")
+        builder.append("Content-Transfer-Encoding: quoted-printable\n\n")
+        builder.append("${HTMLUtils.html2text(content)}\n\n")
+        builder.append("--$boundary\n\n")
         builder.append("Content-Type: text/html; charset=UTF-8\n")
-        builder.append("Content-Transfer-Encoding: 7bit\n")
-        builder.append("$content\n")
-        builder.append("--$boundary\n")
+        builder.append("Content-Transfer-Encoding: 7bit\n\n")
+        builder.append("$content\n\n")
+        builder.append("--$boundary\n\n")
         return builder.toString()
     }
 

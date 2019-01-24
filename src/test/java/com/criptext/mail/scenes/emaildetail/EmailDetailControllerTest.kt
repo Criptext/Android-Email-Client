@@ -135,7 +135,8 @@ open class EmailDetailControllerTest {
                             readOnly = false,
                             emailId = it.toLong(),
                             shouldDuplicate = false,
-                            fileKey = "__FILE_KEY__"
+                            fileKey = "__FILE_KEY__",
+                            cid = null
                             )),
                     cc = emptyList(),
                     bcc = emptyList(),

@@ -70,6 +70,22 @@ class WebViewUtils {
             return sb.toString()
         }
 
+        fun replaceCIDScript() : String{
+            val sb = StringBuilder()
+            sb.append("<script>")
+            sb.append("function replace(cid, filePath)")
+            sb.append("{")
+            sb.append("var images = document.getElementsByTagName('img');")
+            sb.append("for (var i = 0; i < images.length; ++i) {")
+            sb.append("if (images[i].src == cid)")
+            sb.append("images[i].src = filePath;")
+            sb.append("}")
+            sb.append("}")
+            sb.append("</script>")
+
+            return sb.toString()
+        }
+
         fun openUrl(context: Context, url: String){
             val intent = Intent(context, WebViewActivity::class.java)
             intent.putExtra("url", url)
