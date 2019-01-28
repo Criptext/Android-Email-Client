@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail

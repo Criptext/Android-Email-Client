@@ -1,5 +1,8 @@
 package com.criptext.mail.scenes.emaildetail
 
+import android.view.ContextMenu
+import android.view.View
+import android.webkit.WebView
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
@@ -18,6 +21,19 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.file.AndroidFs
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
+import android.webkit.WebView.HitTestResult
+import android.view.MenuInflater
+import android.view.MenuItem
+import com.criptext.mail.R.string.save
+import android.widget.AdapterView.AdapterContextMenuInfo
+
+
+
+
+
+
+
+
 
 /**
  * Created by sebas on 3/12/18.
@@ -84,6 +100,25 @@ class  EmailDetailActivity: BaseActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         controller.requestPermissionResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        (controller as EmailDetailSceneController).onContextItemSelected(item.itemId)
+        return true
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu, view: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        val result = (view as WebView).hitTestResult
+
+        when (result.type) {
+            WebView.HitTestResult.IMAGE_TYPE,
+            WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
+                val inflater = menuInflater
+                inflater.inflate(R.menu.web_view_image_menu, menu)
+                (controller as EmailDetailSceneController).onCreateContextMenu(result.extra)
+            }
+        }
+
     }
 
 }

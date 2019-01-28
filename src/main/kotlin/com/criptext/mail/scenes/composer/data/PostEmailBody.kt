@@ -33,12 +33,13 @@ class PostEmailBody(val threadId: String?, val subject: String,
         return json
     }
 
-    data class CriptextAttachment(val token: String, val name: String, val size: Long): JSONData {
+    data class CriptextAttachment(val token: String, val name: String, val size: Long, val cid: String?): JSONData {
         override fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("token", token)
             json.put("name", name)
             json.put("size", size)
+            if(cid != null) json.put("cid", cid)
             json.put("mimeType", FileUtils.getMimeType(name))
             return json
         }

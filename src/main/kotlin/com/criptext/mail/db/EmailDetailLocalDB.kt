@@ -19,6 +19,7 @@ interface EmailDetailLocalDB {
     fun getLabelsFromThreadId(threadId: String): List<Label>
     fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>): List<FullEmail>
     fun unsendEmail(emailId: Long): Date
+    fun getEmailMetadataKeyById(emailId: Long): Long
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelByName(labelName: String): Label
     fun getLabelsByName(labelName: List<String>): List<Label>
@@ -29,8 +30,17 @@ interface EmailDetailLocalDB {
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
     fun getCustomLabels(): List<Label>
     fun setTrashDate(emailIds: List<Long>)
+    fun getInternalFilesDir(): String
 
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
+        override fun getEmailMetadataKeyById(emailId: Long): Long {
+            return db.emailDao().getEmailById(emailId)!!.metadataKey
+        }
+
+        override fun getInternalFilesDir(): String {
+            return filesDir.path
+        }
+
         override fun setTrashDate(emailIds: List<Long>) {
             db.emailDao().updateEmailTrashDate(Date(), emailIds)
         }

@@ -24,8 +24,31 @@ class AndroidFs {
             return file
         }
 
+        fun getEmailPathFromAppDir(filename: String, recipientId: String, fileDir: String, metadataKey: Long): File {
+            val downloadsDir = "$fileDir/$recipientId/emails/$metadataKey/"
+            val file = File(downloadsDir, filename)
+            return file
+        }
+
         fun fileExistsInDownloadsDir(filename: String, fileSize: Long): Boolean {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, filename)
+            return file.exists() && file.length() == fileSize
+        }
+
+        fun fileExistsInDownloadsDir(filename: String): Boolean {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, filename)
+            return file.exists()
+        }
+
+        fun fileExistsInAppDir(filePath: String): Boolean {
+            val file = File(filePath)
+            return file.exists()
+        }
+
+        fun fileExistsInAppDir(filename: String, recipientId: String, fileDir: String, metadataKey: Long, fileSize: Long): Boolean {
+            val downloadsDir = "$fileDir/$recipientId/emails/$metadataKey/"
             val file = File(downloadsDir, filename)
             return file.exists() && file.length() == fileSize
         }

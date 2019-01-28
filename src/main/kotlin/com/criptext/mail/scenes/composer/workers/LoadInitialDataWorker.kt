@@ -36,7 +36,7 @@ class LoadInitialDataWorker(
         val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map {
             ComposerAttachment(0, it.name, 100,
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
-                    it.size, it.fileKey)
+                    it.size, it.fileKey, it.cid)
         })
         return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
                 body = fullEmail.email.content, subject = fullEmail.email.subject,
@@ -91,7 +91,7 @@ class LoadInitialDataWorker(
         val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map {
             ComposerAttachment(0, it.name, 100,
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
-                    it.size, it.fileKey)
+                    it.size, it.fileKey, it.cid)
         })
 
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),

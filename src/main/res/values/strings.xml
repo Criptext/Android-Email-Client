@@ -445,4 +445,8 @@
   <string name="filter_unread">Show Unread</string>
   <string name="filter_none">Show All</string>
   <string name="retry">Retry Send</string>
+  <string name="view_image">View Image</string>
+  <string name="save_image">Save Image</string>
+  <string name="move_to_downloads_success">Inline image was saved to: %1$s</string>
+  <string name="move_to_downloads_exists">Inline image is already in downloads</string>
 </resources>

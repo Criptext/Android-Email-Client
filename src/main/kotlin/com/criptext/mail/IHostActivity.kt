@@ -45,6 +45,8 @@ interface IHostActivity {
     fun getContentResolver(): ContentResolver?
     fun getHandler(): Handler?
     fun setAppTheme(themeResource: Int)
+
+    fun contextMenuRegister(view: View)
     /**
      * Launch an activity for a result, and then pass that result as an ActivityMessage
      * @param params Object with the necessary data to launch the correct activity.

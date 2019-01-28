@@ -16,6 +16,10 @@ import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun contextMenuRegister(view: View) {
+        
+    }
+
     override fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate? {
         return null
     }

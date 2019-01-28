@@ -17,6 +17,11 @@ import java.net.URISyntaxException
 
 
 object PathUtil {
+
+    fun getPathFromImgSrc(src: String): String{
+        return src.removePrefix("file:///")
+    }
+
     /*
      * Gets the file path of the given Uri.
      */

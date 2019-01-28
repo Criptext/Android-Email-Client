@@ -58,4 +58,6 @@ sealed class EmailDetailRequest{
             val emailId: Long,
             val fileKey: String?
     ): EmailDetailRequest()
+
+    data class CopyToDownloads(val internalPath: String): EmailDetailRequest()
 }

@@ -52,7 +52,8 @@ class SaveEmailWorker(
                     id = it.id, fileKey = it.fileKey, size = it.size,
                     filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
                     filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
-                    uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress
+                    uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress,
+                    cid = it.cid
             )
         }
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
@@ -131,8 +132,8 @@ class SaveEmailWorker(
                     readOnly = false,
                     emailId = 0,
                     shouldDuplicate = shouldDuplicateFile(it.filetoken),
-                    fileKey = fileKey ?: "",
-                    cid = null
+                    fileKey = it.fileKey,
+                    cid = it.cid
             )
         }
 

@@ -445,4 +445,8 @@
   <string name="filter_unread">Mostrar no Leídos</string>
   <string name="filter_none">Mostrar Todos</string>
   <string name="retry">Reintentar Envio</string>
+  <string name="view_image">Ver Imagen</string>
+  <string name="save_image">Guardar Imagen</string>
+  <string name="move_to_downloads_success">Imagen se guardó en: %1$s</string>
+  <string name="move_to_downloads_exists">La imagen ya está en la carpeta de descargas</string>
 </resources>

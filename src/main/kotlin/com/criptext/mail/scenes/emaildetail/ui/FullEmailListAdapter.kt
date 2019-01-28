@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
@@ -252,6 +253,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onResourceLoaded(cid: String)
         fun showStartGuideMenu(view: View)
         fun showStartGuideEmailIsRead(view: View)
+        fun contextMenuRegister(view: View)
     }
 
     private enum class EmailViewTypes {

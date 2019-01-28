@@ -146,7 +146,13 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     httpClient = filesHttpClient,
                     activeAccount = activeAccount,
                     storage = storage,
+                    db = emailDetailLocalDB,
                     accountDao = accountDao,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+            is EmailDetailRequest.CopyToDownloads -> CopyToDownloadWorker(
+                    internalPath = params.internalPath,
                     publishFn = { result ->
                         flushResults(result)
                     })

@@ -104,7 +104,7 @@ class ResendEmailsWorker(
         }
         return finalAttachments.map { attachment ->
             PostEmailBody.CriptextAttachment(token = attachment.token,
-                    name = attachment.name, size = attachment.size)
+                    name = attachment.name, size = attachment.size, cid = attachment.cid)
         }
     }
 

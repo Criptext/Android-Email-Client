@@ -11,6 +11,7 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -476,6 +477,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     override fun setAppTheme(themeResource: Int) {
         setTheme(themeResource)
         recreate()
+    }
+
+    override fun contextMenuRegister(view: View) {
+        registerForContextMenu(view)
     }
 
     override fun checkPermissions(requestCode: Int, permission: String): Boolean =

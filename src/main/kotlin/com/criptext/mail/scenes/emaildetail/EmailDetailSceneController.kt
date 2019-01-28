@@ -32,6 +32,7 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -78,6 +79,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
             is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
             is EmailDetailResult.ReadEmails -> onReadEmails(result)
+            is EmailDetailResult.CopyToDownloads -> onCopyToDownloads(result)
         }
     }
 
@@ -384,6 +386,14 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onCopyToDownloads(result: EmailDetailResult.CopyToDownloads){
+        when(result){
+            is EmailDetailResult.CopyToDownloads.Success -> {
+                scene.showError(result.message)
+            }
+        }
+    }
+
     private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
         val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
         if (emailIndex < 0) return
@@ -438,7 +448,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
-        
+        override fun contextMenuRegister(view: View) {
+            host.contextMenuRegister(view)
+        }
+
         override fun onRetrySendOptionSelected(fullEmail: FullEmail, position: Int) {
             generalDataSource.submitRequest(GeneralRequest.ResendEmail(fullEmail.email.id, position))
         }
@@ -882,6 +895,27 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         if (latestEmailWasUpdated)
             model.threadPreview = model.threadPreview.copy(
                     deliveryStatus = DeliveryTypes.READ)
+    }
+
+    fun onCreateContextMenu(inlineSrc: String?){
+        model.lastTouchedInlineSrc = inlineSrc
+    }
+
+    fun onContextItemSelected(itemId: Int) {
+        when(itemId){
+            R.id.view_image -> {
+                if(model.lastTouchedInlineSrc != null)
+                    openFile(PathUtil.getPathFromImgSrc(model.lastTouchedInlineSrc!!))
+            }
+            R.id.save_image -> {
+                if(model.lastTouchedInlineSrc != null)
+                    dataSource.submitRequest(
+                            EmailDetailRequest.CopyToDownloads(
+                                    PathUtil.getPathFromImgSrc(model.lastTouchedInlineSrc!!)
+                            )
+                    )
+            }
+        }
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
