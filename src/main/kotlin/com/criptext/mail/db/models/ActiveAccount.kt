@@ -57,7 +57,7 @@ data class ActiveAccount(val name: String, val recipientId: String,
             val recipientId = json.getString("recipientId")
             val deviceId = json.getInt("deviceId")
             val jwt = json.getString("jwt")
-            val refreshToken = json.optString("refreshToken") ?: ""
+            val refreshToken = json.optString("refreshToken")
             val signature = json.getString("signature")
 
             return ActiveAccount(name = name, recipientId = recipientId, deviceId = deviceId,

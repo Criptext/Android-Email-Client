@@ -223,7 +223,7 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is ComposerResult.GetRemoteFile.Success -> {
                 scene.dismissPreparingFileDialog()
-                model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second) })
+                model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
                 handleNextUpload()
             }
@@ -364,12 +364,12 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun isReadyForSending() = model.to.isNotEmpty()
 
-    private fun uploadSelectedFile(filepath: String){
+    private fun uploadSelectedFile(filepath: String, fileKey: String){
         model.isUploadingAttachments = true
         scene.dismissPreparingFileDialog()
         dataSource.submitRequest(ComposerRequest.UploadAttachment(
                 filepath = filepath,
-                fileKey = model.fileKey,
+                fileKey = fileKey,
                 filesSize = model.filesSize
         ))
     }
@@ -430,7 +430,7 @@ class ComposerController(private val storage: KeyValueStorage,
         val localAttachments = filesMetadata
                 .filter(isNewAttachment)
                 .filter {it.second != -1L}
-                .map{ComposerAttachment(it.first, it.second)}
+                .map{ComposerAttachment(it.first, it.second, model.fileKey!!)}
         val remoteAttachments = filesMetadata
                 .filter(isNewAttachment)
                 .filter{ it.second == -1L }
@@ -455,7 +455,7 @@ class ComposerController(private val storage: KeyValueStorage,
         val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
         val composerAttachment = getAttachmentByPath(attachmentToUpload.filepath) ?: return
         composerAttachment.uploadProgress = 0
-        uploadSelectedFile(attachmentToUpload.filepath)
+        uploadSelectedFile(attachmentToUpload.filepath, composerAttachment.fileKey)
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {

@@ -19,7 +19,7 @@ class EmailDetailSceneModel(val threadId: String,
     val emails = ArrayList<FullEmail>()
     val fileDetails = HashMap<Long, List<FileDetail>>()
     val inlineImages = mutableListOf<CRFile>()
-    var hasAskedForPermissions = false
+    var hasTriedToSaveImage = false
     var fileToDownload = Pair(-1, -1)
     var lastTouchedInlineSrc: String? = null
 }

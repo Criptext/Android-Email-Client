@@ -51,14 +51,14 @@ class SendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
-    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1, isTrusted = true)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.contactDao().insertIgnoringConflicts(bobContact)
 
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
 
         // create tester user so that signal store is initialized.
@@ -80,14 +80,15 @@ class SendEmailWorkerTest {
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao(),
-                    accountDao = db.accountDao(), storage = storage)
+                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir)
 
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = inputData.attachments!!, onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = inputData.fileKey, originalId = null)
+                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = inputData.fileKey, originalId = null,
+                    filesDir = mActivityRule.activity.filesDir)
 
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
@@ -194,7 +195,8 @@ class SendEmailWorkerTest {
                     filetoken="__FILE_TOKEN__",
                     type= AttachmentTypes.IMAGE,
                     size=file.totalSpace,
-                    fileKey = "__FILE_KEY__"
+                    fileKey = "__FILE_KEY__",
+                    cid = null
             ))
         }
         // first we need to store the email to send in the DB
