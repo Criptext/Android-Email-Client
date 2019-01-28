@@ -2,19 +2,26 @@ package com.criptext.mail.scenes.emaildetail.ui.holders
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.DisplayMetrics
+import android.view.ContextThemeWrapper
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
-import android.util.DisplayMetrics
-import android.view.*
-import android.webkit.*
-import android.widget.*
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.FileDetail
@@ -95,6 +102,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         setAttachments(fileDetails, emailListener)
 
+        emailListener?.contextMenuRegister(bodyWebView)
+
     }
 
     override fun setBackground(drawable: Drawable) {
@@ -110,8 +119,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
                                adapter: FullEmailListAdapter, position: Int){
         val popupMenu = createPopupMenu(fullEmail)
-        if(fullEmail.email.boundary == null)
-            popupMenu.menu.findItem(R.id.source).isVisible = false
+        if(fullEmail.email.delivered == DeliveryTypes.NONE && fullEmail.email.boundary != null)
+            popupMenu.menu.findItem(R.id.source).isVisible = true
 
         if(fullEmail.email.delivered in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING))
             popupMenu.menu.findItem(R.id.retry)?.isVisible = true
@@ -256,7 +265,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
-        val adapter = FileListAdapter(view.context, files)
+        val nonInlineFiles = files.filter { it.file.cid == null }
+        val adapter = FileListAdapter(view.context, nonInlineFiles)
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
             override fun onAttachmentViewClick(position: Int) {

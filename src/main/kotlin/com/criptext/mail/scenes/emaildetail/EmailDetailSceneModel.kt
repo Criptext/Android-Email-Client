@@ -21,4 +21,5 @@ class EmailDetailSceneModel(val threadId: String,
     val inlineImages = mutableListOf<CRFile>()
     var hasAskedForPermissions = false
     var fileToDownload = Pair(-1, -1)
+    var lastTouchedInlineSrc: String? = null
 }

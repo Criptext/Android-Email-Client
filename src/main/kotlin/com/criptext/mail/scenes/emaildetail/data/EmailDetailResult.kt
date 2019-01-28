@@ -69,4 +69,9 @@ sealed class EmailDetailResult {
         class Forbidden: DownloadFile()
         data class Progress(val emailId: Long, val filetoken: String, val progress: Int) : DownloadFile()
     }
+
+    sealed class CopyToDownloads : EmailDetailResult() {
+        data class Success(val message: UIMessage): CopyToDownloads()
+        data class Failure(val message: UIMessage): CopyToDownloads()
+    }
 }

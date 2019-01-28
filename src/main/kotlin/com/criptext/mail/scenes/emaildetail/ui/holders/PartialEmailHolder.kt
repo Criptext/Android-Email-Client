@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.FileDetail

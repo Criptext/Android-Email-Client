@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.emaildetail.ui
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.criptext.mail.IHostActivity
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label

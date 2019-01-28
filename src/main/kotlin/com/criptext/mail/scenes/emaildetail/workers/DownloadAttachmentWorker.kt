@@ -9,6 +9,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
@@ -27,6 +28,7 @@ import java.io.*
 import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileSize: Long,
+                               private val db: EmailDetailLocalDB,
                                private val cid: String?,
                                private val fileName: String,
                                private val fileToken: String,
@@ -101,7 +103,9 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     }
 
     private fun moveFileToDownloads(file: File, fileMetadata: FileMetadata){
-        val downloadFile = AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
+        val downloadFile = if(cid == null) AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
+        else AndroidFs.getEmailPathFromAppDir(filename = fileMetadata.name, fileDir = db.getInternalFilesDir(),
+                recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId))
         val fileStream = FileInputStream(file)
         val downloadStream = FileOutputStream(downloadFile)
 
@@ -126,9 +130,19 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.DownloadFile>): EmailDetailResult.DownloadFile? {
-        if(AndroidFs.fileExistsInDownloadsDir(fileName, fileSize)){
-            filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
-            return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
+        if(cid == null){
+            if(AndroidFs.fileExistsInDownloadsDir(fileName, fileSize)) {
+                filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
+                return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
+            }
+        }else{
+            if(AndroidFs.fileExistsInAppDir(filename = fileName, fileDir = db.getInternalFilesDir(),
+                            recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId),
+                            fileSize = fileSize)) {
+                filepath = AndroidFs.getEmailPathFromAppDir(filename = fileName, fileDir = db.getInternalFilesDir(),
+                        recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId)).absolutePath
+                return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
+            }
         }
         val result = workOperation(reporter)
 

@@ -205,7 +205,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         }
         return finalAttachments.map { attachment ->
             PostEmailBody.CriptextAttachment(token = attachment.filetoken,
-                    name = FileUtils.getName(attachment.filepath), size = attachment.size)
+                    name = FileUtils.getName(attachment.filepath), size = attachment.size, cid = attachment.cid)
         }
     }
 
