@@ -28,7 +28,7 @@ data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String
                     .map {
                         val json = devicesData.getJSONObject(it)
                         val jsonDate = json.getJSONObject("lastActivity").optString("date")
-                        val date = if(jsonDate != null)
+                        val date = if(!jsonDate.isNullOrEmpty())
                             DateAndTimeUtils.getDateFromString(jsonDate, null)
                         else
                             null

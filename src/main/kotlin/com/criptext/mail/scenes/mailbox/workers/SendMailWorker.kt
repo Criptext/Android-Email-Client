@@ -125,7 +125,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                         type = type, body = encryptedData.encryptedB64,
                         messageType = encryptedData.type, fileKey = if(getFileKey() != null)
                                 signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
-                                else null, fileKeys = getFileKeys())
+                                else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId))
             }
         }.flatten()
     }
@@ -177,6 +177,13 @@ class SendMailWorker(private val signalClient: SignalClient,
         }else{
             fileKey
         }
+    }
+
+    private fun getEncryptedFileKeys(recipientId: String, deviceId: Int): ArrayList<String>?{
+        if(attachments.isEmpty()) return null
+        val fileKeys: ArrayList<String> = ArrayList()
+        attachments.mapTo(fileKeys) { signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64 }
+        return fileKeys
     }
 
     private fun getFileKeys(): ArrayList<String>?{

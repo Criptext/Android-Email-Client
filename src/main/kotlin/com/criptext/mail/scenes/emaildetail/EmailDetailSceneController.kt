@@ -461,14 +461,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
             if(inlineFile != null) {
                 model.inlineImages.add(inlineFile)
-
-                if(!model.hasAskedForPermissions) {
-                    if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        model.hasAskedForPermissions = true
-                        return
-                    }
-
                     dataSource.submitRequest(EmailDetailRequest.DownloadFile(
                             fileName = inlineFile.name,
                             cid = inlineFile.cid,
@@ -477,7 +469,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                             fileKey = inlineFile.fileKey,
                             emailId = inlineFile.emailId
                     ))
-                }
             }
         }
 
@@ -513,7 +504,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int) {
             if (!host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                model.hasAskedForPermissions = true
                 model.fileToDownload = Pair(emailPosition, attachmentPosition)
                 return
             }
@@ -793,23 +783,14 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
-            model.hasAskedForPermissions = false
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
         }else{
             if(model.fileToDownload.first != -1){
                 emailHolderEventListener.onAttachmentSelected(model.fileToDownload.first, model.fileToDownload.second)
             }
-            if(model.inlineImages.isNotEmpty()){
-                model.inlineImages.forEach { inlineFile ->
-                    dataSource.submitRequest(EmailDetailRequest.DownloadFile(
-                            fileName = inlineFile.name,
-                            cid = inlineFile.cid,
-                            fileToken = inlineFile.token,
-                            fileSize = inlineFile.size,
-                            fileKey = inlineFile.fileKey,
-                            emailId = inlineFile.emailId
-                    ))
-                }
+            if(model.hasTriedToSaveImage){
+                model.hasTriedToSaveImage = false
+                dataSource.submitRequest(EmailDetailRequest.CopyToDownloads(model.lastTouchedInlineSrc!!))
             }
         }
     }
@@ -908,12 +889,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     openFile(PathUtil.getPathFromImgSrc(model.lastTouchedInlineSrc!!))
             }
             R.id.save_image -> {
-                if(model.lastTouchedInlineSrc != null)
-                    dataSource.submitRequest(
-                            EmailDetailRequest.CopyToDownloads(
-                                    PathUtil.getPathFromImgSrc(model.lastTouchedInlineSrc!!)
-                            )
-                    )
+
+                if (host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (model.lastTouchedInlineSrc != null)
+                        dataSource.submitRequest(
+                                EmailDetailRequest.CopyToDownloads(
+                                        PathUtil.getPathFromImgSrc(model.lastTouchedInlineSrc!!)
+                                )
+                        )
+                }else{
+                    model.hasTriedToSaveImage = true
+                }
+
             }
         }
     }

@@ -286,9 +286,13 @@ object EmailInsertionSetup {
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
         val decryptedHeaders = getDecryptedEmailBody(signalClient, headers, metadata)
-        val decryptedFileKeys = getDecryptedFileKeys(signalClient, metadata)
+        val decryptedFileKeys = if(metadata.files[0].fileKey.isEmpty())
+            listOf()
+        else getDecryptedFileKeys(signalClient, metadata)
+        val decryptedFileKey = if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
         metadata.files.forEachIndexed { index, crFile ->
             crFile.fileKey = decryptedFileKeys[index]
+            crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")) crFile.cid else null
         }
 
 
@@ -308,7 +312,7 @@ object EmailInsertionSetup {
                     status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
             else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
             else DeliveryTypes.NONE), HTMLUtils.createEmailPreview(decryptedBody), labels,
-                    metadata.files, metadata.files[0].fileKey)
+                    metadata.files, decryptedFileKey)
         }
         println(lonReturn)
     }

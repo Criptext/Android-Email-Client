@@ -80,6 +80,14 @@ class ResendEmailsWorker(
         }
     }
 
+    private fun getEncryptedFileKeys(fullEmail: FullEmail, recipientId: String, deviceId: Int): ArrayList<String>?{
+        if(fullEmail.files.isEmpty()) return null
+        val fileKeys: ArrayList<String> = ArrayList()
+        fullEmail.files.mapTo(fileKeys) { signalClient.encryptMessage(recipientId, deviceId,
+                getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64 }
+        return fileKeys
+    }
+
     private fun getFileKeys(attachments: List<CRFile>): ArrayList<String>?{
         if(attachments.isEmpty()) return null
         val fileKeys: ArrayList<String> = ArrayList()
@@ -236,7 +244,7 @@ class ResendEmailsWorker(
                         type = type, body = encryptedData.encryptedB64,
                         messageType = encryptedData.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
                     signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
-                else null, fileKeys = getFileKeys(fullEmail.files))
+                else null, fileKeys = getEncryptedFileKeys(fullEmail, recipientId, deviceId))
             }
         }.flatten()
     }

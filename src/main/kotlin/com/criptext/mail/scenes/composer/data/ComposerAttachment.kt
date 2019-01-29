@@ -6,6 +6,6 @@ import com.criptext.mail.utils.file.FileUtils
 data class ComposerAttachment(val id: Long, val filepath: String, var uploadProgress: Int,
                               var filetoken: String, val type: AttachmentTypes, var size: Long,
                               val fileKey: String, val cid: String?) {
-    constructor(filepath: String, size: Long): this (0, filepath, -1, filetoken = "",
-            type = FileUtils.getAttachmentTypeFromPath(filepath), size = size, fileKey = "", cid = null)
+    constructor(filepath: String, size: Long, fileKey: String): this (0, filepath, -1, filetoken = "",
+            type = FileUtils.getAttachmentTypeFromPath(filepath), size = size, fileKey = fileKey, cid = null)
 }

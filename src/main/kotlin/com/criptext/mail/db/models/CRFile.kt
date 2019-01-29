@@ -4,8 +4,10 @@ import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import java.util.*
 import androidx.annotation.NonNull
+import com.criptext.mail.api.toList
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.file.FileUtils
+import com.github.kittinunf.result.Result
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
@@ -71,11 +73,15 @@ class CRFile(
             val emailData = JSONObject(metadataString)
             if (!emailData.has("files")) return emptyList()
             val jsonFiles = emailData.getJSONArray("files")
-            val jsonKeys = emailData.getJSONArray("fileKeys")
+            val getArray = Result.of { emailData.getJSONArray("fileKeys").toList<String>()  }
+            val jsonKeys = when(getArray){
+                is Result.Success -> getArray.value
+                is Result.Failure -> listOf()
+            }
             val files = ArrayList<CRFile>()
             for (i in 0 until jsonFiles.length()) {
                 val file = jsonFiles.getJSONObject(i)
-                val fileKey = jsonKeys.optString(i)
+                val fileKey = if(jsonKeys.isNotEmpty()) jsonKeys[i] else null
                 files.add(CRFile(
                         0,
                         file.getString("token"),
@@ -85,7 +91,7 @@ class CRFile(
                         Date(),
                         false,
                         0,
-                        file.optString("cid")?: null,
+                        if(file.has("cid")) file.getString("cid") else null,
                         false,
                         fileKey = when (fileKey) {
                             null -> ""
@@ -105,7 +111,7 @@ class CRFile(
                     size = json.getLong("size"),
                     status = json.getInt("status"),
                     date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
-                    cid = json.optString("cid")?: null,
+                    cid = if(json.has("cid")) json.getString("cid") else null,
                     emailId = json.getLong("emailId"),
                     readOnly = json.getBoolean("readOnly"),
                     shouldDuplicate = false,
