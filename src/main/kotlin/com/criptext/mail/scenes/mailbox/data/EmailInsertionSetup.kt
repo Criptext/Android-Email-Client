@@ -239,7 +239,7 @@ object EmailInsertionSetup {
         val fileKeys = mutableListOf<String>()
 
         metadata.files.forEach {
-            if (metadata.messageType != null && senderId.first != null) {
+            if (metadata.messageType != null && senderId.first != null && it.fileKey.isNotEmpty()) {
                 val encryptedData = SignalEncryptedData(
                         encryptedB64 = it.fileKey,
                         type = metadata.messageType)
@@ -286,7 +286,7 @@ object EmailInsertionSetup {
 
         val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
         val decryptedHeaders = getDecryptedEmailBody(signalClient, headers, metadata)
-        val decryptedFileKeys = if(metadata.files[0].fileKey.isEmpty())
+        val decryptedFileKeys = if(metadata.files.isEmpty())
             listOf()
         else getDecryptedFileKeys(signalClient, metadata)
         val decryptedFileKey = if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
