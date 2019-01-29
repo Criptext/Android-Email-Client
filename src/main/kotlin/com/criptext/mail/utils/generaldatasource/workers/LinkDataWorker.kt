@@ -14,6 +14,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -181,6 +182,7 @@ class LinkDataWorker(private val authorizerId: Int,
         db.feedDao().nukeTable()
         db.labelDao().nukeTable()
         db.emailDao().nukeTable()
+        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
 
         val defaultLabels = Label.defaultItems.toList()
         db.labelDao().insertAll(defaultLabels)
