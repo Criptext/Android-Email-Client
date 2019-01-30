@@ -7,6 +7,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -29,6 +30,7 @@ class UpdateMailboxWorker(
         signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
         activeAccount: ActiveAccount,
+        storage: KeyValueStorage,
         private val loadedThreadsCount: Int?,
         private val label: Label,
         private val pushData: Map<String, String>,
@@ -41,7 +43,7 @@ class UpdateMailboxWorker(
 
     override val canBeParallelized = false
 
-    private val eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, false)
+    private val eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, false)
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private var shouldCallAgain = false
 

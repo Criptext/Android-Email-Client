@@ -8,8 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.R
+import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.Utility
 import com.tokenautocomplete.FilteredArrayAdapter
+import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 
 /**
@@ -35,7 +38,7 @@ class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
 
         val nameTextView = view.findViewById<TextView>(R.id.auto_name)
         val mailTextView = view.findViewById<TextView>(R.id.auto_mail) as TextView
-        val circleView = view.findViewById<ImageView>(R.id.auto_circle) as ImageView
+        val circleView = view.findViewById<CircleImageView>(R.id.auto_circle) as CircleImageView
 
         val item = getItem(position)
         nameTextView.text = item.name
@@ -46,7 +49,19 @@ class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
         else{
             nameTextView.visibility = View.VISIBLE
         }
-        circleView.setImageBitmap(Utility.getBitmapFromText(item.name,250, 250))
+
+        if(EmailAddressUtils.isFromCriptextDomain(item.email))
+            UIUtils.setProfilePicture(
+                    iv = circleView,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(item.email),
+                    name = item.name,
+                    runnable = null)
+        else
+            circleView.setImageBitmap(
+                    Utility.getBitmapFromText(
+                            item.name,
+                            250,
+                            250))
 
         return view
     }

@@ -18,7 +18,8 @@ class PushDataSource(
         private val httpClient: HttpClient,
         override val runner: WorkRunner,
         private val db: AppDatabase,
-        private val activeAccount: ActiveAccount)
+        private val activeAccount: ActiveAccount,
+        private val storage: KeyValueStorage)
     : BackgroundWorkManager<PushRequest, PushResult>() {
     override fun createWorkerFromParams(
             params: PushRequest,
@@ -29,6 +30,7 @@ class PushDataSource(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
                     dbEvents = EventLocalDB(db, filesDir),
                     httpClient = httpClient,
+                    storage = storage,
                     activeAccount = activeAccount,
                     label = params.label,
                     loadedThreadsCount = params.loadedThreadsCount,

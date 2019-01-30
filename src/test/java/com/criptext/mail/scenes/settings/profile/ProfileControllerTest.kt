@@ -1,39 +1,40 @@
-package com.criptext.mail.scenes.settings
+package com.criptext.mail.scenes.settings.profile
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.mocks.MockedWorkRunner
-import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
+import com.criptext.mail.scenes.settings.profile.data.ProfileDataSource
+import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
+import com.criptext.mail.scenes.settings.profile.data.ProfileResult
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.websocket.WebSocketController
-import com.criptext.mail.websocket.WebSocketEventPublisher
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
 import org.junit.Before
 import org.junit.Test
 
-class SettingsControllerTest{
+class ProfileControllerTest{
 
-    private lateinit var scene: SettingsScene
-    private lateinit var model: SettingsModel
+    private lateinit var scene: ProfileScene
+    private lateinit var model: ProfileModel
     private lateinit var host: IHostActivity
     private lateinit var activeAccount: ActiveAccount
     private lateinit var storage: KeyValueStorage
-    private lateinit var dataSource: SettingsDataSource
+    private lateinit var dataSource: ProfileDataSource
     private lateinit var generalDataSource: GeneralDataSource
-    private lateinit var controller: SettingsController
+    private lateinit var controller: ProfileController
     private lateinit var runner: MockedWorkRunner
     protected lateinit var webSocketEvents: WebSocketController
-    private lateinit var sentRequests: MutableList<SettingsRequest>
+    private lateinit var sentRequests: MutableList<GeneralRequest>
 
-    private val observerSlot = CapturingSlot<SettingsUIObserver>()
-    private val itemListenerSlot = CapturingSlot<DevicesListItemListener>()
-    private lateinit var listenerSlot: CapturingSlot<(SettingsResult) -> Unit>
+    private val observerSlot = CapturingSlot<ProfileUIObserver>()
+    private lateinit var listenerSlot: CapturingSlot<(ProfileResult) -> Unit>
 
     private val newProfileName = "Andres"
 
@@ -41,7 +42,6 @@ class SettingsControllerTest{
     fun setUp() {
         runner = MockedWorkRunner()
         scene = mockk(relaxed = true)
-        model = SettingsModel()
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
         webSocketEvents = mockk(relaxed = true)
@@ -50,7 +50,8 @@ class SettingsControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        controller = SettingsController(
+        model = ProfileModel(activeAccount.name)
+        controller = ProfileController(
                 scene = scene,
                 model = model,
                 host = host,
@@ -64,7 +65,7 @@ class SettingsControllerTest{
         listenerSlot = CapturingSlot()
 
         every {
-            scene.attachView("Daniel", model, capture(observerSlot), capture(itemListenerSlot))
+            scene.attachView(capture(observerSlot), activeAccount.recipientId, model)
         } just Runs
 
         every {
@@ -72,24 +73,22 @@ class SettingsControllerTest{
         } just Runs
 
         sentRequests = mutableListOf()
-        every { dataSource.submitRequest(capture(sentRequests)) } just Runs
+        every { generalDataSource.submitRequest(capture(sentRequests)) } just Runs
         
     }
 
     @Test
-    fun `on custom label added, should send CreateCustomLabel request`() {
+    fun `on profile name changed, should send ChangeContactName request`() {
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings =
-        UserSettingsData(listOf(), "", false, false, false, null)))
-
         val observer = observerSlot.captured
-        observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")
+        observer.onProfileNameChanged(newProfileName)
+
+        model.name `should equal` newProfileName
 
         val sentRequest = sentRequests.last()
-        sentRequest `should be instance of` SettingsRequest.CreateCustomLabel::class.java
+        sentRequest `should be instance of` GeneralRequest.ChangeContactName::class.java
 
     }
-
 }

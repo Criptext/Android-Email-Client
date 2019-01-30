@@ -38,6 +38,7 @@ import com.otaliastudios.zoom.ZoomEngine
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.lang.Exception
 
 
 /**
@@ -256,8 +257,19 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         else
             unsendProgressBar.visibility = View.INVISIBLE
 
-        leftImageView.setImageBitmap(Utility.getBitmapFromText(
-                fullEmail.from.name,250, 250))
+        val contactFrom = fullEmail.from
+        if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
+            UIUtils.setProfilePicture(
+                    iv = leftImageView,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
+                    name = contactFrom.name,
+                    runnable = null)
+        else
+            leftImageView.setImageBitmap(
+                    Utility.getBitmapFromText(
+                            contactFrom.name,
+                            250,
+                            250))
 
         setToText(fullEmail)
         setDraftIcon(fullEmail)
@@ -334,8 +346,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
-        Picasso.with(view.context).load(drawable).into(readView, object : Callback {
-            override fun onError() {}
+        Picasso.get().load(drawable).into(readView, object : Callback {
+            override fun onError(e: Exception?) {
+
+            }
             override fun onSuccess() {
                 DrawableCompat.setTint(readView.drawable,
                         ContextCompat.getColor(view.context, color))

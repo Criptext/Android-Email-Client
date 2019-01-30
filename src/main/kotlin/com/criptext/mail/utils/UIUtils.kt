@@ -7,13 +7,47 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.db.models.Label
+import com.squareup.picasso.Callback
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 
 object UIUtils{
+
+    fun setProfilePicture(iv: ImageView, recipientId: String, name: String, runnable: Runnable?) {
+        val url = Hosts.restApiBaseUrl.plus("/user/avatar/$recipientId")
+        Picasso.get()
+                .load(url)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(iv, object : Callback {
+                    override fun onSuccess() {
+                        runnable?.run()
+                    }
+
+                    override fun onError(e: Exception) {
+                        Picasso.get()
+                                .load(url)
+                                .into(iv, object : Callback {
+                                    override fun onSuccess() {
+                                        runnable?.run()
+                                    }
+
+                                    override fun onError(e: Exception) {
+                                        runnable?.run()
+                                        iv.setImageBitmap(Utility.getBitmapFromText(
+                                                name,250, 250))
+                                    }
+                                })
+                    }
+                })
+    }
 
     fun animationForProgressBar(progressBar: BootstrapProgressBar, progress: Int, progressBarNumber: TextView,
                                 duration: Long): ValueAnimator{

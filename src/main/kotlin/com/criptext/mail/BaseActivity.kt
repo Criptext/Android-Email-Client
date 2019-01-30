@@ -37,6 +37,7 @@ import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.privacyandsecurity.PrivacyAndSecurityModel
 import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.profile.ProfileModel
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.replyto.ReplyToModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
@@ -215,6 +216,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     params.deviceType, params.authorizerName)
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.replyToEmail)
+            is ProfileParams -> ProfileModel(params.name)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

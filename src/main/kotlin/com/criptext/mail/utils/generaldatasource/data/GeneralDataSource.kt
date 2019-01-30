@@ -179,6 +179,15 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.ChangeContactName -> ChangeContactNameWorker(
+                    fullName = params.fullName,
+                    recipientId = params.recipientId,
+                    db = db,
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    storage = storage,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

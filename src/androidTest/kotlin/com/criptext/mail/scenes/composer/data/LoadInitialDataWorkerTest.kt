@@ -44,7 +44,7 @@ class LoadInitialDataWorkerTest {
     private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2)
     private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3)
     private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
-            senderName = "Mayer", deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
+            sender = "Mayer", deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
             emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false, latestEmailUnsentDate = Date(),
             metadataKey = 1)
 

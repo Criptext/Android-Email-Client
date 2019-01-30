@@ -133,7 +133,7 @@ class AttachmentHistoryPopUp(private val anchorView: View) {
                 }
             }
 
-            Picasso.with(context)
+            Picasso.get()
                     .load(contact.fileType.getDrawableImage())
                     .into(fileType)
 

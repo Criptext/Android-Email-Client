@@ -11,13 +11,12 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.Utility
-import com.criptext.mail.utils.getColorFromAttr
+import com.criptext.mail.utils.*
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import java.lang.Exception
 
 /**
  * Created by sebas on 1/24/18.
@@ -67,11 +66,19 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
         headerView.text = emailPreview.topText
 
-        avatarView.setImageBitmap(
-                Utility.getBitmapFromText(
-                        emailPreview.senderName,
-                        250,
-                        250))
+        val contactFrom = emailPreview.sender
+        if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
+            UIUtils.setProfilePicture(
+                    iv = avatarView,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
+                    name = contactFrom.name,
+                    runnable = null)
+        else
+            avatarView.setImageBitmap(
+                    Utility.getBitmapFromText(
+                            emailPreview.sender.name,
+                            250,
+                            250))
 
         dateView.text = DateAndTimeUtils.getFormattedDate(emailPreview.timestamp.time, context)
 
@@ -135,8 +142,10 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
-        Picasso.with(view.context).load(drawable).into(check, object : Callback{
-            override fun onError() {}
+        Picasso.get().load(drawable).into(check, object : Callback{
+            override fun onError(e: Exception?) {
+
+            }
             override fun onSuccess() {
                 DrawableCompat.setTint(check.drawable,
                         ContextCompat.getColor(view.context, color))

@@ -336,7 +336,7 @@ interface MailboxScene{
         override fun showUpdateBanner(bannerData: UpdateBannerData) {
             updateBanner.findViewById<TextView>(R.id.banner_title).text = bannerData.title
             updateBanner.findViewById<TextView>(R.id.banner_message).text = bannerData.message
-            Picasso.with(context).load(bannerData.image)
+            Picasso.get().load(bannerData.image)
                     .into(updateBanner.findViewById<ImageView>(R.id.banner_image))
             UIUtils.expand(updateBanner)
         }
