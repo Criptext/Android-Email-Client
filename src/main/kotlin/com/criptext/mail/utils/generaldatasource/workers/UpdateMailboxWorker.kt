@@ -49,7 +49,7 @@ class UpdateMailboxWorker(
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
     private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-    private var eventHelper = EventHelper(dbEvents, httpClient, activeAccount, signalClient, true)
+    private var eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
     private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao, storage, accountDao)
 
     private var shouldCallAgain = false
@@ -142,7 +142,7 @@ class UpdateMailboxWorker(
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
-                eventHelper = EventHelper(dbEvents, httpClient, account, signalClient, true)
+                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
                 eventHelper.setupForMailbox(label, loadedThreadsCount)
                 workOperation()
             }

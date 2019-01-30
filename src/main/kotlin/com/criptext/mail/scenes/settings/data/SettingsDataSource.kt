@@ -7,8 +7,8 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.replyto.workers.ChangeReplyToEmailWorker
 import com.criptext.mail.scenes.settings.workers.*
+import com.criptext.mail.utils.generaldatasource.workers.ChangeContactNameWorker
 
 class SettingsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
@@ -22,15 +22,6 @@ class SettingsDataSource(
                                         flushResults: (SettingsResult) -> Unit): BackgroundWorker<*> {
 
         return when(params){
-            is SettingsRequest.ChangeContactName -> ChangeContactNameWorker(
-                    fullName = params.fullName,
-                    recipientId = params.recipientId,
-                    settingsLocalDB = settingsLocalDB,
-                    activeAccount = activeAccount,
-                    httpClient = httpClient,
-                    storage = storage,
-                    publishFn = { res -> flushResults(res) }
-            )
             is SettingsRequest.GetCustomLabels -> GetCustomLabelsWorker(
                     db = settingsLocalDB,
                     publishFn = { res -> flushResults(res) }

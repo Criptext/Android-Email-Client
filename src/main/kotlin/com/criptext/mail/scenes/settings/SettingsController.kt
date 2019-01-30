@@ -70,7 +70,6 @@ class SettingsController(
 
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
-            is SettingsResult.ChangeContactName -> onContactNameChanged(result)
             is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
             is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.GetUserSettings -> onGetUserSettings(result)
@@ -217,7 +216,7 @@ class SettingsController(
         }
 
         override fun onProfileNameClicked() {
-            scene.showProfileNameDialog(model.fullName)
+            host.goToScene(ProfileParams(model.fullName), false)
         }
 
         override fun onReplyToChangeClicked() {
@@ -289,16 +288,6 @@ class SettingsController(
 
         override fun onCreateLabelClicked() {
             scene.showCreateLabelDialog(keyboardManager)
-        }
-
-        override fun onProfileNameChanged(fullName: String) {
-            keyboardManager.hideKeyboard()
-            activeAccount.updateFullName(storage, fullName)
-            model.fullName = fullName
-            dataSource.submitRequest(SettingsRequest.ChangeContactName(
-                    fullName = fullName,
-                    recipientId = activeAccount.recipientId
-            ))
         }
     }
 
@@ -420,17 +409,6 @@ class SettingsController(
             }
             is GeneralResult.SyncPhonebook.Failure -> {
                 scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onContactNameChanged(result: SettingsResult.ChangeContactName){
-        when(result) {
-            is SettingsResult.ChangeContactName.Success -> {
-                scene.showMessage(UIMessage(R.string.profile_name_updated))
-            }
-            is SettingsResult.ChangeContactName.Failure -> {
-                scene.showMessage(UIMessage(R.string.error_updating_account))
             }
         }
     }

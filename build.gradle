@@ -145,7 +145,7 @@ dependencies {
     implementation 'uk.co.chrisjenx:calligraphy:2.2.0'
 
     //Picasso
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     //Gifs
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'

@@ -6,6 +6,7 @@ import android.os.Build
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.Notifier
 import com.criptext.mail.push.PushController
@@ -24,12 +25,14 @@ class MessagingService : FirebaseMessagingService(){
         if(pushController == null){
             val db = Result.of { AppDatabase.getAppDatabase(this) }
             if(db is Result.Success) {
+                val storage = KeyValueStorage.SharedPrefs(this)
                 val account = ActiveAccount.loadFromStorage(this) ?: return
                 pushController = PushController(
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),
                                 httpClient = HttpClient.Default(),
                                 activeAccount = account,
+                                storage = storage,
                                 filesDir = this.filesDir),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,

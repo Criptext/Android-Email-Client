@@ -222,7 +222,7 @@ interface ComposerScene {
             val visibility = if (visible) View.VISIBLE else View.GONE
             ccInput.visibility = visibility
             bccInput.visibility = visibility
-            Picasso.with(imageViewArrow.context).load(
+            Picasso.get().load(
                     if(visible) R.drawable.arrow_up else
                     R.drawable.arrow_down).into(imageViewArrow)
         }

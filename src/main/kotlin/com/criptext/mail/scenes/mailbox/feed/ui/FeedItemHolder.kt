@@ -111,8 +111,8 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
     private fun checkFeedType(activityFeedItem: ActivityFeedItem){
 
         when(activityFeedItem.type){
-            FeedType.OPEN_EMAIL -> Picasso.with(swipeView.context).load(R.drawable.read).into(imageViewTypeFeed)
-            else -> Picasso.with(swipeView.context).load(R.drawable.attachment).into(imageViewTypeFeed)
+            FeedType.OPEN_EMAIL -> Picasso.get().load(R.drawable.read).into(imageViewTypeFeed)
+            else -> Picasso.get().load(R.drawable.attachment).into(imageViewTypeFeed)
         }
     }
 
@@ -120,12 +120,12 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
 
         if(activityFeedItem.isMuted) {
             imageViewMute.visibility = View.VISIBLE
-            Picasso.with(imageViewMuteButton.context).load(R.drawable.activity_feed).into(imageViewMuteButton)
+            Picasso.get().load(R.drawable.activity_feed).into(imageViewMuteButton)
             textViewMute.text = textViewMute.resources.getText(R.string.unmute)
         }
         else{
             imageViewMute.visibility = View.INVISIBLE
-            Picasso.with(imageViewMuteButton.context).load(R.drawable.mute).into(imageViewMuteButton)
+            Picasso.get().load(R.drawable.mute).into(imageViewMuteButton)
             textViewMute.text = textViewMute.resources.getText(R.string.mute)
         }
     }

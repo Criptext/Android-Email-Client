@@ -27,7 +27,6 @@ interface SettingsUIObserver: UIObserver {
     fun onRemoveDevice(deviceId: Int, position: Int)
     fun onChangePasswordOptionClicked()
     fun onRecoveryEmailOptionClicked()
-    fun onProfileNameChanged(fullName: String)
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()
     fun onToggleLabelSelection(label: LabelWrapper)

@@ -91,6 +91,7 @@
   <string name="start_guide_email">Toca para escribir un correo seguro</string>
   <string name="title_swipe">Opciones de Deslice</string>
   <string name="title_profile_name">Nombre de Perfil</string>
+  <string name="title_profile">Perfil</string>
   <string name="title_privacy_policy">Política de Privacidad</string>
   <string name="title_terms_of_service">Términos del Servicio</string>
   <string name="title_open_source_libraries">Librerías de Código Abierto</string>
@@ -179,6 +180,7 @@
   <string name="remove_device_dialog_message">Eliminar este dispositivo hará que se cierre la sesión de forma remota.</string>
   <string name="removing_device_dialog_message">Eliminando dispositivo…</string>
   <string name="privacy_toolbar_title">SEGURIDAD Y PRIVACIDAD</string>
+  <string name="profile_toolbar_title">PERFIL</string>
   <string name="email_source_toolbar_title">FUENTE DEL CORREO</string>
   <string name="pin_lock_switch_text">Usar PIN</string>
   <string name="pin_lock_change">Cambiar Codigo PIN</string>
@@ -257,6 +259,7 @@
   <string name="confirm_password">Confirmar Contraseña</string>
     <string name="sending_email">Enviando correo…</string>
   <string name="documents">Documentos</string>
+  <string name="remove_picture">Remover Imagen</string>
   <string name="photo_library">Librería de Fotos</string>
   <string name="camera">Cámara</string>
     <string name="inbox">Recibidos</string>
@@ -449,4 +452,8 @@
   <string name="save_image">Guardar Imagen</string>
   <string name="move_to_downloads_success">Imagen se guardó en: %1$s</string>
   <string name="move_to_downloads_exists">La imagen ya está en la carpeta de descargas</string>
+  <string name="profile_picture_updated">Imagen de perfil actualizada correctamente</string>
+  <string name="profile_picture_update_failed">Imagen de perfil no se pudo actualizar</string>
+  <string name="profile_picture_deleted">Tu imagen de perfil ha sido borrada</string>
+  <string name="profile_picture_delete_failed">Imagen de perfil no se pudo borrar</string>
 </resources>

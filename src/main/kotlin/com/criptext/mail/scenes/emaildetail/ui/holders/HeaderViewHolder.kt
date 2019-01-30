@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.emaildetail.ui.labels.LabelsRecyclerView
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 
 class HeaderViewHolder(val view: View, val subject: String, val labels: VirtualList<Label>,
@@ -38,8 +39,10 @@ class HeaderViewHolder(val view: View, val subject: String, val labels: VirtualL
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
-        Picasso.with(view.context).load(drawable).into(starredImage, object : Callback {
-            override fun onError() {}
+        Picasso.get().load(drawable).into(starredImage, object : Callback {
+            override fun onError(e: Exception?) {
+
+            }
             override fun onSuccess() {
                 DrawableCompat.setTint(starredImage.drawable,
                         ContextCompat.getColor(view.context, color))

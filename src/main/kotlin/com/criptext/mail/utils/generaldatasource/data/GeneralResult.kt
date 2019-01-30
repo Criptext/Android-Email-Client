@@ -10,6 +10,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
+import java.io.File
 
 /**
  * Created by gabriel on 5/1/18.
@@ -167,5 +168,10 @@ sealed class GeneralResult {
     sealed class ResendEmail: GeneralResult() {
         data class Success(val position: Int): ResendEmail()
         class Failure: ResendEmail()
+    }
+
+    sealed class ChangeContactName : GeneralResult() {
+        data class Success(val fullName: String): ChangeContactName()
+        class Failure: ChangeContactName()
     }
 }

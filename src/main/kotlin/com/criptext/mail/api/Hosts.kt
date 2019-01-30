@@ -6,7 +6,7 @@ package com.criptext.mail.api
 
 object Hosts {
     const val restApiBaseUrl = "https://api.criptext.com"
-    const val webSocketBaseUrl = "wss://socket.criptext.com:3002"
+    const val webSocketBaseUrl = "wss://socket.criptext.com"
     const val fileServiceUrl = "https://services.criptext.com"
     const val fileTransferServer = "https://transfer.criptext.com"
     const val newsRepository = "https://news.criptext.com"

@@ -23,6 +23,7 @@ interface HttpClient {
     fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData
     fun post(path: String, authToken: String?, body: JSONObject): HttpResponseData
     fun put(path: String, authToken: String?, body: JSONObject): HttpResponseData
+    fun putFileStream(path: String, authToken: String?, filePath: String): HttpResponseData
     fun get(path: String, authToken: String?): HttpResponseData
     fun delete(path: String, authToken: String?, body: JSONObject): HttpResponseData
     fun getFile(path: String, authToken: String?): ByteArray
@@ -42,6 +43,7 @@ interface HttpClient {
 
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         private val MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8")
+        private val MEDIA_TYPE_IMAGE = MediaType.parse("image/jpeg")
 
         private val client = buildClient()
 
@@ -98,14 +100,24 @@ interface HttpClient {
         }
 
         private fun postStream(url: String, authToken: String?, filePath: String,
-                               randomId: String): Request {
+                               randomId: String?): Request {
             val body = StreamRequest(MEDIA_TYPE_PLAINTEXT, filePath)
-            return Request.Builder()
+            val builder =  Request.Builder()
                     .addAuthorizationHeader(authToken)
-                    .addHeader("random-id", randomId)
                     .url(url)
                     .post(body)
-                    .build()
+            if(randomId != null)
+                builder.addHeader("random-id", randomId)
+            return builder.build()
+        }
+
+        private fun putStream(url: String, authToken: String?, filePath: String): Request {
+            val body = StreamRequest(MEDIA_TYPE_IMAGE, filePath)
+            val builder =  Request.Builder()
+                    .addAuthorizationHeader(authToken)
+                    .url(url)
+                    .put(body)
+            return builder.build()
         }
 
         private fun putJSON(url: String, authToken: String?, json: JSONObject): Request {
@@ -222,6 +234,13 @@ interface HttpClient {
             val request = putJSON(baseUrl + path, authToken, body)
             return ApiCall.executeRequest(client, request)
         }
+
+        override fun putFileStream(path: String, authToken: String?, filePath: String): HttpResponseData {
+            val request = putStream(url = baseUrl + path, authToken = authToken,
+                    filePath = filePath)
+            return ApiCall.executeRequest(client, request)
+        }
+
 
         override fun get(path: String, authToken: String?): HttpResponseData {
             val request = getUrl(url = baseUrl + path, authToken = authToken)

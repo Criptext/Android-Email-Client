@@ -13,6 +13,8 @@ import com.criptext.mail.R
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
 import com.criptext.mail.scenes.mailbox.NavigationMenuOptions
+import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getColorFromAttr
 import com.criptext.mail.utils.virtuallist.VirtualList
@@ -119,7 +121,7 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderLabels.setOnClickListener {
             val visible = recyclerViewLabels.visibility == View.VISIBLE
             recyclerViewLabels.visibility = if (visible) View.GONE else View.VISIBLE
-            Picasso.with(imageViewArrow.context).load(
+            Picasso.get().load(
                     if(visible) R.drawable.arrow_down else
                         R.drawable.arrow_up).into(imageViewArrow)
         }
@@ -183,7 +185,18 @@ class DrawerMenuView(navigationView: NavigationView,
     fun initNavHeader(fullName: String, email: String){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName
-        avatarView.setImageBitmap(Utility.getBitmapFromText(safeFullName, 250, 250))
+        if(EmailAddressUtils.isFromCriptextDomain(email))
+            UIUtils.setProfilePicture(
+                    iv = avatarView,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
+                    name = safeFullName,
+                    runnable = null)
+        else
+            avatarView.setImageBitmap(
+                    Utility.getBitmapFromText(
+                            fullName,
+                            250,
+                            250))
         textViewNombre.text = safeFullName
         textViewCorreo.text = email
     }

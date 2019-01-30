@@ -91,6 +91,7 @@
   <string name="start_guide_email">Tap to compose a secure email</string>
   <string name="title_swipe">Swipe Options</string>
   <string name="title_profile_name">Profile Name</string>
+  <string name="title_profile">Profile</string>
   <string name="title_privacy_policy">Privacy Policy</string>
   <string name="title_terms_of_service">Terms of Service</string>
   <string name="title_open_source_libraries">Open Source Libraries</string>
@@ -179,6 +180,7 @@
   <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
     <string name="removing_device_dialog_message">Removing device…</string>
     <string name="privacy_toolbar_title">PRIVACY AND SECURITY</string>
+    <string name="profile_toolbar_title">PROFILE</string>
     <string name="email_source_toolbar_title">EMAIL SOURCE</string>
   <string name="pin_lock_switch_text">Use PIN Lock</string>
   <string name="pin_lock_change">Change PIN Code</string>
@@ -257,6 +259,7 @@
   <string name="confirm_password">Confirm Password</string>
     <string name="sending_email">Sending email…</string>
   <string name="documents">Documents</string>
+  <string name="remove_picture">Remove Picture</string>
   <string name="photo_library">Photo Library</string>
   <string name="camera">Camera</string>
     <string name="inbox">Inbox</string>
@@ -449,4 +452,8 @@
   <string name="save_image">Save Image</string>
   <string name="move_to_downloads_success">Inline image was saved to: %1$s</string>
   <string name="move_to_downloads_exists">Inline image is already in downloads</string>
+  <string name="profile_picture_updated">Profile picture updated successfully</string>
+  <string name="profile_picture_update_failed">Error on updating profile picture</string>
+  <string name="profile_picture_deleted">Profile picture deleted successfully</string>
+  <string name="profile_picture_delete_failed">Error on deleting profile picture</string>
 </resources>

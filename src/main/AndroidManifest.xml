@@ -113,6 +113,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.settings.replyto.ReplyToActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.profile.ProfileActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".services.InstanceIdService"

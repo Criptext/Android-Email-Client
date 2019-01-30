@@ -1,6 +1,7 @@
 package com.criptext.mail.email_preview
 
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import java.util.*
 
@@ -9,7 +10,7 @@ import java.util.*
  */
 
 data class EmailPreview(val subject: String, val topText: String, val bodyPreview: String,
-                        val senderName: String, val deliveryStatus: DeliveryTypes,
+                        val sender: Contact, val deliveryStatus: DeliveryTypes,
                         val unread: Boolean, val count: Int, val timestamp: Date,
                         val latestEmailUnsentDate: Date?,
                         val emailId: Long, val metadataKey: Long, val threadId: String,
@@ -23,7 +24,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
 
         fun fromEmailThread(e: EmailThread): EmailPreview {
             return EmailPreview(subject = e.subject, bodyPreview = e.preview,
-                    topText = e.headerPreview, senderName = getSenderNameFromEmailThread(e),
+                    topText = e.headerPreview, sender = e.latestEmail.from,
                     emailId = e.id, deliveryStatus = e.status, unread = e.unread,
                     count = e.totalEmails, timestamp = e.timestamp, threadId = e.threadId,
                     isSelected = false, isStarred = e.isStarred, hasFiles = e.hasFiles,

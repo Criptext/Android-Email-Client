@@ -1,27 +1,28 @@
-package com.criptext.mail.scenes.settings
+package com.criptext.mail.scenes.settings.profile.ui
 
 import android.content.Context
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.profile.ProfileUIObserver
 
 /**
  * Created by sebas on 3/8/18.
  */
 
-class SettingsProfileNameDialog(val context: Context) {
+class ProfileNameDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
     private lateinit var editTextFullName: EditText
 
-    fun showProfileNameDialog(fullName: String, observer: SettingsUIObserver?) {
+    fun showProfileNameDialog(fullName: String, observer: ProfileUIObserver?) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -33,7 +34,7 @@ class SettingsProfileNameDialog(val context: Context) {
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?,
+                             observer: ProfileUIObserver?,
                              fullName: String): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
@@ -55,7 +56,7 @@ class SettingsProfileNameDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?) {
+                                   observer: ProfileUIObserver?) {
 
         val btn_yes = view.findViewById(R.id.settgins_profile_ok) as Button
         val btn_no = view.findViewById(R.id.settgins_profile_no) as Button

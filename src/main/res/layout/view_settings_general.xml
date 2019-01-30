@@ -77,7 +77,7 @@
                     fontPath="fonts/NunitoSans-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/title_profile_name"
+                    android:text="@string/title_profile"
                     android:textSize="@dimen/drawer_text_item"
                     android:gravity="center_vertical"
                     android:textColor="?attr/criptextSettingsOptionsTextColor"/>

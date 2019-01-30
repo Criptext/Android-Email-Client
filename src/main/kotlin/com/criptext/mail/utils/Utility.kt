@@ -3,6 +3,7 @@ package com.criptext.mail.utils
 import android.graphics.*
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.ui.TextDrawable
+import java.io.File
 import java.util.regex.Pattern
 
 /**
@@ -37,6 +38,13 @@ class Utility {
 
             return bitmap
 
+        }
+
+        fun getBitmapFromFile(file: File): Bitmap{
+            val filePath = file.path
+            val options = BitmapFactory.Options()
+            options.inSampleSize = 1
+            return BitmapFactory.decodeFile(filePath, options)
         }
 
         private fun getAvatarLetters(fullName: String): String{

@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
@@ -25,6 +26,7 @@ import java.util.*
 
 class EventHelper(private val db: EventLocalDB,
                   httpClient: HttpClient,
+                  private val storage: KeyValueStorage,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
                   private val acknoledgeEvents: Boolean){
@@ -547,8 +549,10 @@ class EventHelper(private val db: EventLocalDB,
             db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate)
 
 
-    private fun updateUsernameStatus(metadata: PeerUsernameChangedStatusUpdate) =
-            db.updateUserName(activeAccount.recipientId, metadata.name)
+    private fun updateUsernameStatus(metadata: PeerUsernameChangedStatusUpdate) {
+        activeAccount.updateFullName(storage, metadata.name)
+        db.updateUserName(activeAccount.recipientId, metadata.name)
+    }
 
     private fun updateEmailLabelChangedStatus(metadata: PeerEmailLabelsChangedStatusUpdate) =
             db.updateEmailLabels(metadata.metadataKeys, metadata.labelsAdded, metadata.labelsRemoved)

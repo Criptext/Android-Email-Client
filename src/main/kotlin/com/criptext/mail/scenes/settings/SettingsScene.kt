@@ -1,20 +1,19 @@
 package com.criptext.mail.scenes.settings
 
 
-import com.google.android.material.tabs.TabLayout
-import androidx.viewpager.widget.ViewPager
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.viewpager.widget.ViewPager
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
+import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
+import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
 import com.criptext.mail.scenes.settings.views.DevicesSettingsView
 import com.criptext.mail.scenes.settings.views.GeneralSettingsView
 import com.criptext.mail.scenes.settings.views.LabelSettingsView
-import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
-import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -23,13 +22,13 @@ import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
+import com.google.android.material.tabs.TabLayout
 
 interface SettingsScene{
 
     fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver,
                    devicesListItemListener: DevicesListItemListener)
     fun showMessage(message : UIMessage)
-    fun showProfileNameDialog(fullName: String)
     fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
     fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData)
     fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail)
@@ -99,7 +98,6 @@ interface SettingsScene{
         private var generalDialogWithInput: GeneralDialogWithInput? = null
         private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
-        private val settingsProfileNameDialog = SettingsProfileNameDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
         private var messageAndProgressDialog: MessageAndProgressDialog? = null
@@ -132,10 +130,6 @@ interface SettingsScene{
                     context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
-        }
-
-        override fun showProfileNameDialog(fullName: String) {
-            settingsProfileNameDialog.showProfileNameDialog(fullName, settingsUIObserver)
         }
 
         override fun showCreateLabelDialog(keyboardManager: KeyboardManager) {
