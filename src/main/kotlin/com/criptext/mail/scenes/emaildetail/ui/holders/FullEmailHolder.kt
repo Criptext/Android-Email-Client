@@ -261,6 +261,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
             UIUtils.setProfilePicture(
                     iv = leftImageView,
+                    resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
                     name = contactFrom.name,
                     runnable = null)

@@ -2,6 +2,8 @@ package com.criptext.mail.utils
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.drawable.BitmapDrawable
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +23,13 @@ import com.squareup.picasso.Picasso
 
 object UIUtils{
 
-    fun setProfilePicture(iv: ImageView, recipientId: String, name: String, runnable: Runnable?) {
+    fun setProfilePicture(iv: ImageView, resources: Resources, recipientId: String, name: String, runnable: Runnable?) {
         val url = Hosts.restApiBaseUrl.plus("/user/avatar/$recipientId")
+        val bitmapFromText = Utility.getBitmapFromText(
+                name,250, 250)
         Picasso.get()
                 .load(url)
+                .placeholder(BitmapDrawable(resources, bitmapFromText))
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(iv, object : Callback {
                     override fun onSuccess() {
@@ -34,6 +39,7 @@ object UIUtils{
                     override fun onError(e: Exception) {
                         Picasso.get()
                                 .load(url)
+                                .placeholder(BitmapDrawable(resources, bitmapFromText))
                                 .into(iv, object : Callback {
                                     override fun onSuccess() {
                                         runnable?.run()
@@ -41,8 +47,7 @@ object UIUtils{
 
                                     override fun onError(e: Exception) {
                                         runnable?.run()
-                                        iv.setImageBitmap(Utility.getBitmapFromText(
-                                                name,250, 250))
+                                        iv.setImageBitmap(bitmapFromText)
                                     }
                                 })
                     }

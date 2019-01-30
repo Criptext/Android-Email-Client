@@ -90,7 +90,7 @@ interface ProfileScene{
 
             nameText.text = model.name
             showProfilePictureProgress()
-            UIUtils.setProfilePicture(profilePicture, recipientId, model.name, Runnable { hideProfilePictureProgress() })
+            UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.name, Runnable { hideProfilePictureProgress() })
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

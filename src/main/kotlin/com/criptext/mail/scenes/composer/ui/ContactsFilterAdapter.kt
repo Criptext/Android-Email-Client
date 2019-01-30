@@ -53,6 +53,7 @@ class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
         if(EmailAddressUtils.isFromCriptextDomain(item.email))
             UIUtils.setProfilePicture(
                     iv = circleView,
+                    resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(item.email),
                     name = item.name,
                     runnable = null)
