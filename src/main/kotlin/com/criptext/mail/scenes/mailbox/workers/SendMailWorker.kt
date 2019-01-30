@@ -124,8 +124,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                 PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
                         type = type, body = encryptedData.encryptedB64,
                         messageType = encryptedData.type, fileKey = if(getFileKey() != null)
-                                signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
-                                else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId))
+                    signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
+                else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId))
             }
         }.flatten()
     }
@@ -173,16 +173,16 @@ class SendMailWorker(private val signalClient: SignalClient,
         if(fileKey == null) return null
         val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
         return if(attachmentsThatNeedDuplicate.isNotEmpty() && attachments.containsAll(attachmentsThatNeedDuplicate)) {
-            db.getFileKeyByFileId(attachmentsThatNeedDuplicate.first().id)
+            attachmentsThatNeedDuplicate.first().fileKey
         }else{
             fileKey
         }
     }
 
-    private fun getEncryptedFileKeys(recipientId: String, deviceId: Int): ArrayList<String>?{
+    private fun getEncryptedFileKeys(recipientId: String, deviceId: Int): List<String>?{
         if(attachments.isEmpty()) return null
-        val fileKeys: ArrayList<String> = ArrayList()
-        attachments.mapTo(fileKeys) { signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64 }
+        val fileKeys = mutableListOf<String>()
+        attachments.forEach { fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64) }
         return fileKeys
     }
 

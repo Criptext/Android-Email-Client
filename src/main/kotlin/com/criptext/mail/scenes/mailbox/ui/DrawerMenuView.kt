@@ -188,6 +188,7 @@ class DrawerMenuView(navigationView: NavigationView,
         if(EmailAddressUtils.isFromCriptextDomain(email))
             UIUtils.setProfilePicture(
                     iv = avatarView,
+                    resources = avatarView.context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
                     name = safeFullName,
                     runnable = null)

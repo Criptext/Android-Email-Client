@@ -77,17 +77,16 @@ class ResendEmailWorker(
         if(fileKey == null) return null
         val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
         return if(attachments.containsAll(attachmentsThatNeedDuplicate)) {
-            db.getFileKeyByFileId(attachments.first().id)
+            attachmentsThatNeedDuplicate.first().fileKey
         }else{
             fileKey
         }
     }
 
-    private fun getEncryptedFileKeys(fullEmail: FullEmail, recipientId: String, deviceId: Int): ArrayList<String>?{
-        if(fullEmail.files.isEmpty()) return null
-        val fileKeys: ArrayList<String> = ArrayList()
-        fullEmail.files.mapTo(fileKeys) { signalClient.encryptMessage(recipientId, deviceId,
-                getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64 }
+    private fun getEncryptedFileKeys(fullEmail: FullEmail, recipientId: String, deviceId: Int): List<String>?{
+        if(fullEmail.files.isEmpty() || fullEmail.fileKey == null) return null
+        val fileKeys = mutableListOf<String>()
+        fullEmail.files.forEach { fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64) }
         return fileKeys
     }
 
@@ -105,13 +104,15 @@ class ResendEmailWorker(
         if (attachmentsThatNeedDuplicate.isNotEmpty()) {
             finalAttachments.addAll(attachments.filter { it !in attachmentsThatNeedDuplicate })
             val op = Result.of { fileApiClient.duplicateAttachments(attachmentsThatNeedDuplicate.map { it.token }) }
-                    .flatMap { Result.of {
-                        val httpReturn = JSONObject(it.body)
-                        for(file in attachmentsThatNeedDuplicate){
-                            db.updateFileToken(file.id, httpReturn.getString(file.token))
-                            finalAttachments.add(file)
-                        }
-                    } }
+            if(op is Result.Success){
+                val httpReturn = JSONObject(op.value.body).getJSONObject("duplicates")
+                for(file in attachmentsThatNeedDuplicate){
+                    db.updateFileToken(file.id, httpReturn.getString(file.token))
+                    finalAttachments.add(file)
+                }
+            }
+        }else if(attachments.isNotEmpty()){
+            finalAttachments.addAll(attachments)
         }
         return finalAttachments.map { attachment ->
             PostEmailBody.CriptextAttachment(token = attachment.token,

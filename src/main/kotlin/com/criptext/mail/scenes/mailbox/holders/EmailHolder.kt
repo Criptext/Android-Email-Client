@@ -70,6 +70,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
             UIUtils.setProfilePicture(
                     iv = avatarView,
+                    resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
                     name = contactFrom.name,
                     runnable = null)
