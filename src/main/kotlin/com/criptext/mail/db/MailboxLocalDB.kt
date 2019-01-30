@@ -248,22 +248,36 @@ interface MailboxLocalDB {
             }.map {
                 it.id
             }
-            var emails = if(startDate != null)
-                db.emailDao().getEmailThreadsFromMailboxLabel(
-                        isTrashOrSpam = (selectedLabel in conditionalLabels),
-                        startDate = startDate,
-                        rejectedLabels = rejectedIdLabels,
-                        selectedLabel = selectedLabel,
-                        limit = limit )
+            var emails = if(startDate != null) {
+                if(filterUnread)
+                    db.emailDao().getEmailThreadsFromMailboxLabelFiltered(
+                            isTrashOrSpam = (selectedLabel in conditionalLabels),
+                            startDate = startDate,
+                            rejectedLabels = rejectedIdLabels,
+                            selectedLabel = selectedLabel,
+                            limit = limit)
+                else
+                    db.emailDao().getEmailThreadsFromMailboxLabel(
+                            isTrashOrSpam = (selectedLabel in conditionalLabels),
+                            startDate = startDate,
+                            rejectedLabels = rejectedIdLabels,
+                            selectedLabel = selectedLabel,
+                            limit = limit)
+            } else {
+                if (filterUnread)
+                    db.emailDao().getInitialEmailThreadsFromMailboxLabelFiltered(
+                            isTrashOrSpam = (selectedLabel in conditionalLabels),
+                            rejectedLabels = rejectedIdLabels,
+                            selectedLabel = selectedLabel,
+                            limit = limit)
+                else
+                    db.emailDao().getInitialEmailThreadsFromMailboxLabel(
+                            isTrashOrSpam = (selectedLabel in conditionalLabels),
+                            rejectedLabels = rejectedIdLabels,
+                            selectedLabel = selectedLabel,
+                            limit = limit)
+            }
 
-            else
-                db.emailDao().getInitialEmailThreadsFromMailboxLabel(
-                        isTrashOrSpam = (selectedLabel in conditionalLabels),
-                        rejectedLabels = rejectedIdLabels,
-                        selectedLabel = selectedLabel,
-                        limit = limit )
-
-            emails = if(filterUnread) emails.filter { it.unread } else emails
             emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                     filesDir, it.metadataKey, it.content,
                     db.accountDao().getLoggedInAccount()!!.recipientId).first) }

@@ -5,6 +5,15 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.ui.TextDrawable
 import java.io.File
 import java.util.regex.Pattern
+import android.graphics.PorterDuffXfermode
+import android.opengl.ETC1.getWidth
+import android.opengl.ETC1.getHeight
+import android.graphics.Rect
+import android.graphics.Paint
+import android.graphics.Canvas
+import android.graphics.Bitmap
+
+
 
 /**
  * Created by hirobreak on 06/04/17.
@@ -12,6 +21,29 @@ import java.util.regex.Pattern
 class Utility {
 
     companion object {
+
+        fun getCroppedBitmap(bitmap: Bitmap?): Bitmap? {
+            if(bitmap == null) return null
+            val output = Bitmap.createBitmap(bitmap.width,
+                    bitmap.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(output)
+
+            val color = -0xbdbdbe
+            val paint = Paint()
+            val rect = Rect(0, 0, bitmap.width, bitmap.height)
+
+            paint.isAntiAlias = true
+            canvas.drawARGB(0, 0, 0, 0)
+            paint.color = color
+            // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+            canvas.drawCircle((bitmap.width / 2).toFloat(), (bitmap.height / 2).toFloat(),
+                    (bitmap.width / 2).toFloat(), paint)
+            paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+            canvas.drawBitmap(bitmap, rect, rect, paint)
+            //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+            //return _bmp;
+            return output
+        }
 
         fun getBitmapFromText(fullName: String, width: Int, height: Int): Bitmap {
             val nameInitials = getAvatarLetters(fullName)

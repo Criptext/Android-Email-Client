@@ -20,6 +20,15 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import java.io.IOException
+import java.io.FileNotFoundException
+import android.graphics.BitmapFactory
+import java.io.File
+import java.io.FileReader
+import java.io.BufferedReader
+import android.graphics.Bitmap
+
+
 
 object UIUtils{
 

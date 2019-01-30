@@ -26,7 +26,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
         val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, PushTypes.openActivity,
                 data.threadId, data.isPostNougat)
         val cn = NotificationNewMail(ctx)
-        cn.showHeaderNotification(data.title, R.drawable.push_icon,
+        cn.showHeaderNotification(data.name, R.drawable.push_icon,
                 CriptextNotification.ACTION_INBOX, pendingIntent)
     }
 
