@@ -454,6 +454,6 @@
   <string name="move_to_downloads_exists">La imagen ya está en la carpeta de descargas</string>
   <string name="profile_picture_updated">Imagen de perfil actualizada correctamente</string>
   <string name="profile_picture_update_failed">Imagen de perfil no se pudo actualizar</string>
-  <string name="profile_picture_deleted">Tú imagen de perfil ha sido borrada</string>
+  <string name="profile_picture_deleted">Tu imagen de perfil ha sido borrada</string>
   <string name="profile_picture_delete_failed">Imagen de perfil no se pudo borrar</string>
 </resources>
