@@ -1,5 +1,6 @@
 package com.criptext.mail.push
 
+import android.graphics.Bitmap
 import com.criptext.mail.R
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -37,22 +38,24 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
 
     private fun parseNewMailPush(pushData: Map<String, String>,
-                                 shouldPostNotification: Boolean): PushData.NewMail {
-        val body = pushData["body"] ?: ""
-        val title = pushData["title"] ?: ""
+                                 shouldPostNotification: Boolean, senderImage: Bitmap?): PushData.NewMail {
+        val subject = pushData["subject"] ?: ""
+        val name = pushData["name"] ?: ""
+        val email = pushData["email"] ?: ""
         val threadId = pushData["threadId"] ?: ""
         val metadataKey = pushData["metadataKey"]?.toLong()
         val preview = pushData["preview"] ?: ""
 
-        return PushData.NewMail(title = title, body = body, threadId = threadId,
+        return PushData.NewMail(name = name, email = email, subject = subject, threadId = threadId,
                 metadataKey = metadataKey ?: -1, shouldPostNotification = shouldPostNotification,
-                isPostNougat = isPostNougat, preview = preview, activeEmail = activeAccount.userEmail)
+                isPostNougat = isPostNougat, preview = preview, activeEmail = activeAccount.userEmail,
+                senderImage = senderImage)
     }
 
     private fun parseNewOpenMailbox(pushData: Map<String, String>,
                                  shouldPostNotification: Boolean): PushData.OpenMailbox {
-        val body = pushData["body"] ?: ""
-        val title = pushData["title"] ?: ""
+        val body = pushData["subject"] ?: ""
+        val title = pushData["name"] ?: ""
 
         return PushData.OpenMailbox(title = title, body = body,
                 shouldPostNotification = shouldPostNotification,
@@ -61,8 +64,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun parseLinkDevicePush(pushData: Map<String, String>,
                                  shouldPostNotification: Boolean): PushData.LinkDevice {
-        val body = pushData["body"] ?: ""
-        val title = pushData["title"] ?: ""
+        val body = pushData["subject"] ?: ""
+        val title = pushData["name"] ?: ""
         val deviceId = pushData["randomId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""
         val deviceName = pushData["deviceName"] ?: ""
@@ -76,8 +79,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun parseSyncDevicePush(pushData: Map<String, String>,
                                     shouldPostNotification: Boolean): PushData.SyncDevice {
-        val body = pushData["body"] ?: ""
-        val title = pushData["title"] ?: ""
+        val body = pushData["subject"] ?: ""
+        val title = pushData["name"] ?: ""
         val randomId = pushData["randomId"] ?: ""
         val deviceId = pushData["deviceId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""
@@ -98,14 +101,14 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     }
 
     private fun createAndNotifyPush(pushData: Map<String, String>, shouldPostNotification: Boolean,
-                                    isSuccess: Boolean){
+                                    isSuccess: Boolean, senderImage: Bitmap?){
         val action = pushData["action"]
         if (action != null) {
             val type = PushTypes.fromActionString(action)
             val notifier =  when (type) {
                 PushTypes.newMail -> {
                     if(isSuccess) {
-                        val data = parseNewMailPush(pushData, shouldPostNotification)
+                        val data = parseNewMailPush(pushData, shouldPostNotification, senderImage)
                         NewMailNotifier.Single(data)
                     }else{
                         val data = PushData.Error(UIMessage(R.string.push_email_update_mailbox_title),
@@ -134,13 +137,13 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
             is PushResult.UpdateMailbox.Success -> {
-                createAndNotifyPush(result.pushData, result.shouldPostNotification, true)
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, true, result.senderImage)
             }
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
                 parsePushPayload(result.pushData, result.shouldPostNotification)
             }
             is PushResult.UpdateMailbox.Failure -> {
-                createAndNotifyPush(result.pushData, result.shouldPostNotification, false)
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, false, null)
             }
         }
     }

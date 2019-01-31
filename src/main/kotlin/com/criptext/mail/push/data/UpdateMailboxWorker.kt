@@ -21,6 +21,11 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
+import com.squareup.picasso.Picasso
+import android.graphics.Bitmap
+import com.criptext.mail.api.Hosts
+import com.criptext.mail.utils.EmailAddressUtils
+
 
 /**
  * Created by sebas on 3/22/18.
@@ -60,7 +65,8 @@ class UpdateMailboxWorker(
                     isManual = true,
                     mailboxThreads = null,
                     shouldPostNotification = shouldPostNotification,
-                    pushData = pushData)
+                    pushData = pushData,
+                    senderImage = null)
         else
             PushResult.UpdateMailbox.Failure(
                     mailboxLabel = label,
@@ -89,8 +95,15 @@ class UpdateMailboxWorker(
                     val email = dbEvents.getEmailByMetadataKey(metadataKey)
                     if(email != null){
                         newData["preview"] = email.preview
-                        newData["body"] = email.subject
-                        newData["title"] = dbEvents.getFromContactByEmailId(email.id)[0].name
+                        newData["subject"] = email.subject
+                        newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
+                        newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
+                        val emailAddress = newData["email"]
+                        val bm = if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress))
+                                Picasso.get().load(Hosts.restApiBaseUrl
+                                .plus("/user/avatar/${EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)}")).get()
+                        else
+                            null
 
                         if(shouldCallAgain) {
                             PushResult.UpdateMailbox.SuccessAndRepeat(
@@ -98,7 +111,8 @@ class UpdateMailboxWorker(
                                     isManual = true,
                                     mailboxThreads = operationResult.value.first,
                                     pushData = newData,
-                                    shouldPostNotification = shouldPostNotification
+                                    shouldPostNotification = shouldPostNotification,
+                                    senderImage = bm
                             )
                         }else{
                             PushResult.UpdateMailbox.Success(
@@ -106,7 +120,8 @@ class UpdateMailboxWorker(
                                     isManual = true,
                                     mailboxThreads = operationResult.value.first,
                                     pushData = newData,
-                                    shouldPostNotification = shouldPostNotification
+                                    shouldPostNotification = shouldPostNotification,
+                                    senderImage = bm
                             )
                         }
                     }else{

@@ -1,5 +1,6 @@
 package com.criptext.mail.push.data
 
+import android.graphics.Bitmap
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
@@ -14,7 +15,8 @@ sealed class PushResult {
                 val mailboxThreads: List<EmailPreview>?,
                 val isManual: Boolean,
                 val pushData: Map<String, String>,
-                val shouldPostNotification: Boolean): UpdateMailbox() {
+                val shouldPostNotification: Boolean,
+                val senderImage: Bitmap?): UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
@@ -26,7 +28,8 @@ sealed class PushResult {
                 val mailboxThreads: List<EmailPreview>?,
                 val isManual: Boolean,
                 val pushData: Map<String, String>,
-                val shouldPostNotification: Boolean): UpdateMailbox() {
+                val shouldPostNotification: Boolean,
+                val senderImage: Bitmap?): UpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel

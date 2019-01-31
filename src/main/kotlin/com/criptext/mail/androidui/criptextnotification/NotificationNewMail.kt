@@ -1,31 +1,24 @@
 package com.criptext.mail.androidui.criptextnotification
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import android.text.Html
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.PushData
-import com.criptext.mail.push.services.LinkDeviceActionService
-import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.Utility
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
+import com.criptext.mail.api.Hosts
+
 
 class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) {
 
@@ -82,23 +75,28 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val preview = if(pushData.preview.length == 300) pushData.preview.plus("...") else pushData.preview
-        val pushHtmlBody = "<span style='color:black;'>${pushData.body}</span><br>$preview"
+        val pushHtmlBody = "<span style='color:black;'>${pushData.subject}</span><br>$preview"
         val pushBody = if(showEmailPreview)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 Html.fromHtml(pushHtmlBody, Html.FROM_HTML_MODE_LEGACY)
             else
                 Html.fromHtml(pushHtmlBody)
         else
-            pushData.body
+            pushData.subject
 
-        val pushHtmlText = "<span style='color:black;'>${pushData.body}</span>"
+        val pushHtmlText = "<span style='color:black;'>${pushData.subject}</span>"
         val pushText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             Html.fromHtml(pushHtmlText, Html.FROM_HTML_MODE_LEGACY)
         else
             Html.fromHtml(pushHtmlText)
 
+        val largeIcon = Utility.getCroppedBitmap(pushData.senderImage) ?: Utility.getBitmapFromText(
+                pushData.name,
+                250,
+                250)
+
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_NEW_EMAIL)
-                .setContentTitle(pushData.title)
+                .setContentTitle(pushData.name)
                 .setContentText(pushText)
                 .setSubText(pushData.activeEmail)
                 .setAutoCancel(true)
@@ -111,10 +109,7 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
                 .addAction(0, ctx.getString(R.string.push_trash), trashPendingIntent)
                 .addAction(0, ctx.getString(R.string.push_reply), replyPendingAction)
                 .setDeleteIntent(deletePendingIntent)
-                .setLargeIcon(Utility.getBitmapFromText(
-                        pushData.title,
-                        250,
-                        250))
+                .setLargeIcon(largeIcon)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(pushBody))
 
 
