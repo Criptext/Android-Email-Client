@@ -187,6 +187,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
+            is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -197,7 +198,6 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
-            is ComposerResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -219,9 +219,9 @@ class ComposerController(private val storage: KeyValueStorage,
         }
     }
 
-    private fun onGetRemoteFile(result: ComposerResult.GetRemoteFile) {
+    private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
         when (result) {
-            is ComposerResult.GetRemoteFile.Success -> {
+            is GeneralResult.GetRemoteFile.Success -> {
                 scene.dismissPreparingFileDialog()
                 model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
@@ -438,7 +438,7 @@ class ComposerController(private val storage: KeyValueStorage,
             val resolver = host.getContentResolver()
             if(resolver != null) {
                 scene.showPreparingFileDialog()
-                dataSource.submitRequest(ComposerRequest.GetRemoteFile(
+                generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
                         remoteAttachments.map { it.first }, resolver)
                 )
             }
@@ -474,9 +474,8 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun generateEmailFileKey(){
         if(model.fileKey != null)  return
-        model.fileKey = if(model.type is ComposerType.Empty) {
+        model.fileKey =
             FileUtils.generateFileKey()
-        } else null
     }
 
     private fun loadInitialData() {

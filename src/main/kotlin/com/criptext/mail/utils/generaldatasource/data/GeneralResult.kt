@@ -5,6 +5,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.PreKeyBundleShareData
@@ -173,5 +174,12 @@ sealed class GeneralResult {
     sealed class ChangeContactName : GeneralResult() {
         data class Success(val fullName: String): ChangeContactName()
         class Failure: ChangeContactName()
+    }
+
+    sealed class GetRemoteFile : GeneralResult() {
+        data class Success(val remoteFiles: List<Pair<String, Long>>): GetRemoteFile()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): GetRemoteFile()
     }
 }

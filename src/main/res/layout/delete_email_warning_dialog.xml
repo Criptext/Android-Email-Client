@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Warning!"
+        android:text="@string/password_warning_dialog_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
@@ -56,7 +56,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             fontPath="fonts/NunitoSans-SemiBold.ttf"
-            android:text="No" />
+            android:text="@string/no" />
 
         <Button
             android:textColor="@color/button_text_color"

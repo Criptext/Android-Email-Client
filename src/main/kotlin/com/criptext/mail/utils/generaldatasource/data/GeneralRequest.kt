@@ -31,4 +31,5 @@ sealed class GeneralRequest {
     data class SyncDenied(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
     data class ResendEmail(val emailId: Long, val position: Int): GeneralRequest()
     data class ChangeContactName(val fullName: String, val recipientId: String) : GeneralRequest()
+    class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): GeneralRequest()
 }

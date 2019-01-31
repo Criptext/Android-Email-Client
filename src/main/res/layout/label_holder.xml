@@ -10,7 +10,6 @@
         android:id="@+id/name"
         android:textColor="@color/white"
         android:textSize="10sp"
-        android:text="IMPORTANT"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_marginBottom="10dp"

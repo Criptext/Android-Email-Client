@@ -76,6 +76,7 @@ class ComposerActivity : BaseActivity() {
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
         when(filePickerConst){
+            FilePickerConst.KEY_SELECTED_MEDIA,
             FilePickerConst.KEY_SELECTED_DOCS -> {
                 if(data != null) {
                     val clipData = data.clipData
@@ -103,16 +104,6 @@ class ComposerActivity : BaseActivity() {
                             setActivityMessage(ActivityMessage.ShowUIMessage(UIMessage(R.string.too_many_files)))
                         }
                     }
-                }
-            }
-            FilePickerConst.KEY_SELECTED_MEDIA -> {
-                if(data != null) {
-                    val selectedAttachments = data.getStringArrayListExtra(filePickerConst)
-                    val attachmentsList = selectedAttachments.map {
-                        val size = File(it).length()
-                        Pair(it, size)
-                    }
-                    setActivityMessage(ActivityMessage.AddAttachments(attachmentsList))
                 }
             }
             PhotoUtil.KEY_PHOTO_TAKEN -> {

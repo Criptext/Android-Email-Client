@@ -72,7 +72,6 @@
                 android:layout_toEndOf="@+id/mailbox_title_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="(2)"
                 android:alpha="0.3"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/white"

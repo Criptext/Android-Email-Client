@@ -10,7 +10,6 @@
         fontPath="fonts/NunitoSans-Regular.ttf"
         android:id="@+id/name"
         android:layout_height="wrap_content"
-        android:text="Gianni Carlo"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:textSize="13sp"

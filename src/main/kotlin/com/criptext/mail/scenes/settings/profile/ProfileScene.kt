@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.MessageAndProgressDialog
 import com.criptext.mail.scenes.settings.profile.ui.BottomDialog
 import com.criptext.mail.scenes.settings.profile.ui.ProfileNameDialog
 import com.criptext.mail.utils.*
@@ -34,11 +35,14 @@ interface ProfileScene{
     fun resetProfilePicture(name: String)
     fun showProfilePictureProgress()
     fun hideProfilePictureProgress()
+    fun showPreparingFileDialog()
+    fun dismissPreparingFileDialog()
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
 
         private val context = view.context
+        private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
 
 
         private val backButton: ImageView by lazy {
@@ -143,6 +147,14 @@ interface ProfileScene{
 
         override fun hideProfilePictureProgress() {
             profilePictureLoading.visibility = View.GONE
+        }
+
+        override fun showPreparingFileDialog() {
+            preparingFileDialog.showDialog()
+        }
+
+        override fun dismissPreparingFileDialog() {
+            preparingFileDialog.dismiss()
         }
 
         override fun showMessage(message: UIMessage) {

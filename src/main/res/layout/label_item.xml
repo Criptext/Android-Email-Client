@@ -23,7 +23,7 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:textSize="14sp"
-        android:text="INBOX"
+        android:text="@string/inbox"
         android:layout_toEndOf="@+id/label_color"
         android:layout_toStartOf="@+id/label_checkbox"
         android:layout_marginStart="8dp"

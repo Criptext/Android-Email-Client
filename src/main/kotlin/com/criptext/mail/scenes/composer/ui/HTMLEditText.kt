@@ -15,7 +15,7 @@ class HTMLEditText(private val richEditor: RichEditor, hint: String){
     set(value) {
         richEditor.html = value
     }
-    get() = richEditor.html
+    get() = richEditor.html ?: ""
 
     val view: View = richEditor
 
