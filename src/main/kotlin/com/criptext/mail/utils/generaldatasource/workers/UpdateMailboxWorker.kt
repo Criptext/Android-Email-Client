@@ -1,10 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.api.PeerEventsApiHandler
-import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
@@ -22,13 +19,17 @@ import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.EventLoader
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import com.squareup.picasso.Picasso
 import org.whispersystems.libsignal.DuplicateMessageException
+import java.io.File
+
 
 class UpdateMailboxWorker(
         private val signalClient: SignalClient,
@@ -85,6 +86,7 @@ class UpdateMailboxWorker(
         val operationResult = workOperation()
 
         checkTrashDates()
+        checkForCacheCleaning()
 
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operationResult)
@@ -158,6 +160,24 @@ class UpdateMailboxWorker(
             Result.of { dbEvents.updateDeleteEmailPermanently(emailIds) }
             peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(emailIds).toJSON())
         }
+    }
+
+    private fun checkForCacheCleaning() {
+        val currentMillis = System.currentTimeMillis()
+        val millisInADays = (24 * 60 * 60 * 1000).toLong()
+        val savedTime = storage.getLong(KeyValueStorage.StringKey.CacheResetTimestamp, 0L)
+        if(savedTime < currentMillis - millisInADays){
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+            storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, currentMillis)
+            clearImageDiskCache()
+        }
+    }
+
+    private fun clearImageDiskCache(): Boolean {
+        val cache = File(dbEvents.getCacheDir(), "picasso-cache")
+        return if (cache.exists() && cache.isDirectory) {
+            FileUtils.deleteDir(cache)
+        } else false
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

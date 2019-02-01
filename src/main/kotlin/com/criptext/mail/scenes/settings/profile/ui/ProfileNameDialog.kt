@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings.profile.ui
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -21,6 +23,7 @@ class ProfileNameDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
     private lateinit var editTextFullName: EditText
+    private lateinit var btn_yes: Button
 
     fun showProfileNameDialog(fullName: String, observer: ProfileUIObserver?) {
 
@@ -52,13 +55,24 @@ class ProfileNameDialog(val context: Context) {
         editTextFullName.setText(fullName)
         editTextFullName.setSelection(fullName.length)
 
+        editTextFullName.addTextChangedListener( object : TextWatcher {
+            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                btn_yes.isEnabled = (editTextFullName.text.toString().isNotEmpty() && editTextFullName.text.toString() != fullName)
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+        })
+
         return newPasswordLoginDialog
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
                                    observer: ProfileUIObserver?) {
 
-        val btn_yes = view.findViewById(R.id.settgins_profile_ok) as Button
+        btn_yes = view.findViewById(R.id.settgins_profile_ok) as Button
         val btn_no = view.findViewById(R.id.settgins_profile_no) as Button
 
         btn_yes.setOnClickListener {

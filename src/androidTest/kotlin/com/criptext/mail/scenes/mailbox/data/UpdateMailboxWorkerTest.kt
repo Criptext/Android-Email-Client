@@ -59,7 +59,7 @@ class UpdateMailboxWorkerTest {
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
-        eventDB = EventLocalDB(db, mActivityRule.activity.filesDir)
+        eventDB = EventLocalDB(db, mActivityRule.activity.filesDir, mActivityRule.activity.cacheDir)
 
         // mock http requests
         mockWebServer = MockWebServer()

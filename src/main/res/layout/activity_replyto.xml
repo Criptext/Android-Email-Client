@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"
             android:layout_margin="15dp"
-            android:textColorHint="@color/signup_hint_color"
+            android:textColorHint="?attr/criptextPrimaryTextColor"
             android:hint="@string/reply_to_email_hint"
             app:errorEnabled="true"
             app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"

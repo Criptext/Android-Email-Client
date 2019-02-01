@@ -48,7 +48,7 @@ class ComposerActivity : BaseActivity() {
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB, this.filesDir),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),

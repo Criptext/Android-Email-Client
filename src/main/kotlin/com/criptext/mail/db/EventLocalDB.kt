@@ -16,7 +16,11 @@ import com.criptext.mail.utils.*
 import java.io.File
 import java.util.*
 
-class EventLocalDB(private val db: AppDatabase, private val filesDir: File){
+class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
+
+    fun getCacheDir(): File {
+        return cacheDir
+    }
 
     fun getAllPreKeys(): List<CRPreKey> {
         return db.rawPreKeyDao().getAll()

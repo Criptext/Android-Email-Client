@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -55,20 +56,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:layout_marginTop="-30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="center">
             <RelativeLayout
                 android:id="@+id/pin_content"
-                android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_picture"
-                    android:layout_centerInParent="true"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"/>
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_centerInParent="true" />
 
                 <ProgressBar
                     android:padding="36dp"
@@ -84,40 +86,55 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/profile_picture"
-                    android:layout_marginStart="-30dp"
-                    android:layout_marginTop="-30dp"
+                    android:layout_marginStart="-50dp"
+                    android:layout_marginTop="-50dp"
                     android:layout_toEndOf="@+id/profile_picture"
-                    android:src="@drawable/continue_draft"
+                    android:src="@drawable/photo"
                     android:tint="@android:color/white"
-                    app:fabSize="mini"
-                    app:maxImageSize="15dp" />
+                    app:maxImageSize="40dp" />
 
             </RelativeLayout>
 
             <LinearLayout
-                android:layout_margin="40dp"
+                android:id="@+id/view_signature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="10dp"
                     android:id="@+id/profile_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Profile Name"
-                    android:layout_weight="1"
                     android:textColor="?attr/criptextSettingsOptionsTextColor"
                     android:textSize="18sp" />
 
-                <ImageView
-                    android:id="@+id/edit_name_button"
-                    android:layout_width="20dp"
-                    android:layout_height="22dp"
-                    android:layout_weight=".2"
-                    android:clickable="true"
-                    android:src="@drawable/continue_draft" />
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/profile_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/change_name_button"
+                    android:layout_width="140dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/btn_welcome_tour"
+                    android:text="@string/change_name_btn_text"
+                    android:textAllCaps="false"
+                    android:textColor="@drawable/btn_sign_in" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

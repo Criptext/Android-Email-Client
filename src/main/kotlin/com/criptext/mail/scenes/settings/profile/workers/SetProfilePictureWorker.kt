@@ -19,6 +19,7 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 import java.io.File
 import android.R.attr.bitmap
+import com.criptext.mail.utils.file.FileUtils
 import java.io.FileOutputStream
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -95,25 +96,9 @@ class SetProfilePictureWorker(val httpClient: HttpClient,
     private fun clearImageDiskCache(): Boolean {
         val cache = File(cacheDir, "picasso-cache")
         return if (cache.exists() && cache.isDirectory) {
-            deleteDir(cache)
+            FileUtils.deleteDir(cache)
         } else false
     }
-
-    private fun deleteDir(dir: File): Boolean {
-        if (dir.isDirectory) {
-            val children = dir.list()
-            for (i in children.indices) {
-                val success = deleteDir(File(dir, children[i]))
-                if (!success) {
-                    return false
-                }
-            }
-        }
-        // The directory is now empty so delete it
-        return dir.delete()
-    }
-
-
 
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.

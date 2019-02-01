@@ -138,7 +138,7 @@ class MailboxActivity : BaseActivity() {
                 labelDao = appDB.labelDao(),
                 emailLabelDao = appDB.emailLabelDao(),
                 emailContactJoinDao = appDB.emailContactDao(),
-                eventLocalDB = EventLocalDB(appDB, activity.filesDir))
+                eventLocalDB = EventLocalDB(appDB, activity.filesDir, activity.cacheDir))
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
 
@@ -148,7 +148,7 @@ class MailboxActivity : BaseActivity() {
                 )
             val remoteChangeDataSource = GeneralDataSource(
                     signalClient = signalClient,
-                    eventLocalDB = EventLocalDB(appDB, activity.filesDir),
+                    eventLocalDB = EventLocalDB(appDB, activity.filesDir, activity.cacheDir),
                     storage = storage,
                     db = appDB,
                     runner = AsyncTaskWorkRunner(),

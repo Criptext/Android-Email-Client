@@ -15,6 +15,7 @@ import java.io.File
 
 class PushDataSource(
         private val filesDir: File,
+        private val cacheDir: File,
         private val httpClient: HttpClient,
         override val runner: WorkRunner,
         private val db: AppDatabase,
@@ -28,7 +29,7 @@ class PushDataSource(
         return when (params) {
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
-                    dbEvents = EventLocalDB(db, filesDir),
+                    dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     httpClient = httpClient,
                     storage = storage,
                     activeAccount = activeAccount,

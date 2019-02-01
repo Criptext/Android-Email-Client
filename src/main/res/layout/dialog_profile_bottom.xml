@@ -87,9 +87,9 @@
             android:gravity="center">
 
             <ImageView
-                android:layout_width="32dp"
+                android:layout_width="13dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/trash"
+                android:src="@drawable/x"
                 android:tint="?attr/criptextAttachmentDialogTextColor"/>
             <TextView
                 fontPath="fonts/NunitoSans-Regular.ttf"

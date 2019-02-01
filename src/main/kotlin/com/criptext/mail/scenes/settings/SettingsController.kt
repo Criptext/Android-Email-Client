@@ -216,7 +216,7 @@ class SettingsController(
         }
 
         override fun onProfileNameClicked() {
-            host.goToScene(ProfileParams(model.fullName), false)
+            host.goToScene(ProfileParams(model.fullName, activeAccount.userEmail), false)
         }
 
         override fun onReplyToChangeClicked() {
@@ -299,6 +299,7 @@ class SettingsController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        checkFirstTimeToResetCache()
         websocketEvents.setListener(webSocketEventListener)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
@@ -324,6 +325,13 @@ class SettingsController(
         }
 
         return false
+    }
+
+    private fun checkFirstTimeToResetCache(){
+        if(!storage.getBool(KeyValueStorage.StringKey.HasTimestampForCacheReset, false)){
+            storage.putBool(KeyValueStorage.StringKey.HasTimestampForCacheReset, true)
+            storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, System.currentTimeMillis())
+        }
     }
 
     override fun onStop() {
