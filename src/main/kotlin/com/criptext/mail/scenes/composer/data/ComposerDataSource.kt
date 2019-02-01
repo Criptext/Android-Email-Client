@@ -9,6 +9,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.workers.*
+import com.criptext.mail.utils.generaldatasource.workers.GetRemoteFileWorker
 import java.io.File
 
 /**
@@ -56,11 +57,6 @@ class ComposerDataSource(
                     userEmailAddress = activeAccount.userEmail,
                     signature = activeAccount.signature,
                     publishFn = { res -> flushResults(res) })
-            is ComposerRequest.GetRemoteFile -> GetRemoteFileWorker(
-                    uris = params.uris,
-                    contentResolver = params.contentResolver,
-                    publishFn = { res -> flushResults(res) }
-            )
         }
     }
 

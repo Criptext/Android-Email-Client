@@ -77,16 +77,20 @@ class ProfileActivity: BaseActivity(){
         when(filePickerConst){
             FilePickerConst.KEY_SELECTED_MEDIA -> {
                 if(data != null) {
-                    val selectedAttachments = data.getStringArrayListExtra(filePickerConst)
-                    setActivityMessage(ActivityMessage.ProfilePictureFile(
-                            Utility.getBitmapFromFile(File(selectedAttachments.first())),
-                            selectedAttachments.first()))
+                    val clipData = data.clipData
+                    if(clipData == null) {
+                        data.data?.also { uri ->
+                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
+                            if (attachment != null)
+                                setActivityMessage(ActivityMessage.ProfilePictureFile(attachment))
+                        }
+                    }
                 }
             }
             PhotoUtil.KEY_PHOTO_TAKEN -> {
                 val photo= photoUtil.getPhotoFileFromIntent()
                 if(photo != null && photo.length() != 0L)
-                    setActivityMessage(ActivityMessage.ProfilePictureFile(Utility.getBitmapFromFile(photo), photo.path))
+                    setActivityMessage(ActivityMessage.ProfilePictureFile(Pair(photo.absolutePath, photo.length())))
             }
         }
     }

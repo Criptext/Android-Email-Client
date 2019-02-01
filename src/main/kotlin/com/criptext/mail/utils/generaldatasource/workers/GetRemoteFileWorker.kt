@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.composer.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import android.accounts.NetworkErrorException
 import android.content.ContentResolver
@@ -11,20 +11,21 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import org.json.JSONException
 import java.io.File
 
 class GetRemoteFileWorker(private val uris: List<String>,
                           private val contentResolver: ContentResolver,
-                          override val publishFn: (ComposerResult.GetRemoteFile) -> Unit)
-    : BackgroundWorker<ComposerResult.GetRemoteFile> {
+                          override val publishFn: (GeneralResult.GetRemoteFile) -> Unit)
+    : BackgroundWorker<GeneralResult.GetRemoteFile> {
     override val canBeParallelized = true
 
-    override fun catchException(ex: Exception): ComposerResult.GetRemoteFile =
-            ComposerResult.GetRemoteFile.Failure(createErrorMessage(ex), ex)
+    override fun catchException(ex: Exception): GeneralResult.GetRemoteFile =
+            GeneralResult.GetRemoteFile.Failure(createErrorMessage(ex), ex)
 
-    override fun work(reporter: ProgressReporter<ComposerResult.GetRemoteFile>)
-            : ComposerResult.GetRemoteFile? {
+    override fun work(reporter: ProgressReporter<GeneralResult.GetRemoteFile>)
+            : GeneralResult.GetRemoteFile? {
 
         val attachmentList = mutableListOf<Pair<String, Long>>()
 
@@ -50,7 +51,7 @@ class GetRemoteFileWorker(private val uris: List<String>,
 
             attachmentList.add(Pair(file.absolutePath, file.length()))
         }
-        return ComposerResult.GetRemoteFile.Success(attachmentList)
+        return GeneralResult.GetRemoteFile.Success(attachmentList)
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

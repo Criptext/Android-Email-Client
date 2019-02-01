@@ -26,6 +26,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -36,6 +37,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.MemoryPolicy
+import java.io.File
 import java.lang.Exception
 
 
@@ -60,6 +62,7 @@ class ProfileController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeContactName -> onContactNameChanged(result)
+            is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -101,7 +104,7 @@ class ProfileController(
         override fun onNewGalleryPictureRequested() {
             scene.showProfilePictureProgress()
             PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
-            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker(1))
+            host.launchExternalActivityForResult(ExternalActivityParams.ProfileImagePicker())
         }
 
         override fun onDeletePictureRequested() {
@@ -252,30 +255,57 @@ class ProfileController(
         }
     }
 
+    private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
+        when (result) {
+            is GeneralResult.GetRemoteFile.Success -> {
+                scene.dismissPreparingFileDialog()
+                setBitmapOnProfileImage(result.remoteFiles.first().first)
+            }
+        }
+    }
+
     override fun onStop() {
         websocketEvents.clearListener(webSocketEventListener)
+    }
+
+    private fun setBitmapOnProfileImage(imagePath: String){
+        val file = File(imagePath)
+        val bitmapImage = Utility.getBitmapFromFile(file)
+
+        scene.showProfilePictureProgress()
+        val exif = ExifInterface(file.path)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            else -> {
+            }
+        }
+        val rotatedBitmap = Bitmap.createBitmap(bitmapImage, 0, 0,
+                bitmapImage.width, bitmapImage.height, matrix, true)
+        dataSource.submitRequest(ProfileRequest.SetProfilePicture(rotatedBitmap))
+        scene.updateProfilePicture(rotatedBitmap)
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         PinLockUtils.resetLastMillisPin()
         PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
         if (activityMessage is ActivityMessage.ProfilePictureFile) {
-            scene.showProfilePictureProgress()
-            val exif = ExifInterface(activityMessage.path)
-            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
-            val matrix = Matrix()
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-                else -> {
+            return if(activityMessage.filesMetadata.second != -1L) {
+                setBitmapOnProfileImage(activityMessage.filesMetadata.first)
+                true
+            }else{
+                val resolver = host.getContentResolver()
+                if(resolver != null) {
+                    scene.showPreparingFileDialog()
+                    generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
+                            listOf(activityMessage.filesMetadata.first), resolver)
+                    )
                 }
+                true
             }
-            val rotatedBitmap = Bitmap.createBitmap(activityMessage.image, 0, 0,
-                    activityMessage.image.width, activityMessage.image.height, matrix, true)
-            dataSource.submitRequest(ProfileRequest.SetProfilePicture(rotatedBitmap))
-            scene.updateProfilePicture(rotatedBitmap)
-            return true
         }
         return false
     }

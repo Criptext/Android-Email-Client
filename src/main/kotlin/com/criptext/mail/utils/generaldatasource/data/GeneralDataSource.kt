@@ -188,6 +188,11 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.GetRemoteFile -> GetRemoteFileWorker(
+                    uris = params.uris,
+                    contentResolver = params.contentResolver,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

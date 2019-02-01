@@ -55,7 +55,6 @@
                         android:textColor="?attr/criptextPrimaryTextColor"
                         android:id="@+id/email_header"
                         android:layout_height="wrap_content"
-                        android:text="Gianni Carlo"
                         android:layout_gravity="center_vertical"
                         android:textSize="18sp"
                         android:maxLines="1"
@@ -68,7 +67,6 @@
                         android:id="@+id/email_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10:30 AM"
                         android:textSize="13sp"
                         android:textColor="@color/mail_item_date" />
 
@@ -93,7 +91,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxWidth="150dp"
-                        android:text="To me, Allison, Daniel, Natasha"
                         android:layout_toEndOf="@+id/check"
                         android:layout_centerVertical="true"
                         android:maxLines="1"

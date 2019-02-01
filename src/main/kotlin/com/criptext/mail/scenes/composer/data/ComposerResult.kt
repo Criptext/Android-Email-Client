@@ -46,11 +46,4 @@ sealed class ComposerResult {
                 val message: UIMessage,
                 val exception: Exception): DeleteDraft()
     }
-
-    sealed class GetRemoteFile : ComposerResult() {
-        data class Success(val remoteFiles: List<Pair<String, Long>>): GetRemoteFile()
-        data class Failure(
-                val message: UIMessage,
-                val exception: Exception): GetRemoteFile()
-    }
 }

@@ -20,8 +20,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:textColor="?attr/criptextContactTokenTextColor"
-        android:textSize="14sp"
-        android:text="Daniel Tigse"/>
+        android:textSize="14sp"/>
 
     <View
         android:layout_width="match_parent"

@@ -14,6 +14,5 @@ sealed class ComposerRequest {
                            val fileKey: String?, val originalId: Long?): ComposerRequest()
     class DeleteDraft(val emailId: Long): ComposerRequest()
     class UploadAttachment(val filepath: String, val fileKey: String?, val filesSize: Long): ComposerRequest()
-    class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): ComposerRequest()
     class LoadInitialData(val composerType: ComposerType, val emailId: Long): ComposerRequest()
 }

@@ -370,6 +370,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
         when(params){
+            is ExternalActivityParams.ProfileImagePicker -> {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "image/*"
+                }
+                startActivityForResult(intent, FilePickerConst.REQUEST_CODE_PHOTO)
+            }
             is ExternalActivityParams.FilePicker -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -380,12 +387,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 startActivityForResult(intent, FilePickerConst.REQUEST_CODE_DOC)
             }
             is ExternalActivityParams.ImagePicker -> {
-                FilePickerBuilder.getInstance()
-                        .enableVideoPicker(true)
-                        .setMaxCount(params.remaining)
-                        .setActivityTheme(R.style.AppTheme)
-                        .enableCameraSupport(false)
-                        .pickPhoto(this)
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    putExtra("remaining", params.remaining)
+                    val mimeTypes = arrayOf("image/*", "video/*")
+                    type = "*/*"
+                    putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                }
+                startActivityForResult(intent, FilePickerConst.REQUEST_CODE_PHOTO)
             }
             is ExternalActivityParams.Camera -> {
                 val file = photoUtil.createImageFile()
