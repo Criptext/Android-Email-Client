@@ -47,13 +47,14 @@ class EventHelper(private val db: EventLocalDB,
     private var updateBannerData: UpdateBannerData? = null
     private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
     private var shouldCallAgain = false
+    private var shouldNotify = false
 
     fun setupForMailbox(label: Label, threadCount: Int?){
         this.label = label
         loadedThreadsCount = threadCount
     }
 
-    val processEvents: (Pair<List<Event>, Boolean>) -> Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> = { events ->
+    val processEvents: (Pair<List<Event>, Boolean>) -> Result<EventHelperResultData, Exception> = { events ->
         Result.of {
 
             val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
@@ -63,8 +64,8 @@ class EventHelper(private val db: EventLocalDB,
                     .or(processThreadDeletedPermanently(events.first)).or(processLabelCreated(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
                     .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
-            Triple(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
-                    updateBannerData, linkDevicesEvents)
+            EventHelperResultData(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
+                    updateBannerData, linkDevicesEvents, shouldNotify)
         }
     }
 
@@ -85,6 +86,8 @@ class EventHelper(private val db: EventLocalDB,
             if (cache.exists() && cache.isDirectory) {
                 FileUtils.deleteDir(cache)
             }
+            if (acknoledgeEvents)
+                eventsToAcknowldege.addAll(eventIdsToAcknowledge)
         }
 
         return eventIdsToAcknowledge.isNotEmpty()
@@ -140,8 +143,10 @@ class EventHelper(private val db: EventLocalDB,
         val deviceInfo = eventIdsToAcknowledge.map { it.second }
         linkDevicesEvents.add(if(deviceInfo.isEmpty())
             null
-                else
-            eventIdsToAcknowledge.map { it.second }.last()
+                else{
+                shouldNotify = true
+                eventIdsToAcknowledge.map { it.second }.last()
+            }
         )
 
         return eventIdsToAcknowledge.isNotEmpty()
@@ -162,8 +167,10 @@ class EventHelper(private val db: EventLocalDB,
         val deviceInfo = eventIdsToAcknowledge.map { it.second }
         linkDevicesEvents.add(if(deviceInfo.isEmpty())
             null
-                else
-            eventIdsToAcknowledge.map { it.second }.last()
+                else {
+                    shouldNotify = true
+                    eventIdsToAcknowledge.map { it.second }.last()
+                }
         )
 
         return eventIdsToAcknowledge.isNotEmpty()
@@ -180,6 +187,7 @@ class EventHelper(private val db: EventLocalDB,
                     when(operation){
                         is Result.Success ->{
                             updateBannerDataList.add(operation.value)
+                            shouldNotify = true
                             true
                         }
                         else -> false
@@ -210,6 +218,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         insertIncomingEmailTransaction(metadata)
+                        shouldNotify = true
                         // insertion success, try to acknowledge it
                         true
                     } catch (ex: DuplicateMessageException) {

@@ -14,9 +14,6 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.utils.EventHelper
-import com.criptext.mail.utils.EventLoader
-import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.whispersystems.libsignal.DuplicateMessageException
@@ -24,7 +21,7 @@ import java.io.File
 import com.squareup.picasso.Picasso
 import android.graphics.Bitmap
 import com.criptext.mail.api.Hosts
-import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.*
 
 
 /**
@@ -57,7 +54,7 @@ class UpdateMailboxWorker(
         return PushResult.UpdateMailbox.Failure(label, message, ex, pushData, shouldPostNotification)
     }
 
-    private fun processFailure(failure: Result.Failure<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>,
+    private fun processFailure(failure: Result.Failure<EventHelperResultData,
             Exception>): PushResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
             PushResult.UpdateMailbox.Success(
@@ -109,7 +106,7 @@ class UpdateMailboxWorker(
                             PushResult.UpdateMailbox.SuccessAndRepeat(
                                     mailboxLabel = label,
                                     isManual = true,
-                                    mailboxThreads = operationResult.value.first,
+                                    mailboxThreads = operationResult.value.emailPreviews,
                                     pushData = newData,
                                     shouldPostNotification = shouldPostNotification,
                                     senderImage = bm
@@ -118,7 +115,7 @@ class UpdateMailboxWorker(
                             PushResult.UpdateMailbox.Success(
                                     mailboxLabel = label,
                                     isManual = true,
-                                    mailboxThreads = operationResult.value.first,
+                                    mailboxThreads = operationResult.value.emailPreviews,
                                     pushData = newData,
                                     shouldPostNotification = shouldPostNotification,
                                     senderImage = bm

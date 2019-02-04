@@ -15,10 +15,7 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.utils.EventHelper
-import com.criptext.mail.utils.EventLoader
-import com.criptext.mail.utils.ServerCodes
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -68,14 +65,15 @@ class UpdateMailboxWorker(
         else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
 
 
-    private fun processFailure(failure: Result.Failure<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception>): GeneralResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<EventHelperResultData, Exception>): GeneralResult.UpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
             GeneralResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
                     mailboxThreads = null,
                     updateBannerData = null,
-                    syncEventsList = listOf())
+                    syncEventsList = listOf(),
+                    shouldNotify = false)
         else
             catchException(failure.error)
     }
@@ -103,17 +101,19 @@ class UpdateMailboxWorker(
                     GeneralResult.UpdateMailbox.SuccessAndRepeat(
                             mailboxLabel = label,
                             isManual = true,
-                            mailboxThreads = finalResult.value.first,
-                            updateBannerData = finalResult.value.second,
-                            syncEventsList = finalResult.value.third
+                            mailboxThreads = finalResult.value.emailPreviews,
+                            updateBannerData = finalResult.value.updateBannerData,
+                            syncEventsList = finalResult.value.deviceInfo,
+                            shouldNotify = finalResult.value.shouldNotify
                     )
                 }else {
                     GeneralResult.UpdateMailbox.Success(
                             mailboxLabel = label,
                             isManual = true,
-                            mailboxThreads = finalResult.value.first,
-                            updateBannerData = finalResult.value.second,
-                            syncEventsList = finalResult.value.third
+                            mailboxThreads = finalResult.value.emailPreviews,
+                            updateBannerData = finalResult.value.updateBannerData,
+                            syncEventsList = finalResult.value.deviceInfo,
+                            shouldNotify = finalResult.value.shouldNotify
                     )
                 }
             }
@@ -126,7 +126,7 @@ class UpdateMailboxWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception>  {
+    private fun workOperation() : Result<EventHelperResultData, Exception>  {
         val requestEvents = EventLoader.getEvents(mailboxApiClient)
         shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
         return requestEvents
@@ -134,7 +134,7 @@ class UpdateMailboxWorker(
     }
 
     private fun newRetryWithNewSessionOperation()
-            : Result<Triple<List<EmailPreview>, UpdateBannerData?, List<DeviceInfo?>>, Exception> {
+            : Result<EventHelperResultData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
                 activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)

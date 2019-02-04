@@ -3,7 +3,9 @@ package com.criptext.mail.scenes.mailbox
 import android.content.Context
 import android.media.AudioManager
 import android.media.RingtoneManager
+import android.os.Build
 import android.os.Handler
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.Gravity
 import android.view.View
@@ -514,22 +516,13 @@ interface MailboxScene{
         }
 
         override fun showNotification() {
-            val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
-
-            when (am!!.ringerMode) {
-                AudioManager.RINGER_MODE_VIBRATE -> setNotification(false)
-                AudioManager.RINGER_MODE_NORMAL -> setNotification(true)
-            }
-        }
-
-        private fun setNotification(sound: Boolean){
             val vibrate: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            vibrate.vibrate(400)
-            if(sound){
-                val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                val ringtone = RingtoneManager.getRingtone(context.applicationContext, defaultSound)
-                ringtone.play()
+            if (Build.VERSION.SDK_INT >= 26) {
+                vibrate.vibrate(VibrationEffect.createOneShot(400,10))
+            } else {
+                vibrate.vibrate(400)
             }
+
         }
     }
 }
