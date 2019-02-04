@@ -42,6 +42,7 @@ import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import java.net.URLDecoder
 
 /**
  * Created by sebas on 3/12/18.
@@ -879,7 +880,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     fun onCreateContextMenu(inlineSrc: String?){
-        model.lastTouchedInlineSrc = inlineSrc
+        model.lastTouchedInlineSrc =  URLDecoder.decode(inlineSrc, "UTF-8")
     }
 
     fun onContextItemSelected(itemId: Int) {
