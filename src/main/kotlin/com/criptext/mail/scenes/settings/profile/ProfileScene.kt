@@ -1,11 +1,14 @@
 package com.criptext.mail.scenes.settings.profile
 
 import android.graphics.Bitmap
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.MessageAndProgressDialog
@@ -16,6 +19,7 @@ import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.google.android.material.textfield.TextInputLayout
 import de.hdodenhof.circleimageview.CircleImageView
 
 
@@ -49,12 +53,8 @@ interface ProfileScene{
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val nameText: TextView by lazy {
-            view.findViewById<TextView>(R.id.profile_name)
-        }
-
         private val changeNameButton: View by lazy {
-            view.findViewById<View>(R.id.edit_name_button)
+            view.findViewById<View>(R.id.change_name_button)
         }
 
         private val profilePicture: CircleImageView by lazy {
@@ -67,6 +67,14 @@ interface ProfileScene{
 
         private val changePictureButton: View by lazy {
             view.findViewById<View>(R.id.edit_img)
+        }
+
+        private val nameText: TextView by lazy {
+            view.findViewById<TextView>(R.id.profile_name)
+        }
+
+        private val emailText: TextView by lazy {
+            view.findViewById<TextView>(R.id.profile_email)
         }
 
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
@@ -93,6 +101,7 @@ interface ProfileScene{
             }
 
             nameText.text = model.name
+            emailText.text = model.email
             showProfilePictureProgress()
             UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.name, Runnable { hideProfilePictureProgress() })
         }

@@ -42,7 +42,7 @@ class ChangePasswordActivity: BaseActivity(){
                 accountDao = appDB.accountDao())
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB, this.filesDir),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),

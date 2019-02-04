@@ -217,7 +217,7 @@
   <string name="taken_username_error">Nombre de Usuario no disponible.</string>
   <string name="username_doesnt_exist">Nombre de Usuario no existe</string>
   <string name="username_invalid_error">Nombre de Usuario inválido.</string>
-  <string name="username_length_error">Nombre de Usuario debe tener al menos 3 caracteres.</string>
+  <string name="username_length_error">Al menos 3 caracteres. Debe comenzar con letras A-Z.</string>
   <string name="email_invalid_error">Dirección de correo inválida.</string>
   <string name="fullname_length_error">El nombre es demasiado largo.</string>
   <string name="fullname_empty_error">Nombre Completo no puede estar vacío.</string>
@@ -456,4 +456,5 @@
   <string name="profile_picture_update_failed">Imagen de perfil no se pudo actualizar</string>
   <string name="profile_picture_deleted">Tu imagen de perfil ha sido borrada</string>
   <string name="profile_picture_delete_failed">Imagen de perfil no se pudo borrar</string>
+  <string name="change_name_btn_text">Cambiar Nombre</string>
 </resources>

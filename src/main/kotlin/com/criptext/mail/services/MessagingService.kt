@@ -33,7 +33,8 @@ class MessagingService : FirebaseMessagingService(){
                                 httpClient = HttpClient.Default(),
                                 activeAccount = account,
                                 storage = storage,
-                                filesDir = this.filesDir),
+                                filesDir = this.filesDir,
+                                cacheDir = this.cacheDir),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
                         activeAccount = account)

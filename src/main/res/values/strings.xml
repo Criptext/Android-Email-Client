@@ -217,7 +217,7 @@
   <string name="taken_username_error">This username is not available.</string>
   <string name="username_doesnt_exist">Username does not exist</string>
   <string name="username_invalid_error">Invalid Username.</string>
-  <string name="username_length_error">Username must be at least 3 characters.</string>
+  <string name="username_length_error">At least 3 characters. Must begin with letters A-Z.</string>
   <string name="email_invalid_error">Invalid email address.</string>
   <string name="fullname_length_error">Name is too long.</string>
   <string name="fullname_empty_error">Name cannot be empty.</string>
@@ -456,4 +456,5 @@
   <string name="profile_picture_update_failed">Error on updating profile picture</string>
   <string name="profile_picture_deleted">Profile picture deleted successfully</string>
   <string name="profile_picture_delete_failed">Error on deleting profile picture</string>
+  <string name="change_name_btn_text">Edit Name</string>
 </resources>

@@ -265,5 +265,18 @@ class FileUtils {
         fun generateFileKey(): String{
             return AESUtil.generateAesKey()
         }
+
+        fun deleteDir(dir: File): Boolean {
+            if (dir.isDirectory) {
+                val children = dir.list()
+                for (i in children.indices) {
+                    val success = deleteDir(File(dir, children[i]))
+                    if (!success) {
+                        return false
+                    }
+                }
+            }
+            return dir.delete()
+        }
     }
 }

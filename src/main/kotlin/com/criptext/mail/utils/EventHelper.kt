@@ -17,7 +17,9 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
+import com.squareup.picasso.Picasso
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
@@ -60,10 +62,32 @@ class EventHelper(private val db: EventLocalDB,
                     .or(processThreadLabelChanged(events.first)).or(processEmailDeletedPermanently(events.first))
                     .or(processThreadDeletedPermanently(events.first)).or(processLabelCreated(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
-                    .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first))
+                    .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
             Triple(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
                     updateBannerData, linkDevicesEvents)
         }
+    }
+
+    private fun processProfilePicChangePeer(events: List<Event>): Boolean {
+        val isLowOnPreKeysEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.profilePictureChanged }
+        val toEventIds: (Event) -> Long =
+                { it.rowid }
+
+        val eventIdsToAcknowledge = events
+                .filter(isLowOnPreKeysEvent)
+                .map(toEventIds)
+
+        if(eventIdsToAcknowledge.isNotEmpty()){
+
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+
+            val cache = File(db.getCacheDir(), "picasso-cache")
+            if (cache.exists() && cache.isDirectory) {
+                FileUtils.deleteDir(cache)
+            }
+        }
+
+        return eventIdsToAcknowledge.isNotEmpty()
     }
 
     private fun processLowPreKeys(events: List<Event>): Boolean {

@@ -50,7 +50,7 @@ class ProfileControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        model = ProfileModel(activeAccount.name)
+        model = ProfileModel(activeAccount.name, activeAccount.userEmail)
         controller = ProfileController(
                 scene = scene,
                 model = model,
@@ -84,8 +84,6 @@ class ProfileControllerTest{
 
         val observer = observerSlot.captured
         observer.onProfileNameChanged(newProfileName)
-
-        model.name `should equal` newProfileName
 
         val sentRequest = sentRequests.last()
         sentRequest `should be instance of` GeneralRequest.ChangeContactName::class.java

@@ -24,24 +24,24 @@ class DeleteProfilePictureWorker(val httpClient: HttpClient,
                                  private val storage: KeyValueStorage,
                                  private val accountDao: AccountDao,
                                  override val publishFn: (ProfileResult) -> Unit)
-    : BackgroundWorker<ProfileResult.SetProfilePicture> {
+    : BackgroundWorker<ProfileResult.DeleteProfilePicture> {
 
     private val apiClient = ProfileAPIClient(httpClient, activeAccount.jwt)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): ProfileResult.SetProfilePicture {
+    override fun catchException(ex: Exception): ProfileResult.DeleteProfilePicture {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.message_warning_two_fa), ex)
-                else -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
+                ServerCodes.MethodNotAllowed -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.message_warning_two_fa), ex)
+                else -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
             }
         }else {
-            ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
+            ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
         }
     }
 
-    override fun work(reporter: ProgressReporter<ProfileResult.SetProfilePicture>): ProfileResult.SetProfilePicture? {
+    override fun work(reporter: ProgressReporter<ProfileResult.DeleteProfilePicture>): ProfileResult.DeleteProfilePicture? {
         val result =  workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
@@ -52,7 +52,7 @@ class DeleteProfilePictureWorker(val httpClient: HttpClient,
             result
 
         return when (finalResult) {
-            is Result.Success -> ProfileResult.SetProfilePicture.Success()
+            is Result.Success -> ProfileResult.DeleteProfilePicture.Success()
 
             is Result.Failure -> catchException(finalResult.error)
         }

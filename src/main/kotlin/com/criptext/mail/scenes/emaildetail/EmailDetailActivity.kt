@@ -63,7 +63,7 @@ class  EmailDetailActivity: BaseActivity() {
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
-                eventLocalDB = EventLocalDB(appDB, this.filesDir),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
                 storage = KeyValueStorage.SharedPrefs(this),
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),

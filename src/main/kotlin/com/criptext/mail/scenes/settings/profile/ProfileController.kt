@@ -31,6 +31,8 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.squareup.picasso.Callback
@@ -76,7 +78,6 @@ class ProfileController(
     private val uiObserver = object: ProfileUIObserver{
         override fun onProfileNameChanged(name: String) {
             keyboardManager.hideKeyboard()
-            activeAccount.updateFullName(storage, name)
             model.name = name
             generalDataSource.submitRequest(GeneralRequest.ChangeContactName(
                     fullName = name,
@@ -219,9 +220,12 @@ class ProfileController(
         when(result) {
             is GeneralResult.ChangeContactName.Success -> {
                 scene.updateProfileName(result.fullName)
+                activeAccount.updateFullName(storage, model.name)
                 scene.showMessage(UIMessage(R.string.profile_name_updated))
             }
             is GeneralResult.ChangeContactName.Failure -> {
+                scene.updateProfileName(activeAccount.name)
+                model.name = activeAccount.name
                 scene.showMessage(UIMessage(R.string.error_updating_account))
             }
         }
