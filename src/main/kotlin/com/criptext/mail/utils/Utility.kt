@@ -75,8 +75,8 @@ class Utility {
         fun getBitmapFromFile(file: File): Bitmap{
             val filePath = file.path
             val options = BitmapFactory.Options()
-            options.inSampleSize = 1
-            return BitmapFactory.decodeFile(filePath, options)
+            val bitmap = BitmapFactory.decodeFile(filePath, options)
+            return Bitmap.createScaledBitmap(bitmap, 256, 256, false)
         }
 
         private fun getAvatarLetters(fullName: String): String{
