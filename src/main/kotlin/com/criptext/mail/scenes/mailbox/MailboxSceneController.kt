@@ -915,7 +915,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             feedController.reloadFeeds()
             dataSource.submitRequest(MailboxRequest.ResendEmails())
             if(!model.threads.isEmpty()){
-                if(model.selectedLabel.text== Label.LABEL_INBOX && model.threads[0].unread){
+                if(resultData.shouldNotify){
                     scene.showNotification()
                 }
             }
@@ -1043,7 +1043,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                         syncEventsList = resultData.syncEventsList,
                         updateBannerData = resultData.updateBannerData,
                         isManual = resultData.isManual,
-                        mailboxThreads = resultData.mailboxThreads
+                        mailboxThreads = resultData.mailboxThreads,
+                        shouldNotify = resultData.shouldNotify
                 )
                 handleSuccessfulMailboxUpdate(success)
                 dataSourceController.updateMailbox(model.selectedLabel)

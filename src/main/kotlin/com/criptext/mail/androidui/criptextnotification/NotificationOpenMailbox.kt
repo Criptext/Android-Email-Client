@@ -54,10 +54,6 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
-                .setLargeIcon(Utility.getBitmapFromText(
-                        pushData.title,
-                        250,
-                        250))
                 .setStyle(NotificationCompat.BigTextStyle().bigText(pushData.body))
 
         return buildNotification(builder)

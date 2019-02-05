@@ -54,8 +54,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun parseNewOpenMailbox(pushData: Map<String, String>,
                                  shouldPostNotification: Boolean): PushData.OpenMailbox {
-        val body = pushData["subject"] ?: ""
-        val title = pushData["name"] ?: ""
+        val body = pushData["body"] ?: ""
+        val title = pushData["title"] ?: ""
 
         return PushData.OpenMailbox(title = title, body = body,
                 shouldPostNotification = shouldPostNotification,
@@ -64,8 +64,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun parseLinkDevicePush(pushData: Map<String, String>,
                                  shouldPostNotification: Boolean): PushData.LinkDevice {
-        val body = pushData["subject"] ?: ""
-        val title = pushData["name"] ?: ""
+        val body = pushData["body"] ?: ""
+        val title = pushData["title"] ?: ""
         val deviceId = pushData["randomId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""
         val deviceName = pushData["deviceName"] ?: ""
@@ -79,8 +79,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun parseSyncDevicePush(pushData: Map<String, String>,
                                     shouldPostNotification: Boolean): PushData.SyncDevice {
-        val body = pushData["subject"] ?: ""
-        val title = pushData["name"] ?: ""
+        val body = pushData["body"] ?: ""
+        val title = pushData["title"] ?: ""
         val randomId = pushData["randomId"] ?: ""
         val deviceId = pushData["deviceId"] ?: ""
         val deviceType = pushData["deviceType"] ?: ""

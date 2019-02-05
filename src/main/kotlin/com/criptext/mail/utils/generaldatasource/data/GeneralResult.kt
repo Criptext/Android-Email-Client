@@ -35,6 +35,7 @@ sealed class GeneralResult {
     sealed class UpdateMailbox : GeneralResult() {
         abstract fun getDestinationMailbox(): Label
         data class Success(
+                val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
                 val updateBannerData: UpdateBannerData?,
@@ -47,6 +48,7 @@ sealed class GeneralResult {
         }
 
         data class SuccessAndRepeat(
+                val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
                 val updateBannerData: UpdateBannerData?,
