@@ -69,6 +69,7 @@ interface SignUpDao {
                 domain = account.domain, isLoggedIn = if(account.isLoggedIn) 1 else 0, isActive = if(account.isActive) 1 else 0,
                 identityKey = account.identityKeyPairB64, jwt = account.jwt, refreshJwt = account.refreshToken,
                 registrationId = account.registrationId)
+
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }
         insertPreKeys(preKeyList)

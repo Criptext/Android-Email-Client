@@ -257,6 +257,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("DROP TABLE email")
                     database.execSQL("ALTER TABLE new_email RENAME TO email")
+
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_metadataKey_index ON email (metadataKey, accountId)")
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_messageId_index ON email (messageId, accountId)")
 
@@ -278,6 +279,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("DROP TABLE label")
                     database.execSQL("ALTER TABLE new_label RENAME TO label")
+
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")
 
                     database.execSQL("""ALTER TABLE raw_identitykey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")

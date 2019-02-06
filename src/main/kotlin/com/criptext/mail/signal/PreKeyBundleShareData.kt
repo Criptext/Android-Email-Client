@@ -92,7 +92,7 @@ data class PreKeyBundleShareData(val recipientId: String,
             val preKeyArray = JSONArray()
             preKeys.forEach { (id, key) ->
                 val item = JSONObject()
-                item.put("id", id)
+                item.put("preKeyId", id)
                 item.put("publicKey", key)
                 preKeyArray.put(item)
             }
