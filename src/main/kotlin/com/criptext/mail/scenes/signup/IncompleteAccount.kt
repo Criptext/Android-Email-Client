@@ -17,6 +17,7 @@ data class IncompleteAccount(
 
         fun complete(privateBundle: SignalKeyGenerator.PrivateBundle, jwt: String, refreshToken: String) =
                 Account(
+                        id = 0,
                         name = this.name,
                         recipientId = this.username,
                         deviceId = this.deviceId,
@@ -24,6 +25,9 @@ data class IncompleteAccount(
                         jwt = jwt,
                         refreshToken = refreshToken,
                         registrationId = privateBundle.registrationId,
-                        identityKeyPairB64 = privateBundle.identityKeyPair
+                        identityKeyPairB64 = privateBundle.identityKeyPair,
+                        domain = "criptext.com",
+                        isActive = true,
+                        isLoggedIn = true
                 )
 }

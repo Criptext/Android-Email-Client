@@ -189,7 +189,7 @@ class ResendEmailsWorker(
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
-                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
+                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
             signalClient.createSessionsFromBundles(downloadedBundles)
         }
         if (blackListedJSONArray.length() > 0) {
@@ -203,7 +203,7 @@ class ResendEmailsWorker(
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
-        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients)
+        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients, activeAccount.id)
         existingSessions.forEach { knownAddress: KnownAddress ->
             knownAddresses[knownAddress.recipientId] = knownAddresses[knownAddress.recipientId]
                     ?.plus(knownAddress.deviceId)

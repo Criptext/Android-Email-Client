@@ -29,7 +29,7 @@ class UserDataWriterTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     val nowDate = Calendar.getInstance().time
     val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
@@ -40,20 +40,20 @@ class UserDataWriterTest {
             isTrusted = false, score = 0)
 
     private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM,
-            visible = true, uuid = "uuid1")
+            visible = true, uuid = "uuid1", accountId = activeAccount.id)
     private val labelTwo = Label(id = 2, color = "blue", text = "Custom Label 2", type = LabelTypes.CUSTOM,
-            visible = true, uuid = "uuid2")
+            visible = true, uuid = "uuid2", accountId = activeAccount.id)
 
     private val emailOne = Email(id = 1, content = "contents 1", date = nowDate,
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
             preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
-            fromAddress = "bob@criptext.com", replyTo = null, boundary = null)
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
     private val emailTwo = Email(id = 2, content = "contents 2", date = nowDate,
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_2", metadataKey = 456,
             preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
-            fromAddress = "bob@criptext.com", replyTo = null, boundary = null)
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
 
     private val fileOne = CRFile(id = 1, date = nowDate, emailId = 1, name = "this.txt",
             readOnly = true, size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
@@ -88,11 +88,15 @@ class UserDataWriterTest {
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
+        db.emailInsertionDao().insertAccountContact(listOf(
+                AccountContact(0, activeAccount.id, bobContact.id),
+                AccountContact(0, activeAccount.id, joeContact.id)))
         db.labelDao().insertAll(listOf(labelOne,labelTwo))
         db.emailDao().insert(emailOne)
         db.emailDao().insert(emailTwo)

@@ -25,6 +25,8 @@ interface SearchLocalDB{
 
     class Default(private val db: AppDatabase, val filesDir: File): SearchLocalDB{
 
+        private val account by lazy { db.accountDao().getLoggedInAccount()!! }
+
         override fun searchMailsInDB(userEmail: String, queryText: String,
                                      startDate: Date?,
                                      limit: Int): List<EmailThread> {
@@ -34,13 +36,13 @@ interface SearchLocalDB{
                         starterDate = startDate,
                         queryText = "%$queryText%",
                         rejectedLabels = listOf(Label.defaultItems.spam, Label.defaultItems.trash).map { it.id },
-                        limit = limit )
+                        limit = limit , accountId = account.id)
 
             else
                 db.emailDao().searchInitialEmailThreads(
                         queryText = "%$queryText%",
                         rejectedLabels = listOf(Label.defaultItems.spam, Label.defaultItems.trash).map { it.id },
-                        limit = limit )
+                        limit = limit, accountId = account.id )
 
             return emails.map { email ->
                 getEmailThreadFromEmail(email, Label.defaultItems.inbox.text,
@@ -64,7 +66,7 @@ interface SearchLocalDB{
             email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                     .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
 
-            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+            val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels, account.id)
             var totalFiles = 0
             val participants = emails.flatMap {
                 val contacts = mutableListOf<Contact>()
@@ -127,11 +129,11 @@ interface SearchLocalDB{
                                         updateUnreadStatus: Boolean,
                                         rejectedLabels: List<Long>) {
             emailThreads.forEach {
-                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId, rejectedLabels)
+                val emailsIds = db.emailDao().getEmailsFromThreadId(it.threadId, rejectedLabels, account.id)
                         .map {
                             it.id
                         }
-                db.emailDao().toggleRead(ids = emailsIds, unread = updateUnreadStatus)
+                db.emailDao().toggleRead(ids = emailsIds, unread = updateUnreadStatus, accountId = account.id)
             }
         }
     }

@@ -44,7 +44,7 @@ class ChangeContactNameWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", fullName)
+                db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", fullName, activeAccount.id)
                 db.accountDao().updateProfileName(fullName, recipientId)
 
                 GeneralResult.ChangeContactName.Success(fullName)

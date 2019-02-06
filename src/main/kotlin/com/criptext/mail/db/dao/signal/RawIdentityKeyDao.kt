@@ -17,14 +17,14 @@ interface RawIdentityKeyDao {
     fun insert(crIdentityKey: CRIdentityKey)
 
     @Query("""SELECT * FROM raw_identitykey
-              WHERE recipientId = :recipientId AND deviceId = :deviceId LIMIT 1""")
-    fun find(recipientId: String, deviceId: Int): CRIdentityKey?
+              WHERE recipientId = :recipientId AND deviceId = :deviceId AND accountId = :accountId LIMIT 1""")
+    fun find(recipientId: String, deviceId: Int, accountId: Long): CRIdentityKey?
 
     @Query("""DELETE FROM raw_identitykey
-              WHERE recipientId = :recipientId""")
-    fun deleteByRecipientId(recipientId: String)
+              WHERE recipientId = :recipientId AND accountId = :accountId""")
+    fun deleteByRecipientId(recipientId: String, accountId: Long)
 
-    @Query("DELETE FROM raw_identitykey")
-    fun deleteAll()
+    @Query("DELETE FROM raw_identitykey WHERE accountId = :accountId")
+    fun deleteAll(accountId: Long)
 
 }

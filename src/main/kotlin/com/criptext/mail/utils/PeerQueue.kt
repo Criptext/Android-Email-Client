@@ -2,6 +2,7 @@ package com.criptext.mail.utils
 
 import com.criptext.mail.api.PeerAPIClient
 import com.criptext.mail.db.dao.PendingEventDao
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.PendingEvent
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -19,20 +20,21 @@ abstract class PeerQueue{
     }
 
     class EventQueue(private val apiClient: PeerAPIClient,
-                     private val pendingEventDao: PendingEventDao): PeerQueue(){
+                     private val pendingEventDao: PendingEventDao,
+                     private val activeAccount: ActiveAccount): PeerQueue(){
 
         override fun enqueue(jsonObject: JSONObject) {
-            val peerEvent = PendingEvent(0, jsonObject.toString())
+            val peerEvent = PendingEvent(0, jsonObject.toString(), activeAccount.id)
             pendingEventDao.insert(peerEvent)
             val op = dispatchAndDequeue(pick())
         }
 
         override fun pick(batchSize: Int): List<PendingEvent> {
-            return pendingEventDao.getByBatch(batchSize)
+            return pendingEventDao.getByBatch(batchSize, activeAccount.id)
         }
 
         override fun dequeue(ids: List<Long>) {
-            pendingEventDao.deleteByBatch(ids)
+            pendingEventDao.deleteByBatch(ids, activeAccount.id)
         }
 
         override fun isEmpty(): Boolean {

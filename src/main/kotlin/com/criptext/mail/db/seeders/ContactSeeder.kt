@@ -13,7 +13,7 @@ class ContactSeeder {
         var contacts : List<Contact> = mutableListOf()
 
         fun seed(contactDao: ContactDao){
-            contacts = contactDao.getAll()
+            contacts = contactDao.getAll(1)
             contactDao.deleteAll(contacts)
             contacts = mutableListOf()
             for (a in 1..3){

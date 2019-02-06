@@ -14,7 +14,7 @@ object ExistingEmailUpdateSetup {
 
     fun updateExistingEmailTransaction(metadata: EmailMetadata, dao: EmailInsertionDao,
                                        activeAccount: ActiveAccount): Email {
-        val existingEmail = dao.findEmailByMessageId(metadata.messageId)!!
+        val existingEmail = dao.findEmailByMessageId(metadata.messageId, activeAccount.id)!!
         if(metadata.senderRecipientId == activeAccount.recipientId){
             dao.deleteByEmailLabelIds(labelId = defaultItems.sent.id, emailId = existingEmail.id)
             val emailLabel = EmailLabel(emailId = existingEmail.id, labelId = defaultItems.sent.id)

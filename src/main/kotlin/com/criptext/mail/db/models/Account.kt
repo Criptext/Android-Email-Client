@@ -1,18 +1,22 @@
 package com.criptext.mail.db.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.ColumnInfo
 
 /**
  * Created by sebas on 2/6/18.
  */
 
-@Entity(tableName = "account", indices = [Index(value = "name")] )
+@Entity(tableName = "account", indices = [Index(value = "name"),
+    Index(value = "recipientId", name = "account_recipient_index", unique = true)] )
 class Account(
 
-        @PrimaryKey
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "id")
+        var id : Long,
+
         @ColumnInfo(name = "recipientId")
         var recipientId : String,
 
@@ -35,7 +39,16 @@ class Account(
         var registrationId : Int,
 
         @ColumnInfo(name = "signature")
-        var signature: String
+        var signature: String,
+
+        @ColumnInfo(name = "domain")
+        var domain: String,
+
+        @ColumnInfo(name = "isActive")
+        var isActive: Boolean,
+
+        @ColumnInfo(name = "isLoggedIn")
+        var isLoggedIn: Boolean
 ) {
 
     override fun toString(): String {

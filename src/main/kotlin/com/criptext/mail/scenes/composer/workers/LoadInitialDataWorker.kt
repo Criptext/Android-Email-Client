@@ -4,6 +4,7 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.composer.data.*
@@ -19,6 +20,7 @@ import java.lang.StringBuilder
  */
 class LoadInitialDataWorker(
         private val db: ComposerLocalDB,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (ComposerResult.LoadInitialData) -> Unit,
         private val userEmailAddress: String,
         private val signature: String,
@@ -102,7 +104,7 @@ class LoadInitialDataWorker(
 
     private fun createSupportInputData(): ComposerInputData {
         val supportTemplate = (composerType as ComposerType.Support).template
-        val supportContact= db.contactDao.getContact(supportTemplate.contact)
+        val supportContact= db.contactDao.getContact(supportTemplate.contact, activeAccount.id)
 
         return if(supportContact != null){
             ComposerInputData(to = listOf(supportContact), cc = emptyList(), bcc = emptyList(),
@@ -119,7 +121,7 @@ class LoadInitialDataWorker(
     }
 
     private fun createMailToInputData(to: String): ComposerInputData {
-        val contact = db.contactDao.getContact(to)
+        val contact = db.contactDao.getContact(to, activeAccount.id)
 
         return if(contact != null){
             ComposerInputData(to = listOf(contact), cc = emptyList(), bcc = emptyList(),

@@ -27,7 +27,7 @@ class LocalCommunicationTest {
         val alice = InMemoryUser(generator, "alice", 1).setup()
         val bob = InMemoryUser(generator, "bob", 1).setup()
 
-        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val keyBundleFromBob = bob.fetchAPreKeyBundle(1)
         alice.buildSession(keyBundleFromBob)
 
         for (i in 1..50) {
@@ -52,7 +52,7 @@ class LocalCommunicationTest {
         val alice = InMemoryUser(generator, "alice", 1).setup()
         val bob = InMemoryUser(generator, "bob", 1).setup()
 
-        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val keyBundleFromBob = bob.fetchAPreKeyBundle(1)
         alice.buildSession(keyBundleFromBob)
 
         for (i in 1..50) {

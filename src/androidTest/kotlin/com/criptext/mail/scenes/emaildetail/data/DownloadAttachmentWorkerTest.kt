@@ -46,7 +46,7 @@ class DownloadAttachmentWorkerTest {
     private lateinit var emailDetailLocalDB: EmailDetailLocalDB
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     private var filetoken = ""
     private val reporter: ProgressReporter<ComposerResult.UploadFile> =

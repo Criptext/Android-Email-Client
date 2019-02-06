@@ -30,9 +30,12 @@ class ComposerDataSource(
                                         flushResults: (ComposerResult) -> Unit)
             : BackgroundWorker<*> {
         return when(params) {
-            is ComposerRequest.GetAllContacts -> LoadContactsWorker(composerLocalDB, { res ->
+            is ComposerRequest.GetAllContacts -> LoadContactsWorker(
+                    composerLocalDB,
+                    activeAccount
+            ) { res ->
                 flushResults(res)
-            })
+            }
             is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
@@ -44,6 +47,7 @@ class ComposerDataSource(
 
             is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
                     emailId = params.emailId,
+                    activeAccount = activeAccount,
                     db = composerLocalDB,
                     publishFn = { res -> flushResults(res) })
             is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filesSize = params.filesSize,
@@ -56,6 +60,7 @@ class ComposerDataSource(
                     composerType = params.composerType,
                     userEmailAddress = activeAccount.userEmail,
                     signature = activeAccount.signature,
+                    activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) })
         }
     }

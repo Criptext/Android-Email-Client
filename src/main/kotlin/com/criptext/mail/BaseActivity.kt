@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
@@ -124,12 +125,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     private fun getSavedInstanceModel(savedInstanceState: Bundle?): SceneModel? {
         if(savedInstanceState == null) return null
+        val activeAccount = ActiveAccount.loadFromStorage(this) ?: return null
         return if(savedInstanceState.getString("type") != null){
             when(savedInstanceState.getString("type")){
                 EMAIL_DETAIL_MODEL -> {
                     EmailDetailSceneModel(
                             threadId = savedInstanceState.getString("threadId")!!,
-                            currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!),
+                            currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!, activeAccount.id),
                             threadPreview = EmailPreview.emailPreviewFromJSON(savedInstanceState.getString("threadPreview")!!),
                             doReply = savedInstanceState.getBoolean("doReply")
                     )

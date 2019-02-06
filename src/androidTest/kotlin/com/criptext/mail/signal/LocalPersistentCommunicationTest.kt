@@ -49,7 +49,7 @@ class LocalPersistentCommunicationTest {
         val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
         
 
-        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val keyBundleFromBob = bob.fetchAPreKeyBundle(1)
         alice.buildSession(keyBundleFromBob)
 
         val originalTextFromAlice = "Hello Bob! How are you! I'm persisting my data with Room. This is my 1st e-mail."
@@ -65,7 +65,7 @@ class LocalPersistentCommunicationTest {
         val alice = newPersistedUser("alice", 1).setup()
         val bob = InMemoryUser(keyGenerator, "bob", 1).setup()
 
-        val keyBundleFromAlice = alice.fetchAPreKeyBundle()
+        val keyBundleFromAlice = alice.fetchAPreKeyBundle(1)
         bob.buildSession(keyBundleFromAlice)
 
         val originalTextFromBob = "Hello Alice! How are you! I'm in ur RAM. This is my 1st e-mail."

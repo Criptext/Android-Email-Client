@@ -18,10 +18,10 @@ class PreKeyBundleShareDataTest {
                 recipientId = "gabriel", deviceId = 1, registrationId = 125, signedPreKeyId = 564,
                 signedPreKeyPublic = "ggiwt35WtoPl5", signedPreKeySignature = "aiL97Mh40Kr31Sbn",
                 identityPublicKey = "ti9igMltw7Y"),
-                preKey = CRPreKey(id = 5, byteString = "trey4mI0kR3dw8Iwq"))
+                preKey = CRPreKey(id = 0, preKeyId = 5, byteString = "trey4mI0kR3dw8Iwq", accountId = 1))
 
         val serialized = original.toJSON().toString()
-        val deserialized = PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(serialized))
+        val deserialized = PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(serialized), 1)
 
         deserialized `should equal` original
     }

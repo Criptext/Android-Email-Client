@@ -1,6 +1,8 @@
 package com.criptext.mail
 
+import android.os.AsyncTask
 import androidx.multidex.MultiDexApplication
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.linking.LinkingActivity

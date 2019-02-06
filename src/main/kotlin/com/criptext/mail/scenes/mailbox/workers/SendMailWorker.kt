@@ -69,7 +69,7 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
-        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients)
+        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients, activeAccount.id)
         existingSessions.forEach { knownAddress: KnownAddress ->
             knownAddresses[knownAddress.recipientId] = knownAddresses[knownAddress.recipientId]
                                                 ?.plus(knownAddress.deviceId)
@@ -86,7 +86,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
-                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
+                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
             signalClient.createSessionsFromBundles(downloadedBundles)
         }
         if (blackListedJSONArray.length() > 0) {
@@ -339,7 +339,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
             val sessionToEncrypt = getSignalSessionJSON(tempSignalUser,
-                    tempSignalUser.fetchAPreKeyBundle()).toString().toByteArray()
+                    tempSignalUser.fetchAPreKeyBundle(activeAccount.id)).toString().toByteArray()
             val (salt, iv, encryptedSession) =
                     AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
             val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
@@ -351,8 +351,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     encryptedBody, salt, iv, encryptedSession, null, fileKeys = getFileKeys())
             tempSignalUser.store.deleteAllSessions(composerInputData.passwordForNonCriptextUsers)
-            rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
-            rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers)
+            rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers, activeAccount.id)
+            rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers, activeAccount.id)
 
         }
         return postGuestEmailBody
@@ -361,7 +361,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     private fun getDummySignalSession(recipientId: String): DummyUser{
         val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
         val tempUser = InMemoryUser(keyGenerator, recipientId, 1).setup()
-        val keyBundleFromTempUser = tempUser.fetchAPreKeyBundle()
+        val keyBundleFromTempUser = tempUser.fetchAPreKeyBundle(activeAccount.id)
 
         signalClient.createSessionsFromBundles(listOf(keyBundleFromTempUser))
         return tempUser
@@ -379,8 +379,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         jsonReturn.put("identityKey", jsonIdentityKey)
         jsonReturn.put("registrationId", tempUser.store.localRegistrationId)
         jsonPreKey.put("keyId", keyBundleFromTempUser.preKey?.id)
-        jsonPreKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey!!.id).keyPair.publicKey.serialize()))
-        jsonPreKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey.id).keyPair.privateKey.serialize()))
+        jsonPreKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey!!.preKeyId).keyPair.publicKey.serialize()))
+        jsonPreKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey.preKeyId).keyPair.privateKey.serialize()))
         jsonReturn.put("preKey", jsonPreKey)
         jsonSignedPreKey.put("keyId", keyBundleFromTempUser.shareData.signedPreKeyId)
         jsonSignedPreKey.put("publicKey", Encoding.byteArrayToString(signedPreKey.keyPair.publicKey.serialize()))
