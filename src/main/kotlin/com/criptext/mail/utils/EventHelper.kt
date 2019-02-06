@@ -104,7 +104,7 @@ class EventHelper(private val db: EventLocalDB,
 
         if(eventIdsToAcknowledge.isNotEmpty()){
             val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
-            val remainingKeys = db.getAllPreKeys().map { it.id }
+            val remainingKeys = db.getAllPreKeys().map { it.preKeyId }
             val registrationBundles = keyGenerator.register(activeAccount.recipientId,
                     activeAccount.deviceId)
 
@@ -116,8 +116,8 @@ class EventHelper(private val db: EventLocalDB,
             }
             if(response is Result.Success){
                 val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
-                    CRPreKey(id = key, byteString = value)
-                }.filter { it.id !in remainingKeys }
+                    CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = activeAccount.id)
+                }.filter { it.preKeyId !in remainingKeys }
                 db.insertPreKeys(preKeyList)
 
                 if (acknoledgeEvents)
@@ -600,7 +600,7 @@ class EventHelper(private val db: EventLocalDB,
             db.updateDeleteThreadPermanently(metadata.threadIds)
 
     private fun updateLabelCreatedStatus(metadata: PeerLabelCreatedStatusUpdate) =
-            db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid)
+            db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid, activeAccount.id)
 
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =

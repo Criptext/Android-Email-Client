@@ -1,9 +1,6 @@
 package com.criptext.mail.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Transaction
+import androidx.room.*
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
@@ -31,9 +28,12 @@ interface SignUpDao {
     @Transaction
     fun insertNewAccountData(account: Account, preKeyList: List<CRPreKey>,
                              signedPreKey: CRSignedPreKey, defaultLabels: List<Label>,
-                             extraRegistrationSteps: Runnable) {
+                             extraRegistrationSteps: Runnable, accountDao: AccountDao) {
         saveAccount(account)
+        val savedAccount = accountDao.getLoggedInAccount()!!
+        preKeyList.forEach { it.accountId = savedAccount.id }
         insertPreKeys(preKeyList)
+        signedPreKey.accountId = savedAccount.id
         insertSignedPreKey(signedPreKey)
         insertLabels(defaultLabels)
         // execute extra steps here, so that if they fail, we can rollback
@@ -43,9 +43,12 @@ interface SignUpDao {
     @Transaction
     fun updateAccountData(account: Account, preKeyList: List<CRPreKey>,
                              signedPreKey: CRSignedPreKey,
-                             extraRegistrationSteps: Runnable) {
+                             extraRegistrationSteps: Runnable, accountDao: AccountDao) {
         saveAccount(account)
+        val savedAccount = accountDao.getLoggedInAccount()!!
+        preKeyList.forEach { it.accountId = savedAccount.id }
         insertPreKeys(preKeyList)
+        signedPreKey.accountId = savedAccount.id
         insertSignedPreKey(signedPreKey)
         // execute extra steps here, so that if they fail, we can rollback
         extraRegistrationSteps.run()

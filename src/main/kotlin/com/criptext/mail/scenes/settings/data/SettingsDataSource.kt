@@ -23,6 +23,7 @@ class SettingsDataSource(
 
         return when(params){
             is SettingsRequest.GetCustomLabels -> GetCustomLabelsWorker(
+                    activeAccount = activeAccount,
                     db = settingsLocalDB,
                     publishFn = { res -> flushResults(res) }
             )
@@ -35,6 +36,7 @@ class SettingsDataSource(
                     publishFn = { res -> flushResults(res) }
             )
             is SettingsRequest.ChangeVisibilityLabel -> ChangeVisibilityLabelWorker(
+                    activeAccount = activeAccount,
                     db = settingsLocalDB,
                     isVisible = params.isVisible,
                     labelId = params.labelId,

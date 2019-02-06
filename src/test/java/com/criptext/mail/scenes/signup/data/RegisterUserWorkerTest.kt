@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.signup.data
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.services.MessagingInstance
@@ -24,6 +25,7 @@ class RegisterUserWorkerTest {
     private lateinit var keyGenerator: SignalKeyGenerator
     private lateinit var httpClient: HttpClient
     private lateinit var signUpDao: SignUpDao
+    private lateinit var accountDao: AccountDao
     private lateinit var storage: KeyValueStorage
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: AppDatabase
@@ -37,6 +39,7 @@ class RegisterUserWorkerTest {
         keyGenerator = mockk()
         httpClient = mockk()
         signUpDao = mockk()
+        accountDao = mockk()
         storage = mockk()
         messagingInstance = mockk()
         db = mockk()
@@ -47,7 +50,7 @@ class RegisterUserWorkerTest {
     private fun newWorker(incompleteAccount: IncompleteAccount): RegisterUserWorker =
         RegisterUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 signalKeyGenerator = keyGenerator, incompleteAccount = incompleteAccount,
-                publishFn = {}, messagingInstance = messagingInstance, db = db)
+                publishFn = {}, messagingInstance = messagingInstance, db = db, accountDao = accountDao)
 
 
     @Test
@@ -61,7 +64,8 @@ class RegisterUserWorkerTest {
             keyGenerator.register("tester", 1)
         } returns RegisterUserTestUtils.createRegistrationBundles("tester", 1)
         every { httpClient.post("/user", null, capture(bodySlot)).body } returns returnJson.toString()
-        every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
+        every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any(), any()) } just Runs
+        every { accountDao.updateActiveInAccount() } just Runs
         every {
             httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>()).body
         } returns "OK"

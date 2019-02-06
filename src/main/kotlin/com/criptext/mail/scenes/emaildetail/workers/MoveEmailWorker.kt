@@ -38,7 +38,7 @@ class MoveEmailWorker(
         private val emailId: Long,
         private val currentLabel: Label,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (
                 EmailDetailResult.MoveEmail) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmail> {
@@ -59,7 +59,7 @@ class MoveEmailWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmail>): EmailDetailResult.MoveEmail? {
 
         val emailIds = listOf(emailId)
-        val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
+        val metadataKeys = emailDao.getAllEmailsbyId(emailIds, activeAccount.id)
                 .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
                 .map { it.metadataKey }
 

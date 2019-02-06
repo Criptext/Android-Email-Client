@@ -14,7 +14,8 @@ enum class NavigationMenuOptions {
         SPAM -> Label.defaultItems.spam
         TRASH -> Label.defaultItems.trash
         ALL_MAIL -> Label(id = -1, color = "000000", text = Label.LABEL_ALL_MAIL,
-                visible = true, type = LabelTypes.SYSTEM, uuid = "00000000-0000-0000-0000-000000000000")
+                visible = true, type = LabelTypes.SYSTEM, uuid = "00000000-0000-0000-0000-000000000000",
+                accountId = -1)
         else -> null
     }
 }

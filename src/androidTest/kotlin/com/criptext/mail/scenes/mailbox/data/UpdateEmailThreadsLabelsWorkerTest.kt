@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
@@ -35,13 +36,17 @@ class UpdateEmailThreadsLabelsWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
+                name = "Tester", registrationId = 1,
+                identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true))
 
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
 
@@ -53,7 +58,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
     }
 
     private fun newWorker(selectedThreadIds: List<String>, currentLabel: Label, selectedLabels: SelectedLabels):

@@ -34,6 +34,7 @@ data class PreKeyBundleShareData(val recipientId: String,
             if (preKey != null) {
                 val preKeyJson = JSONObject()
                 preKeyJson.put("id", preKey.id)
+                preKeyJson.put("preKeyId", preKey.preKeyId)
                 preKeyJson.put("publicKey", preKey.byteString)
 
                 json.put("preKey", preKeyJson)
@@ -43,7 +44,7 @@ data class PreKeyBundleShareData(val recipientId: String,
         }
 
         companion object {
-            fun fromJSON(json: JSONObject): DownloadBundle {
+            fun fromJSON(json: JSONObject, accountId: Long): DownloadBundle {
                 val registrationId = json.getInt("registrationId")
                 val deviceId = json.getInt("deviceId")
                 val recipientId = json.getString("recipientId")
@@ -54,8 +55,10 @@ data class PreKeyBundleShareData(val recipientId: String,
 
                 val preKeyJson = json.optJSONObject("preKey")
                 val preKey = if (preKeyJson != null)
-                    CRPreKey(id = preKeyJson.getInt("id"),
-                             byteString = preKeyJson.getString("publicKey"))
+                    CRPreKey(id = preKeyJson.getLong("id"),
+                             preKeyId = preKeyJson.getInt("preKeyId"),
+                             byteString = preKeyJson.getString("publicKey"),
+                             accountId = accountId)
                     else null
 
                 val shareData = PreKeyBundleShareData(
@@ -69,12 +72,12 @@ data class PreKeyBundleShareData(val recipientId: String,
                 return DownloadBundle(shareData = shareData, preKey = preKey)
             }
 
-            fun fromJSONArray(jsonArray: JSONArray): List<DownloadBundle> {
+            fun fromJSONArray(jsonArray: JSONArray, accountId: Long): List<DownloadBundle> {
                 val length = jsonArray.length()
                 return (0..(length-1))
                         .map {
                             val json = jsonArray.getJSONObject(it)
-                            fromJSON(json)
+                            fromJSON(json, accountId)
                         }
             }
         }
@@ -90,7 +93,7 @@ data class PreKeyBundleShareData(val recipientId: String,
             val preKeyArray = JSONArray()
             preKeys.forEach { (id, key) ->
                 val item = JSONObject()
-                item.put("id", id)
+                item.put("preKeyId", id)
                 item.put("publicKey", key)
                 preKeyArray.put(item)
             }

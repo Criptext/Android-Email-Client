@@ -82,11 +82,13 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.TotalUnreadEmails -> GetTotalUnreadMailsByLabelWorker(
+                    activeAccount = activeAccount!!,
                     emailDao = db.emailDao(),
                     currentLabel = params.currentLabel,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.SyncPhonebook -> SyncPhonebookWorker(
+                    activeAccount = activeAccount!!,
                     contactDao = db.contactDao(),
                     contentResolver = params.contentResolver,
                     publishFn = { res -> flushResults(res)}

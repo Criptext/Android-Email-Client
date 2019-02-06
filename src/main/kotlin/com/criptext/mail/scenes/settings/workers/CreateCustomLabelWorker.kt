@@ -20,7 +20,7 @@ class CreateCustomLabelWorker(
         private val labelName: String,
         private val settingsLocalDB: SettingsLocalDB,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         override val publishFn: (SettingsResult.CreateCustomLabel) -> Unit)
     : BackgroundWorker<SettingsResult.CreateCustomLabel> {
@@ -41,13 +41,14 @@ class CreateCustomLabelWorker(
                 color = ColorUtils.colorStringByName(labelName),
                 visible = true,
                 type = LabelTypes.CUSTOM,
-                uuid = UUID.randomUUID().toString())
+                uuid = UUID.randomUUID().toString(),
+                accountId = activeAccount.id)
         val operation = Result.of { settingsLocalDB.labelDao.insert(label) }
 
         return when(operation){
             is Result.Success -> {
                 peerApiClient.enqueueEvent(PeerCreateLabelData(label.text, label.color, label.uuid).toJSON())
-                SettingsResult.CreateCustomLabel.Success(settingsLocalDB.labelDao.getLabelById(operation.value))
+                SettingsResult.CreateCustomLabel.Success(settingsLocalDB.labelDao.getLabelById(operation.value, activeAccount.id))
             }
             is Result.Failure -> SettingsResult.CreateCustomLabel.Failure()
         }

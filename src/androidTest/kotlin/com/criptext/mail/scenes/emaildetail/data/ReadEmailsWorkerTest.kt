@@ -33,7 +33,7 @@ class ReadEmailsWorkerTest {
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     private lateinit var httpClient: HttpClient
 
@@ -41,6 +41,10 @@ class ReadEmailsWorkerTest {
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
+        db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
+                name = "Tester", registrationId = 1,
+                identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true))
         mockWebServer = MockWebServer()
         mockWebServer.start()
         storage = mockk(relaxed = true)
@@ -121,7 +125,8 @@ class ReadEmailsWorkerTest {
                                     null),
                             boundary = null,
                             replyTo = null,
-                            fromAddress = "tester@criptext.com"),
+                            fromAddress = "tester@criptext.com",
+                            accountId = activeAccount.id),
                     labels = emptyList(),
                     to = emptyList(),
                     files = arrayListOf(CRFile(id = 0, token = "efhgfdgdfsg$it",

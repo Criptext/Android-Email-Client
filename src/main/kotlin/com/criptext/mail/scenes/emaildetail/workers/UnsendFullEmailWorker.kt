@@ -67,7 +67,7 @@ class UnsendFullEmailWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.UnsendFullEmailFromEmailId>)
             : EmailDetailResult.UnsendFullEmailFromEmailId {
 
-        val unsentEmail = emailDao.findEmailById(emailId)
+        val unsentEmail = emailDao.findEmailById(emailId, activeAccount.id)
         val result = workOperation(unsentEmail)
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)

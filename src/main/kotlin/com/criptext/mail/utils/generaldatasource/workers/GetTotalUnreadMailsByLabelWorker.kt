@@ -4,12 +4,14 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.dao.EmailDao
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 
 class GetTotalUnreadMailsByLabelWorker(private val emailDao: EmailDao,
+                                       private val activeAccount: ActiveAccount,
                                        private val currentLabel: String,
                                        override val publishFn: (GeneralResult.TotalUnreadEmails) -> Unit
                           ) : BackgroundWorker<GeneralResult.TotalUnreadEmails> {
@@ -25,7 +27,7 @@ class GetTotalUnreadMailsByLabelWorker(private val emailDao: EmailDao,
         val rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(currentLabel).map { it.id }
         val operation = Result.of {
             val labelId = Label.getLabelIdWildcard(labelName = currentLabel, labels = Label.defaultItems.toList())
-            emailDao.getTotalUnreadThreads(rejectedLabels, labelId).size
+            emailDao.getTotalUnreadThreads(rejectedLabels, labelId, activeAccount.id).size
         }
         return when (operation){
             is Result.Success -> {

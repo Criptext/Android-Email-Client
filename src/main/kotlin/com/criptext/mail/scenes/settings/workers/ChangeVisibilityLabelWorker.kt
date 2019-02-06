@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.settings.workers
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsResult
 
 /**
@@ -11,6 +12,7 @@ import com.criptext.mail.scenes.settings.data.SettingsResult
 
 class ChangeVisibilityLabelWorker(
         private val db: SettingsLocalDB,
+        private val activeAccount: ActiveAccount,
         private val labelId: Long,
         private val isVisible: Boolean,
         override val publishFn: (
@@ -24,7 +26,7 @@ class ChangeVisibilityLabelWorker(
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.ChangeVisibilityLabel>): SettingsResult.ChangeVisibilityLabel? {
-        db.labelDao.updateVisibility(labelId, isVisible)
+        db.labelDao.updateVisibility(labelId, isVisible, activeAccount.id)
         return SettingsResult.ChangeVisibilityLabel.Success()
     }
 

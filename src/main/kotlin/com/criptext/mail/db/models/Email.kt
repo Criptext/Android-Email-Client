@@ -1,10 +1,11 @@
 package com.criptext.mail.db.models
 
+import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.room.*
 import com.criptext.mail.db.DeliveryTypes
 import org.json.JSONObject
-import java.util.Date
+import java.util.*
 
 /**
  * Created by sebas on 1/24/18.
@@ -13,7 +14,11 @@ import java.util.Date
 @Entity(tableName = "email",
         indices = [
                 Index(value = "metadataKey", name = "email_metadataKey_index", unique = true),
-                Index(value = "messageId", name = "email_messageId_index", unique = true)])
+                Index(value = "messageId", name = "email_messageId_index", unique = true)],
+        foreignKeys = [ForeignKey(entity = Account::class,
+                parentColumns = ["id"],
+                onDelete = ForeignKey.CASCADE,
+                childColumns = ["accountId"])])
 data class Email(
         @PrimaryKey(autoGenerate = true)
         var id: Long,
@@ -66,13 +71,17 @@ data class Email(
 
         @ColumnInfo(name = "trashDate")
         @Nullable
-        var trashDate: Date?
+        var trashDate: Date?,
+
+        @ColumnInfo(name = "accountId")
+        @NonNull
+        var accountId : Long
 ){
         @Ignore
         var headers : String? = null
 
         companion object {
-            fun fromJSON(jsonString: String): Email{
+            fun fromJSON(jsonString: String, accountId: Long): Email{
                 val json = JSONObject(jsonString)
                 val email = Email(
                         id = json.getLong("id"),
@@ -94,7 +103,8 @@ data class Email(
                         unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("unsentDate"), null) else null,
                         trashDate = if(json.has("trashDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
-                                json.getString("trashDate"), null) else null
+                                json.getString("trashDate"), null) else null,
+                        accountId = accountId
 
                 )
                 email.headers = if(json.has("headers")) json.getString("headers") else null
