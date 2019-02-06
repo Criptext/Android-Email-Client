@@ -41,7 +41,7 @@ class AuthenticateUserWorker(
     : BackgroundWorker<SignInResult.AuthenticateUser> {
 
     private val apiClient = SignInAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SignInResult.AuthenticateUser {
@@ -86,10 +86,10 @@ class AuthenticateUserWorker(
         Result.of {
             val registrationBundles = keyGenerator.register(username, signInSession.deviceId)
             val privateBundle = registrationBundles.privateBundle
-            val account = Account(recipientId = username, deviceId = signInSession.deviceId,
+            val account = Account(id = 0, recipientId = username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
-                    signature = "", refreshToken = "")
+                    signature = "", refreshToken = "", isActive = true, domain = "criptext.com", isLoggedIn = true)
             Pair(registrationBundles, account)
         }
     }

@@ -44,7 +44,7 @@ class UpdateMailboxWorkerTest {
     private lateinit var storage: KeyValueStorage
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase
@@ -54,9 +54,10 @@ class UpdateMailboxWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
@@ -89,8 +90,8 @@ class UpdateMailboxWorkerTest {
 
         // store local emails in db
         val localEmails = listOf(
-                MockEmailData.createNewEmail(1),
-                MockEmailData.createNewEmail(2))
+                MockEmailData.createNewEmail(1, activeAccount.id),
+                MockEmailData.createNewEmail(2, activeAccount.id))
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -102,12 +103,13 @@ class UpdateMailboxWorkerTest {
         }
         db.emailDao().insertAll(localEmails)
         db.contactDao().insertIgnoringConflicts(Contact(
-                id = 0,
+                id = 1,
                 email = "mayer@criptext.com",
                 name = "Mayer",
                 score = 0,
                 isTrusted = false
         ))
+        db.emailInsertionDao().insertAccountContact(listOf(AccountContact(0, 1, 1)))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
 
         var totalFeeds = db.feedDao().getAllFeedItems().size
@@ -118,7 +120,7 @@ class UpdateMailboxWorkerTest {
         worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
 
         // assert that emails got updated correctly in DB
-        val updatedEmails = db.emailDao().getAll()
+        val updatedEmails = db.emailDao().getAll(activeAccount.id)
         updatedEmails.size `shouldBe` 2
         Log.d("DeliveryStatus", "updatedEmails = ${updatedEmails.map { it.delivered }}")
         updatedEmails.all(hasDeliveryTypeRead).shouldBeTrue()
@@ -136,8 +138,8 @@ class UpdateMailboxWorkerTest {
 
         // store local emails in db
         val localEmails = listOf(
-                MockEmailData.createNewEmail(1),
-                MockEmailData.createNewEmail(2))
+                MockEmailData.createNewEmail(1, activeAccount.id),
+                MockEmailData.createNewEmail(2, activeAccount.id))
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -150,6 +152,7 @@ class UpdateMailboxWorkerTest {
         db.emailDao().insertAll(localEmails)
         db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer",
                 false, 0))
+        db.emailInsertionDao().insertAccountContact(listOf(AccountContact(0, 1, 1)))
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
@@ -185,7 +188,7 @@ class UpdateMailboxWorkerTest {
         ))
 
         // store local emails in db
-        val localEmails = MockEmailData.createNewEmails(3)
+        val localEmails = MockEmailData.createNewEmails(3, activeAccount.id)
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -202,7 +205,7 @@ class UpdateMailboxWorkerTest {
         worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
 
         // assert that emails got inserted correctly in DB and in the File System
-        val newLocalEmails = db.emailDao().getAll()
+        val newLocalEmails = db.emailDao().getAll(activeAccount.id)
         newLocalEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
                 mActivityRule.activity.filesDir, it.metadataKey, it.content, activeAccount.recipientId
         ).first }
@@ -238,7 +241,7 @@ class UpdateMailboxWorkerTest {
         ))
 
         // store local emails in db
-        val localEmails = MockEmailData.createNewEmails(3)
+        val localEmails = MockEmailData.createNewEmails(3, activeAccount.id)
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -287,7 +290,7 @@ class UpdateMailboxWorkerTest {
         ))
 
         // store local emails in db
-        val localEmails = MockEmailData.createNewEmails(3)
+        val localEmails = MockEmailData.createNewEmails(3, activeAccount.id)
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -343,7 +346,7 @@ class UpdateMailboxWorkerTest {
         ))
 
         // store local emails in db
-        val localEmails = MockEmailData.createNewEmails(3)
+        val localEmails = MockEmailData.createNewEmails(3, activeAccount.id)
         localEmails.forEach {
             EmailUtils.saveEmailInFileSystem(
                     filesDir = mActivityRule.activity.filesDir,
@@ -359,11 +362,11 @@ class UpdateMailboxWorkerTest {
 
         // run worker 1st time
         worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
-        val mailCountAfter1stRun = db.emailDao().getAll().size
+        val mailCountAfter1stRun = db.emailDao().getAll(activeAccount.id).size
 
         // run worker 2nd time
         worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
-        val mailCountAfter2ndRun = db.emailDao().getAll().size
+        val mailCountAfter2ndRun = db.emailDao().getAll(activeAccount.id).size
 
         // no new mails should be added on second run
         mailCountAfter2ndRun shouldEqual mailCountAfter1stRun

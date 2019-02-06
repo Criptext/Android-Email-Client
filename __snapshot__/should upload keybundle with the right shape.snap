@@ -3,15 +3,15 @@
     "signedPreKeyId": 1,
     "preKeys": [
         {
-            "id": 1,
+            "preKeyId": 1,
             "publicKey": "__PK_1__"
         },
         {
-            "id": 2,
+            "preKeyId": 2,
             "publicKey": "__PK_2__"
         },
         {
-            "id": 3,
+            "preKeyId": 3,
             "publicKey": "__PK_3__"
         }
     ],

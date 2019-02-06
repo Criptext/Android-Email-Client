@@ -55,7 +55,7 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                     Result.of {
                         val bundleJSON = JSONObject(it.body)
                         val downloadedBundle =
-                                PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON)
+                                PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON, activeAccount.id)
                         signalClient.createSessionsFromBundles(listOf(downloadedBundle))
                     }
                 }

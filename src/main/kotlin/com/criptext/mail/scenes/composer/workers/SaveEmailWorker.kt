@@ -139,7 +139,7 @@ class SaveEmailWorker(
 
     private fun shouldDuplicateFile(fileToken: String): Boolean{
         if(originalId == null) return false
-        val email = dao.findEmailById(originalId) ?: return false
+        val email = dao.findEmailById(originalId, account.id) ?: return false
         val oldFiles = dao.findFilesByEmailId(email.id)
         if(fileToken in oldFiles.map { it.token })
             return true
@@ -152,9 +152,9 @@ class SaveEmailWorker(
         val labels = if(onlySave) listOf(defaultLabels.draft) else listOf(defaultLabels.sent)
         val files = createFilesData()
         val newEmailId = dao.runTransaction {
-            if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId)
+            if (emailId != null) dao.deletePreviouslyCreatedDraft(emailId, account.id)
 
-            EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns,
+            EmailInsertionSetup.exec(dao = dao, metadataColumns = metadataColumns, accountId = account.id,
                     preview = HTMLUtils.createEmailPreview(composerInputData.body), labels = labels, files = files, fileKey = fileKey)
 
         }

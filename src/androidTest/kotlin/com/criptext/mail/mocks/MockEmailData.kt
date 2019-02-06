@@ -3,10 +3,7 @@ package com.criptext.mail.mocks
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.models.CRFile
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.Email
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.utils.EmailUtils
 import java.io.File
@@ -18,7 +15,7 @@ import java.util.*
 object MockEmailData {
     private val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi", true, 0)
 
-    fun createNewEmail(dateMilis: Long, number: Int): Email =
+    fun createNewEmail(dateMilis: Long, number: Int, accountId: Long): Email =
             Email(id = number.toLong(), messageId = number.toString(),
                             threadId = "thread$number", unread = true, secure = true,
                             content = "this is message #$number", preview = "message #$number",
@@ -26,14 +23,14 @@ object MockEmailData {
                             date = Date(dateMilis + number), metadataKey = number + 100L,
                             isMuted = false, unsentDate = Date(dateMilis + number),
                             trashDate = Date(dateMilis + number), boundary = null,
-                            fromAddress = fromContact.email, replyTo = null)
+                            fromAddress = fromContact.email, replyTo = null, accountId = accountId)
 
-    fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
+    fun createNewEmail(number: Int, accountId: Long) = createNewEmail(System.currentTimeMillis(), number, accountId)
 
-    fun createNewEmails(max: Int) = (1..max).map{ createNewEmail(it)}
+    fun createNewEmails(max: Int, accountId: Long) = (1..max).map{ createNewEmail(it, accountId)}
 
     fun insertEmailsNeededForTests(db: TestDatabase, labels: List<Label>, filesDir: File, recipientId: String,
-                                   toList: List<String> = listOf("gabriel@criptext.com")){
+                                   toList: List<String> = listOf("gabriel@criptext.com"), accountId: Long){
         (1..2).forEach {
             val seconds = if (it < 10) "0$it" else it.toString()
             val metadata = EmailMetadata.DBColumns(to = toList,  cc = emptyList(), bcc = emptyList(),
@@ -51,7 +48,7 @@ object MockEmailData {
                     headers = null)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(),
                     metadataColumns = metadata, preview = decryptedBody,
-                    labels = labels, files = emptyList(), fileKey = null)
+                    labels = labels, files = emptyList(), fileKey = null, accountId = accountId)
         }
     }
 }

@@ -35,7 +35,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
     : BackgroundWorker<SignInResult.CreateSessionFromLink> {
 
     private val apiClient = SignInAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
 
     override val canBeParallelized = false
 
@@ -72,10 +72,10 @@ class CreateSessionWorker(val httpClient: HttpClient,
             val registrationBundles = keyGenerator.register(username,
                     randomId)
             val privateBundle = registrationBundles.privateBundle
-            val account = Account(recipientId = username, deviceId = randomId,
+            val account = Account(id = 0, recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "", refreshToken = "")
+                    signature = "", refreshToken = "", isActive = true, domain = "criptext.com", isLoggedIn = true)
             Pair(registrationBundles, account)
         }
     }

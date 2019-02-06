@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer.data
 
 import android.content.Context
 import com.criptext.mail.api.toList
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
@@ -34,28 +35,29 @@ sealed class ComposerType {
     companion object {
         fun fromJSON(jsonString: String, context: Context) : ComposerType {
             val json = JSONObject(jsonString)
+            val activeAccount = ActiveAccount.loadFromStorage(context)!!
             return when(json.getInt("type")){
                 Type.DRAFT.ordinal -> {
                     Draft(draftId = json.getLong("draftId"),
                             threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!))
+                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id))
                 }
                 Type.REPLY.ordinal -> {
                     Reply(originalId = json.getLong("originalId"),
                             threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
                             template = REMailTemplate(context))
                 }
                 Type.REPLYALL.ordinal -> {
                     ReplyAll(originalId = json.getLong("originalId"),
                             threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
                             template = REMailTemplate(context))
                 }
                 Type.FORWARD.ordinal -> {
                     Forward(originalId = json.getLong("draftId"),
                             threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
                             template = FWMailTemplate(context))
                 }
                 Type.SUPPORT.ordinal -> {

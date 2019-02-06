@@ -2,7 +2,239 @@
 
 ## [Unreleased](https://github.com/criptext/Android-Email-Client/tree/HEAD)
 
-[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/0.13.2...HEAD)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.16.0...HEAD)
+
+**Implemented enhancements:**
+
+- Push Notification Encrypted Preview [\#408](https://github.com/Criptext/Android-Email-Client/issues/408)
+- Add UUID to label related events [\#407](https://github.com/Criptext/Android-Email-Client/issues/407)
+- Add more rules to the sign up password [\#183](https://github.com/Criptext/Android-Email-Client/issues/183)
+- Use a more appropriate adapter for Feed [\#148](https://github.com/Criptext/Android-Email-Client/issues/148)
+- Don't load fonts when binding views in a RecyclerView. [\#147](https://github.com/Criptext/Android-Email-Client/issues/147)
+- Improve search query instrumentation tests. [\#83](https://github.com/Criptext/Android-Email-Client/issues/83)
+
+**Closed issues:**
+
+- Leave Forward Content Open [\#414](https://github.com/Criptext/Android-Email-Client/issues/414)
+- Multiple Accounts [\#409](https://github.com/Criptext/Android-Email-Client/issues/409)
+- add column UUID in tables Label and Contact [\#238](https://github.com/Criptext/Android-Email-Client/issues/238)
+- Special behavior with some recipientIds  [\#225](https://github.com/Criptext/Android-Email-Client/issues/225)
+- Use a file to save email body instead of saving in DB [\#223](https://github.com/Criptext/Android-Email-Client/issues/223)
+- Don't open links in the same email viewer [\#190](https://github.com/Criptext/Android-Email-Client/issues/190)
+- Create custom app for support@criptext.com [\#188](https://github.com/Criptext/Android-Email-Client/issues/188)
+- Create popup for external emails [\#144](https://github.com/Criptext/Android-Email-Client/issues/144)
+- Validate if a file is uploading before send an email [\#140](https://github.com/Criptext/Android-Email-Client/issues/140)
+- Recieve event: file donwload and show it on activity feed [\#131](https://github.com/Criptext/Android-Email-Client/issues/131)
+-  Sent event: file downloaded  [\#130](https://github.com/Criptext/Android-Email-Client/issues/130)
+- Show 3 points icon highlighted when you open/close quoted body [\#87](https://github.com/Criptext/Android-Email-Client/issues/87)
+
+**Merged pull requests:**
+
+- Added missing tests and also fixed name on mailbox and added 3 points states for replies and fw. [\#406](https://github.com/Criptext/Android-Email-Client/pull/406) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed the 3 point menu in email detail on spam label. [\#405](https://github.com/Criptext/Android-Email-Client/pull/405) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various Fixes [\#404](https://github.com/Criptext/Android-Email-Client/pull/404) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now models that need init values are properly recovered after app suspension. [\#403](https://github.com/Criptext/Android-Email-Client/pull/403) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now sending file keys for externals and also avoiding unsend on peer issue. [\#402](https://github.com/Criptext/Android-Email-Client/pull/402) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various fixes. [\#401](https://github.com/Criptext/Android-Email-Client/pull/401) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now we run android tests using firebase. [\#400](https://github.com/Criptext/Android-Email-Client/pull/400) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now when clicking on the drawer profile pic takes you to the profile activity. [\#399](https://github.com/Criptext/Android-Email-Client/pull/399) ([jorgeblacio](https://github.com/jorgeblacio))
+- Contact filter and Profile pic resize maintaining aspect ratio. [\#398](https://github.com/Criptext/Android-Email-Client/pull/398) ([jorgeblacio](https://github.com/jorgeblacio))
+- Prep for release, also fixed a small error with notifiation sound on pull down. [\#397](https://github.com/Criptext/Android-Email-Client/pull/397) ([jorgeblacio](https://github.com/jorgeblacio))
+- Hot fix for release 0.16.4 [\#396](https://github.com/Criptext/Android-Email-Client/pull/396) ([jorgeblacio](https://github.com/jorgeblacio))
+- Changes to how you change your name. Also peer event for Profile Name. [\#395](https://github.com/Criptext/Android-Email-Client/pull/395) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fix crash on reply with atachments, also removed all non resource text and now using native image picker for profile [\#394](https://github.com/Criptext/Android-Email-Client/pull/394) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed filter menu colors on dark theme and also the filtering now works as intended. [\#393](https://github.com/Criptext/Android-Email-Client/pull/393) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed an issue on sending fw with attachments and also the blinking o… [\#392](https://github.com/Criptext/Android-Email-Client/pull/392) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added profile settings section to update avatar picture and user full name. [\#391](https://github.com/Criptext/Android-Email-Client/pull/391) ([jorgeblacio](https://github.com/jorgeblacio))
+- Hot fix for release 0.16.2 [\#390](https://github.com/Criptext/Android-Email-Client/pull/390) ([jorgeblacio](https://github.com/jorgeblacio))
+- Prep for release hot fixes. [\#389](https://github.com/Criptext/Android-Email-Client/pull/389) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now on inline images display, those files won't show as attachments, also thy are saved in the app private dir [\#388](https://github.com/Criptext/Android-Email-Client/pull/388) ([jorgeblacio](https://github.com/jorgeblacio))
+- Prep for release version 0.16.2 [\#387](https://github.com/Criptext/Android-Email-Client/pull/387) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now we are showing inline images in email detail [\#386](https://github.com/Criptext/Android-Email-Client/pull/386) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added a retry option to send emails. Also Added headers to the sync devices. [\#385](https://github.com/Criptext/Android-Email-Client/pull/385) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now new prekeys get sent when you run out of them. [\#384](https://github.com/Criptext/Android-Email-Client/pull/384) ([jorgeblacio](https://github.com/jorgeblacio))
+- Hot fix for release 0.16.0 [\#383](https://github.com/Criptext/Android-Email-Client/pull/383) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you can see external email's source [\#382](https://github.com/Criptext/Android-Email-Client/pull/382) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.16.0](https://github.com/criptext/Android-Email-Client/tree/v0.16.0) (2019-01-21)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.15.1...v0.16.0)
+
+**Merged pull requests:**
+
+- Prep for release. [\#381](https://github.com/Criptext/Android-Email-Client/pull/381) ([jorgeblacio](https://github.com/jorgeblacio))
+- Changed Reply To option to a new screen. [\#380](https://github.com/Criptext/Android-Email-Client/pull/380) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you can see the email source of incoming emails. [\#379](https://github.com/Criptext/Android-Email-Client/pull/379) ([jorgeblacio](https://github.com/jorgeblacio))
+- Resend expiration, contactFrom without name fix, key and iv from file instead of filekey table. [\#378](https://github.com/Criptext/Android-Email-Client/pull/378) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now email bodies are saved in the file system instead of the db. [\#377](https://github.com/Criptext/Android-Email-Client/pull/377) ([jorgeblacio](https://github.com/jorgeblacio))
+- Collapsed emails in email detail. [\#376](https://github.com/Criptext/Android-Email-Client/pull/376) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added a couple of needed fields to the db [\#375](https://github.com/Criptext/Android-Email-Client/pull/375) ([jorgeblacio](https://github.com/jorgeblacio))
+- Save filekey in file when linking [\#374](https://github.com/Criptext/Android-Email-Client/pull/374) ([saulmestanza](https://github.com/saulmestanza))
+- Upgrade to Android X [\#356](https://github.com/Criptext/Android-Email-Client/pull/356) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.15.1](https://github.com/criptext/Android-Email-Client/tree/v0.15.1) (2019-01-14)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.15.0...v0.15.1)
+
+**Fixed bugs:**
+
+- Multi select in mailbox doesn't work correctly sometimes. [\#263](https://github.com/Criptext/Android-Email-Client/issues/263)
+
+**Closed issues:**
+
+- Javascript injection in Criptext 0.14.2 [\#332](https://github.com/Criptext/Android-Email-Client/issues/332)
+- Access to contacts  [\#317](https://github.com/Criptext/Android-Email-Client/issues/317)
+- Dark Theme [\#270](https://github.com/Criptext/Android-Email-Client/issues/270)
+- Use only the first name in the recipients names list [\#264](https://github.com/Criptext/Android-Email-Client/issues/264)
+- Sound and vibration when an email arrives inside app [\#118](https://github.com/Criptext/Android-Email-Client/issues/118)
+
+**Merged pull requests:**
+
+- Updated various minor issues. [\#373](https://github.com/Criptext/Android-Email-Client/pull/373) ([jorgeblacio](https://github.com/jorgeblacio))
+- Updated text of empty mailboxes. [\#372](https://github.com/Criptext/Android-Email-Client/pull/372) ([jorgeblacio](https://github.com/jorgeblacio))
+- Banner update operator implementation and fixed a the empty mailbox image position a bit. [\#371](https://github.com/Criptext/Android-Email-Client/pull/371) ([jorgeblacio](https://github.com/jorgeblacio))
+- New assets for empty mailboxes. [\#370](https://github.com/Criptext/Android-Email-Client/pull/370) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now banner for updates check for app version and also event pagination is now in place. [\#369](https://github.com/Criptext/Android-Email-Client/pull/369) ([jorgeblacio](https://github.com/jorgeblacio))
+- Refactor of mailbox update request [\#368](https://github.com/Criptext/Android-Email-Client/pull/368) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added print option for emails. [\#367](https://github.com/Criptext/Android-Email-Client/pull/367) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.15.0](https://github.com/criptext/Android-Email-Client/tree/v0.15.0) (2019-01-04)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.14.7...v0.15.0)
+
+**Merged pull requests:**
+
+- File keys per archive [\#366](https://github.com/Criptext/Android-Email-Client/pull/366) ([saulmestanza](https://github.com/saulmestanza))
+- Manual mailbox sync from settings. [\#365](https://github.com/Criptext/Android-Email-Client/pull/365) ([jorgeblacio](https://github.com/jorgeblacio))
+- Notifications [\#362](https://github.com/Criptext/Android-Email-Client/pull/362) ([saulmestanza](https://github.com/saulmestanza))
+
+## [v0.14.7](https://github.com/criptext/Android-Email-Client/tree/v0.14.7) (2019-01-02)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.14.6...v0.14.7)
+
+**Merged pull requests:**
+
+- Release Dark Theme [\#364](https://github.com/Criptext/Android-Email-Client/pull/364) ([jorgeblacio](https://github.com/jorgeblacio))
+- Change link colors and attachment dialog text color based on theme. [\#363](https://github.com/Criptext/Android-Email-Client/pull/363) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various fixes and optimizarions. [\#360](https://github.com/Criptext/Android-Email-Client/pull/360) ([jorgeblacio](https://github.com/jorgeblacio))
+- Corrections - Quick Guide, Max files size, device types, header [\#359](https://github.com/Criptext/Android-Email-Client/pull/359) ([saulmestanza](https://github.com/saulmestanza))
+- Dark theme [\#358](https://github.com/Criptext/Android-Email-Client/pull/358) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.14.6](https://github.com/criptext/Android-Email-Client/tree/v0.14.6) (2018-12-19)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.14.5...v0.14.6)
+
+**Implemented enhancements:**
+
+- validate file exists to not download it again [\#151](https://github.com/Criptext/Android-Email-Client/issues/151)
+
+**Closed issues:**
+
+- Keep attachments at forwarding an email [\#218](https://github.com/Criptext/Android-Email-Client/issues/218)
+- Quick Guide [\#180](https://github.com/Criptext/Android-Email-Client/issues/180)
+- Save files in drafts [\#120](https://github.com/Criptext/Android-Email-Client/issues/120)
+
+**Merged pull requests:**
+
+- Final fixes spanish language. [\#357](https://github.com/Criptext/Android-Email-Client/pull/357) ([jorgeblacio](https://github.com/jorgeblacio))
+- Minor fixes for spanish release. Signup error handling. [\#355](https://github.com/Criptext/Android-Email-Client/pull/355) ([jorgeblacio](https://github.com/jorgeblacio))
+- Minor changes for release. [\#354](https://github.com/Criptext/Android-Email-Client/pull/354) ([jorgeblacio](https://github.com/jorgeblacio))
+- Lokalise: Translations update [\#353](https://github.com/Criptext/Android-Email-Client/pull/353) ([danieltigse](https://github.com/danieltigse))
+- Now using endpoint for refreshig legacy users token, and some language fixes. [\#351](https://github.com/Criptext/Android-Email-Client/pull/351) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed some minor issues. [\#350](https://github.com/Criptext/Android-Email-Client/pull/350) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added refresh session token functionality. [\#349](https://github.com/Criptext/Android-Email-Client/pull/349) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added support for spanish language. [\#297](https://github.com/Criptext/Android-Email-Client/pull/297) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.14.5](https://github.com/criptext/Android-Email-Client/tree/v0.14.5) (2018-12-10)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.14.3...v0.14.5)
+
+**Merged pull requests:**
+
+- Version number change for release and minor fix for error push. [\#348](https://github.com/Criptext/Android-Email-Client/pull/348) ([jorgeblacio](https://github.com/jorgeblacio))
+- Some fixes to some cases of pin usage. [\#347](https://github.com/Criptext/Android-Email-Client/pull/347) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added a new option for privacy and moved email preview and read receipts there. [\#346](https://github.com/Criptext/Android-Email-Client/pull/346) ([jorgeblacio](https://github.com/jorgeblacio))
+- AndroidTest Corrections, and implementation of attach files quantity test [\#345](https://github.com/Criptext/Android-Email-Client/pull/345) ([saulmestanza](https://github.com/saulmestanza))
+- Added a fix for samsung sqlite queries. [\#344](https://github.com/Criptext/Android-Email-Client/pull/344) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various minor adjustments for the code and also managed externals and devices order sorting. [\#343](https://github.com/Criptext/Android-Email-Client/pull/343) ([jorgeblacio](https://github.com/jorgeblacio))
+- Attachments in drafts correction [\#342](https://github.com/Criptext/Android-Email-Client/pull/342) ([saulmestanza](https://github.com/saulmestanza))
+- Extension file error [\#341](https://github.com/Criptext/Android-Email-Client/pull/341) ([saulmestanza](https://github.com/saulmestanza))
+- Upload file error when exceeds max size  [\#340](https://github.com/Criptext/Android-Email-Client/pull/340) ([saulmestanza](https://github.com/saulmestanza))
+- Attchaments bug fix and progress bar bug fix. [\#339](https://github.com/Criptext/Android-Email-Client/pull/339) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you are able to delete your account from settings. [\#338](https://github.com/Criptext/Android-Email-Client/pull/338) ([jorgeblacio](https://github.com/jorgeblacio))
+- StartGuide attachments design correction, Progress Bar new design in SignIn and Linking Scene [\#337](https://github.com/Criptext/Android-Email-Client/pull/337) ([saulmestanza](https://github.com/saulmestanza))
+- Fixed an issue with fw of attchments that had no fileKey [\#336](https://github.com/Criptext/Android-Email-Client/pull/336) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added update banner functionality. [\#328](https://github.com/Criptext/Android-Email-Client/pull/328) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.14.3](https://github.com/criptext/Android-Email-Client/tree/v0.14.3) (2018-12-03)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.14.2...v0.14.3)
+
+**Merged pull requests:**
+
+- Added pagination for the creation of the link devices file. [\#335](https://github.com/Criptext/Android-Email-Client/pull/335) ([jorgeblacio](https://github.com/jorgeblacio))
+- Startguide fixes  [\#334](https://github.com/Criptext/Android-Email-Client/pull/334) ([saulmestanza](https://github.com/saulmestanza))
+- Changed all logout texts for sign out. [\#333](https://github.com/Criptext/Android-Email-Client/pull/333) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed the push notification for opens. [\#331](https://github.com/Criptext/Android-Email-Client/pull/331) ([jorgeblacio](https://github.com/jorgeblacio))
+- Updated and added some alert dialogs. [\#330](https://github.com/Criptext/Android-Email-Client/pull/330) ([jorgeblacio](https://github.com/jorgeblacio))
+- Startguide [\#329](https://github.com/Criptext/Android-Email-Client/pull/329) ([saulmestanza](https://github.com/saulmestanza))
+- Added rate limits messages and a couple more tweaks and features. [\#327](https://github.com/Criptext/Android-Email-Client/pull/327) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.14.2](https://github.com/criptext/Android-Email-Client/tree/v0.14.2) (2018-11-27)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.7...v0.14.2)
+
+**Fixed bugs:**
+
+- Scrolling in mailbox during multi select triggers "load more" event and app ends in inconstent state [\#262](https://github.com/Criptext/Android-Email-Client/issues/262)
+
+**Closed issues:**
+
+- Limit recipients to 100 [\#272](https://github.com/Criptext/Android-Email-Client/issues/272)
+- get contacts from phonebook at signUp or signIn [\#219](https://github.com/Criptext/Android-Email-Client/issues/219)
+- Show uploading percentage immediately after pick a file [\#204](https://github.com/Criptext/Android-Email-Client/issues/204)
+- Change file picker [\#119](https://github.com/Criptext/Android-Email-Client/issues/119)
+
+**Merged pull requests:**
+
+- Added some necessary null-checks for the pin lock manager. [\#326](https://github.com/Criptext/Android-Email-Client/pull/326) ([jorgeblacio](https://github.com/jorgeblacio))
+- Various minor post release fixes. [\#325](https://github.com/Criptext/Android-Email-Client/pull/325) ([jorgeblacio](https://github.com/jorgeblacio))
+- Pin lock is now based on the aesthetic design. [\#324](https://github.com/Criptext/Android-Email-Client/pull/324) ([jorgeblacio](https://github.com/jorgeblacio))
+- Forward with attachments. [\#323](https://github.com/Criptext/Android-Email-Client/pull/323) ([jorgeblacio](https://github.com/jorgeblacio))
+- Finished all Pin Lock functionality. [\#322](https://github.com/Criptext/Android-Email-Client/pull/322) ([jorgeblacio](https://github.com/jorgeblacio))
+- You can now share pictures through Criptext, also you can use mailto. [\#321](https://github.com/Criptext/Android-Email-Client/pull/321) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you can enable/disable read receipts in settings. [\#320](https://github.com/Criptext/Android-Email-Client/pull/320) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now you can lock the app with a pin. [\#319](https://github.com/Criptext/Android-Email-Client/pull/319) ([jorgeblacio](https://github.com/jorgeblacio))
+- Users can now sync phonebook contacts from settings. [\#318](https://github.com/Criptext/Android-Email-Client/pull/318) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.13.7](https://github.com/criptext/Android-Email-Client/tree/v0.13.7) (2018-11-19)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.6...v0.13.7)
+
+**Merged pull requests:**
+
+- Changed version for release. [\#316](https://github.com/Criptext/Android-Email-Client/pull/316) ([jorgeblacio](https://github.com/jorgeblacio))
+- Using native file picker for files. [\#315](https://github.com/Criptext/Android-Email-Client/pull/315) ([jorgeblacio](https://github.com/jorgeblacio))
+- Fixed a crash that happened only on Kitkat when starting the app. [\#314](https://github.com/Criptext/Android-Email-Client/pull/314) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now the toolbar shows the correct number of unread emails. [\#313](https://github.com/Criptext/Android-Email-Client/pull/313) ([jorgeblacio](https://github.com/jorgeblacio))
+- New emails won't reload the whole recycler view and show a snack bar with quantity. [\#312](https://github.com/Criptext/Android-Email-Client/pull/312) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.13.6](https://github.com/criptext/Android-Email-Client/tree/v0.13.6) (2018-11-12)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.5...v0.13.6)
+
+**Merged pull requests:**
+
+- Fix a double ringing on notifications. [\#311](https://github.com/Criptext/Android-Email-Client/pull/311) ([jorgeblacio](https://github.com/jorgeblacio))
+- Made various improvements to the update of the recycler view of the email threads. [\#310](https://github.com/Criptext/Android-Email-Client/pull/310) ([jorgeblacio](https://github.com/jorgeblacio))
+- Now the push notifications don't use the data from the push payload. [\#309](https://github.com/Criptext/Android-Email-Client/pull/309) ([jorgeblacio](https://github.com/jorgeblacio))
+- Notifications now act faster on action buttons and Mailbox Update issue. [\#308](https://github.com/Criptext/Android-Email-Client/pull/308) ([jorgeblacio](https://github.com/jorgeblacio))
+- Refactored the way postDelays were handled. [\#307](https://github.com/Criptext/Android-Email-Client/pull/307) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.13.5](https://github.com/criptext/Android-Email-Client/tree/v0.13.5) (2018-11-05)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/v0.13.4...v0.13.5)
+
+**Merged pull requests:**
+
+- Refactor notification code. [\#306](https://github.com/Criptext/Android-Email-Client/pull/306) ([jorgeblacio](https://github.com/jorgeblacio))
+- empty email detail fix and criptext quote standard implemented [\#305](https://github.com/Criptext/Android-Email-Client/pull/305) ([danieltigse](https://github.com/danieltigse))
+- Fixed various issues. [\#304](https://github.com/Criptext/Android-Email-Client/pull/304) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added support for .zip and audio files on the picker. [\#303](https://github.com/Criptext/Android-Email-Client/pull/303) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added reply button and refactored notification code a bit [\#302](https://github.com/Criptext/Android-Email-Client/pull/302) ([jorgeblacio](https://github.com/jorgeblacio))
+- Added queue to handle peer event dispatching. [\#300](https://github.com/Criptext/Android-Email-Client/pull/300) ([jorgeblacio](https://github.com/jorgeblacio))
+
+## [v0.13.4](https://github.com/criptext/Android-Email-Client/tree/v0.13.4) (2018-10-29)
+[Full Changelog](https://github.com/criptext/Android-Email-Client/compare/0.13.2...v0.13.4)
 
 **Closed issues:**
 
@@ -12,6 +244,7 @@
 
 **Merged pull requests:**
 
+- Release 0.13.4 [\#301](https://github.com/Criptext/Android-Email-Client/pull/301) ([jorgeblacio](https://github.com/jorgeblacio))
 - Reply on push notification and bug fixes. [\#299](https://github.com/Criptext/Android-Email-Client/pull/299) ([jorgeblacio](https://github.com/jorgeblacio))
 - Made it so that the notification only appear after the update has been processed. [\#298](https://github.com/Criptext/Android-Email-Client/pull/298) ([jorgeblacio](https://github.com/jorgeblacio))
 - Added device types for connection holder and some other tweaks. [\#296](https://github.com/Criptext/Android-Email-Client/pull/296) ([jorgeblacio](https://github.com/jorgeblacio))

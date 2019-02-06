@@ -23,8 +23,11 @@ interface AccountDao {
     @Query("SELECT * FROM account")
     fun getAll() : List<Account>
 
-    @Query("SELECT * FROM account LIMIT 1")
+    @Query("SELECT * FROM account WHERE isActive=1")
     fun getLoggedInAccount() : Account?
+
+    @Query("UPDATE account SET isActive=0")
+    fun updateActiveInAccount()
 
     @Query("DELETE FROM account")
     fun nukeTable()

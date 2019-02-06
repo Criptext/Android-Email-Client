@@ -29,7 +29,7 @@ class ReadEmailsWorker(private val dao: EmailDao,
                        accountDao: AccountDao,
                        storage: KeyValueStorage,
                        httpClient: HttpClient,
-                       activeAccount: ActiveAccount,
+                       private val activeAccount: ActiveAccount,
                        override val publishFn: (EmailDetailResult.ReadEmails) -> Unit,
                        private val emailIds: List<Long>,
                        private val metadataKeys: List<Long>
@@ -46,20 +46,20 @@ class ReadEmailsWorker(private val dao: EmailDao,
     }
 
     private fun postOpenEmails(): Result<Int, Exception>{
-        val emails = dao.getAllEmailsToOpenByMetadataKey(metadataKeys)
+        val emails = dao.getAllEmailsToOpenByMetadataKey(metadataKeys, activeAccount.id)
         val unreadEmails = emails.filter { it.unread }
         if(unreadEmails.isEmpty())
             return Result.Failure(EventHelper.NothingNewException())
         peerEventHandler.enqueueEvent(PeerOpenEmailData(emails.map { it.metadataKey }).toJSON())
         return Result.of {
                     dao.toggleCheckingRead(ids = unreadEmails.map { it.id },
-                            unread = false)
+                            unread = false, accountId = activeAccount.id)
                     unreadEmails.size
         }
     }
 
     private fun peerOpenEmails(): Result<Int, Exception>{
-        val peerEmails = dao.getAllEmailsByMetadataKey(metadataKeys)
+        val peerEmails = dao.getAllEmailsByMetadataKey(metadataKeys, activeAccount.id)
         val peerUnreadEmails = peerEmails.filter { it.unread }
         if(peerUnreadEmails.isEmpty())
             return Result.Failure(EventHelper.NothingNewException())
@@ -68,7 +68,7 @@ class ReadEmailsWorker(private val dao: EmailDao,
                 .map { it.metadataKey }
         peerEventHandler.enqueueEvent(PeerReadEmailData(metadataKeys,false).toJSON())
         return Result.of { dao.toggleCheckingRead(ids = peerUnreadEmails.map { it.id },
-                            unread = false)
+                            unread = false, accountId = activeAccount.id)
                     peerUnreadEmails.size
                 }
 

@@ -26,7 +26,7 @@ class SaveEmailWorkerTest {
     private lateinit var db: TestDatabase
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 
@@ -35,9 +35,10 @@ class SaveEmailWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(1, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         emailInsertionDao = db.emailInsertionDao()
     }
 
@@ -68,13 +69,13 @@ class SaveEmailWorkerTest {
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
-        val insertedEmails = db.emailDao().getAll()
+        val insertedEmails = db.emailDao().getAll(activeAccount.id)
         insertedEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
                 mActivityRule.activity.filesDir,
                 it.metadataKey,
                 it.content,
                 activeAccount.recipientId).first }
-        val insertedContacts = db.contactDao().getAll()
+        val insertedContacts = db.contactDao().getAll(activeAccount.id)
         val insertedContactsAddresses = insertedContacts.map { contact -> contact.email }
 
         insertedEmails.single().content `shouldEqual` "Hello, this is a test email"
@@ -89,7 +90,8 @@ class SaveEmailWorkerTest {
                 content = "This was my original draft", preview = "__PREVIEW__", subject = "draft",
                 delivered = DeliveryTypes.NONE, date = Date(), secure = false,
                 threadId = "__MESSAGE_ID__", metadataKey = 1246275862L, isMuted = false, unsentDate = Date(),
-                trashDate = Date(), boundary = null, replyTo = null, fromAddress = "tester@criptext.com")
+                trashDate = Date(), boundary = null, replyTo = null, fromAddress = "tester@criptext.com",
+                accountId = activeAccount.id)
         val draftId = db.emailDao().insert(previousDraft)
 
 
@@ -111,7 +113,7 @@ class SaveEmailWorkerTest {
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
-        val insertedEmails = db.emailDao().getAll()
+        val insertedEmails = db.emailDao().getAll(activeAccount.id)
         insertedEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
                 mActivityRule.activity.filesDir,
                 it.metadataKey,
@@ -148,7 +150,7 @@ class SaveEmailWorkerTest {
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
-        val insertedContacts = db.contactDao().getAll()
+        val insertedContacts = db.contactDao().getAll(activeAccount.id)
         val insertedContactsAddresses = insertedContacts.map { contact -> contact.email }
 
         insertedContactsAddresses `shouldEqual` listOf(

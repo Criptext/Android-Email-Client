@@ -11,6 +11,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.SignUpResult.RegisterUser
@@ -34,6 +35,7 @@ import org.json.JSONObject
 class RegisterUserWorker(
         private val db: AppDatabase,
         signUpDao: SignUpDao,
+        accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
         httpClient: HttpClient,
         private val signalKeyGenerator: SignalKeyGenerator,
@@ -44,7 +46,7 @@ class RegisterUserWorker(
 
     override val canBeParallelized = false
     private val apiClient = SignUpAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
 
 
     override fun catchException(ex: Exception): RegisterUser {

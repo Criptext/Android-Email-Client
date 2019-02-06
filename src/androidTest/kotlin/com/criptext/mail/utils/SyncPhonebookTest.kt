@@ -7,6 +7,7 @@ import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.workers.SyncPhonebookWorker
@@ -27,6 +28,8 @@ class SyncPhonebookTest{
     var mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS)
 
     private lateinit var db: TestDatabase
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     @Before
     fun setup() {
@@ -46,7 +49,7 @@ class SyncPhonebookTest{
 
         if(result is GeneralResult.SyncPhonebook.Success) {
 
-            val contacts = db.contactDao().getAll()
+            val contacts = db.contactDao().getAll(activeAccount.id)
 
             contacts.size shouldBeGreaterThan 0
         }else if(result is GeneralResult.SyncPhonebook.Failure){
@@ -60,6 +63,7 @@ class SyncPhonebookTest{
             SyncPhonebookWorker(
                     contactDao = db.contactDao(),
                     contentResolver = mActivityRule.activity.contentResolver,
+                    activeAccount = activeAccount,
                     publishFn = {})
 
 }

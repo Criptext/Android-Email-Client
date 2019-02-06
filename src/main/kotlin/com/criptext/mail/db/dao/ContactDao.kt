@@ -19,14 +19,23 @@ interface ContactDao {
     @Insert
     fun insertAll(users : List<Contact>)
 
-    @Query("SELECT * FROM contact")
-    fun getAll() : List<Contact>
+    @Query("""SELECT DISTINCT * FROM contact
+        WHERE EXISTS
+        (SELECT DISTINCT contactId FROM account_contact WHERE accountId=:accountId)""")
+    fun getAll(accountId: Long) : List<Contact>
 
-    @Query("""SELECT * FROM contact WHERE id > :lastId ORDER BY id LIMIT :limit""")
-    fun getAllForLinkFile(limit: Int, lastId: Long) : List<Contact>
+    @Query("""SELECT DISTINCT * FROM contact
+            WHERE id > :lastId
+            AND EXISTS
+            (SELECT DISTINCT contactId FROM account_contact WHERE accountId=:accountId)
+            ORDER BY id LIMIT :limit""")
+    fun getAllForLinkFile(limit: Int, lastId: Long, accountId: Long) : List<Contact>
 
-    @Query("SELECT * FROM contact where email=:email")
-    fun getContact(email : String) : Contact?
+    @Query("""SELECT DISTINCT * FROM contact WHERE email=:email
+        AND EXISTS
+        (SELECT DISTINCT contactId FROM account_contact WHERE accountId=:accountId)
+    """)
+    fun getContact(email : String, accountId: Long) : Contact?
 
     @Query("SELECT * FROM contact where id=:id")
     fun getContactById(id : Long) : Contact?
@@ -36,9 +45,11 @@ interface ContactDao {
 
     @Query("""UPDATE contact
             SET name=:name
-            where email=:email""")
-    fun updateContactName(email: String, name: String)
+            where email=:email
+            AND EXISTS
+            (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)""")
+    fun updateContactName(email: String, name: String, accountId: Long)
 
-    @Query("DELETE FROM contact")
-    fun nukeTable()
+    @Query("DELETE FROM contact WHERE  EXISTS (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)")
+    fun nukeTable(accountId: Long)
 }

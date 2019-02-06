@@ -29,7 +29,7 @@ class SearchEmailWorkerTest{
     private lateinit var searchLocalDB: SearchLocalDB
 
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
@@ -45,9 +45,10 @@ class SearchEmailWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         searchLocalDB = SearchLocalDB.Default(db, mActivityRule.activity.filesDir)
 
         (1..2).forEach {
@@ -62,7 +63,8 @@ class SearchEmailWorkerTest{
                     content = decryptedBody,
                     headers = null)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
+                    preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null,
+                    accountId = activeAccount.id)
         }
 
         val anotherFromContact = Contact(2,"erika@criptext.com", "Erika Perugachi", isTrusted = false, score = 0)
@@ -76,7 +78,8 @@ class SearchEmailWorkerTest{
                 content = decryptedBody,
                 headers = null)
         EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
+                preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null,
+                accountId = activeAccount.id)
     }
 
     @Test
