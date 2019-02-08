@@ -38,7 +38,7 @@ class MailboxActivity : BaseActivity() {
 
     // Only use this during development
     private fun seedEmails(appDB: AppDatabase) {
-        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true)
+        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0)
         (1..50)
           .forEach {
               val seconds = if (it < 10) "0$it" else it.toString()
@@ -50,10 +50,10 @@ class MailboxActivity : BaseActivity() {
                       replyTo = null, boundary = null)
               val decryptedBody = "Hello, this is message #$it"
               val labels = listOf(Label.defaultItems.inbox)
-              appDB.emailInsertionDao().runTransaction({
+              appDB.emailInsertionDao().runTransaction {
                   EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody,
                           labels, emptyList(), null)
-              })
+              }
           }
 
     }

@@ -90,7 +90,7 @@ class SaveEmailWorker(
         val draftMessageId = createDraftMessageId(account.deviceId)
         val sender = Contact(id = 0, name = account.name,
                 email = "${account.recipientId}@${Contact.mainDomain}",
-                isTrusted = true)
+                isTrusted = true, score = 0)
 
         val tempThreadId = System.currentTimeMillis()
 

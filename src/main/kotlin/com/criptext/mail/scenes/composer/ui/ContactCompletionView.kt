@@ -40,7 +40,7 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
         if (isValidEmailAddress) {
             val index = completionText.indexOf('@')
             val name = completionText.substring(0, index)
-            return Contact(id = 0, name = name, email = completionText, isTrusted = false)
+            return Contact(id = 0, name = name, email = completionText, isTrusted = false, score = 0)
         } else {
             return Contact.Invalid(name = completionText, email = completionText)
         }

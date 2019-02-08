@@ -30,6 +30,13 @@ interface EmailContactJoinDao {
             AND email_contact.type=:contactType""")
     fun getContactsFromEmail(emailId: Long, contactType: ContactTypes) : List<Contact>
 
+    @Query("""UPDATE contact
+            SET score = score + 1
+            WHERE id IN
+            (SELECT contactId FROM email_contact
+            WHERE emailId in (:emailIds) AND type != :excludedType)""")
+    fun increaseScore(emailIds: List<Long>, excludedType: ContactTypes)
+
 
     @Insert
     fun insertAll(emailUsers : List<EmailContact>)

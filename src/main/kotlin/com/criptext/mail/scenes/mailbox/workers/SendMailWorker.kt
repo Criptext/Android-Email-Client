@@ -27,10 +27,8 @@ import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import org.whispersystems.libsignal.SignalProtocolAddress
 import java.io.File
 
 
@@ -282,6 +280,7 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         return when (finalResult) {
             is Result.Success -> {
+                db.increaseContactScore(listOf(emailId))
                 MailboxResult.SendMail.Success(emailId)
             }
             is Result.Failure -> {

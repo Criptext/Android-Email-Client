@@ -72,7 +72,7 @@ object EmailInsertionSetup {
 
         val toContacts = mutableListOf<Contact>()
         for (i in 0..(toAddresses.size - 1))
-            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false))
+            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false, score = 0))
         val existingContacts = dao.findContactsByEmail(toContacts.toSet().map { it.email })
 
         val contactsMap = HashMap<String, Contact>()
@@ -90,7 +90,8 @@ object EmailInsertionSetup {
             Contact(id = ids.first(),
                     name = EmailAddressUtils.extractName(senderContact.name),
                     email = EmailAddressUtils.extractEmailAddress(senderContact.email),
-                    isTrusted = false)
+                    isTrusted = false,
+                    score = senderContact.score)
         } else {
             dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name))
             existingContacts.first()

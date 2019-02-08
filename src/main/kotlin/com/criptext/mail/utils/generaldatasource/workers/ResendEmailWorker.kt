@@ -143,6 +143,7 @@ class ResendEmailWorker(
         }else{
             return GeneralResult.ResendEmail.Failure()
         }
+        db.increaseContactScore(listOf(emailId))
         return GeneralResult.ResendEmail.Success(position)
     }
 

@@ -21,7 +21,7 @@ class LoadContactsWorker(
 
     override fun work(reporter: ProgressReporter<ComposerResult.GetAllContacts>)
             : ComposerResult.GetAllContacts? {
-        val contacts = db.contactDao.getAll()
+        val contacts = db.contactDao.getAll().sortedByDescending { it.score }
         return ComposerResult.GetAllContacts.Success(contacts = contacts)
     }
 

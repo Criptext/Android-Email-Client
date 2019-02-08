@@ -18,7 +18,7 @@ import java.util.*
 /**
  * Created by gabriel on 2/28/18.
  */
-class ContactsFilterAdapter(context : Context, objects : Array<Contact>)
+class ContactsFilterAdapter(context : Context, objects : List<Contact>)
     : FilteredArrayAdapter<Contact>(context, R.layout.autocomplete_item, 0, objects) {
 
     override fun keepObject(obj: Contact?, mask: String?): Boolean {

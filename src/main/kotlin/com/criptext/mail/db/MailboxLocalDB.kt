@@ -63,9 +63,14 @@ interface MailboxLocalDB {
     fun fileNeedsDuplicate(id: Long): Boolean
     fun updateFileToken(id: Long, newToken: String)
     fun getFileKeyByFileId(id: Long): String?
+    fun increaseContactScore(emailIds: List<Long>)
 
 
     class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
+        override fun increaseContactScore(emailIds: List<Long>) {
+            db.emailContactDao().increaseScore(emailIds, ContactTypes.FROM)
+        }
+
         override fun getFullEmailById(emailId: Long): FullEmail? {
             val email = db.emailDao().getEmailById(emailId) ?: return null
             val id = email.id
@@ -447,7 +452,8 @@ interface MailboxLocalDB {
                     id = 0,
                     email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                     name = EmailAddressUtils.extractName(email.fromAddress),
-                    isTrusted = contactsFROM[0].isTrusted
+                    isTrusted = contactsFROM[0].isTrusted,
+                    score = contactsFROM[0].score
             )
 
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
