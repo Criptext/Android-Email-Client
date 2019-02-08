@@ -54,7 +54,7 @@ data class EmailMetadata(
             val fromEmail = EmailAddressUtils.extractEmailAddress(from)
             val fromName = EmailAddressUtils.extractName(from)
             val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
-            val fromContact = Contact(id = 0, email = fromEmail, name = fromName, isTrusted = false)
+            val fromContact = Contact(id = 0, email = fromEmail, name = fromName, isTrusted = false, score = 0)
             val messageType = emailData.optInt("messageType")
             val senderDeviceId = emailData.optInt("senderDeviceId")
             val files = CRFile.listFromJSON(metadataJsonString)

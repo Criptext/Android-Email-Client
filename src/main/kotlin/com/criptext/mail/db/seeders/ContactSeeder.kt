@@ -30,20 +30,23 @@ class ContactSeeder {
                         id = 0,
                         name = "Daniel Tigse" ,
                         email = "daniel@criptext.com",
-                        isTrusted = true
+                        isTrusted = true,
+                        score = 0
                         )
 
                 2 -> contact = Contact(
                         id = 1,
                         name = "Sebastian Caceres" ,
                         email = "ascacere92@gmail.com",
-                        isTrusted = true)
+                        isTrusted = true,
+                        score = 0)
 
                 3 -> contact = Contact(
                         id = 2,
                         name = "Gabriel Aumala" ,
                         email = "gabriel@criptext.com",
-                        isTrusted = true)
+                        isTrusted = true,
+                        score = 0)
             }
             return contact
         }

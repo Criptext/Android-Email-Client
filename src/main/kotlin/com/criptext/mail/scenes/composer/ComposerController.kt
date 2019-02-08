@@ -306,7 +306,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun onContactsLoaded(result: ComposerResult.GetAllContacts){
         when (result) {
             is ComposerResult.GetAllContacts.Success -> {
-                scene.setContactSuggestionList(result.contacts.toTypedArray())
+                scene.setContactSuggestionList(result.contacts)
             }
             is ComposerResult.GetAllContacts.Failure -> {
                 scene.showError(UIMessage(R.string.error_getting_contacts))
@@ -353,11 +353,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted) })
+        model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
         model.cc.clear()
-        model.cc.addAll(data.cc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted) })
+        model.cc.addAll(data.cc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted) })
+        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
         model.body = data.body
         model.subject = data.subject
     }

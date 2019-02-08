@@ -92,7 +92,8 @@ interface EmailDetailLocalDB {
                                 id = 0,
                                 email = EmailAddressUtils.extractEmailAddress(it.fromAddress),
                                 name = EmailAddressUtils.extractName(it.fromAddress),
-                                isTrusted = contactsFROM[0].isTrusted
+                                isTrusted = contactsFROM[0].isTrusted,
+                                score = contactsFROM[0].score
                         ),
                         files = files,
                         labels = labels,

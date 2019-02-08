@@ -274,7 +274,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 id = 0,
                 email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                 name = EmailAddressUtils.extractName(email.fromAddress),
-                isTrusted = contactsFROM[0].isTrusted
+                isTrusted = contactsFROM[0].isTrusted,
+                score = contactsFROM[0].score
         )
         val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                 email.metadataKey, email.content,

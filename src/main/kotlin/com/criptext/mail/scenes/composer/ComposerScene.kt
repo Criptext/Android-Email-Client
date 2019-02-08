@@ -47,7 +47,7 @@ interface ComposerScene {
     fun setFocusToSubject()
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
-    fun setContactSuggestionList(contacts: Array<Contact>)
+    fun setContactSuggestionList(contacts: List<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
     fun showAttachmentErrorDialog(filename: String)
     fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
@@ -79,23 +79,23 @@ interface ComposerScene {
         private val stayInComposerDialog = StayInComposerDialog(ctx)
         private var passwordForNonCriptextUsersFromDialog: String? = null
 
-        private val toInput: ContactCompletionView by lazy({
+        private val toInput: ContactCompletionView by lazy {
             view.findViewById<ContactCompletionView>(INPUT_TO_ID)
-        })
-        private val ccInput: ContactCompletionView by lazy({
+        }
+        private val ccInput: ContactCompletionView by lazy {
             view.findViewById<ContactCompletionView>(R.id.input_cc)
-        })
-        private val bccInput: ContactCompletionView by lazy({
+        }
+        private val bccInput: ContactCompletionView by lazy {
             view.findViewById<ContactCompletionView>(R.id.input_bcc)
-        })
-        private val subjectEditText: EditText by lazy({
+        }
+        private val subjectEditText: EditText by lazy {
             view.findViewById<EditText>(INPUT_SUBJECT_ID)
-        })
-        private val bodyEditText: HTMLEditText by lazy({
+        }
+        private val bodyEditText: HTMLEditText by lazy {
             HTMLEditText(
                     richEditor = view.findViewById(INPUT_BODY_ID),
                     hint = ctx.resources.getString(R.string.message))
-        })
+        }
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.backButton) as ImageView
         }
@@ -211,7 +211,7 @@ interface ComposerScene {
             Toast.makeText(ctx, ctx.getLocalizedUIMessage(message), Toast.LENGTH_SHORT).show()
         }
 
-        override fun setContactSuggestionList(contacts: Array<Contact>) {
+        override fun setContactSuggestionList(contacts: List<Contact>) {
             val adapter = ContactsFilterAdapter(ctx, contacts)
             toInput.setAdapter(adapter)
             ccInput.setAdapter(adapter)

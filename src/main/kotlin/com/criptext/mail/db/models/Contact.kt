@@ -29,7 +29,10 @@ open class Contact(
         var name : String,
 
         @ColumnInfo(name = "isTrusted")
-        var isTrusted : Boolean
+        var isTrusted : Boolean,
+
+        @ColumnInfo(name = "score")
+        var score : Int
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -75,10 +78,11 @@ open class Contact(
                     id =  id,
                     email = email,
                     name = name,
-                    isTrusted = isTrusted
+                    isTrusted = isTrusted,
+                    score = 0
             )
         }
     }
 
-    class Invalid(email: String, name: String): Contact(0, email, name, false)
+    class Invalid(email: String, name: String): Contact(0, email, name, false, 0)
 }

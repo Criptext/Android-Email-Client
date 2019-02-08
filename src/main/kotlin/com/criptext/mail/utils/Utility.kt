@@ -12,6 +12,12 @@ import android.graphics.Rect
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Bitmap
+import android.R.attr.maxWidth
+import android.R.attr.maxHeight
+import android.opengl.ETC1.getHeight
+import android.opengl.ETC1.getWidth
+
+
 
 
 
@@ -76,7 +82,30 @@ class Utility {
             val filePath = file.path
             val options = BitmapFactory.Options()
             val bitmap = BitmapFactory.decodeFile(filePath, options)
-            return Bitmap.createScaledBitmap(bitmap, 256, 256, false)
+            var width = bitmap.width
+            var height = bitmap.height
+
+            when {
+                width > height -> {
+                    // landscape
+                    val ratio = width.toFloat() / 256
+                    width = 256
+                    height = (height / ratio).toInt()
+                }
+                height > width -> {
+                    // portrait
+                    val ratio = height.toFloat() / 256
+                    height = 256
+                    width = (width / ratio).toInt()
+                }
+                else -> {
+                    // square
+                    height = 256
+                    width = 256
+                }
+            }
+
+            return Bitmap.createScaledBitmap(bitmap, width, height, true)
         }
 
         private fun getAvatarLetters(fullName: String): String{

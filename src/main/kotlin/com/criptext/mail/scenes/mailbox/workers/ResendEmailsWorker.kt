@@ -139,6 +139,7 @@ class ResendEmailsWorker(
 
             if(finalResult is Result.Failure) return catchException(finalResult.error)
         }
+        db.increaseContactScore(pendingEmails.map { it.email.id })
         return MailboxResult.ResendEmails.Success()
     }
 
