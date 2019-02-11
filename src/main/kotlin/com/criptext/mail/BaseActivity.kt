@@ -216,7 +216,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     params.deviceType, params.authorizerName)
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.replyToEmail)
-            is ProfileParams -> ProfileModel(params.name, params.email)
+            is ProfileParams -> ProfileModel(params.name, params.email, params.exitToMailbox)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
