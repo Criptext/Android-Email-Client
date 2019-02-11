@@ -8,4 +8,5 @@ interface DrawerMenuItemListener {
     fun onSettingsOptionClicked()
     fun onInviteFriendOptionClicked()
     fun onSupportOptionClicked()
+    fun onAvatarClicked()
 }

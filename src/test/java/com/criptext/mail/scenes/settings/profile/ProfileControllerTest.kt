@@ -50,7 +50,7 @@ class ProfileControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        model = ProfileModel(activeAccount.name, activeAccount.userEmail)
+        model = ProfileModel(activeAccount.name, activeAccount.userEmail, false)
         controller = ProfileController(
                 scene = scene,
                 model = model,

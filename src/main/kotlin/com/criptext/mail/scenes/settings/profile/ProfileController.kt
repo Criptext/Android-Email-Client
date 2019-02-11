@@ -153,7 +153,10 @@ class ProfileController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(SettingsParams(), null,true)
+            if(model.exitToMailbox)
+                host.finishScene()
+            else
+                host.exitToScene(SettingsParams(), null,true)
         }
     }
 

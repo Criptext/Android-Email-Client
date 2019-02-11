@@ -216,7 +216,7 @@ class SettingsController(
         }
 
         override fun onProfileNameClicked() {
-            host.goToScene(ProfileParams(model.fullName, activeAccount.userEmail), false)
+            host.goToScene(ProfileParams(model.fullName, activeAccount.userEmail, false), false)
         }
 
         override fun onReplyToChangeClicked() {
