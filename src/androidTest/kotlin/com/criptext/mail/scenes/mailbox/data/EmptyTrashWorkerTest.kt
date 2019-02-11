@@ -47,9 +47,10 @@ class EmptyTrashWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),
+                mActivityRule.activity.filesDir, activeAccount.recipientId)
     }
 
     @Test

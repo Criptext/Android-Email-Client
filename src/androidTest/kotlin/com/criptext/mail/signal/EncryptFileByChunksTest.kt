@@ -29,8 +29,10 @@ class EncryptFileByChunksTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
 
-    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
-    private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
+            score = 0, isTrusted = false)
+    private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
+            score = 0, isTrusted = false)
 
 
     @Before
@@ -40,7 +42,7 @@ class EncryptFileByChunksTest {
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
 
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
 
         // create tester user so that signal store is initialized.

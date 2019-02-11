@@ -118,7 +118,10 @@ class ReadEmailsWorkerTest {
                                     null),
                             trashDate = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
-                                    null)),
+                                    null),
+                            boundary = null,
+                            replyTo = null,
+                            fromAddress = "tester@criptext.com"),
                     labels = emptyList(),
                     to = emptyList(),
                     files = arrayListOf(CRFile(id = 0, token = "efhgfdgdfsg$it",
@@ -131,12 +134,14 @@ class ReadEmailsWorkerTest {
                             readOnly = false,
                             emailId = it.toLong(),
                             shouldDuplicate = false,
-                            fileKey = "__FILE_KEY__"
+                            fileKey = "__FILE_KEY__",
+                            cid = null
                     )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
-                    fileKey = null)
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", isTrusted = false, score = 0),
+                    fileKey = null,
+                    headers = "")
         }.reversed()
     }
 }

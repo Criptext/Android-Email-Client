@@ -25,8 +25,8 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
 
     override fun catchException(ex: Exception): GeneralResult.SyncPhonebook {
         return when(ex){
-            is Resources.NotFoundException -> GeneralResult.SyncPhonebook.Failure(UIMessage(R.string.error_sync_contact))
-            else -> GeneralResult.SyncPhonebook.Failure(UIMessage(R.string.already_sync_contact))
+            is Resources.NotFoundException -> GeneralResult.SyncPhonebook.Failure(ex, UIMessage(R.string.error_sync_contact))
+            else -> GeneralResult.SyncPhonebook.Failure(ex, UIMessage(R.string.already_sync_contact))
         }
     }
 

@@ -27,7 +27,7 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
         val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
             contactsFROM[0]
         }else Contact(
-                id = 0,
+                id = contactsFROM[0].id,
                 email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                 name = EmailAddressUtils.extractName(email.fromAddress),
                 isTrusted = contactsFROM[0].isTrusted,

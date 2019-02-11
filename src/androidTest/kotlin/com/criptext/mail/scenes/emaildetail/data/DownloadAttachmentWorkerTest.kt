@@ -9,6 +9,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
@@ -37,10 +38,12 @@ class DownloadAttachmentWorkerTest {
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     @get:Rule
-    var mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    var mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET)
 
     private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
+    private lateinit var emailDetailLocalDB: EmailDetailLocalDB
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
@@ -74,6 +77,7 @@ class DownloadAttachmentWorkerTest {
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
+        emailDetailLocalDB = EmailDetailLocalDB.Default(db,  mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = getFilServiceBaseUrl(), connectionTimeout = 7000L,
@@ -95,8 +99,8 @@ class DownloadAttachmentWorkerTest {
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,
                     downloadPath = mActivityRule.activity.cacheDir.absolutePath,
                     httpClient = httpClient, activeAccount = activeAccount,
-                    publishFn = {}, fileKey = null, fileName = "", fileSize = 0L,
-                    accountDao = db.accountDao(), storage = storage)
+                    publishFn = {}, fileKey = null, fileName = "test", fileSize = 0L,
+                    accountDao = db.accountDao(), storage = storage, cid = null, db = emailDetailLocalDB)
 
     private fun sendPermanentRequest(filetoken: String){
         val filejson = JSONObject()

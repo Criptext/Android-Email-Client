@@ -43,7 +43,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
 
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
 
         // mock http requests
         mockWebServer = MockWebServer()
@@ -52,7 +52,8 @@ class UpdateEmailThreadsLabelsWorkerTest {
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
+                mActivityRule.activity.filesDir, activeAccount.recipientId)
     }
 
     private fun newWorker(selectedThreadIds: List<String>, currentLabel: Label, selectedLabels: SelectedLabels):

@@ -39,7 +39,8 @@ class ChangeVisibilityLabelWorkerTest{
                 text = labelName,
                 type = LabelTypes.CUSTOM,
                 visible = true,
-                color = "000000"
+                color = "000000",
+                uuid = "uuid"
         ))
 
     }
