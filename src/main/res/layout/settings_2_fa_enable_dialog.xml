@@ -42,7 +42,7 @@
         android:paddingBottom="15dp"
         android:paddingEnd="15dp"
         android:paddingStart="15dp"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="?attr/criptextSecondaryTextColor"
         android:visibility="gone"
         android:textSize="15sp"/>
 

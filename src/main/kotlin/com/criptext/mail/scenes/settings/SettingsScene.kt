@@ -61,6 +61,7 @@ interface SettingsScene{
     fun dismissSyncBeginDialog()
     fun dismissReplyToEmailDialog()
     fun syncBeginDialogDenied()
+    fun clearThemeSwitchListener()
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -271,6 +272,10 @@ interface SettingsScene{
             )
             if(model.devices.size == 1)
                 generalView.enable2FASwitch(true)
+        }
+
+        override fun clearThemeSwitchListener() {
+            generalView.disableDarkThemeSwitch()
         }
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {

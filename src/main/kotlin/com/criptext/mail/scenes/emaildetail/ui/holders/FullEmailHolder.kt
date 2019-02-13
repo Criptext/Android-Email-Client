@@ -101,7 +101,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         showStartGuideMenu(emailListener, fullEmail)
 
-        setAttachments(fileDetails, emailListener)
+        setAttachments(fileDetails, emailListener, adapter)
 
         emailListener?.contextMenuRegister(bodyWebView)
 
@@ -277,13 +277,22 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         setIcons(fullEmail.email.delivered)
     }
 
-    private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?){
+    private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
+                               fullEmailListAdapter: FullEmailListAdapter){
         val nonInlineFiles = files.filter { it.file.cid == null }
         val adapter = FileListAdapter(view.context, nonInlineFiles)
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {
             override fun onAttachmentViewClick(position: Int) {
-                emailListener?.onAttachmentSelected(adapterPosition - 1, position)
+                val emailPosition = if(!fullEmailListAdapter.isExpanded) {
+                    if(adapterPosition == 1)
+                        adapterPosition - 1
+                    else
+                        fullEmailListAdapter.getEmailsSize() - 1
+                } else {
+                    adapterPosition - 1
+                }
+                emailListener?.onAttachmentSelected(emailPosition, position)
             }
             override fun onRemoveAttachmentClicked(position: Int) {}
         }

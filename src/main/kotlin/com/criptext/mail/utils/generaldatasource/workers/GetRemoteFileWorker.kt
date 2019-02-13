@@ -11,6 +11,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import org.json.JSONException
 import java.io.File
@@ -42,7 +43,10 @@ class GetRemoteFileWorker(private val uris: List<String>,
                 it.moveToFirst()
                 it.getString(nameIndex)
             }
-            val file = createTempFile(prefix = name ?: "tmp", suffix = ".".plus(extension))
+
+            var cleanedName = if(name == null) null else FileUtils.getBasenameAndExtension(name).first
+            if(cleanedName != null && cleanedName.length < 3) cleanedName = cleanedName.plus("_tmp")
+            val file = createTempFile(prefix = cleanedName ?: "tmp", suffix = ".".plus(extension))
 
             val stream = contentResolver.openInputStream(realUri)
             stream.use { input ->

@@ -113,9 +113,11 @@ class  EmailDetailActivity: BaseActivity() {
         when (result.type) {
             WebView.HitTestResult.IMAGE_TYPE,
             WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
-                val inflater = menuInflater
-                inflater.inflate(R.menu.web_view_image_menu, menu)
-                (controller as EmailDetailSceneController).onCreateContextMenu(result.extra)
+                if(result.extra != null && result.extra!!.startsWith("file://")) {
+                    val inflater = menuInflater
+                    inflater.inflate(R.menu.web_view_image_menu, menu)
+                    (controller as EmailDetailSceneController).onCreateContextMenu(result.extra)
+                }
             }
         }
 

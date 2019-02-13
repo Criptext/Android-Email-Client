@@ -96,11 +96,15 @@ class UpdateMailboxWorker(
                         newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
                         newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
                         val emailAddress = newData["email"]
-                        val bm = if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress))
+                        val bm = try {
+                            if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress))
                                 Picasso.get().load(Hosts.restApiBaseUrl
-                                .plus("/user/avatar/${EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)}")).get()
-                        else
+                                        .plus("/user/avatar/${EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)}")).get()
+                            else
+                                null
+                        } catch (ex: Exception){
                             null
+                        }
 
                         if(shouldCallAgain) {
                             PushResult.UpdateMailbox.SuccessAndRepeat(

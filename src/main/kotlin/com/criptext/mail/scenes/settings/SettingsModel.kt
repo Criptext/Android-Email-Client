@@ -4,7 +4,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.settings.devices.DeviceItem
 import com.criptext.mail.validation.FormInputState
 
-class SettingsModel{
+class SettingsModel(var hasChangedTheme: Boolean = false){
     var fullName: String = ""
     var signature: String = ""
     val labels : ArrayList<LabelWrapper> = ArrayList()
@@ -20,7 +20,6 @@ class SettingsModel{
     var hasReadReceipts: Boolean = false
     var recoveryEmail: String = ""
     var replyToEmail: String? = null
-    var hasChangedTheme: Boolean = false
 
     var isWaitingForSync = false
 

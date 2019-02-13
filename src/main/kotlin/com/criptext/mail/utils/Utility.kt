@@ -110,6 +110,7 @@ class Utility {
 
         private fun getAvatarLetters(fullName: String): String{
             val cleanedName = fullName.trim()
+            if(cleanedName.isEmpty()) return ""
             val firstLetter = cleanedName.toCharArray()[0].toString().toUpperCase()
             val secondLetter = if(cleanedName.contains(" "))
                 cleanedName[cleanedName.lastIndexOf(" ") + 1].toString().toUpperCase()

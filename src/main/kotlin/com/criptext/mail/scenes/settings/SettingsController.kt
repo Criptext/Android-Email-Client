@@ -112,6 +112,7 @@ class SettingsController(
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 host.setAppTheme(R.style.AppTheme)
             }
+            host.exitToScene(SettingsParams(true), null, false, true)
         }
 
         override fun onResendDeviceLinkAuth() {

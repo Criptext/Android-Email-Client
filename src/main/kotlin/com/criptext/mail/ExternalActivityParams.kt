@@ -2,9 +2,9 @@ package com.criptext.mail
 
 
 sealed class ExternalActivityParams {
-    data class FilePicker(val remaining: Int): ExternalActivityParams()
+    class FilePicker: ExternalActivityParams()
     class ProfileImagePicker: ExternalActivityParams()
-    data class ImagePicker(val remaining: Int): ExternalActivityParams()
+    class ImagePicker: ExternalActivityParams()
     data class PinScreen(val isFirstTime: Boolean): ExternalActivityParams()
     class Camera: ExternalActivityParams()
     class InviteFriend: ExternalActivityParams()

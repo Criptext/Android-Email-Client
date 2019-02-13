@@ -84,14 +84,12 @@ class ComposerController(private val storage: KeyValueStorage,
 
         override fun onNewFileAttachmentRequested() {
             PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
-            val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker(remaining))
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
 
         override fun onNewGalleryAttachmentRequested() {
             PinLockUtils.setPinLockTimeout(PinLockUtils.TIMEOUT_TO_DISABLE)
-            val remaining = EmailUtils.ATTACHMENT_LIMIT - model.attachments.size
-            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker(remaining))
+            host.launchExternalActivityForResult(ExternalActivityParams.ImagePicker())
         }
 
         override fun sendDialogButtonPressed() {
@@ -155,10 +153,7 @@ class ComposerController(private val storage: KeyValueStorage,
         override fun onAttachmentButtonClicked() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                if(model.attachments.size < EmailUtils.ATTACHMENT_LIMIT)
-                    scene.showAttachmentsBottomDialog(this)
-                else
-                    scene.showError(UIMessage(R.string.attachment_limit_reached, arrayOf(EmailUtils.ATTACHMENT_LIMIT)))
+                scene.showAttachmentsBottomDialog(this)
             }
         }
 
@@ -260,7 +255,7 @@ class ComposerController(private val storage: KeyValueStorage,
             }
             is ComposerResult.UploadFile.MaxFilesExceeds -> {
                 removeAttachmentByPath(result.filepath)
-                scene.showMaxFilesExceedsDialog()
+                model.filesExceedingMaxEmailSize.add(FileUtils.getName(result.filepath))
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.PayloadTooLarge -> {
@@ -453,9 +448,14 @@ class ComposerController(private val storage: KeyValueStorage,
             return
         }
         val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
-        val composerAttachment = getAttachmentByPath(attachmentToUpload.filepath) ?: return
-        composerAttachment.uploadProgress = 0
-        uploadSelectedFile(attachmentToUpload.filepath, composerAttachment.fileKey)
+        val composerAttachment = getAttachmentByPath(attachmentToUpload.filepath)
+        if(composerAttachment == null){
+            scene.showMaxFilesExceedsDialog()
+            return
+        }else {
+            composerAttachment.uploadProgress = 0
+            uploadSelectedFile(attachmentToUpload.filepath, composerAttachment.fileKey)
+        }
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
@@ -635,10 +635,7 @@ class ComposerController(private val storage: KeyValueStorage,
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
             return
         }
-        if(model.attachments.size < EmailUtils.ATTACHMENT_LIMIT)
-            scene.showAttachmentsBottomDialog(observer)
-        else
-            scene.showError(UIMessage(R.string.attachment_limit_reached, arrayOf(EmailUtils.ATTACHMENT_LIMIT)))
+        scene.showAttachmentsBottomDialog(observer)
 
     }
 

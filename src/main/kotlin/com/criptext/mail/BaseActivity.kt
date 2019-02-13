@@ -66,6 +66,7 @@ import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
+import java.lang.Exception
 import java.util.*
 
 
@@ -145,7 +146,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         }else{
             model = cacheModel
         }
-        controller = initController(model)
+        try {
+            controller = initController(model)
+        } catch (ex: Exception) {
+            restartApplication()
+        }
     }
 
     override fun onStart() {
@@ -206,7 +211,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview, params.doReply)
             is ComposerParams -> ComposerModel(params.type)
-            is SettingsParams -> SettingsModel()
+            is SettingsParams -> SettingsModel(params.hasChangedTheme)
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
             is ChangePasswordParams -> ChangePasswordModel()
@@ -324,23 +329,19 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                     return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment))
                             }
                         }else{
-                            if(clipData.itemCount < EmailUtils.ATTACHMENT_LIMIT) {
-                                val attachmentList = mutableListOf<Pair<String, Long>>()
-                                for (i in 0 until clipData.itemCount) {
-                                    clipData.getItemAt(i).also { item ->
-                                        if (item.uri != null) {
-                                            val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
-                                                    contentResolver, this)
-                                            if (attachment != null)
-                                                attachmentList.add(attachment)
-                                        }
+                            val attachmentList = mutableListOf<Pair<String, Long>>()
+                            for (i in 0 until clipData.itemCount) {
+                                clipData.getItemAt(i).also { item ->
+                                    if (item.uri != null) {
+                                        val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
+                                                contentResolver, this)
+                                        if (attachment != null)
+                                            attachmentList.add(attachment)
                                     }
                                 }
-                                if (attachmentList.isNotEmpty())
-                                    return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList)
-                            }else{
-                                return IntentExtrasData.IntentErrorMessage(Intent.ACTION_APP_ERROR, UIMessage(R.string.too_many_files))
                             }
+                            if (attachmentList.isNotEmpty())
+                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList)
                         }
                     }
                 }
@@ -381,7 +382,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                    putExtra("remaining", params.remaining)
                     type = "*/*"
                 }
                 startActivityForResult(intent, FilePickerConst.REQUEST_CODE_DOC)
@@ -390,7 +390,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                    putExtra("remaining", params.remaining)
                     val mimeTypes = arrayOf("image/*", "video/*")
                     type = "*/*"
                     putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
@@ -488,7 +487,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun setAppTheme(themeResource: Int) {
         setTheme(themeResource)
-        recreate()
     }
 
     override fun contextMenuRegister(view: View) {

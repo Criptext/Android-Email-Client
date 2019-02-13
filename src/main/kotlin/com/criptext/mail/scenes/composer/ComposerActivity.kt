@@ -87,22 +87,17 @@ class ComposerActivity : BaseActivity() {
                                 setActivityMessage(ActivityMessage.AddAttachments(listOf(attachment)))
                         }
                     }else{
-                        val remaining = data.getIntExtra("remaining", 0)
-                        if(clipData.itemCount < remaining) {
-                            val attachmentList = mutableListOf<Pair<String, Long>>()
-                            for (i in 0 until clipData.itemCount) {
-                                clipData.getItemAt(i).also { item ->
-                                    val attachment = FileUtils.getPathAndSizeFromUri(item.uri, contentResolver,
-                                            this)
-                                    if (attachment != null)
-                                        attachmentList.add(attachment)
-                                }
+                        val attachmentList = mutableListOf<Pair<String, Long>>()
+                        for (i in 0 until clipData.itemCount) {
+                            clipData.getItemAt(i).also { item ->
+                                val attachment = FileUtils.getPathAndSizeFromUri(item.uri, contentResolver,
+                                        this)
+                                if (attachment != null)
+                                    attachmentList.add(attachment)
                             }
-                            if (attachmentList.isNotEmpty())
-                                setActivityMessage(ActivityMessage.AddAttachments(attachmentList))
-                        }else{
-                            setActivityMessage(ActivityMessage.ShowUIMessage(UIMessage(R.string.too_many_files)))
                         }
+                        if (attachmentList.isNotEmpty())
+                            setActivityMessage(ActivityMessage.AddAttachments(attachmentList))
                     }
                 }
             }

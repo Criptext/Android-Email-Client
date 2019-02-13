@@ -159,6 +159,10 @@ class FullEmailListAdapter(private val mContext : Context,
         return if(isExpanded) fullEmails.size + 2 else MAX_SIZE_FOR_COLLAPSE
     }
 
+    fun getEmailsSize(): Int{
+        return fullEmails.size
+    }
+
     override fun getItemId(position: Int): Long {
         if(isPositionFooter(position)) {
             return -1
