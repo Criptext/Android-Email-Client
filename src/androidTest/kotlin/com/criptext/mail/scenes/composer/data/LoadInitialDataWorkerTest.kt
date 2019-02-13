@@ -7,12 +7,14 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.workers.LoadInitialDataWorker
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
+import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import io.mockk.mockk
@@ -40,11 +42,11 @@ class LoadInitialDataWorkerTest {
     private lateinit var composerLocalDB: ComposerLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
-    private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1)
-    private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2)
-    private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3)
+    private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1, score = 0, isTrusted = true)
+    private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2, score = 0, isTrusted = true)
+    private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3, score = 0, isTrusted = true)
     private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
-            sender = "Mayer", deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
+            sender = mayerContact, deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
             emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false, latestEmailUnsentDate = Date(),
             metadataKey = 1)
 
@@ -53,6 +55,9 @@ class LoadInitialDataWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, ""))
         reTemplate = REMailTemplate(mActivityRule.activity)
         fwmTemplate = FWMailTemplate(mActivityRule.activity)
         db.contactDao().insertAll(listOf(testerContact, mayerContact, danielContact))
@@ -60,7 +65,7 @@ class LoadInitialDataWorkerTest {
         composerLocalDB = ComposerLocalDB(contactDao = db.contactDao(), emailDao = db.emailDao(),
                 emailContactDao = db.emailContactDao(), emailLabelDao = db.emailLabelDao(),
                 labelDao = db.labelDao(), fileDao = db.fileDao(), accountDao = db.accountDao(),
-                fileKeyDao = db.fileKeyDao())
+                fileKeyDao = db.fileKeyDao(), filesDir = mActivityRule.activity.filesDir)
 
     }
 
@@ -71,18 +76,25 @@ class LoadInitialDataWorkerTest {
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean, fileKey: String?): Long {
-        val to = to.map {it.email}
-        val metadata = EmailMetadata.DBColumns(to = to,  cc = emptyList(),
+        val toEmails = to.map {it.email}
+        val metadata = EmailMetadata.DBColumns(to = toEmails,  cc = emptyList(),
                     bcc = emptyList(), fromContact = fromContact, messageId = "__MESSAGE_ID__",
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
                     subject = subject, unread = true, metadataKey = 100L,
                     status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:00", secure = true,
-                    trashDate = "2018-02-21 14:00:00")
+                    trashDate = "2018-02-21 14:00:00", replyTo = null, boundary = null)
             val labels = if (isDraft) listOf(Label.defaultItems.inbox)
                         else listOf(Label.defaultItems.draft)
 
+        EmailUtils.saveEmailInFileSystem(
+                filesDir = mActivityRule.activity.filesDir,
+                recipientId = activeAccount.recipientId,
+                metadataKey = metadata.metadataKey,
+                content = decryptedBody,
+                headers = null)
+
             return EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = fileKey)
+                    preview = decryptedBody, labels = labels, files = emptyList(), fileKey = fileKey)
     }
 
     @Test

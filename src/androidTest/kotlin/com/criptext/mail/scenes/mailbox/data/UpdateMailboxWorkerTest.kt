@@ -11,10 +11,7 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.EmailInsertionDao
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.Email
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.mocks.MockJSONData
 import com.criptext.mail.signal.SignalClient
@@ -25,6 +22,7 @@ import com.criptext.mail.utils.generaldatasource.workers.UpdateMailboxWorker
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -56,6 +54,9 @@ class UpdateMailboxWorkerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, ""))
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
@@ -90,11 +91,22 @@ class UpdateMailboxWorkerTest {
         val localEmails = listOf(
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
         db.contactDao().insertIgnoringConflicts(Contact(
                 id = 0,
                 email = "mayer@criptext.com",
-                name = "Mayer"
+                name = "Mayer",
+                score = 0,
+                isTrusted = false
         ))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
 
@@ -126,8 +138,18 @@ class UpdateMailboxWorkerTest {
         val localEmails = listOf(
                 MockEmailData.createNewEmail(1),
                 MockEmailData.createNewEmail(2))
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
-        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer"))
+        db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer",
+                false, 0))
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
@@ -149,15 +171,30 @@ class UpdateMailboxWorkerTest {
 
     @Test
     fun when_processing_new_email_events_should_insert_emails_correctly() {
+        val mockedJsonForGetBody1 = JSONObject()
+        mockedJsonForGetBody1.put("body", "__ENCRYPTED_BODY_1")
+        mockedJsonForGetBody1.put("headers", "")
+        val mockedJsonForGetBody2 = JSONObject()
+        mockedJsonForGetBody2.put("body", "__ENCRYPTED_BODY_2")
+        mockedJsonForGetBody2.put("headers", "")
         mockWebServer.enqueueResponses(listOf(
             MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
-            MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
-            MockedResponse.Ok("__ENCRYPTED_BODY_2"), /* /email/body (2st email) */
+            MockedResponse.Ok(mockedJsonForGetBody1.toString()), /* /email/body (1st email) */
+            MockedResponse.Ok(mockedJsonForGetBody2.toString()), /* /email/body (2st email) */
             MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
         val localEmails = MockEmailData.createNewEmails(3)
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
 
         // run worker
@@ -166,6 +203,9 @@ class UpdateMailboxWorkerTest {
 
         // assert that emails got inserted correctly in DB
         val newLocalEmails = db.emailDao().getAll()
+        newLocalEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
+                mActivityRule.activity.filesDir, it.metadataKey, it.content, activeAccount.recipientId
+        ).first }
         newLocalEmails.size `shouldBe` 5
         // assert that the new emails got in
         val latestEmails = newLocalEmails.subList(3, 5)
@@ -181,15 +221,30 @@ class UpdateMailboxWorkerTest {
 
     @Test
     fun when_processing_new_email_events_should_fetch_and_acknowledge_events_correctly() {
+        val mockedJsonForGetBody1 = JSONObject()
+        mockedJsonForGetBody1.put("body", "__ENCRYPTED_BODY_1")
+        mockedJsonForGetBody1.put("headers", "")
+        val mockedJsonForGetBody2 = JSONObject()
+        mockedJsonForGetBody2.put("body", "__ENCRYPTED_BODY_2")
+        mockedJsonForGetBody2.put("headers", "")
         mockWebServer.enqueueResponses(listOf(
             MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /event */
-            MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
-            MockedResponse.Ok("__ENCRYPTED_BODY_2"), /* /email/body (2st email) */
+            MockedResponse.Ok(mockedJsonForGetBody1.toString()), /* /email/body (1st email) */
+            MockedResponse.Ok(mockedJsonForGetBody2.toString()), /* /email/body (2st email) */
             MockedResponse.Ok("OK") /* /event/ack */
         ))
 
         // store local emails in db
         val localEmails = MockEmailData.createNewEmails(3)
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
 
         // run worker
@@ -218,15 +273,27 @@ class UpdateMailboxWorkerTest {
 
     @Test
     fun when_processing_new_email_events_if_get_body_fails_should_not_acknowledge_that_event() {
+        val mockedJsonForGetBody = JSONObject()
+        mockedJsonForGetBody.put("body", "__ENCRYPTED_BODY_1")
+        mockedJsonForGetBody.put("headers", "")
         mockWebServer.enqueueResponses(listOf(
             MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
-            MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
+            MockedResponse.Ok(mockedJsonForGetBody.toString()), /* /email/body (1st email) */
             MockedResponse.Timeout(), /* /email/body (2nd email) */
             MockedResponse.Ok("OK") /* /data/ack */
         ))
 
         // store local emails in db
         val localEmails = MockEmailData.createNewEmails(3)
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
 
         // run worker
@@ -255,11 +322,17 @@ class UpdateMailboxWorkerTest {
 
     @Test
     fun when_processing_new_email_events_if_acknowledge_fails_should_retry_acknowledge_on_2nd_run() {
+        val mockedJsonForGetBody1 = JSONObject()
+        mockedJsonForGetBody1.put("body", "__ENCRYPTED_BODY_1")
+        mockedJsonForGetBody1.put("headers", "")
+        val mockedJsonForGetBody2 = JSONObject()
+        mockedJsonForGetBody2.put("body", "__ENCRYPTED_BODY_2")
+        mockedJsonForGetBody2.put("headers", "")
         mockWebServer.enqueueResponses(listOf(
             // first run
             MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
-            MockedResponse.Ok("__ENCRYPTED_BODY_1"), /* /email/body (1st email) */
-            MockedResponse.Ok("__ENCRYPTED_BODY_2"), /* /email/body (2nd email) */
+            MockedResponse.Ok(mockedJsonForGetBody1.toString()), /* /email/body (1st email) */
+            MockedResponse.Ok(mockedJsonForGetBody2.toString()), /* /email/body (2nd email) */
             MockedResponse.Timeout(), /* /data/ack */
             // second run
             MockedResponse.Ok(MockJSONData.sample2NewEmailEvents), /* /data */
@@ -268,6 +341,15 @@ class UpdateMailboxWorkerTest {
 
         // store local emails in db
         val localEmails = MockEmailData.createNewEmails(3)
+        localEmails.forEach {
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = null)
+            it.content = ""
+        }
         db.emailDao().insertAll(localEmails)
 
         val worker = newWorker(2, Label.defaultItems.inbox)

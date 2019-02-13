@@ -24,11 +24,14 @@ import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @RunWith(AndroidJUnit4::class)
@@ -47,14 +50,15 @@ class ResendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
-    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
+            isTrusted = false, score = 0)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.contactDao().insertIgnoringConflicts(bobContact)
 
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
         storage = mockk(relaxed = true)
         // create tester user so that signal store is initialized.
@@ -73,19 +77,20 @@ class ResendEmailWorkerTest {
             ResendEmailsWorker(signalClient = signalClient, rawSessionDao = db.rawSessionDao(),
                     httpClient = httpClient, db = mailboxLocalDB,
                     activeAccount = activeAccount, publishFn = {}, accountDao = db.accountDao(),
-                    storage = storage)
+                    storage = storage, filesDir = mActivityRule.activity.filesDir)
 
     private fun newWorker(emailId: Long, threadId: String?, inputData: ComposerInputData): SendMailWorker =
             SendMailWorker(signalClient = signalClient, emailId = emailId, threadId = threadId,
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao(),
-                    accountDao = db.accountDao(), storage = storage)
+                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir)
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
-                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null)
+                    dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
+                    filesDir = mActivityRule.activity.filesDir)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
@@ -118,12 +123,17 @@ class ResendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
-        val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
+        val jsonFindKeyBundleResponse = JSONObject()
+        jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        val date = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        val strDate = dateFormat.format(date)
+        val postEmailResponse = SentMailData(date = strDate, metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
                 MockedResponse.ServerError(),
-                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(jsonFindKeyBundleResponse.toString()), /* /keybundle/find */
                 MockedResponse.Ok(postEmailResponse) /* /email */
         ))
 
@@ -157,12 +167,17 @@ class ResendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
-        val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
+        val jsonFindKeyBundleResponse = JSONObject()
+        jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        val date = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        val strDate = dateFormat.format(date)
+        val postEmailResponse = SentMailData(date = strDate, metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
                 MockedResponse.ServerError(),
-                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(jsonFindKeyBundleResponse.toString()), /* /keybundle/find */
                 MockedResponse.Ok(postEmailResponse) /* /email */
         ))
 

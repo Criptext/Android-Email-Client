@@ -50,10 +50,11 @@ class LogoutWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         settingsLocalDB = SettingsLocalDB.Default(db)
 
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
+                mActivityRule.activity.filesDir, activeAccount.recipientId)
     }
 
     @Test

@@ -116,7 +116,7 @@ sealed class GeneralResult {
 
     sealed class SyncPhonebook: GeneralResult() {
         class Success: SyncPhonebook()
-        data class Failure(val message: UIMessage): SyncPhonebook()
+        data class Failure(val exception: Exception, val message: UIMessage): SyncPhonebook()
     }
 
     sealed class Logout: GeneralResult() {

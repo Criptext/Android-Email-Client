@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.*
 import com.criptext.mail.scenes.search.data.SearchEmailWorker
 import com.criptext.mail.scenes.search.data.SearchResult
+import com.criptext.mail.utils.EmailUtils
 import io.mockk.mockk
 import org.amshove.kluent.shouldBe
 import org.junit.Before
@@ -27,7 +28,8 @@ class SearchEmailWorkerTest{
     private lateinit var db: TestDatabase
     private lateinit var searchLocalDB: SearchLocalDB
 
-    private val userEmail = "gabriel@criptext.com"
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
@@ -36,30 +38,45 @@ class SearchEmailWorkerTest{
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$id",
                     subject = "Test #$id", unread = true, metadataKey = id + 100L,
                     status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds", secure = true,
-                    trashDate = "2018-02-21 14:00:$seconds")
+                    trashDate = "2018-02-21 14:00:$seconds", replyTo = null, boundary = null)
     }
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        searchLocalDB = SearchLocalDB.Default(db)
+        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, ""))
+        searchLocalDB = SearchLocalDB.Default(db, mActivityRule.activity.filesDir)
 
         (1..2).forEach {
-            val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi")
+            val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi", isTrusted = false, score = 0)
             val metadata = createMetadataColumns(it, fromContact)
             val decryptedBody = "Hello, this is message #$it"
             val labels = listOf(Label.defaultItems.inbox)
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = mActivityRule.activity.filesDir,
+                    recipientId = activeAccount.recipientId,
+                    metadataKey = metadata.metadataKey,
+                    content = decryptedBody,
+                    headers = null)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                    decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
+                    preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
         }
 
-        val anotherFromContact = Contact(2,"erika@criptext.com", "Erika Perugachi")
+        val anotherFromContact = Contact(2,"erika@criptext.com", "Erika Perugachi", isTrusted = false, score = 0)
         val metadata = createMetadataColumns(3, anotherFromContact)
         val decryptedBody = "Hello again, this is message #3"
         val labels = listOf(Label.defaultItems.inbox)
+        EmailUtils.saveEmailInFileSystem(
+                filesDir = mActivityRule.activity.filesDir,
+                recipientId = activeAccount.recipientId,
+                metadataKey = metadata.metadataKey,
+                content = decryptedBody,
+                headers = null)
         EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                decryptedBody = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
+                preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
     }
 
     @Test
@@ -80,7 +97,7 @@ class SearchEmailWorkerTest{
                     db = searchLocalDB,
                     queryText = queryText,
                     loadParams = loadParams,
-                    userEmail = userEmail,
+                    userEmail = activeAccount.userEmail,
                     publishFn = {})
 
 }

@@ -23,6 +23,7 @@ import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
@@ -51,7 +52,8 @@ class SendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
-    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1, isTrusted = true)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
+            isTrusted = true, score = 0)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
@@ -121,11 +123,13 @@ class SendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val jsonFindKeyBundleResponse = JSONObject()
+        jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
-                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(jsonFindKeyBundleResponse.toString()), /* /keybundle/find */
                 MockedResponse.Ok(postEmailResponse) /* /email */
         ))
 
@@ -153,11 +157,13 @@ class SendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val jsonFindKeyBundleResponse = JSONObject()
+        jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
-                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(jsonFindKeyBundleResponse.toString()), /* /keybundle/find */
                 MockedResponse.Ok(postEmailResponse) /* /email */
         ))
 
@@ -208,11 +214,13 @@ class SendEmailWorkerTest {
 
         // prepare server mocks to send email
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
-        val findKeyBundlesResponse = "[${keyBundleFromBob.toJSON()}]"
+        val jsonFindKeyBundleResponse = JSONObject()
+        jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
-                MockedResponse.Ok(findKeyBundlesResponse), /* /keybundle/find */
+                MockedResponse.Ok(jsonFindKeyBundleResponse.toString()), /* /keybundle/find */
                 MockedResponse.Ok(postEmailResponse) /* /email */
         ))
 

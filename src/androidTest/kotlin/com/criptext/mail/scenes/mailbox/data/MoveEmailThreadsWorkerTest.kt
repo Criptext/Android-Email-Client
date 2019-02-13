@@ -7,6 +7,7 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
@@ -47,9 +48,13 @@ class MoveEmailThreadsWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        mailboxLocalDB = MailboxLocalDB.Default(db)
+        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, ""))
+        mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
+                mActivityRule.activity.filesDir, activeAccount.recipientId)
     }
 
     @Test
@@ -64,7 +69,8 @@ class MoveEmailThreadsWorkerTest{
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelName = Label.defaultItems.spam.text,
                 startDate = null,
-                limit = 20
+                limit = 20,
+                filterUnread = false
         ).size shouldBe 0
 
         val emailThreads = mailboxLocalDB.getThreadsFromMailboxLabel(
@@ -72,7 +78,8 @@ class MoveEmailThreadsWorkerTest{
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox),
                 labelName = Label.defaultItems.inbox.text,
                 startDate = null,
-                limit = 20
+                limit = 20,
+                filterUnread = false
         )
 
         val worker = newWorker(
@@ -87,7 +94,8 @@ class MoveEmailThreadsWorkerTest{
                 rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.spam),
                 labelName = Label.defaultItems.spam.text,
                 startDate = null,
-                limit = 20
+                limit = 20,
+                filterUnread = false
         ).size shouldBe 2
 
     }

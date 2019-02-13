@@ -50,7 +50,7 @@ class PushRequestHandlerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        emailDetailLocalDB = EmailDetailLocalDB.Default(db)
+        emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         mockWebServer = MockWebServer()
         mockWebServer.start()
 
@@ -63,7 +63,8 @@ class PushRequestHandlerTest {
                     fullEmail.email.unread = true
                     fullEmail
                 }
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox))
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
+                mActivityRule.activity.filesDir, activeAccount.recipientId)
     }
 
     @After
@@ -146,7 +147,10 @@ class PushRequestHandlerTest {
                                     null),
                             trashDate = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
-                                    null)),
+                                    null),
+                            boundary = null,
+                            replyTo = null,
+                            fromAddress = "mayer@jigl.com"),
                     labels = emptyList(),
                     to = emptyList(),
                     files = arrayListOf(CRFile(id = 0, token = "efhgfdgdfsg$it",
@@ -159,12 +163,14 @@ class PushRequestHandlerTest {
                             readOnly = false,
                             emailId = it.toLong(),
                             shouldDuplicate = false,
-                            fileKey = "__FILE_KEY__"
+                            fileKey = "__FILE_KEY__",
+                            cid = null
                     )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi"),
-                    fileKey = null)
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0),
+                    fileKey = null,
+                    headers = null)
         }.reversed()
     }
 }

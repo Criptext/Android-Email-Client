@@ -4,9 +4,12 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
-import com.criptext.mail.db.*
+import com.criptext.mail.db.ContactTypes
+import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.*
-import com.criptext.mail.signal.*
+import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import org.amshove.kluent.shouldEqual
@@ -15,7 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.text.SimpleDateFormat
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class UserDataWriterTest {
@@ -25,26 +28,39 @@ class UserDataWriterTest {
     private lateinit var db: TestDatabase
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
 
-    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1)
-    private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2)
+    val nowDate = Calendar.getInstance().time
+    val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
 
-    private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM, visible = true)
-    private val labelTwo = Label(id = 2, color = "blue", text = "Custom Label 2", type = LabelTypes.CUSTOM, visible = true)
+    private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
+            isTrusted = false, score = 0)
+    private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
+            isTrusted = false, score = 0)
 
-    private val emailOne = Email(id = 1, content = "contents 1", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
+    private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM,
+            visible = true, uuid = "uuid1")
+    private val labelTwo = Label(id = 2, color = "blue", text = "Custom Label 2", type = LabelTypes.CUSTOM,
+            visible = true, uuid = "uuid2")
+
+    private val emailOne = Email(id = 1, content = "contents 1", date = nowDate,
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
-            preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
-            trashDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
-    private val emailTwo = Email(id = 2, content = "contents 2", date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
+            preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = nowDate,
+            trashDate = nowDate,
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null)
+    private val emailTwo = Email(id = 2, content = "contents 2", date = nowDate,
             delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_2", metadataKey = 456,
-            preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"),
-            trashDate = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"))
+            preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = nowDate,
+            trashDate = nowDate,
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null)
 
-    private val fileOne = CRFile(id = 1, date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"), emailId = 1, name = "this.txt",
-            readOnly = true, size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__")
-    private val fileTwo = CRFile(id = 2, date = SimpleDateFormat("dd/MM/yyyy").parse("21/12/2012"), emailId = 2, name = "that.txt",
-            readOnly = true, size = 14, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__")
+    private val fileOne = CRFile(id = 1, date = nowDate, emailId = 1, name = "this.txt",
+            readOnly = true, size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
+            cid = null)
+    private val fileTwo = CRFile(id = 2, date = nowDate, emailId = 2, name = "that.txt",
+            readOnly = true, size = 14, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
+            cid = null)
 
     private val emailLabel1 = EmailLabel(emailId = 1, labelId = 1)
     private val emailLabel2 = EmailLabel(emailId = 2, labelId = 2)
@@ -55,25 +71,26 @@ class UserDataWriterTest {
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
 
-    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\"}}",
-    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\"}}",
-    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"visible\":true}}",
-    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"visible\":true}}",
-    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"2012-12-21 05:00:00\",\"key\":123,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
-    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"2012-12-21 05:00:00\",\"key\":456,\"isMuted\":false,\"unsentDate\":\"2012-12-21 05:00:00\",\"trashDate\":\"2012-12-21 05:00:00\"}}",
-    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
-    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"2012-12-21 05:00:00\",\"readOnly\":true,\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
+    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false}}",
+    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false}}",
+    "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"uuid\":\"uuid1\",\"visible\":true}}",
+    "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"uuid\":\"uuid2\",\"visible\":true}}",
+    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"$strDate\",\"key\":123,\"isMuted\":false,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"$strDate\",\"key\":456,\"isMuted\":false,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"$strDate\",\"readOnly\":true,\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"$strDate\",\"readOnly\":true,\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"to\"}}",
-    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"from\"}}",
-    "{\"table\":\"filekey\",\"object\":{\"id\":1,\"key\":\"test_key_16bytes\",\"iv\":\"test_iv_16_bytes\",\"emailId\":1}}",
-    "{\"table\":\"filekey\",\"object\":{\"id\":2,\"key\":\"test_key_16bytes\",\"iv\":\"test_iv_16_bytes\",\"emailId\":2}}")
+    "{\"table\":\"email_contact\",\"object\":{\"id\":2,\"emailId\":2,\"contactId\":2,\"type\":\"from\"}}")
 
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
+        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, ""))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
         db.labelDao().insertAll(listOf(labelOne,labelTwo))
