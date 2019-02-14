@@ -7,8 +7,7 @@ import com.criptext.mail.mocks.MockLinkDeviceFile
 import com.criptext.mail.scenes.emaildetail.data.DownloadAttachmentWorkerTest
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.AndroidFs
-import org.amshove.kluent.shouldBeFile
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -34,6 +33,38 @@ class EncryptBinaryFileWithAESTest {
     }
 
     @Test
+    fun should_correctly_generate_aes_key() {
+
+        val aesKey = AESUtil.generateAesKey()
+        val aesTestClient = AESUtil(aesKey)
+
+        aesTestClient.shouldBeInstanceOf(AESUtil::class.java)
+
+        aesKey.indexOf(':') shouldNotBe -1
+        val array = aesKey.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val strKey = Encoding.stringToByteArray(array[0])
+        val strIV = Encoding.stringToByteArray(array[1])
+
+        strKey.size shouldBe 16
+        strIV.size shouldBe 16
+    }
+
+    @Test
+    fun should_correctly_encrypt_and_decrypt_with_password() {
+
+        val constantByteArray = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 127)
+        val password = "123456"
+
+        val encryptedData = AESUtil.encryptWithPassword(password, constantByteArray)
+        val decryptedData = AESUtil.decryptWithPassword(
+                password = password,
+                salt = encryptedData.first, iv = encryptedData.second,
+                dataToDecrypt = Encoding.stringToByteArray(encryptedData.third))
+        Encoding.stringToByteArray(decryptedData) shouldEqual constantByteArray
+
+    }
+
+    @Test
     fun should_correctly_encrypt_and_decrypt_a_byte_array() {
 
         val constantByteArray = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 127)
@@ -41,7 +72,7 @@ class EncryptBinaryFileWithAESTest {
         val encryptedBytes = aesClient.encrypt(constantByteArray)
         val decryptedBytes = aesClient.decrypt(encryptedBytes)
 
-        decryptedBytes `shouldEqual` constantByteArray
+        decryptedBytes shouldEqual constantByteArray
     }
 
     @Test
@@ -62,7 +93,7 @@ class EncryptBinaryFileWithAESTest {
 
         decryptedList = File(decryptedFile).readLines()
 
-        decryptedList `shouldEqual` constantListOfFileEntries
+        decryptedList shouldEqual constantListOfFileEntries
 
 
     }

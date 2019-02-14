@@ -27,6 +27,7 @@ import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -370,6 +371,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         jsonSignedPreKey.put("privateKey", Encoding.byteArrayToString(signedPreKey.keyPair.privateKey.serialize()))
         jsonReturn.put("signedPreKey", jsonSignedPreKey)
         jsonReturn.put("fileKey", fileKey)
+        jsonReturn.put("fileKeys", JSONArray(getFileKeys()))
         return jsonReturn
     }
 
