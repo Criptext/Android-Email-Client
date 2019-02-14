@@ -21,6 +21,9 @@ class ComposerModel(val type: ComposerType) {
 
     var attachments: ArrayList<ComposerAttachment> = ArrayList()
 
+    val filesExceedingMaxEmailSize = mutableListOf<String>()
+    val filesExceedingMaxFileSize = mutableListOf<Pair<String, String>>()
+
     var isUploadingAttachments = false
 
     val to = LinkedList<Contact>()

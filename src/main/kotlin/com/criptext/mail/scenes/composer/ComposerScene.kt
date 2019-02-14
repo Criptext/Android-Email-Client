@@ -280,7 +280,7 @@ interface ComposerScene {
         override fun showMaxFilesExceedsDialog(){
             val builder = AlertDialog.Builder(ctx)
             val size = FileUtils.readableFileSize(EmailUtils.ATTACHMENT_SIZE_LIMIT.toLong(), 1000)
-            builder.setTitle(ctx.resources.getString(R.string.error_attach_file))
+            builder.setTitle(ctx.resources.getString(R.string.error_email_max_files_title))
                     .setMessage(ctx.resources.getString(R.string.error_email_max_size, size))
                     .show()
         }

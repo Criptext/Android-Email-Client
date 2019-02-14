@@ -90,6 +90,10 @@ class GeneralSettingsView(view: View, title: String): TabView(view, title) {
         setSwitchListener()
     }
 
+    fun disableDarkThemeSwitch(){
+        darkThemeSwitch.setOnCheckedChangeListener { _, _ ->  }
+    }
+
     fun setDarkTheme(hasDarkTheme: Boolean){
         darkThemeSwitch.setOnCheckedChangeListener { _, _ ->  }
         darkThemeSwitch.isChecked = hasDarkTheme
