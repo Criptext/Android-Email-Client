@@ -22,7 +22,8 @@ class ThreadListController(private val model : MailboxSceneModel,
     }
 
     fun appendAll(loadedThreads : List<EmailPreview>, hasReachedEnd: Boolean) {
-        model.threads.addAll(loadedThreads)
+        val threadsToAppend = loadedThreads.filter { !model.threads.contains(it) }
+        model.threads.addAll(threadsToAppend)
 
         model.hasReachedEnd = hasReachedEnd
         virtualListView?.notifyDataSetChanged()

@@ -39,7 +39,7 @@ data class EmailMetadata(
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
-                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = true,
+                    fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = secure,
                     trashDate = null, replyTo = replyTo, boundary = boundary)
 
     companion object {
@@ -59,6 +59,9 @@ data class EmailMetadata(
             val senderDeviceId = emailData.optInt("senderDeviceId")
             val files = CRFile.listFromJSON(metadataJsonString)
             val fileKey = getFileKey(metadataJsonString)
+            val guestEncryption = emailData.getInt("guestEncryption")
+            val secure = guestEncryption == 1 || guestEncryption == 3
+
             return EmailMetadata(
                     from = from,
                     senderRecipientId = fromRecipientId,
@@ -77,7 +80,7 @@ data class EmailMetadata(
                     messageType = SignalEncryptedData.Type.fromInt(messageType),
                     files = files,
                     fileKey = fileKey.key,
-                    secure = true,
+                    secure = secure,
                     isSpam = checkSpam(emailData),
                     isExternal = isExternal
             )

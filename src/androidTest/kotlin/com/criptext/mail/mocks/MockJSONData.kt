@@ -26,12 +26,12 @@ object MockJSONData {
             "rowid": 4,
             "cmd": 101,
             "params":
-                "{\"threadId\":\"<15221916.12518@criptext.com>\",\"subject\":\"hello\",\"from\":\"Mayer Mizrachi <mayer@criptext.com>\",\"to\":\"gabriel@criptext.com\",\"cc\":\"\",\"bcc\":\"\",\"messageId\":\"<15221916.12518@criptext.com>\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":81,\"messageType\":3,\"senderDeviceId\":1}"
+                "{\"threadId\":\"<15221916.12518@criptext.com>\",\"subject\":\"hello\",\"from\":\"Mayer Mizrachi <mayer@criptext.com>\",\"to\":\"gabriel@criptext.com\",\"cc\":\"\",\"bcc\":\"\",\"messageId\":\"<15221916.12518@criptext.com>\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":81,\"messageType\":3,\"senderDeviceId\":1,\"guestEncryption\":1}"
 },{
             "rowid": 5,
             "cmd": 101,
             "params":
-                "{\"threadId\":\"<15221916.12519@criptext.com>\",\"subject\":\"hello again\",\"from\":\"Gianni Carlo <gianni@criptext.com>\",\"to\":\"gabriel@criptext.com\",\"cc\":\"\",\"bcc\":\"\",\"messageId\":\"<15221916.12519@criptext.com>\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":82,\"messageType\":3,\"senderDeviceId\":1}"
+                "{\"threadId\":\"<15221916.12519@criptext.com>\",\"subject\":\"hello again\",\"from\":\"Gianni Carlo <gianni@criptext.com>\",\"to\":\"gabriel@criptext.com\",\"cc\":\"\",\"bcc\":\"\",\"messageId\":\"<15221916.12519@criptext.com>\",\"date\":\"2018-03-27 23:00:13\",\"metadataKey\":82,\"messageType\":3,\"senderDeviceId\":1,\"guestEncryption\":1}"
 }
 ]"""
     val sample2TrackingUpdateEvents = """
