@@ -68,6 +68,17 @@ data class Label (
                 uuid = uuid
             )
         }
+
+        fun toJSON(label: Label): JSONObject {
+            val json = JSONObject()
+            json.put("id", label.id)
+            json.put("color", label.color)
+            json.put("text", label.text)
+            json.put("type", label.type)
+            json.put("visible", label.visible)
+            json.put("uuid", label.uuid)
+            return json
+        }
     }
 
     class DefaultItems {

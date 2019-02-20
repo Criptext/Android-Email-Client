@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,13 +18,17 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.Label
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.ComposerModel
+import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
@@ -64,6 +69,7 @@ import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
+import kotlinx.android.synthetic.main.contact_item.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.lang.Exception
@@ -116,6 +122,56 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return cachedModels[javaClass]
     }
 
+    private fun getSavedInstanceModel(savedInstanceState: Bundle): SceneModel? {
+        return if(savedInstanceState.getString("type") != null){
+            when(savedInstanceState.getString("type")){
+                EMAIL_DETAIL_MODEL -> {
+                    EmailDetailSceneModel(
+                            threadId = savedInstanceState.getString("threadId")!!,
+                            currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!),
+                            threadPreview = EmailPreview.emailPreviewFromJSON(savedInstanceState.getString("threadPreview")!!),
+                            doReply = savedInstanceState.getBoolean("doReply")
+                    )
+                }
+                COMPOSER_MODEL -> {
+                    ComposerModel(
+                            type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this)
+                    )
+                }
+                PRIVACY_AND_SECURITY_MODEL -> {
+                    PrivacyAndSecurityModel(
+                            hasReadReceipts = savedInstanceState.getBoolean("hasReadReceipts")
+                    )
+                }
+                PROFILE_MODEL -> {
+                    ProfileModel(
+                            name = savedInstanceState.getString("name")!!,
+                            email = savedInstanceState.getString("email")!!,
+                            exitToMailbox = savedInstanceState.getBoolean("exitToMailbox")
+                    )
+                }
+                RECOVERY_EMAIL_MODEL -> {
+                    RecoveryEmailModel(
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
+                    )
+                }
+                REPLY_TO_MODEL -> {
+                    ReplyToModel(
+                            replyToEmail = savedInstanceState.getString("replyToEmail")!!
+                    )
+                }
+                SIGNATURE_MODEL -> {
+                    SignatureModel(
+                            recipientId = savedInstanceState.getString("recipientId")!!
+                    )
+                }
+                else -> null
+            }
+        }else
+            null
+    }
+
     private fun dismissAllNotifications() {
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
@@ -139,7 +195,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             setSupportActionBar(toolbar)
         }
 
-        val cacheModel = getCachedModel()
+        val cacheModel = if(savedInstanceState == null) getCachedModel()
+        else getSavedInstanceModel(savedInstanceState)
+
         if(cacheModel == null){
             restartApplication()
             return
@@ -176,6 +234,47 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         }
         controller.onOptionsItemSelected(itemId)
         return true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val currentModel = model
+        when(currentModel) {
+            is EmailDetailSceneModel -> {
+                outState.putString("type", EMAIL_DETAIL_MODEL)
+                outState.putString("threadId", currentModel.threadId)
+                outState.putString("currentLabel", Label.toJSON(currentModel.currentLabel).toString())
+                outState.putString("threadPreview", EmailPreview.emailPreviewToJSON(currentModel.threadPreview))
+                outState.putBoolean("doReply", currentModel.doReply)
+            }
+            is ComposerModel -> {
+                outState.putString("type", COMPOSER_MODEL)
+                outState.putString("composerType", ComposerType.toJSON(currentModel.type))
+            }
+            is PrivacyAndSecurityModel -> {
+                outState.putString("type", PRIVACY_AND_SECURITY_MODEL)
+                outState.putBoolean("hasReadReceipts", currentModel.hasReadReceipts)
+            }
+            is ProfileModel -> {
+                outState.putString("type", PROFILE_MODEL)
+                outState.putString("name", currentModel.name)
+                outState.putString("email", currentModel.email)
+                outState.putBoolean("exitToMailbox", currentModel.exitToMailbox)
+            }
+            is RecoveryEmailModel -> {
+                outState.putString("type", RECOVERY_EMAIL_MODEL)
+                outState.putBoolean("isEmailConfirmed", currentModel.isEmailConfirmed)
+                outState.putString("recoveryEmail", currentModel.recoveryEmail)
+            }
+            is ReplyToModel -> {
+                outState.putString("type", REPLY_TO_MODEL)
+                outState.putString("replyToEmail", currentModel.replyToEmail)
+            }
+            is SignatureModel -> {
+                outState.putString("type", SIGNATURE_MODEL)
+                outState.putString("recipientId", currentModel.recipientId)
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -530,6 +629,14 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         fun setCachedModel(clazz: Class<*>, model: Any) {
             cachedModels[clazz] = model
         }
+
+        private const val EMAIL_DETAIL_MODEL = "EmailDetailModel"
+        private const val COMPOSER_MODEL = "ComposerModel"
+        private const val PRIVACY_AND_SECURITY_MODEL = "PrivacyAndSecurityModel"
+        private const val PROFILE_MODEL = "ProfileModel"
+        private const val RECOVERY_EMAIL_MODEL = "RecoveryEmailModel"
+        private const val REPLY_TO_MODEL = "ReplyToModel"
+        private const val SIGNATURE_MODEL = "SignatureModel"
     }
 
     enum class RequestCode {

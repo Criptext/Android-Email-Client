@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.composer
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.validation.FormInputState
@@ -12,7 +13,7 @@ import java.util.*
  * Created by gabriel on 2/26/18.
  */
 
-class ComposerModel(val type: ComposerType) {
+class ComposerModel(val type: ComposerType): SceneModel {
 
     val isReplyOrDraft: Boolean = type is ComposerType.Reply
             || type is ComposerType.ReplyAll || type is ComposerType.Draft

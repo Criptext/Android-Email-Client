@@ -10,7 +10,7 @@ abstract class BackupDataWriter<T>(private val batchSize: Int) : Flushable {
     private val dataList: MutableList<T> = mutableListOf()
 
     protected abstract fun deserialize(item: String): T
-    protected abstract fun writeBatch(batch: List<T>)
+    protected abstract fun  writeBatch(batch: List<T>)
 
     // calls deserialize and and adds item to batch. inserts to db when batch is ready
     fun insert(item: String){

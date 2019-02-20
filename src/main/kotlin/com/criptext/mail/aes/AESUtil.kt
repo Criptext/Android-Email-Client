@@ -106,12 +106,11 @@ class AESUtil(keyAndIV: String) {
 
         fun decryptWithPassword(password: String, salt: String, iv: String, dataToDecrypt: ByteArray): String{
 
+            val generator = PKCS5S2ParametersGenerator(SHA256Digest())
+            generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password.toCharArray()), Encoding.stringToByteArray(salt), 10000)
+            val key = generator.generateDerivedMacParameters(128) as KeyParameter
 
-            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val spec = PBEKeySpec(password.toCharArray(), Encoding.stringToByteArray(salt),
-                    10000, 128)
-            val tmp = factory.generateSecret(spec)
-            val skey = SecretKeySpec(tmp.encoded, "AES")
+            val skey = SecretKeySpec(key.key, "AES")
 
             val ivspec = IvParameterSpec(Encoding.stringToByteArray(iv))
 

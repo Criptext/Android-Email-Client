@@ -82,6 +82,16 @@ open class Contact(
                     score = 0
             )
         }
+
+        fun toJSON(contact: Contact): JSONObject{
+            val json = JSONObject()
+            json.put("id", contact.id)
+            json.put("email", contact.email)
+            json.put("name", contact.name)
+            json.put("isTrusted", contact.isTrusted)
+            json.put("score", contact.score)
+            return json
+        }
     }
 
     class Invalid(email: String, name: String): Contact(0, email, name, false, 0)
