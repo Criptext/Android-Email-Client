@@ -60,8 +60,8 @@ class EventHelper(private val db: EventLocalDB,
             val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
-                    .or(processThreadLabelChanged(events.first)).or(processEmailDeletedPermanently(events.first))
-                    .or(processThreadDeletedPermanently(events.first)).or(processLabelCreated(events.first))
+                    .or(processLabelCreated(events.first)).or(processThreadLabelChanged(events.first))
+                    .or(processEmailDeletedPermanently(events.first)).or(processThreadDeletedPermanently(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
                     .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
             EventHelperResultData(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),

@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings.privacyandsecurity
 
-class PrivacyAndSecurityModel(val hasReadReceipts: Boolean){
+import com.criptext.mail.scenes.SceneModel
+
+class PrivacyAndSecurityModel(val hasReadReceipts: Boolean): SceneModel{
     var pinTimeOut = 1
     var pinActive = false
 }
