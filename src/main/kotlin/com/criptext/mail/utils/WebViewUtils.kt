@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.scenes.WebViewActivity
+import com.criptext.mail.scenes.composer.data.ComposerType
 import pub.devrel.easypermissions.EasyPermissions
 
 class WebViewUtils {
@@ -18,7 +19,8 @@ class WebViewUtils {
         else
             "file:///android_asset/showmore.png"
 
-        fun collapseScript() : String{
+        fun collapseScript(isForward: Boolean) : String{
+            val display = if(isForward) "block" else "none"
             val sb = StringBuilder()
             sb.append("<script>")
 
@@ -60,7 +62,7 @@ class WebViewUtils {
             sb.append("newNode.width = 30;")
             sb.append("newNode.style.paddingTop = \"20px\";")
             sb.append("newNode.style.paddingBottom = \"10px\";")
-            sb.append("replybody.style.display = \"none\";")
+            sb.append("replybody.style.display = \"$display\";")
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")
             sb.append("newNode.addEventListener(\"click\", function(){ if(replybody.style.display == \"block\"){ " +
                     "replybody.style.display = \"none\";} else {" +

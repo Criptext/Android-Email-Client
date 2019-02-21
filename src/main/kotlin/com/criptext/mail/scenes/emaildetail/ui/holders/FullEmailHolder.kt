@@ -222,7 +222,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml(fullEmail.email.content), "text/html", "utf-8", "")
+                    changedHeaderHtml(fullEmail.email.content, EmailUtils.checkIfItsForward(fullEmail.email.subject)), "text/html", "utf-8", "")
             bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             setDefaultBackgroundColors()
         }
@@ -236,7 +236,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             rootView.background = ContextCompat.getDrawable(
                     view.context, R.drawable.background_cardview_unsend)
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml(finalDate),
+                    changedHeaderHtml(finalDate, EmailUtils.checkIfItsForward(fullEmail.email.subject)),
                     "text/html", "utf-8", "")
             deactivateElementsForUnsend()
         }

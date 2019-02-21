@@ -122,7 +122,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return cachedModels[javaClass]
     }
 
-    private fun getSavedInstanceModel(savedInstanceState: Bundle): SceneModel? {
+    private fun getSavedInstanceModel(savedInstanceState: Bundle?): SceneModel? {
+        if(savedInstanceState == null) return null
         return if(savedInstanceState.getString("type") != null){
             when(savedInstanceState.getString("type")){
                 EMAIL_DETAIL_MODEL -> {
@@ -195,8 +196,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             setSupportActionBar(toolbar)
         }
 
-        val cacheModel = if(savedInstanceState == null) getCachedModel()
-        else getSavedInstanceModel(savedInstanceState)
+        val savedInstanceModel = getSavedInstanceModel(savedInstanceState)
+        val cacheModel = if(savedInstanceState == null || savedInstanceModel == null) getCachedModel()
+        else savedInstanceModel
 
         if(cacheModel == null){
             restartApplication()

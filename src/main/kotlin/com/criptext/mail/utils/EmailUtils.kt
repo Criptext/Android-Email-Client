@@ -152,6 +152,10 @@ object EmailUtils {
         return builder.toString()
     }
 
+    fun checkIfItsForward(subject: String): Boolean {
+        return subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())
+    }
+
     class MailRecipients(val toCriptext: List<String>, val ccCriptext: List<String>,
                          val bccCriptext: List<String>, val peerCriptext: List<String>) {
         val criptextRecipients = listOf(toCriptext, ccCriptext, bccCriptext, peerCriptext).flatten()

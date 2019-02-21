@@ -50,6 +50,11 @@ sealed class EmailDetailRequest{
             val metadataKeys: List<Long>
     ): EmailDetailRequest()
 
+    data class MarkAsReadEmail(
+            val metadataKey: Long,
+            val unread: Boolean
+    ): EmailDetailRequest()
+
     data class DownloadFile(
             val cid: String? = null,
             val fileName: String,

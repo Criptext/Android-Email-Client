@@ -124,8 +124,9 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         val selectedIndex = 0
         val selectedFile = model.emails[selectedIndex].files[selectedIndex]
 
-        simulateDownloadEvent(EmailDetailResult.DownloadFile.Failure(selectedFile.token, UIMessage(R.string.error_downloading_file)))
-        verify { scene.showError(UIMessage(R.string.error_downloading_file)) }
+        simulateDownloadEvent(EmailDetailResult.DownloadFile.Failure(model.emails[selectedIndex].email.id,
+                selectedFile.token, UIMessage(R.string.error_downloading_file, arrayOf(selectedFile.name))))
+        verify { scene.showError(UIMessage(R.string.error_downloading_file, arrayOf(selectedFile.name))) }
     }
 
     @Test

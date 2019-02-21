@@ -55,10 +55,10 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                     EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.DownloadFile.Forbidden()
-                else -> EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
+                else -> EmailDetailResult.DownloadFile.Failure(emailId, fileToken, createErrorMessage(ex))
             }
         }
-        else EmailDetailResult.DownloadFile.Failure(fileToken, createErrorMessage(ex))
+        else EmailDetailResult.DownloadFile.Failure(emailId, fileToken, createErrorMessage(ex))
 
 
 
@@ -188,11 +188,9 @@ class DownloadAttachmentWorker(private val fileSize: Long,
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         ex.printStackTrace()
-        when (ex) { // these are not the real errors TODO fix!
-            is JSONException -> UIMessage(resId = R.string.json_error_exception)
+        when (ex) {
             is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
-            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
-            else -> UIMessage(resId = R.string.error_downloading_file)
+            else -> UIMessage(resId = R.string.error_downloading_file, args = arrayOf(fileName))
         }
     }
 

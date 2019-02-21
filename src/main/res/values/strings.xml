@@ -332,7 +332,7 @@
   <string name="you_wanna_save">Do you want to save this as draft?</string>
   <string name="unable_to_upload">Unable to upload %1$s. Please try again</string>
   <string name="error_attach_file">File too large</string>
-  <string name="error_downloading_file">Unable to download the file. Please try again</string>
+  <string name="error_downloading_file">Unable to download the file: %1$s. Please try again</string>
   <string name="composer_load_error">An unexpected error occurred while loading composer data.</string>
     <string name="network_error_exception">Failed to register user. Please check your internet connection.</string>
   <string name="json_error_exception">Failed to register user. Invalid server response.</string>
