@@ -332,7 +332,7 @@
   <string name="you_wanna_save">¿Quieres guardarlo como borrador?</string>
   <string name="unable_to_upload">No se pudo subir %1$s. Por favor, intenta de nuevo</string>
   <string name="error_attach_file">Archivo demasiado grande</string>
-  <string name="error_downloading_file">No se pudo descargar el archivo. Por favor, intenta nuevamente.</string>
+  <string name="error_downloading_file">No se pudo descargar el archivo: %1$s. Por favor, intenta nuevamente.</string>
   <string name="composer_load_error">Ha ocurrido un error inesperado al cargar datos.</string>
     <string name="network_error_exception">Fallo al registrar usuario. Verifica tu conexión de internet.</string>
   <string name="json_error_exception">Fallo al registrar usuario. Respuesta del servidor inválida.</string>

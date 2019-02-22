@@ -107,14 +107,7 @@ class UpdateMailboxWorker(
                         }
 
                         if(shouldCallAgain) {
-                            PushResult.UpdateMailbox.SuccessAndRepeat(
-                                    mailboxLabel = label,
-                                    isManual = true,
-                                    mailboxThreads = operationResult.value.emailPreviews,
-                                    pushData = newData,
-                                    shouldPostNotification = shouldPostNotification,
-                                    senderImage = bm
-                            )
+                            callAgainResult(operationResult.value.emailPreviews, newData, bm)
                         }else{
                             PushResult.UpdateMailbox.Success(
                                     mailboxLabel = label,
@@ -134,17 +127,33 @@ class UpdateMailboxWorker(
                                 shouldPostNotification = shouldPostNotification)
                     }
                 }else {
-                    PushResult.UpdateMailbox.Failure(
-                            mailboxLabel = label,
-                            message = createErrorMessage(Resources.NotFoundException()),
-                            exception = Resources.NotFoundException(),
-                            pushData = pushData,
-                            shouldPostNotification = shouldPostNotification)
+                    if(shouldCallAgain) {
+                        callAgainResult(operationResult.value.emailPreviews, newData, null)
+                    } else {
+                        PushResult.UpdateMailbox.Failure(
+                                mailboxLabel = label,
+                                message = createErrorMessage(Resources.NotFoundException()),
+                                exception = Resources.NotFoundException(),
+                                pushData = pushData,
+                                shouldPostNotification = shouldPostNotification)
+                    }
                 }
             }
 
             is Result.Failure -> processFailure(operationResult)
         }
+    }
+
+    private fun callAgainResult(emailPreviews: List<EmailPreview>,
+                                newData: Map<String, String>, bm: Bitmap?): PushResult.UpdateMailbox? {
+        return PushResult.UpdateMailbox.SuccessAndRepeat(
+                mailboxLabel = label,
+                isManual = true,
+                mailboxThreads = emailPreviews,
+                pushData = newData,
+                shouldPostNotification = shouldPostNotification,
+                senderImage = bm
+        )
     }
 
     override fun cancel() {

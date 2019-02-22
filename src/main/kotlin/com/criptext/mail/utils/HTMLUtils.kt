@@ -28,16 +28,17 @@ class HTMLUtils {
             return Jsoup.parse(body).html()
         }
 
-        fun changedHeaderHtml(htmlText: String): String {
+        fun changedHeaderHtml(htmlText: String, isForward: Boolean): String {
             val style = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
             "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;} a{color:#009EFF;}</style>"
             else "<style type=\"text/css\">body{color:#000;background-color:#fff;} </style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
-            return head + htmlText + replaceCIDScript() + collapseScript() + closedTag
+            return head + htmlText + replaceCIDScript() + collapseScript(isForward) + closedTag
         }
 
-        fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String, message: String): String {
+        fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String,
+                              message: String, isForward: Boolean): String {
             val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val fileUrl = "file:///android_asset/logo.png"
             val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:120px !important\"></div> <hr> <div><p><b>${printData.subject}</b></br>1 $message</p></div> <hr>" +
@@ -50,10 +51,11 @@ class HTMLUtils {
                     "  </tr>\n" +
                     "</table> <br>"
             val closedTag = "</body></html>"
-            return head + printHeader + htmlText + collapseScript() + closedTag
+            return head + printHeader + htmlText + collapseScript(isForward) + closedTag
         }
 
-        fun headerForPrintingAll(htmlText: List<String>, printData: List<PrintHeaderInfo>, to: String, at: String, message: String): String {
+        fun headerForPrintingAll(htmlText: List<String>, printData: List<PrintHeaderInfo>, to: String,
+                                 at: String, message: String, isForward: Boolean): String {
             val head = "<head><meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val fileUrl = "file:///android_asset/logo.png"
             val printHeader = "<div><img src=\"$fileUrl\" alt=\"Criptext Logo\" style=\"width:120px !important\"></div> <hr> <div><p><b>${printData[0].subject}</b> </br>${printData.size} $message</p></div> <hr>" +
@@ -80,7 +82,7 @@ class HTMLUtils {
                 concatOtherMails.append(secondaryHeader + htmlText[i] + "<br>")
             }
             
-            return head + printHeader + htmlText[0] + concatOtherMails.toString() + collapseScript() + closedTag
+            return head + printHeader + htmlText[0] + concatOtherMails.toString() + collapseScript(isForward) + closedTag
         }
 
         fun createEmailPreview(emailBody: String): String {

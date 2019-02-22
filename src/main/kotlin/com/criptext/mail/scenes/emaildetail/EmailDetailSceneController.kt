@@ -80,6 +80,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
             is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
             is EmailDetailResult.ReadEmails -> onReadEmails(result)
+            is EmailDetailResult.MarkAsReadEmail -> onMarAsReadEmail(result)
             is EmailDetailResult.CopyToDownloads -> onCopyToDownloads(result)
         }
     }
@@ -125,6 +126,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onBackButtonPressed() {
+            if(model.emails.any { it.email.unread }){
+                model.threadPreview = model.threadPreview.copy(
+                        unread = true)
+            }
             host.exitToScene(
                     params = MailboxParams(),
                     activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
@@ -363,7 +368,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 }
             }
             is EmailDetailResult.DownloadFile.Failure -> {
-                scene.showError(UIMessage(R.string.error_downloading_file))
+                updateAttachmentProgress(result.emailId, result.fileToken, -1)
+                scene.showError(result.message)
             }
             is EmailDetailResult.DownloadFile.Progress -> {
                 updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
@@ -382,6 +388,22 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.ReadEmails.Success -> {
                 if(model.doReply){
                     emailHolderEventListener.onReplyBtnClicked()
+                }
+            }
+        }
+    }
+
+    private fun onMarAsReadEmail(result: EmailDetailResult.MarkAsReadEmail){
+        when(result){
+            is EmailDetailResult.MarkAsReadEmail.Success -> {
+                val fullEmail = model.emails.find { it.email.metadataKey == result.metadataKey }
+                if(fullEmail != null) {
+                    val position = model.emails.indexOf(fullEmail)
+                    if(position >= 0) {
+                        model.emails[position] = model.emails[position].copy(
+                                email = model.emails[position].email.copy(unread = result.unread)
+                        )
+                    }
                 }
             }
         }
@@ -577,10 +599,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
-            dataSource.submitRequest(EmailDetailRequest.UpdateUnreadStatus(
-                    threadId = model.threadId,
-                    updateUnreadStatus = true,
-                    currentLabel = model.currentLabel))
+            dataSource.submitRequest(EmailDetailRequest.MarkAsReadEmail(
+                    metadataKey = fullEmail.email.metadataKey,
+                    unread = !markAsRead
+            ))
         }
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
@@ -598,7 +620,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val toList = fullEmail.to.map { it.toString() }.joinToString().replace("<", "&lt;").replace(">", "&gt;")
             val info = HTMLUtils.PrintHeaderInfo(subject = fullEmail.email.subject, toList = toList,
                     date = fullEmail.email.date, fromMail = fullEmail.from.email, fromName = fullEmail.from.name)
-            scene.printFullEmail(info, fullEmail.email.content,fullEmail.email.subject + "-" + fullEmail.email.metadataKey)
+            scene.printFullEmail(info, fullEmail.email.content,fullEmail.email.subject + "-" + fullEmail.email.metadataKey,
+                    EmailUtils.checkIfItsForward(fullEmail.email.subject))
         }
 
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
@@ -725,11 +748,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     override fun onBackPressed(): Boolean {
-        host.exitToScene(
-                params = MailboxParams(),
-                activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                forceAnimation = false
-        )
+        emailDetailUIObserver.onBackButtonPressed()
         return true
     }
 
@@ -811,7 +830,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 HTMLUtils.PrintHeaderInfo(subject = it.email.subject, toList = toList[model.emails.indexOf(it)],
                         date = it.email.date, fromMail = it.from.email, fromName = it.from.name)
             }
-            scene.printAllFullEmail(info, model.emails.map { it.email.content }, model.emails[0].email.subject + "-" + model.emails[0].email.metadataKey)
+            scene.printAllFullEmail(info, model.emails.map { it.email.content },
+                    model.emails[0].email.subject + "-" + model.emails[0].email.metadataKey,
+                    EmailUtils.checkIfItsForward(model.emails.first().email.subject))
         }
     }
 

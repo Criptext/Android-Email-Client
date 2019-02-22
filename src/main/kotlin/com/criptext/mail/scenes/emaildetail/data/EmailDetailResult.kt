@@ -45,6 +45,12 @@ sealed class EmailDetailResult {
         data class Success(val readEmailsQuantity: Int): ReadEmails()
         data class Failure(val message: UIMessage): ReadEmails()
     }
+
+    sealed class MarkAsReadEmail: EmailDetailResult(){
+        data class Success(val metadataKey: Long, val unread: Boolean): MarkAsReadEmail()
+        data class Failure(val message: UIMessage): MarkAsReadEmail()
+    }
+
     sealed class UpdateEmailThreadsLabelsRelations: EmailDetailResult() {
         data class Success(val threadId: String, val selectedLabels: List<Label>,
                            val exitAndReload: Boolean): UpdateEmailThreadsLabelsRelations()
@@ -64,7 +70,7 @@ sealed class EmailDetailResult {
 
     sealed class DownloadFile : EmailDetailResult() {
         data class Success(val emailId: Long, val filetoken: String, val filepath: String, val cid: String?): DownloadFile()
-        data class Failure(val fileToken: String, val message: UIMessage): DownloadFile()
+        data class Failure(val emailId: Long, val fileToken: String, val message: UIMessage): DownloadFile()
         data class Unauthorized(val message: UIMessage): DownloadFile()
         class Forbidden: DownloadFile()
         data class Progress(val emailId: Long, val filetoken: String, val progress: Int) : DownloadFile()

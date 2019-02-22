@@ -63,8 +63,10 @@ interface EmailDetailScene {
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showStartGuideEmailIsRead(view: View)
     fun showStartGuideMenu(view: View)
-    fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String)
-    fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String)
+    fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String,
+                       isForward: Boolean)
+    fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String,
+                          isForward: Boolean)
     fun expandAllThread()
 
     class EmailDetailSceneView(
@@ -201,14 +203,16 @@ interface EmailDetailScene {
 
         }
 
-        override fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String) {
+        override fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String,
+                                    isForward: Boolean) {
             val newWebView = WebView(context)
             newWebView.loadDataWithBaseURL("", HTMLUtils.
                     headerForPrinting(htmlText = content,
                             printData = info,
                             to = context.getLocalizedUIMessage(UIMessage(R.string.to)),
                             at = context.getLocalizedUIMessage(UIMessage(R.string.mail_template_at)),
-                            message = context.getLocalizedUIMessage(UIMessage(R.string.message))),
+                            message = context.getLocalizedUIMessage(UIMessage(R.string.message)),
+                            isForward = isForward),
                     "text/html", "utf-8", "")
             PrintUtils.createWebPrintJob(
                     webView = newWebView,
@@ -217,14 +221,16 @@ interface EmailDetailScene {
             )
         }
 
-        override fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String) {
+        override fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>,
+                                       documentName: String, isForward: Boolean) {
             val newWebView = WebView(context)
             newWebView.loadDataWithBaseURL("", HTMLUtils.
                     headerForPrintingAll(htmlText = content,
                             printData = info,
                             to = context.getLocalizedUIMessage(UIMessage(R.string.to)),
                             at = context.getLocalizedUIMessage(UIMessage(R.string.mail_template_at)),
-                            message = context.getLocalizedUIMessage(UIMessage(R.string.messages))),
+                            message = context.getLocalizedUIMessage(UIMessage(R.string.messages)),
+                            isForward = isForward),
                     "text/html", "utf-8", "")
             PrintUtils.createWebPrintJob(
                     webView = newWebView,

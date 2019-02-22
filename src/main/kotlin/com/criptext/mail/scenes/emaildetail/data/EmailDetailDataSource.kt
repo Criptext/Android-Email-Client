@@ -135,6 +135,18 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is EmailDetailRequest.MarkAsReadEmail -> MarkAsReadEmailWorker(
+                    httpClient = httpClient,
+                    dao = emailDao,
+                    pendingDao = pendingDao,
+                    activeAccount = activeAccount,
+                    metadataKey = params.metadataKey,
+                    storage = storage,
+                    accountDao = accountDao,
+                    unread = params.unread,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
             is EmailDetailRequest.DownloadFile -> DownloadAttachmentWorker(
                     fileName = params.fileName,
                     fileSize = params.fileSize,
