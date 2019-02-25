@@ -190,27 +190,31 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 || fullEmail.email.delivered == DeliveryTypes.UNSEND
                 || !fullEmail.email.secure) {
                     if (fullEmail.email.unread) {
-                        if (fullEmail.labels.contains(Label.defaultItems.trash))
-                            R.menu.mail_options_unread_menu_in_trash
-                        else
-                            R.menu.mail_options_unread_menu
+                        when {
+                            fullEmail.labels.contains(Label.defaultItems.trash) -> R.menu.mail_options_unread_menu_in_trash
+                            fullEmail.labels.contains(Label.defaultItems.spam) -> R.menu.mail_options_unread_menu_in_spam
+                            else -> R.menu.mail_options_unread_menu
+                        }
                     }else {
-                        if (fullEmail.labels.contains(Label.defaultItems.trash))
-                            R.menu.mail_options_read_menu_in_trash
-                        else
-                            R.menu.mail_options_read_menu
+                        when {
+                            fullEmail.labels.contains(Label.defaultItems.trash) -> R.menu.mail_options_read_menu_in_trash
+                            fullEmail.labels.contains(Label.defaultItems.spam) -> R.menu.mail_options_read_menu_in_spam
+                            else -> R.menu.mail_options_read_menu
+                        }
                      }
         }else{
             if (fullEmail.email.unread) {
-                if (fullEmail.labels.contains(Label.defaultItems.trash))
-                    R.menu.mail_options_unread_menu_sent_in_trash
-                else
-                    R.menu.mail_options_unread_menu_sent
+                when {
+                    fullEmail.labels.contains(Label.defaultItems.trash) -> R.menu.mail_options_unread_menu_sent_in_trash
+                    fullEmail.labels.contains(Label.defaultItems.spam) -> R.menu.mail_options_unread_menu_sent_in_spam
+                    else -> R.menu.mail_options_unread_menu_sent
+                }
             }else {
-                if (fullEmail.labels.contains(Label.defaultItems.trash))
-                    R.menu.mail_options_read_menu_sent_in_trash
-                else
-                    R.menu.mail_options_read_menu_sent
+                when {
+                    fullEmail.labels.contains(Label.defaultItems.trash) -> R.menu.mail_options_read_menu_sent_in_trash
+                    fullEmail.labels.contains(Label.defaultItems.spam) -> R.menu.mail_options_read_menu_sent_in_spam
+                    else -> R.menu.mail_options_read_menu_sent
+                }
             }
         }
 
