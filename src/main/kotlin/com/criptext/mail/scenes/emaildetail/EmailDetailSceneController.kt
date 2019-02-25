@@ -606,7 +606,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onDeleteOptionSelected(fullEmail: FullEmail, position: Int) {
-            if(!fullEmail.labels.contains(Label.defaultItems.trash))
+            if(!(fullEmail.labels.contains(Label.defaultItems.trash) || fullEmail.labels.contains(Label.defaultItems.spam)))
                 moveEmail(fullEmail, Label.LABEL_TRASH)
             else
                 deleteSelectedEmail4Ever(fullEmail)
