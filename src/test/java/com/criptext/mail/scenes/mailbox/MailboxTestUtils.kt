@@ -36,7 +36,7 @@ object MailboxTestUtils {
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
                             from = Contact(2, "mayer@criptext.com", name = "Mayer", isTrusted = true,
                                     score = 0), fileKey = null, headers = null)
-                    EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0, false)
+                    EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0, false, false)
                 }
     }
 

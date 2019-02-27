@@ -78,6 +78,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.UpdateEmailThreadsLabelsRelations -> onUpdatedLabels(result)
             is EmailDetailResult.UpdateUnreadStatus -> onUpdateUnreadStatus(result)
             is EmailDetailResult.MoveEmailThread -> onMoveEmailThread(result)
+            is EmailDetailResult.MoveEmail -> onMoveEmail(result)
             is EmailDetailResult.DownloadFile -> onDownloadedFile(result)
             is EmailDetailResult.ReadEmails -> onReadEmails(result)
             is EmailDetailResult.MarkAsReadEmail -> onMarAsReadEmail(result)
@@ -302,6 +303,38 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
+                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            }
+        }
+    }
+
+    private fun onMoveEmail(result: EmailDetailResult.MoveEmail){
+        when(result) {
+            is EmailDetailResult.MoveEmail.Success ->  {
+                val position = model.emails.indexOfFirst { it.email.id == result.emailId }
+                if(position > -1){
+                    if(model.emails.size == 1){
+                        val message = ActivityMessage.MoveThread(model.threadId)
+                        host.exitToScene(
+                                params = MailboxParams(),
+                                activityMessage = message,
+                                forceAnimation = false)
+                    } else {
+                        model.emails.removeAt(position)
+                        model.threadPreview = model.threadPreview.copy(
+                                count = model.threadPreview.count - 1
+                        )
+                        scene.notifyFullEmailRemoved(position + 1)
+                    }
+                }
+            }
+            is EmailDetailResult.MoveEmail.Failure -> {
+                scene.showError(UIMessage(R.string.error_moving_emails))
+            }
+            is EmailDetailResult.MoveEmail.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is EmailDetailResult.MoveEmail.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }

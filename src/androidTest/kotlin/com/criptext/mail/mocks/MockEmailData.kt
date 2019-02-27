@@ -32,10 +32,11 @@ object MockEmailData {
 
     fun createNewEmails(max: Int) = (1..max).map{ createNewEmail(it)}
 
-    fun insertEmailsNeededForTests(db: TestDatabase, labels: List<Label>, filesDir: File, recipientId: String){
+    fun insertEmailsNeededForTests(db: TestDatabase, labels: List<Label>, filesDir: File, recipientId: String,
+                                   toList: List<String> = listOf("gabriel@criptext.com")){
         (1..2).forEach {
             val seconds = if (it < 10) "0$it" else it.toString()
-            val metadata = EmailMetadata.DBColumns(to = listOf("gabriel@criptext.com"),  cc = emptyList(), bcc = emptyList(),
+            val metadata = EmailMetadata.DBColumns(to = toList,  cc = emptyList(), bcc = emptyList(),
                     fromContact = fromContact, messageId = "gabriel/1/$it",
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                     subject = "Test #$it", unread = true, metadataKey = it + 100L,

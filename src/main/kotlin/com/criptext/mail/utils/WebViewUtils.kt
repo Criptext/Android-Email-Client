@@ -7,20 +7,28 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.scenes.WebViewActivity
-import com.criptext.mail.scenes.composer.data.ComposerType
 import pub.devrel.easypermissions.EasyPermissions
 
 class WebViewUtils {
 
     companion object {
 
-        private val imageUri = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "file:///android_asset/showmore_dark.png"
+        private var imageUriCollapsed = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            "file:///android_asset/showmore-dark-collapsed.png"
         else
-            "file:///android_asset/showmore.png"
+            "file:///android_asset/showmore-light-collapsed.png"
+
+        private var imageUriOpened = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            "file:///android_asset/showmore-dark-opened.png"
+        else
+            "file:///android_asset/showmore-light-opened.png"
 
         fun collapseScript(isForward: Boolean) : String{
-            val display = if(isForward) "block" else "none"
+            val display = if(isForward){
+                "block"
+            } else {
+                "none"
+            }
             val sb = StringBuilder()
             sb.append("<script>")
 
@@ -58,7 +66,7 @@ class WebViewUtils {
                     "|| document.getElementsByClassName(\"gmail_quote\")[0] " +
                     "|| document.getElementsByTagName(\"blockquote\")[0];")
             sb.append("var newNode = document.createElement(\"img\");")
-            sb.append("newNode.src = \"$imageUri\";")
+            sb.append("newNode.src = \"${if(isForward) imageUriOpened else imageUriCollapsed}\";")
             sb.append("newNode.width = 30;")
             sb.append("newNode.style.paddingTop = \"20px\";")
             sb.append("newNode.style.paddingBottom = \"10px\";")
@@ -66,7 +74,10 @@ class WebViewUtils {
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")
             sb.append("newNode.addEventListener(\"click\", function(){ if(replybody.style.display == \"block\"){ " +
                     "replybody.style.display = \"none\";} else {" +
-                    "replybody.style.display = \"block\";} CriptextSecureEmail.toggleButton();});")
+                    "replybody.style.display = \"block\";} " +
+                    "if(newNode.src == \"$imageUriOpened\"){ " +
+                    "newNode.src = \"$imageUriCollapsed\";} else {" +
+                    "newNode.src = \"$imageUriOpened\";} CriptextSecureEmail.toggleButton();});")
             sb.append("</script>")
 
             return sb.toString()

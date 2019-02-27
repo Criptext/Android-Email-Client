@@ -118,7 +118,8 @@ interface SearchLocalDB{
                             fileKey = fileKey?.key,
                             headers = emailContent.second),
                     totalEmails = emails.size,
-                    hasFiles = totalFiles > 0
+                    hasFiles = totalFiles > 0,
+                    allFilesAreInline = files.filter { it.cid != null }.size == totalFiles
             )
         }
 

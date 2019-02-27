@@ -201,7 +201,7 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(2, Label.defaultItems.inbox)
         worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
 
-        // assert that emails got inserted correctly in DB
+        // assert that emails got inserted correctly in DB and in the File System
         val newLocalEmails = db.emailDao().getAll()
         newLocalEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
                 mActivityRule.activity.filesDir, it.metadataKey, it.content, activeAccount.recipientId
@@ -216,6 +216,9 @@ class UpdateMailboxWorkerTest {
                     "  Unable to decrypt message.\n" +
                     " </body>\n" +
                     "</html>")
+            //Email preview should not contain html tags and should be on the character limit of 300.
+            email.preview.shouldBeEqualTo("Unable to decrypt message.")
+            email.preview.length.shouldBeLessOrEqualTo(300)
         }
     }
 

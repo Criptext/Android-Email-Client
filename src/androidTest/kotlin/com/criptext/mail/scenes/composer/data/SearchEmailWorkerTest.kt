@@ -92,6 +92,45 @@ class SearchEmailWorkerTest{
         result.emailThreads.size shouldBe 2
     }
 
+    @Test
+    fun test_should_found_one_email_based_on_subject(){
+
+        val worker = newWorker(
+                queryText = "Test #1",
+                loadParams = LoadParams.Reset(20)
+        )
+
+        val result = worker.work(mockk()) as SearchResult.SearchEmails.Success
+
+        result.emailThreads.size shouldBe 1
+    }
+
+    @Test
+    fun test_should_found_one_email_based_on_preview(){
+
+        val worker = newWorker(
+                queryText = "Hello, this is message #1",
+                loadParams = LoadParams.Reset(20)
+        )
+
+        val result = worker.work(mockk()) as SearchResult.SearchEmails.Success
+
+        result.emailThreads.size shouldBe 1
+    }
+
+    @Test
+    fun test_should_found_three_emails_based_on_to_contact(){
+
+        val worker = newWorker(
+                queryText = "gabriel@criptext.com",
+                loadParams = LoadParams.Reset(20)
+        )
+
+        val result = worker.work(mockk()) as SearchResult.SearchEmails.Success
+
+        result.emailThreads.size shouldBe 3
+    }
+
     private fun newWorker(queryText: String, loadParams: LoadParams): SearchEmailWorker =
             SearchEmailWorker(
                     db = searchLocalDB,

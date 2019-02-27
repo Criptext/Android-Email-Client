@@ -74,17 +74,24 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
         val deletePendingIntent = PendingIntent.getService(ctx, notificationId, deleteAction,0)
 
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val preview = if(pushData.preview.length == 300) pushData.preview.plus("...") else pushData.preview
-        val pushHtmlBody = "<span style='color:black;'>${pushData.subject}</span><br>$preview"
+        val preview = if(pushData.preview.isEmpty() && !pushData.hasInlineImages)
+            "<i>" + ctx.getLocalizedUIMessage(UIMessage(R.string.nocontent)) + "</i>"
+        else {
+            if (pushData.preview.length == 300) pushData.preview.plus("...") else pushData.preview
+        }
+
+        val subject = if(pushData.subject.isEmpty()) ctx.getLocalizedUIMessage(UIMessage(R.string.nosubject)) else pushData.subject
+
+        val pushHtmlBody = "<span style='color:black;'>$subject</span><br>$preview"
         val pushBody = if(showEmailPreview)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 Html.fromHtml(pushHtmlBody, Html.FROM_HTML_MODE_LEGACY)
             else
                 Html.fromHtml(pushHtmlBody)
         else
-            pushData.subject
+            subject
 
-        val pushHtmlText = "<span style='color:black;'>${pushData.subject}</span>"
+        val pushHtmlText = "<span style='color:black;'>$subject</span>"
         val pushText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             Html.fromHtml(pushHtmlText, Html.FROM_HTML_MODE_LEGACY)
         else

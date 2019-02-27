@@ -376,7 +376,7 @@
   <string name="payload_too_large">El archivo %1$s se excede %2$s</string>
   <string name="web_socket_error">Evento del servidor desconocido. Código: %1$d</string>
   <string name="nosubject">(Sin Asunto)</string>
-  <string name="nocontent">(Sin Contenido)</string>
+  <string name="nocontent">Este correo no tiene contenido</string>
   <string name="unknown">Desconocido</string>
   <string name="to">Para</string>
   <string name="to_me">Para mí</string>

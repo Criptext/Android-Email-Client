@@ -23,6 +23,10 @@ class HTMLUtils {
             return Jsoup.parse(body).text()
         }
 
+        fun isHtmlEmpty(html: String): Boolean {
+            return Jsoup.parse(html).text().isEmpty() && !html.contains("<img")
+        }
+
         fun sanitizeHtml(html: String):String {
             val body = Jsoup.clean(html, whiteList)
             return Jsoup.parse(body).html()

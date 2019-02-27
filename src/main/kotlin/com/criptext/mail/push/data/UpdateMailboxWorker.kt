@@ -91,8 +91,10 @@ class UpdateMailboxWorker(
                 if(metadataKey != null) {
                     val email = dbEvents.getEmailByMetadataKey(metadataKey)
                     if(email != null){
+                        val files = dbEvents.getFullEmailById(emailId = email.id)!!.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
+                        newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()
                         newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
                         newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
                         val emailAddress = newData["email"]
