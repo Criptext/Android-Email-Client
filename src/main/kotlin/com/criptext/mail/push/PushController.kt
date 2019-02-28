@@ -45,11 +45,12 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val threadId = pushData["threadId"] ?: ""
         val metadataKey = pushData["metadataKey"]?.toLong()
         val preview = pushData["preview"] ?: ""
+        val hasInlineImages = pushData["hasInlineImages"]?.toBoolean() ?: false
 
         return PushData.NewMail(name = name, email = email, subject = subject, threadId = threadId,
                 metadataKey = metadataKey ?: -1, shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat, preview = preview, activeEmail = activeAccount.userEmail,
-                senderImage = senderImage)
+                senderImage = senderImage, hasInlineImages = hasInlineImages)
     }
 
     private fun parseNewOpenMailbox(pushData: Map<String, String>,

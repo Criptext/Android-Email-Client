@@ -10,6 +10,8 @@ import com.criptext.mail.R
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.labels.LabelsRecyclerView
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -30,7 +32,13 @@ class HeaderViewHolder(val view: View, val subject: String, val labels: VirtualL
 
         labelsRecyclerView = LabelsRecyclerView(recyclerLabelsView, labels)
 
-        textViewSubject.text = subject
+        val finalSubject = if(subject.isEmpty()){
+            view.context.getLocalizedUIMessage(UIMessage(R.string.nosubject))
+        } else {
+            subject
+        }
+
+        textViewSubject.text = finalSubject
 
         currentStar = isStarred
 

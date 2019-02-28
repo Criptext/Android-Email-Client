@@ -475,7 +475,8 @@ interface MailboxLocalDB {
                             fileKey = fileKey?.key,
                             headers = emailContent.second),
                     totalEmails = getEmailCount(emailsInSelectedLabel, emails.size, selectedLabel),
-                    hasFiles = totalFiles > 0
+                    hasFiles = totalFiles > 0,
+                    allFilesAreInline = files.filter { it.cid != null }.size == totalFiles
             )
         }
 

@@ -225,8 +225,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     override fun bindFullMail(fullEmail: FullEmail) {
 
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
+            val content = if(HTMLUtils.isHtmlEmpty(fullEmail.email.content)){
+                "<font color=\"#6a707e\"><i>" + context.getLocalizedUIMessage(UIMessage(R.string.nocontent)) + "</i></font>"
+            } else {
+                fullEmail.email.content
+            }
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml(fullEmail.email.content, EmailUtils.checkIfItsForward(fullEmail.email.subject)), "text/html", "utf-8", "")
+                    changedHeaderHtml(content, EmailUtils.checkIfItsForward(fullEmail.email.subject)), "text/html", "utf-8", "")
             bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             setDefaultBackgroundColors()
         }

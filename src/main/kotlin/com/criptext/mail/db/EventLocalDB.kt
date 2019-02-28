@@ -51,6 +51,33 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         return db.emailDao().findEmailByMetadataKey(metadataKey)
     }
 
+    fun getFullEmailById(emailId: Long): FullEmail? {
+        val email = db.emailDao().getEmailById(emailId) ?: return null
+        val id = email.id
+        val labels = db.emailLabelDao().getLabelsFromEmail(id)
+        val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+        val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+        val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+        val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+        val files = db.fileDao().getAttachmentsFromEmail(id)
+        val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+
+        val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
+                email.metadataKey, email.content,
+                db.accountDao().getLoggedInAccount()!!.recipientId)
+
+        return FullEmail(
+                email = email.copy(content = emailContent.first),
+                bcc = contactsBCC,
+                cc = contactsCC,
+                from = contactsFROM[0],
+                files = files,
+                labels = labels,
+                to = contactsTO, fileKey = fileKey?.key, headers = emailContent.second)
+
+
+    }
+
     fun removeDevice(storage: KeyValueStorage){
         db.clearAllTables()
         storage.clearAll()
@@ -295,7 +322,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         fileKey = fileKey?.key,
                         headers = emailContent.second),
                 totalEmails = emails.size,
-                hasFiles = totalFiles > 0
+                hasFiles = totalFiles > 0,
+                allFilesAreInline = files.filter { it.cid != null }.size == totalFiles
         )
     }
 

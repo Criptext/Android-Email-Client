@@ -16,7 +16,8 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                         val unread: Boolean, val count: Int, val timestamp: Date,
                         val latestEmailUnsentDate: Date?,
                         val emailId: Long, val metadataKey: Long, val threadId: String,
-                        var isSelected: Boolean, var isStarred: Boolean, val hasFiles: Boolean) {
+                        var isSelected: Boolean, var isStarred: Boolean, val hasFiles: Boolean,
+                        val allFilesAreInline: Boolean) {
 
     companion object {
         private fun getSenderNameFromEmailThread(e: EmailThread): String {
@@ -30,7 +31,8 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     emailId = e.id, deliveryStatus = e.status, unread = e.unread,
                     count = e.totalEmails, timestamp = e.timestamp, threadId = e.threadId,
                     isSelected = false, isStarred = e.isStarred, hasFiles = e.hasFiles,
-                    latestEmailUnsentDate = e.latestEmail.email.unsentDate, metadataKey = e.metadataKey)
+                    latestEmailUnsentDate = e.latestEmail.email.unsentDate, metadataKey = e.metadataKey,
+                    allFilesAreInline = e.allFilesAreInline)
         }
 
         fun emailPreviewToJSON(e: EmailPreview): String {
@@ -48,6 +50,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
             json.put("isSelected", e.isSelected)
             json.put("isStarred", e.isStarred)
             json.put("hasFiles", e.hasFiles)
+            json.put("allFilesAreInline", e.allFilesAreInline)
             if(e.latestEmailUnsentDate != null)
                 json.put("latestEmailUnsentDate", DateAndTimeUtils.printDateWithServerFormat(e.latestEmailUnsentDate))
             json.put("metadataKey", e.metadataKey)
@@ -67,7 +70,8 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     hasFiles = json.getBoolean("hasFiles"),
                     latestEmailUnsentDate = if(json.has("latestEmailUnsentDate"))
                     DateAndTimeUtils.getDateFromString(
-                            json.getString("latestEmailUnsentDate"), null) else null, metadataKey = json.getLong("metadataKey"))
+                            json.getString("latestEmailUnsentDate"), null) else null, metadataKey = json.getLong("metadataKey"),
+                    allFilesAreInline = json.getBoolean("allFilesAreInline"))
         }
     }
 }

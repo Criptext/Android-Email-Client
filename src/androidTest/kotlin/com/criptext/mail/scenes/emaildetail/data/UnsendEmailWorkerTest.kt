@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.emaildetail.data
 
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
+import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
@@ -62,7 +63,7 @@ class UnsendEmailWorkerTest {
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, listOf("gabriel@criptext.com", "mayer@gmail.com"))
         mockWebServer = MockWebServer()
         mockWebServer.start()
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
@@ -99,6 +100,16 @@ class UnsendEmailWorkerTest {
         val worker = newWorker(emailToUnsend.id, 0)
         worker.work(mockk(relaxed = true))
                 as EmailDetailResult.UnsendFullEmailFromEmailId.Success
+
+        //The request should only be done with Criptext recipients, so we test the worker if it correctly filters the to addresses.
+        if(Config.mockCriptextHTTPRequests) {
+            mockWebServer.assertSentRequests(listOf(
+                    ExpectedRequest(
+                            expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt),
+                            method = "POST", path = "/email/unsend",
+                            assertBodyFn = { it `shouldEqual` """{"metadataKey":101,"recipients":["gabriel@criptext.com"]}""" })
+            ))
+        }
 
         val unsentEmailFromDB = db.emailDao().getEmailById(emailToUnsend.id)
 

@@ -15,7 +15,7 @@ sealed class PushData {
      * POJO that holds all the data from the NewMail push notification
      */
     data class NewMail(val name: String, val email: String, val subject: String, val threadId: String,
-                       val metadataKey: Long, val isPostNougat: Boolean, val preview: String,
+                       val metadataKey: Long, val isPostNougat: Boolean, val preview: String, val hasInlineImages: Boolean,
                        val shouldPostNotification:Boolean, val activeEmail: String, val senderImage: Bitmap?): PushData()
     data class OpenMailbox(val title: String, val body: String,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()

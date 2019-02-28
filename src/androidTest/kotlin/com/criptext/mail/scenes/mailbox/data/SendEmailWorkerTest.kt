@@ -4,7 +4,6 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
-import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AttachmentTypes
 import com.criptext.mail.db.DeliveryTypes
@@ -18,8 +17,10 @@ import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.workers.SaveEmailWorker
 import com.criptext.mail.scenes.mailbox.workers.SendMailWorker
 import com.criptext.mail.signal.*
-import com.criptext.mail.utils.*
-import io.mockk.mockk
+import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.MockedResponse
+import com.criptext.mail.utils.enqueueResponses
+import io.mockk.*
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
@@ -28,8 +29,9 @@ import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.whispersystems.libsignal.SignalProtocolAddress
 
 
 /**
@@ -48,6 +50,8 @@ class SendEmailWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
     private lateinit var tester: DummyUser
+
+    private val signalAddresses = mutableListOf<List<SignalProtocolAddress>>()
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
@@ -159,7 +163,12 @@ class SendEmailWorkerTest {
         val keyBundleFromBob = bob.fetchAPreKeyBundle()
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
-        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+
+        //Add blacklisted devices to test for removal
+        val jsonBlacklistObject = JSONObject()
+        jsonBlacklistObject.put("name", "jose")
+        jsonBlacklistObject.put("devices", JSONArray().put(1))
+        jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray().put(jsonBlacklistObject))
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(

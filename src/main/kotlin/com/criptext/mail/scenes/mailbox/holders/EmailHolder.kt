@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.holders
 
 import android.content.Context
+import android.graphics.Typeface
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -49,11 +50,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             subjectView.context.getString(R.string.nosubject)
         else emailPreview.subject
 
-        previewView.text = if(emailPreview.bodyPreview.isEmpty())
-            subjectView.context.getString(R.string.nocontent)
-        else
-            emailPreview.bodyPreview
-
         if(emailPreview.deliveryStatus == DeliveryTypes.UNSEND && emailPreview.latestEmailUnsentDate != null) {
             val previewText =
                     DateAndTimeUtils.getUnsentDate(emailPreview.latestEmailUnsentDate.time, context)
@@ -61,7 +57,13 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.unsent_content))
         }else {
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.mail_preview))
-            previewView.text = emailPreview.bodyPreview
+            previewView.text = if (emailPreview.bodyPreview.isEmpty() && !emailPreview.hasFiles) {
+                previewView.setTypeface(null, Typeface.ITALIC)
+                subjectView.context.getString(R.string.nocontent)
+            } else {
+                previewView.setTypeface(null, Typeface.NORMAL)
+                emailPreview.bodyPreview
+            }
         }
 
         headerView.text = emailPreview.topText
@@ -108,12 +110,12 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             countView.visibility = View.GONE
         }
 
-        setIcons(emailPreview.deliveryStatus, emailPreview.isStarred, emailPreview.hasFiles)
+        setIcons(emailPreview.deliveryStatus, emailPreview.isStarred, (emailPreview.hasFiles && !emailPreview.allFilesAreInline))
         toggleStatus(emailPreview.isSelected, emailPreview.unread)
 
     }
 
-    private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, hasFiles: Boolean){
+    private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, showClip: Boolean){
 
         check.visibility = View.VISIBLE
 
@@ -139,7 +141,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         }
 
         starIcon.visibility = if(isStarred) View.VISIBLE else View.GONE
-        attachment.visibility = if(hasFiles) View.VISIBLE else View.GONE
+        attachment.visibility = if(showClip) View.VISIBLE else View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){

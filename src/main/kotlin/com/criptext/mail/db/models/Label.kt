@@ -114,6 +114,7 @@ data class Label (
                 LABEL_SENT,
                 LABEL_INBOX,
                 LABEL_STARRED,
+                LABEL_DRAFT,
                 LABEL_ALL_MAIL -> listOf(spam, trash)
                 LABEL_SPAM -> listOf(trash)
                 LABEL_TRASH -> listOf(spam)

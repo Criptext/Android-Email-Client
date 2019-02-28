@@ -68,6 +68,15 @@ sealed class EmailDetailResult {
         class Forbidden : MoveEmailThread()
     }
 
+    sealed class MoveEmail: EmailDetailResult() {
+        data class Success(val emailId: Long): MoveEmail()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception) : MoveEmail()
+        data class Unauthorized(val message: UIMessage) : MoveEmail()
+        class Forbidden : MoveEmail()
+    }
+
     sealed class DownloadFile : EmailDetailResult() {
         data class Success(val emailId: Long, val filetoken: String, val filepath: String, val cid: String?): DownloadFile()
         data class Failure(val emailId: Long, val fileToken: String, val message: UIMessage): DownloadFile()

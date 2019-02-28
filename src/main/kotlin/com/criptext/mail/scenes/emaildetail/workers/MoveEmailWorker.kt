@@ -40,23 +40,23 @@ class MoveEmailWorker(
         httpClient: HttpClient,
         activeAccount: ActiveAccount,
         override val publishFn: (
-                EmailDetailResult.MoveEmailThread) -> Unit)
-    : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
+                EmailDetailResult.MoveEmail) -> Unit)
+    : BackgroundWorker<EmailDetailResult.MoveEmail> {
 
     private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
             storage, accountDao)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): EmailDetailResult.MoveEmailThread {
+    override fun catchException(ex: Exception): EmailDetailResult.MoveEmail {
 
         val message = createErrorMessage(ex)
-        return EmailDetailResult.MoveEmailThread.Failure(
+        return EmailDetailResult.MoveEmail.Failure(
                 message = message,
                 exception = ex)
     }
 
-    override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
+    override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmail>): EmailDetailResult.MoveEmail? {
 
         val emailIds = listOf(emailId)
         val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
@@ -69,11 +69,11 @@ class MoveEmailWorker(
             return when (result) {
                 is Result.Success -> {
                     peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())
-                    EmailDetailResult.MoveEmailThread.Success(null)
+                    EmailDetailResult.MoveEmail.Success(emailId)
                 }
                 is Result.Failure -> {
                     val message = createErrorMessage(result.error)
-                    EmailDetailResult.MoveEmailThread.Failure(message = message, exception = result.error)
+                    EmailDetailResult.MoveEmail.Failure(message = message, exception = result.error)
                 }
             }
         }
@@ -112,11 +112,11 @@ class MoveEmailWorker(
                 peerEventHandler.enqueueEvent(PeerChangeEmailLabelData(metadataKeys,
                         peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON())
 
-                EmailDetailResult.MoveEmailThread.Success(null)
+                EmailDetailResult.MoveEmail.Success(emailId)
             }
             is Result.Failure -> {
                 val message = createErrorMessage(result.error)
-                EmailDetailResult.MoveEmailThread.Failure(message = message, exception = result.error)
+                EmailDetailResult.MoveEmail.Failure(message = message, exception = result.error)
             }
         }
 

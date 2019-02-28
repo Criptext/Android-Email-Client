@@ -43,6 +43,7 @@ interface EmailDetailScene {
     fun showMessage(message : UIMessage, showAction: Boolean = false)
     fun notifyFullEmailListChanged()
     fun notifyFullEmailChanged(position: Int)
+    fun notifyFullEmailRemoved(position: Int)
     fun notifyLabelsChanged(updatedLabels: List<Label>)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
@@ -143,6 +144,10 @@ interface EmailDetailScene {
 
         override fun notifyFullEmailChanged(position: Int) {
             fullEmailsRecyclerView?.notifyFullEmailChanged(position = position)
+        }
+
+        override fun notifyFullEmailRemoved(position: Int) {
+            fullEmailsRecyclerView?.notifyFullEmailRemoved(position = position)
         }
 
         override fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler) {

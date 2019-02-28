@@ -58,8 +58,24 @@ class ChunkFileReaderTest {
         receivedIndexes `should equal` mutableListOf(0, 1, 2, 3)
     }
 
+    @Test
+    fun should_identify_file_type_by_mime_type(){
+        FileUtils.getExtension(testFilePath) `should equal` "txt"
+        FileUtils.getExtension(testImagePath) `should equal` "png"
+        FileUtils.getExtension(testVideoPath) `should equal` "mp4"
+        FileUtils.getExtension(testAudioPath) `should equal` "mp3"
+
+        FileUtils.getMimeType(testFilePath) `should equal` "text/plain"
+        FileUtils.getMimeType(testImagePath) `should equal` "image/png"
+        FileUtils.getMimeType(testVideoPath) `should equal` "video/mp4"
+        FileUtils.getMimeType(testAudioPath) `should equal` "audio/mpeg"
+    }
+
     companion object {
         private const val testFilePath = "./build/tmp/test.txt"
+        private const val testImagePath = "./build/tmp/image.png"
+        private const val testVideoPath = "./build/tmp/video.mp4"
+        private const val testAudioPath = "./build/tmp/audio.mp3"
         @AfterClass
         fun tearDown() {
             File(testFilePath).delete()
