@@ -29,6 +29,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private val dataSourceListener = { result: PushResult ->
         when (result) {
             is PushResult.UpdateMailbox -> onUpdateMailbox(result)
+            is PushResult.NewEmail -> onNewEmail(result)
         }
     }
 
@@ -97,7 +98,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     fun parsePushPayload(pushData: Map<String, String>, shouldPostNotification: Boolean) {
         if(shouldPostNotification)
-            dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+            dataSource.submitRequest(PushRequest.NewEmail(Label.defaultItems.inbox,
                     pushData, shouldPostNotification))
     }
 
@@ -137,13 +138,20 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
-            is PushResult.UpdateMailbox.Success -> {
-                createAndNotifyPush(result.pushData, result.shouldPostNotification, true, result.senderImage)
-            }
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
                 parsePushPayload(result.pushData, result.shouldPostNotification)
             }
-            is PushResult.UpdateMailbox.Failure -> {
+        }
+    }
+
+    private fun onNewEmail(result: PushResult.NewEmail){
+        when(result){
+            is PushResult.NewEmail.Success -> {
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, true, result.senderImage)
+                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+                        result.pushData, result.shouldPostNotification))
+            }
+            is PushResult.NewEmail.Failure -> {
                 createAndNotifyPush(result.pushData, result.shouldPostNotification, false, null)
             }
         }

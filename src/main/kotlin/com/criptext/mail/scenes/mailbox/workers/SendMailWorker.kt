@@ -114,17 +114,33 @@ class SendMailWorker(private val signalClient: SignalClient,
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
+                return listOf(PostEmailBody.EmptyCriptextEmail(recipientId))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
             }.map { deviceId ->
-                val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
-                PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
-                        type = type, body = encryptedData.encryptedB64,
-                        messageType = encryptedData.type, fileKey = if(getFileKey() != null)
-                    signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
-                else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId))
+                val encryptOperation = Result.of {
+                    val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
+                    val email = db.getEmailById(emailId)!!
+                    val encryptedPreview = signalClient.encryptMessage(recipientId, deviceId, email.preview)
+                    Pair(encryptedData, encryptedPreview)
+                }
+                when(encryptOperation){
+                    is Result.Success -> {
+                        PostEmailBody.CompleteCriptextEmail(recipientId = recipientId, deviceId = deviceId,
+                                type = type, body = encryptOperation.value.first.encryptedB64,
+                                messageType = encryptOperation.value.first.type, fileKey = if(getFileKey() != null)
+                            signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
+                        else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId),
+                                preview = encryptOperation.value.second.encryptedB64,
+                                previewMessageType = encryptOperation.value.second.type)
+                    }
+                    is Result.Failure -> {
+                        PostEmailBody.EmptyCriptextEmail(recipientId)
+                    }
+                }
+
+
             }
         }.flatten()
     }

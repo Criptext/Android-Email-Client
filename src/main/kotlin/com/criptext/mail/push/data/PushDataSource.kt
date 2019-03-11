@@ -7,8 +7,9 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.push.workers.GetPushEmailWorker
+import com.criptext.mail.push.workers.UpdateMailboxWorker
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import java.io.File
@@ -27,6 +28,17 @@ class PushDataSource(
             flushResults: (PushResult) -> Unit)
             : BackgroundWorker<*> {
         return when (params) {
+            is PushRequest.NewEmail -> GetPushEmailWorker(
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    dbEvents = EventLocalDB(db, filesDir, cacheDir),
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    label = params.label,
+                    pushData = params.pushData,
+                    shouldPostNotification = params.shouldPostNotification,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
                     signalClient = SignalClient.Default(SignalStoreCriptext(db)),
                     dbEvents = EventLocalDB(db, filesDir, cacheDir),

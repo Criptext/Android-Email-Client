@@ -48,6 +48,22 @@ sealed class PushResult {
         }
     }
 
+    sealed class NewEmail : PushResult() {
+        data class Success(
+                val mailboxLabel: Label,
+                val isManual: Boolean,
+                val pushData: Map<String, String>,
+                val shouldPostNotification: Boolean,
+                val senderImage: Bitmap?): NewEmail()
+
+        data class Failure(
+                val mailboxLabel: Label,
+                val message: UIMessage,
+                val exception: Exception?,
+                val pushData: Map<String, String>,
+                val shouldPostNotification: Boolean): NewEmail()
+    }
+
     sealed class LinkAccept: PushResult() {
         data class Success(val notificationId: Int): LinkAccept()
         data class Failure(val message: UIMessage): LinkAccept()
