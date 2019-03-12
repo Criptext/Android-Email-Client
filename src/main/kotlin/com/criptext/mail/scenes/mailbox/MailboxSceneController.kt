@@ -547,6 +547,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         dataSource.submitRequest(MailboxRequest.UpdateUnreadStatus(
                 threadIds, !unreadStatus, model.selectedLabel))
         changeMode(multiSelectON = false, silent = false)
+        threadListController.changeThreadReadStatus(threadIds, !unreadStatus)
     }
 
     private fun showMultiModeBar() {
@@ -875,7 +876,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onUpdateUnreadStatus(result: MailboxResult){
             when (result) {
                 is MailboxResult.UpdateUnreadStatus.Success -> {
-                    threadListController.changeThreadReadStatus(result.threadId, result.unreadStatus)
+                    //threadListController.changeThreadReadStatus(result.threadId, result.unreadStatus)
                     generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }

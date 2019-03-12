@@ -99,6 +99,7 @@ class ResendEmailWorkerTest {
         val bodyJSON = JSONObject(bodyString)
 
         val firstCriptextEmail = bodyJSON.getJSONArray("criptextEmails").getJSONObject(0)
+                .getJSONArray("emails").getJSONObject(0)
         val encryptedText = firstCriptextEmail.getString("body")
 
         return recipient.decrypt("tester", 1,

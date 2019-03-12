@@ -15,7 +15,6 @@ import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.data.ComposerAPIClient
 import com.criptext.mail.scenes.composer.data.PostEmailBody
-import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.data.SentMailData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
@@ -25,10 +24,8 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import org.json.JSONArray
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
-import org.whispersystems.libsignal.SignalProtocolAddress
 import java.io.File
 
 class ResendEmailWorker(
@@ -240,17 +237,29 @@ class ResendEmailWorker(
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                throw IllegalArgumentException("Signal address for '$recipientId' does not exist in the store")
+                return listOf(PostEmailBody.EmptyCriptextEmail(recipientId))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
             }.map { deviceId ->
-                val encryptedData = signalClient.encryptMessage(recipientId, deviceId, fullEmail.email.content)
-                PostEmailBody.CriptextEmail(recipientId = recipientId, deviceId = deviceId,
-                        type = type, body = encryptedData.encryptedB64,
-                        messageType = encryptedData.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
-                    signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
-                else null, fileKeys = getEncryptedFileKeys(fullEmail, recipientId, deviceId))
+                val encryptOperation = Result.of {
+                    val encryptedData = signalClient.encryptMessage(recipientId, deviceId, fullEmail.email.content)
+                    val encryptedPreview = signalClient.encryptMessage(recipientId, deviceId, fullEmail.email.preview)
+                    Pair(encryptedData, encryptedPreview)
+                }
+                when(encryptOperation){
+                    is Result.Success -> {
+                        PostEmailBody.CompleteCriptextEmail(recipientId = recipientId, deviceId = deviceId,
+                                type = type, body = encryptOperation.value.first.encryptedB64,
+                                messageType = encryptOperation.value.first.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
+                            signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
+                        else null, fileKeys = getEncryptedFileKeys(fullEmail, recipientId, deviceId),
+                                preview = encryptOperation.value.second.encryptedB64, previewMessageType = encryptOperation.value.second.type)
+                    }
+                    is Result.Failure -> {
+                        PostEmailBody.EmptyCriptextEmail(recipientId)
+                    }
+                }
             }
         }.flatten()
     }

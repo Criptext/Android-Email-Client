@@ -115,7 +115,7 @@ class SignInSceneController(
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
                 }
             }
-            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(UIMessage(R.string.error_checking_availability))
+            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(UIMessage(R.string.forgot_password_error))
         }
         scene.setSubmitButtonState(ProgressButtonState.enabled)
     }

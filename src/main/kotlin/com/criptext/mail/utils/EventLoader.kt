@@ -6,6 +6,7 @@ import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.json.JSONArray
+import org.json.JSONObject
 
 object EventLoader{
 
@@ -14,10 +15,31 @@ object EventLoader{
                 .flatMap(parseEvents)
     }
 
+    fun getEvent(apiClient: MailboxAPIClient, rowId: Int): Result<Event, Exception>{
+        return fetchPendingEvent(apiClient, rowId)
+                .flatMap(parseEvent)
+    }
+
+    private fun fetchPendingEvent(apiClient: MailboxAPIClient, rowId: Int): Result<HttpResponseData, Exception> {
+        return Result.of {
+            val responseText = apiClient.getPendingEvent(rowId)
+            if (responseText.body.isEmpty()) HttpResponseData(ServerCodes.Success, "[]") else responseText
+        }
+    }
+
     private fun fetchPendingEvents(apiClient: MailboxAPIClient): Result<HttpResponseData, Exception> {
         return Result.of {
             val responseText = apiClient.getPendingEvents()
             if (responseText.body.isEmpty()) HttpResponseData(ServerCodes.Success, "[]") else responseText
+        }
+    }
+
+    private val parseEvent: (HttpResponseData) -> Result<Event, Exception> = { responseData ->
+        Result.of {
+            val eventJSONString = JSONObject(responseData.body).toString()
+            if (eventJSONString.isNotEmpty()) {
+                Event.fromJSON(eventJSONString)
+            } else throw Exception()
         }
     }
 

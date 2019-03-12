@@ -45,21 +45,39 @@ class PostEmailBody(val threadId: String?, val subject: String,
         }
     }
 
-    data class CriptextEmail(val recipientId: String, val deviceId: Int,
-                             val messageType: SignalEncryptedData.Type,
-                             val type: RecipientTypes, val body: String, val fileKey: String?,
-                             val fileKeys: List<String>?): JSONData {
+    abstract class CriptextEmail: JSONData
+
+    data class CompleteCriptextEmail(val recipientId: String, val deviceId: Int,
+                                     val messageType: SignalEncryptedData.Type,
+                                     val type: RecipientTypes, val body: String, val fileKey: String?,
+                                     val fileKeys: List<String>?, val preview: String,
+                                     val previewMessageType: SignalEncryptedData.Type): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
+            val jsonOuter = JSONObject()
             json.put("recipientId", recipientId)
             json.put("deviceId", deviceId)
             json.put("type", type.toString())
             json.put("body", body)
+            json.put("preview", preview)
+            json.put("previewMessageType", previewMessageType.toInt())
             json.put("messageType", messageType.toInt())
             json.put("fileKey", fileKey)
             json.put("fileKeys", JSONArray(fileKeys))
-            return json
+            jsonOuter.put("username", recipientId)
+            jsonOuter.put("emails", JSONArray().put(json))
+            return jsonOuter
+        }
+    }
+
+    data class EmptyCriptextEmail(val recipientId: String): CriptextEmail() {
+
+        override fun toJSON(): JSONObject {
+            val jsonOuter = JSONObject()
+            jsonOuter.put("username", recipientId)
+            jsonOuter.put("emails", JSONArray())
+            return jsonOuter
         }
     }
 
