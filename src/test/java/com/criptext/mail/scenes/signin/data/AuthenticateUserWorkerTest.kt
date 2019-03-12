@@ -1,11 +1,11 @@
 package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -29,6 +29,7 @@ class AuthenticateUserWorkerTest {
     private lateinit var accountDao: AccountDao
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: SignInLocalDB
+    private lateinit var account: Account
 
     private val camera = Camera()
 
@@ -40,6 +41,7 @@ class AuthenticateUserWorkerTest {
         signUpDao = mockk()
         storage = mockk(relaxed = true)
         accountDao = mockk()
+        account = mockk()
         messagingInstance = mockk()
         db = mockk()
 
@@ -87,11 +89,16 @@ class AuthenticateUserWorkerTest {
         every {
             signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any())
+                    defaultLabels = any(), accountDao = any())
         } answers { extraStepsSlot.captured.run() }
 
         every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
         every { accountDao.updateRefreshToken("tester", "__REFRESH__") } just Runs
+        every { accountDao.updateActiveInAccount() } just Runs
+        every { accountDao.getLoggedInAccount() } returns Account(id = 1, recipientId = "tester", deviceId = 2,
+                name = "A Tester", registrationId = 1,
+                identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true)
 
         val result = worker.work(mockk())
 
@@ -103,7 +110,7 @@ class AuthenticateUserWorkerTest {
         }
         verify {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","deviceId":2,"refreshToken":"__REFRESH__"}""")
+                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","id":1,"deviceId":2,"refreshToken":"__REFRESH__"}""")
         }
 
         // request snapshots
@@ -142,7 +149,7 @@ class AuthenticateUserWorkerTest {
         every {
             signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any())
+                    defaultLabels = any(), accountDao = any())
         } answers { extraStepsSlot.captured.run() }
 
         val result = worker.work(mockk())

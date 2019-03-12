@@ -16,17 +16,17 @@ interface EmailInsertionDao {
     @Query("SELECT * FROM email")
     fun getAll(): List<Email>
 
-    @Query("DELETE FROM email WHERE id = :draftEmailId" )
-    fun deletePreviouslyCreatedDraft(draftEmailId: Long)
+    @Query("DELETE FROM email WHERE id = :draftEmailId AND accountId = :accountId" )
+    fun deletePreviouslyCreatedDraft(draftEmailId: Long, accountId: Long)
 
-    @Query("Select * from email where messageId = :messageId")
-    fun findEmailByMessageId(messageId: String): Email?
+    @Query("Select * from email where messageId = :messageId AND accountId = :accountId")
+    fun findEmailByMessageId(messageId: String, accountId: Long): Email?
 
     @Query("Select * from email where metadataKey = :metadataKey")
     fun findEmailByMetadataKey(metadataKey: Long): Email?
 
-    @Query("Select * from email where id=:id")
-    fun findEmailById(id: Long): Email?
+    @Query("Select * from email where id=:id AND accountId = :accountId")
+    fun findEmailById(id: Long, accountId: Long): Email?
 
     @Insert
     fun insertEmails(emails: List<Email>): List<Long>
@@ -36,8 +36,10 @@ interface EmailInsertionDao {
 
     @Query("""UPDATE contact
             SET name=:name
-            where id=:id""")
-    fun updateContactName(id: Long, name: String)
+            where id=:id
+            AND EXISTS
+            (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)""")
+    fun updateContactName(id: Long, name: String, accountId: Long)
 
     @Query("SELECT * FROM contact where email in (:emailAddresses)")
     fun findContactsByEmail(emailAddresses: List<String>): List<Contact>
@@ -60,6 +62,9 @@ interface EmailInsertionDao {
 
     @Insert
     fun insertEmailFileKey(emailFileKey: FileKey)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAccountContact(accountContact: List<AccountContact>)
 
     @Transaction
     fun runTransaction(insertFn: () -> Long): Long {

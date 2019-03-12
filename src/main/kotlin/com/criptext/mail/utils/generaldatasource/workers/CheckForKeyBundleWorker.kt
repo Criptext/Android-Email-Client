@@ -64,7 +64,7 @@ class CheckForKeyBundleWorker(
     }
     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     .flatMap { Result.of {
-        PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(it.body))
+        PreKeyBundleShareData.DownloadBundle.fromJSON(JSONObject(it.body), activeAccount.id)
     } }
 
     private fun newRetryWithNewSessionOperation()

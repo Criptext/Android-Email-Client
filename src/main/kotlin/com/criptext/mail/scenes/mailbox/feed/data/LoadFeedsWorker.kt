@@ -35,7 +35,7 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
         val activityFeedItems = items.map {
             ActivityFeedItem(
                     feedItem = it,
-                    email = emailDao.findEmailById(it.emailId)!!,
+                    email = emailDao.findEmailById(it.emailId, activeAccount.id)!!,
                     contact = getContactForFeed(it.contactId),
                     file = if(it.fileId != null) fileDao.getFileById(it.fileId!!) else null
             )

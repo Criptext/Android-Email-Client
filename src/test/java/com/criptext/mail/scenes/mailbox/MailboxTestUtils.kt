@@ -22,7 +22,7 @@ object MailboxTestUtils {
                             date = Date(dateMilis + number), metadataKey = number + 100L,
                             isMuted = false, unsentDate = Date(dateMilis + number), trashDate = null,
                             fromAddress = "Mayer Mizrachi <mayer@jigl.com>", replyTo = null,
-                            boundary = null)
+                            boundary = null, accountId = 1)
 
     fun createNewEmail(number: Int) = createNewEmail(System.currentTimeMillis(), number)
 

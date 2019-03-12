@@ -28,16 +28,17 @@ class GetEmailPreviewWorkerTest{
     private lateinit var mailboxLocalDB: MailboxLocalDB
 
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
     }
 
@@ -60,8 +61,8 @@ class GetEmailPreviewWorkerTest{
                 content = decryptedBody,
                 headers = null)
         val emailId = EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
-                preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null)
-        return db.emailDao().findEmailById(emailId)!!
+                preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null, accountId = activeAccount.id)
+        return db.emailDao().findEmailById(emailId, activeAccount.id)!!
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.dao.ContactDao
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -17,6 +18,7 @@ import java.util.*
 
 
 class SyncPhonebookWorker(private val contactDao: ContactDao,
+                          private val activeAccount: ActiveAccount,
                           private val contentResolver: ContentResolver,
                           override val publishFn: (GeneralResult.SyncPhonebook) -> Unit
                           ) : BackgroundWorker<GeneralResult.SyncPhonebook> {
@@ -34,7 +36,7 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
             : GeneralResult.SyncPhonebook? {
         val operation = Result.of { getNameEmailDetails() }
                 .flatMap { Result.of {
-                    val contacts = contactDao.getAll().map { dbContact -> dbContact.email }
+                    val contacts = contactDao.getAll(activeAccount.id).map { dbContact -> dbContact.email }
                     val phonebookContacts = it.filter { contact -> contact.email !in contacts }
                     if(phonebookContacts.isEmpty() && it.isEmpty())
                         throw Resources.NotFoundException()

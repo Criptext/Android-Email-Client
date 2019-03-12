@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import android.content.res.Resources
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
@@ -9,6 +10,7 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import org.json.JSONObject
 import java.io.File
+import javax.security.auth.login.LoginException
 
 class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
@@ -18,10 +20,11 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 
 
             val tmpFileLinkData = createTempFile()
+            val account = db.accountDao().getLoggedInAccount() ?: throw LoginException()
 
-            addContactsToFile(db.contactDao(), tmpFileLinkData)
+            addContactsToFile(db.contactDao(), tmpFileLinkData, account.id)
             addLabelsToFile(db.labelDao(), tmpFileLinkData)
-            addMailsToFile(db.emailDao(), tmpFileLinkData)
+            addMailsToFile(db.emailDao(), tmpFileLinkData, account.id)
             addFilesToFile(db.fileDao(), tmpFileLinkData)
             addMailsAndLabelsRelationToFile(db.emailLabelDao(), tmpFileLinkData)
             addMailsAndContactsRelationToFile(db.emailContactDao(), tmpFileLinkData)
@@ -33,11 +36,12 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
     }
 
     fun createDBFromFile(file: File) {
+        val account = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
         val contactWriter = ContactDataWriter(db.contactDao())
-        val labelWriter = LabelDataWriter(db.labelDao())
+        val labelWriter = LabelDataWriter(db.labelDao(), activeAccount = account)
         val emailWriter = EmailDataWriter(
                 emailDao = db.emailDao(),
-                activeRecipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                activeAccount = account,
                 filesDir = filesDir
         )
         val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter))
@@ -74,7 +78,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         db.endTransaction()
     }
 
-    private fun addContactsToFile(contactDao: ContactDao, tmpFile: File)
+    private fun addContactsToFile(contactDao: ContactDao, tmpFile: File, accountId: Long)
     {
         fun flushContacts(allContacts: List<Contact>): Long {
             var lastId = 0L
@@ -94,7 +98,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val contacts = contactDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val contacts = contactDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(contacts.isNotEmpty()) {
                 lastId = flushContacts(contacts)
             }
@@ -176,7 +180,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }while (files.isNotEmpty())
     }
 
-    private fun addMailsToFile(emailDao: EmailDao, tmpFile: File)
+    private fun addMailsToFile(emailDao: EmailDao, tmpFile: File, accountId: Long)
     {
         fun flushMails(allMails: List<Email>): Long {
             var lastId = 0L
@@ -217,7 +221,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val emails = emailDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val emails = emailDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(emails.isNotEmpty()) {
                 lastId = flushMails(emails)
             }

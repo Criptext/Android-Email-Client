@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.settings.workers
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.settings.data.SettingsResult
 
@@ -12,6 +13,7 @@ import com.criptext.mail.scenes.settings.data.SettingsResult
 
 class GetCustomLabelsWorker(
         private val db: SettingsLocalDB,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (
                 SettingsResult.GetCustomLabels) -> Unit)
     : BackgroundWorker<SettingsResult.GetCustomLabels> {
@@ -23,7 +25,7 @@ class GetCustomLabelsWorker(
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.GetCustomLabels>): SettingsResult.GetCustomLabels? {
-        val labels = db.labelDao.getAllCustomLabels().toMutableList()
+        val labels = db.labelDao.getAllCustomLabels(activeAccount.id).toMutableList()
         //We threat starred label as a custom label
         labels.add(0, Label.defaultItems.starred)
         return SettingsResult.GetCustomLabels.Success(labels)

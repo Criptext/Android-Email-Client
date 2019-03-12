@@ -33,7 +33,7 @@ class MoveEmailThreadsWorkerTest{
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 
@@ -48,13 +48,14 @@ class MoveEmailThreadsWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
     }
 
     @Test

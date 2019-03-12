@@ -19,10 +19,10 @@ abstract class DummyUser(generator: SignalKeyGenerator, recipientId: String, dev
         return this
     }
 
-    fun fetchAPreKeyBundle(): PreKeyBundleShareData.DownloadBundle {
+    fun fetchAPreKeyBundle(accountId: Long): PreKeyBundleShareData.DownloadBundle {
         val bundle = registrationBundles.uploadBundle
         val preKeyPublic = bundle.preKeys[1]!!
-        val preKeyRecord = CRPreKey(1, preKeyPublic)
+        val preKeyRecord = CRPreKey(1, 1, preKeyPublic, accountId)
 
         return PreKeyBundleShareData.DownloadBundle(
                 shareData = registrationBundles.uploadBundle.shareData,

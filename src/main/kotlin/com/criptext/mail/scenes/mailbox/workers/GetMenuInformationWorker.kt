@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.workers
 
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
@@ -23,8 +24,9 @@ class GetMenuInformationWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.GetMenuInformation>)
             : MailboxResult.GetMenuInformation? {
+        val account = db.getExistingAccount() ?: return MailboxResult.GetMenuInformation.Failure()
         return MailboxResult.GetMenuInformation.Success(
-                account = db.getExistingAccount(),
+                account = account,
                 totalInbox = db.getUnreadCounterLabel(Label.defaultItems.inbox.id),
                 totalSpam = db.getUnreadCounterLabel(Label.defaultItems.spam.id),
                 totalDraft = db.getTotalCounterLabel(Label.defaultItems.draft.id),

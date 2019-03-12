@@ -125,10 +125,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         handleNotificationCountForNewEmail(notificationId)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val operation = Result.of {
-            val email = emailDao.getEmailByMetadataKey(metadataKey)
+            val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)
             email
         }
-        .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false) } }
+        .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false, activeAccount.id) } }
 
 
 
@@ -162,16 +162,16 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         else
             emptyList()
 
-        val email = emailDao.getEmailByMetadataKey(metadataKey)
+        val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)
 
         peerEventsApiHandler.enqueueEvent(
                 PeerChangeEmailLabelData(
-                emailDao.getAllEmailsbyId(listOf(email.id)).map { it.metadataKey },
+                emailDao.getAllEmailsbyId(listOf(email.id), activeAccount.id).map { it.metadataKey },
                 peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON()
         )
 
         val result = Result.of {
-            val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey).id)
+            val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id).id)
 
             val emailLabels = arrayListOf<EmailLabel>()
             emailIds.flatMap{ emailId ->

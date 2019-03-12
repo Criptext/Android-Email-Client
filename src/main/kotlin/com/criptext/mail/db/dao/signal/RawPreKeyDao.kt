@@ -12,21 +12,21 @@ import com.criptext.mail.db.models.signal.CRPreKey
 @Dao
 interface RawPreKeyDao {
 
-    @Query("DELETE from raw_prekey where id = :id")
-    fun deleteById(id: Int)
+    @Query("DELETE from raw_prekey where preKeyId = :id AND accountId = :accountId")
+    fun deleteById(id: Int, accountId: Long)
 
 
     @Insert
     fun insertAll(prekeys : List<CRPreKey>)
 
-    @Query("DELETE from raw_prekey")
-    fun deleteAll()
+    @Query("DELETE from raw_prekey WHERE accountId = :accountId")
+    fun deleteAll(accountId: Long)
 
-    @Query("SELECT * from raw_prekey where id = :id")
-    fun find(id: Int): CRPreKey?
+    @Query("SELECT * from raw_prekey where preKeyId = :id AND accountId = :accountId")
+    fun find(id: Int, accountId: Long): CRPreKey?
 
-    @Query("SELECT * from raw_prekey")
-    fun getAll(): List<CRPreKey>
+    @Query("SELECT * from raw_prekey WHERE accountId = :accountId")
+    fun getAll(accountId: Long): List<CRPreKey>
 
     @Insert
     fun insert(crPreKey: CRPreKey)

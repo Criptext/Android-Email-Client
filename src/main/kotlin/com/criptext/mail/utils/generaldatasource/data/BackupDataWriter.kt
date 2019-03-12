@@ -46,10 +46,11 @@ class ContactDataWriter(private val contactDao: ContactDao,
 }
 
 class LabelDataWriter(private val labelDao: LabelDao,
-                      private val dependencies: List<Flushable> = listOf()):
+                      private val dependencies: List<Flushable> = listOf(),
+                      private val activeAccount: ActiveAccount):
         BackupDataWriter<Label>(UserDataWriter.DEFAULT_BATCH_SIZE){
     override fun deserialize(item: String): Label {
-        return Label.fromJSON(item)
+        return Label.fromJSON(item, activeAccount.id)
     }
 
     override fun writeBatch(batch: List<Label>) {
@@ -62,11 +63,11 @@ class LabelDataWriter(private val labelDao: LabelDao,
 
 class EmailDataWriter(private val emailDao: EmailDao,
                       private val dependencies: List<Flushable> = listOf(),
-                      private val activeRecipientId: String,
+                      private val activeAccount: ActiveAccount,
                       private val filesDir: File):
         BackupDataWriter<Email>(UserDataWriter.EMAIL_BATCH_SIZE){
     override fun deserialize(item: String): Email {
-        return Email.fromJSON(item)
+        return Email.fromJSON(item, activeAccount.id)
     }
 
     override fun writeBatch(batch: List<Email>) {
@@ -78,7 +79,7 @@ class EmailDataWriter(private val emailDao: EmailDao,
 
     private fun insertAllEmails(batch: List<Email>){
         batch.forEach {
-            EmailUtils.saveEmailInFileSystem(filesDir, activeRecipientId, it.metadataKey, it.content, it.headers)
+            EmailUtils.saveEmailInFileSystem(filesDir, activeAccount.recipientId, it.metadataKey, it.content, it.headers)
         }
 
         val emails = batch.map { it.copy(content = "") }

@@ -22,7 +22,7 @@ interface PeerEventsApiHandler {
             PeerEventsApiHandler{
 
         private val apiClient = PeerAPIClient(httpClient, activeAccount.jwt)
-        private val queue = PeerQueue.EventQueue(apiClient, pendingEventDao)
+        private val queue = PeerQueue.EventQueue(apiClient, pendingEventDao, activeAccount)
 
         override fun enqueueEvent(jsonObject: JSONObject) {
             queue.enqueue(jsonObject)
