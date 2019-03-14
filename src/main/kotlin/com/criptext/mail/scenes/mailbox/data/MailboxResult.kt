@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
@@ -69,8 +70,13 @@ sealed class MailboxResult {
 
     sealed class GetMenuInformation : MailboxResult() {
         data class Success(val account: Account, val totalInbox: Int, val totalDraft: Int,
-                           val totalSpam: Int, val labels: List<Label>): GetMenuInformation()
+                           val totalSpam: Int, val labels: List<Label>, val accounts: List<Account>): GetMenuInformation()
         class Failure: GetMenuInformation()
+    }
+
+    sealed class SetActiveAccount : MailboxResult() {
+        data class Success(val activeAccount: ActiveAccount): SetActiveAccount()
+        class Failure: SetActiveAccount()
     }
 
     sealed class UpdateUnreadStatus: MailboxResult(){

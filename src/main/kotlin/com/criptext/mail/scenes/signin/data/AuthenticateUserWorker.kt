@@ -12,12 +12,11 @@ import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.ServerCodes
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -31,6 +30,7 @@ class AuthenticateUserWorker(
         private val db: SignInLocalDB,
         signUpDao: SignUpDao,
         httpClient: HttpClient,
+        private val isMultiple: Boolean,
         private val accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
         private val keyGenerator: SignalKeyGenerator,
@@ -69,7 +69,7 @@ class AuthenticateUserWorker(
             }
             storedValue = ""
         }
-        val jsonString = if (storedValue.isEmpty()) authenticateUser() else storedValue
+        val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticateUser() else storedValue
         val jsonObject = JSONObject(jsonString)
         return SignInSession.fromJSON(jsonObject)
 
@@ -89,7 +89,7 @@ class AuthenticateUserWorker(
             val account = Account(id = 0, recipientId = username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
-                    signature = "", refreshToken = "", isActive = true, domain = "criptext.com", isLoggedIn = true)
+                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true)
             Pair(registrationBundles, account)
         }
     }
@@ -112,7 +112,8 @@ class AuthenticateUserWorker(
 
             storeAccountTransaction.run(account = account,
                                         keyBundle = registrationBundles.privateBundle,
-                                        extraSteps = postKeyBundleStep, keepData = shouldKeepData)
+                                        extraSteps = postKeyBundleStep, keepData = shouldKeepData,
+                                        isMultiple = isMultiple)
         }
 
     }

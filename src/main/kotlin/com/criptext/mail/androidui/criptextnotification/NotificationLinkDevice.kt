@@ -22,10 +22,7 @@ import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.Utility
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 
 class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ctx) {
 
@@ -80,6 +77,7 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
                         ctx.getLocalizedUIMessage(UIMessage(R.string.push_link_device_message,
                                 arrayOf(data.deviceName)))
                 )
+                .setSubText(pushData.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX))
                 .setAutoCancel(true)
                 .setSound(defaultSound)
                 .setContentIntent(clickIntent)

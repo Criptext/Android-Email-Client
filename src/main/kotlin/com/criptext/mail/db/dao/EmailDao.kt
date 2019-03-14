@@ -12,7 +12,7 @@ import java.util.*
 @Dao interface EmailDao {
 
     @Insert
-    fun insertAll(emails : List<Email>)
+    fun insertAll(emails : List<Email>): List<Long>
 
     @Query("""SELECT * FROM email
             left join email_label on email.id = email_label.emailId

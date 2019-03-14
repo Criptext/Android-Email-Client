@@ -43,6 +43,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     keyGenerator = keyGenerator,
                     keyValueStorage = keyValueStorage,
                     accountDao = accountDao,
+                    isMultiple = params.isMultiple,
                     messagingInstance = MessagingInstance.Default(),
                     publishFn = { result ->
                         flushResults(result)
@@ -89,6 +90,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     keyGenerator = keyGenerator, keyValueStorage = keyValueStorage,
                     messagingInstance = MessagingInstance.Default(),
                     signUpDao = signUpDao,
+                    isMultiple = params.isMultiple,
                     publishFn = { result -> flushResults(result)
                     }
             )

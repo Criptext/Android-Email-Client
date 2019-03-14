@@ -1,6 +1,5 @@
 package com.criptext.mail.utils.generaldatasource.data
 
-import android.content.res.Resources
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
@@ -14,6 +13,8 @@ import javax.security.auth.login.LoginException
 
 class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
+
+    data class DataMapper(val idsMap: MutableMap<Long, Long>)
 
     fun createFile():String? {
         try {
@@ -37,16 +38,23 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 
     fun createDBFromFile(file: File) {
         val account = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
-        val contactWriter = ContactDataWriter(db.contactDao())
-        val labelWriter = LabelDataWriter(db.labelDao(), activeAccount = account)
+        val contactDataMapper = DataMapper(mutableMapOf())
+        val contactWriter = ContactDataWriter(db.contactDao(), db.accountContactDao(), activeAccount = account,
+                dataMapper = contactDataMapper)
+        val labelDataMapper = DataMapper(mutableMapOf())
+        val labelWriter = LabelDataWriter(db.labelDao(), activeAccount = account, dataMapper = labelDataMapper)
+        val emaillDataMapper = DataMapper(mutableMapOf())
         val emailWriter = EmailDataWriter(
                 emailDao = db.emailDao(),
                 activeAccount = account,
-                filesDir = filesDir
+                filesDir = filesDir,
+                dataMapper = emaillDataMapper
         )
-        val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter))
-        val emailLabelWriter = EmailLabelDataWriter(db.emailLabelDao(), listOf(labelWriter, emailWriter))
-        val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter))
+        val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter), emaillDataMapper)
+        val emailLabelWriter = EmailLabelDataWriter(db.emailLabelDao(), listOf(labelWriter, emailWriter),
+                emailDataMapper = emaillDataMapper, labelDataMapper = labelDataMapper)
+        val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter),
+                emailDataMapper = emaillDataMapper, contactDataMapper = contactDataMapper)
         val data = file.bufferedReader()
         var line = data.readLine()
         db.beginTransaction()

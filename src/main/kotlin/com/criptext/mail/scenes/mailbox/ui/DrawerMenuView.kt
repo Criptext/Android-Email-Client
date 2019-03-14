@@ -6,10 +6,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.criptext.mail.R
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
 import com.criptext.mail.scenes.mailbox.NavigationMenuOptions
@@ -36,6 +36,22 @@ class DrawerMenuView(navigationView: NavigationView,
     private val textViewNombre: TextView
     private val textViewCorreo: TextView
 
+    //EXRA ACCOUNTS
+    private val avatarView2 : CircleImageView
+    private val avatarView3 : CircleImageView
+    private val avatarViewLayout2 : RelativeLayout
+    private val avatarViewLayout3 : RelativeLayout
+    private val badgeAccount2 : TextView
+    private val badgeAccount3 : TextView
+
+    //MULTIPLE ACCOUNTS MENU
+    private val openMenuArrow: ImageView
+    private val multipleAccontsMenu: LinearLayout
+    private val addAccountOption: LinearLayout
+    private val createAccountOption: LinearLayout
+    private val extraAccountsAvatars: LinearLayout
+    private val recyclerViewAccount : RecyclerView
+
     //MENU OPTIONS
     private val sliderInbox : LinearLayout
     private val sliderSent : LinearLayout
@@ -51,6 +67,9 @@ class DrawerMenuView(navigationView: NavigationView,
 
     private val recyclerViewLabels : RecyclerView
     private val imageViewArrow: ImageView
+
+    //MENU ROOT
+    private val navBody: LinearLayout
 
     //MENU TITLES
     private val textViewTitleInbox: TextView
@@ -74,6 +93,8 @@ class DrawerMenuView(navigationView: NavigationView,
     private val textViewCounterInbox: TextView
     private val textViewCounterDraft: TextView
     private val textViewCounterSpam: TextView
+
+    private val badgeMap = mutableMapOf<String, TextView>()
 
     private fun setListeners() {
         sliderInbox.setOnClickListener {
@@ -141,12 +162,44 @@ class DrawerMenuView(navigationView: NavigationView,
         avatarView.setOnClickListener {
             drawerMenuItemListener.onAvatarClicked()
         }
+
+        openMenuArrow.setOnClickListener {
+            val visible = multipleAccontsMenu.visibility == View.VISIBLE
+            multipleAccontsMenu.visibility = if (visible) View.GONE else View.VISIBLE
+            navBody.visibility = if (visible) View.VISIBLE else View.GONE
+            extraAccountsAvatars.visibility = if (visible) View.VISIBLE else View.GONE
+            Picasso.get().load(
+                    if(visible) R.drawable.arrow_down else
+                        R.drawable.arrow_up).into(imageViewArrow)
+        }
+
+        addAccountOption.setOnClickListener {
+            drawerMenuItemListener.onAddAccountClicked()
+        }
+
+        createAccountOption.setOnClickListener {
+            drawerMenuItemListener.onCreateAccountClicked()
+        }
     }
 
     init {
         avatarView = navigationView.findViewById(R.id.circleView)
         textViewNombre = navigationView.findViewById(R.id.textViewNombre)
         textViewCorreo = navigationView.findViewById(R.id.textViewCorreo)
+
+        openMenuArrow = navigationView.findViewById(R.id.imageViewArrow)
+        multipleAccontsMenu = navigationView.findViewById(R.id.multiple_accounts_menu)
+        addAccountOption = navigationView.findViewById(R.id.add_account)
+        createAccountOption = navigationView.findViewById(R.id.create_account)
+        recyclerViewAccount = navigationView.findViewById(R.id.recyclerViewAccounts)
+        extraAccountsAvatars = navigationView.findViewById(R.id.extraAccountsAvatars)
+
+        avatarView2 = navigationView.findViewById(R.id.circleView2)
+        avatarView3 = navigationView.findViewById(R.id.circleView3)
+        avatarViewLayout2 = navigationView.findViewById(R.id.extraAccount2)
+        avatarViewLayout3 = navigationView.findViewById(R.id.extraAccount3)
+        badgeAccount2 = navigationView.findViewById(R.id.count_account_2)
+        badgeAccount3 = navigationView.findViewById(R.id.count_account_3)
 
         sliderInbox = navigationView.findViewById(R.id.slider_inbox)
         sliderSent = navigationView.findViewById(R.id.slider_sent)
@@ -159,6 +212,8 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderSettings = navigationView.findViewById(R.id.slider_settings)
         sliderInviteFriend = navigationView.findViewById(R.id.slider_invite_friend)
         sliderSupport = navigationView.findViewById(R.id.slider_support)
+
+        navBody = navigationView.findViewById(R.id.nav_body)
 
         imageViewArrow = navigationView.findViewById(R.id.imageViewArrow)
         recyclerViewLabels = navigationView.findViewById(R.id.recyclerViewLabels)
@@ -265,6 +320,58 @@ class DrawerMenuView(navigationView: NavigationView,
                 drawerMenuItemListener, VirtualLabelWrapperList(label)))
     }
 
+    fun setAccountAdapter(accounts: List<Account>, bageCount: List<Int>){
+        recyclerViewAccount.layoutManager = LinearLayoutManager(recyclerViewAccount.context)
+        recyclerViewAccount.adapter = AccountAdapter(recyclerViewAccount.context,
+                drawerMenuItemListener, accounts, bageCount)
+
+        when(accounts.size){
+            2 -> {
+                setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
+                setAvatarViewAndListener(avatarView3, avatarViewLayout3, accounts[1], badgeAccount3)
+                addAccountOption.visibility = View.GONE
+                createAccountOption.visibility = View.GONE
+            }
+            1 -> setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
+        }
+    }
+
+    fun updateBadges(badgeData: List<Pair<String, Int>>){
+        badgeData.forEach {
+            if(badgeMap[it.first] != null){
+                if(it.second > 0) {
+                    badgeMap[it.first]?.visibility = View.VISIBLE
+                    badgeMap[it.first]?.text = it.second.toString()
+                } else {
+                    badgeMap[it.first]?.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun setAvatarViewAndListener(avatar: CircleImageView, layout: RelativeLayout,
+                                         account: Account, badgeText: TextView){
+        layout.visibility = View.VISIBLE
+        val email = account.recipientId.plus("@").plus(account.domain)
+        if(EmailAddressUtils.isFromCriptextDomain(email))
+            UIUtils.setProfilePicture(
+                    iv = avatar,
+                    resources = avatar.context.resources,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
+                    name = account.name,
+                    runnable = null)
+        else
+            avatar.setImageBitmap(
+                    Utility.getBitmapFromText(
+                            account.name,
+                            250,
+                            250))
+        avatar.setOnClickListener {
+            drawerMenuItemListener.onAccountClicked(account)
+        }
+        badgeMap[account.recipientId] = badgeText
+    }
+
     fun clearActiveLabel(){
         sliderInbox.setBackgroundColor(Color.TRANSPARENT)
         sliderDrafts.setBackgroundColor(Color.TRANSPARENT)
@@ -308,6 +415,19 @@ class DrawerMenuView(navigationView: NavigationView,
 
         override val size: Int
             get() = labels.size
+
+        override val hasReachedEnd = true
+
+    }
+
+    inner class VirtualAccountWrapperList(val accounts: List<Account>): VirtualList<Account>{
+
+        override fun get(i: Int): Account {
+            return accounts[i]
+        }
+
+        override val size: Int
+            get() = accounts.size
 
         override val hasReachedEnd = true
 

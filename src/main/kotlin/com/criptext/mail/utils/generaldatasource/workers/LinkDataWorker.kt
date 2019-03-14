@@ -172,20 +172,11 @@ class LinkDataWorker(private val authorizerId: Int,
     }
 
     private fun deleteLocalData(){
-        db.fileKeyDao().nukeTable()
-        db.emailContactDao().nukeTable()
-        db.emailExternalSessionDao().nukeTable()
-        db.emailLabelDao().nukeTable()
-        db.fileDao().nukeTable()
-        db.contactDao().nukeTable(activeAccount.id)
+        db.accountContactDao().nukeTable(activeAccount.id)
         db.pendingEventDao().nukeTable(activeAccount.id)
-        db.feedDao().nukeTable()
-        db.labelDao().nukeTable()
+        db.labelDao().nukeTable(activeAccount.id)
         db.emailDao().nukeTable(activeAccount.id)
         EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-
-        val defaultLabels = Label.defaultItems.toList()
-        db.labelDao().insertAll(defaultLabels)
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

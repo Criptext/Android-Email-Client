@@ -28,7 +28,8 @@ class StoreAccountTransaction(private val dao: SignUpDao,
                 activeAccount.toJSON().toString())
     }
 
-    fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle, extraSteps: Runnable?, keepData: Boolean = false) {
+    fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle, extraSteps: Runnable?,
+            keepData: Boolean = false, isMultiple: Boolean = false) {
         accountDao.updateActiveInAccount()
         val preKeyList = keyBundle.preKeys.entries.map { (key, value) ->
             CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = account.id)
@@ -46,14 +47,15 @@ class StoreAccountTransaction(private val dao: SignUpDao,
         if(!keepData) {
             dao.insertNewAccountData(account = account, preKeyList = preKeyList,
                     signedPreKey = signedPreKey, defaultLabels = defaultLabels,
-                    extraRegistrationSteps = extraRegistrationSteps, accountDao = accountDao)
+                    extraRegistrationSteps = extraRegistrationSteps, accountDao = accountDao,
+                    isMultiple = isMultiple)
         }else{
             dao.updateAccountData(account = account, preKeyList = preKeyList, signedPreKey = signedPreKey,
                     extraRegistrationSteps = extraRegistrationSteps, accountDao = accountDao)
         }
     }
 
-    fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle) =
-            run(account, keyBundle, null)
+    fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle, isMultiple: Boolean = false) =
+            run(account, keyBundle, null, isMultiple = isMultiple)
 
 }

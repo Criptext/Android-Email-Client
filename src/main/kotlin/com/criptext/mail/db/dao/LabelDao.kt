@@ -14,7 +14,7 @@ interface LabelDao {
     fun insert(label: Label): Long
 
     @Insert
-    fun insertAll(labels : List<Label>)
+    fun insertAll(labels : List<Label>): List<Long>
 
     @Query("SELECT * FROM label WHERE accountId IS NULL OR accountId = :accountId")
     fun getAll(accountId: Long) : List<Label>
@@ -54,7 +54,7 @@ interface LabelDao {
             where id=:id AND (accountId IS NULL OR accountId = :accountId)""")
     fun updateVisibility(id: Long, visibility: Boolean, accountId: Long)
 
-    @Query("DELETE FROM label")
-    fun nukeTable()
+    @Query("DELETE FROM label WHERE accountId=:accountId")
+    fun nukeTable(accountId: Long)
 
 }

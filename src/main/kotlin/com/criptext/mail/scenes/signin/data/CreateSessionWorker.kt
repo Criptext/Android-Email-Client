@@ -10,6 +10,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -22,6 +23,7 @@ import org.json.JSONObject
 
 class CreateSessionWorker(val httpClient: HttpClient,
                           private val db: SignInLocalDB,
+                          private val isMultiple: Boolean,
                           signUpDao: SignUpDao,
                           private val name : String,
                           private val username: String,
@@ -47,11 +49,18 @@ class CreateSessionWorker(val httpClient: HttpClient,
 
         val result = Result.of {
                     val lastLoggedUser = keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
-                    if(lastLoggedUser.isNotEmpty())
-                        db.deleteDatabase(lastLoggedUser)
-                    else
-                        db.deleteDatabase()
-                    keyValueStorage.clearAll()
+                    if(!isMultiple) {
+                        if (lastLoggedUser.isNotEmpty())
+                            db.deleteDatabase(lastLoggedUser)
+                        else
+                            db.deleteDatabase()
+                        keyValueStorage.clearAll()
+                    } else {
+                        if (lastLoggedUser.isNotEmpty()) {
+                            val account = accountDao.getAccountByRecipientId(lastLoggedUser)!!
+                            db.deleteDatabase(account)
+                        }
+                    }
 
                 }
                 .flatMap { signalRegistrationOperation() }
@@ -75,7 +84,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
             val account = Account(id = 0, recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "", refreshToken = "", isActive = true, domain = "criptext.com", isLoggedIn = true)
+                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true)
             Pair(registrationBundles, account)
         }
     }
@@ -98,7 +107,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
 
             storeAccountTransaction.run(account = account,
                     keyBundle = registrationBundles.privateBundle,
-                    extraSteps = postKeyBundleStep)
+                    extraSteps = postKeyBundleStep, isMultiple = isMultiple)
         }
 
     }

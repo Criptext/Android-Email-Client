@@ -254,7 +254,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 }
 
             }
@@ -336,7 +337,8 @@ class SignInSceneController(
             val hashedPassword = currentState.password.sha256()
             val req = SignInRequest.AuthenticateUser(
                     username = currentState.username,
-                    password = hashedPassword
+                    password = hashedPassword,
+                    isMultiple = model.isMultiple
             )
             dataSource.submitRequest(req)
         }
@@ -391,7 +393,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
                             username = currentState.username,
-                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 })
             }
         }
@@ -447,7 +450,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 }
                 is SignInResult.LinkData -> {
                     dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress, model.authorizerId))

@@ -458,4 +458,7 @@
   <string name="profile_picture_delete_failed">Imagen de perfil no se pudo borrar</string>
   <string name="change_name_btn_text">Cambiar Nombre</string>
   <string name="error_email_max_files_title">Capacidad Máxima</string>
+  <string name="drawer_add_account">Agregar cuenta existente</string>
+  <string name="drawer_create_account_account">Crear una cuenta</string>
+  <string name="snack_bar_active_account">Conectado como %1$s</string>
 </resources>

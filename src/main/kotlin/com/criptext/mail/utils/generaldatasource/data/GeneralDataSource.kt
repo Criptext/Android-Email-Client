@@ -19,7 +19,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                         private val eventLocalDB: EventLocalDB,
                         private val db : AppDatabase,
                         private val storage: KeyValueStorage,
-                        private val activeAccount: ActiveAccount?,
+                        var activeAccount: ActiveAccount?,
                         private val httpClient: HttpClient
 ): BackgroundWorkManager<GeneralRequest, GeneralResult>() {
 
@@ -45,8 +45,9 @@ class GeneralDataSource(override val runner: WorkRunner,
                     signalClient = signalClient,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
-                    activeAccount = activeAccount!!,
+                    activeAccount = params.activeAccount ?: activeAccount!!,
                     label = params.label,
+                    isActiveAccount = params.isActiveAccount,
                     loadedThreadsCount = params.loadedThreadsCount,
                     storage = storage,
                     accountDao = db.accountDao(),
@@ -84,6 +85,7 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.TotalUnreadEmails -> GetTotalUnreadMailsByLabelWorker(
                     activeAccount = activeAccount!!,
                     emailDao = db.emailDao(),
+                    db = MailboxLocalDB.Default(db, filesDir),
                     currentLabel = params.currentLabel,
                     publishFn = { res -> flushResults(res)}
             )
