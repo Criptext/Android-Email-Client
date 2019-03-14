@@ -1,6 +1,7 @@
 package com.criptext.mail.db
 
 import android.content.Context
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.utils.EmailUtils
 import java.io.File
 
@@ -12,6 +13,7 @@ import java.io.File
 interface SignInLocalDB {
     fun login(): Boolean
     fun accountExistsLocally(username: String): Boolean
+    fun deleteDatabase(account: Account)
     fun deleteDatabase(user: String)
     fun deleteDatabase()
 
@@ -37,6 +39,11 @@ interface SignInLocalDB {
         override fun deleteDatabase(user: String) {
             EmailUtils.deleteEmailsInFileSystem(filesDir, user)
             db.clearAllTables()
+        }
+
+        override fun deleteDatabase(account: Account) {
+            EmailUtils.deleteEmailsInFileSystem(filesDir, account.recipientId)
+            db.accountDao().delete(account)
         }
 
     }

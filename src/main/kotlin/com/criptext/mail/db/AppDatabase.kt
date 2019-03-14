@@ -44,6 +44,7 @@ import java.util.*
         FeedTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
+    abstract fun accountContactDao(): AccountContactDao
     abstract fun contactDao(): ContactDao
     abstract fun emailDao(): EmailDao
     abstract fun emailLabelDao(): EmailLabelDao
@@ -256,8 +257,8 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("DROP TABLE email")
                     database.execSQL("ALTER TABLE new_email RENAME TO email")
-                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_metadataKey_index ON email (metadataKey)")
-                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_messageId_index ON email (messageId)")
+                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_metadataKey_index ON email (metadataKey, accountId)")
+                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_messageId_index ON email (messageId, accountId)")
 
                     database.execSQL("""ALTER TABLE label ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
                     database.execSQL("""UPDATE label SET accountId=NULL WHERE type='SYSTEM'""")
@@ -277,7 +278,6 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("DROP TABLE label")
                     database.execSQL("ALTER TABLE new_label RENAME TO label")
-                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_text ON label (text)")
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")
 
                     database.execSQL("""ALTER TABLE raw_identitykey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")

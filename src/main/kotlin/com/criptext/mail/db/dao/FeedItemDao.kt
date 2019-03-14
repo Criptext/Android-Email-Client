@@ -16,8 +16,11 @@ interface FeedItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertFeedItems(feedItems: List<FeedItem>)
 
-    @Query("SELECT * FROM feedItem ORDER BY date DESC")
-    fun getAllFeedItems() : List<FeedItem>
+    @Query("""SELECT * FROM feedItem
+        WHERE emailId IN
+        (SELECT id FROM email WHERE accountId=:accountId)
+        ORDER BY date DESC""")
+    fun getAllFeedItems(accountId: Long) : List<FeedItem>
 
     @Delete
     fun deleteFeedItems(feedItems: List<FeedItem>)

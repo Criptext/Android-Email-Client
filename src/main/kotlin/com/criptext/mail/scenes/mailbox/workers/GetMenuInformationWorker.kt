@@ -30,7 +30,8 @@ class GetMenuInformationWorker(
                 totalInbox = db.getUnreadCounterLabel(Label.defaultItems.inbox.id),
                 totalSpam = db.getUnreadCounterLabel(Label.defaultItems.spam.id),
                 totalDraft = db.getTotalCounterLabel(Label.defaultItems.draft.id),
-                labels = db.getCustomAndVisibleLabels())
+                labels = db.getCustomAndVisibleLabels(),
+                accounts = db.getLoggedAccounts())
     }
 
     override fun cancel() {

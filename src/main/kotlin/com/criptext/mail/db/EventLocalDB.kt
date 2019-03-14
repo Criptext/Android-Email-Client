@@ -20,6 +20,19 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     private val account by lazy { db.accountDao().getLoggedInAccount()!! }
 
+    fun getExistingAccount(): Account? {
+        return db.accountDao().getLoggedInAccount()
+    }
+
+    fun setActiveAccount(id: Long) {
+        db.accountDao().updateActiveInAccount()
+        db.accountDao().updateActiveInAccount(id)
+    }
+
+    fun getLoggedAccounts(): List<Account> {
+        return db.accountDao().getLoggedInAccounts()
+    }
+
     fun getCacheDir(): File {
         return cacheDir
     }
@@ -38,6 +51,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun logout(){
+        db.accountDao().logoutAccount(account.id)
         db.rawIdentityKeyDao().deleteAll(account.id)
         db.rawPreKeyDao().deleteAll(account.id)
         db.rawSessionDao().deleteAll(account.id)

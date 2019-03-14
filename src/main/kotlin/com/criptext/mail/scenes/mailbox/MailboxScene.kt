@@ -21,6 +21,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -81,7 +82,9 @@ interface MailboxScene{
     fun showRefresh()
     fun scrollTop()
     fun setCounterLabel(menu: NavigationMenuOptions, total: Int)
+    fun updateBadges(badgeData: List<Pair<String, Int>>)
     fun setMenuLabels(labels: List<LabelWrapper>)
+    fun setMenuAccounts(accounts: List<Account>, badgeCount: List<Int>)
     fun clearMenuActiveLabel()
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
@@ -472,6 +475,10 @@ interface MailboxScene{
             drawerMenuView.setCounterLabel(menu, total)
         }
 
+        override fun updateBadges(badgeData: List<Pair<String, Int>>) {
+            drawerMenuView.updateBadges(badgeData)
+        }
+
         private fun setListeners(observer: MailboxUIObserver){
 
             openComposerButton.setOnClickListener {
@@ -509,6 +516,10 @@ interface MailboxScene{
 
         override fun setMenuLabels(labels: List<LabelWrapper>) {
             drawerMenuView.setLabelAdapter(labels)
+        }
+
+        override fun setMenuAccounts(accounts: List<Account>, badgeCount: List<Int>) {
+            drawerMenuView.setAccountAdapter(accounts, badgeCount)
         }
 
         override fun clearMenuActiveLabel() {

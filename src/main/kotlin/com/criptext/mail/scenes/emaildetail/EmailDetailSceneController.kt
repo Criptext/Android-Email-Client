@@ -226,7 +226,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         model.threadId, model.currentLabel))
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
-                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
             }
             is GeneralResult.UpdateMailbox.Unauthorized ->
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
@@ -999,7 +999,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onNewEvent() {
-            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {

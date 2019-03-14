@@ -43,6 +43,8 @@ interface MailboxLocalDB {
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
                                metadataKey: Long, date: Date, status: DeliveryTypes)
     fun getExistingAccount(): Account?
+    fun setActiveAccount(id: Long)
+    fun getLoggedAccounts(): List<Account>
     fun getUnreadCounterLabel(labelId: Long): Int
     fun setTrashDate(emailIds: List<Long>)
     fun getTotalCounterLabel(labelId: Long): Int
@@ -389,6 +391,15 @@ interface MailboxLocalDB {
 
         override fun getExistingAccount(): Account? {
             return db.accountDao().getLoggedInAccount()
+        }
+
+        override fun setActiveAccount(id: Long) {
+            db.accountDao().updateActiveInAccount()
+            db.accountDao().updateActiveInAccount(id)
+        }
+
+        override fun getLoggedAccounts(): List<Account> {
+            return db.accountDao().getLoggedInAccounts()
         }
 
         override fun getUnreadCounterLabel(labelId: Long): Int {

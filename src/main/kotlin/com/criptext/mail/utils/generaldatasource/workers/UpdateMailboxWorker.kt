@@ -29,6 +29,7 @@ import java.io.File
 
 
 class UpdateMailboxWorker(
+        private val isActiveAccount: Boolean,
         private val signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
@@ -56,13 +57,13 @@ class UpdateMailboxWorker(
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    GeneralResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.UpdateMailbox.Unauthorized(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.Forbidden ->
-                    GeneralResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
-                else -> GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+                    GeneralResult.UpdateMailbox.Forbidden(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                else -> GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
             }
         }
-        else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+        else GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
 
 
     private fun processFailure(failure: Result.Failure<EventHelperResultData, Exception>): GeneralResult.UpdateMailbox {
@@ -73,7 +74,8 @@ class UpdateMailboxWorker(
                     mailboxThreads = null,
                     updateBannerData = null,
                     syncEventsList = listOf(),
-                    shouldNotify = false)
+                    shouldNotify = false,
+                    isActiveAccount = isActiveAccount)
         else
             catchException(failure.error)
     }
@@ -104,7 +106,8 @@ class UpdateMailboxWorker(
                             mailboxThreads = finalResult.value.emailPreviews,
                             updateBannerData = finalResult.value.updateBannerData,
                             syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify
+                            shouldNotify = finalResult.value.shouldNotify,
+                            isActiveAccount = isActiveAccount
                     )
                 }else {
                     GeneralResult.UpdateMailbox.Success(
@@ -113,7 +116,8 @@ class UpdateMailboxWorker(
                             mailboxThreads = finalResult.value.emailPreviews,
                             updateBannerData = finalResult.value.updateBannerData,
                             syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify
+                            shouldNotify = finalResult.value.shouldNotify,
+                            isActiveAccount = isActiveAccount
                     )
                 }
             }
@@ -136,11 +140,11 @@ class UpdateMailboxWorker(
     private fun newRetryWithNewSessionOperation()
             : Result<EventHelperResultData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
-                activeAccount, storage, accountDao)
+                activeAccount, storage, accountDao, isActiveAccount)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
+                val account = ActiveAccount.loadFromDB(accountDao.getAccountByRecipientId(activeAccount.recipientId)!!)!!
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
