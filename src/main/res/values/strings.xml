@@ -462,4 +462,5 @@
   <string name="drawer_add_account">Add an Existing Account</string>
   <string name="drawer_create_account_account">Create an Account</string>
   <string name="snack_bar_active_account">Now logged in as %1$s</string>
+  <string name="username_not_available_error">Username not available</string>
 </resources>
