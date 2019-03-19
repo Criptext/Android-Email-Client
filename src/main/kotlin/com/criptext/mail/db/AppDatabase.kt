@@ -278,6 +278,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("DROP TABLE label")
                     database.execSQL("ALTER TABLE new_label RENAME TO label")
+
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")
 
                     database.execSQL("""ALTER TABLE raw_identitykey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")

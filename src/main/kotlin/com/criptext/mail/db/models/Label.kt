@@ -1,5 +1,6 @@
 package com.criptext.mail.db.models
 
+
 import androidx.room.*
 import com.criptext.mail.db.LabelTypes
 import org.json.JSONObject

@@ -77,7 +77,7 @@ class UpdateMailboxWorkerTest {
             UpdateMailboxWorker(signalClient = signalClient, label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
-                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao())
+                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
@@ -112,7 +112,7 @@ class UpdateMailboxWorkerTest {
         db.emailInsertionDao().insertAccountContact(listOf(AccountContact(0, 1, 1)))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
 
-        var totalFeeds = db.feedDao().getAllFeedItems().size
+        var totalFeeds = db.feedDao().getAllFeedItems(activeAccount.id).size
         totalFeeds `shouldBe` 0
 
         // run worker
@@ -125,7 +125,7 @@ class UpdateMailboxWorkerTest {
         Log.d("DeliveryStatus", "updatedEmails = ${updatedEmails.map { it.delivered }}")
         updatedEmails.all(hasDeliveryTypeRead).shouldBeTrue()
 
-        totalFeeds = db.feedDao().getAllFeedItems().size
+        totalFeeds = db.feedDao().getAllFeedItems(activeAccount.id).size
         totalFeeds `shouldBe` 2
     }
 

@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import android.content.res.Resources
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes

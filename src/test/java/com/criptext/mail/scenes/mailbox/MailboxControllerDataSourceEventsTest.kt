@@ -56,7 +56,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         // verify UpdateMailbox request sent
         verify {
             generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = loadedThreads.size))
+                loadedThreadsCount = loadedThreads.size, isActiveAccount = true, activeAccount = null))
         }
     }
 
@@ -119,7 +119,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
                 isManual = false,
                 updateBannerData = null,
                 syncEventsList = listOf(),
-                shouldNotify = false))
+                shouldNotify = false,
+                isActiveAccount = true))
 
         model.threads.size `should be` 20
         verify { virtualListView.notifyDataSetChanged() }
@@ -139,7 +140,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
                 mailboxLabel = model.selectedLabel, isManual = false,
                 updateBannerData = null,
                 syncEventsList = listOf(),
-                shouldNotify = false))
+                shouldNotify = false,
+                isActiveAccount = true))
 
         model.threads.size `should be` 40
         verify(inverse = true) { virtualListView.notifyDataSetChanged() }
@@ -159,7 +161,8 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
                 mailboxLabel = model.selectedLabel, isManual = true,
                 updateBannerData = null,
                 syncEventsList = listOf(),
-                shouldNotify = false))
+                shouldNotify = false,
+                isActiveAccount = true))
 
         verify { scene.clearRefreshing() }
     }
