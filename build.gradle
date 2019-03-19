@@ -46,7 +46,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 53
-        versionName "0.17.1"
+        versionName "0.17.2"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

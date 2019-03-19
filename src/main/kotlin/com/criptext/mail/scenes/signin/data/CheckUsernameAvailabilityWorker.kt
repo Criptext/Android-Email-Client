@@ -1,11 +1,13 @@
 package com.criptext.mail.scenes.signin.data
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.utils.ServerCodes
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 
 /**
@@ -22,7 +24,14 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
     override val canBeParallelized = true
 
     override fun catchException(ex: Exception): SignInResult.CheckUsernameAvailability {
-        return SignInResult.CheckUsernameAvailability.Failure()
+        return if(ex is ServerErrorException) {
+            when(ex.errorCode) {
+                ServerCodes.Gone -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.username_not_available_error))
+                else -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.forgot_password_error))
+            }
+        }else {
+            SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.forgot_password_error))
+        }
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.CheckUsernameAvailability>): SignInResult.CheckUsernameAvailability? {
@@ -35,7 +44,7 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
                 if (error is ServerErrorException && error.errorCode == ServerCodes.BadRequest)
                     SignInResult.CheckUsernameAvailability.Success(userExists = true, username = username)
                 else
-                    SignInResult.CheckUsernameAvailability.Failure()
+                    catchException(error)
             }
         }
     }

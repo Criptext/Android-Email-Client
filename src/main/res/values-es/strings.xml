@@ -458,4 +458,5 @@
   <string name="profile_picture_delete_failed">Imagen de perfil no se pudo borrar</string>
   <string name="change_name_btn_text">Cambiar Nombre</string>
   <string name="error_email_max_files_title">Capacidad Máxima</string>
+  <string name="username_not_available_error">Usuario no disponible</string>
 </resources>

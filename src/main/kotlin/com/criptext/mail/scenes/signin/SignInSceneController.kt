@@ -115,7 +115,7 @@ class SignInSceneController(
                     scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
                 }
             }
-            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(UIMessage(R.string.forgot_password_error))
+            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(result.message)
         }
         scene.setSubmitButtonState(ProgressButtonState.enabled)
     }
@@ -152,9 +152,15 @@ class SignInSceneController(
     }
 
     private fun onLinkAuth(result: SignInResult.LinkAuth) {
-        scene.toggleResendClickable(true)
         when (result) {
             is SignInResult.LinkAuth.Success -> {
+                if(model.hasTwoFA) {
+                    val currentState = model.state as SignInLayoutState.InputPassword
+                    model.state = SignInLayoutState.LoginValidation(currentState.username, model.hasTwoFA)
+                    scene.initLayout(model.state, uiObserver)
+                }
+                handleNewTemporalWebSocket()
+                scene.toggleResendClickable(true)
                 model.linkDeviceState = LinkDeviceState.Auth()
                 host.postDelay(Runnable{
                     if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
@@ -171,7 +177,6 @@ class SignInSceneController(
                             result.exception)
                     onAuthenticationFailed(resultData)
                 }else {
-                    val currentState = model.state as SignInLayoutState.LoginValidation
                     scene.showError(UIMessage(R.string.server_error_exception))
                 }
             }
@@ -499,9 +504,6 @@ class SignInSceneController(
                     if(model.hasTwoFA){
                         val currentState = model.state as SignInLayoutState.InputPassword
                         model.realSecurePassword = currentState.password.sha256()
-                        model.state = SignInLayoutState.LoginValidation(currentState.username, model.hasTwoFA)
-                        scene.initLayout(model.state, this)
-                        handleNewTemporalWebSocket()
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
                                 model.ephemeralJwt, model.realSecurePassword))
                     }else{
