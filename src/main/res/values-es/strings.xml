@@ -91,8 +91,9 @@
   <string name="start_guide_email">Toca para escribir un correo seguro</string>
   <string name="title_swipe">Opciones de Deslice</string>
   <string name="title_profile_name">Nombre de Perfil</string>
-  <string name="title_profile">Perfil</string>
+  <string name="title_account">Cuenta</string>
   <string name="title_privacy_policy">Política de Privacidad</string>
+  <string name="title_faq">Preguntas Frecuentes</string>
   <string name="title_terms_of_service">Términos del Servicio</string>
   <string name="title_open_source_libraries">Librerías de Código Abierto</string>
   <string name="title_logout">Cerrar Sesión</string>
@@ -117,12 +118,13 @@
   <string name="title_two_fa">Autenticación de Dos Factores</string>
   <string name="title_dark_theme">Tema Oscuro</string>
   <string name="title_read_receipts">Confirmaciones de Lectura</string>
-    <string name="title_privacy">Seguridad y Privacidad</string>
+    <string name="title_privacy">Privacidad</string>
   <string name="title_badges">Notificación en icono de la aplicación</string>
   <string name="title_sounds">Sonidos</string>
   <string name="separator_account">CUENTA</string>
   <string name="separator_about">ACERCA DE</string>
   <string name="separator_appearance">APARIENCIA</string>
+  <string name="separator_general">GENERAL</string>
   <string name="status_not_confirmed">(no verificado)</string>
   <string name="status_confirmed">(verificado)</string>
   <string name="criptext_version">Criptext Beta </string>
@@ -179,7 +181,10 @@
   <string name="delete_account_toast_message">Cuenta fue eliminada exitosamente.</string>
   <string name="remove_device_dialog_message">Eliminar este dispositivo hará que se cierre la sesión de forma remota.</string>
   <string name="removing_device_dialog_message">Eliminando dispositivo…</string>
-  <string name="privacy_toolbar_title">SEGURIDAD Y PRIVACIDAD</string>
+  <string name="privacy_toolbar_title">PRIVACIDAD</string>
+  <string name="devices_toolbar_title">DISPOSITIVOS</string>
+    <string name="labels_toolbar_title">ETIQUETAS</string>
+  <string name="pin_toolbar_title">BLOQUEO PIN</string>
   <string name="profile_toolbar_title">PERFIL</string>
   <string name="email_source_toolbar_title">FUENTE DEL CORREO</string>
   <string name="pin_lock_switch_text">Usar PIN</string>
@@ -459,4 +464,9 @@
   <string name="change_name_btn_text">Cambiar Nombre</string>
   <string name="error_email_max_files_title">Capacidad Máxima</string>
   <string name="username_not_available_error">Usuario no disponible</string>
+  <string name="title_devices">Dispositivos</string>
+  <string name="title_labels">Etiquetas</string>
+  <string name="title_pin_lock">Bloqueo Pin</string>
+  <string name="privacy_two_fa_message">Una validación extra para proteger tu cuenta.</string>
+  <string name="privacy_read_receipts_message">Saber cuando tus correos son abiertos o leídos. Si lo deshabilitas, no podrás enviar o recibir confirmaciones de lectura.</string>
 </resources>

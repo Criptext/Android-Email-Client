@@ -1,25 +1,20 @@
 package com.criptext.mail.scenes.settings.profile
 
 import android.graphics.Bitmap
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatEditText
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
-import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.MessageAndProgressDialog
+import com.criptext.mail.scenes.settings.SettingsLogoutDialog
 import com.criptext.mail.scenes.settings.profile.ui.BottomDialog
 import com.criptext.mail.scenes.settings.profile.ui.ProfileNameDialog
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.ForgotPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.google.android.material.textfield.TextInputLayout
 import de.hdodenhof.circleimageview.CircleImageView
 
 
@@ -41,6 +36,12 @@ interface ProfileScene{
     fun hideProfilePictureProgress()
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
+    fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
+    fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData)
+    fun setGeneralDialogWithInputError(message: UIMessage)
+    fun toggleGeneralDialogLoad(isLoading: Boolean)
+    fun showMessageAndProgressDialog(message: UIMessage)
+    fun dismissMessageAndProgressDialog()
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -53,8 +54,32 @@ interface ProfileScene{
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val changeNameButton: View by lazy {
-            view.findViewById<View>(R.id.change_name_button)
+        private val profileNameButton: View by lazy {
+            view.findViewById<View>(R.id.profile_name_button)
+        }
+
+        private val profileSignatureButton: View by lazy {
+            view.findViewById<View>(R.id.profile_signature_button)
+        }
+
+        private val profilePasswordButton: View by lazy {
+            view.findViewById<View>(R.id.profile_password_button)
+        }
+
+        private val profileRecoveryEmailButton: View by lazy {
+            view.findViewById<View>(R.id.profile_recovery_button)
+        }
+
+        private val profileReplyToEmailButton: View by lazy {
+            view.findViewById<View>(R.id.profile_change_reply_to)
+        }
+
+        private val profileLogoutlButton: View by lazy {
+            view.findViewById<View>(R.id.profile_logout_button)
+        }
+
+        private val profileDeleteAccountButton: View by lazy {
+            view.findViewById<View>(R.id.profile_delete_account_button)
         }
 
         private val profilePicture: CircleImageView by lazy {
@@ -81,6 +106,9 @@ interface ProfileScene{
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val attachmentBottomDialog = BottomDialog(context)
         private val settingsProfileNameDialog = ProfileNameDialog(context)
+        private val settingLogoutDialog = SettingsLogoutDialog(context)
+        private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
+        private var messageAndProgressDialog: MessageAndProgressDialog? = null
 
 
         override fun attachView(uiObserver: ProfileUIObserver, recipientId: String,
@@ -92,18 +120,42 @@ interface ProfileScene{
                 profileUIObserver.onBackButtonPressed()
             }
 
-            changeNameButton.setOnClickListener {
+            profileNameButton.setOnClickListener {
                 profileUIObserver.onEditProfileNamePressed()
+            }
+
+            profileSignatureButton.setOnClickListener {
+                profileUIObserver.onSignatureOptionClicked()
+            }
+
+            profilePasswordButton.setOnClickListener {
+                profileUIObserver.onChangePasswordOptionClicked()
+            }
+
+            profileRecoveryEmailButton.setOnClickListener {
+                profileUIObserver.onRecoveryEmailOptionClicked()
+            }
+
+            profileReplyToEmailButton.setOnClickListener {
+                profileUIObserver.onReplyToChangeClicked()
+            }
+
+            profileLogoutlButton.setOnClickListener {
+                profileUIObserver.onLogoutClicked()
+            }
+
+            profileDeleteAccountButton.setOnClickListener {
+                profileUIObserver.onDeleteAccountClicked()
             }
 
             changePictureButton.setOnClickListener {
                 profileUIObserver.onEditPicturePressed()
             }
 
-            nameText.text = model.name
-            emailText.text = model.email
+            nameText.text = model.userData.name
+            emailText.text = model.userData.email
             showProfilePictureProgress()
-            UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.name, Runnable { hideProfilePictureProgress() })
+            UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.userData.name, Runnable { hideProfilePictureProgress() })
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
@@ -164,6 +216,32 @@ interface ProfileScene{
 
         override fun dismissPreparingFileDialog() {
             preparingFileDialog.dismiss()
+        }
+
+        override fun showLogoutDialog(isLastDeviceWith2FA: Boolean) {
+            settingLogoutDialog.showLogoutDialog(profileUIObserver, isLastDeviceWith2FA)
+        }
+
+        override fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData) {
+            generalDialogWithInputPassword = GeneralDialogWithInputPassword(context, dialogData)
+            generalDialogWithInputPassword?.showDialog(profileUIObserver)
+        }
+
+        override fun setGeneralDialogWithInputError(message: UIMessage) {
+            generalDialogWithInputPassword?.setPasswordError(message)
+        }
+
+        override fun toggleGeneralDialogLoad(isLoading: Boolean) {
+            generalDialogWithInputPassword?.toggleLoad(isLoading)
+        }
+
+        override fun showMessageAndProgressDialog(message: UIMessage) {
+            messageAndProgressDialog = MessageAndProgressDialog(context, message)
+            messageAndProgressDialog?.showDialog()
+        }
+
+        override fun dismissMessageAndProgressDialog() {
+            messageAndProgressDialog?.dismiss()
         }
 
         override fun showMessage(message: UIMessage) {

@@ -10,4 +10,11 @@ interface ProfileUIObserver: UIObserver {
     fun onNewGalleryPictureRequested()
     fun onDeletePictureRequested()
     fun onProfileNameChanged(name: String)
+    fun onSignatureOptionClicked()
+    fun onChangePasswordOptionClicked()
+    fun onRecoveryEmailOptionClicked()
+    fun onReplyToChangeClicked()
+    fun onLogoutClicked()
+    fun onLogoutConfirmedClicked()
+    fun onDeleteAccountClicked()
 }

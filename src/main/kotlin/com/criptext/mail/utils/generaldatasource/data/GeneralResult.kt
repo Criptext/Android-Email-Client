@@ -184,4 +184,9 @@ sealed class GeneralResult {
                 val message: UIMessage,
                 val exception: Exception): GetRemoteFile()
     }
+
+    sealed class Set2FA: GeneralResult() {
+        data class Success(val hasTwoFA: Boolean): Set2FA()
+        data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
+    }
 }

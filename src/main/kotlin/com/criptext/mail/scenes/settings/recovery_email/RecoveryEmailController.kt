@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.LinkingParams
+import com.criptext.mail.scenes.params.ProfileParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
@@ -137,7 +138,7 @@ class RecoveryEmailController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(SettingsParams(), null,true)
+            host.exitToScene(ProfileParams(model.userData), null,false)
         }
 
         override fun onResendRecoveryLinkPressed() {
@@ -188,8 +189,8 @@ class RecoveryEmailController(
     private fun onChangeRecoveryEmail(result: RecoveryEmailResult.ChangeRecoveryEmail){
         when(result) {
             is RecoveryEmailResult.ChangeRecoveryEmail.Success -> {
-                model.recoveryEmail = model.newRecoveryEmail.value
-                model.isEmailConfirmed = false
+                model.userData.recoveryEmail = model.newRecoveryEmail.value
+                model.userData.isEmailConfirmed = false
                 scene.updateCurrent(model)
                 scene.enterPasswordDialogDismiss()
                 scene.showMessage(UIMessage(R.string.recovery_email_has_changed))
@@ -312,13 +313,13 @@ class RecoveryEmailController(
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {
-            model.recoveryEmail = model.newRecoveryEmail.value
-            model.isEmailConfirmed = false
+            model.userData.recoveryEmail = model.newRecoveryEmail.value
+            model.userData.isEmailConfirmed = false
             scene.updateCurrent(model)
         }
 
         override fun onRecoveryEmailConfirmed() {
-            model.isEmailConfirmed = true
+            model.userData.isEmailConfirmed = true
             scene.updateCurrent(model)
         }
 

@@ -193,6 +193,14 @@ class GeneralDataSource(override val runner: WorkRunner,
                     contentResolver = params.contentResolver,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.Set2FA -> TwoFAWorker(
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    activeAccount = activeAccount!!,
+                    twoFA = params.twoFA,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

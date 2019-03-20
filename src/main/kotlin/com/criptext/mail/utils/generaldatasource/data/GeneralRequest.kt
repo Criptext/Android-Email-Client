@@ -32,4 +32,5 @@ sealed class GeneralRequest {
     data class ResendEmail(val emailId: Long, val position: Int): GeneralRequest()
     data class ChangeContactName(val fullName: String, val recipientId: String) : GeneralRequest()
     class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): GeneralRequest()
+    data class Set2FA(val twoFA: Boolean): GeneralRequest()
 }

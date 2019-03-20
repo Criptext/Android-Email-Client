@@ -10,7 +10,8 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.settings.workers.CreateCustomLabelWorker
+import com.criptext.mail.scenes.settings.labels.data.LabelsResult
+import com.criptext.mail.scenes.settings.labels.workers.CreateCustomLabelWorker
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
 import io.mockk.mockk
@@ -61,7 +62,7 @@ class CreateCustomLabelWorkerTest{
         }
         val labelName = "__LABEL__"
         val worker = newWorker(labelName)
-        val result = worker.work(mockk()) as SettingsResult.CreateCustomLabel.Success
+        val result = worker.work(mockk()) as LabelsResult.CreateCustomLabel.Success
 
         result.label.text shouldEqual labelName
 

@@ -20,9 +20,8 @@ import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.data.SettingsRequest
-import com.criptext.mail.scenes.settings.devices.DeviceItem
-import com.criptext.mail.scenes.settings.devices.DeviceWrapperListController
-import com.criptext.mail.scenes.settings.labels.LabelWrapperListController
+import com.criptext.mail.scenes.settings.devices.data.DeviceItem
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
@@ -51,9 +50,6 @@ class SettingsController(
 
     override val menuResourceId: Int? = null
 
-    private val labelWrapperListController = LabelWrapperListController(model, scene.getLabelListView())
-    private val deviceWrapperListController = DeviceWrapperListController(model, scene.getDeviceListView())
-
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
@@ -62,25 +58,35 @@ class SettingsController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
-            is GeneralResult.Logout -> onLogout(result)
-            is GeneralResult.DeleteAccount -> onDeleteAccount(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
         }
     }
 
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
-            is SettingsResult.GetCustomLabels -> onGetCustomLabels(result)
-            is SettingsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is SettingsResult.GetUserSettings -> onGetUserSettings(result)
-            is SettingsResult.RemoveDevice -> onRemoveDevice(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
-            is SettingsResult.Set2FA -> onSet2FA(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onLabelsOptionClicked() {
+            host.goToScene(LabelsParams(), false)
+        }
+
+        override fun onDevicesOptionClicked() {
+            host.goToScene(DevicesParams(model.devices), false)
+        }
+
+        override fun onPrivacyClicked() {
+            host.goToScene(PrivacyParams(model.hasReadReceipts, model.hasTwoFA, model.isEmailConfirmed), false)
+        }
+
+        override fun onShowPreviewSwitched(isChecked: Boolean) {
+            storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
+            model.showEmailPreview = isChecked
+        }
 
         override fun onSnackbarClicked() {
 
@@ -127,24 +133,8 @@ class SettingsController(
                 ))
         }
 
-        override fun onDeleteAccountClicked() {
-            scene.showGeneralDialogWithInputPassword(DialogData.DialogMessageData(
-                    title = UIMessage(R.string.delete_account_dialog_title),
-                    message = listOf(UIMessage(R.string.delete_account_dialog_message)),
-                    type = DialogType.DeleteAccount()
-            ))
-        }
-
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
-                is DialogResult.DialogWithInput -> {
-                    when(result.type){
-                        is DialogType.DeleteAccount -> {
-                            scene.toggleGeneralDialogLoad(true)
-                            generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
-                        }
-                    }
-                }
                 is DialogResult.DialogConfirmation -> {
                     when(result.type){
                         is DialogType.ManualSyncConfirmation -> {
@@ -169,19 +159,7 @@ class SettingsController(
         }
 
         override fun onPinLockClicked() {
-            host.goToScene(PrivacyAndSecurityParams(model.hasReadReceipts), false)
-        }
-
-        override fun onTwoFASwitched(isChecked: Boolean) {
-            if(model.isEmailConfirmed) {
-                scene.enableTwoFASwitch(false)
-                dataSource.submitRequest(SettingsRequest.Set2FA(isChecked))
-            }else{
-                scene.enableTwoFASwitch(true)
-                scene.updateTwoFa(!isChecked)
-            }
-            if(isChecked)
-                scene.showTwoFADialog(model.isEmailConfirmed)
+            host.goToScene(PinLockParams(), false)
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
@@ -203,25 +181,24 @@ class SettingsController(
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
-        override fun onChangePasswordOptionClicked() {
-            host.goToScene(ChangePasswordParams(), false)
+        override fun onAccountOptionClicked() {
+            val userData = ProfileUserData(
+                name = model.fullName,
+                email = activeAccount.userEmail,
+                recoveryEmail = model.recoveryEmail,
+                isLastDeviceWith2FA = model.devices.size == 1 && model.hasTwoFA,
+                replyToEmail = model.replyToEmail,
+                isEmailConfirmed = model.isEmailConfirmed
+            )
+            host.goToScene(ProfileParams(userData), false)
         }
 
-        override fun onRecoveryEmailOptionClicked() {
-            host.goToScene(RecoveryEmailParams(model.isEmailConfirmed, model.recoveryEmail), false)
-        }
-
-        override fun onCustomLabelNameAdded(labelName: String) {
-            dataSource.submitRequest(SettingsRequest.CreateCustomLabel(labelName))
-            keyboardManager.hideKeyboard()
-        }
-
-        override fun onProfileNameClicked() {
-            host.goToScene(ProfileParams(model.fullName, activeAccount.userEmail, false), false)
-        }
-
-        override fun onReplyToChangeClicked() {
-            host.goToScene(ReplyToParams(model.replyToEmail ?: ""), false)
+        override fun onFAQClicked() {
+            val context = (host as BaseActivity)
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/faq")
+            context.startActivity(intent)
+            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
 
         override fun onPrivacyPoliciesClicked() {
@@ -231,6 +208,7 @@ class SettingsController(
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
+
         override fun onTermsOfServiceClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
@@ -238,36 +216,13 @@ class SettingsController(
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
         }
+
         override fun onOpenSourceLibrariesClicked() {
             val context = (host as BaseActivity)
             val intent = Intent(context, WebViewActivity::class.java)
             intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/open-source-android")
             context.startActivity(intent)
             context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
-        }
-        override fun onLogoutClicked() {
-            val isLastDeviceWith2FA = model.devices.size == 1 &&
-                    model.hasTwoFA
-            scene.showLogoutDialog(isLastDeviceWith2FA)
-        }
-
-        override fun onLogoutConfirmedClicked() {
-            scene.showMessageAndProgressDialog(UIMessage(R.string.login_out_dialog_message))
-            generalDataSource.submitRequest(GeneralRequest.Logout(false))
-        }
-
-        override fun onRemoveDevice(deviceId: Int, position: Int) {
-            scene.showRemoveDeviceDialog(deviceId, position)
-        }
-
-        override fun onRemoveDeviceConfirmed(deviceId: Int, position: Int, password: String) {
-            scene.removeDeviceDialogToggleLoad(true)
-            keyboardManager.hideKeyboard()
-            dataSource.submitRequest(SettingsRequest.RemoveDevice(deviceId, position, password))
-        }
-
-        override fun onRemoveDeviceCancel() {
-            keyboardManager.hideKeyboard()
         }
 
         override fun onBackButtonPressed() {
@@ -278,25 +233,6 @@ class SettingsController(
                 host.finishScene()
             }
         }
-
-        override fun onSignatureOptionClicked() {
-            host.goToScene(SignatureParams(activeAccount.recipientId), true)
-        }
-
-        override fun onToggleLabelSelection(label: LabelWrapper) {
-            dataSource.submitRequest(SettingsRequest.ChangeVisibilityLabel(label.id, label.isSelected))
-        }
-
-        override fun onCreateLabelClicked() {
-            scene.showCreateLabelDialog(keyboardManager)
-        }
-    }
-
-    private val onDevicesListItemListener:DevicesListItemListener = object: DevicesListItemListener {
-        override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
-            settingsUIObserver.onRemoveDevice(device.id, position)
-            return true
-        }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
@@ -306,9 +242,6 @@ class SettingsController(
         generalDataSource.listener = generalDataSourceListener
         model.fullName = activeAccount.name
         model.signature = activeAccount.signature
-        if(model.labels.isEmpty()) {
-            dataSource.submitRequest(SettingsRequest.GetCustomLabels())
-        }
         if(model.devices.isEmpty()) {
             model.devices.add(DeviceItem(
                     id = activeAccount.deviceId,
@@ -318,12 +251,14 @@ class SettingsController(
                     deviceType = DeviceUtils.getDeviceType().ordinal,
                     lastActivity = null))
             scene.attachView(
-                    name = activeAccount.name,
+                    email = activeAccount.userEmail,
                     model = model,
-                    settingsUIObserver = settingsUIObserver,
-                    devicesListItemListener = onDevicesListItemListener)
+                    settingsUIObserver = settingsUIObserver)
             dataSource.submitRequest(SettingsRequest.GetUserSettings())
         }
+
+        model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
+        scene.setEmailPreview(model.showEmailPreview)
 
         return false
     }
@@ -422,70 +357,6 @@ class SettingsController(
         }
     }
 
-    private fun onCreateCustomLabels(result: SettingsResult.CreateCustomLabel){
-        when(result) {
-            is SettingsResult.CreateCustomLabel.Success -> {
-                val labelWrapper = LabelWrapper(result.label)
-                labelWrapper.isSelected = true
-                labelWrapperListController.addNew(labelWrapper)
-            }
-            is SettingsResult.CreateCustomLabel.Failure -> {
-                scene.showMessage(UIMessage(R.string.error_creating_labels))
-                host.finishScene()
-            }
-        }
-    }
-
-    private fun onGetCustomLabels(result: SettingsResult.GetCustomLabels){
-        when(result) {
-            is SettingsResult.GetCustomLabels.Success -> {
-                model.labels.addAll(result.labels.map {
-                    if(it.type == LabelTypes.SYSTEM) {
-                        val label = it.copy(
-                                text = scene.getLabelLocalizedName(it.text)
-                        )
-                        val labelWrapper = LabelWrapper(label)
-                        labelWrapper.isSelected = it.visible
-                        labelWrapper
-                    }else {
-                        val labelWrapper = LabelWrapper(it)
-                        labelWrapper.isSelected = it.visible
-                        labelWrapper
-                    }
-                })
-                labelWrapperListController.notifyDataSetChange()
-            }
-            is SettingsResult.GetCustomLabels.Failure -> {
-                scene.showMessage(UIMessage(R.string.error_getting_labels))
-                host.finishScene()
-            }
-        }
-    }
-
-    private fun onLogout(result: GeneralResult.Logout){
-        when(result) {
-            is GeneralResult.Logout.Success -> {
-                host.exitToScene(SignInParams(), null, false, true)
-            }
-            is GeneralResult.Logout.Failure -> {
-                scene.dismissMessageAndProgressDialog()
-                scene.showMessage(UIMessage(R.string.error_login_out))
-            }
-        }
-    }
-
-    private fun onDeleteAccount(result: GeneralResult.DeleteAccount){
-        scene.toggleGeneralDialogLoad(false)
-        when(result) {
-            is GeneralResult.DeleteAccount.Success -> {
-                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
-            }
-            is GeneralResult.DeleteAccount.Failure -> {
-                scene.setGeneralDialogWithInputError(result.message)
-            }
-        }
-    }
-
     private fun onSyncBegin(result: SettingsResult.SyncBegin){
         scene.enableSyncBeginResendButton()
         when(result) {
@@ -493,7 +364,7 @@ class SettingsController(
                 generalDataSource.submitRequest(GeneralRequest.SyncStatus())
             }
             is SettingsResult.SyncBegin.Failure -> {
-                scene.setGeneralDialogWithInputError(result.message)
+                scene.showMessage(result.message)
             }
         }
     }
@@ -508,7 +379,7 @@ class SettingsController(
                 model.recoveryEmail = result.userSettings.recoveryEmail
                 model.hasTwoFA = result.userSettings.hasTwoFA
                 model.hasReadReceipts = result.userSettings.hasReadReceipts
-                deviceWrapperListController.update()
+                model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
                 scene.updateUserSettings(model)
             }
             is SettingsResult.GetUserSettings.Failure -> {
@@ -523,20 +394,6 @@ class SettingsController(
         }
     }
 
-    private fun onRemoveDevice(result: SettingsResult.RemoveDevice){
-        scene.removeDeviceDialogToggleLoad(false)
-        when(result) {
-            is SettingsResult.RemoveDevice.Success -> {
-                deviceWrapperListController.remove(result.position)
-                scene.removeDeviceDialogDismiss()
-                scene.showMessage(UIMessage(R.string.device_removed))
-            }
-            is SettingsResult.RemoveDevice.Failure -> {
-                scene.setRemoveDeviceError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
     private fun onResetPassword(result: SettingsResult.ResetPassword){
         when(result) {
             is SettingsResult.ResetPassword.Success -> {
@@ -544,22 +401,6 @@ class SettingsController(
             }
             is SettingsResult.ResetPassword.Failure -> {
                 scene.showMessage(result.message)
-            }
-        }
-    }
-
-    private fun onSet2FA(result: SettingsResult.Set2FA){
-        when(result) {
-            is SettingsResult.Set2FA.Success -> {
-                scene.enableTwoFASwitch(true)
-                scene.updateTwoFa(result.hasTwoFA)
-                model.hasTwoFA = result.hasTwoFA
-            }
-            is SettingsResult.Set2FA.Failure -> {
-                scene.showMessage(result.message)
-                scene.enableTwoFASwitch(true)
-                scene.updateTwoFa(!result.twoFAAttempt)
-                model.hasTwoFA = !result.twoFAAttempt
             }
         }
     }

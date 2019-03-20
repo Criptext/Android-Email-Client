@@ -137,10 +137,6 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderSupport.setOnClickListener {
             drawerMenuItemListener.onSupportOptionClicked()
         }
-
-        avatarView.setOnClickListener {
-            drawerMenuItemListener.onAvatarClicked()
-        }
     }
 
     init {

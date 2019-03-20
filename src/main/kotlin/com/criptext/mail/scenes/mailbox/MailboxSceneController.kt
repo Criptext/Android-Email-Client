@@ -181,9 +181,6 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
-        override fun onAvatarClicked() {
-            host.goToScene(ProfileParams(activeAccount.name, activeAccount.userEmail, true),true)
-        }
 
         override fun onCustomLabelClicked(label: Label) {
             model.showOnlyUnread = false

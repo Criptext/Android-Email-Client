@@ -8,6 +8,14 @@ import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
+import com.criptext.mail.scenes.settings.labels.LabelsController
+import com.criptext.mail.scenes.settings.labels.LabelsModel
+import com.criptext.mail.scenes.settings.labels.LabelsScene
+import com.criptext.mail.scenes.settings.labels.LabelsUIObserver
+import com.criptext.mail.scenes.settings.labels.data.LabelsDataSource
+import com.criptext.mail.scenes.settings.labels.data.LabelsRequest
+import com.criptext.mail.scenes.settings.labels.data.LabelsResult
+import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -19,21 +27,20 @@ import org.junit.Test
 
 class SettingsControllerTest{
 
-    private lateinit var scene: SettingsScene
-    private lateinit var model: SettingsModel
+    private lateinit var scene: LabelsScene
+    private lateinit var model: LabelsModel
     private lateinit var host: IHostActivity
     private lateinit var activeAccount: ActiveAccount
     private lateinit var storage: KeyValueStorage
-    private lateinit var dataSource: SettingsDataSource
+    private lateinit var dataSource: LabelsDataSource
     private lateinit var generalDataSource: GeneralDataSource
-    private lateinit var controller: SettingsController
+    private lateinit var controller: LabelsController
     private lateinit var runner: MockedWorkRunner
     protected lateinit var webSocketEvents: WebSocketController
-    private lateinit var sentRequests: MutableList<SettingsRequest>
+    private lateinit var sentRequests: MutableList<LabelsRequest>
 
-    private val observerSlot = CapturingSlot<SettingsUIObserver>()
-    private val itemListenerSlot = CapturingSlot<DevicesListItemListener>()
-    private lateinit var listenerSlot: CapturingSlot<(SettingsResult) -> Unit>
+    private val observerSlot = CapturingSlot<LabelsUIObserver>()
+    private lateinit var listenerSlot: CapturingSlot<(LabelsResult) -> Unit>
 
     private val newProfileName = "Andres"
 
@@ -41,7 +48,7 @@ class SettingsControllerTest{
     fun setUp() {
         runner = MockedWorkRunner()
         scene = mockk(relaxed = true)
-        model = SettingsModel()
+        model = LabelsModel()
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
         webSocketEvents = mockk(relaxed = true)
@@ -50,7 +57,7 @@ class SettingsControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        controller = SettingsController(
+        controller = LabelsController(
                 scene = scene,
                 model = model,
                 host = host,
@@ -64,7 +71,7 @@ class SettingsControllerTest{
         listenerSlot = CapturingSlot()
 
         every {
-            scene.attachView("Daniel", model, capture(observerSlot), capture(itemListenerSlot))
+            scene.attachView(capture(observerSlot), model)
         } just Runs
 
         every {
@@ -81,14 +88,11 @@ class SettingsControllerTest{
 
         controller.onStart(null)
 
-        listenerSlot.captured(SettingsResult.GetUserSettings.Success(userSettings =
-        UserSettingsData(listOf(), "", false, false, false, null)))
-
         val observer = observerSlot.captured
         observer.onCustomLabelNameAdded("__NEW_CUSTOM_LABEL__")
 
         val sentRequest = sentRequests.last()
-        sentRequest `should be instance of` SettingsRequest.CreateCustomLabel::class.java
+        sentRequest `should be instance of` LabelsRequest.CreateCustomLabel::class.java
 
     }
 
