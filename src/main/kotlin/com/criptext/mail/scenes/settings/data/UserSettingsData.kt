@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.settings.data
 
-import com.criptext.mail.scenes.settings.devices.DeviceItem
+import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 

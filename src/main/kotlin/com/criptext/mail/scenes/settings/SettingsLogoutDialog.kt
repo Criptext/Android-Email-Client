@@ -1,17 +1,16 @@
 package com.criptext.mail.scenes.settings
 
 import android.content.Context
-import android.os.CountDownTimer
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.profile.ProfileUIObserver
 
 
 class SettingsLogoutDialog(val context: Context) {
@@ -19,7 +18,7 @@ class SettingsLogoutDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showLogoutDialog(observer: SettingsUIObserver?, isLastDeviceWith2FA: Boolean) {
+    fun showLogoutDialog(observer: ProfileUIObserver?, isLastDeviceWith2FA: Boolean) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -36,7 +35,7 @@ class SettingsLogoutDialog(val context: Context) {
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?): AlertDialog {
+                             observer: ProfileUIObserver?): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -55,7 +54,7 @@ class SettingsLogoutDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?) {
+                                   observer: ProfileUIObserver?) {
 
         val btn_yes = view.findViewById(R.id.settings_logout_yes) as Button
         val btn_no = view.findViewById(R.id.settings_logout_cancel) as Button

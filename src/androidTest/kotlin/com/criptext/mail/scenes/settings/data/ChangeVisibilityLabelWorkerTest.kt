@@ -9,7 +9,7 @@ import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.settings.workers.ChangeVisibilityLabelWorker
+import com.criptext.mail.scenes.settings.labels.workers.ChangeVisibilityLabelWorker
 import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before

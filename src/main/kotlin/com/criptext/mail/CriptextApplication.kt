@@ -5,8 +5,7 @@ import androidx.multidex.MultiDexApplication
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.linking.LinkingActivity
-import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.splash.SplashActivity

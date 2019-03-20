@@ -8,11 +8,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -41,9 +39,13 @@ import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
-import com.criptext.mail.scenes.settings.privacyandsecurity.PrivacyAndSecurityModel
-import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.devices.DevicesModel
+import com.criptext.mail.scenes.settings.labels.LabelsModel
+import com.criptext.mail.scenes.settings.pinlock.PinLockModel
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.privacy.PrivacyModel
 import com.criptext.mail.scenes.settings.profile.ProfileModel
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.replyto.ReplyToModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
@@ -68,9 +70,7 @@ import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.firebase.analytics.FirebaseAnalytics
-import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
-import kotlinx.android.synthetic.main.contact_item.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.lang.Exception
@@ -141,28 +141,45 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this)
                     )
                 }
-                PRIVACY_AND_SECURITY_MODEL -> {
-                    PrivacyAndSecurityModel(
-                            hasReadReceipts = savedInstanceState.getBoolean("hasReadReceipts")
+                PRIVACY_MODEL -> {
+                    PrivacyModel(
+                            readReceipts = savedInstanceState.getBoolean("readReceipts"),
+                            twoFA = savedInstanceState.getBoolean("twoFA"),
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed")
                     )
                 }
                 PROFILE_MODEL -> {
-                    ProfileModel(
+                    val userData = ProfileUserData(
                             name = savedInstanceState.getString("name")!!,
                             email = savedInstanceState.getString("email")!!,
-                            exitToMailbox = savedInstanceState.getBoolean("exitToMailbox")
-                    )
-                }
-                RECOVERY_EMAIL_MODEL -> {
-                    RecoveryEmailModel(
                             isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
                             recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
                     )
+                    ProfileModel(userData)
+                }
+                RECOVERY_EMAIL_MODEL -> {
+                    val userData = ProfileUserData(
+                            name = savedInstanceState.getString("name")!!,
+                            email = savedInstanceState.getString("email")!!,
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
+                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
+                    )
+                    RecoveryEmailModel(userData)
                 }
                 REPLY_TO_MODEL -> {
-                    ReplyToModel(
-                            replyToEmail = savedInstanceState.getString("replyToEmail")!!
+                    val userData = ProfileUserData(
+                            name = savedInstanceState.getString("name")!!,
+                            email = savedInstanceState.getString("email")!!,
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
+                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
                     )
+                    ReplyToModel(userData)
                 }
                 SIGNATURE_MODEL -> {
                     SignatureModel(
@@ -255,24 +272,41 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 outState.putString("type", COMPOSER_MODEL)
                 outState.putString("composerType", ComposerType.toJSON(currentModel.type))
             }
-            is PrivacyAndSecurityModel -> {
-                outState.putString("type", PRIVACY_AND_SECURITY_MODEL)
-                outState.putBoolean("hasReadReceipts", currentModel.hasReadReceipts)
+            is PrivacyModel -> {
+                outState.putString("type", PRIVACY_MODEL)
+                outState.putBoolean("readReceipts", currentModel.readReceipts)
+                outState.putBoolean("twoFA", currentModel.twoFA)
+                outState.putBoolean("isEmailConfirmed", currentModel.isEmailConfirmed)
             }
             is ProfileModel -> {
                 outState.putString("type", PROFILE_MODEL)
-                outState.putString("name", currentModel.name)
-                outState.putString("email", currentModel.email)
-                outState.putBoolean("exitToMailbox", currentModel.exitToMailbox)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is RecoveryEmailModel -> {
                 outState.putString("type", RECOVERY_EMAIL_MODEL)
-                outState.putBoolean("isEmailConfirmed", currentModel.isEmailConfirmed)
-                outState.putString("recoveryEmail", currentModel.recoveryEmail)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is ReplyToModel -> {
                 outState.putString("type", REPLY_TO_MODEL)
-                outState.putString("replyToEmail", currentModel.replyToEmail)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is SignatureModel -> {
                 outState.putString("type", SIGNATURE_MODEL)
@@ -316,15 +350,18 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ComposerParams -> ComposerModel(params.type)
             is SettingsParams -> SettingsModel(params.hasChangedTheme)
             is SignatureParams -> SignatureModel(params.recipientId)
-            is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
+            is RecoveryEmailParams -> RecoveryEmailModel(params.userData)
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
-            is PrivacyAndSecurityParams -> PrivacyAndSecurityModel(params.hasReadReceipts)
+            is PinLockParams -> PinLockModel()
+            is DevicesParams -> DevicesModel(params.devices)
+            is LabelsParams -> LabelsModel()
+            is PrivacyParams -> PrivacyModel(params.hasReadReceipts, params.hasTwoFA, params.isEmailConfirmed)
             is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
                     params.deviceType, params.authorizerName)
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
-            is ReplyToParams -> ReplyToModel(params.replyToEmail)
-            is ProfileParams -> ProfileModel(params.name, params.email, params.exitToMailbox)
+            is ReplyToParams -> ReplyToModel(params.userData)
+            is ProfileParams -> ProfileModel(params.userData)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -636,7 +673,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
         private const val EMAIL_DETAIL_MODEL = "EmailDetailModel"
         private const val COMPOSER_MODEL = "ComposerModel"
-        private const val PRIVACY_AND_SECURITY_MODEL = "PrivacyAndSecurityModel"
+        private const val PIN_LOCK_MODEL = "PinLockModel"
+        private const val PRIVACY_MODEL = "PrivacyModel"
         private const val PROFILE_MODEL = "ProfileModel"
         private const val RECOVERY_EMAIL_MODEL = "RecoveryEmailModel"
         private const val REPLY_TO_MODEL = "ReplyToModel"
