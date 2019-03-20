@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.profile
 
 import com.criptext.mail.scenes.SceneModel
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 
-class ProfileModel(var name: String, val email: String, val exitToMailbox: Boolean) : SceneModel
+class ProfileModel(val userData: ProfileUserData) : SceneModel

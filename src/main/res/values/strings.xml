@@ -91,8 +91,9 @@
   <string name="start_guide_email">Tap to compose a secure email</string>
   <string name="title_swipe">Swipe Options</string>
   <string name="title_profile_name">Profile Name</string>
-  <string name="title_profile">Profile</string>
+  <string name="title_account">Account</string>
   <string name="title_privacy_policy">Privacy Policy</string>
+  <string name="title_faq">FAQ</string>
   <string name="title_terms_of_service">Terms of Service</string>
   <string name="title_open_source_libraries">Open Source Libraries</string>
   <string name="title_logout">Sign Out</string>
@@ -102,8 +103,8 @@
   <string name="title_custom_dialog">New Label</string>
   <string name="hint_custom_dialog">Enter the name</string>
   <string name="title_profile_photo">Profile Photo</string>
-  <string name="title_change_password">Change Password</string>
-  <string name="title_change_reply_to">Change Reply To Email</string>
+  <string name="title_change_password">Password</string>
+  <string name="title_change_reply_to">Reply-to Email</string>
   <string name="title_sync_phonebook">Sync Phonebook Contacts</string>
   <string name="title_recovery_email">Recovery Email</string>
   <string name="title_signature">Signature</string>
@@ -117,12 +118,13 @@
   <string name="title_two_fa">Two-Factor Authentication</string>
   <string name="title_dark_theme">Dark Theme</string>
   <string name="title_read_receipts">Read Receipts</string>
-  <string name="title_privacy">Privacy and Security</string>
+  <string name="title_privacy">Privacy</string>
   <string name="title_badges">Badge App Icon</string>
   <string name="title_sounds">Sounds</string>
   <string name="separator_account">ACCOUNT</string>
   <string name="separator_about">ABOUT</string>
   <string name="separator_appearance">APPEARANCE</string>
+  <string name="separator_general">GENERAL</string>
   <string name="status_not_confirmed">(not verified)</string>
   <string name="status_confirmed">(verified)</string>
   <string name="criptext_version">Criptext Beta </string>
@@ -179,7 +181,10 @@
   <string name="delete_account_toast_message">Account was deleted successfully.</string>
   <string name="remove_device_dialog_message">Removing this device will cause it to sign out from your account remotely.</string>
     <string name="removing_device_dialog_message">Removing device…</string>
-    <string name="privacy_toolbar_title">PRIVACY AND SECURITY</string>
+    <string name="privacy_toolbar_title">PRIVACY</string>
+    <string name="devices_toolbar_title">DEVICES</string>
+    <string name="labels_toolbar_title">LABELS</string>
+    <string name="pin_toolbar_title">PIN LOCK</string>
     <string name="profile_toolbar_title">PROFILE</string>
     <string name="email_source_toolbar_title">EMAIL SOURCE</string>
   <string name="pin_lock_switch_text">Use PIN Lock</string>
@@ -463,4 +468,9 @@
   <string name="drawer_create_account_account">Create an Account</string>
   <string name="snack_bar_active_account">Now logged in as %1$s</string>
   <string name="username_not_available_error">Username not available</string>
+  <string name="title_devices">Devices</string>
+  <string name="title_labels">Labels</string>
+  <string name="title_pin_lock">Pin Lock</string>
+  <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
+  <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
 </resources>
