@@ -44,7 +44,7 @@ import java.lang.Exception
 
 
 class ProfileController(
-        private val activeAccount: ActiveAccount,
+        private var activeAccount: ActiveAccount,
         private val model: ProfileModel,
         private val scene: ProfileScene,
         private val host: IHostActivity,
@@ -214,7 +214,14 @@ class ProfileController(
     private fun onLogout(result: GeneralResult.Logout){
         when(result) {
             is GeneralResult.Logout.Success -> {
-                host.exitToScene(SignInParams(), null, false, true)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), null, false, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
             }
             is GeneralResult.Logout.Failure -> {
                 scene.dismissMessageAndProgressDialog()

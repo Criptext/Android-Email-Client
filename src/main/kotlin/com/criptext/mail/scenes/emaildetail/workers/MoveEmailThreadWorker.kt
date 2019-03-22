@@ -35,7 +35,7 @@ class MoveEmailThreadWorker(
         private val accountDao: AccountDao,
         private val storage: KeyValueStorage,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (
                 EmailDetailResult.MoveEmailThread) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
@@ -66,14 +66,15 @@ class MoveEmailThreadWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels).map {
+        val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels,
+                accountId = activeAccount.id).map {
             it.email.id
         }
 
         if(chosenLabel == null){
             val result = Result.of {
                 db.deleteRelationByEmailIds(emailIds = emailIds)
-                db.deleteThread(threadId)
+                db.deleteThread(threadId, activeAccount.id)
             }
 
             return when (result){
@@ -88,10 +89,10 @@ class MoveEmailThreadWorker(
 
         }
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel, activeAccount.id)))
 
         val selectedLabelsList = selectedLabels.toList().map { it.label }
-        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
 
         val peerSelectedLabels = selectedLabels.toList()
@@ -104,12 +105,12 @@ class MoveEmailThreadWorker(
 
         val result = Result.of {
             if(chosenLabel == Label.LABEL_TRASH){
-                db.setTrashDate(emailIds)
+                db.setTrashDate(emailIds, activeAccount.id)
             }
             if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
                 //Mark as spam from trash
                 db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
-                        emailIds = emailIds)
+                        emailIds = emailIds, accountId = activeAccount.id)
             }
             val emailLabels = arrayListOf<EmailLabel>()
             emailIds.flatMap{ emailId ->

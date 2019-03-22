@@ -17,6 +17,7 @@ import com.criptext.mail.utils.UIMessage
 
 class GetSelectedLabelsWorker(
         private val db: EmailDetailLocalDB,
+        private val activeAccount: ActiveAccount,
         private val threadId: String,
         override val publishFn: (
                 EmailDetailResult.GetSelectedLabels) -> Unit)
@@ -29,7 +30,7 @@ class GetSelectedLabelsWorker(
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.GetSelectedLabels>): EmailDetailResult.GetSelectedLabels? {
-        val labels = db.getCustomLabels() as ArrayList<Label>
+        val labels = db.getCustomLabels(activeAccount.id) as ArrayList<Label>
         labels.add(Label.defaultItems.starred)
         val defaultSelectedLabels = db.getLabelsFromThreadId(threadId)
         return EmailDetailResult.GetSelectedLabels.Success(

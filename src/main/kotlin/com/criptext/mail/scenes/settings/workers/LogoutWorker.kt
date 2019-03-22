@@ -60,7 +60,7 @@ class LogoutWorker(
 
     private fun workOperation() : Result<Unit, Exception> = Result.of {apiClient.postLogout()}
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-            .flatMap { Result.of { db.logout() } }
+            .flatMap { Result.of { db.logout(activeAccount.id) } }
             .flatMap {
                 Result.of {
                     storage.clearAll()

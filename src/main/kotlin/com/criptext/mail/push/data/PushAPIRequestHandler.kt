@@ -155,7 +155,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel, activeAccount.id)))
         val peerRemoveLabels = if(currentLabel == Label.defaultItems.trash
                 || currentLabel == Label.defaultItems.spam)
             listOf(currentLabel.text)
@@ -182,7 +182,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
                 }
             }
             db.createLabelEmailRelations(emailLabels)
-            db.setTrashDate(emailIds)
+            db.setTrashDate(emailIds, activeAccount.id)
         }
 
         return when (result) {

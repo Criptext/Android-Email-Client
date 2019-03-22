@@ -66,8 +66,6 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             }
         }
 
-        headerView.text = emailPreview.topText
-
         val contactFrom = emailPreview.sender
         if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
             UIUtils.setProfilePicture(
@@ -100,6 +98,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                     view.resources.assets,
                     "fonts/NunitoSans-Regular.ttf")
         }
+
+        headerView.text = emailPreview.topText
 
 
         if(emailPreview.count > 1){

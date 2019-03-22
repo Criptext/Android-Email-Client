@@ -14,10 +14,8 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                       val fileKeyDao: FileKeyDao, val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
                       val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val filesDir: File) {
 
-    private val account by lazy { accountDao.getLoggedInAccount()!! }
-
-    fun loadFullEmail(id: Long): FullEmail? {
-        val email = emailDao.findEmailById(id, account.id) ?: return null
+    fun loadFullEmail(id: Long, accountId: Long): FullEmail? {
+        val email = emailDao.findEmailById(id, accountId) ?: return null
         val labels = emailLabelDao.getLabelsFromEmail(id)
         val contactsCC = emailContactDao.getContactsFromEmail(id, ContactTypes.CC)
         val contactsBCC = emailContactDao.getContactsFromEmail(id, ContactTypes.BCC)

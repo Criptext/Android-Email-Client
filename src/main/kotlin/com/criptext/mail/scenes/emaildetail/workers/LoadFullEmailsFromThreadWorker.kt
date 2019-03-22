@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.emaildetail.workers
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 
@@ -12,6 +13,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 
 class LoadFullEmailsFromThreadWorker(
         private val db: EmailDetailLocalDB,
+        private val activeAccount: ActiveAccount,
         private val threadId: String,
         private val currentLabel: Label,
         override val publishFn: (EmailDetailResult.LoadFullEmailsFromThreadId) -> Unit)
@@ -27,7 +29,7 @@ class LoadFullEmailsFromThreadWorker(
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val items = db.getFullEmailsFromThreadId(threadId = threadId,
                 rejectedLabels = rejectedLabels,
-                selectedLabel = currentLabel.text)
+                selectedLabel = currentLabel.text, accountId = activeAccount.id)
         val unreadEmails = items.filter { it.email.unread }.size
         items.forEach { it.email.unread = false }
         return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items, unreadEmails)

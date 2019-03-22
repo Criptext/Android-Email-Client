@@ -4,6 +4,7 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.SearchLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 
 /**
  * Created by danieltigse on 2/5/18.
@@ -11,6 +12,7 @@ import com.criptext.mail.db.SearchLocalDB
 
 class SearchDataSource(
         private val searchLocalDB: SearchLocalDB,
+        private val activeAccount: ActiveAccount,
         override val runner: WorkRunner)
     : BackgroundWorkManager<SearchRequest, SearchResult>(){
 
@@ -19,6 +21,7 @@ class SearchDataSource(
         return when (params) {
 
             is SearchRequest.SearchEmails -> SearchEmailWorker(
+                    activeAccount = activeAccount,
                     db = searchLocalDB,
                     queryText = params.queryText,
                     loadParams = params.loadParams,
@@ -28,6 +31,7 @@ class SearchDataSource(
                     })
 
             is SearchRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
+                    activeAccount = activeAccount,
                     db = searchLocalDB,
                     currentLabel = params.currentLabel,
                     emailThreads = params.emailThreads,

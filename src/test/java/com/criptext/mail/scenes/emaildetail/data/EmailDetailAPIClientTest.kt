@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.data
 
 import com.criptext.mail.api.HttpClient
-import com.gaumala.kotlinsnapshot.Camera
+import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
@@ -16,7 +16,6 @@ class EmailDetailAPIClientTest {
 
     private lateinit var httpClient: HttpClient
     private lateinit var apiClient: EmailDetailAPIClient
-    private val camera = Camera()
 
     @Before
     fun setup() {
@@ -34,7 +33,7 @@ class EmailDetailAPIClientTest {
 
         apiClient.postOpenEvent(metadataKeys = listOf(1L, 3L, 7L))
 
-        camera.matchWithSnapshot("should send request to post open events with correct shape",
-                bodySlot.captured.toString(4))
+        bodySlot.captured.toString(4)
+                .matchWithSnapshot("should send request to post open events with correct shape")
     }
 }

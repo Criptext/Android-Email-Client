@@ -411,7 +411,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             when(intent.action){
                 Intent.ACTION_MAIN ->    {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
-                    val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
@@ -423,7 +423,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     val uuid = intent.extras.get("randomId").toString()
                     val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
                     val version = intent.extras.getInt("version")
-                    val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
@@ -437,7 +437,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     val version = intent.extras.getInt("version")
                     val deviceId = intent.extras.getInt("deviceId")
                     val deviceName = intent.extras.getString("deviceName")
-                    val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
@@ -448,7 +448,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 NewMailActionService.REPLY -> {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
                     val metadataKey = intent.extras.getLong("metadataKey")
-                    val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
@@ -458,7 +458,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 }
                 Intent.ACTION_VIEW -> {
                     val mailTo = intent.data
-                    val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                    val account = intent.extras.getString("account")
                     if(mailTo.toString().contains("mailto:"))
                         return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"), account)
                 }
@@ -466,7 +466,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 Intent.ACTION_SEND_MULTIPLE -> {
                     val data = intent
                     if(data != null) {
-                        val account = intent.extras.get(MessagingInstance.ACCOUNT).toString()
+                        val account = intent.extras.getString("account")
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
