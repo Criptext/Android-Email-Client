@@ -19,8 +19,8 @@ interface LabelDao {
     @Query("SELECT * FROM label WHERE accountId IS NULL OR accountId = :accountId")
     fun getAll(accountId: Long) : List<Label>
 
-    @Query("SELECT * FROM label WHERE id > :lastId ORDER BY id LIMIT :limit")
-    fun getAllForLinkFile(limit: Int, lastId: Long) : List<Label>
+    @Query("SELECT * FROM label WHERE id > :lastId AND accountId = :accountId ORDER BY id LIMIT :limit")
+    fun getAllForLinkFile(limit: Int, lastId: Long, accountId: Long) : List<Label>
 
     @Query("SELECT * FROM label where type = 'CUSTOM' AND accountId = :accountId")
     fun getAllCustomLabels(accountId: Long) : List<Label>

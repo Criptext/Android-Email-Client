@@ -19,10 +19,8 @@ interface ContactDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(users : List<Contact>): List<Long>
 
-    @Query("""SELECT DISTINCT * FROM contact
-        WHERE EXISTS
-        (SELECT DISTINCT contactId FROM account_contact WHERE accountId=:accountId)""")
-    fun getAll(accountId: Long) : List<Contact>
+    @Query("""SELECT DISTINCT * FROM contact""")
+    fun getAll() : List<Contact>
 
     @Query("""SELECT DISTINCT * FROM contact
         WHERE email in (:emails)

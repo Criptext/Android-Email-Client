@@ -7,6 +7,7 @@ import com.criptext.mail.db.dao.signal.RawPreKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.dao.signal.RawSignedPreKeyDao
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.signal.CRIdentityKey
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSessionRecord
@@ -24,18 +25,18 @@ import org.whispersystems.libsignal.state.*
 
 class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawIdentityKeyDao,
                           accountDao: AccountDao, rawSignedPreKeyDao: RawSignedPreKeyDao,
-                          rawPreKeyDao: RawPreKeyDao): SignalProtocolStore {
+                          rawPreKeyDao: RawPreKeyDao, activeAccount: ActiveAccount? = null): SignalProtocolStore {
 
-    constructor(db: AppDatabase): this(rawSessionDao = db.rawSessionDao(),
+    constructor(db: AppDatabase, activeAccount: ActiveAccount? = null): this(rawSessionDao = db.rawSessionDao(),
             rawIdentityKeyDao = db.rawIdentityKeyDao(), accountDao = db.accountDao(),
             rawSignedPreKeyDao = db.rawSignedPreKeyDao(),
-            rawPreKeyDao = db.rawPreKeyDao())
+            rawPreKeyDao = db.rawPreKeyDao(), activeAccount = activeAccount)
     
-    private val sessionStore = SessionStoreImplementation(rawSessionDao, accountDao)
+    private val sessionStore = SessionStoreImplementation(rawSessionDao, accountDao, activeAccount)
     private val identityKeyStore = IdentityKeyStoreImplementation(accountDao = accountDao,
-            rawIdentityKeyDao = rawIdentityKeyDao)
-    private val signedPreKeyStore = SignedPreKeyStoreImplementation(rawSignedPreKeyDao, accountDao)
-    private val preKeyStore = PreKeyStoreImplementation(rawPreKeyDao, accountDao)
+            rawIdentityKeyDao = rawIdentityKeyDao, activeAccount = activeAccount)
+    private val signedPreKeyStore = SignedPreKeyStoreImplementation(rawSignedPreKeyDao, accountDao, activeAccount)
+    private val preKeyStore = PreKeyStoreImplementation(rawPreKeyDao, accountDao, activeAccount)
 
     override fun saveIdentity(address: SignalProtocolAddress, identityKey: IdentityKey) =
             identityKeyStore.saveIdentity(address, identityKey)
@@ -84,9 +85,11 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
 
     override fun loadPreKey(preKeyId: Int) = preKeyStore.loadPreKey(preKeyId)
 
-    private class SessionStoreImplementation(private val db: RawSessionDao, private val accountDao: AccountDao): SessionStore {
+    private class SessionStoreImplementation(private val db: RawSessionDao, private val accountDao: AccountDao,
+                                             private val activeAccount: ActiveAccount?): SessionStore {
 
-        private val account by lazy { accountDao.getLoggedInAccount()!! }
+        private val account by lazy { activeAccount ?: ActiveAccount
+                .loadFromDB(accountDao.getLoggedInAccount()!!)!! }
 
         private fun loadSessionFromDB(address: SignalProtocolAddress) =
             db.find(recipientId = address.name, deviceId = address.deviceId, accountId = account.id)
@@ -130,11 +133,15 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
     }
 
     private class IdentityKeyStoreImplementation(private val accountDao: AccountDao,
-                                                 private val rawIdentityKeyDao: RawIdentityKeyDao)
+                                                 private val rawIdentityKeyDao: RawIdentityKeyDao,
+                                                 private val activeAccount: ActiveAccount?)
         : IdentityKeyStore {
 
         private fun getLoggedInAccount(): Account {
-            val user = accountDao.getLoggedInAccount()
+            val user = if(activeAccount == null)
+                accountDao.getLoggedInAccount()
+            else
+                accountDao.getAccountByRecipientId(activeAccount.recipientId)
             return user ?: throw Exception("Please Log In")
         }
 
@@ -168,10 +175,12 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
     }
 
     private class SignedPreKeyStoreImplementation(private val rawSignedPreKeyDao: RawSignedPreKeyDao,
-                                                  private val accountDao: AccountDao)
+                                                  private val accountDao: AccountDao,
+                                                  private val activeAccount: ActiveAccount?)
         : SignedPreKeyStore {
 
-        private val account by lazy { accountDao.getLoggedInAccount()!! }
+        private val account by lazy { activeAccount ?: ActiveAccount
+                .loadFromDB(accountDao.getLoggedInAccount()!!)!! }
 
         override fun containsSignedPreKey(signedPreKeyId: Int): Boolean =
             rawSignedPreKeyDao.find(signedPreKeyId, account.id) != null
@@ -205,25 +214,35 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
     }
 
     private class PreKeyStoreImplementation(private val rawPreKeyDao: RawPreKeyDao,
-                                            private val accountDao: AccountDao): PreKeyStore {
+                                            private val accountDao: AccountDao,
+                                            private val activeAccount: ActiveAccount?): PreKeyStore {
+
+        private fun getLoggedInAccount(): Account {
+            val user = if(activeAccount == null)
+                accountDao.getLoggedInAccount()
+            else
+                accountDao.getAccountByRecipientId(activeAccount.recipientId)
+            return user ?: throw Exception("Please Log In")
+        }
+
         override fun containsPreKey(preKeyId: Int): Boolean {
-            val account = accountDao.getLoggedInAccount() ?: return false
+            val account = getLoggedInAccount()
             return rawPreKeyDao.find(preKeyId, account.id) != null
         }
 
         override fun storePreKey(preKeyId: Int, record: PreKeyRecord) {
             val preKeyString = Encoding.byteArrayToString(record.serialize())
             val newPreKey = CRPreKey(id = 0, preKeyId = preKeyId, byteString = preKeyString,
-                    accountId = accountDao.getLoggedInAccount()!!.id)
+                    accountId = getLoggedInAccount().id)
             rawPreKeyDao.insert(newPreKey)
         }
 
         override fun removePreKey(preKeyId: Int) {
-            rawPreKeyDao.deleteById(preKeyId, accountDao.getLoggedInAccount()!!.id)
+            rawPreKeyDao.deleteById(preKeyId, getLoggedInAccount().id)
         }
 
         override fun loadPreKey(preKeyId: Int): PreKeyRecord  {
-            val rawPreKey = rawPreKeyDao.find(preKeyId, accountDao.getLoggedInAccount()!!.id)
+            val rawPreKey = rawPreKeyDao.find(preKeyId, getLoggedInAccount().id)
             if (rawPreKey != null) {
                 val serializedPreKey = Encoding.stringToByteArray(rawPreKey.byteString)
                 return PreKeyRecord(serializedPreKey)

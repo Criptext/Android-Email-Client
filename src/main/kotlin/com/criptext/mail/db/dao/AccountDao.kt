@@ -26,6 +26,9 @@ interface AccountDao {
     @Query("SELECT * FROM account WHERE recipientId=:recipientId")
     fun getAccountByRecipientId(recipientId: String) : Account?
 
+    @Query("SELECT * FROM account WHERE id=:id")
+    fun getAccountById(id: Long) : Account?
+
     @Query("SELECT * FROM account WHERE isActive=1")
     fun getLoggedInAccount() : Account?
 

@@ -29,7 +29,7 @@ import com.criptext.mail.utils.*
 class UpdateMailboxWorker(
         signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         private val loadedThreadsCount: Int?,
         private val label: Label,
@@ -87,9 +87,9 @@ class UpdateMailboxWorker(
             is Result.Success -> {
                 val metadataKey = newData["metadataKey"]?.toLong()
                 if(metadataKey != null) {
-                    val email = dbEvents.getEmailByMetadataKey(metadataKey)
+                    val email = dbEvents.getEmailByMetadataKey(metadataKey, activeAccount.id)
                     if(email != null){
-                        val files = dbEvents.getFullEmailById(emailId = email.id)!!.files
+                        val files = dbEvents.getFullEmailById(emailId = email.id, accountId = activeAccount.id)!!.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
                         newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()

@@ -4,6 +4,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
@@ -13,6 +14,7 @@ import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.workers.*
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import java.io.File
 
 /**
@@ -39,6 +41,7 @@ class MailboxDataSource(
         private val rawIdentityKeyDao: RawIdentityKeyDao,
         private val emailInsertionDao: EmailInsertionDao,
         private val httpClient: HttpClient,
+        private val db: AppDatabase,
         private val mailboxLocalDB: MailboxLocalDB,
         private val eventLocalDB: EventLocalDB)
     : BackgroundWorkManager<MailboxRequest, MailboxResult>() {
@@ -66,8 +69,9 @@ class MailboxDataSource(
             is MailboxRequest.SendMail -> SendMailWorker(
                     storage = storage,
                     accountDao = accountDao,
-                    signalClient = signalClient,
-                    activeAccount = activeAccount,
+                    signalClient = if(params.senderAccount == null) signalClient
+                                    else SignalClient.Default(SignalStoreCriptext(db, params.senderAccount)),
+                    activeAccount = params.senderAccount ?: activeAccount,
                     rawSessionDao = rawSessionDao,
                     rawIdentityKeyDao = rawIdentityKeyDao,
                     db = mailboxLocalDB,
@@ -117,6 +121,15 @@ class MailboxDataSource(
             )
             is MailboxRequest.SetActiveAccount -> SetActiveAccountWorker(
                     account = params.account,
+                    db = mailboxLocalDB,
+                    storage = storage,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is MailboxRequest.SetActiveAccountFromPush -> SetActiveAccountFromPushWorker(
+                    recipientId = params.recipientId,
+                    extras = params.extras,
                     db = mailboxLocalDB,
                     storage = storage,
                     publishFn = { result ->

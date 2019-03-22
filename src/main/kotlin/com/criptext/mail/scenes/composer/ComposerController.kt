@@ -47,6 +47,9 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
+        override fun onSenderSelectedItem(sender: String) {
+            model.selectedAccount = model.accounts.find { it.userEmail == sender }
+        }
 
         override fun onSnackbarClicked() {
 
@@ -189,6 +192,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private val dataSourceListener: (ComposerResult) -> Unit = { result ->
         when(result) {
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
+            is ComposerResult.GetAllFromAddresses -> onFromAddressesLoaded(result)
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
             is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
@@ -285,7 +289,8 @@ class ComposerController(private val storage: KeyValueStorage,
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
-                            attachments = result.attachments, fileKey = model.fileKey)
+                            attachments = result.attachments, fileKey = model.fileKey,
+                            senderAccount = model.selectedAccount)
                     host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
@@ -310,6 +315,18 @@ class ComposerController(private val storage: KeyValueStorage,
         if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
             scene.showStartGuideAttachments()
             storage.putBool(KeyValueStorage.StringKey.StartGuideShowAttachments, false)
+        }
+    }
+
+    private fun onFromAddressesLoaded(result: ComposerResult.GetAllFromAddresses){
+        when (result) {
+            is ComposerResult.GetAllFromAddresses.Success -> {
+                model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
+                scene.fillFromOptions(result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") })
+            }
+            is ComposerResult.GetAllFromAddresses.Failure -> {
+                scene.showError(UIMessage(R.string.error_getting_contacts))
+            }
         }
     }
 
@@ -390,7 +407,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 emailId = draftId,
                 originalId = originalId,
                 composerInputData = composerInputData,
-                onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey))
+                onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
+                senderAccount = model.selectedAccount))
 
     }
 
@@ -518,6 +536,7 @@ class ComposerController(private val storage: KeyValueStorage,
             loadInitialData()
 
         dataSourceController.getAllContacts()
+        dataSourceController.getAllFromAddresses()
         scene.observer = observer
         return handleActivityMessage(activityMessage)
     }
@@ -621,6 +640,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
         fun getAllContacts(){
             val req = ComposerRequest.GetAllContacts()
+            dataSource.submitRequest(req)
+        }
+
+        fun getAllFromAddresses(){
+            val req = ComposerRequest.GetAllFromAddresses()
             dataSource.submitRequest(req)
         }
 

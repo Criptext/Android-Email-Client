@@ -24,6 +24,11 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         return db.accountDao().getLoggedInAccount()
     }
 
+    fun getAccountByRecipientId(recipientId: String?): Account? {
+        if(recipientId == null) return null
+        return db.accountDao().getAccountByRecipientId(recipientId)
+    }
+
     fun setActiveAccount(id: Long) {
         db.accountDao().updateActiveInAccount()
         db.accountDao().updateActiveInAccount(id)
@@ -62,12 +67,12 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         return db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
     }
 
-    fun getEmailByMetadataKey(metadataKey: Long): Email?{
-        return db.emailDao().findEmailByMetadataKey(metadataKey, account.id)
+    fun getEmailByMetadataKey(metadataKey: Long, accountId: Long): Email?{
+        return db.emailDao().findEmailByMetadataKey(metadataKey, accountId)
     }
 
-    fun getFullEmailById(emailId: Long): FullEmail? {
-        val email = db.emailDao().getEmailById(emailId, account.id) ?: return null
+    fun getFullEmailById(emailId: Long, accountId: Long): FullEmail? {
+        val email = db.emailDao().getEmailById(emailId, accountId) ?: return null
         val id = email.id
         val labels = db.emailLabelDao().getLabelsFromEmail(id)
         val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)

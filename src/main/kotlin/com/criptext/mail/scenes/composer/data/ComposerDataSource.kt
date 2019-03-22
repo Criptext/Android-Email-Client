@@ -31,15 +31,19 @@ class ComposerDataSource(
             : BackgroundWorker<*> {
         return when(params) {
             is ComposerRequest.GetAllContacts -> LoadContactsWorker(
-                    composerLocalDB,
-                    activeAccount
+                    composerLocalDB
+            ) { res ->
+                flushResults(res)
+            }
+            is ComposerRequest.GetAllFromAddresses -> LoadFromAddressesWorker(
+                    composerLocalDB
             ) { res ->
                 flushResults(res)
             }
             is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
-                    account = activeAccount, dao = emailInsertionDao,
+                    account = params.senderAccount ?: activeAccount, dao = emailInsertionDao,
                     filesDir = filesDir,
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,

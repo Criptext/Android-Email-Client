@@ -143,8 +143,8 @@ class DrawerMenuView(navigationView: NavigationView,
             val visible = recyclerViewLabels.visibility == View.VISIBLE
             recyclerViewLabels.visibility = if (visible) View.GONE else View.VISIBLE
             Picasso.get().load(
-                    if(visible) R.drawable.arrow_down else
-                        R.drawable.arrow_up).into(imageViewArrow)
+                    if(visible) R.drawable.arrowdown else
+                        R.drawable.arrowup).into(imageViewArrow)
         }
 
         sliderSettings.setOnClickListener {
@@ -165,8 +165,8 @@ class DrawerMenuView(navigationView: NavigationView,
             navBody.visibility = if (visible) View.VISIBLE else View.GONE
             extraAccountsAvatars.visibility = if (visible) View.VISIBLE else View.GONE
             Picasso.get().load(
-                    if(visible) R.drawable.arrow_down else
-                        R.drawable.arrow_up).into(imageViewArrow)
+                    if(visible) R.drawable.arrowdown else
+                        R.drawable.arrowup).into(imageViewArrow)
         }
 
         addAccountOption.setOnClickListener {

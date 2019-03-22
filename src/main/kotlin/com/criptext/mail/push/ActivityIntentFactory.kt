@@ -14,12 +14,14 @@ import com.criptext.mail.services.MessagingInstance
 class ActivityIntentFactory {
     companion object {
 
-        private fun buildSceneActivityIntent(ctx: Context, type: PushTypes, extraParam: String?)
+        private fun buildSceneActivityIntent(ctx: Context, type: PushTypes, extraParam: String?, account: String?)
                 : Intent {
             val intent = Intent(ctx, MailboxActivity::class.java)
             intent.action = Intent.ACTION_MAIN
             intent.addCategory(Intent.CATEGORY_LAUNCHER)
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            if(account != null)
+                intent.putExtra(MessagingInstance.ACCOUNT, account)
             if (type == PushTypes.newMail && extraParam != null) {
                 intent.putExtra(MessagingInstance.THREAD_ID, extraParam)
             }
@@ -28,8 +30,8 @@ class ActivityIntentFactory {
         }
 
         internal fun buildSceneActivityPendingIntent(ctx: Context, type : PushTypes,
-                                                     extraParam: String?, isPostNougat: Boolean) : PendingIntent {
-            val intent = buildSceneActivityIntent(ctx, type, extraParam)
+                                                     extraParam: String?, isPostNougat: Boolean, account: String? = null) : PendingIntent {
+            val intent = buildSceneActivityIntent(ctx, type, extraParam, account)
             return PendingIntent.getActivity(ctx, if(isPostNougat) type.requestCodeRandom() else type.requestCode(), intent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
         }

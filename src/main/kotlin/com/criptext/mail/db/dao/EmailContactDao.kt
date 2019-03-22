@@ -48,12 +48,13 @@ interface EmailContactJoinDao {
     @Query("""SELECT * FROM email_contact
         WHERE EXISTS
         (SELECT * FROM email WHERE delivered NOT IN (1, 4)
-        AND email.id = email_contact.emailId)
+        AND email.id = email_contact.emailId
+        AND email.accountId = :accountId)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = email_contact.emailId
         AND email_label.labelId=6)
         LIMIT :limit OFFSET :offset""")
-    fun getAllForLinkFile(limit: Int, offset: Int) : List<EmailContact>
+    fun getAllForLinkFile(limit: Int, offset: Int, accountId: Long) : List<EmailContact>
 
     @Insert
     fun insert(emailContact : EmailContact)
