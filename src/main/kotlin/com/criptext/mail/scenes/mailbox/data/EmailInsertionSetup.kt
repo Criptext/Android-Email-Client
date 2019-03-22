@@ -296,8 +296,8 @@ object EmailInsertionSetup {
         if(metadata.isSpam) labels.add(Label.defaultItems.spam)
 
 
-        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey)
-        val emailAlreadyExists =  foundEmail?.metadataKey == metadata.metadataKey
+        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
+        val emailAlreadyExists =  foundEmail != null
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 

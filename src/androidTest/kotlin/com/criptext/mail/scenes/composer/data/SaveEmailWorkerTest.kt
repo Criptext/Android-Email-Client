@@ -75,7 +75,7 @@ class SaveEmailWorkerTest {
                 it.metadataKey,
                 it.content,
                 activeAccount.recipientId).first }
-        val insertedContacts = db.contactDao().getAll(activeAccount.id)
+        val insertedContacts = db.contactDao().getAll()
         val insertedContactsAddresses = insertedContacts.map { contact -> contact.email }
 
         insertedEmails.single().content `shouldEqual` "Hello, this is a test email"
@@ -150,7 +150,7 @@ class SaveEmailWorkerTest {
         worker.work(progressReporter) as ComposerResult.SaveEmail.Success
 
         // assert that data actually got stored to DB
-        val insertedContacts = db.contactDao().getAll(activeAccount.id)
+        val insertedContacts = db.contactDao().getAll()
         val insertedContactsAddresses = insertedContacts.map { contact -> contact.email }
 
         insertedContactsAddresses `shouldEqual` listOf(

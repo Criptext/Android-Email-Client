@@ -104,7 +104,7 @@ class EventHelper(private val db: EventLocalDB,
 
         if(eventIdsToAcknowledge.isNotEmpty()){
             val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
-            val remainingKeys = db.getAllPreKeys().map { it.preKeyId }
+            val remainingKeys = db.getAllPreKeys(activeAccount.id).map { it.preKeyId }
             val registrationBundles = keyGenerator.register(activeAccount.recipientId,
                     activeAccount.deviceId)
 
@@ -555,7 +555,8 @@ class EventHelper(private val db: EventLocalDB,
                     startDate = null,
                     limit = Math.max(20, loadedThreadsCount?:30),
                     rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
-                    userEmail = activeAccount.userEmail)
+                    userEmail = activeAccount.userEmail,
+                    accountId = activeAccount.id)
                     .map { EmailPreview.fromEmailThread(it) }
         else throw EventHelper.NothingNewException()
     }
@@ -573,31 +574,31 @@ class EventHelper(private val db: EventLocalDB,
             db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)
 
     private fun updateThreadReadStatus(metadata: PeerReadThreadStatusUpdate) =
-            db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread)
+            db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread, activeAccount.id)
 
     private fun updateEmailReadStatus(metadata: PeerReadEmailStatusUpdate) =
-            db.updateUnreadStatusByMetadataKeys(metadata.metadataKeys, metadata.unread)
+            db.updateUnreadStatusByMetadataKeys(metadata.metadataKeys, metadata.unread, activeAccount.id)
 
     private fun updateUnsendEmailStatus(metadata: PeerUnsendEmailStatusUpdate) =
-            db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate)
+            db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate, activeAccount.id)
 
 
     private fun updateUsernameStatus(metadata: PeerUsernameChangedStatusUpdate) {
         activeAccount.updateFullName(storage, metadata.name)
-        db.updateUserName(activeAccount.recipientId, metadata.name)
+        db.updateUserName(activeAccount.recipientId, metadata.name, activeAccount.id)
     }
 
     private fun updateEmailLabelChangedStatus(metadata: PeerEmailLabelsChangedStatusUpdate) =
-            db.updateEmailLabels(metadata.metadataKeys, metadata.labelsAdded, metadata.labelsRemoved)
+            db.updateEmailLabels(metadata.metadataKeys, metadata.labelsAdded, metadata.labelsRemoved, activeAccount.id)
 
     private fun updateThreadLabelChangedStatus(metadata: PeerThreadLabelsChangedStatusUpdate) =
-            db.updateThreadLabels(metadata.threadIds, metadata.labelsAdded, metadata.labelsRemoved)
+            db.updateThreadLabels(metadata.threadIds, metadata.labelsAdded, metadata.labelsRemoved, activeAccount.id)
 
     private fun updateEmailDeletedPermanentlyStatus(metadata: PeerEmailDeletedStatusUpdate) =
-            db.updateDeleteEmailPermanently(metadata.metadataKeys)
+            db.updateDeleteEmailPermanently(metadata.metadataKeys, activeAccount.id)
 
     private fun updateThreadDeletedPermanentlyStatus(metadata: PeerThreadDeletedStatusUpdate) =
-            db.updateDeleteThreadPermanently(metadata.threadIds)
+            db.updateDeleteThreadPermanently(metadata.threadIds, activeAccount.id)
 
     private fun updateLabelCreatedStatus(metadata: PeerLabelCreatedStatusUpdate) =
             db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid, activeAccount.id)
@@ -608,10 +609,10 @@ class EventHelper(private val db: EventLocalDB,
 
 
     private fun changeDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes) =
-            db.updateDeliveryTypeByMetadataKey(metadataKeys, deliveryType)
+            db.updateDeliveryTypeByMetadataKey(metadataKeys, deliveryType, activeAccount.id)
 
     private fun createFeedItems(trackingUpdates: List<TrackingUpdate>) =
-            db.updateFeedItems(trackingUpdates)
+            db.updateFeedItems(trackingUpdates, activeAccount.id)
 
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>): Boolean {

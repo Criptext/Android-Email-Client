@@ -2,7 +2,7 @@ package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.MultipartFormItem
-import com.gaumala.kotlinsnapshot.Camera
+import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +18,6 @@ class FileServiceAPIClientTest {
 
     lateinit var httpClient: HttpClient
     lateinit var fileServiceClient: FileServiceAPIClient
-    val camera = Camera()
 
     @Before
     fun setup() {
@@ -37,8 +36,7 @@ class FileServiceAPIClientTest {
         fileServiceClient.registerFile(fileName = "my_photo.png", fileSize =
         1024, chunkSize = 512, totalChunks = 2)
 
-        camera.matchWithSnapshot("should send request to register file with correct shape",
-                bodySlot.captured.toString(4))
+        bodySlot.captured.toString(4).matchWithSnapshot("should send request to register file with correct shape")
     }
 
     @Test
@@ -51,7 +49,6 @@ class FileServiceAPIClientTest {
         fileServiceClient.uploadChunk(chunk = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 127),
                 fileName = "my_photo.png", fileToken = "__FILE_TOKEN__", part = 2)
 
-        camera.matchWithSnapshot("should send request to upload chunk with correct shape",
-                bodySlot.captured.toString())
+        bodySlot.captured.toString().matchWithSnapshot("should send request to upload chunk with correct shape")
     }
 }

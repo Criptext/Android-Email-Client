@@ -140,6 +140,7 @@ class SearchEmailWorkerTest{
                     queryText = queryText,
                     loadParams = loadParams,
                     userEmail = activeAccount.userEmail,
-                    publishFn = {})
+                    publishFn = {},
+                    activeAccount = activeAccount)
 
 }

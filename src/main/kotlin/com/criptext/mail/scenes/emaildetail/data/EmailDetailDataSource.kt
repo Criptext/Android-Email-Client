@@ -36,6 +36,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             BackgroundWorker<*> {
         return when (params) {
             is EmailDetailRequest.LoadFullEmailsFromThreadId -> LoadFullEmailsFromThreadWorker(
+                    activeAccount = activeAccount,
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
                     currentLabel = params.currentLabel,
@@ -59,6 +60,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
 
             is EmailDetailRequest.GetSelectedLabels -> GetSelectedLabelsWorker(
                     db = emailDetailLocalDB,
+                    activeAccount = activeAccount,
                     threadId = params.threadId,
                     publishFn = { result ->
                         flushResults(result)

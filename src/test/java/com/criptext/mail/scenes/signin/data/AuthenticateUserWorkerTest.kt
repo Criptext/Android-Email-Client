@@ -9,7 +9,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.gaumala.kotlinsnapshot.Camera
+import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.json.JSONObject
@@ -31,7 +31,6 @@ class AuthenticateUserWorkerTest {
     private lateinit var db: SignInLocalDB
     private lateinit var account: Account
 
-    private val camera = Camera()
 
     @Before
     fun setup() {
@@ -114,10 +113,10 @@ class AuthenticateUserWorkerTest {
         }
 
         // request snapshots
-        camera.matchWithSnapshot("should send login request with the right shape",
-                authRequestSlot.captured.toString(4))
-        camera.matchWithSnapshot("should upload keybundle with the right shape",
-                postKeyBundleRequestSlot.captured.toString(4))
+        authRequestSlot.captured.toString(4)
+                .matchWithSnapshot("should send login request with the right shape")
+        postKeyBundleRequestSlot.captured.toString(4)
+                .matchWithSnapshot("should upload keybundle with the right shape")
     }
 
      @Test

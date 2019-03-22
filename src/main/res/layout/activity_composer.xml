@@ -74,12 +74,22 @@
                     android:textColor="?attr/criptextSecondaryTextColor"
                     android:text="@string/from_popup"/>
 
+                <TextView
+                    android:id="@+id/from_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingLeft="10dp"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:visibility="gone"/>
+
                 <Spinner
                     android:id="@+id/spinner_from"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
+                    android:visibility="visible"
                     >
 
                 </Spinner>

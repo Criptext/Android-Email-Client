@@ -9,7 +9,7 @@ import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.gaumala.kotlinsnapshot.Camera
+import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.json.JSONObject
@@ -30,7 +30,6 @@ class RegisterUserWorkerTest {
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: AppDatabase
 
-    private val camera = Camera()
 
     @Before
     fun setup() {
@@ -78,6 +77,6 @@ class RegisterUserWorkerTest {
         worker.work(mockk()) `should be instance of` SignUpResult.RegisterUser.Success::class.java
 
         val uploadedJSONString = bodySlot.captured.toString(2)
-        camera.matchWithSnapshot("uploads new user data with correct shape", uploadedJSONString)
+        uploadedJSONString.matchWithSnapshot("uploads new user data with correct shape")
     }
 }
