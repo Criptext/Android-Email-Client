@@ -34,6 +34,7 @@ import org.json.JSONObject
 
 class RegisterUserWorker(
         private val db: AppDatabase,
+        private val isMultiple: Boolean,
         signUpDao: SignUpDao,
         accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
@@ -71,7 +72,7 @@ class RegisterUserWorker(
                 val newAccount = incompleteAccount.complete(keyBundle, tokens.first, tokens.second)
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", tokens.first)
-                storeAccountTransaction.run(account = newAccount, keyBundle = keyBundle)
+                storeAccountTransaction.run(account = newAccount, keyBundle = keyBundle, isMultiple = isMultiple)
             }
 
         }

@@ -33,8 +33,7 @@ data class PreKeyBundleShareData(val recipientId: String,
 
             if (preKey != null) {
                 val preKeyJson = JSONObject()
-                preKeyJson.put("id", preKey.id)
-                preKeyJson.put("preKeyId", preKey.preKeyId)
+                preKeyJson.put("id", preKey.preKeyId)
                 preKeyJson.put("publicKey", preKey.byteString)
 
                 json.put("preKey", preKeyJson)
@@ -55,8 +54,8 @@ data class PreKeyBundleShareData(val recipientId: String,
 
                 val preKeyJson = json.optJSONObject("preKey")
                 val preKey = if (preKeyJson != null)
-                    CRPreKey(id = preKeyJson.getLong("id"),
-                             preKeyId = preKeyJson.getInt("preKeyId"),
+                    CRPreKey(id = 0,
+                             preKeyId = preKeyJson.getInt("id"),
                              byteString = preKeyJson.getString("publicKey"),
                              accountId = accountId)
                     else null

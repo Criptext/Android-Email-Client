@@ -8,7 +8,7 @@ import com.criptext.mail.validation.TextInput
  * Created by sebas on 2/23/18.
  */
 
-class SignUpSceneModel : SceneModel {
+class SignUpSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var username: TextInput = TextInput.blank()
     var fullName: TextInput = TextInput.blank()
 

@@ -24,7 +24,7 @@ class MailboxDataSource(
         private val filesDir: File,
         private val storage: KeyValueStorage,
         override val runner: WorkRunner,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val pendingDao: PendingEventDao,
         private val accountDao: AccountDao,
         private val emailDao: EmailDao,
@@ -111,6 +111,14 @@ class MailboxDataSource(
 
             is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
                     db = mailboxLocalDB,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is MailboxRequest.SetActiveAccount -> SetActiveAccountWorker(
+                    account = params.account,
+                    db = mailboxLocalDB,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     }

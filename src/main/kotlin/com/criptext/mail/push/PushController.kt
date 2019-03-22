@@ -29,6 +29,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private val dataSourceListener = { result: PushResult ->
         when (result) {
             is PushResult.UpdateMailbox -> onUpdateMailbox(result)
+            is PushResult.NewEmail -> onNewEmail(result)
         }
     }
 
@@ -46,21 +47,23 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val metadataKey = pushData["metadataKey"]?.toLong()
         val preview = pushData["preview"] ?: ""
         val hasInlineImages = pushData["hasInlineImages"]?.toBoolean() ?: false
+        val recipientId = pushData["recipientId"] ?: ""
 
         return PushData.NewMail(name = name, email = email, subject = subject, threadId = threadId,
                 metadataKey = metadataKey ?: -1, shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat, preview = preview, activeEmail = activeAccount.userEmail,
-                senderImage = senderImage, hasInlineImages = hasInlineImages)
+                senderImage = senderImage, hasInlineImages = hasInlineImages, recipientId = recipientId)
     }
 
     private fun parseNewOpenMailbox(pushData: Map<String, String>,
                                  shouldPostNotification: Boolean): PushData.OpenMailbox {
         val body = pushData["body"] ?: ""
         val title = pushData["title"] ?: ""
+        val recipientId = pushData["recipientId"] ?: ""
 
         return PushData.OpenMailbox(title = title, body = body,
                 shouldPostNotification = shouldPostNotification,
-                isPostNougat = isPostNougat)
+                isPostNougat = isPostNougat, recipientId = recipientId)
     }
 
     private fun parseLinkDevicePush(pushData: Map<String, String>,
@@ -71,9 +74,10 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val deviceType = pushData["deviceType"] ?: ""
         val deviceName = pushData["deviceName"] ?: ""
         val syncFileVersion = pushData["version"] ?: ""
+        val recipientId = pushData["recipientId"] ?: ""
 
         return PushData.LinkDevice(title = title, body = body, deviceName = deviceName,
-                shouldPostNotification = shouldPostNotification,
+                shouldPostNotification = shouldPostNotification, recipientId = recipientId,
                 isPostNougat = isPostNougat, randomId = deviceId, syncFileVersion = syncFileVersion.toInt(),
                 deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))
     }
@@ -87,17 +91,18 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val deviceType = pushData["deviceType"] ?: ""
         val deviceName = pushData["deviceName"] ?: ""
         val syncFileVersion = pushData["version"] ?: ""
+        val recipientId = pushData["recipientId"] ?: ""
 
         return PushData.SyncDevice(title = title, body = body, deviceName = deviceName,
                 shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat, randomId = randomId, deviceId = deviceId.toInt(),
-                syncFileVersion = syncFileVersion.toInt(),
+                syncFileVersion = syncFileVersion.toInt(), recipientId = recipientId,
                 deviceType = DeviceUtils.getDeviceType(deviceType.toInt()))
     }
 
     fun parsePushPayload(pushData: Map<String, String>, shouldPostNotification: Boolean) {
         if(shouldPostNotification)
-            dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+            dataSource.submitRequest(PushRequest.NewEmail(Label.defaultItems.inbox,
                     pushData, shouldPostNotification))
     }
 
@@ -137,13 +142,20 @@ class PushController(private val dataSource: PushDataSource, private val host: M
 
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
-            is PushResult.UpdateMailbox.Success -> {
-                createAndNotifyPush(result.pushData, result.shouldPostNotification, true, result.senderImage)
-            }
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
                 parsePushPayload(result.pushData, result.shouldPostNotification)
             }
-            is PushResult.UpdateMailbox.Failure -> {
+        }
+    }
+
+    private fun onNewEmail(result: PushResult.NewEmail){
+        when(result){
+            is PushResult.NewEmail.Success -> {
+                createAndNotifyPush(result.pushData, result.shouldPostNotification, true, result.senderImage)
+                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+                        result.pushData, result.shouldPostNotification))
+            }
+            is PushResult.NewEmail.Failure -> {
                 createAndNotifyPush(result.pushData, result.shouldPostNotification, false, null)
             }
         }

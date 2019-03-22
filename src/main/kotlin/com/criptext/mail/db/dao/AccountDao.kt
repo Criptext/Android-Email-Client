@@ -23,14 +23,29 @@ interface AccountDao {
     @Query("SELECT * FROM account")
     fun getAll() : List<Account>
 
+    @Query("SELECT * FROM account WHERE recipientId=:recipientId")
+    fun getAccountByRecipientId(recipientId: String) : Account?
+
     @Query("SELECT * FROM account WHERE isActive=1")
     fun getLoggedInAccount() : Account?
+
+    @Query("SELECT * FROM account WHERE isLoggedIn=1")
+    fun getLoggedInAccounts() : List<Account>
 
     @Query("UPDATE account SET isActive=0")
     fun updateActiveInAccount()
 
+    @Query("UPDATE account SET isActive=1 WHERE id=:id")
+    fun updateActiveInAccount(id: Long)
+
+    @Query("UPDATE account SET isLoggedIn=0 WHERE id=:id")
+    fun logoutAccount(id: Long)
+
     @Query("DELETE FROM account")
     fun nukeTable()
+
+    @Delete
+    fun delete(account: Account)
 
     @Delete
     fun deleteAll(accounts: List<Account>)

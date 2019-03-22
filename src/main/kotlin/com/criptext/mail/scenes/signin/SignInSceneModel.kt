@@ -9,7 +9,7 @@ import com.criptext.mail.utils.DeviceUtils
 /**
  * Created by sebas on 2/23/18.
  */
-class SignInSceneModel : SceneModel {
+class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var state: SignInLayoutState = SignInLayoutState.Start(username = "", firstTime = true)
     var ephemeralJwt: String = ""
     var hasTwoFA = false

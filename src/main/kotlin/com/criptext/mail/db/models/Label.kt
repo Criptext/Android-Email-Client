@@ -1,6 +1,6 @@
 package com.criptext.mail.db.models
 
-import androidx.annotation.NonNull
+
 import androidx.room.*
 import com.criptext.mail.db.LabelTypes
 import org.json.JSONObject
@@ -10,7 +10,7 @@ import org.json.JSONObject
  */
 
 @Entity(tableName = "label",
-        indices = [(Index(value = "text", unique = true)),(Index(value = "uuid", unique = true))],
+        indices = [(Index(value = ["uuid"], unique = true))],
         foreignKeys = [ForeignKey(entity = Account::class,
                 parentColumns = ["id"],
                 onDelete = ForeignKey.CASCADE,

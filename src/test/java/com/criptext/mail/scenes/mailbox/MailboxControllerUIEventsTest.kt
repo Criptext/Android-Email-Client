@@ -140,7 +140,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
 
         val sentRequest = sentGeneralRequests.first()
         sentRequest `should equal` GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = 20)
+                loadedThreadsCount = 20, isActiveAccount = true, activeAccount = null)
     }
 
     @Test

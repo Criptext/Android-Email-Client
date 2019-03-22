@@ -6,7 +6,8 @@ package com.criptext.mail.scenes.signin.data
 
 sealed class SignInRequest{
     class AuthenticateUser(val username: String,
-                           val password: String
+                           val password: String,
+                           val isMultiple: Boolean
     ): SignInRequest()
 
     class VerifyUser(val username: String
@@ -21,7 +22,7 @@ sealed class SignInRequest{
     data class LinkAuth(val username: String, val ephemeralJwt: String, val password: String? = null): SignInRequest()
 
     data class CreateSessionFromLink(val name: String, val username: String, val randomId: Int,
-                                     val ephemeralJwt: String): SignInRequest()
+                                     val ephemeralJwt: String, val isMultiple: Boolean): SignInRequest()
     data class LinkData(val key: String, val dataAddress: String, val authorizerId: Int): SignInRequest()
 
     data class LinkStatus(val ephemeralJwt: String): SignInRequest()

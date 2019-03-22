@@ -8,7 +8,8 @@ import com.criptext.mail.scenes.signup.IncompleteAccount
 
 sealed class SignUpRequest{
     data class RegisterUser(val account: IncompleteAccount,
-                       val recipientId: String
+                            val recipientId: String,
+                            val isMultiple: Boolean
                        ): SignUpRequest()
     data class CheckUserAvailability(val username: String): SignUpRequest()
 }

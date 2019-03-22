@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerResult
@@ -35,6 +36,7 @@ sealed class GeneralResult {
     sealed class UpdateMailbox : GeneralResult() {
         abstract fun getDestinationMailbox(): Label
         data class Success(
+                val isActiveAccount: Boolean,
                 val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
@@ -48,6 +50,7 @@ sealed class GeneralResult {
         }
 
         data class SuccessAndRepeat(
+                val isActiveAccount: Boolean,
                 val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
@@ -61,6 +64,7 @@ sealed class GeneralResult {
         }
 
         data class Failure(
+                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
                 val exception: Exception?) : UpdateMailbox() {
@@ -70,6 +74,7 @@ sealed class GeneralResult {
         }
 
         data class Unauthorized(
+                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
                 val exception: Exception?) : UpdateMailbox() {
@@ -79,6 +84,7 @@ sealed class GeneralResult {
         }
 
         data class Forbidden(
+                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
                 val exception: Exception?) : UpdateMailbox() {
@@ -110,7 +116,7 @@ sealed class GeneralResult {
     }
 
     sealed class TotalUnreadEmails: GeneralResult() {
-        data class Success(val total: Int): TotalUnreadEmails()
+        data class Success(val activeAccountTotal: Int, val extraAccountsData: List<Pair<String, Int>>): TotalUnreadEmails()
         data class Failure(val message: UIMessage): TotalUnreadEmails()
     }
 
@@ -120,7 +126,7 @@ sealed class GeneralResult {
     }
 
     sealed class Logout: GeneralResult() {
-        class Success: Logout()
+        data class Success(val activeAccount: ActiveAccount?): Logout()
         class Failure: Logout()
     }
 

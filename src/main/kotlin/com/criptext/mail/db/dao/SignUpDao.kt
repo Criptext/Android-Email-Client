@@ -1,5 +1,6 @@
 package com.criptext.mail.db.dao
 
+import android.os.IBinder
 import androidx.room.*
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
@@ -19,6 +20,22 @@ interface SignUpDao {
     @Insert
     fun saveAccount(account : Account)
 
+    @Query("""UPDATE account
+        SET name=:name,
+        jwt=:jwt,
+        deviceId=:deviceId,
+        refreshToken=:refreshJwt,
+        identityKeyPairB64=:identityKey,
+        registrationId=:registrationId,
+        domain=:domain,
+        isActive=:isActive,
+        isLoggedIn=:isLoggedIn
+        WHERE recipientId=:recipientId
+    """)
+    fun updateAccount(recipientId: String, name: String, jwt: String, refreshJwt: String,
+                      deviceId: Int, identityKey: String, registrationId: Int, domain: String,
+                      isActive: Int, isLoggedIn: Int)
+
     @Insert
     fun insertPreKeys(preKeys : List<CRPreKey>)
 
@@ -28,14 +45,17 @@ interface SignUpDao {
     @Transaction
     fun insertNewAccountData(account: Account, preKeyList: List<CRPreKey>,
                              signedPreKey: CRSignedPreKey, defaultLabels: List<Label>,
-                             extraRegistrationSteps: Runnable, accountDao: AccountDao) {
+                             extraRegistrationSteps: Runnable, accountDao: AccountDao,
+                             isMultiple: Boolean = false) {
         saveAccount(account)
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }
         insertPreKeys(preKeyList)
         signedPreKey.accountId = savedAccount.id
         insertSignedPreKey(signedPreKey)
-        insertLabels(defaultLabels)
+
+        if(!isMultiple)
+            insertLabels(defaultLabels)
         // execute extra steps here, so that if they fail, we can rollback
         extraRegistrationSteps.run()
     }
@@ -43,8 +63,12 @@ interface SignUpDao {
     @Transaction
     fun updateAccountData(account: Account, preKeyList: List<CRPreKey>,
                              signedPreKey: CRSignedPreKey,
-                             extraRegistrationSteps: Runnable, accountDao: AccountDao) {
-        saveAccount(account)
+                             extraRegistrationSteps: Runnable, accountDao: AccountDao,
+                          isMultiple: Boolean = false) {
+        updateAccount(recipientId = account.recipientId, name = account.name, deviceId = account.deviceId,
+                domain = account.domain, isLoggedIn = if(account.isLoggedIn) 1 else 0, isActive = if(account.isActive) 1 else 0,
+                identityKey = account.identityKeyPairB64, jwt = account.jwt, refreshJwt = account.refreshToken,
+                registrationId = account.registrationId)
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }
         insertPreKeys(preKeyList)

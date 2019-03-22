@@ -308,8 +308,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     private fun createNewSceneFromParams(params: SceneParams): Any {
         return when(params) {
             is SearchParams -> SearchSceneModel()
-            is SignUpParams -> SignUpSceneModel()
-            is SignInParams -> SignInSceneModel()
+            is SignUpParams -> SignUpSceneModel(params.isMultiple)
+            is SignInParams -> SignInSceneModel(params.isMultiple)
             is MailboxParams -> MailboxSceneModel(params.showWelcome)
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview, params.doReply)

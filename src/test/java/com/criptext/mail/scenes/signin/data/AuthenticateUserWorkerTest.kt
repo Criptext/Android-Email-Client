@@ -52,7 +52,8 @@ class AuthenticateUserWorkerTest {
     private fun newWorker(username: String, password: String): AuthenticateUserWorker =
         AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 keyGenerator = keyGenerator, username = username, password = password,
-                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db)
+                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
+                isMultiple = false)
 
 
     @Test
