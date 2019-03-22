@@ -181,6 +181,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
+
         override fun onAccountClicked(account: Account) {
             dataSource.submitRequest(MailboxRequest.SetActiveAccount(account))
         }
@@ -191,10 +192,6 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onCreateAccountClicked() {
             host.goToScene(SignUpParams(true), true)
-        }
-
-        override fun onAvatarClicked() {
-            host.goToScene(ProfileParams(activeAccount.name, activeAccount.userEmail, true),true)
         }
 
         override fun onCustomLabelClicked(label: Label) {

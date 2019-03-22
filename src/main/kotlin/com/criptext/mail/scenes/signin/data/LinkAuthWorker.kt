@@ -5,7 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.scenes.settings.devices.DeviceItem
+import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result

@@ -159,10 +159,6 @@ class DrawerMenuView(navigationView: NavigationView,
             drawerMenuItemListener.onSupportOptionClicked()
         }
 
-        avatarView.setOnClickListener {
-            drawerMenuItemListener.onAvatarClicked()
-        }
-
         openMenuArrow.setOnClickListener {
             val visible = multipleAccontsMenu.visibility == View.VISIBLE
             multipleAccontsMenu.visibility = if (visible) View.GONE else View.VISIBLE

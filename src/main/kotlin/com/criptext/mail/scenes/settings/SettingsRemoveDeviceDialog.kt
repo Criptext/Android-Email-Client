@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.devices.DevicesUIObserver
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 
@@ -33,7 +34,7 @@ class SettingsRemoveDeviceDialog(val context: Context) {
 
     private lateinit var view: View
 
-    fun showRemoveDeviceDialog(observer: SettingsUIObserver?, deviceId: Int, position: Int) {
+    fun showRemoveDeviceDialog(observer: DevicesUIObserver?, deviceId: Int, position: Int) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         view = inflater.inflate(R.layout.settings_remove_device_dialog, null)
@@ -45,7 +46,7 @@ class SettingsRemoveDeviceDialog(val context: Context) {
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?, deviceId: Int, position: Int): AlertDialog {
+                             observer: DevicesUIObserver?, deviceId: Int, position: Int): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newRemoveDeviceDialog = dialogBuilder.create()
@@ -75,7 +76,7 @@ class SettingsRemoveDeviceDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?, deviceId: Int, position: Int) {
+                                   observer: DevicesUIObserver?, deviceId: Int, position: Int) {
 
         btnYes = view.findViewById(R.id.settings_remove_yes) as Button
         btnCancel = view.findViewById(R.id.settings_remove_cancel) as Button

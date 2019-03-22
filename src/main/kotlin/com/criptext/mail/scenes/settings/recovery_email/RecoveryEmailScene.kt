@@ -112,13 +112,13 @@ interface RecoveryEmailScene{
 
             updateCurrentEmailStatus(model)
 
-            textViewCurrentEmail.text = model.recoveryEmail
+            textViewCurrentEmail.text = model.userData.recoveryEmail
 
             recoveryEmailTextListener()
         }
 
         private fun updateCurrentEmailStatus(model: RecoveryEmailModel){
-            if(model.isEmailConfirmed) {
+            if(model.userData.isEmailConfirmed) {
                 textViewConfirmText.setTextColor(ContextCompat.getColor(
                         view.context, R.color.green))
                 textViewConfirmText.setText(R.string.status_confirmed)
@@ -132,7 +132,7 @@ interface RecoveryEmailScene{
                     resendLinkButton.isEnabled = false
                     timerListener(RecoveryEmailController.RESEND_TIME - lastResend)
                 }else {
-                    if(model.recoveryEmail.isNotEmpty())
+                    if(model.userData.recoveryEmail.isNotEmpty())
                         resendLinkButton.visibility = View.VISIBLE
                 }
             }
@@ -231,7 +231,7 @@ interface RecoveryEmailScene{
         }
 
         override fun updateCurrent(model: RecoveryEmailModel) {
-            textViewCurrentEmail.text = model.recoveryEmail
+            textViewCurrentEmail.text = model.userData.recoveryEmail
             updateCurrentEmailStatus(model)
         }
 

@@ -96,7 +96,7 @@ class ChangePasswordController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(SettingsParams(), null,true)
+            host.finishScene()
         }
 
         override fun onOldPasswordChangedListener(password: String) {

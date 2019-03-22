@@ -10,6 +10,7 @@ import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.scenes.settings.profile.data.ProfileDataSource
 import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
 import com.criptext.mail.scenes.settings.profile.data.ProfileResult
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.websocket.WebSocketController
@@ -50,7 +51,15 @@ class ProfileControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        model = ProfileModel(activeAccount.name, activeAccount.userEmail, false)
+        val userData = ProfileUserData(
+                name = activeAccount.name,
+                email = activeAccount.userEmail,
+                isEmailConfirmed = false,
+                replyToEmail = null,
+                isLastDeviceWith2FA = false,
+                recoveryEmail = ""
+        )
+        model = ProfileModel(userData)
         controller = ProfileController(
                 scene = scene,
                 model = model,
