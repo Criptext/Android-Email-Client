@@ -14,6 +14,7 @@ import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
+import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
@@ -47,6 +48,7 @@ class NotificationSyncDevice(override val ctx: Context): CriptextNotification(ct
         okAction.putExtra("deviceName", pushData.deviceName)
         okAction.putExtra("deviceType", pushData.deviceType.ordinal)
         okAction.putExtra("version", pushData.syncFileVersion)
+        okAction.putExtra("account", pushData.recipientId)
         val okPendingIntent = PendingIntent.getActivity(ctx, 0, okAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
@@ -55,6 +57,7 @@ class NotificationSyncDevice(override val ctx: Context): CriptextNotification(ct
         denyAction.putExtra("notificationId", SYNC_DEVICE_ID)
         denyAction.putExtra("randomId", pushData.randomId)
         denyAction.putExtra("version", pushData.syncFileVersion)
+        denyAction.putExtra("account", pushData.recipientId)
         val denyPendingIntent = PendingIntent.getService(ctx, 0, denyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 

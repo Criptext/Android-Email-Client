@@ -37,8 +37,10 @@ class AccountHolder(val view: View) : RecyclerView.ViewHolder(view){
                             250,
                             250))
         if(badgeCount > 0) {
+            badgeNumber.visibility = View.VISIBLE
             badgeNumber.text = badgeCount.toString()
         }else{
+            badgeNumber.visibility = View.GONE
             badgeNumber.text = ""
         }
     }

@@ -121,7 +121,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             }.map { deviceId ->
                 val encryptOperation = Result.of {
                     val encryptedData = signalClient.encryptMessage(recipientId, deviceId, composerInputData.body)
-                    val email = db.getEmailById(emailId)!!
+                    val email = db.getEmailById(emailId, activeAccount.id)!!
                     val encryptedPreview = signalClient.encryptMessage(recipientId, deviceId, email.preview)
                     Pair(encryptedData, encryptedPreview)
                 }
@@ -236,7 +236,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             { criptextEmails ->
                 Result.of {
                     val requestBody = PostEmailBody(
-                            threadId = EmailUtils.getThreadIdForSending(db, threadId, emailId),
+                            threadId = EmailUtils.getThreadIdForSending(db, threadId, emailId, activeAccount.id),
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = guestEmails,
@@ -248,7 +248,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     private val updateSentMailInDB: (String) -> Result<Unit, Exception> =
             { response ->
                Result.of {
-                   val email = db.getEmailById(emailId)
+                   val email = db.getEmailById(emailId, activeAccount.id)
                    val emailContent = EmailUtils.getEmailContentFromFileSystem(
                            filesDir = filesDir,
                            metadataKey = email!!.metadataKey,
@@ -282,7 +282,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         else
             null
 
-        val currentEmail = db.getEmailById(emailId)
+        val currentEmail = db.getEmailById(emailId, activeAccount.id)
 
         if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null)
 

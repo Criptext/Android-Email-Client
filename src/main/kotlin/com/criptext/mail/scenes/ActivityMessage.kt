@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes
 
 import android.graphics.Bitmap
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -14,6 +15,11 @@ import java.io.File
 
 sealed class ActivityMessage {
     data class SendMail(val emailId: Long,
+                        val threadId: String?,
+                        val composerInputData: ComposerInputData,
+                        val attachments: List<ComposerAttachment>, val fileKey: String?,
+                        val senderAccount: ActiveAccount? = null): ActivityMessage()
+    data class SendMailFromExtraAccount(val emailId: Long,
                         val threadId: String?,
                         val composerInputData: ComposerInputData,
                         val attachments: List<ComposerAttachment>, val fileKey: String?): ActivityMessage()

@@ -29,7 +29,7 @@ import com.criptext.mail.utils.*
 class UpdateMailboxWorker(
         signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         private val loadedThreadsCount: Int?,
         private val label: Label,

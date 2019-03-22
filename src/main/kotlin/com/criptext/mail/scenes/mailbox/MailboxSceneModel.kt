@@ -24,4 +24,5 @@ class MailboxSceneModel(var showWelcome: Boolean = false) : SceneModel {
     var lastSync = 0L
     var showOnlyUnread = false
     var extraAccounts = listOf<Account>()
+    var waitForAccountSwitch = false
 }

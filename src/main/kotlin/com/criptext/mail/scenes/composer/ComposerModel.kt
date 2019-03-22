@@ -1,5 +1,7 @@
 package com.criptext.mail.scenes.composer
 
+import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -43,4 +45,7 @@ class ComposerModel(val type: ComposerType): SceneModel {
     var fileKey: String? = null
 
     var filesSize: Long = 0L
+
+    var accounts = listOf<ActiveAccount>()
+    var selectedAccount: ActiveAccount? = null
 }

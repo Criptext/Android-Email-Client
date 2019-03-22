@@ -86,6 +86,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
+            is MailboxResult.SetActiveAccountFromPush -> dataSourceController.onSetActiveAccountFromPush(result)
         }
     }
 
@@ -398,7 +399,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             is ActivityMessage.SendMail -> {
                 reloadMailboxThreads()
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
-                        activityMessage.composerInputData, attachments = activityMessage.attachments, fileKey = activityMessage.fileKey)
+                        activityMessage.composerInputData, attachments = activityMessage.attachments,
+                        fileKey = activityMessage.fileKey, senderAccount = activityMessage.senderAccount)
                 dataSource.submitRequest(newRequest)
                 scene.showMessage(UIMessage(R.string.sending_email))
                 true
@@ -461,78 +463,90 @@ class MailboxSceneController(private val scene: MailboxScene,
         val extras = host.getIntentExtras()
 
         if(extras != null) {
-            when(extras.action){
-                Intent.ACTION_MAIN -> {
-                    val extrasMail = extras as IntentExtrasData.IntentExtrasDataMail
-                    dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
-                            userEmail = activeAccount.userEmail))
-                }
-                LinkDeviceActionService.APPROVE -> {
-                    val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
-                    val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
-                            "", "", extrasDevice.deviceType, extrasDevice.syncFileVersion)
-                    if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                        generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-                    else
-                        scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-                }
-                SyncDeviceActionService.APPROVE -> {
-                    val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
-                    val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.deviceId, extrasDevice.deviceName,
-                            extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
-                    if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                        generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-                    else
-                        scene.showToastMessage(UIMessage(R.string.sync_version_incorrect))
-                }
-                NewMailActionService.REPLY -> {
-                    val extrasMail = extras as IntentExtrasData.IntentExtrasReply
-                    dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
-                            userEmail = activeAccount.userEmail, doReply = true))
-                }
-                Intent.ACTION_VIEW -> {
-                    val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
-                    host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo)), null, false, true)
-                }
-                Intent.ACTION_APP_ERROR -> {
-                    val extrasMail = extras as IntentExtrasData.IntentErrorMessage
-                    scene.showMessage(extrasMail.uiMessage)
-                }
-                Intent.ACTION_SEND_MULTIPLE,
-                Intent.ACTION_SEND -> {
-                    val extrasMail = extras as IntentExtrasData.IntentExtrasSend
-                    val composerMessage = ActivityMessage.AddAttachments(extrasMail.files)
-                    host.exitToScene(ComposerParams(type = ComposerType.Empty()), composerMessage, false, true)
-                }
+            if(extras.account == activeAccount.recipientId)
+                handleIntentExtras(extras)
+            else {
+                model.waitForAccountSwitch = true
+                dataSource.submitRequest(MailboxRequest.SetActiveAccountFromPush(extras.account, extras))
             }
         }
 
-        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-        if (model.threads.isEmpty()) reloadMailboxThreads()
+        if(!model.waitForAccountSwitch) {
 
-        toggleMultiModeBar()
-        generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
-        feedController.onStart()
+            dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+            if (model.threads.isEmpty()) reloadMailboxThreads()
 
-        websocketEvents.setListener(webSocketEventListener)
-        if(model.showWelcome) {
-            model.showWelcome = false
-            scene.showWelcomeDialog(observer)
-        }else{
-            if(storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)){
-                scene.showSyncPhonebookDialog(observer)
-                storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
+            toggleMultiModeBar()
+            generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+            feedController.onStart()
+
+            websocketEvents.setListener(webSocketEventListener)
+            if (model.showWelcome) {
+                model.showWelcome = false
+                scene.showWelcomeDialog(observer)
+            } else {
+                if (storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)) {
+                    scene.showSyncPhonebookDialog(observer)
+                    storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
+                }
             }
-        }
 
-        if(storage.getBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, false)) {
-            host.getContentResolver()?.registerContentObserver(
-                    ContactsContract.Contacts.CONTENT_URI, true, mObserver)
-        }
+            if (storage.getBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, false)) {
+                host.getContentResolver()?.registerContentObserver(
+                        ContactsContract.Contacts.CONTENT_URI, true, mObserver)
+            }
 
-        dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+            dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+        }
 
         return handleActivityMessage(activityMessage)
+    }
+
+    private fun handleIntentExtras(extras: IntentExtrasData){
+        when(extras.action){
+            Intent.ACTION_MAIN -> {
+                val extrasMail = extras as IntentExtrasData.IntentExtrasDataMail
+                dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
+                        userEmail = activeAccount.userEmail))
+            }
+            LinkDeviceActionService.APPROVE -> {
+                val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
+                val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
+                        "", "", extrasDevice.deviceType, extrasDevice.syncFileVersion)
+                if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                    generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
+                else
+                    scene.showMessage(UIMessage(R.string.sync_version_incorrect))
+            }
+            SyncDeviceActionService.APPROVE -> {
+                val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
+                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.deviceId, extrasDevice.deviceName,
+                        extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
+                if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
+                    generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
+                else
+                    scene.showToastMessage(UIMessage(R.string.sync_version_incorrect))
+            }
+            NewMailActionService.REPLY -> {
+                val extrasMail = extras as IntentExtrasData.IntentExtrasReply
+                dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
+                        userEmail = activeAccount.userEmail, doReply = true))
+            }
+            Intent.ACTION_VIEW -> {
+                val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
+                host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo)), null, false, true)
+            }
+            Intent.ACTION_APP_ERROR -> {
+                val extrasMail = extras as IntentExtrasData.IntentErrorMessage
+                scene.showMessage(extrasMail.uiMessage)
+            }
+            Intent.ACTION_SEND_MULTIPLE,
+            Intent.ACTION_SEND -> {
+                val extrasMail = extras as IntentExtrasData.IntentExtrasSend
+                val composerMessage = ActivityMessage.AddAttachments(extrasMail.files)
+                host.exitToScene(ComposerParams(type = ComposerType.Empty()), composerMessage, false, true)
+            }
+        }
     }
 
     override fun onStop() {
@@ -760,6 +774,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
 
+                    scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
                     val req = MailboxRequest.LoadEmailThreads(
                             label = model.selectedLabel.text,
                             filterUnread = model.showOnlyUnread,
@@ -769,6 +785,29 @@ class MailboxSceneController(private val scene: MailboxScene,
                     feedController.reloadFeeds()
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+                }
+            }
+        }
+
+        fun onSetActiveAccountFromPush(resultData: MailboxResult.SetActiveAccountFromPush){
+            when(resultData){
+                is MailboxResult.SetActiveAccountFromPush.Success -> {
+                    activeAccount = resultData.activeAccount
+                    generalDataSource.activeAccount = activeAccount
+                    dataSource.activeAccount = activeAccount
+
+                    handleIntentExtras(resultData.extrasData)
+
+                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                    if (model.threads.isEmpty()) reloadMailboxThreads()
+
+                    toggleMultiModeBar()
+                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+                    feedController.onStart()
+
+                    websocketEvents.setListener(webSocketEventListener)
+                    dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
+                    scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
                 }
             }
         }
