@@ -4,6 +4,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -77,6 +78,11 @@ sealed class MailboxResult {
     sealed class SetActiveAccount : MailboxResult() {
         data class Success(val activeAccount: ActiveAccount): SetActiveAccount()
         class Failure: SetActiveAccount()
+    }
+
+    sealed class SetActiveAccountFromPush : MailboxResult() {
+        data class Success(val activeAccount: ActiveAccount, val extrasData: IntentExtrasData): SetActiveAccountFromPush()
+        class Failure: SetActiveAccountFromPush()
     }
 
     sealed class UpdateUnreadStatus: MailboxResult(){

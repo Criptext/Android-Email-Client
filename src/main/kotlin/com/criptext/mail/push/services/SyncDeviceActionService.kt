@@ -8,6 +8,7 @@ import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.criptextnotification.NotificationError
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.data.PushAPIRequestHandler
@@ -25,11 +26,16 @@ class SyncDeviceActionService : IntentService("Sync Device Action Service") {
 
 
     public override fun onHandleIntent(intent: Intent?) {
-        val data = getIntentData(intent)
+        val storage = KeyValueStorage.SharedPrefs(this)
+        var activeAccount = ActiveAccount.loadFromStorage(storage)!!
+        val data = getIntentData(intent, activeAccount.recipientId)
+        val db = AppDatabase.getAppDatabase(this)
+        if(activeAccount.recipientId != data.recipientId)
+            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccountByRecipientId(data.recipientId)!!)!!
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
-                ActiveAccount.loadFromStorage(this)!!, HttpClient.Default(),
+                activeAccount, HttpClient.Default(),
                 KeyValueStorage.SharedPrefs(this))
 
         when {
@@ -47,14 +53,15 @@ class SyncDeviceActionService : IntentService("Sync Device Action Service") {
         }
     }
 
-    private fun getIntentData(intent: Intent?): IntentData {
+    private fun getIntentData(intent: Intent?, activeRecipientId: String): IntentData {
         val action = intent!!.action
         val notificationId = intent.getIntExtra("notificationId", 0)
         val randomId = intent.getStringExtra("randomId")
         val version = intent.getIntExtra("version", -1)
-        return IntentData(action, randomId, notificationId, version)
+        val recipientId = intent.getStringExtra("account") ?: activeRecipientId
+        return IntentData(action, randomId, notificationId, version, recipientId)
     }
 
     private data class IntentData(val action: String, val randomId: String, val notificationId: Int,
-                                  val version: Int)
+                                  val version: Int, val recipientId: String)
 }

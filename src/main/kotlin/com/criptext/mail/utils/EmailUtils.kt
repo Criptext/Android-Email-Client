@@ -48,8 +48,8 @@ object EmailUtils {
                 bccCriptext = bccNonCriptext, peerCriptext = listOf(recipientId))
     }
 
-    fun getThreadIdForSending(db: MailboxLocalDB, threadId: String?, emailId: Long): String?{
-        val email = db.getEmailById(emailId)
+    fun getThreadIdForSending(db: MailboxLocalDB, threadId: String?, emailId: Long, accountId: Long): String?{
+        val email = db.getEmailById(emailId, accountId)
         if(email != null){
             val threadIdToLong = Result.of {email.threadId.toLong()}
             when(threadIdToLong){

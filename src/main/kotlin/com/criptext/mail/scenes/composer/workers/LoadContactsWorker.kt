@@ -11,7 +11,6 @@ import com.criptext.mail.scenes.composer.data.ComposerResult
  */
 class LoadContactsWorker(
         private val db: ComposerLocalDB,
-        private val activeAccount: ActiveAccount,
         override val publishFn: (ComposerResult.GetAllContacts) -> Unit)
     : BackgroundWorker<ComposerResult.GetAllContacts> {
 
@@ -23,7 +22,7 @@ class LoadContactsWorker(
 
     override fun work(reporter: ProgressReporter<ComposerResult.GetAllContacts>)
             : ComposerResult.GetAllContacts? {
-        val contacts = db.contactDao.getAll(activeAccount.id).sortedByDescending { it.score }
+        val contacts = db.contactDao.getAll().sortedByDescending { it.score }
         return ComposerResult.GetAllContacts.Success(contacts = contacts)
     }
 

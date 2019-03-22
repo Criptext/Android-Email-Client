@@ -27,13 +27,13 @@ interface FileDao {
         WHERE id > :lastId
         AND EXISTS
         (SELECT * FROM email WHERE delivered NOT IN (1, 4)
-        AND email.id = file.emailId)
+        AND email.id = file.emailId AND email.accountId = :accountId)
         AND NOT EXISTS
         (SELECT * FROM email_label WHERE email_label.emailId = file.emailId and email_label.labelId=6)
         ORDER BY id
         LIMIT :limit
     """)
-    fun getAllForLinkFile(limit: Int, lastId: Long) : List<CRFile>
+    fun getAllForLinkFile(limit: Int, lastId: Long, accountId:Long) : List<CRFile>
 
     @Query("SELECT * FROM file where id=:id")
     fun getFileById(id : Long) : CRFile?

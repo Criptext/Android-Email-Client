@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.ResultHeaders
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.UIMessage
 
@@ -12,6 +13,11 @@ sealed class ComposerResult {
     sealed class GetAllContacts : ComposerResult() {
         data class Success(val contacts: List<Contact>): GetAllContacts()
         data class Failure(val message: String): GetAllContacts()
+    }
+
+    sealed class GetAllFromAddresses : ComposerResult() {
+        data class Success(val accounts: List<Account>): GetAllFromAddresses()
+        data class Failure(val message: String): GetAllFromAddresses()
     }
 
     sealed class LoadInitialData : ComposerResult() {

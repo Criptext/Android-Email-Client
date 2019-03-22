@@ -9,12 +9,14 @@ import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.EventLoader
@@ -27,13 +29,12 @@ import java.io.IOException
 
 
 class GetPushEmailWorker(
-        private val signalClient: SignalClient,
+        private val db: AppDatabase,
         private val dbEvents: EventLocalDB,
-        private val activeAccount: ActiveAccount,
         private val label: Label,
         private val pushData: Map<String, String>,
         private val shouldPostNotification: Boolean,
-        httpClient: HttpClient,
+        private val httpClient: HttpClient,
         override val publishFn: (
                 PushResult.NewEmail) -> Unit)
     : BackgroundWorker<PushResult.NewEmail> {
@@ -41,9 +42,11 @@ class GetPushEmailWorker(
 
     override val canBeParallelized = false
 
-    private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
-    private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
+    private lateinit var apiClient: MailboxAPIClient
+    private lateinit var emailInsertionApiClient: EmailInsertionAPIClient
     private val eventsToAcknowldege = mutableListOf<Long>()
+    private lateinit var activeAccount: ActiveAccount
+    private lateinit var signalClient: SignalClient
 
     override fun catchException(ex: Exception): PushResult.NewEmail {
         val message = createErrorMessage(ex)
@@ -71,12 +74,26 @@ class GetPushEmailWorker(
     override fun work(reporter: ProgressReporter<PushResult.NewEmail>)
             : PushResult.NewEmail? {
 
+        val dbAccount = dbEvents.getAccountByRecipientId(pushData["account"]) ?: return PushResult.NewEmail.Failure(
+                mailboxLabel = label,
+                message = createErrorMessage(EventHelper.NothingNewException()),
+                exception = EventHelper.NothingNewException(),
+                pushData = pushData,
+                shouldPostNotification = shouldPostNotification)
+
         val rowId = pushData["rowId"]?.toInt() ?: return PushResult.NewEmail.Failure(
                 mailboxLabel = label,
                 message = createErrorMessage(EventHelper.NothingNewException()),
                 exception = EventHelper.NothingNewException(),
                 pushData = pushData,
                 shouldPostNotification = shouldPostNotification)
+
+
+
+        activeAccount = ActiveAccount.loadFromDB(dbAccount)!!
+        signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
+        apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+        emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
 
         val requestEvents = EventLoader.getEvent(apiClient, rowId)
         val operationResult = requestEvents
@@ -90,9 +107,9 @@ class GetPushEmailWorker(
             is Result.Success -> {
                 val metadataKey = newData["metadataKey"]?.toLong()
                 if(metadataKey != null) {
-                    val email = dbEvents.getEmailByMetadataKey(metadataKey)
+                    val email = dbEvents.getEmailByMetadataKey(metadataKey, activeAccount.id)
                     if(email != null){
-                        val files = dbEvents.getFullEmailById(emailId = email.id)!!.files
+                        val files = dbEvents.getFullEmailById(emailId = email.id, accountId = activeAccount.id)!!.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
                         newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()
@@ -184,7 +201,7 @@ class GetPushEmailWorker(
     }
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
-            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)
+            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount!!)
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
             dbEvents.updateExistingEmail(metadata, activeAccount)

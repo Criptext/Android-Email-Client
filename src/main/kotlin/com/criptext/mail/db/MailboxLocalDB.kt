@@ -49,8 +49,8 @@ interface MailboxLocalDB {
     fun setTrashDate(emailIds: List<Long>)
     fun getTotalCounterLabel(labelId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>): List<Email>
-    fun getEmailById(id: Long): Email?
-    fun getFullEmailById(emailId: Long): FullEmail?
+    fun getEmailById(id: Long, accountId: Long): Email?
+    fun getFullEmailById(emailId: Long, accountId: Long): FullEmail?
     fun getPendingEmails(deliveryTypes: List<Int>): List<FullEmail>
     fun deleteThreads(threadIds: List<String>)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
@@ -74,8 +74,8 @@ interface MailboxLocalDB {
             db.emailContactDao().increaseScore(emailIds, ContactTypes.FROM)
         }
 
-        override fun getFullEmailById(emailId: Long): FullEmail? {
-            val email = db.emailDao().getEmailById(emailId, getExistingAccount()!!.id) ?: return null
+        override fun getFullEmailById(emailId: Long, accountId: Long): FullEmail? {
+            val email = db.emailDao().getEmailById(emailId, accountId) ?: return null
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -117,8 +117,8 @@ interface MailboxLocalDB {
             return db.fileDao().getFileById(id)?.shouldDuplicate ?: false
         }
 
-        override fun getEmailById(id: Long): Email? {
-            return db.emailDao().getEmailById(id, getExistingAccount()!!.id)
+        override fun getEmailById(id: Long, accountId: Long): Email? {
+            return db.emailDao().getEmailById(id, accountId)
         }
 
         override fun saveExternalSession(externalSession: EmailExternalSession) {

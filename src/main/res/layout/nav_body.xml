@@ -338,13 +338,12 @@
         <ImageView
             android:id="@+id/imageViewArrow"
             android:layout_width="40dp"
-            android:layout_height="32dp"
+            android:layout_height="35dp"
             android:layout_marginEnd="20dp"
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
-            android:padding="12dp"
             android:tint="?attr/criptextLeftMenuSeparator"
-            android:src="@drawable/arrow_down"/>
+            android:src="@drawable/arrowdown"/>
 
     </LinearLayout>
 

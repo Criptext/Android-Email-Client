@@ -36,7 +36,7 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
             : GeneralResult.SyncPhonebook? {
         val operation = Result.of { getNameEmailDetails() }
                 .flatMap { Result.of {
-                    val contacts = contactDao.getAll(activeAccount.id).map { dbContact -> dbContact.email }
+                    val contacts = contactDao.getAll().map { dbContact -> dbContact.email }
                     val phonebookContacts = it.filter { contact -> contact.email !in contacts }
                     if(phonebookContacts.isEmpty() && it.isEmpty())
                         throw Resources.NotFoundException()
