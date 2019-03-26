@@ -85,58 +85,17 @@ class UpdateMailboxWorker(
 
         return when(operationResult) {
             is Result.Success -> {
-                val metadataKey = newData["metadataKey"]?.toLong()
-                if(metadataKey != null) {
-                    val email = dbEvents.getEmailByMetadataKey(metadataKey)
-                    if(email != null){
-                        val files = dbEvents.getFullEmailById(emailId = email.id)!!.files
-                        newData["preview"] = email.preview
-                        newData["subject"] = email.subject
-                        newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()
-                        newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
-                        newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
-                        val emailAddress = newData["email"]
-                        val bm = try {
-                            if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress))
-                                Picasso.get().load(Hosts.restApiBaseUrl
-                                        .plus("/user/avatar/${EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)}")).get()
-                            else
-                                null
-                        } catch (ex: Exception){
-                            null
-                        }
-
-                        if(shouldCallAgain) {
-                            callAgainResult(operationResult.value.emailPreviews, newData, bm)
-                        }else{
-                            PushResult.UpdateMailbox.Success(
-                                    mailboxLabel = label,
-                                    isManual = true,
-                                    mailboxThreads = operationResult.value.emailPreviews,
-                                    pushData = newData,
-                                    shouldPostNotification = shouldPostNotification,
-                                    senderImage = bm
-                            )
-                        }
-                    }else{
-                        PushResult.UpdateMailbox.Failure(
-                                mailboxLabel = label,
-                                message = createErrorMessage(Resources.NotFoundException()),
-                                exception = Resources.NotFoundException(),
-                                pushData = pushData,
-                                shouldPostNotification = shouldPostNotification)
-                    }
-                }else {
-                    if(shouldCallAgain) {
-                        callAgainResult(operationResult.value.emailPreviews, newData, null)
-                    } else {
-                        PushResult.UpdateMailbox.Failure(
-                                mailboxLabel = label,
-                                message = createErrorMessage(Resources.NotFoundException()),
-                                exception = Resources.NotFoundException(),
-                                pushData = pushData,
-                                shouldPostNotification = shouldPostNotification)
-                    }
+                if(shouldCallAgain) {
+                    callAgainResult(operationResult.value.emailPreviews, newData, null)
+                }else{
+                    PushResult.UpdateMailbox.Success(
+                            mailboxLabel = label,
+                            isManual = true,
+                            mailboxThreads = operationResult.value.emailPreviews,
+                            pushData = newData,
+                            shouldPostNotification = shouldPostNotification,
+                            senderImage = null
+                    )
                 }
             }
 
