@@ -52,12 +52,13 @@ class  EmailDetailActivity: BaseActivity() {
                 EmailDetailLocalDB.Default(appDB, this.filesDir)
         val emailDetailModel = receivedModel as EmailDetailSceneModel
         val httpClient = HttpClient.Default()
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
 
         val emailDetailSceneView = EmailDetailScene.EmailDetailSceneView(
                 findViewById(R.id.include_emails_detail), this)
 
-        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+
         val webSocketEvents = WebSocketSingleton.getInstance(
                 activeAccount = activeAccount)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath

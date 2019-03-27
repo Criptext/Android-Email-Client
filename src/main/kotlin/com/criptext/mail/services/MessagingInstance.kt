@@ -12,7 +12,5 @@ interface MessagingInstance{
 
     companion object {
         const val THREAD_ID = "service.threadId"
-        const val ACCOUNT = "service.account"
-        const val ACTIVITY_FLAG = "service.activity"
     }
 }

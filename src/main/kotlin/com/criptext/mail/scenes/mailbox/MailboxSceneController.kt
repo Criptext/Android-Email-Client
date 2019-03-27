@@ -184,6 +184,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
 
         override fun onAccountClicked(account: Account) {
+            scene.hideDrawer()
             dataSource.submitRequest(MailboxRequest.SetActiveAccount(account))
         }
 
@@ -502,12 +503,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         return handleActivityMessage(activityMessage)
     }
 
-    private fun handleIntentExtras(extras: IntentExtrasData){
+    private fun handleIntentExtras(extras: IntentExtrasData, hasChangedAccount: Boolean = false){
         when(extras.action){
             Intent.ACTION_MAIN -> {
+                val activityMessage = if(hasChangedAccount)
+                    ActivityMessage.ShowUIMessage(
+                            UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))
+                    )
+                else null
                 val extrasMail = extras as IntentExtrasData.IntentExtrasDataMail
                 dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
-                        userEmail = activeAccount.userEmail))
+                        userEmail = activeAccount.userEmail, activityMessage = activityMessage))
             }
             LinkDeviceActionService.APPROVE -> {
                 val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
@@ -796,7 +802,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
 
-                    handleIntentExtras(resultData.extrasData)
+                    handleIntentExtras(resultData.extrasData, true)
 
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     if (model.threads.isEmpty()) reloadMailboxThreads()
@@ -975,7 +981,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     feedController.reloadFeeds()
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
                             currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
-                            doReply = result.doReply), true)
+                            doReply = result.doReply), true, activityMessage = result.activityMessage)
                 }
                 is MailboxResult.GetEmailPreview.Failure -> {
                     dataSourceController.updateMailbox(model.selectedLabel)

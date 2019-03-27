@@ -152,6 +152,7 @@ class MailboxDataSource(
             )
 
             is MailboxRequest.GetEmailPreview -> GetEmailPreviewWorker(
+                    activityMessage = params.activityMessage,
                     threadId = params.threadId,
                     mailboxLocalDB = mailboxLocalDB,
                     userEmail = params.userEmail,

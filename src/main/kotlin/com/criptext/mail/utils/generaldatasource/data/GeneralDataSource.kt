@@ -10,12 +10,13 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.generaldatasource.workers.*
 import java.io.File
 
 class GeneralDataSource(override val runner: WorkRunner,
                         private val filesDir: File,
-                        private val signalClient: SignalClient,
+                        private val signalClient: SignalClient?,
                         private val eventLocalDB: EventLocalDB,
                         private val db : AppDatabase,
                         private val storage: KeyValueStorage,
@@ -42,7 +43,8 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res) }
             )
             is GeneralRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = signalClient,
+                    signalClient = if(params.activeAccount == null) signalClient!!
+                    else SignalClient.Default(SignalStoreCriptext(db, params.activeAccount)),
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
                     activeAccount = params.activeAccount ?: activeAccount!!,
@@ -77,7 +79,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     deviceId = params.deviceID,
                     fileKey = params.key,
                     keyBundle = params.keyBundle,
-                    signalClient = signalClient,
+                    signalClient = signalClient!!,
                     accountDao = db.accountDao(),
                     storage = storage,
                     publishFn = { res -> flushResults(res)}
@@ -135,7 +137,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     authorizerId = params.authorizerId,
                     filesDir = filesDir,
                     db = db,
-                    signalClient = signalClient,
+                    signalClient = signalClient!!,
                     dataAddress = params.dataAddress,
                     key = params.key,
                     publishFn = { res -> flushResults(res) }
@@ -173,7 +175,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     accountDao = db.accountDao(),
                     storage = storage,
                     rawSessionDao = db.rawSessionDao(),
-                    signalClient = signalClient,
+                    signalClient = signalClient!!,
                     db = MailboxLocalDB.Default(db, filesDir),
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,

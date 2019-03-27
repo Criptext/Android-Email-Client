@@ -101,7 +101,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     authorizerId = params.authorizerId,
                     dataAddress = params.dataAddress,
                     key = params.key,
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db, ActiveAccount.loadFromStorage(keyValueStorage)!!)),
                     db = db,
                     storage = keyValueStorage,
                     publishFn = {

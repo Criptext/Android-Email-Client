@@ -40,6 +40,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     db = emailDetailLocalDB,
                     threadId = params.threadId,
                     currentLabel = params.currentLabel,
+                    changeAccountMessage = params.changeAccountMessage,
                     publishFn = { result ->
                         flushResults(result)
                     })

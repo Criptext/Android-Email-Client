@@ -47,7 +47,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 54
+        versionCode 55
         versionName "0.18.0"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

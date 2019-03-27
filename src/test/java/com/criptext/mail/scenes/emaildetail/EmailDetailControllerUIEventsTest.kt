@@ -44,7 +44,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     }
 
     private fun simulateLoadOfEmails(size: Int) {
-        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size), 2))
+        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size), 2, null))
     }
 
     @Test

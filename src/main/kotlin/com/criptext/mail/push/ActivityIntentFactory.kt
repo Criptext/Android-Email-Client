@@ -21,7 +21,7 @@ class ActivityIntentFactory {
             intent.addCategory(Intent.CATEGORY_LAUNCHER)
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             if(account != null)
-                intent.putExtra(MessagingInstance.ACCOUNT, account)
+                intent.putExtra("account", account)
             if (type == PushTypes.newMail && extraParam != null) {
                 intent.putExtra(MessagingInstance.THREAD_ID, extraParam)
             }
