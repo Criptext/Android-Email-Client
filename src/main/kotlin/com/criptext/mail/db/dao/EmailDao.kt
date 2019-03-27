@@ -258,6 +258,11 @@ import java.util.*
             where id=:id AND accountId = :accountId""")
     fun updateEmail(id: Long, threadId: String, messageId: String, metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
 
+    @Query("""UPDATE email
+            SET delivered=:status
+            where id=:id AND accountId = :accountId""")
+    fun updateEmailStatus(id: Long, status: DeliveryTypes, accountId: Long)
+
     @Update
     fun update(emails: List<Email>)
 

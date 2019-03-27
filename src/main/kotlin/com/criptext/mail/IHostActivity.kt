@@ -21,7 +21,7 @@ interface IHostActivity {
      * @param keep if true, the current activity will not be finished after the transition, so
      * that the user can return by pressing back.
      */
-    fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false)
+    fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false, activityMessage: ActivityMessage? = null)
 
     /**
      * Finishes the current activity and opens a new one using a "return" animation.

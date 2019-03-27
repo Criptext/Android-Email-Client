@@ -39,7 +39,7 @@ class PushDataSource(
                         flushResults(result)
                     })
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount)),
                     dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     httpClient = httpClient,
                     storage = storage,

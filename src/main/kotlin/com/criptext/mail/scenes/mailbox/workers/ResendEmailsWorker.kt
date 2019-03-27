@@ -120,8 +120,7 @@ class ResendEmailsWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.ResendEmails>)
             : MailboxResult.ResendEmails? {
-        val pendingEmails = db.getPendingEmails(listOf(DeliveryTypes.getTrueOrdinal(DeliveryTypes.FAIL),
-                DeliveryTypes.getTrueOrdinal(DeliveryTypes.SENDING)))
+        val pendingEmails = db.getPendingEmails(listOf(DeliveryTypes.getTrueOrdinal(DeliveryTypes.FAIL)))
         if(pendingEmails.isEmpty()) return MailboxResult.ResendEmails.Failure()
         for (email in pendingEmails) {
             meAsRecipient = setMeAsRecipient(email)

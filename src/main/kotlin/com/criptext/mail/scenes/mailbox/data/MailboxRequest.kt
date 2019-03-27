@@ -4,6 +4,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
@@ -53,7 +54,8 @@ sealed class MailboxRequest{
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
 
-    data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false): MailboxRequest()
+    data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false,
+                               val activityMessage: ActivityMessage? = null): MailboxRequest()
 
     class EmptyTrash: MailboxRequest()
 

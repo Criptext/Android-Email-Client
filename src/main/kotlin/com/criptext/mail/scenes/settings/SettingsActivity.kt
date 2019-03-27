@@ -27,12 +27,12 @@ class SettingsActivity: BaseActivity(){
         val model = receivedModel as SettingsModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val scene = SettingsScene.Default(view)
         val db = SettingsLocalDB.Default(appDB)
-        val activeAccount = ActiveAccount.loadFromStorage(this)
         val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount!!)
+                activeAccount = activeAccount)
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
                 activeAccount = activeAccount,

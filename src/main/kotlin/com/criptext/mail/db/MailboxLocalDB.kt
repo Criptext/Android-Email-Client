@@ -42,6 +42,7 @@ interface MailboxLocalDB {
     fun getLabelsByName(labelName: List<String>): List<Label>
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
                                metadataKey: Long, date: Date, status: DeliveryTypes)
+    fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long)
     fun getExistingAccount(): Account?
     fun setActiveAccount(id: Long)
     fun getLoggedAccounts(): List<Account>
@@ -387,6 +388,10 @@ interface MailboxLocalDB {
                 if(status == DeliveryTypes.DELIVERED)
                     createLabelEmailInbox(id)
             }
+        }
+
+        override fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long) {
+            db.emailDao().updateEmailStatus(id, status, accountId)
         }
 
         override fun getExistingAccount(): Account? {

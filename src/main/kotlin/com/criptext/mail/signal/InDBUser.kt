@@ -3,6 +3,7 @@ package com.criptext.mail.signal
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import org.whispersystems.libsignal.state.SignalProtocolStore
