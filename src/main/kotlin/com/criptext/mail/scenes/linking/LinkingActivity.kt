@@ -28,14 +28,14 @@ class LinkingActivity: BaseActivity(){
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = LinkingScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
-        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount!!)
+                activeAccount = activeAccount)
 
         val dataSource = LinkingDataSource(
                 httpClient = HttpClient.Default(),
-                activeAccount = activeAccount!!,
+                activeAccount = activeAccount,
                 runner = AsyncTaskWorkRunner(),
                 accountDao = appDB.accountDao(),
                 storage = KeyValueStorage.SharedPrefs(this))

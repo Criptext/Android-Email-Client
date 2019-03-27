@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.emaildetail.data
 import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
+import com.criptext.mail.utils.UIMessage
 
 /**
  * Created by sebas on 3/12/18.
@@ -14,7 +15,8 @@ sealed class EmailDetailRequest{
 
     class LoadFullEmailsFromThreadId(
             val threadId: String,
-            val currentLabel: Label): EmailDetailRequest()
+            val currentLabel: Label,
+            val changeAccountMessage: UIMessage?): EmailDetailRequest()
 
     class UnsendFullEmailFromEmailId(
             val emailId: Long, val position: Int): EmailDetailRequest()

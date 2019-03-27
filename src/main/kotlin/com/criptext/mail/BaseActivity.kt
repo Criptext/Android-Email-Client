@@ -374,7 +374,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return getLocalizedUIMessage(message)
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
+                           activityMessage: ActivityMessage?) {
+        BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass, deletePastIntents)
@@ -397,12 +399,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
                              forceAnimation: Boolean, deletePastIntents: Boolean) {
-        BaseActivity.activityMessage = activityMessage
         finish()
         if(forceAnimation) {
             overridePendingTransition(0, R.anim.slide_out_right)
         }
-        goToScene(params, false, deletePastIntents)
+        goToScene(params, false, deletePastIntents, activityMessage)
     }
 
     override fun getIntentExtras(): IntentExtrasData? {

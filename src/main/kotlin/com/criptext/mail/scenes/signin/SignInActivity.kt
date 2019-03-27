@@ -32,11 +32,10 @@ class SignInActivity : BaseActivity() {
         val appCtx = this.applicationContext
         val db: SignInLocalDB.Default = SignInLocalDB.Default(appCtx, appCtx.filesDir)
         val appDB = AppDatabase.getAppDatabase(appCtx)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel
         val generalDataSource = GeneralDataSource(
-                signalClient = signalClient,
+                signalClient = null,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
                 storage = KeyValueStorage.SharedPrefs(appCtx),
                 db = appDB,

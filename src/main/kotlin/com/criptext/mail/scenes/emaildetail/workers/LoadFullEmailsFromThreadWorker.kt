@@ -6,6 +6,7 @@ import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
+import com.criptext.mail.utils.UIMessage
 
 /**
  * Created by sebas on 3/13/18.
@@ -14,6 +15,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 class LoadFullEmailsFromThreadWorker(
         private val db: EmailDetailLocalDB,
         private val activeAccount: ActiveAccount,
+        private val changeAccountMessage: UIMessage?,
         private val threadId: String,
         private val currentLabel: Label,
         override val publishFn: (EmailDetailResult.LoadFullEmailsFromThreadId) -> Unit)
@@ -32,7 +34,7 @@ class LoadFullEmailsFromThreadWorker(
                 selectedLabel = currentLabel.text, accountId = activeAccount.id)
         val unreadEmails = items.filter { it.email.unread }.size
         items.forEach { it.email.unread = false }
-        return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items, unreadEmails)
+        return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items, unreadEmails, changeAccountMessage)
     }
 
     override fun cancel() {

@@ -39,13 +39,13 @@ class ComposerActivity : BaseActivity() {
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val scene = ComposerScene.Default(view, KeyboardManager(this))
         val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
                 fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao(), filesDir = this.filesDir)
-        val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),

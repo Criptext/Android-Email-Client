@@ -65,7 +65,7 @@ class MockedIHostActivity: IHostActivity{
     override fun refreshToolbarItems() {
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?) {
     }
 
     override fun finishScene() {

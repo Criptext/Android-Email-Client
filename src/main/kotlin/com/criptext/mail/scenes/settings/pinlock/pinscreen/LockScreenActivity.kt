@@ -89,7 +89,7 @@ class LockScreenActivity: AppLockActivity(){
         return GeneralDataSource(storage = storage, activeAccount = activeAccount,
                 db = db, runner = AsyncTaskWorkRunner(),
                 eventLocalDB = EventLocalDB(db, this.filesDir, this.cacheDir), httpClient = HttpClient.Default(),
-                signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount!!)),
                 filesDir = this.filesDir).also {
             it.listener = dataSourceListener
         }

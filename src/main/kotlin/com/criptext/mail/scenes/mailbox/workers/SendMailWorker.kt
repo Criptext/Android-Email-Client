@@ -301,6 +301,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                 MailboxResult.SendMail.Success(emailId)
             }
             is Result.Failure -> {
+                db.updateDeliveryType(emailId, DeliveryTypes.FAIL, activeAccount.id)
                 catchException(finalResult.error)
             }
         }
