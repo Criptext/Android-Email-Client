@@ -49,7 +49,7 @@ class SyncPhonebookTest{
 
         if(result is GeneralResult.SyncPhonebook.Success) {
 
-            val contacts = db.contactDao().getAll(activeAccount.id)
+            val contacts = db.contactDao().getAll()
 
             contacts.size shouldBeGreaterThan 0
         }else if(result is GeneralResult.SyncPhonebook.Failure){

@@ -65,6 +65,7 @@ interface ComposerScene {
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showStartGuideAttachments()
     fun fillFromOptions(list: List<String>)
+    fun switchToSimpleFrom(from: String)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -79,6 +80,10 @@ interface ComposerScene {
 
         private val fromAddresses: Spinner by lazy {
             view.findViewById<Spinner>(R.id.spinner_from)
+        }
+
+        private val fromAddress: TextView by lazy {
+            view.findViewById<TextView>(R.id.from_address)
         }
 
         private val toInput: ContactCompletionView by lazy {
@@ -244,6 +249,12 @@ interface ComposerScene {
 
                 }
             }
+        }
+
+        override fun switchToSimpleFrom(from: String) {
+            fromAddresses.visibility = View.GONE
+            fromAddress.visibility = View.VISIBLE
+            fromAddress.text = from
         }
 
         override fun showStartGuideAttachments() {

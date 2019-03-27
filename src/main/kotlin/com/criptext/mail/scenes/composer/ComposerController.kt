@@ -323,6 +323,10 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.GetAllFromAddresses.Success -> {
                 model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
                 scene.fillFromOptions(result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") })
+                if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)){
+                    model.selectedAccount = model.accounts.find { it.userEmail == activeAccount.userEmail }
+                    scene.switchToSimpleFrom(model.selectedAccount!!.userEmail)
+                }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
                 scene.showError(UIMessage(R.string.error_getting_contacts))

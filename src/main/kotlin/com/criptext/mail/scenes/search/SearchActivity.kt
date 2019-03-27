@@ -25,12 +25,13 @@ class SearchActivity : BaseActivity() {
         val db : SearchLocalDB.Default = SearchLocalDB.Default(appDB, this.filesDir)
         val model = receivedModel as SearchSceneModel
         val scene = SearchScene.SearchSceneView(findViewById(R.id.rootView), KeyboardManager(this))
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
         return SearchSceneController(
                 scene = scene,
                 model = model,
                 host = this,
                 storage = KeyValueStorage.SharedPrefs(this.applicationContext),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
-                dataSource = SearchDataSource(db, AsyncTaskWorkRunner()))
+                activeAccount = activeAccount,
+                dataSource = SearchDataSource(db, activeAccount, AsyncTaskWorkRunner()))
     }
 }

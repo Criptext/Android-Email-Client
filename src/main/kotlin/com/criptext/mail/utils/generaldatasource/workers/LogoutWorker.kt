@@ -73,7 +73,7 @@ class LogoutWorker(
                 if(shouldDeleteAllData)
                     db.logoutNukeDB()
                 else
-                    db.logout()
+                    db.logout(activeAccount.id)
             } }
             .flatMap {
                 Result.of {

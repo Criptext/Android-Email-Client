@@ -22,8 +22,8 @@ interface EmailInsertionDao {
     @Query("Select * from email where messageId = :messageId AND accountId = :accountId")
     fun findEmailByMessageId(messageId: String, accountId: Long): Email?
 
-    @Query("Select * from email where metadataKey = :metadataKey")
-    fun findEmailByMetadataKey(metadataKey: Long): Email?
+    @Query("Select * from email where metadataKey = :metadataKey AND accountId = :accountId")
+    fun findEmailByMetadataKey(metadataKey: Long, accountId: Long): Email?
 
     @Query("Select * from email where id=:id AND accountId = :accountId")
     fun findEmailById(id: Long, accountId: Long): Email?

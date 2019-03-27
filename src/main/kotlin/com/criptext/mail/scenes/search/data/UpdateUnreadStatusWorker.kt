@@ -4,6 +4,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.SearchLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 
@@ -12,6 +13,7 @@ import com.criptext.mail.scenes.mailbox.data.EmailThread
  */
 
 class UpdateUnreadStatusWorker(
+        private val activeAccount: ActiveAccount,
         private val db: SearchLocalDB,
         private val emailThreads: List<EmailThread>,
         private val updateUnreadStatus: Boolean,
@@ -27,7 +29,7 @@ class UpdateUnreadStatusWorker(
 
     override fun work(reporter: ProgressReporter<SearchResult.UpdateUnreadStatus>): SearchResult.UpdateUnreadStatus? {
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        db.updateUnreadStatus(emailThreads, updateUnreadStatus, rejectedLabels)
+        db.updateUnreadStatus(emailThreads, updateUnreadStatus, rejectedLabels, activeAccount.id)
         return SearchResult.UpdateUnreadStatus.Success()
     }
 

@@ -15,6 +15,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.fabric.tools:gradle:1.+'
         classpath 'com.google.gms:google-services:3.2.0'
+        classpath 'com.karumi.kotlinsnapshot:plugin:2.1.0'
     }
 }
 
@@ -34,6 +35,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply plugin: 'com.karumi.kotlin-snapshot'
 
 android {
     dexOptions {
@@ -115,7 +117,7 @@ dependencies {
     // test utils
     testImplementation "io.mockk:mockk:1.8.4"
     androidTestImplementation "io.mockk:mockk-android:1.8.4"
-    testImplementation 'com.github.GAumala:KotlinSnapshot:0.1'
+    //testImplementation 'com.github.GAumala:KotlinSnapshot:0.1'
 
     // Kluent
     testImplementation 'org.amshove.kluent:kluent:1.41'
@@ -178,9 +180,6 @@ dependencies {
 
     // easy permissions
     implementation 'pub.devrel:easypermissions:0.3.1'
-
-    // spinkit -> custom animations in progressBar
-    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
 
     // jsoup -> Parse html
     implementation 'org.jsoup:jsoup:1.10.1'
