@@ -7,9 +7,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.*
@@ -18,6 +16,7 @@ import com.criptext.mail.scenes.composer.data.PostEmailBody
 import com.criptext.mail.scenes.mailbox.data.SentMailData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -29,9 +28,9 @@ import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
 
 class ResendEmailWorker(
-        private val signalClient: SignalClient,
         private val filesDir: File,
         private val rawSessionDao: RawSessionDao,
+        appDB: AppDatabase,
         private val db: MailboxLocalDB,
         private val emailId: Long,
         private val position: Int,
@@ -45,6 +44,8 @@ class ResendEmailWorker(
 
 
     override val canBeParallelized = false
+
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
 
     private val fileHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt,
             14000L, 7000L)

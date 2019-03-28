@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalKeyGenerator
 
 /**
@@ -26,7 +27,7 @@ data class IncompleteAccount(
                         refreshToken = refreshToken,
                         registrationId = privateBundle.registrationId,
                         identityKeyPairB64 = privateBundle.identityKeyPair,
-                        domain = "criptext.com",
+                        domain = Contact.mainDomain,
                         isActive = true,
                         isLoggedIn = true
                 )

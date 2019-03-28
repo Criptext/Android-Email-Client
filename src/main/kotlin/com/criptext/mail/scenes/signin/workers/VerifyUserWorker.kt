@@ -1,10 +1,11 @@
-package com.criptext.mail.scenes.signin.data
+package com.criptext.mail.scenes.signin.workers
 
 import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.SignInLocalDB
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.utils.UIMessage
 import org.json.JSONException
 

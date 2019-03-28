@@ -12,4 +12,10 @@ object AccountUtils {
                 activeAccount.toJSON().toString())
         return activeAccount
     }
+
+    fun getLastLoggedAccounts(storage: KeyValueStorage): MutableList<String> {
+        val storageLastUser = storage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
+        return if(storageLastUser.isEmpty()) mutableListOf() else
+            storageLastUser.split(",").map { it.trim() }.toMutableList()
+    }
 }

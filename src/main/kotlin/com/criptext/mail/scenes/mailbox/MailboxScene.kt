@@ -22,6 +22,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -32,16 +33,14 @@ import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.UIUtils
-import com.criptext.mail.utils.getColorFromAttr
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.mail_item_left_name.view.*
 
 /**
@@ -57,12 +56,13 @@ interface MailboxScene{
     fun hideSyncingDialog()
     fun initDrawerLayout()
     fun initNavHeader(fullName: String, email: String)
+    fun initMailboxAvatar(fullName: String, email: String)
     fun onBackPressed(): Boolean
     fun attachView(
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
-            threadList: VirtualEmailThreadList)
+            threadList: VirtualEmailThreadList, fullName: String, email: String)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -161,8 +161,8 @@ interface MailboxScene{
             mailboxView.findViewById<NavigationView>(R.id.nav_right_view)
         }
 
-        private val navButton: ImageView by lazy {
-            mailboxView.findViewById<ImageView>(R.id.mailbox_nav_button)
+        private val navButton: CircleImageView by lazy {
+            mailboxView.findViewById<CircleImageView>(R.id.mailbox_nav_button)
         }
 
         private val openComposerButton: View by lazy {
@@ -196,12 +196,14 @@ interface MailboxScene{
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
-                threadList: VirtualEmailThreadList) {
+                threadList: VirtualEmailThreadList, fullName: String, email: String) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
             adapter = EmailThreadAdapter(threadListener = threadEventListener,
                                          threadList = threadList)
+
+            initMailboxAvatar(fullName, email)
 
             refreshLayout.setProgressBackgroundColorSchemeColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             refreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorAccent))
@@ -216,6 +218,15 @@ interface MailboxScene{
             navButton.setOnClickListener{
                 drawerLayout.openDrawer(GravityCompat.START)
             }
+        }
+
+        override fun initMailboxAvatar(fullName: String, email: String) {
+            UIUtils.setProfilePicture(
+                    iv = navButton,
+                    resources = context.resources,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
+                    name = fullName,
+                    runnable = null)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

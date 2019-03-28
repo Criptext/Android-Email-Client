@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.signin.data
+package com.criptext.mail.scenes.signin.workers
 
 import android.accounts.NetworkErrorException
 import com.criptext.mail.R
@@ -13,6 +13,9 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.scenes.signin.data.SignInAPIClient
+import com.criptext.mail.scenes.signin.data.SignInResult
+import com.criptext.mail.scenes.signin.data.SignInSession
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -50,7 +53,7 @@ class AuthenticateUserWorker(
     }
 
     private val shouldKeepData: Boolean by lazy {
-        keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "") == username
+        username in AccountUtils.getLastLoggedAccounts(keyValueStorage)
     }
 
     private fun authenticateUser(): String {
@@ -61,13 +64,15 @@ class AuthenticateUserWorker(
 
     private fun getSignInSession(): SignInSession {
         var storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
-        val lastLoggedUser = keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
-        if(lastLoggedUser.isNotEmpty()) {
+        val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
+        if(lastLoggedUsers.isNotEmpty()) {
             if(!shouldKeepData){
                 keyValueStorage.clearAll()
-                db.deleteDatabase(lastLoggedUser)
+                db.deleteDatabase(lastLoggedUsers)
             }
             storedValue = ""
+            lastLoggedUsers.remove(username)
+            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.joinToString())
         }
         val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticateUser() else storedValue
         val jsonObject = JSONObject(jsonString)

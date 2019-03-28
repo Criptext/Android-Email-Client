@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.signin.data
+package com.criptext.mail.scenes.signin.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -11,13 +11,15 @@ import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.scenes.signin.data.SignInAPIClient
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
 import org.json.JSONObject
 
 
@@ -48,7 +50,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
     override fun work(reporter: ProgressReporter<SignInResult.CreateSessionFromLink>): SignInResult.CreateSessionFromLink? {
 
         val result = Result.of {
-                    val lastLoggedUser = keyValueStorage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
+                    val lastLoggedUser = AccountUtils.getLastLoggedAccounts(keyValueStorage)
                     if(!isMultiple) {
                         if (lastLoggedUser.isNotEmpty())
                             db.deleteDatabase(lastLoggedUser)
@@ -56,9 +58,10 @@ class CreateSessionWorker(val httpClient: HttpClient,
                             db.deleteDatabase()
                         keyValueStorage.clearAll()
                     } else {
-                        if (lastLoggedUser.isNotEmpty()) {
-                            val account = accountDao.getAccountByRecipientId(lastLoggedUser)!!
-                            db.deleteDatabase(account)
+                        if (lastLoggedUser.isNotEmpty() && username in lastLoggedUser) {
+                            db.deleteDatabase(username)
+                            lastLoggedUser.remove(username)
+                            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.joinToString())
                         }
                     }
 

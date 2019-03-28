@@ -9,6 +9,7 @@ import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
+import com.criptext.mail.utils.AccountUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -63,8 +64,9 @@ class LogoutWorker(
             .flatMap { Result.of { db.logout(activeAccount.id) } }
             .flatMap {
                 Result.of {
-                    storage.clearAll()
-                    storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
+                    val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                    loggedOutAccounts.add(activeAccount.recipientId)
+                    storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.joinToString())
                 }
             }
 

@@ -6,18 +6,14 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.AccountUtils
-import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import java.io.File
-
 
 
 /**
@@ -85,7 +81,9 @@ class LogoutWorker(
                         storage.clearAll()
                     }
                     if(!shouldDeleteAllData) {
-                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
+                        val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                        loggedOutAccounts.add(activeAccount.recipientId)
+                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.joinToString())
                     }
                 }
             }

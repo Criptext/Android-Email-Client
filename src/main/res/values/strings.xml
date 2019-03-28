@@ -473,4 +473,5 @@
   <string name="title_pin_lock">Pin Lock</string>
   <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
   <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
+  <string name="user_already_logged_in">Account already added!</string>
 </resources>

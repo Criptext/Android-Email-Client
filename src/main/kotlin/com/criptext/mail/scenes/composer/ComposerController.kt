@@ -379,7 +379,7 @@ class ComposerController(private val storage: KeyValueStorage,
         model.subject = data.subject
     }
 
-    private fun isReadyForSending() = model.to.isNotEmpty()
+    private fun isReadyForSending() = (model.to.isNotEmpty() || model.cc.isNotEmpty() || model.bcc.isNotEmpty())
 
     private fun uploadSelectedFile(filepath: String, fileKey: String){
         model.isUploadingAttachments = true

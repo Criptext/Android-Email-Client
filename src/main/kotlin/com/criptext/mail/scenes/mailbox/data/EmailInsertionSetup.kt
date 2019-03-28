@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
+import android.util.Log
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes

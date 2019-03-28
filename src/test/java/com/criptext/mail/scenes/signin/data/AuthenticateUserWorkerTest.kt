@@ -6,6 +6,7 @@ import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.scenes.signin.workers.AuthenticateUserWorker
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -49,9 +50,10 @@ class AuthenticateUserWorkerTest {
     }
 
     private fun newWorker(username: String, password: String): AuthenticateUserWorker =
-        AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
-                keyGenerator = keyGenerator, username = username, password = password,
-                publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db)
+            AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
+                    keyGenerator = keyGenerator, username = username, password = password,
+                    publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
+                    isMultiple = false)
 
 
     @Test
