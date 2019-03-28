@@ -472,4 +472,5 @@
   <string name="title_pin_lock">Bloqueo Pin</string>
   <string name="privacy_two_fa_message">Una validación extra para proteger tu cuenta.</string>
   <string name="privacy_read_receipts_message">Saber cuando tus correos son abiertos o leídos. Si lo deshabilitas, no podrás enviar o recibir confirmaciones de lectura.</string>
+  <string name="user_already_logged_in">¡La cuenta ya está agregada!</string>
 </resources>

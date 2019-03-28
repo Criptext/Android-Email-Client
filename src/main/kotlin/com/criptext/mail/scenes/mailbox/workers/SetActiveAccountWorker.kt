@@ -10,9 +10,6 @@ import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.AccountUtils
 import com.github.kittinunf.result.Result
 
-/**
- * Created by danieltigse on 4/20/18.
- */
 
 class SetActiveAccountWorker(
         private val account: Account,

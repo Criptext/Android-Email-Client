@@ -46,7 +46,7 @@ interface EmailDetailScene {
     fun notifyFullEmailRemoved(position: Int)
     fun notifyLabelsChanged(updatedLabels: List<Label>)
     fun showDialogLabelsChooser(labelDataHandler: LabelDataHandler)
-    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener)
+    fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: String)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
     fun showDialogDeleteEmail(onDeleteEmailListener: OnDeleteEmailListener, fullEmail: FullEmail)
     fun onFetchedSelectedLabels(
@@ -160,10 +160,11 @@ interface EmailDetailScene {
                     allLabels = allLabels)
         }
 
-        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener) {
+        override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener,
+                                      currentFolder: String) {
             moveToDialog.showMoveToDialog(
                     onMoveThreadsListener = onMoveThreadsListener,
-                    currentFolder = Label.LABEL_ALL_MAIL)
+                    currentFolder = currentFolder)
         }
 
         override fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener) {

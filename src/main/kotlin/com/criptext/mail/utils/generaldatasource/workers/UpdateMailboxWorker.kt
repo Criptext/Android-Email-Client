@@ -5,6 +5,8 @@ import com.criptext.mail.api.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.AppDatabase_Impl
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
@@ -15,6 +17,7 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -30,7 +33,7 @@ import java.io.File
 
 class UpdateMailboxWorker(
         private val isActiveAccount: Boolean,
-        private val signalClient: SignalClient,
+        db: AppDatabase,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
         private val activeAccount: ActiveAccount,
@@ -45,6 +48,8 @@ class UpdateMailboxWorker(
 
 
     override val canBeParallelized = false
+
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
     private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 

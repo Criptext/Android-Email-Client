@@ -824,7 +824,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             R.id.mailbox_spam -> moveEmailThread(Label.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
-                scene.showDialogMoveTo(onMoveThreadsListener)
+                scene.showDialogMoveTo(onMoveThreadsListener, model.currentLabel.text)
             }
             R.id.mailbox_add_labels -> {
                 showLabelsDialog()

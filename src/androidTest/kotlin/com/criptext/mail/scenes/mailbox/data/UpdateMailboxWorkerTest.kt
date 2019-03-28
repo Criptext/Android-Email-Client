@@ -74,10 +74,11 @@ class UpdateMailboxWorkerTest {
 
 
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
-            UpdateMailboxWorker(signalClient = signalClient, label = label,
+            UpdateMailboxWorker(label = label,
                     activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
-                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true)
+                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true,
+                    db = db)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 

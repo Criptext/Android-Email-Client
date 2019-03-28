@@ -53,6 +53,14 @@ interface AccountDao {
     @Delete
     fun deleteAll(accounts: List<Account>)
 
+    @Query("""DELETE FROM account
+            WHERE recipientId=:recipientId""")
+    fun deleteAccountByRecipientId(recipientId: String)
+
+    @Query("""DELETE FROM account
+            WHERE recipientId in (:recipientIds)""")
+    fun deleteAccountsByRecipientId(recipientIds: List<String>)
+
     @Query("""UPDATE account
             SET name=:name
             where recipientId=:recipientId""")

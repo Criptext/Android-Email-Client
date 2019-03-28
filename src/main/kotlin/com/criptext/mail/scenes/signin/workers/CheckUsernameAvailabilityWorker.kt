@@ -1,10 +1,13 @@
-package com.criptext.mail.scenes.signin.data
+package com.criptext.mail.scenes.signin.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
@@ -15,6 +18,7 @@ import com.github.kittinunf.result.Result
  */
 
 class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
+                                      private val accountDao: AccountDao,
                                       private val username: String,
                                       override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.CheckUsernameAvailability> {
@@ -35,6 +39,10 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.CheckUsernameAvailability>): SignInResult.CheckUsernameAvailability? {
+
+        val loggedUsers = accountDao.getLoggedInAccounts().map { it.recipientId }
+        if(username in loggedUsers) return SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.user_already_logged_in))
+
         val result = Result.of { apiClient.isUsernameAvailable(username) }
 
         return when (result) {
