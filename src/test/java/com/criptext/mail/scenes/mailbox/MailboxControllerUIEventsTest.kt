@@ -9,10 +9,7 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import io.mockk.*
-import org.amshove.kluent.`should be empty`
-import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should equal`
-import org.amshove.kluent.mock
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 
@@ -139,9 +136,9 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         // verify ui is showing "refreshing" animation
         verify { scene.showRefresh() }
 
-        val sentRequest = sentGeneralRequests.first()
-        sentRequest `should equal` GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = 20)
+        val sentRequest = sentGeneralRequests
+        sentRequest `should contain` GeneralRequest.UpdateMailbox(label = model.selectedLabel,
+                loadedThreadsCount = 20, isActiveAccount = true, activeAccount = null)
     }
 
     @Test

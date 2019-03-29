@@ -57,6 +57,8 @@ interface MailboxScene{
     fun initDrawerLayout()
     fun initNavHeader(fullName: String, email: String)
     fun initMailboxAvatar(fullName: String, email: String)
+    fun showExtraAccountsBadge(show: Boolean)
+    fun hideMultipleAccountsMenu()
     fun onBackPressed(): Boolean
     fun attachView(
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
@@ -165,6 +167,10 @@ interface MailboxScene{
             mailboxView.findViewById<CircleImageView>(R.id.mailbox_nav_button)
         }
 
+        private val newMailExtraAccounts: TextView by lazy {
+            mailboxView.findViewById<TextView>(R.id.badge_new_mails)
+        }
+
         private val openComposerButton: View by lazy {
             mailboxView.findViewById<View>(R.id.fab)
         }
@@ -227,6 +233,14 @@ interface MailboxScene{
                     recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
                     name = fullName,
                     runnable = null)
+        }
+
+        override fun showExtraAccountsBadge(show: Boolean) {
+            newMailExtraAccounts.visibility = if(show) View.VISIBLE else View.GONE
+        }
+
+        override fun hideMultipleAccountsMenu() {
+            drawerMenuView.hideMultipleAccountsMenu()
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

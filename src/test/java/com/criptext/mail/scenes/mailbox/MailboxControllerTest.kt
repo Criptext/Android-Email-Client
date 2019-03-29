@@ -4,10 +4,12 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.mocks.MockedIHostActivity
 import com.criptext.mail.mocks.MockedKeyValueStorage
+import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
 import com.criptext.mail.scenes.mailbox.data.MailboxRequest
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -26,8 +28,8 @@ open class MailboxControllerTest {
     protected lateinit var scene: MailboxScene
     protected lateinit var storage: MockedKeyValueStorage
     protected lateinit var signal: SignalClient
-    protected lateinit var dataSource: BackgroundWorkManager<MailboxRequest, MailboxResult>
-    protected lateinit var generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>
+    protected lateinit var dataSource: MailboxDataSource
+    protected lateinit var generalDataSource: GeneralDataSource
     protected lateinit var controller: MailboxSceneController
     protected lateinit var host: MockedIHostActivity
     protected lateinit var webSocketEvents: WebSocketEventPublisher

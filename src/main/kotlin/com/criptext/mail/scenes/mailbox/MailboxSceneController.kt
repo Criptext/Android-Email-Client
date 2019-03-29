@@ -44,6 +44,7 @@ import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
 
 /**
@@ -56,7 +57,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val generalDataSource: GeneralDataSource,
                              private val dataSource: MailboxDataSource,
                              private var activeAccount: ActiveAccount,
-                             private val websocketEvents: WebSocketEventPublisher,
+                             private var websocketEvents: WebSocketEventPublisher,
                              private val feedController : FeedController) : SceneController() {
 
     private val threadListController = ThreadListController(model, scene.virtualListView)
@@ -185,16 +186,15 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onAccountClicked(account: Account) {
             scene.hideDrawer()
+            scene.showExtraAccountsBadge(false)
+            scene.hideMultipleAccountsMenu()
             threadListController.clear()
             dataSource.submitRequest(MailboxRequest.SetActiveAccount(account))
         }
 
         override fun onAddAccountClicked() {
+            scene.hideMultipleAccountsMenu()
             host.goToScene(SignInParams(true), true)
-        }
-
-        override fun onCreateAccountClicked() {
-            host.goToScene(SignUpParams(true), true)
         }
 
         override fun onCustomLabelClicked(label: Label) {
@@ -781,6 +781,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
+                    websocketEvents = WebSocketSingleton.getInstance(activeAccount)
+                    websocketEvents.setListener(webSocketEventListener)
 
                     scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
 
@@ -1131,8 +1133,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                 isActiveAccount = resultData.isActiveAccount
                 if(resultData.isActiveAccount)
                     handleSuccessfulMailboxUpdate(resultData)
-                else
+                else {
+                    scene.showExtraAccountsBadge(true)
+                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                }
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
                 isActiveAccount = resultData.isActiveAccount
@@ -1171,7 +1176,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
                         label = model.selectedLabel,
                         loadedThreadsCount = model.threads.size,
-                        isActiveAccount = true,
+                        isActiveAccount = false,
                         activeAccount = ActiveAccount.loadFromDB(it)
                 ))
             }

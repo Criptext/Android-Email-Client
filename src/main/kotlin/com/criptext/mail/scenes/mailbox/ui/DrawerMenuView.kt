@@ -231,6 +231,13 @@ class DrawerMenuView(navigationView: NavigationView,
         setListeners()
     }
 
+    fun hideMultipleAccountsMenu(){
+        multipleAccontsMenu.visibility = View.GONE
+        navBody.visibility = View.VISIBLE
+        extraAccountsAvatars.visibility = View.VISIBLE
+        Picasso.get().load(R.drawable.arrowdown).into(imageViewArrow)
+    }
+
     fun initNavHeader(fullName: String, email: String){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName

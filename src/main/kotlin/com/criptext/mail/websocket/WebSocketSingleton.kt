@@ -19,6 +19,7 @@ object WebSocketSingleton {
 
     fun getInstance(activeAccount: ActiveAccount): WebSocketController {
         if(lastRecipientId != activeAccount.recipientId){
+            INSTANCE?.disconnect()
             INSTANCE = null
             lastRecipientId = activeAccount.recipientId
         }

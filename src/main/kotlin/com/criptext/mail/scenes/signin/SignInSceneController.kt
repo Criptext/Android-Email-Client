@@ -553,7 +553,7 @@ class SignInSceneController(
         }
 
         override fun onSignUpLabelClicked() {
-            host.goToScene(SignUpParams(), false)
+            host.goToScene(SignUpParams(model.isMultiple), false)
         }
     }
 

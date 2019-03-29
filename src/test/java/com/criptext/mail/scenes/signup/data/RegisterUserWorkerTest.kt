@@ -49,7 +49,8 @@ class RegisterUserWorkerTest {
     private fun newWorker(incompleteAccount: IncompleteAccount): RegisterUserWorker =
         RegisterUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 signalKeyGenerator = keyGenerator, incompleteAccount = incompleteAccount,
-                publishFn = {}, messagingInstance = messagingInstance, db = db, accountDao = accountDao)
+                publishFn = {}, messagingInstance = messagingInstance, db = db, accountDao = accountDao,
+                isMultiple = false)
 
 
     @Test

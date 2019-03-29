@@ -41,7 +41,7 @@ interface MailboxLocalDB {
     fun getLabelByName(labelName: String): Label
     fun getLabelsByName(labelName: List<String>): List<Label>
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
-                               metadataKey: Long, date: Date, status: DeliveryTypes)
+                               metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
     fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long)
     fun getExistingAccount(): Account?
     fun setActiveAccount(id: Long)
@@ -373,16 +373,17 @@ interface MailboxLocalDB {
         }
 
         private fun updateEmail(id: Long, threadId: String, messageId : String, metadataKey: Long,
-                        date: Date, status: DeliveryTypes) {
+                        date: Date, status: DeliveryTypes, accountId: Long) {
             db.emailDao().updateEmail(id = id, threadId = threadId, messageId = messageId,
-                    metadataKey = metadataKey, date = date, status = status, accountId = getExistingAccount()!!.id)
+                    metadataKey = metadataKey, date = date, status = status, accountId = accountId)
         }
 
         override fun updateEmailAndAddLabel(id: Long, threadId: String, messageId: String,
-                                            metadataKey: Long, date: Date, status: DeliveryTypes) {
+                                            metadataKey: Long, date: Date, status: DeliveryTypes,
+                                            accountId: Long) {
             db.runInTransaction {
                 updateEmail(id = id, threadId = threadId, messageId = messageId,
-                        metadataKey = metadataKey, date = date, status = status)
+                        metadataKey = metadataKey, date = date, status = status, accountId = accountId)
                 deleteRelationByEmailIds(arrayListOf(id))
                 createLabelEmailSent(id)
                 if(status == DeliveryTypes.DELIVERED)

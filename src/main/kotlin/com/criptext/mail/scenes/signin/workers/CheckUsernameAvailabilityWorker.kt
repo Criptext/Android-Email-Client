@@ -30,7 +30,7 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
     override fun catchException(ex: Exception): SignInResult.CheckUsernameAvailability {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerCodes.Gone -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.username_not_available_error))
+                ServerCodes.Gone -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.username_not_available))
                 else -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.forgot_password_error))
             }
         }else {

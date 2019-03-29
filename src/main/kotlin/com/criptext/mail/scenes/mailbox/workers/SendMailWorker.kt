@@ -259,7 +259,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                    db.updateEmailAndAddLabel(id = emailId, threadId = sentMailData.threadId,
                        messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                        status = getDeliveryType(),
-                       date = DateAndTimeUtils.getDateFromString(sentMailData.date, null)
+                       date = DateAndTimeUtils.getDateFromString(sentMailData.date, null),
+                       accountId = activeAccount.id
                    )
 
                    EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,
