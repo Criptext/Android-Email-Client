@@ -15,6 +15,7 @@ interface SignInLocalDB {
     fun accountExistsLocally(username: String): Boolean
     fun deleteDatabase(account: Account)
     fun deleteDatabase(user: String)
+    fun deleteDatabase(users: List<String>)
     fun deleteDatabase()
 
     class Default(applicationContext: Context, private val filesDir: File): SignInLocalDB {
@@ -38,7 +39,12 @@ interface SignInLocalDB {
 
         override fun deleteDatabase(user: String) {
             EmailUtils.deleteEmailsInFileSystem(filesDir, user)
-            db.clearAllTables()
+            db.accountDao().deleteAccountByRecipientId(user)
+        }
+
+        override fun deleteDatabase(users: List<String>) {
+            users.forEach { EmailUtils.deleteEmailsInFileSystem(filesDir, it) }
+            db.accountDao().deleteAccountsByRecipientId(users)
         }
 
         override fun deleteDatabase(account: Account) {

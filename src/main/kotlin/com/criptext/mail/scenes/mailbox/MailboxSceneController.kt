@@ -185,6 +185,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onAccountClicked(account: Account) {
             scene.hideDrawer()
+            threadListController.clear()
             dataSource.submitRequest(MailboxRequest.SetActiveAccount(account))
         }
 
@@ -457,7 +458,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.attachView(
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
-                observer = observer, threadList = VirtualEmailThreadList(model))
+                observer = observer, threadList = VirtualEmailThreadList(model),
+                email = activeAccount.userEmail, fullName = activeAccount.name)
         scene.initDrawerLayout()
         scene.setEmtpyMailboxBackground(model.selectedLabel)
 
@@ -779,6 +781,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
+
+                    scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
 
                     scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 

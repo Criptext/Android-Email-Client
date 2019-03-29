@@ -173,24 +173,5 @@
                 android:textColor="?attr/criptextPrimaryTextColor"
                 android:text="@string/drawer_add_account"/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="30dp"
-            android:id="@+id/create_account"
-            android:clickable="true">
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_gravity="center"
-                android:src="@drawable/filter_copy"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textColor="?attr/criptextPrimaryTextColor"
-                android:text="@string/drawer_create_account_account"/>
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

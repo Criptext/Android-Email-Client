@@ -48,7 +48,6 @@ class DrawerMenuView(navigationView: NavigationView,
     private val openMenuArrow: ImageView
     private val multipleAccontsMenu: LinearLayout
     private val addAccountOption: LinearLayout
-    private val createAccountOption: LinearLayout
     private val extraAccountsAvatars: LinearLayout
     private val recyclerViewAccount : RecyclerView
 
@@ -172,10 +171,6 @@ class DrawerMenuView(navigationView: NavigationView,
         addAccountOption.setOnClickListener {
             drawerMenuItemListener.onAddAccountClicked()
         }
-
-        createAccountOption.setOnClickListener {
-            drawerMenuItemListener.onCreateAccountClicked()
-        }
     }
 
     init {
@@ -186,7 +181,6 @@ class DrawerMenuView(navigationView: NavigationView,
         openMenuArrow = navigationView.findViewById(R.id.imageViewArrow)
         multipleAccontsMenu = navigationView.findViewById(R.id.multiple_accounts_menu)
         addAccountOption = navigationView.findViewById(R.id.add_account)
-        createAccountOption = navigationView.findViewById(R.id.create_account)
         recyclerViewAccount = navigationView.findViewById(R.id.recyclerViewAccounts)
         extraAccountsAvatars = navigationView.findViewById(R.id.extraAccountsAvatars)
 
@@ -326,7 +320,6 @@ class DrawerMenuView(navigationView: NavigationView,
                 setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
                 setAvatarViewAndListener(avatarView3, avatarViewLayout3, accounts[1], badgeAccount3)
                 addAccountOption.visibility = View.GONE
-                createAccountOption.visibility = View.GONE
             }
             1 -> setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
         }

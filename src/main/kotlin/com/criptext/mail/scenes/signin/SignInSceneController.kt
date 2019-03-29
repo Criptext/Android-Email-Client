@@ -12,13 +12,10 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
-import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
@@ -101,9 +98,12 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
-                    val oldAccount = storage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
-                    if(oldAccount.isNotEmpty() && result.username != oldAccount)
-                        scene.showSignInWarningDialog(oldAccount.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX), result.username)
+                    val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                    if(oldAccounts.isNotEmpty() && result.username !in oldAccounts)
+                        scene.showSignInWarningDialog(
+                                oldAccountName = oldAccounts.joinToString { it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX) },
+                                newUserName = result.username
+                        )
                     else {
                         //LINK DEVICE FEATURE
                         model.state = SignInLayoutState.LoginValidation(username = result.username,

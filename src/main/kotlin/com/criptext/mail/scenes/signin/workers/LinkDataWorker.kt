@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.signin.data
+package com.criptext.mail.scenes.signin.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
@@ -10,25 +10,20 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.signup.data.SignUpAPIClient
+import com.criptext.mail.scenes.signin.data.SignInAPIClient
+import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
-import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import com.google.android.gms.common.util.IOUtils
-import java.nio.file.StandardCopyOption
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.FileOutputStream
-import java.io.OutputStream
-import java.io.IOException
 import java.util.zip.GZIPInputStream
 
 

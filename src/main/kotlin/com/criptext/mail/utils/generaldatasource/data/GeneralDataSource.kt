@@ -43,8 +43,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res) }
             )
             is GeneralRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = if(params.activeAccount == null) signalClient!!
-                    else SignalClient.Default(SignalStoreCriptext(db, params.activeAccount)),
+                    db = db,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
                     activeAccount = params.activeAccount ?: activeAccount!!,
@@ -72,6 +71,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(
+                    db = db,
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
                     randomId = params.randomId,
@@ -79,7 +79,6 @@ class GeneralDataSource(override val runner: WorkRunner,
                     deviceId = params.deviceID,
                     fileKey = params.key,
                     keyBundle = params.keyBundle,
-                    signalClient = signalClient!!,
                     accountDao = db.accountDao(),
                     storage = storage,
                     publishFn = { res -> flushResults(res)}
@@ -137,7 +136,6 @@ class GeneralDataSource(override val runner: WorkRunner,
                     authorizerId = params.authorizerId,
                     filesDir = filesDir,
                     db = db,
-                    signalClient = signalClient!!,
                     dataAddress = params.dataAddress,
                     key = params.key,
                     publishFn = { res -> flushResults(res) }
@@ -175,7 +173,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     accountDao = db.accountDao(),
                     storage = storage,
                     rawSessionDao = db.rawSessionDao(),
-                    signalClient = signalClient!!,
+                    appDB = db,
                     db = MailboxLocalDB.Default(db, filesDir),
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
