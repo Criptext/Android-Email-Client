@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
@@ -36,6 +37,7 @@ open class MailboxWorkerTest {
     protected lateinit var rawSessionDao: RawSessionDao
     protected lateinit var rawIdentityKeyDao: RawIdentityKeyDao
     protected lateinit var db: MailboxLocalDB
+    protected lateinit var appDB: AppDatabase
     protected lateinit var eventDB: EventLocalDB
     protected lateinit var dao: EmailInsertionDao
     protected lateinit var activeAccount: ActiveAccount
@@ -49,9 +51,10 @@ open class MailboxWorkerTest {
     fun setup() {
         lastResult = null
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
-                jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__")
+                jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1)
         signalClient = mockk()
         db = mockk()
+        appDB = mockk()
         storage = mockk(relaxed = true)
         emailDao = mockk()
         feedItemDao = mockk()
@@ -76,7 +79,8 @@ open class MailboxWorkerTest {
                 feedItemDao = feedItemDao, contactDao = contactDao, fileDao = fileDao,
                 labelDao = labelDao, emailLabelDao = emailLabelDao, emailContactJoinDao = emailContactDao,
                 fileKeyDao = fileKeyDao, rawIdentityKeyDao = rawIdentityKeyDao, accountDao = accountDao,
-                eventLocalDB = eventDB, storage = storage, pendingDao = pendingDao, filesDir = File("mock"))
+                eventLocalDB = eventDB, storage = storage, pendingDao = pendingDao, filesDir = File("mock"),
+                db = appDB)
         dataSource.listener = { result -> lastResult = result }
     }
 

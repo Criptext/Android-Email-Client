@@ -6,8 +6,10 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.settings.workers.ChangeVisibilityLabelWorker
+import com.criptext.mail.scenes.settings.labels.workers.ChangeVisibilityLabelWorker
 import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -26,12 +28,18 @@ class ChangeVisibilityLabelWorkerTest{
 
     private val labelName = "Cute Dogs"
     private var labelId: Long = 0
+    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
+                name = "Tester", registrationId = 1,
+                identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true))
         settingsLocalDB = SettingsLocalDB.Default(db)
 
         labelId = db.labelDao().insert(Label(
@@ -40,7 +48,8 @@ class ChangeVisibilityLabelWorkerTest{
                 type = LabelTypes.CUSTOM,
                 visible = true,
                 color = "000000",
-                uuid = "uuid"
+                uuid = "uuid",
+                accountId = activeAccount.id
         ))
 
     }
@@ -51,7 +60,7 @@ class ChangeVisibilityLabelWorkerTest{
         val worker = newWorker(labelId, true)
         worker.work(mockk())
 
-        val labelInserted = db.labelDao().get(labelName)
+        val labelInserted = db.labelDao().get(labelName, activeAccount.id)
         labelInserted.visible shouldEqual true
 
     }
@@ -62,7 +71,7 @@ class ChangeVisibilityLabelWorkerTest{
         val worker = newWorker(labelId, false)
         worker.work(mockk())
 
-        val labelInserted = db.labelDao().get(labelName)
+        val labelInserted = db.labelDao().get(labelName, activeAccount.id)
         labelInserted.visible shouldEqual false
 
     }
@@ -72,6 +81,7 @@ class ChangeVisibilityLabelWorkerTest{
                     labelId = labelId,
                     isVisible = isVisible,
                     db = settingsLocalDB,
+                    activeAccount = activeAccount,
                     publishFn = {})
 
 }

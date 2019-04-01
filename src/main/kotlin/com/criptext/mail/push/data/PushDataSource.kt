@@ -29,10 +29,9 @@ class PushDataSource(
             : BackgroundWorker<*> {
         return when (params) {
             is PushRequest.NewEmail -> GetPushEmailWorker(
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    db = db,
                     dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     httpClient = httpClient,
-                    activeAccount = activeAccount,
                     label = params.label,
                     pushData = params.pushData,
                     shouldPostNotification = params.shouldPostNotification,
@@ -40,7 +39,7 @@ class PushDataSource(
                         flushResults(result)
                     })
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount)),
                     dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     httpClient = httpClient,
                     storage = storage,

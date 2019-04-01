@@ -17,9 +17,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
-import com.criptext.mail.scenes.params.LinkingParams
-import com.criptext.mail.scenes.params.SettingsParams
-import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
 import com.criptext.mail.scenes.settings.profile.data.ProfileResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
@@ -30,7 +28,9 @@ import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -44,7 +44,7 @@ import java.lang.Exception
 
 
 class ProfileController(
-        private val activeAccount: ActiveAccount,
+        private var activeAccount: ActiveAccount,
         private val model: ProfileModel,
         private val scene: ProfileScene,
         private val host: IHostActivity,
@@ -65,6 +65,8 @@ class ProfileController(
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeContactName -> onContactNameChanged(result)
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
+            is GeneralResult.DeleteAccount -> onDeleteAccount(result)
+            is GeneralResult.Logout -> onLogout(result)
         }
     }
 
@@ -76,9 +78,42 @@ class ProfileController(
     }
 
     private val uiObserver = object: ProfileUIObserver{
+        override fun onLogoutClicked() {
+            scene.showLogoutDialog(model.userData.isLastDeviceWith2FA)
+        }
+
+        override fun onLogoutConfirmedClicked() {
+            scene.showMessageAndProgressDialog(UIMessage(R.string.login_out_dialog_message))
+            generalDataSource.submitRequest(GeneralRequest.Logout(false))
+        }
+
+        override fun onDeleteAccountClicked() {
+            scene.showGeneralDialogWithInputPassword(DialogData.DialogMessageData(
+                    title = UIMessage(R.string.delete_account_dialog_title),
+                    message = listOf(UIMessage(R.string.delete_account_dialog_message)),
+                    type = DialogType.DeleteAccount()
+            ))
+        }
+
+        override fun onRecoveryEmailOptionClicked() {
+            host.goToScene(RecoveryEmailParams(model.userData), false)
+        }
+
+        override fun onReplyToChangeClicked() {
+            host.goToScene(ReplyToParams(model.userData), false)
+        }
+
+        override fun onChangePasswordOptionClicked() {
+            host.goToScene(ChangePasswordParams(), true)
+        }
+
+        override fun onSignatureOptionClicked() {
+            host.goToScene(SignatureParams(activeAccount.recipientId), true)
+        }
+
         override fun onProfileNameChanged(name: String) {
             keyboardManager.hideKeyboard()
-            model.name = name
+            model.userData.name = name
             generalDataSource.submitRequest(GeneralRequest.ChangeContactName(
                     fullName = name,
                     recipientId = activeAccount.recipientId
@@ -93,7 +128,7 @@ class ProfileController(
         }
 
         override fun onEditProfileNamePressed() {
-            scene.showProfileNameDialog(model.name)
+            scene.showProfileNameDialog(model.userData.name)
         }
 
         override fun onNewCamPictureRequested() {
@@ -129,7 +164,16 @@ class ProfileController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogWithInput -> {
+                    when(result.type){
+                        is DialogType.DeleteAccount -> {
+                            scene.toggleGeneralDialogLoad(true)
+                            generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
+                        }
+                    }
+                }
+            }
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -153,10 +197,7 @@ class ProfileController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            if(model.exitToMailbox)
-                host.finishScene()
-            else
-                host.exitToScene(SettingsParams(), null,true)
+            host.exitToScene(SettingsParams(), null,true)
         }
     }
 
@@ -168,6 +209,37 @@ class ProfileController(
         dataSource.listener = dataSourceListener
 
         return handleActivityMessage(activityMessage)
+    }
+
+    private fun onLogout(result: GeneralResult.Logout){
+        when(result) {
+            is GeneralResult.Logout.Success -> {
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), null, false, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
+            }
+            is GeneralResult.Logout.Failure -> {
+                scene.dismissMessageAndProgressDialog()
+                scene.showMessage(UIMessage(R.string.error_login_out))
+            }
+        }
+    }
+
+    private fun onDeleteAccount(result: GeneralResult.DeleteAccount){
+        scene.toggleGeneralDialogLoad(false)
+        when(result) {
+            is GeneralResult.DeleteAccount.Success -> {
+                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
+            }
+            is GeneralResult.DeleteAccount.Failure -> {
+                scene.setGeneralDialogWithInputError(result.message)
+            }
+        }
     }
 
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
@@ -223,12 +295,12 @@ class ProfileController(
         when(result) {
             is GeneralResult.ChangeContactName.Success -> {
                 scene.updateProfileName(result.fullName)
-                activeAccount.updateFullName(storage, model.name)
+                activeAccount.updateFullName(storage, model.userData.name)
                 scene.showMessage(UIMessage(R.string.profile_name_updated))
             }
             is GeneralResult.ChangeContactName.Failure -> {
                 scene.updateProfileName(activeAccount.name)
-                model.name = activeAccount.name
+                model.userData.name = activeAccount.name
                 scene.showMessage(UIMessage(R.string.error_updating_account))
             }
         }
@@ -242,7 +314,7 @@ class ProfileController(
                 scene.showMessage(UIMessage(R.string.profile_picture_updated))
             }
             is ProfileResult.SetProfilePicture.Failure -> {
-                scene.resetProfilePicture(model.name)
+                scene.resetProfilePicture(model.userData.name)
                 scene.hideProfilePictureProgress()
                 scene.showMessage(UIMessage(R.string.profile_picture_update_failed))
             }
@@ -253,7 +325,7 @@ class ProfileController(
         scene.hideProfilePictureProgress()
         when(result) {
             is ProfileResult.DeleteProfilePicture.Success -> {
-                scene.resetProfilePicture(model.name)
+                scene.resetProfilePicture(model.userData.name)
                 scene.showMessage(UIMessage(R.string.profile_picture_deleted))
             }
             is ProfileResult.DeleteProfilePicture.Failure -> {

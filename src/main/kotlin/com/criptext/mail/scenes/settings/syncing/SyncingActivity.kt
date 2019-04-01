@@ -27,17 +27,11 @@ class SyncingActivity: BaseActivity(){
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = SyncingScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
-        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount!!)
+                activeAccount = activeAccount)
 
-        val dataSource = LinkingDataSource(
-                httpClient = HttpClient.Default(),
-                activeAccount = activeAccount!!,
-                runner = AsyncTaskWorkRunner(),
-                accountDao = appDB.accountDao(),
-                storage = KeyValueStorage.SharedPrefs(this))
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),

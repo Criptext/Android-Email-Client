@@ -50,20 +50,22 @@ class UnsendEmailWorkerTest {
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
 
         db.labelDao().insertAll(Label.DefaultItems().toList())
-        db.accountDao().insert(Account(activeAccount.recipientId, activeAccount.deviceId,
+        db.accountDao().insert(Account(1, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
-                "_KEY_PAIR_", 0, ""))
+                "_KEY_PAIR_", 1, "", "criptext.com",
+                true, true))
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, listOf("gabriel@criptext.com", "mayer@gmail.com"))
+                mActivityRule.activity.filesDir, activeAccount.recipientId, listOf("gabriel@criptext.com", "mayer@gmail.com"),
+                activeAccount.id)
         mockWebServer = MockWebServer()
         mockWebServer.start()
         val mockWebServerUrl = mockWebServer.url("/mock").toString()
@@ -84,7 +86,7 @@ class UnsendEmailWorkerTest {
                 MockedResponse.Ok("Ok")
         ))
 
-        val emails = db.emailDao().getAll()
+        val emails = db.emailDao().getAll(activeAccount.id)
         val emailToUnsend = emails[0]
 
         val emailContentBeforeUnsend = EmailUtils.getEmailContentFromFileSystem(
@@ -111,7 +113,7 @@ class UnsendEmailWorkerTest {
             ))
         }
 
-        val unsentEmailFromDB = db.emailDao().getEmailById(emailToUnsend.id)
+        val unsentEmailFromDB = db.emailDao().getEmailById(emailToUnsend.id, activeAccount.id)
 
         unsentEmailFromDB shouldNotBe null
 

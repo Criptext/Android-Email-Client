@@ -44,7 +44,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     }
 
     private fun simulateLoadOfEmails(size: Int) {
-        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size), 2))
+        listenerSlot.captured(EmailDetailResult.LoadFullEmailsFromThreadId.Success(createEmailItemsInThread(size), 2, null))
     }
 
     @Test
@@ -56,7 +56,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
         // capture onMoveThreadsListener
         val onMoveThreadsListenerSlot = CapturingSlot<OnMoveThreadsListener>()
         every {
-            scene.showDialogMoveTo(capture(onMoveThreadsListenerSlot))
+            scene.showDialogMoveTo(capture(onMoveThreadsListenerSlot), Label.LABEL_INBOX)
         } just Runs
 
         controller.onOptionsItemSelected(R.id.mailbox_move_to)

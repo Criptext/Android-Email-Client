@@ -6,7 +6,7 @@ import com.criptext.mail.scenes.signup.SignUpActivity
  * Created by sebas on 2/23/18.
  */
 
-class SignUpParams: SceneParams() {
+class SignUpParams(val isMultiple: Boolean = false): SceneParams() {
     override val activityClass = SignUpActivity::class.java
 
     override fun equals(other: Any?): Boolean {

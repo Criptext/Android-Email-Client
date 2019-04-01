@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalKeyGenerator
 
 /**
@@ -17,6 +18,7 @@ data class IncompleteAccount(
 
         fun complete(privateBundle: SignalKeyGenerator.PrivateBundle, jwt: String, refreshToken: String) =
                 Account(
+                        id = 0,
                         name = this.name,
                         recipientId = this.username,
                         deviceId = this.deviceId,
@@ -24,6 +26,9 @@ data class IncompleteAccount(
                         jwt = jwt,
                         refreshToken = refreshToken,
                         registrationId = privateBundle.registrationId,
-                        identityKeyPairB64 = privateBundle.identityKeyPair
+                        identityKeyPairB64 = privateBundle.identityKeyPair,
+                        domain = Contact.mainDomain,
+                        isActive = true,
+                        isLoggedIn = true
                 )
 }

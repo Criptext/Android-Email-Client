@@ -18,12 +18,26 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun getAccountByRecipientId(recipientId: String?): Account? {
+        if(recipientId == null) return null
+        return db.accountDao().getAccountByRecipientId(recipientId)
+    }
+
+    fun setActiveAccount(id: Long) {
+        db.accountDao().updateActiveInAccount()
+        db.accountDao().updateActiveInAccount(id)
+    }
+
+    fun getLoggedAccounts(): List<Account> {
+        return db.accountDao().getLoggedInAccounts()
+    }
+
     fun getCacheDir(): File {
         return cacheDir
     }
 
-    fun getAllPreKeys(): List<CRPreKey> {
-        return db.rawPreKeyDao().getAll()
+    fun getAllPreKeys(accountId: Long): List<CRPreKey> {
+        return db.rawPreKeyDao().getAll(accountId)
     }
 
     fun insertPreKeys(preKeys : List<CRPreKey>){
@@ -35,24 +49,24 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         db.clearAllTables()
     }
 
-    fun logout(){
-        db.accountDao().nukeTable()
-        db.rawIdentityKeyDao().deleteAll()
-        db.rawPreKeyDao().deleteAll()
-        db.rawSessionDao().deleteAll()
-        db.rawSignedPreKeyDao().deleteAll()
+    fun logout(accountId: Long){
+        db.accountDao().logoutAccount(accountId)
+        db.rawIdentityKeyDao().deleteAll(accountId)
+        db.rawPreKeyDao().deleteAll(accountId)
+        db.rawSessionDao().deleteAll(accountId)
+        db.rawSignedPreKeyDao().deleteAll(accountId)
     }
 
     fun getFromContactByEmailId(id: Long): List<Contact> {
         return db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
     }
 
-    fun getEmailByMetadataKey(metadataKey: Long): Email?{
-        return db.emailDao().findEmailByMetadataKey(metadataKey)
+    fun getEmailByMetadataKey(metadataKey: Long, accountId: Long): Email?{
+        return db.emailDao().findEmailByMetadataKey(metadataKey, accountId)
     }
 
-    fun getFullEmailById(emailId: Long): FullEmail? {
-        val email = db.emailDao().getEmailById(emailId) ?: return null
+    fun getFullEmailById(emailId: Long, accountId: Long): FullEmail? {
+        val email = db.emailDao().getEmailById(emailId, accountId) ?: return null
         val id = email.id
         val labels = db.emailLabelDao().getLabelsFromEmail(id)
         val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -78,15 +92,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     }
 
-    fun removeDevice(storage: KeyValueStorage){
-        db.clearAllTables()
-        storage.clearAll()
-    }
-
-    fun updateFeedItems(trackingUpdates: List<TrackingUpdate>) {
+    fun updateFeedItems(trackingUpdates: List<TrackingUpdate>, accountId: Long) {
         val feeds = mutableListOf<FeedItem>()
         trackingUpdates.forEach {
-            val existingEmail = db.emailDao().findEmailByMetadataKey(it.metadataKey)
+            val existingEmail = db.emailDao().findEmailByMetadataKey(it.metadataKey, accountId)
             if(existingEmail != null && it.type == DeliveryTypes.READ){
                 feeds.add(FeedItem(
                         id = 0,
@@ -95,7 +104,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         location = "",
                         seen = false,
                         emailId = existingEmail.id,
-                        contactId = db.contactDao().getContact("${it.from}@${Contact.mainDomain}")!!.id,
+                        contactId = db.contactDao().getContact("${it.from}@${Contact.mainDomain}", accountId)!!.id,
                         fileId = null
                 ))
             }
@@ -104,11 +113,11 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         db.feedDao().insertFeedItems(feeds)
     }
 
-    fun updateDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes) {
+    fun updateDeliveryTypeByMetadataKey(metadataKeys: List<Long>, deliveryType: DeliveryTypes, accountId: Long) {
         if (metadataKeys.isNotEmpty()) {
             db.emailDao().changeDeliveryTypeByMetadataKey(metadataKeys, deliveryType,
                     listOf(DeliveryTypes.getTrueOrdinal(DeliveryTypes.UNSEND),
-                    DeliveryTypes.getTrueOrdinal(DeliveryTypes.NONE)))
+                    DeliveryTypes.getTrueOrdinal(DeliveryTypes.NONE)), accountId)
         }
     }
 
@@ -117,32 +126,33 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 activeAccount = activeAccount)
     }
 
-    fun updateCreateLabel(text: String, color: String, uuid: String) {
+    fun updateCreateLabel(text: String, color: String, uuid: String, accountId: Long) {
         db.labelDao().insert(Label(
                 id = 0,
                 text = text,
                 color = ColorUtils.colorStringByName(color),
                 visible = true,
                 type = LabelTypes.CUSTOM,
-                uuid = uuid
+                uuid = uuid,
+                accountId = accountId
         ))
     }
 
-    fun updateDeleteThreadPermanently(threadIds: List<String>) {
+    fun updateDeleteThreadPermanently(threadIds: List<String>, accountId: Long) {
         if(threadIds.isNotEmpty()){
-            db.emailDao().getEmailsFromThreadIds(threadIds).forEach {
+            db.emailDao().getEmailsFromThreadIds(threadIds, accountId).forEach {
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
                         recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
             }
-            db.emailDao().deleteThreads(threadIds, listOf(Label.defaultItems.trash.id, Label.defaultItems.spam.id))
+            db.emailDao().deleteThreads(threadIds, listOf(Label.defaultItems.trash.id, Label.defaultItems.spam.id), accountId)
         }
     }
 
-    fun updateDeleteEmailPermanently(metadataKeys: List<Long>) {
+    fun updateDeleteEmailPermanently(metadataKeys: List<Long>, accountId: Long) {
         if(metadataKeys.isNotEmpty()){
-            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
+            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys, accountId)
             if(emails.isEmpty()) return
             emails.forEach {
                 EmailUtils.deleteEmailInFileSystem(
@@ -154,18 +164,18 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         }
     }
 
-    fun updateThreadLabels(threadIds: List<String>, labelsAdded: List<String>, labelsRemoved: List<String>) {
+    fun updateThreadLabels(threadIds: List<String>, labelsAdded: List<String>, labelsRemoved: List<String>, accountId: Long) {
         if(threadIds.isNotEmpty()){
 
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
                     .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH, Label.LABEL_STARRED) }
-                    .map { it.text })
-            val threads = db.emailDao().getEmailsFromThreadIds(threadIds)
+                    .map { it.text }, accountId)
+            val threads = db.emailDao().getEmailsFromThreadIds(threadIds, accountId)
             if(threads.isEmpty()) return
             val emailIds = threads.map { it.id }
-            val removedLabels = db.labelDao().get(labelsRemoved)
+            val removedLabels = db.labelDao().get(labelsRemoved, accountId)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
-            val addedLabels = db.labelDao().get(labelsAdded)
+            val addedLabels = db.labelDao().get(labelsAdded, accountId)
 
             db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedNonSystemLabelIds, emailIds)
 
@@ -174,7 +184,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             }
 
             if(Label.defaultItems.trash in addedLabels){
-                db.emailDao().updateEmailTrashDate(Date(), emailIds)
+                db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
             }
 
 
@@ -190,18 +200,18 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         }
     }
 
-    fun updateEmailLabels(metadataKeys: List<Long>, labelsAdded: List<String>, labelsRemoved: List<String>) {
+    fun updateEmailLabels(metadataKeys: List<Long>, labelsAdded: List<String>, labelsRemoved: List<String>, accountId: Long) {
         if(metadataKeys.isNotEmpty()){
 
             val systemLabels = db.labelDao().get(Label.defaultItems.toList()
                     .filter { it.text !in listOf(Label.LABEL_SPAM, Label.LABEL_TRASH, Label.LABEL_STARRED) }
-                    .map { it.text })
-            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys)
+                    .map { it.text }, accountId)
+            val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys, accountId)
             if(emails.isEmpty()) return
             val emailIds = emails.map { it.id }
-            val removedLabels = db.labelDao().get(labelsRemoved)
+            val removedLabels = db.labelDao().get(labelsRemoved, accountId)
             val removedNonSystemLabelIds = removedLabels.filter { !systemLabels.contains(it) }.map { it.id }
-            val addedLabels = db.labelDao().get(labelsAdded)
+            val addedLabels = db.labelDao().get(labelsAdded, accountId)
 
             db.emailLabelDao().deleteRelationByLabelsAndEmailIds(removedNonSystemLabelIds, emailIds)
 
@@ -210,7 +220,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             }
 
             if(Label.defaultItems.trash in addedLabels){
-                db.emailDao().updateEmailTrashDate(Date(), emailIds)
+                db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
             }
 
             val selectedLabels = SelectedLabels()
@@ -225,16 +235,16 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         }
     }
 
-    fun updateUserName(recipientId: String, name: String) {
-        db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", name)
+    fun updateUserName(recipientId: String, name: String, accountId: Long) {
+        db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", name, accountId)
         db.accountDao().updateProfileName(name, recipientId)
     }
 
-    fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: Date) {
-        db.emailDao().changeDeliveryTypeByMetadataKey(metadataKey, DeliveryTypes.UNSEND)
+    fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: Date, accountId: Long) {
+        db.emailDao().changeDeliveryTypeByMetadataKey(metadataKey, DeliveryTypes.UNSEND, accountId)
         db.emailDao().unsendEmailByMetadataKey(metadataKey, "", "",
-                unsentDate)
-        db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey).id, 0)
+                unsentDate, accountId)
+        db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey, accountId).id, 0)
         EmailUtils.deleteEmailInFileSystem(
                 filesDir = filesDir,
                 metadataKey = metadataKey,
@@ -242,12 +252,12 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         )
     }
 
-    fun updateUnreadStatusByThreadId(emailThreads: List<String>, updateUnreadStatus: Boolean) {
-        db.emailDao().toggleReadByThreadId(emailThreads, updateUnreadStatus)
+    fun updateUnreadStatusByThreadId(emailThreads: List<String>, updateUnreadStatus: Boolean, accountId: Long) {
+        db.emailDao().toggleReadByThreadId(emailThreads, updateUnreadStatus, accountId)
     }
 
-    fun updateUnreadStatusByMetadataKeys(metadataKeys: List<Long>, updateUnreadStatus: Boolean) {
-        db.emailDao().toggleReadByMetadataKey(metadataKeys, updateUnreadStatus)
+    fun updateUnreadStatusByMetadataKeys(metadataKeys: List<Long>, updateUnreadStatus: Boolean, accountId: Long) {
+        db.emailDao().toggleReadByMetadataKey(metadataKeys, updateUnreadStatus, accountId)
     }
 
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
@@ -258,7 +268,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
-                                         rejectedLabels: List<Long>, userEmail: String): EmailThread {
+                                         rejectedLabels: List<Long>, userEmail: String, accountId: Long): EmailThread {
 
         val id = email.id
         val labels = db.emailLabelDao().getLabelsFromEmail(id)
@@ -271,7 +281,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         email.subject = email.subject.replace("^(Re|RE): ".toRegex(), "")
                 .replace("^(Fw|FW|Fwd|FWD): ".toRegex(), "")
 
-        val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels)
+        val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels, accountId)
         var totalFiles = 0
         val participants = emails.flatMap {
             val contacts = mutableListOf<Contact>()
@@ -329,9 +339,9 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     fun getThreadsFromMailboxLabel(userEmail: String, labelName: String,
                                             startDate: Date?, limit: Int,
-                                            rejectedLabels: List<Label>): List<EmailThread> {
-
-        val labels = db.labelDao().getAll()
+                                            rejectedLabels: List<Label>, accountId: Long): List<EmailThread> {
+        val account = db.accountDao().getLoggedInAccount()!!
+        val labels = db.labelDao().getAll(account.id)
         val selectedLabel = Label.getLabelIdWildcard(labelName, labels)
         val conditionalLabels = listOf(
                 Label.getLabelIdWildcard(Label.LABEL_TRASH, labels),
@@ -348,14 +358,16 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                     startDate = startDate,
                     rejectedLabels = rejectedIdLabels,
                     selectedLabel = selectedLabel,
-                    limit = limit)
+                    limit = limit,
+                    accountId = account.id)
 
         else
             db.emailDao().getInitialEmailThreadsFromMailboxLabel(
                     isTrashOrSpam = (selectedLabel in conditionalLabels),
                     rejectedLabels = rejectedIdLabels,
                     selectedLabel = selectedLabel,
-                    limit = limit )
+                    limit = limit,
+                    accountId = account.id)
 
         emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                 filesDir, it.metadataKey, it.content,
@@ -364,14 +376,14 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         return emails.map { email ->
             getEmailThreadFromEmail(email, labelName,
                     Label.defaultItems.rejectedLabelsByMailbox(
-                            db.labelDao().get(labelName)
-                    ).map { it.id }, userEmail)
+                            db.labelDao().get(labelName, account.id)
+                    ).map { it.id }, userEmail, accountId)
         } as ArrayList<EmailThread>
     }
 
-    fun getThreadIdsFromTrashExpiredEmails(): List<Long>{
-        val labelId = db.labelDao().get(Label.LABEL_TRASH).id
-        return db.emailDao().getTrashExpiredThreadIds(labelId)
+    fun getThreadIdsFromTrashExpiredEmails(accountId: Long): List<Long>{
+        val labelId = Label.defaultItems.trash.id
+        return db.emailDao().getTrashExpiredThreadIds(labelId, accountId)
     }
 
 }

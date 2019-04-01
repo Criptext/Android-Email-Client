@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
+import android.util.Log
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
@@ -24,7 +25,7 @@ import kotlin.collections.HashMap
  * Created by gabriel on 4/26/18.
  */
 object EmailInsertionSetup {
-    private fun createEmailRow(metadata: EmailMetadata.DBColumns, preview: String): Email {
+    private fun createEmailRow(metadata: EmailMetadata.DBColumns, preview: String, accountId: Long): Email {
         return Email(
             id = 0,
             fromAddress = if(metadata.fromContact.name.isEmpty()) metadata.fromContact.email
@@ -45,7 +46,8 @@ object EmailInsertionSetup {
             content = "",
             metadataKey = metadata.metadataKey,
             isMuted = false,
-            trashDate = null
+            trashDate = null,
+            accountId = accountId
         )
     }
 
@@ -83,7 +85,7 @@ object EmailInsertionSetup {
         return contactsMap.values.toList()
     }
 
-    private fun createSenderContactRow(dao: EmailInsertionDao, senderContact: Contact): Contact {
+    private fun createSenderContactRow(dao: EmailInsertionDao, senderContact: Contact, accountId: Long): Contact {
         val existingContacts = dao.findContactsByEmail(listOf(senderContact.email))
         return if (existingContacts.isEmpty()) {
             val ids = dao.insertContacts(listOf(senderContact))
@@ -93,7 +95,7 @@ object EmailInsertionSetup {
                     isTrusted = false,
                     score = senderContact.score)
         } else {
-            dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name))
+            dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name), accountId)
             existingContacts.first()
         }
     }
@@ -102,9 +104,9 @@ object EmailInsertionSetup {
                                         metadataColumns: EmailMetadata.DBColumns,
                                         preview: String,
                                         labels: List<Label>,
-                                        files: List<CRFile>, fileKey: String?): FullEmail {
-        val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact)
-        val emailRow = createEmailRow(metadataColumns, preview)
+                                        files: List<CRFile>, fileKey: String?, accountId: Long): FullEmail {
+        val senderContactRow = createSenderContactRow(dao, metadataColumns.fromContact, accountId)
+        val emailRow = createEmailRow(metadataColumns, preview, accountId)
         val toContactsRows = createContactRows(dao, metadataColumns.to)
         val ccContactsRows = createContactRows(dao, metadataColumns.cc)
         val bccContactsRows = createContactRows(dao, metadataColumns.bcc)
@@ -162,14 +164,32 @@ object EmailInsertionSetup {
         dao.insertEmailContactRelations(contactRelations)
     }
 
+    private fun insertAccountContactRelations(dao: EmailInsertionDao,
+                                            fullEmail: FullEmail) {
+        val senderRelation = AccountContact(id = 0,
+                contactId = fullEmail.from.id, accountId = fullEmail.email.accountId)
+        val toRelations = fullEmail.to.map{ AccountContact(id = 0,
+                contactId = it.id, accountId = fullEmail.email.accountId)}
+        val ccRelations = fullEmail.cc.map{ AccountContact(id = 0,
+                contactId = it.id, accountId = fullEmail.email.accountId)}
+        val bccRelations = fullEmail.bcc.map{ AccountContact(id = 0,
+                contactId = it.id, accountId = fullEmail.email.accountId)}
+
+        val contactRelations = listOf(toRelations, ccRelations, bccRelations)
+                .flatten()
+                .plus(senderRelation)
+
+        dao.insertAccountContact(contactRelations)
+    }
+
 
     fun exec(dao: EmailInsertionDao,
              metadataColumns: EmailMetadata.DBColumns,
              preview: String,
              labels: List<Label>,
-             files: List<CRFile>, fileKey: String?): Long {
+             files: List<CRFile>, fileKey: String?, accountId: Long): Long {
         val fullEmail = createFullEmailToInsert(dao, metadataColumns, preview, labels,
-                files, fileKey)
+                files, fileKey, accountId)
         return exec(dao, fullEmail)
     }
 
@@ -177,6 +197,7 @@ object EmailInsertionSetup {
         val newEmailId = dao.insertEmail(fullEmail.email)
         insertEmailLabelRelations(dao, fullEmail, newEmailId)
         insertEmailContactRelations(dao, fullEmail, newEmailId)
+        insertAccountContactRelations(dao, fullEmail)
         insertEmailFiles(dao, fullEmail, newEmailId)
         insertEmailFileKey(dao, fullEmail.fileKey, newEmailId)
         return newEmailId
@@ -276,8 +297,8 @@ object EmailInsertionSetup {
         if(metadata.isSpam) labels.add(Label.defaultItems.spam)
 
 
-        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey)
-        val emailAlreadyExists =  foundEmail?.metadataKey == metadata.metadataKey
+        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
+        val emailAlreadyExists =  foundEmail != null
         if (emailAlreadyExists)
             throw DuplicateMessageException("Email Already exists in database!")
 
@@ -313,7 +334,7 @@ object EmailInsertionSetup {
                     status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
             else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
             else DeliveryTypes.NONE), HTMLUtils.createEmailPreview(decryptedBody), labels,
-                    metadata.files, decryptedFileKey)
+                    metadata.files, decryptedFileKey, activeAccount.id)
         }
         println(lonReturn)
     }

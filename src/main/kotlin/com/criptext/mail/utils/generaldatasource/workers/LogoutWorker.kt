@@ -6,17 +6,14 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import java.io.File
-
 
 
 /**
@@ -36,6 +33,7 @@ class LogoutWorker(
 
     override val canBeParallelized = true
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private var newActiveAccount: ActiveAccount? = null
 
     override fun catchException(ex: Exception): GeneralResult.Logout {
         return GeneralResult.Logout.Failure()
@@ -53,7 +51,7 @@ class LogoutWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.Logout.Success()
+                GeneralResult.Logout.Success(newActiveAccount)
             }
             is Result.Failure -> {
                 GeneralResult.Logout.Failure()
@@ -71,13 +69,22 @@ class LogoutWorker(
                 if(shouldDeleteAllData)
                     db.logoutNukeDB()
                 else
-                    db.logout()
+                    db.logout(activeAccount.id)
             } }
             .flatMap {
                 Result.of {
-                    storage.clearAll()
-                    if(!shouldDeleteAllData)
-                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, activeAccount.recipientId)
+                    val accounts = db.getLoggedAccounts()
+                    if(accounts.isNotEmpty()){
+                        db.setActiveAccount(accounts.first().id)
+                        newActiveAccount = AccountUtils.setUserAsActiveAccount(accounts.first(), storage)
+                    } else {
+                        storage.clearAll()
+                    }
+                    if(!shouldDeleteAllData) {
+                        val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                        loggedOutAccounts.add(activeAccount.recipientId)
+                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.joinToString())
+                    }
                 }
             }
 

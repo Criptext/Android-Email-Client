@@ -105,7 +105,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     private fun moveFileToDownloads(file: File, fileMetadata: FileMetadata){
         val downloadFile = if(cid == null) AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
         else AndroidFs.getEmailPathFromAppDir(filename = fileMetadata.name, fileDir = db.getInternalFilesDir(),
-                recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId))
+                recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId, activeAccount.id))
         val fileStream = FileInputStream(file)
         val downloadStream = FileOutputStream(downloadFile)
 
@@ -137,10 +137,10 @@ class DownloadAttachmentWorker(private val fileSize: Long,
             }
         }else{
             if(AndroidFs.fileExistsInAppDir(filename = fileName, fileDir = db.getInternalFilesDir(),
-                            recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId),
+                            recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId, activeAccount.id),
                             fileSize = fileSize)) {
                 filepath = AndroidFs.getEmailPathFromAppDir(filename = fileName, fileDir = db.getInternalFilesDir(),
-                        recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId)).absolutePath
+                        recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId, activeAccount.id)).absolutePath
                 return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)
             }
         }

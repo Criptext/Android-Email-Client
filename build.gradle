@@ -15,6 +15,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.fabric.tools:gradle:1.+'
         classpath 'com.google.gms:google-services:3.2.0'
+        classpath 'com.karumi.kotlinsnapshot:plugin:2.1.0'
     }
 }
 
@@ -34,6 +35,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply plugin: 'com.karumi.kotlin-snapshot'
 
 android {
     dexOptions {
@@ -45,8 +47,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 54
-        versionName "0.17.3"
+        versionCode 55
+        versionName "0.18.0"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -115,7 +117,7 @@ dependencies {
     // test utils
     testImplementation "io.mockk:mockk:1.8.4"
     androidTestImplementation "io.mockk:mockk-android:1.8.4"
-    testImplementation 'com.github.GAumala:KotlinSnapshot:0.1'
+    //testImplementation 'com.github.GAumala:KotlinSnapshot:0.1'
 
     // Kluent
     testImplementation 'org.amshove.kluent:kluent:1.41'

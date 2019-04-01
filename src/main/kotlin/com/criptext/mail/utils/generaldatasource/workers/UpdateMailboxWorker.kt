@@ -5,6 +5,8 @@ import com.criptext.mail.api.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.AppDatabase_Impl
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
@@ -15,6 +17,7 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -29,7 +32,8 @@ import java.io.File
 
 
 class UpdateMailboxWorker(
-        private val signalClient: SignalClient,
+        private val isActiveAccount: Boolean,
+        db: AppDatabase,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
         private val activeAccount: ActiveAccount,
@@ -44,6 +48,8 @@ class UpdateMailboxWorker(
 
 
     override val canBeParallelized = false
+
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
     private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
@@ -56,13 +62,13 @@ class UpdateMailboxWorker(
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    GeneralResult.UpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.UpdateMailbox.Unauthorized(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.Forbidden ->
-                    GeneralResult.UpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
-                else -> GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+                    GeneralResult.UpdateMailbox.Forbidden(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                else -> GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
             }
         }
-        else GeneralResult.UpdateMailbox.Failure(label, createErrorMessage(ex), ex)
+        else GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
 
 
     private fun processFailure(failure: Result.Failure<EventHelperResultData, Exception>): GeneralResult.UpdateMailbox {
@@ -73,7 +79,8 @@ class UpdateMailboxWorker(
                     mailboxThreads = null,
                     updateBannerData = null,
                     syncEventsList = listOf(),
-                    shouldNotify = false)
+                    shouldNotify = false,
+                    isActiveAccount = isActiveAccount)
         else
             catchException(failure.error)
     }
@@ -104,7 +111,8 @@ class UpdateMailboxWorker(
                             mailboxThreads = finalResult.value.emailPreviews,
                             updateBannerData = finalResult.value.updateBannerData,
                             syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify
+                            shouldNotify = finalResult.value.shouldNotify,
+                            isActiveAccount = isActiveAccount
                     )
                 }else {
                     GeneralResult.UpdateMailbox.Success(
@@ -113,7 +121,8 @@ class UpdateMailboxWorker(
                             mailboxThreads = finalResult.value.emailPreviews,
                             updateBannerData = finalResult.value.updateBannerData,
                             syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify
+                            shouldNotify = finalResult.value.shouldNotify,
+                            isActiveAccount = isActiveAccount
                     )
                 }
             }
@@ -136,11 +145,11 @@ class UpdateMailboxWorker(
     private fun newRetryWithNewSessionOperation()
             : Result<EventHelperResultData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
-                activeAccount, storage, accountDao)
+                activeAccount, storage, accountDao, isActiveAccount)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
+                val account = ActiveAccount.loadFromDB(accountDao.getAccountByRecipientId(activeAccount.recipientId)!!)!!
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
@@ -155,9 +164,9 @@ class UpdateMailboxWorker(
     }
 
     private fun checkTrashDates(){
-        val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails()
+        val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails(activeAccount.id)
         if(emailIds.isNotEmpty()){
-            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds) }
+            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds, activeAccount.id) }
             peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(emailIds).toJSON())
         }
     }

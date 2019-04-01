@@ -293,7 +293,8 @@ class SignUpSceneController(
 
         val req = SignUpRequest.RegisterUser(
                 account = newAccount,
-                recipientId = model.username.value
+                recipientId = model.username.value,
+                isMultiple = model.isMultiple
         )
         dataSource.submitRequest(req)
     }

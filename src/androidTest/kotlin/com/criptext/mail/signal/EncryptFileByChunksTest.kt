@@ -6,6 +6,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.FileDownloader
@@ -33,6 +34,8 @@ class EncryptFileByChunksTest {
             score = 0, isTrusted = false)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
             score = 0, isTrusted = false)
+    private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
 
     @Before
@@ -49,6 +52,7 @@ class EncryptFileByChunksTest {
         val storage = TestSharedPrefs(mActivityRule.activity)
         tester = InDBUser(db = db, storage = storage, generator = keyGenerator,
                 recipientId = "tester", deviceId = 1).setup()
+        activeAccount = activeAccount.copy(id = db.accountDao().getLoggedInAccount()!!.id)
     }
 
     @Test
@@ -65,7 +69,7 @@ class EncryptFileByChunksTest {
 
             constantListOfFileEntries = constantFile.readLines()
 
-            val keyBundleFromBob = bob.fetchAPreKeyBundle()
+            val keyBundleFromBob = bob.fetchAPreKeyBundle(activeAccount.id)
             tester.buildSession(keyBundleFromBob)
 
 

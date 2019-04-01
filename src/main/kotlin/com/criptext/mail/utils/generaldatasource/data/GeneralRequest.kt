@@ -2,6 +2,7 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import android.content.ContentResolver
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.signal.PreKeyBundleShareData
 
@@ -10,6 +11,8 @@ sealed class GeneralRequest {
     data class ConfirmPassword(val password: String): GeneralRequest()
     data class ResetPassword(val recipientId: String): GeneralRequest()
     data class UpdateMailbox(
+            val isActiveAccount: Boolean,
+            val activeAccount: ActiveAccount?,
             val label: Label,
             val loadedThreadsCount: Int): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
@@ -32,4 +35,5 @@ sealed class GeneralRequest {
     data class ResendEmail(val emailId: Long, val position: Int): GeneralRequest()
     data class ChangeContactName(val fullName: String, val recipientId: String) : GeneralRequest()
     class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): GeneralRequest()
+    data class Set2FA(val twoFA: Boolean): GeneralRequest()
 }

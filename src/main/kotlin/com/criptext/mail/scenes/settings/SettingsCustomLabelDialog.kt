@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.labels.LabelsUIObserver
 import com.criptext.mail.utils.KeyboardManager
 
 /**
@@ -22,7 +23,7 @@ class SettingsCustomLabelDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private lateinit var editTextLabelName: EditText
 
-    fun showCustomLabelDialog(observer: SettingsUIObserver?, keyboardManager: KeyboardManager) {
+    fun showCustomLabelDialog(observer: LabelsUIObserver?, keyboardManager: KeyboardManager) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -34,7 +35,7 @@ class SettingsCustomLabelDialog(val context: Context) {
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SettingsUIObserver?,
+                             observer: LabelsUIObserver?,
                              keyboardManager: KeyboardManager): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
@@ -55,7 +56,7 @@ class SettingsCustomLabelDialog(val context: Context) {
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SettingsUIObserver?,
+                                   observer: LabelsUIObserver?,
                                    keyboardManager: KeyboardManager) {
 
         val btn_yes = view.findViewById(R.id.settings_label_ok) as Button

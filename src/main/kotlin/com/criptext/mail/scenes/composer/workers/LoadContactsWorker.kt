@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.composer.workers
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 
 /**

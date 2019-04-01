@@ -2,56 +2,31 @@ package com.criptext.mail.scenes.settings
 
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.viewpager.widget.ViewPager
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
-import com.criptext.mail.scenes.settings.devices.VirtualDeviceList
-import com.criptext.mail.scenes.settings.labels.VirtualLabelWrapperList
 import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
-import com.criptext.mail.scenes.settings.views.DevicesSettingsView
-import com.criptext.mail.scenes.settings.views.GeneralSettingsView
-import com.criptext.mail.scenes.settings.views.LabelSettingsView
-import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.criptext.mail.utils.virtuallist.VirtualListView
-import com.google.android.material.tabs.TabLayout
 
 interface SettingsScene{
 
-    fun attachView(name: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver,
-                   devicesListItemListener: DevicesListItemListener)
+    fun attachView(email: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
     fun showMessage(message : UIMessage)
-    fun showLogoutDialog(isLastDeviceWith2FA: Boolean)
-    fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData)
     fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail)
     fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
     fun showSyncBeginDialog()
-    fun setGeneralDialogWithInputError(message: UIMessage)
-    fun toggleGeneralDialogLoad(isLoading: Boolean)
     fun toggleGeneralDialogWithInputLoad(isLoading: Boolean)
-    fun showMessageAndProgressDialog(message: UIMessage)
-    fun showRemoveDeviceDialog(deviceId: Int, position: Int)
-    fun dismissMessageAndProgressDialog()
-    fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun showConfirmPasswordDialog(observer: UIObserver)
-    fun getLabelListView(): VirtualListView
-    fun getDeviceListView(): VirtualListView
     fun updateUserSettings(model: SettingsModel)
-    fun updateTwoFa(isChecked: Boolean)
-    fun enableTwoFASwitch(isEnabled: Boolean)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
-    fun setRemoveDeviceError(message: UIMessage)
-    fun removeDeviceDialogToggleLoad(loading: Boolean)
-    fun removeDeviceDialogDismiss()
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
@@ -62,6 +37,7 @@ interface SettingsScene{
     fun dismissReplyToEmailDialog()
     fun syncBeginDialogDenied()
     fun clearThemeSwitchListener()
+    fun setEmailPreview(isChecked: Boolean)
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -70,39 +46,63 @@ interface SettingsScene{
 
         private val context = view.context
 
-        private val mViewPager: ViewPager by lazy {
-            view.findViewById<ViewPager>(R.id.viewpager)
+        private val accountEmail: TextView by lazy {
+            view.findViewById<TextView>(R.id.account_email)
+        }
+        private val settingsAccount: View by lazy {
+            view.findViewById<View>(R.id.settings_account)
+        }
+        private val settingsPrivacy: View by lazy {
+            view.findViewById<View>(R.id.settings_privacy)
+        }
+        private val settingsDevices: View by lazy {
+            view.findViewById<View>(R.id.settings_devices)
+        }
+        private val settingsLabels: View by lazy {
+            view.findViewById<View>(R.id.settings_labels)
+        }
+        private val settingsMailboxSync: View by lazy {
+            view.findViewById<View>(R.id.settings_sync_mailbox)
+        }
+        private val settingsDarkTheme: Switch by lazy {
+            view.findViewById<Switch>(R.id.switch_dark_theme)
+        }
+        private val settingsSyncPhonebookContacts: View by lazy {
+            view.findViewById<View>(R.id.settings_sync_contacts)
+        }
+        private val settingsSyncPhonebookProgress: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.sync_phonebook_progress)
+        }
+        private val settingsShowPreview: Switch by lazy {
+            view.findViewById<Switch>(R.id.switch_preview)
+        }
+        private val settingsPinLock: View by lazy {
+            view.findViewById<View>(R.id.settings_pin_lock)
+        }
+        private val settingsFAQ: View by lazy {
+            view.findViewById<View>(R.id.settings_faq)
+        }
+        private val settingsPrivacyPolicies: View by lazy {
+            view.findViewById<View>(R.id.settings_privacy_policy)
+        }
+        private val settingsTermsOfService: View by lazy {
+            view.findViewById<View>(R.id.settings_terms_of_service)
+        }
+        private val settingsOpenSourceLibraries: View by lazy {
+            view.findViewById<View>(R.id.settings_open_source_libraries)
+        }
+        private val versionText: TextView by lazy {
+            view.findViewById<TextView>(R.id.version_text)
         }
 
-        private val tabs: TabLayout by lazy {
-            view.findViewById<TabLayout>(R.id.sliding_tabs)
-        }
 
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val labelView: LabelSettingsView by lazy {
-            LabelSettingsView(view.findViewById(R.id.viewSettingsLabels),
-                    context.getString(R.string.labels))
-        }
-
-        private val deviceView: DevicesSettingsView by lazy {
-            DevicesSettingsView(view.findViewById(R.id.viewSettingsDevices), context.getString(R.string.devices))
-        }
-        private val generalView: GeneralSettingsView by lazy {
-            GeneralSettingsView(view.findViewById(R.id.viewSettingsGeneral),
-                    context.getString(R.string.general))
-        }
-
-        private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
         private var generalDialogWithInput: GeneralDialogWithInput? = null
         private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
-        private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
-        private val settingLogoutDialog = SettingsLogoutDialog(context)
-        private var messageAndProgressDialog: MessageAndProgressDialog? = null
-        private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
@@ -111,13 +111,19 @@ interface SettingsScene{
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
-        override fun attachView(name: String, model: SettingsModel,
-                                settingsUIObserver: SettingsUIObserver,
-                                devicesListItemListener: DevicesListItemListener) {
+        override fun attachView(email: String, model: SettingsModel,
+                                settingsUIObserver: SettingsUIObserver) {
 
             this.settingsUIObserver = settingsUIObserver
 
-            loadTabs(name, model, devicesListItemListener)
+            settingsDarkTheme.setOnCheckedChangeListener { _, _ ->  }
+            settingsDarkTheme.isChecked = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+
+            versionText.text = BuildConfig.VERSION_NAME
+            accountEmail.text = email.toUpperCase()
+
+            setListeners()
+            setSwitchListener()
 
             backButton.setOnClickListener {
                 settingsUIObserver.onBackButtonPressed()
@@ -133,24 +139,6 @@ interface SettingsScene{
             toast.show()
         }
 
-        override fun showCreateLabelDialog(keyboardManager: KeyboardManager) {
-            settingCustomLabelDialog.showCustomLabelDialog(settingsUIObserver, keyboardManager)
-        }
-
-        override fun showLogoutDialog(isLastDeviceWith2FA: Boolean) {
-            settingLogoutDialog.showLogoutDialog(settingsUIObserver, isLastDeviceWith2FA)
-        }
-
-        override fun showMessageAndProgressDialog(message: UIMessage) {
-            messageAndProgressDialog = MessageAndProgressDialog(context, message)
-            messageAndProgressDialog?.showDialog()
-        }
-
-        override fun showGeneralDialogWithInputPassword(dialogData: DialogData.DialogMessageData) {
-            generalDialogWithInputPassword = GeneralDialogWithInputPassword(context, dialogData)
-            generalDialogWithInputPassword?.showDialog(settingsUIObserver)
-        }
-
         override fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail) {
             generalDialogWithInput = GeneralDialogWithInput(context, dialogData)
             generalDialogWithInput?.showDialog(settingsUIObserver)
@@ -161,24 +149,8 @@ interface SettingsScene{
             generalDialogConfirmation?.showDialog(settingsUIObserver)
         }
 
-        override fun setGeneralDialogWithInputError(message: UIMessage) {
-            generalDialogWithInputPassword?.setPasswordError(message)
-        }
-
-        override fun toggleGeneralDialogLoad(isLoading: Boolean) {
-            generalDialogWithInputPassword?.toggleLoad(isLoading)
-        }
-
         override fun toggleGeneralDialogWithInputLoad(isLoading: Boolean) {
             generalDialogWithInput?.toggleLoad(isLoading)
-        }
-
-        override fun showRemoveDeviceDialog(deviceId: Int, position: Int) {
-            settingRemoveDeviceDialog.showRemoveDeviceDialog(settingsUIObserver, deviceId, position)
-        }
-
-        override fun dismissMessageAndProgressDialog() {
-            messageAndProgressDialog?.dismiss()
         }
 
         override fun dismissReplyToEmailDialog() {
@@ -197,14 +169,6 @@ interface SettingsScene{
             confirmPassword.setPasswordError(message)
         }
 
-        override fun setRemoveDeviceError(message: UIMessage) {
-            settingRemoveDeviceDialog.setPasswordError(message)
-        }
-
-        override fun removeDeviceDialogToggleLoad(loading: Boolean) {
-            settingRemoveDeviceDialog.toggleLoad(loading)
-        }
-
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
             if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
                 linkAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, untrustedDeviceInfo)
@@ -217,19 +181,6 @@ interface SettingsScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(settingsUIObserver, trustedDeviceInfo)
-        }
-
-        override fun removeDeviceDialogDismiss() {
-
-            settingRemoveDeviceDialog.dismissDialog()
-        }
-
-        override fun getLabelListView(): VirtualListView {
-            return labelView.getListView()
-        }
-
-        override fun getDeviceListView(): VirtualListView {
-            return deviceView.getListView()
         }
 
         override fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean) {
@@ -253,37 +204,24 @@ interface SettingsScene{
         }
 
         override fun setSyncContactsProgressVisisble(isVisible: Boolean) {
-            generalView.setSyncContactsProgressVisisble(isVisible)
-        }
-
-        private fun loadTabs(name: String, model: SettingsModel, devicesListItemListener: DevicesListItemListener) {
-            setupViewPager(mViewPager, name, model, devicesListItemListener)
-            tabs.setupWithViewPager(mViewPager)
+            if(isVisible) settingsSyncPhonebookProgress.visibility = View.VISIBLE
+            else settingsSyncPhonebookProgress.visibility = View.INVISIBLE
         }
 
         override fun updateUserSettings(model: SettingsModel) {
-            generalView.setRecoveryEmailConfirmationText(model.isEmailConfirmed)
-            generalView.enable2FASwitch(true)
-            generalView.enableReplyTo(true)
-            generalView.enablePrivacyOption(true)
-            generalView.set2FA(model.hasTwoFA)
-            generalView.setDarkTheme(
-                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-            )
-            if(model.devices.size == 1)
-                generalView.enable2FASwitch(true)
+            settingsDevices.isClickable = true
+            settingsPrivacy.isClickable = true
+        }
+
+        override fun setEmailPreview(isChecked: Boolean) {
+            settingsShowPreview.setOnCheckedChangeListener { _, _ ->  }
+            settingsShowPreview.isEnabled = true
+            settingsShowPreview.isChecked = isChecked
+            setSwitchListener()
         }
 
         override fun clearThemeSwitchListener() {
-            generalView.disableDarkThemeSwitch()
-        }
-
-        override fun enableTwoFASwitch(isEnabled: Boolean) {
-            generalView.enable2FASwitch(isEnabled)
-        }
-
-        override fun updateTwoFa(isChecked: Boolean) {
-            generalView.set2FA(isChecked)
+            settingsDarkTheme.setOnCheckedChangeListener { _, _ ->  }
         }
 
         override fun getLabelLocalizedName(name: String): String {
@@ -292,21 +230,50 @@ interface SettingsScene{
             )
         }
 
-        private fun setupViewPager(viewPager: ViewPager, name: String, model: SettingsModel,
-                                   devicesListItemListener: DevicesListItemListener) {
-
-            val adapter = ViewPagerAdapter()
-            generalView.setExternalListeners(settingsUIObserver)
-            adapter.addView(generalView)
-
-            labelView.initView(VirtualLabelWrapperList(model), settingsUIObserver)
-            adapter.addView(labelView)
-
-            deviceView.initView(VirtualDeviceList(model), devicesListItemListener)
-            adapter.addView(deviceView)
-            viewPager.offscreenPageLimit = 2
-            viewPager.adapter = adapter
+        private fun setListeners(){
+            settingsAccount.setOnClickListener {
+                settingsUIObserver?.onAccountOptionClicked()
+            }
+            settingsFAQ.setOnClickListener {
+                settingsUIObserver?.onFAQClicked()
+            }
+            settingsPrivacyPolicies.setOnClickListener {
+                settingsUIObserver?.onPrivacyPoliciesClicked()
+            }
+            settingsTermsOfService.setOnClickListener {
+                settingsUIObserver?.onTermsOfServiceClicked()
+            }
+            settingsOpenSourceLibraries.setOnClickListener {
+                settingsUIObserver?.onOpenSourceLibrariesClicked()
+            }
+            settingsSyncPhonebookContacts.setOnClickListener {
+                settingsUIObserver?.onSyncPhonebookContacts()
+            }
+            settingsMailboxSync.setOnClickListener {
+                settingsUIObserver?.onSyncMailbox()
+            }
+            settingsPinLock.setOnClickListener {
+                settingsUIObserver?.onPinLockClicked()
+            }
+            settingsPrivacy.setOnClickListener {
+                settingsUIObserver?.onPrivacyClicked()
+            }
+            settingsDevices.setOnClickListener {
+                settingsUIObserver?.onDevicesOptionClicked()
+            }
+            settingsLabels.setOnClickListener {
+                settingsUIObserver?.onLabelsOptionClicked()
+            }
+            setSwitchListener()
         }
 
+        private fun setSwitchListener(){
+            settingsDarkTheme.setOnCheckedChangeListener {_, isChecked ->
+                settingsUIObserver?.onDarkThemeSwitched(isChecked)
+            }
+            settingsShowPreview.setOnCheckedChangeListener { _, isChecked ->
+                settingsUIObserver?.onShowPreviewSwitched(isChecked)
+            }
+        }
     }
 }

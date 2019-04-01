@@ -26,14 +26,18 @@ class NewMailActionService : IntentService("New Mail Action Service") {
 
 
     public override fun onHandleIntent(intent: Intent?) {
-        val data = getIntentData(intent)
+        val storage = KeyValueStorage.SharedPrefs(this)
+        var activeAccount = ActiveAccount.loadFromStorage(storage)!!
+        val data = getIntentData(intent, activeAccount.recipientId)
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val storage = KeyValueStorage.SharedPrefs(this)
-        val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
-                ActiveAccount.loadFromStorage(this)!!, HttpClient.Default(),
-                storage)
         val db = AppDatabase.getAppDatabase(this)
+        if(activeAccount.recipientId != data.recipientId)
+            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccountByRecipientId(data.recipientId)!!)!!
+        val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
+                activeAccount, HttpClient.Default(),
+                storage)
+
 
         when (data.action){
             READ -> {
@@ -55,12 +59,13 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         }
     }
 
-    private fun getIntentData(intent: Intent?): IntentData {
+    private fun getIntentData(intent: Intent?, activeRecipientId: String): IntentData {
         val action = intent!!.action
         val notificationId = intent.getIntExtra("notificationId", 0)
         val metadataKey = intent.getLongExtra("metadataKey", 0)
-        return IntentData(action, metadataKey, notificationId)
+        val recipientId = intent.getStringExtra("account") ?: activeRecipientId
+        return IntentData(action, metadataKey, notificationId, recipientId)
     }
 
-    private data class IntentData(val action: String, val metadataKey: Long, val notificationId: Int)
+    private data class IntentData(val action: String, val metadataKey: Long, val notificationId: Int, val recipientId: String)
 }

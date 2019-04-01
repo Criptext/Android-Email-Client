@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_height="match_parent"
-                android:text="@string/profile_toolbar_title"
+                android:text="@string/separator_account"
                 android:gravity="left|center_vertical"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
@@ -54,13 +54,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="10dp">
         <LinearLayout
-            android:layout_marginTop="-30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center">
+            android:orientation="vertical">
             <RelativeLayout
                 android:id="@+id/pin_content"
                 android:layout_width="match_parent"
@@ -68,8 +67,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_picture"
-                    android:layout_width="180dp"
-                    android:layout_height="180dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:layout_centerInParent="true" />
 
                 <ProgressBar
@@ -103,10 +102,11 @@
                 android:orientation="vertical">
 
                 <TextView
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_marginTop="40dp"
+                    fontPath="fonts/NunitoSans-Bold.ttf"
+                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:id="@+id/profile_name"
+                    android:text="Jorge Blacio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -117,6 +117,7 @@
                     android:layout_marginBottom="10dp"
                     fontPath="fonts/NunitoSans-Regular.ttf"
                     android:id="@+id/profile_email"
+                    android:text="jorge@criptext.com"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -124,16 +125,295 @@
                     android:textColor="?attr/criptextSecondaryTextColor"
                     android:textSize="15sp" />
 
-                <Button
-                    android:id="@+id/change_name_button"
-                    android:layout_width="140dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/btn_welcome_tour"
-                    android:text="@string/change_name_btn_text"
-                    android:textAllCaps="false"
-                    android:textColor="@drawable/btn_sign_in" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_name_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_profile_name"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_signature_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_signature"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_password_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_change_password"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_recovery_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_recovery_email"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:id="@+id/not_confirmed_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="@string/status_not_confirmed"
+                        android:textSize="14sp"
+                        android:gravity="end|center_vertical"
+                        android:textColor="#dd4040"
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="1"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:padding="12dp"
+                        android:layout_gravity="center_vertical"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_change_reply_to"
+                    android:visibility="visible"
+                    android:clickable="false"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_change_reply_to"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_logout_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_logout"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="?attr/criptextLeftMenuSeparator"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="22dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="17dp"
+                    android:id="@+id/profile_delete_account_button"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/title_delete_account"
+                        android:textSize="@dimen/drawer_text_item"
+                        android:gravity="center_vertical"
+                        android:textColor="#DE4646"/>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="end|center_vertical"
+                        android:padding="12dp"
+                        android:tint="#e3e3e3"
+                        android:src="@drawable/arrow_right"/>
+
+                </FrameLayout>
 
             </LinearLayout>
         </LinearLayout>

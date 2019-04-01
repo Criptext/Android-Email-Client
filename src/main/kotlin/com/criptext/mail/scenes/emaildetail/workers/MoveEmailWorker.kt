@@ -38,7 +38,7 @@ class MoveEmailWorker(
         private val emailId: Long,
         private val currentLabel: Label,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (
                 EmailDetailResult.MoveEmail) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmail> {
@@ -59,13 +59,13 @@ class MoveEmailWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmail>): EmailDetailResult.MoveEmail? {
 
         val emailIds = listOf(emailId)
-        val metadataKeys = emailDao.getAllEmailsbyId(emailIds)
+        val metadataKeys = emailDao.getAllEmailsbyId(emailIds, activeAccount.id)
                 .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
                 .map { it.metadataKey }
 
         if(chosenLabel == null){
             //It means the email will be deleted permanently
-            val result = Result.of { db.deleteEmail(emailId) }
+            val result = Result.of { db.deleteEmail(emailId, activeAccount.id) }
             return when (result) {
                 is Result.Success -> {
                     peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())
@@ -79,7 +79,7 @@ class MoveEmailWorker(
         }
 
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel, activeAccount.id)))
         val peerRemoveLabels = if(currentLabel == Label.defaultItems.trash
                 || currentLabel == Label.defaultItems.spam)
             listOf(currentLabel.text)
@@ -90,7 +90,7 @@ class MoveEmailWorker(
             if(currentLabel == Label.defaultItems.trash && chosenLabel == Label.LABEL_SPAM){
                 //Mark as spam from trash
                 db.deleteRelationByLabelAndEmailIds(labelId = Label.defaultItems.trash.id,
-                        emailIds = emailIds)
+                        emailIds = emailIds, accountId = activeAccount.id)
             }
 
             val emailLabels = arrayListOf<EmailLabel>()
@@ -104,7 +104,7 @@ class MoveEmailWorker(
             db.createLabelEmailRelations(emailLabels)
 
             if(chosenLabel == Label.LABEL_TRASH){
-                db.setTrashDate(emailIds)
+                db.setTrashDate(emailIds, activeAccount.id)
             }}
 
         return when (result) {

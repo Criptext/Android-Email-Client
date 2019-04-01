@@ -223,10 +223,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when (result) {
             is GeneralResult.UpdateMailbox.Success -> {
                 dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
-                        model.threadId, model.currentLabel))
+                        model.threadId, model.currentLabel, null))
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
-                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
             }
             is GeneralResult.UpdateMailbox.Unauthorized ->
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
@@ -720,6 +720,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 shouldOpenExpanded = (fullEmailsList.size < 4
                                 || result.unreadEmails > 1 && fullEmailsList.size >= 4))
 
+                        if(result.changeAccountMessage != null)
+                            scene.showMessage(result.changeAccountMessage)
                         readEmails(result.fullEmailList)
                     }else{
                         val lastEmail = result.fullEmailList.last().email
@@ -754,9 +756,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
-    private fun loadEmails() {
+    private fun loadEmails(message: UIMessage?) {
         val req = EmailDetailRequest.LoadFullEmailsFromThreadId(
-                threadId = model.threadId, currentLabel = model.currentLabel)
+                threadId = model.threadId, currentLabel = model.currentLabel,
+                changeAccountMessage = message)
 
         dataSource.submitRequest(req)
     }
@@ -768,8 +771,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         generalDataSource.listener = remoteChangeDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
 
-        if (model.emails.isEmpty())
-            loadEmails()
+        if (model.emails.isEmpty()) {
+            val message = (activityMessage as? ActivityMessage.ShowUIMessage)?.message
+            loadEmails(message)
+        }
 
         keyboard.hideKeyboard()
         return false
@@ -819,7 +824,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             R.id.mailbox_spam -> moveEmailThread(Label.LABEL_SPAM)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
-                scene.showDialogMoveTo(onMoveThreadsListener)
+                scene.showDialogMoveTo(onMoveThreadsListener, model.currentLabel.text)
             }
             R.id.mailbox_add_labels -> {
                 showLabelsDialog()
@@ -999,7 +1004,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onNewEvent() {
-            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(model.currentLabel, 1))
+            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {

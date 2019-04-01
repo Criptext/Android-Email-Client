@@ -5,6 +5,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.EmailThreadValidator
 import com.github.kittinunf.result.Result
@@ -15,6 +16,7 @@ import com.github.kittinunf.result.Result
  */
 
 class GetEmailPreviewWorker(private val threadId:String,
+                            private val activityMessage: ActivityMessage?,
                             private val mailboxLocalDB: MailboxLocalDB,
                             private val doReply: Boolean = false,
                             private val userEmail: String,
@@ -41,7 +43,7 @@ class GetEmailPreviewWorker(private val threadId:String,
                         emailPreview = EmailPreview.fromEmailThread(emailThreadResult.value),
                         isTrash = EmailThreadValidator.isLabelInList(labels, Label.LABEL_TRASH),
                         isSpam = EmailThreadValidator.isLabelInList(labels, Label.LABEL_SPAM),
-                        doReply = doReply)
+                        doReply = doReply, activityMessage = activityMessage)
             }
             is Result.Failure -> {
                 catchException(emailThreadResult.error)

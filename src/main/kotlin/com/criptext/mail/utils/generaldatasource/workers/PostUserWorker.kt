@@ -6,11 +6,13 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -20,7 +22,8 @@ import com.github.kittinunf.result.mapError
 import org.json.JSONObject
 
 class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle?,
-                     private val httpClient: HttpClient,
+                     httpClient: HttpClient,
+                     db: AppDatabase,
                      private val randomId: String,
                      private val filePath: String,
                      private val deviceId: Int,
@@ -28,12 +31,12 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                      private val activeAccount: ActiveAccount,
                      private val storage: KeyValueStorage,
                      private val accountDao: AccountDao,
-                     private val signalClient: SignalClient,
                      override val publishFn: (GeneralResult.PostUserData) -> Unit
                           ) : BackgroundWorker<GeneralResult.PostUserData> {
 
     override val canBeParallelized = false
 
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
     private val fileHttpClient = HttpClient.Default(Hosts.fileTransferServer, HttpClient.AuthScheme.jwt,
             14000L, 7000L)
 
@@ -55,7 +58,7 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                     Result.of {
                         val bundleJSON = JSONObject(it.body)
                         val downloadedBundle =
-                                PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON)
+                                PreKeyBundleShareData.DownloadBundle.fromJSON(bundleJSON, activeAccount.id)
                         signalClient.createSessionsFromBundles(listOf(downloadedBundle))
                     }
                 }

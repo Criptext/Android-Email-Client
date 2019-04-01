@@ -38,10 +38,10 @@ class ProfileActivity: BaseActivity(){
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = ProfileScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
-        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount!!)
+                activeAccount = activeAccount)
 
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,

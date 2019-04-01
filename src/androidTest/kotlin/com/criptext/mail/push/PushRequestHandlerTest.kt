@@ -37,7 +37,7 @@ class PushRequestHandlerTest {
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1)
 
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>
@@ -50,6 +50,10 @@ class PushRequestHandlerTest {
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
+                name = "Tester", registrationId = 1,
+                identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true))
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         mockWebServer = MockWebServer()
         mockWebServer.start()
@@ -64,7 +68,7 @@ class PushRequestHandlerTest {
                     fullEmail
                 }
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
     }
 
     @After
@@ -90,7 +94,7 @@ class PushRequestHandlerTest {
         requestHandler.trashEmail(loadedEmails.last().email.metadataKey, 0,
                 emailDetailLocalDB, db.emailDao(), db.pendingEventDao(), db.accountDao())
 
-        val trashEmails = db.emailDao().getMetadataKeysFromLabel(Label.defaultItems.trash.id)
+        val trashEmails = db.emailDao().getMetadataKeysFromLabel(Label.defaultItems.trash.id, activeAccount.id)
 
 
         trashEmails.size shouldEqualTo 1
@@ -110,7 +114,7 @@ class PushRequestHandlerTest {
         requestHandler.openEmail(loadedEmails.last().email.metadataKey, 0, db.emailDao(),
                 db.pendingEventDao(), db.accountDao())
 
-        val readEmails = db.emailDao().getAll().filter { !it.unread }
+        val readEmails = db.emailDao().getAll(activeAccount.id).filter { !it.unread }
 
 
         readEmails.size shouldEqualTo 1
@@ -150,7 +154,8 @@ class PushRequestHandlerTest {
                                     null),
                             boundary = null,
                             replyTo = null,
-                            fromAddress = "mayer@jigl.com"),
+                            fromAddress = "mayer@jigl.com",
+                            accountId = activeAccount.id),
                     labels = emptyList(),
                     to = emptyList(),
                     files = arrayListOf(CRFile(id = 0, token = "efhgfdgdfsg$it",

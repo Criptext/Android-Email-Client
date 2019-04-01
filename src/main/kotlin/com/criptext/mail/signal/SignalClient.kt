@@ -59,7 +59,7 @@ interface SignalClient {
                 val shareData = downloadBundle.shareData
                 val registrationId = shareData.registrationId
                 val deviceId = shareData.deviceId
-                val preKeyId = downloadBundle.preKey?.id ?: -1
+                val preKeyId = downloadBundle.preKey?.preKeyId ?: -1
                 val publicPreKeyString = downloadBundle.preKey?.byteString
                 val signedPreKeyId = shareData.signedPreKeyId
                 val signedPreKeyPublicString = shareData.signedPreKeyPublic

@@ -4,43 +4,174 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/criptextLeftMenuHeader"
-    android:gravity="center_horizontal"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="25dp"
     android:layout_marginTop="20dp">
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleView"
-        android:layout_width="45dp"
-        android:layout_height="45dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleView"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            />
 
-        <TextView
-            android:id="@+id/textViewNombre"
+        <LinearLayout
+            android:id="@+id/extraAccountsAvatars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:visibility="visible">
+            <RelativeLayout
+                android:id="@+id/extraAccount2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circleView2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@color/attachment_background_dark"
+                    />
+
+                <TextView
+                    android:id="@+id/count_account_2"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:background="@drawable/badge_menu"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginStart="25dp"
+                    android:text="8"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/extraAccount3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circleView3"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@color/attachment_background_dark"
+                    />
+
+                <TextView
+                    android:id="@+id/count_account_3"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:background="@drawable/badge_menu"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginStart="25dp"
+                    android:text="+99"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="25dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="10dp"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/textViewCorreo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="10dp"
+                android:alpha="0.44"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/imageViewArrow"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="20dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:tint="?attr/criptextLeftMenuSeparator"
+            android:src="@drawable/arrowdown"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/multiple_accounts_menu"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="40dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAccounts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:visibility="visible"/>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="10dp"
-            android:textColor="?attr/criptextPrimaryTextColor"
-            android:textSize="16sp"
-            android:maxLines="1"
-            android:ellipsize="end"/>
-
-        <TextView
-            android:id="@+id/textViewCorreo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="?attr/criptextSecondaryTextColor"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="10dp"
-            android:alpha="0.44"
-            android:textSize="16sp"
-            android:maxLines="1"
-            android:ellipsize="end"/>
-
+            android:orientation="horizontal"
+            android:id="@+id/add_account"
+            android:clickable="true">
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:src="@drawable/filter_copy"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:text="@string/drawer_add_account"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

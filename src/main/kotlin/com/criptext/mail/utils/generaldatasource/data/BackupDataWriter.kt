@@ -31,7 +31,10 @@ abstract class BackupDataWriter<T>(private val batchSize: Int) : Flushable {
 }
 
 class ContactDataWriter(private val contactDao: ContactDao,
-                        private val dependencies: List<Flushable> = listOf()):
+                        private val accountContactDao: AccountContactDao,
+                        private val dependencies: List<Flushable> = listOf(),
+                        private val activeAccount: ActiveAccount,
+                        private val dataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<Contact>(UserDataWriter.DEFAULT_BATCH_SIZE){
     override fun deserialize(item: String): Contact {
         return Contact.fromJSON(item)
@@ -41,32 +44,66 @@ class ContactDataWriter(private val contactDao: ContactDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
-        contactDao.insertAll(batch)
+
+        val existingContacts = contactDao.getContactByEmails(batch.map { it.email })
+        existingContacts.forEach { existingContact ->
+            val matchedContact = batch.find { it.email == existingContact.email }
+            if(matchedContact != null)
+                dataMapper.idsMap[matchedContact.id] = existingContact.id
+        }
+        val newContacts = batch.filter { batchContact -> batchContact.email !in existingContacts.map { it.email } }
+        val oldIds = mutableListOf<Long>()
+        newContacts.forEach {
+            oldIds.add(it.id)
+            it.id = 0
+        }
+        val newIds = contactDao.insertAll(newContacts)
+
+        oldIds.forEach {
+            dataMapper.idsMap[it] = newIds[oldIds.indexOf(it)]
+        }
+        val accountContacts = dataMapper.idsMap.keys.map { AccountContact(0, accountId = activeAccount.id, contactId = dataMapper.idsMap[it]!!) }
+        accountContactDao.insert(accountContacts)
+
     }
 }
 
 class LabelDataWriter(private val labelDao: LabelDao,
-                      private val dependencies: List<Flushable> = listOf()):
+                      private val dependencies: List<Flushable> = listOf(),
+                      private val activeAccount: ActiveAccount,
+                      private val dataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<Label>(UserDataWriter.DEFAULT_BATCH_SIZE){
     override fun deserialize(item: String): Label {
-        return Label.fromJSON(item)
+        return Label.fromJSON(item, activeAccount.id)
     }
 
     override fun writeBatch(batch: List<Label>) {
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
-        labelDao.insertAll(batch)
+
+
+        val oldIds = mutableListOf<Long>()
+        batch.forEach {
+            oldIds.add(it.id)
+            it.id = 0
+        }
+        val newIds = labelDao.insertAll(batch)
+
+        oldIds.forEach {
+            dataMapper.idsMap[it] = newIds[oldIds.indexOf(it)]
+        }
     }
 }
 
 class EmailDataWriter(private val emailDao: EmailDao,
                       private val dependencies: List<Flushable> = listOf(),
-                      private val activeRecipientId: String,
-                      private val filesDir: File):
+                      private val activeAccount: ActiveAccount,
+                      private val filesDir: File,
+                      private val dataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<Email>(UserDataWriter.EMAIL_BATCH_SIZE){
     override fun deserialize(item: String): Email {
-        return Email.fromJSON(item)
+        return Email.fromJSON(item, activeAccount.id)
     }
 
     override fun writeBatch(batch: List<Email>) {
@@ -77,18 +114,27 @@ class EmailDataWriter(private val emailDao: EmailDao,
     }
 
     private fun insertAllEmails(batch: List<Email>){
+        val oldIds = mutableListOf<Long>()
         batch.forEach {
-            EmailUtils.saveEmailInFileSystem(filesDir, activeRecipientId, it.metadataKey, it.content, it.headers)
+            EmailUtils.saveEmailInFileSystem(filesDir, activeAccount.recipientId, it.metadataKey, it.content, it.headers)
+            oldIds.add(it.id)
+            it.id = 0
         }
 
         val emails = batch.map { it.copy(content = "") }
 
-        emailDao.insertAll(emails)
+        val newIds = emailDao.insertAll(emails)
+
+        oldIds.forEach {
+            dataMapper.idsMap[it] = newIds[oldIds.indexOf(it)]
+        }
+
     }
 }
 
 class FileDataWriter(private val fileDao: FileDao,
-                     private val dependencies: List<Flushable> = listOf()):
+                     private val dependencies: List<Flushable> = listOf(),
+                     private val emailDataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<CRFile>(UserDataWriter.DEFAULT_BATCH_SIZE){
     override fun deserialize(item: String): CRFile {
         return CRFile.fromJSON(item)
@@ -98,12 +144,20 @@ class FileDataWriter(private val fileDao: FileDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
+
+        batch.forEach {
+            it.id = 0
+            it.emailId = emailDataMapper.idsMap[it.emailId]!!
+        }
+
         fileDao.insertAll(batch)
     }
 }
 
 class EmailLabelDataWriter(private val emailLabelDao: EmailLabelDao,
-                           private val dependencies: List<Flushable> = listOf()):
+                           private val dependencies: List<Flushable> = listOf(),
+                           private val emailDataMapper: UserDataWriter.DataMapper,
+                           private val labelDataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<EmailLabel>(UserDataWriter.RELATIONS_BATCH_SIZE){
     override fun deserialize(item: String): EmailLabel {
         return EmailLabel.fromJSON(item)
@@ -113,12 +167,20 @@ class EmailLabelDataWriter(private val emailLabelDao: EmailLabelDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
+        batch.forEach { emailLabel ->
+            if(emailLabel.labelId !in Label.defaultItems.toList().map { it.id }) {
+                emailLabel.labelId = labelDataMapper.idsMap[emailLabel.labelId]!!
+            }
+            emailLabel.emailId = emailDataMapper.idsMap[emailLabel.emailId]!!
+        }
         emailLabelDao.insertAll(batch)
     }
 }
 
 class EmailContactDataWriter(private val emailContactDao: EmailContactJoinDao,
-                             private val dependencies: List<Flushable> = listOf()):
+                             private val dependencies: List<Flushable> = listOf(),
+                             private val emailDataMapper: UserDataWriter.DataMapper,
+                             private val contactDataMapper: UserDataWriter.DataMapper):
         BackupDataWriter<EmailContact>(UserDataWriter.RELATIONS_BATCH_SIZE){
     override fun deserialize(item: String): EmailContact {
         return EmailContact.fromJSON(item)
@@ -128,24 +190,14 @@ class EmailContactDataWriter(private val emailContactDao: EmailContactJoinDao,
         if(dependencies.isNotEmpty()){
             dependencies.forEach { it.flush() }
         }
+
+        batch.forEach {
+            it.id = 0
+            it.contactId = contactDataMapper.idsMap[it.contactId]!!
+            it.emailId = emailDataMapper.idsMap[it.emailId]!!
+        }
+
         emailContactDao.insertAll(batch)
-    }
-}
-
-class FileKeyDataWriter(private val fileKeyDao: FileKeyDao,
-                        private val dependencies: List<Flushable> = listOf()):
-        BackupDataWriter<FileKey>(UserDataWriter.DEFAULT_BATCH_SIZE){
-    override fun deserialize(item: String): FileKey {
-        return FileKey.fromJSON(item)
-    }
-
-    override fun writeBatch(batch: List<FileKey>) {
-        if(dependencies.isNotEmpty()){
-            dependencies.forEach { it.flush() }
-        }
-        batch.forEach{
-            it.key?.let { it1 -> fileKeyDao.insertFileKeyForFiles(it1, it.emailId) }
-        }
     }
 }
 

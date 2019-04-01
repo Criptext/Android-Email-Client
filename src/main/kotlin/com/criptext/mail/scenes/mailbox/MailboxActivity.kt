@@ -52,7 +52,7 @@ class MailboxActivity : BaseActivity() {
               val labels = listOf(Label.defaultItems.inbox)
               appDB.emailInsertionDao().runTransaction {
                   EmailInsertionSetup.exec(appDB.emailInsertionDao(), metadata, decryptedBody,
-                          labels, emptyList(), null)
+                          labels, emptyList(), null, 1)
               }
           }
 
@@ -112,10 +112,10 @@ class MailboxActivity : BaseActivity() {
                            storage: KeyValueStorage): MailboxSceneController {
 
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB, activity.filesDir)
-            val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
-            val activeAccount = ActiveAccount.loadFromStorage(activity)
+            val activeAccount = ActiveAccount.loadFromStorage(activity)!!
+            val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
             val webSocketEvents = WebSocketSingleton.getInstance(
-                    activeAccount = activeAccount!!)
+                    activeAccount = activeAccount)
 
             val mailboxDataSource = MailboxDataSource(
                 filesDir = activity.filesDir,
@@ -138,7 +138,8 @@ class MailboxActivity : BaseActivity() {
                 labelDao = appDB.labelDao(),
                 emailLabelDao = appDB.emailLabelDao(),
                 emailContactJoinDao = appDB.emailContactDao(),
-                eventLocalDB = EventLocalDB(appDB, activity.filesDir, activity.cacheDir))
+                eventLocalDB = EventLocalDB(appDB, activity.filesDir, activity.cacheDir),
+                db = appDB)
 
             val rootView = activity.findViewById<ViewGroup>(R.id.drawer_layout)
 

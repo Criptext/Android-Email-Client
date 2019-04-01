@@ -1,8 +1,11 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -69,8 +72,18 @@ sealed class MailboxResult {
 
     sealed class GetMenuInformation : MailboxResult() {
         data class Success(val account: Account, val totalInbox: Int, val totalDraft: Int,
-                           val totalSpam: Int, val labels: List<Label>): GetMenuInformation()
+                           val totalSpam: Int, val labels: List<Label>, val accounts: List<Account>): GetMenuInformation()
         class Failure: GetMenuInformation()
+    }
+
+    sealed class SetActiveAccount : MailboxResult() {
+        data class Success(val activeAccount: ActiveAccount): SetActiveAccount()
+        class Failure: SetActiveAccount()
+    }
+
+    sealed class SetActiveAccountFromPush : MailboxResult() {
+        data class Success(val activeAccount: ActiveAccount, val extrasData: IntentExtrasData): SetActiveAccountFromPush()
+        class Failure: SetActiveAccountFromPush()
     }
 
     sealed class UpdateUnreadStatus: MailboxResult(){
@@ -83,7 +96,8 @@ sealed class MailboxResult {
     sealed class GetEmailPreview: MailboxResult() {
         data class Success(val emailPreview: EmailPreview,
                            val isTrash: Boolean, val isSpam: Boolean,
-                           val doReply: Boolean = false): GetEmailPreview()
+                           val doReply: Boolean = false,
+                           val activityMessage: ActivityMessage? = null): GetEmailPreview()
         data class Failure(val message: String): GetEmailPreview()
     }
 

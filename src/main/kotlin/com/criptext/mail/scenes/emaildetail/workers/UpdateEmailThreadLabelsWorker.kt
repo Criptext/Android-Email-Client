@@ -25,7 +25,7 @@ import com.github.kittinunf.result.Result
 
 class UpdateEmailThreadLabelsWorker(
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         private val exitAndReload: Boolean,
@@ -58,10 +58,11 @@ class UpdateEmailThreadLabelsWorker(
 
         val selectedLabelsList = selectedLabels.toList().map { it.label }
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
                 .filter { it.text != Label.LABEL_STARRED }
-        val emails = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels)
+        val emails = db.getFullEmailsFromThreadId(threadId = threadId,
+                rejectedLabels = rejectedLabels, accountId = activeAccount.id)
         val emailIds = emails.map { it.email.id }
         val removedLabels = if(currentLabel == Label.defaultItems.starred
                 || currentLabel == Label.defaultItems.sent) listOf(Label.defaultItems.inbox.text)
@@ -89,10 +90,10 @@ class UpdateEmailThreadLabelsWorker(
                     Result.of {
                         if(currentLabel == Label.defaultItems.starred
                                 || currentLabel == Label.defaultItems.sent){
-                            db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds)
+                            db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds, activeAccount.id)
                         }
                         else{
-                            db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds)
+                            db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds, activeAccount.id)
                     } }
 
             } else {

@@ -7,9 +7,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.*
@@ -18,6 +16,7 @@ import com.criptext.mail.scenes.composer.data.PostEmailBody
 import com.criptext.mail.scenes.mailbox.data.SentMailData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -29,9 +28,9 @@ import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
 
 class ResendEmailWorker(
-        private val signalClient: SignalClient,
         private val filesDir: File,
         private val rawSessionDao: RawSessionDao,
+        appDB: AppDatabase,
         private val db: MailboxLocalDB,
         private val emailId: Long,
         private val position: Int,
@@ -45,6 +44,8 @@ class ResendEmailWorker(
 
 
     override val canBeParallelized = false
+
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
 
     private val fileHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt,
             14000L, 7000L)
@@ -122,7 +123,7 @@ class ResendEmailWorker(
 
     override fun work(reporter: ProgressReporter<GeneralResult.ResendEmail>)
             : GeneralResult.ResendEmail? {
-        val pendingEmail = db.getFullEmailById(emailId)
+        val pendingEmail = db.getFullEmailById(emailId, activeAccount.id)
         if(pendingEmail != null && (pendingEmail.email.delivered in listOf(DeliveryTypes.FAIL,
                         DeliveryTypes.SENDING))) {
             meAsRecipient = setMeAsRecipient(pendingEmail)
@@ -192,7 +193,7 @@ class ResendEmailWorker(
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
-                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray)
+                    PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
             signalClient.createSessionsFromBundles(downloadedBundles)
         }
         if (blackListedJSONArray.length() > 0) {
@@ -206,7 +207,7 @@ class ResendEmailWorker(
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
-        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients)
+        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients, activeAccount.id)
         existingSessions.forEach { knownAddress: KnownAddress ->
             knownAddresses[knownAddress.recipientId] = knownAddresses[knownAddress.recipientId]
                     ?.plus(knownAddress.deviceId)
@@ -298,7 +299,8 @@ class ResendEmailWorker(
                     db.updateEmailAndAddLabel(id = currentFullEmail!!.email.id, threadId = sentMailData.threadId,
                             messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                             status = getDeliveryType(),
-                            date = DateAndTimeUtils.getDateFromString(sentMailData.date, null)
+                            date = DateAndTimeUtils.getDateFromString(sentMailData.date, null),
+                            accountId = activeAccount.id
                     )
 
                     EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,

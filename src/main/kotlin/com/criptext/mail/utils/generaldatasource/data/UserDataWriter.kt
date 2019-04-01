@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import android.content.res.Resources
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
@@ -9,22 +10,26 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import org.json.JSONObject
 import java.io.File
+import javax.security.auth.login.LoginException
 
 class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
+
+    data class DataMapper(val idsMap: MutableMap<Long, Long>)
 
     fun createFile():String? {
         try {
 
 
             val tmpFileLinkData = createTempFile()
+            val account = db.accountDao().getLoggedInAccount() ?: throw LoginException()
 
-            addContactsToFile(db.contactDao(), tmpFileLinkData)
-            addLabelsToFile(db.labelDao(), tmpFileLinkData)
-            addMailsToFile(db.emailDao(), tmpFileLinkData)
-            addFilesToFile(db.fileDao(), tmpFileLinkData)
-            addMailsAndLabelsRelationToFile(db.emailLabelDao(), tmpFileLinkData)
-            addMailsAndContactsRelationToFile(db.emailContactDao(), tmpFileLinkData)
+            addContactsToFile(db.contactDao(), tmpFileLinkData, account.id)
+            addLabelsToFile(db.labelDao(), tmpFileLinkData, account.id)
+            addMailsToFile(db.emailDao(), tmpFileLinkData, account.id)
+            addFilesToFile(db.fileDao(), tmpFileLinkData, account.id)
+            addMailsAndLabelsRelationToFile(db.emailLabelDao(), tmpFileLinkData, account.id)
+            addMailsAndContactsRelationToFile(db.emailContactDao(), tmpFileLinkData, account.id)
 
             return tmpFileLinkData.absolutePath
         }catch (ex:Exception){
@@ -33,16 +38,24 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
     }
 
     fun createDBFromFile(file: File) {
-        val contactWriter = ContactDataWriter(db.contactDao())
-        val labelWriter = LabelDataWriter(db.labelDao())
+        val account = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
+        val contactDataMapper = DataMapper(mutableMapOf())
+        val contactWriter = ContactDataWriter(db.contactDao(), db.accountContactDao(), activeAccount = account,
+                dataMapper = contactDataMapper)
+        val labelDataMapper = DataMapper(mutableMapOf())
+        val labelWriter = LabelDataWriter(db.labelDao(), activeAccount = account, dataMapper = labelDataMapper)
+        val emaillDataMapper = DataMapper(mutableMapOf())
         val emailWriter = EmailDataWriter(
                 emailDao = db.emailDao(),
-                activeRecipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
-                filesDir = filesDir
+                activeAccount = account,
+                filesDir = filesDir,
+                dataMapper = emaillDataMapper
         )
-        val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter))
-        val emailLabelWriter = EmailLabelDataWriter(db.emailLabelDao(), listOf(labelWriter, emailWriter))
-        val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter))
+        val fileWriter = FileDataWriter(db.fileDao(), listOf(emailWriter), emaillDataMapper)
+        val emailLabelWriter = EmailLabelDataWriter(db.emailLabelDao(), listOf(labelWriter, emailWriter),
+                emailDataMapper = emaillDataMapper, labelDataMapper = labelDataMapper)
+        val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter),
+                emailDataMapper = emaillDataMapper, contactDataMapper = contactDataMapper)
         val data = file.bufferedReader()
         var line = data.readLine()
         db.beginTransaction()
@@ -74,7 +87,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         db.endTransaction()
     }
 
-    private fun addContactsToFile(contactDao: ContactDao, tmpFile: File)
+    private fun addContactsToFile(contactDao: ContactDao, tmpFile: File, accountId: Long)
     {
         fun flushContacts(allContacts: List<Contact>): Long {
             var lastId = 0L
@@ -94,14 +107,14 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val contacts = contactDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val contacts = contactDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(contacts.isNotEmpty()) {
                 lastId = flushContacts(contacts)
             }
         }while (contacts.isNotEmpty())
     }
 
-    private fun addLabelsToFile(labelDao: LabelDao, tmpFile: File)
+    private fun addLabelsToFile(labelDao: LabelDao, tmpFile: File, accountId: Long)
     {
         fun flushLabels(allLabels: List<Label>): Long {
             var lastId = 0L
@@ -125,7 +138,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val labels = labelDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val labels = labelDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(labels.isNotEmpty()) {
                 lastId = flushLabels(labels)
             }
@@ -133,7 +146,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 
     }
 
-    private fun addFilesToFile(fileDao: FileDao, tmpFile: File)
+    private fun addFilesToFile(fileDao: FileDao, tmpFile: File, accountId: Long)
     {
         fun flushFiles(allFiles: List<CRFile>): Long {
             var lastId = 0L
@@ -169,14 +182,14 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val files = fileDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val files = fileDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(files.isNotEmpty()) {
                 lastId = flushFiles(files)
             }
         }while (files.isNotEmpty())
     }
 
-    private fun addMailsToFile(emailDao: EmailDao, tmpFile: File)
+    private fun addMailsToFile(emailDao: EmailDao, tmpFile: File, accountId: Long)
     {
         fun flushMails(allMails: List<Email>): Long {
             var lastId = 0L
@@ -217,19 +230,20 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
         var lastId = 0L
         do {
-            val emails = emailDao.getAllForLinkFile(DB_READING_LIMIT, lastId)
+            val emails = emailDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
             if(emails.isNotEmpty()) {
                 lastId = flushMails(emails)
             }
         }while (emails.isNotEmpty())
     }
 
-    private fun addMailsAndLabelsRelationToFile(emailLabelDao: EmailLabelDao, tmpFile: File)
+    private fun addMailsAndLabelsRelationToFile(emailLabelDao: EmailLabelDao, tmpFile: File,
+                                                accountId: Long)
     {
         val allMailsAndLabelsRelation = mutableListOf<EmailLabel>()
         var offset = 0
         do {
-            val emailLabels = emailLabelDao.getAllForLinkFile(DB_READING_LIMIT, offset)
+            val emailLabels = emailLabelDao.getAllForLinkFile(DB_READING_LIMIT, offset, accountId)
             if(emailLabels.isNotEmpty()) {
                 allMailsAndLabelsRelation.addAll(emailLabels)
                 offset += DB_READING_LIMIT
@@ -245,12 +259,13 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
     }
 
-    private fun addMailsAndContactsRelationToFile(emailContactJoinDao: EmailContactJoinDao, tmpFile: File)
+    private fun addMailsAndContactsRelationToFile(emailContactJoinDao: EmailContactJoinDao, tmpFile: File,
+                                                  accountId: Long)
     {
         val allMailsAndContacts = mutableListOf<EmailContact>()
         var offset = 0
         do {
-            val mailContacts = emailContactJoinDao.getAllForLinkFile(DB_READING_LIMIT, offset)
+            val mailContacts = emailContactJoinDao.getAllForLinkFile(DB_READING_LIMIT, offset, accountId)
             if(mailContacts.isNotEmpty()) {
                 allMailsAndContacts.addAll(mailContacts)
                 offset += DB_READING_LIMIT

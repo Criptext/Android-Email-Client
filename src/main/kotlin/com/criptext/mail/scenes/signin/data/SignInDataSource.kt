@@ -10,6 +10,7 @@ import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.signin.workers.*
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -43,6 +44,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     keyGenerator = keyGenerator,
                     keyValueStorage = keyValueStorage,
                     accountDao = accountDao,
+                    isMultiple = params.isMultiple,
                     messagingInstance = MessagingInstance.Default(),
                     publishFn = { result ->
                         flushResults(result)
@@ -57,28 +59,34 @@ class SignInDataSource(override val runner: WorkRunner,
             is SignInRequest.CheckUserAvailability -> CheckUsernameAvailabilityWorker(
                     httpClient = httpClient,
                     username = params.username,
-                    publishFn = { result -> flushResults(result)
+                    accountDao = accountDao,
+                    publishFn = { result ->
+                        flushResults(result)
                     })
             is SignInRequest.ForgotPassword -> ForgotPasswordWorker(
                     httpClient = httpClient, username = params.username,
-                    publishFn = { result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
             is SignInRequest.LinkBegin -> LinkBeginWorker(
                     httpClient = httpClient, username = params.username,
-                    publishFn = { result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
             is SignInRequest.LinkAuth -> LinkAuthWorker(
                     httpClient = httpClient, username = params.username,
                     jwt = params.ephemeralJwt, password = params.password,
-                    publishFn = { result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
             is SignInRequest.LinkStatus -> LinkStatusWorker(
                     httpClient = httpClient,
                     jwt = params.ephemeralJwt,
-                    publishFn = { result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
             is SignInRequest.CreateSessionFromLink -> CreateSessionWorker(
@@ -89,7 +97,9 @@ class SignInDataSource(override val runner: WorkRunner,
                     keyGenerator = keyGenerator, keyValueStorage = keyValueStorage,
                     messagingInstance = MessagingInstance.Default(),
                     signUpDao = signUpDao,
-                    publishFn = { result -> flushResults(result)
+                    isMultiple = params.isMultiple,
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
 
@@ -99,11 +109,11 @@ class SignInDataSource(override val runner: WorkRunner,
                     authorizerId = params.authorizerId,
                     dataAddress = params.dataAddress,
                     key = params.key,
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db)),
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db, ActiveAccount.loadFromStorage(keyValueStorage)!!)),
                     db = db,
                     storage = keyValueStorage,
-                    publishFn = {
-                        result -> flushResults(result)
+                    publishFn = { result ->
+                        flushResults(result)
                     }
             )
             is SignInRequest.LinkDataReady -> LinkDataReadyWorker(

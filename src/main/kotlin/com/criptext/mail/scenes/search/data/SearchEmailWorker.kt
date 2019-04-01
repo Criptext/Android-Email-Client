@@ -4,12 +4,14 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.SearchLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.utils.UIMessage
 
 class SearchEmailWorker(
         private val userEmail: String,
+        private val activeAccount: ActiveAccount,
         private val db: SearchLocalDB,
         private val queryText: String,
         private val loadParams: LoadParams,
@@ -28,17 +30,20 @@ class SearchEmailWorker(
                 queryText = queryText,
                 startDate = loadParams.startDate,
                 limit = loadParams.size,
-                userEmail = userEmail)
+                userEmail = userEmail,
+                accountId = activeAccount.id)
         is LoadParams.UpdatePage -> db.searchMailsInDB(
                 queryText = queryText,
                 startDate = null,
                 limit = loadParams.size,
-                userEmail = userEmail)
+                userEmail = userEmail,
+                accountId = activeAccount.id)
         is LoadParams.Reset -> db.searchMailsInDB(
                 queryText = queryText,
                 startDate = null,
                 limit = loadParams.size,
-                userEmail = userEmail)
+                userEmail = userEmail,
+                accountId = activeAccount.id)
     }
 
     override fun work(reporter: ProgressReporter<SearchResult.SearchEmails>): SearchResult.SearchEmails? {

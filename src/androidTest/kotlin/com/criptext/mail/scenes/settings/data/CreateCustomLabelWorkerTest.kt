@@ -8,9 +8,11 @@ import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.settings.workers.CreateCustomLabelWorker
+import com.criptext.mail.scenes.settings.labels.data.LabelsResult
+import com.criptext.mail.scenes.settings.labels.workers.CreateCustomLabelWorker
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
 import io.mockk.mockk
@@ -34,7 +36,7 @@ class CreateCustomLabelWorkerTest{
     private lateinit var settingsLocalDB: SettingsLocalDB
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
     private lateinit var httpClient: HttpClient
 
     @Before
@@ -49,6 +51,10 @@ class CreateCustomLabelWorkerTest{
         db = TestDatabase.getInstance(mActivityRule.activity)
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
+        db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
+                activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
+                "_KEY_PAIR_", 0, "", "criptext.com",
+                true, true))
         settingsLocalDB = SettingsLocalDB.Default(db)
     }
 
@@ -61,11 +67,11 @@ class CreateCustomLabelWorkerTest{
         }
         val labelName = "__LABEL__"
         val worker = newWorker(labelName)
-        val result = worker.work(mockk()) as SettingsResult.CreateCustomLabel.Success
+        val result = worker.work(mockk()) as LabelsResult.CreateCustomLabel.Success
 
         result.label.text shouldEqual labelName
 
-        db.labelDao().get(labelName) shouldNotBe null
+        db.labelDao().get(labelName, activeAccount.id) shouldNotBe null
     }
 
     private fun newWorker(labelName: String): CreateCustomLabelWorker =

@@ -7,6 +7,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.params.ProfileParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.replyto.data.ReplyToRequest
 import com.criptext.mail.scenes.settings.replyto.data.ReplyToResult
@@ -37,7 +38,7 @@ class ReplyToController(
         override fun onTurnOffReplyTo() {
             model.newReplyToEmail = ""
             scene.clearTextBox()
-            dataSource.submitRequest(ReplyToRequest.SetReplyToEmail(model.replyToEmail, false))
+            dataSource.submitRequest(ReplyToRequest.SetReplyToEmail(model.newReplyToEmail, false))
         }
 
         override fun onRecoveryChangeButonPressed() {
@@ -50,7 +51,7 @@ class ReplyToController(
             val userInput = AccountDataValidator.validateEmailAddress(model.newReplyToEmail)
             when (userInput) {
                 is FormData.Valid -> {
-                    if (!text.isEmpty() && text != model.replyToEmail) {
+                    if (!text.isEmpty() && text != model.userData.replyToEmail) {
                         scene.setEmailError(null)
                         scene.enableSaveButton()
                     } else {
@@ -66,13 +67,13 @@ class ReplyToController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(SettingsParams(), null, false)
+            host.exitToScene(ProfileParams(model.userData), null, false)
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        scene.attachView(replyToUIObserver, model.replyToEmail, keyboardManager)
+        scene.attachView(replyToUIObserver, model.userData.replyToEmail ?: "", keyboardManager)
         return false
     }
 
@@ -80,9 +81,10 @@ class ReplyToController(
         when(result) {
             is ReplyToResult.SetReplyToEmail.Success -> {
                 if(result.enabled) {
-                    model.replyToEmail = result.replyToEmail
+                    model.userData.replyToEmail = result.replyToEmail
                     scene.showMessage(UIMessage(R.string.reply_to_email_has_changed))
                 }else {
+                    model.userData.replyToEmail = null
                     scene.enableSaveButton()
                     scene.showMessage(UIMessage(R.string.reply_to_email_removed))
                 }

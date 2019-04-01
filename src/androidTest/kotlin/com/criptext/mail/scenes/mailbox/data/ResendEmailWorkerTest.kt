@@ -9,6 +9,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -48,8 +49,8 @@ class ResendEmailWorkerTest {
     private lateinit var tester: DummyUser
 
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
-    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "")
+    private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
             isTrusted = false, score = 0)
     @Before
@@ -64,6 +65,7 @@ class ResendEmailWorkerTest {
         // create tester user so that signal store is initialized.
         tester = InDBUser(db = db, storage = storage, generator = keyGenerator,
                 recipientId = "tester", deviceId = 1).setup()
+        activeAccount = activeAccount.copy(id = db.accountDao().getLoggedInAccount()!!.id)
 
         // mock http requests
         mockWebServer = MockWebServer()
@@ -123,7 +125,7 @@ class ResendEmailWorkerTest {
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
         // prepare server mocks to send email
-        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val keyBundleFromBob = bob.fetchAPreKeyBundle(activeAccount.id)
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
@@ -167,7 +169,7 @@ class ResendEmailWorkerTest {
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 
         // prepare server mocks to send email
-        val keyBundleFromBob = bob.fetchAPreKeyBundle()
+        val keyBundleFromBob = bob.fetchAPreKeyBundle(activeAccount.id)
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
@@ -195,7 +197,7 @@ class ResendEmailWorkerTest {
         resendEmailsWorker.work(mockk(relaxed = true)) as MailboxResult.ResendEmails.Success
 
         // assert that email got updated correctly in DB
-        val updatedEmails = db.emailDao().getAll()
+        val updatedEmails = db.emailDao().getAll(activeAccount.id)
 
         val sentEmail = updatedEmails.single()
         sentEmail.delivered `shouldBe` DeliveryTypes.SENT

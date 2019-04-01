@@ -1,10 +1,9 @@
 package com.criptext.mail.scenes.mailbox
 
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.SceneModel
-import com.criptext.mail.scenes.composer.data.ComposerInputData
-import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.mailbox.feed.FeedModel
 
 /**
@@ -24,4 +23,6 @@ class MailboxSceneModel(var showWelcome: Boolean = false) : SceneModel {
     var hasReachedEnd = true
     var lastSync = 0L
     var showOnlyUnread = false
+    var extraAccounts = listOf<Account>()
+    var waitForAccountSwitch = false
 }

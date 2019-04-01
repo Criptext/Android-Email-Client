@@ -25,7 +25,9 @@ class SignUpDataSource(override val runner: WorkRunner,
         return when (params) {
             is SignUpRequest.RegisterUser -> RegisterUserWorker(
                     db = db,
+                    isMultiple = params.isMultiple,
                     signUpDao = db.signUpDao(),
+                    accountDao = db.accountDao(),
                     httpClient = httpClient,
                     incompleteAccount = params.account,
                     signalKeyGenerator = signalKeyGenerator,

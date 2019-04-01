@@ -14,6 +14,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
@@ -46,7 +47,6 @@ class LinkDataWorker(private val authorizerId: Int,
                      private var activeAccount: ActiveAccount,
                      private val key: String,
                      private val dataAddress: String,
-                     private val signalClient: SignalClient,
                      private val storage: KeyValueStorage,
                      private val db: AppDatabase,
                      override val publishFn: (GeneralResult) -> Unit)
@@ -56,6 +56,8 @@ class LinkDataWorker(private val authorizerId: Int,
             14000L, 7000L)
     private val apiClient = GeneralAPIClient(fileHttpClient, activeAccount.jwt)
     private val dataWriter = UserDataWriter(db, filesDir)
+
+    private val signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
 
     override val canBeParallelized = false
 
@@ -172,20 +174,11 @@ class LinkDataWorker(private val authorizerId: Int,
     }
 
     private fun deleteLocalData(){
-        db.fileKeyDao().nukeTable()
-        db.emailContactDao().nukeTable()
-        db.emailExternalSessionDao().nukeTable()
-        db.emailLabelDao().nukeTable()
-        db.fileDao().nukeTable()
-        db.contactDao().nukeTable()
-        db.pendingEventDao().nukeTable()
-        db.feedDao().nukeTable()
-        db.labelDao().nukeTable()
-        db.emailDao().nukeTable()
+        db.accountContactDao().nukeTable(activeAccount.id)
+        db.pendingEventDao().nukeTable(activeAccount.id)
+        db.labelDao().nukeTable(activeAccount.id)
+        db.emailDao().nukeTable(activeAccount.id)
         EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-
-        val defaultLabels = Label.defaultItems.toList()
-        db.labelDao().insertAll(defaultLabels)
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

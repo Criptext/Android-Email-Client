@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.view.View
 import android.webkit.WebView
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -67,6 +64,8 @@ interface ComposerScene {
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showStartGuideAttachments()
+    fun fillFromOptions(list: List<String>)
+    fun switchToSimpleFrom(from: String)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -78,6 +77,14 @@ interface ComposerScene {
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
         private var passwordForNonCriptextUsersFromDialog: String? = null
+
+        private val fromAddresses: Spinner by lazy {
+            view.findViewById<Spinner>(R.id.spinner_from)
+        }
+
+        private val fromAddress: TextView by lazy {
+            view.findViewById<TextView>(R.id.from_address)
+        }
 
         private val toInput: ContactCompletionView by lazy {
             view.findViewById<ContactCompletionView>(INPUT_TO_ID)
@@ -223,8 +230,31 @@ interface ComposerScene {
             ccInput.visibility = visibility
             bccInput.visibility = visibility
             Picasso.get().load(
-                    if(visible) R.drawable.arrow_up else
-                    R.drawable.arrow_down).into(imageViewArrow)
+                    if(visible) R.drawable.arrowup else
+                    R.drawable.arrowdown).into(imageViewArrow)
+        }
+
+        override fun fillFromOptions(list: List<String>) {
+            val adapter = ArrayAdapter<String>(
+                    ctx, R.layout.support_simple_spinner_dropdown_item, list
+            )
+            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+            fromAddresses.adapter = adapter
+            fromAddresses.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    observer?.onSenderSelectedItem(list[p2])
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+            }
+        }
+
+        override fun switchToSimpleFrom(from: String) {
+            fromAddresses.visibility = View.GONE
+            fromAddress.visibility = View.VISIBLE
+            fromAddress.text = from
         }
 
         override fun showStartGuideAttachments() {

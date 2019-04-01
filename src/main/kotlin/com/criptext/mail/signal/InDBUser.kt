@@ -3,6 +3,7 @@ package com.criptext.mail.signal
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import org.whispersystems.libsignal.state.SignalProtocolStore
@@ -30,7 +31,7 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpDao:
         val persistedUser = incompleteAccount.complete(privateBundle, "__MOCKED_JWT__",
                 "__MOCKED_REFRESH__")
 
-        val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage)
+        val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage, db.accountDao())
         storeAccountTransaction.run(persistedUser, privateBundle)
 
     }

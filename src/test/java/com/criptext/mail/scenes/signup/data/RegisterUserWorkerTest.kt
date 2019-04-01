@@ -3,12 +3,13 @@ package com.criptext.mail.scenes.signup.data
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.gaumala.kotlinsnapshot.Camera
+import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.json.JSONObject
@@ -24,11 +25,11 @@ class RegisterUserWorkerTest {
     private lateinit var keyGenerator: SignalKeyGenerator
     private lateinit var httpClient: HttpClient
     private lateinit var signUpDao: SignUpDao
+    private lateinit var accountDao: AccountDao
     private lateinit var storage: KeyValueStorage
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: AppDatabase
 
-    private val camera = Camera()
 
     @Before
     fun setup() {
@@ -37,6 +38,7 @@ class RegisterUserWorkerTest {
         keyGenerator = mockk()
         httpClient = mockk()
         signUpDao = mockk()
+        accountDao = mockk()
         storage = mockk()
         messagingInstance = mockk()
         db = mockk()
@@ -47,7 +49,8 @@ class RegisterUserWorkerTest {
     private fun newWorker(incompleteAccount: IncompleteAccount): RegisterUserWorker =
         RegisterUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                 signalKeyGenerator = keyGenerator, incompleteAccount = incompleteAccount,
-                publishFn = {}, messagingInstance = messagingInstance, db = db)
+                publishFn = {}, messagingInstance = messagingInstance, db = db, accountDao = accountDao,
+                isMultiple = false)
 
 
     @Test
@@ -61,7 +64,8 @@ class RegisterUserWorkerTest {
             keyGenerator.register("tester", 1)
         } returns RegisterUserTestUtils.createRegistrationBundles("tester", 1)
         every { httpClient.post("/user", null, capture(bodySlot)).body } returns returnJson.toString()
-        every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any()) } just Runs
+        every { signUpDao.insertNewAccountData(any(), any(), any(), any(), any(), any()) } just Runs
+        every { accountDao.updateActiveInAccount() } just Runs
         every {
             httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>()).body
         } returns "OK"
@@ -74,6 +78,6 @@ class RegisterUserWorkerTest {
         worker.work(mockk()) `should be instance of` SignUpResult.RegisterUser.Success::class.java
 
         val uploadedJSONString = bodySlot.captured.toString(2)
-        camera.matchWithSnapshot("uploads new user data with correct shape", uploadedJSONString)
+        uploadedJSONString.matchWithSnapshot("uploads new user data with correct shape")
     }
 }

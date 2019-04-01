@@ -36,7 +36,8 @@ class EmailDetailControllerResultTest: EmailDetailControllerTest() {
                 }
         val result = EmailDetailResult.LoadFullEmailsFromThreadId.Success(
                 fullEmailList = loadedEmails,
-                unreadEmails = 2
+                unreadEmails = 2,
+                changeAccountMessage = null
         )
 
         controller.onStart(null)

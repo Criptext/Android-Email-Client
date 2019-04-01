@@ -47,19 +47,21 @@ object HttpErrorHandlingHelper {
     }
 
     fun newRefreshSessionOperation(apiClient: CriptextAPIClient, account: ActiveAccount, storage: KeyValueStorage,
-                                   accountDao: AccountDao)
+                                   accountDao: AccountDao, isActiveAccount: Boolean = false)
             : Result<Unit, Exception> {
         return Result.of {
             val accountInDB = accountDao.getLoggedInAccount()
             if(accountInDB != null){
                 if(accountInDB.refreshToken.isEmpty()){
                     val refreshAndSession = apiClient.getRefreshToken(account.jwt).body
-                    account.updateUserWithTokensData(storage, refreshAndSession)
+                    if (isActiveAccount)
+                        account.updateUserWithTokensData(storage, refreshAndSession)
                     accountDao.updateJwt(account.recipientId, JSONObject(refreshAndSession).getString("token"))
                     accountDao.updateRefreshToken(account.recipientId, JSONObject(refreshAndSession).getString("refreshToken"))
                 }else{
                     val sessionToken = apiClient.refreshSession(account.refreshToken).body
-                    account.updateUserWithSessionData(storage, sessionToken)
+                    if (isActiveAccount)
+                        account.updateUserWithSessionData(storage, sessionToken)
                     accountDao.updateJwt(account.recipientId, sessionToken)
                 }
             }

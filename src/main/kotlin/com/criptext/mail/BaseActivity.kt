@@ -8,16 +8,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
@@ -40,9 +39,13 @@ import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
-import com.criptext.mail.scenes.settings.privacyandsecurity.PrivacyAndSecurityModel
-import com.criptext.mail.scenes.settings.privacyandsecurity.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.devices.DevicesModel
+import com.criptext.mail.scenes.settings.labels.LabelsModel
+import com.criptext.mail.scenes.settings.pinlock.PinLockModel
+import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
+import com.criptext.mail.scenes.settings.privacy.PrivacyModel
 import com.criptext.mail.scenes.settings.profile.ProfileModel
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.replyto.ReplyToModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
@@ -67,9 +70,7 @@ import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.firebase.analytics.FirebaseAnalytics
-import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
-import kotlinx.android.synthetic.main.contact_item.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.lang.Exception
@@ -124,12 +125,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     private fun getSavedInstanceModel(savedInstanceState: Bundle?): SceneModel? {
         if(savedInstanceState == null) return null
+        val activeAccount = ActiveAccount.loadFromStorage(this) ?: return null
         return if(savedInstanceState.getString("type") != null){
             when(savedInstanceState.getString("type")){
                 EMAIL_DETAIL_MODEL -> {
                     EmailDetailSceneModel(
                             threadId = savedInstanceState.getString("threadId")!!,
-                            currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!),
+                            currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!, activeAccount.id),
                             threadPreview = EmailPreview.emailPreviewFromJSON(savedInstanceState.getString("threadPreview")!!),
                             doReply = savedInstanceState.getBoolean("doReply")
                     )
@@ -139,28 +141,45 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this)
                     )
                 }
-                PRIVACY_AND_SECURITY_MODEL -> {
-                    PrivacyAndSecurityModel(
-                            hasReadReceipts = savedInstanceState.getBoolean("hasReadReceipts")
+                PRIVACY_MODEL -> {
+                    PrivacyModel(
+                            readReceipts = savedInstanceState.getBoolean("readReceipts"),
+                            twoFA = savedInstanceState.getBoolean("twoFA"),
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed")
                     )
                 }
                 PROFILE_MODEL -> {
-                    ProfileModel(
+                    val userData = ProfileUserData(
                             name = savedInstanceState.getString("name")!!,
                             email = savedInstanceState.getString("email")!!,
-                            exitToMailbox = savedInstanceState.getBoolean("exitToMailbox")
-                    )
-                }
-                RECOVERY_EMAIL_MODEL -> {
-                    RecoveryEmailModel(
                             isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
                             recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
                     )
+                    ProfileModel(userData)
+                }
+                RECOVERY_EMAIL_MODEL -> {
+                    val userData = ProfileUserData(
+                            name = savedInstanceState.getString("name")!!,
+                            email = savedInstanceState.getString("email")!!,
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
+                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
+                    )
+                    RecoveryEmailModel(userData)
                 }
                 REPLY_TO_MODEL -> {
-                    ReplyToModel(
-                            replyToEmail = savedInstanceState.getString("replyToEmail")!!
+                    val userData = ProfileUserData(
+                            name = savedInstanceState.getString("name")!!,
+                            email = savedInstanceState.getString("email")!!,
+                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
+                            replyToEmail = savedInstanceState.getString("replyToEmail"),
+                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
+                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
                     )
+                    ReplyToModel(userData)
                 }
                 SIGNATURE_MODEL -> {
                     SignatureModel(
@@ -253,24 +272,41 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 outState.putString("type", COMPOSER_MODEL)
                 outState.putString("composerType", ComposerType.toJSON(currentModel.type))
             }
-            is PrivacyAndSecurityModel -> {
-                outState.putString("type", PRIVACY_AND_SECURITY_MODEL)
-                outState.putBoolean("hasReadReceipts", currentModel.hasReadReceipts)
+            is PrivacyModel -> {
+                outState.putString("type", PRIVACY_MODEL)
+                outState.putBoolean("readReceipts", currentModel.readReceipts)
+                outState.putBoolean("twoFA", currentModel.twoFA)
+                outState.putBoolean("isEmailConfirmed", currentModel.isEmailConfirmed)
             }
             is ProfileModel -> {
                 outState.putString("type", PROFILE_MODEL)
-                outState.putString("name", currentModel.name)
-                outState.putString("email", currentModel.email)
-                outState.putBoolean("exitToMailbox", currentModel.exitToMailbox)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is RecoveryEmailModel -> {
                 outState.putString("type", RECOVERY_EMAIL_MODEL)
-                outState.putBoolean("isEmailConfirmed", currentModel.isEmailConfirmed)
-                outState.putString("recoveryEmail", currentModel.recoveryEmail)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is ReplyToModel -> {
                 outState.putString("type", REPLY_TO_MODEL)
-                outState.putString("replyToEmail", currentModel.replyToEmail)
+                outState.putString("name", currentModel.userData.name)
+                outState.putString("email", currentModel.userData.email)
+                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
+                if(currentModel.userData.replyToEmail != null)
+                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
+                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
+                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
             }
             is SignatureModel -> {
                 outState.putString("type", SIGNATURE_MODEL)
@@ -306,23 +342,26 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     private fun createNewSceneFromParams(params: SceneParams): Any {
         return when(params) {
             is SearchParams -> SearchSceneModel()
-            is SignUpParams -> SignUpSceneModel()
-            is SignInParams -> SignInSceneModel()
+            is SignUpParams -> SignUpSceneModel(params.isMultiple)
+            is SignInParams -> SignInSceneModel(params.isMultiple)
             is MailboxParams -> MailboxSceneModel(params.showWelcome)
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview, params.doReply)
             is ComposerParams -> ComposerModel(params.type)
             is SettingsParams -> SettingsModel(params.hasChangedTheme)
             is SignatureParams -> SignatureModel(params.recipientId)
-            is RecoveryEmailParams -> RecoveryEmailModel(params.isConfirmed, params.recoveryEmail)
+            is RecoveryEmailParams -> RecoveryEmailModel(params.userData)
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
-            is PrivacyAndSecurityParams -> PrivacyAndSecurityModel(params.hasReadReceipts)
+            is PinLockParams -> PinLockModel()
+            is DevicesParams -> DevicesModel(params.devices)
+            is LabelsParams -> LabelsModel()
+            is PrivacyParams -> PrivacyModel(params.hasReadReceipts, params.hasTwoFA, params.isEmailConfirmed)
             is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
                     params.deviceType, params.authorizerName)
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
-            is ReplyToParams -> ReplyToModel(params.replyToEmail)
-            is ProfileParams -> ProfileModel(params.name, params.email, params.exitToMailbox)
+            is ReplyToParams -> ReplyToModel(params.userData)
+            is ProfileParams -> ProfileModel(params.userData)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -335,7 +374,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return getLocalizedUIMessage(message)
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
+                           activityMessage: ActivityMessage?) {
+        BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass, deletePastIntents)
@@ -358,12 +399,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
                              forceAnimation: Boolean, deletePastIntents: Boolean) {
-        BaseActivity.activityMessage = activityMessage
         finish()
         if(forceAnimation) {
             overridePendingTransition(0, R.anim.slide_out_right)
         }
-        goToScene(params, false, deletePastIntents)
+        goToScene(params, false, deletePastIntents, activityMessage)
     }
 
     override fun getIntentExtras(): IntentExtrasData? {
@@ -372,23 +412,25 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             when(intent.action){
                 Intent.ACTION_MAIN ->    {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasDataMail(intent.action, threadId)
+                    return IntentExtrasData.IntentExtrasDataMail(intent.action, threadId, account)
                 }
                 LinkDeviceActionService.APPROVE ->    {
                     val uuid = intent.extras.get("randomId").toString()
                     val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
                     val version = intent.extras.getInt("version")
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType, version)
+                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType, version, account)
                 }
                 SyncDeviceActionService.APPROVE ->    {
                     val uuid = intent.extras.get("randomId").toString()
@@ -396,38 +438,42 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     val version = intent.extras.getInt("version")
                     val deviceId = intent.extras.getInt("deviceId")
                     val deviceName = intent.extras.getString("deviceName")
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasSyncDevice(intent.action, uuid, deviceId, deviceName, deviceType, version)
+                    return IntentExtrasData.IntentExtrasSyncDevice(intent.action, uuid, deviceId, deviceName, deviceType, version, account)
                 }
                 NewMailActionService.REPLY -> {
                     val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
                     val metadataKey = intent.extras.getLong("metadataKey")
+                    val account = intent.extras.getString("account")
                     if(intent.extras != null) {
                         for (key in intent.extras.keySet()){
                             intent.removeExtra(key)
                         }
                     }
-                    return IntentExtrasData.IntentExtrasReply(intent.action, threadId, metadataKey)
+                    return IntentExtrasData.IntentExtrasReply(intent.action, threadId, metadataKey, account)
                 }
                 Intent.ACTION_VIEW -> {
                     val mailTo = intent.data
+                    val account = intent.extras.getString("account")
                     if(mailTo.toString().contains("mailto:"))
-                        return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"))
+                        return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"), account)
                 }
                 Intent.ACTION_SEND,
                 Intent.ACTION_SEND_MULTIPLE -> {
                     val data = intent
                     if(data != null) {
+                        val account = intent.extras.getString("account")
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
                                 val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                                 if (attachment != null)
-                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment))
+                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment), account)
                             }
                         }else{
                             val attachmentList = mutableListOf<Pair<String, Long>>()
@@ -442,7 +488,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                 }
                             }
                             if (attachmentList.isNotEmpty())
-                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList)
+                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList, account)
                         }
                     }
                 }
@@ -634,7 +680,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
         private const val EMAIL_DETAIL_MODEL = "EmailDetailModel"
         private const val COMPOSER_MODEL = "ComposerModel"
-        private const val PRIVACY_AND_SECURITY_MODEL = "PrivacyAndSecurityModel"
+        private const val PIN_LOCK_MODEL = "PinLockModel"
+        private const val PRIVACY_MODEL = "PrivacyModel"
         private const val PROFILE_MODEL = "ProfileModel"
         private const val RECOVERY_EMAIL_MODEL = "RecoveryEmailModel"
         private const val REPLY_TO_MODEL = "ReplyToModel"

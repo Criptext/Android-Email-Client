@@ -10,16 +10,17 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.generaldatasource.workers.*
 import java.io.File
 
 class GeneralDataSource(override val runner: WorkRunner,
                         private val filesDir: File,
-                        private val signalClient: SignalClient,
+                        private val signalClient: SignalClient?,
                         private val eventLocalDB: EventLocalDB,
                         private val db : AppDatabase,
                         private val storage: KeyValueStorage,
-                        private val activeAccount: ActiveAccount?,
+                        var activeAccount: ActiveAccount?,
                         private val httpClient: HttpClient
 ): BackgroundWorkManager<GeneralRequest, GeneralResult>() {
 
@@ -42,11 +43,12 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res) }
             )
             is GeneralRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = signalClient,
+                    db = db,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
-                    activeAccount = activeAccount!!,
+                    activeAccount = params.activeAccount ?: activeAccount!!,
                     label = params.label,
+                    isActiveAccount = params.isActiveAccount,
                     loadedThreadsCount = params.loadedThreadsCount,
                     storage = storage,
                     accountDao = db.accountDao(),
@@ -69,6 +71,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(
+                    db = db,
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
                     randomId = params.randomId,
@@ -76,17 +79,19 @@ class GeneralDataSource(override val runner: WorkRunner,
                     deviceId = params.deviceID,
                     fileKey = params.key,
                     keyBundle = params.keyBundle,
-                    signalClient = signalClient,
                     accountDao = db.accountDao(),
                     storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.TotalUnreadEmails -> GetTotalUnreadMailsByLabelWorker(
+                    activeAccount = activeAccount!!,
                     emailDao = db.emailDao(),
+                    db = MailboxLocalDB.Default(db, filesDir),
                     currentLabel = params.currentLabel,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.SyncPhonebook -> SyncPhonebookWorker(
+                    activeAccount = activeAccount!!,
                     contactDao = db.contactDao(),
                     contentResolver = params.contentResolver,
                     publishFn = { res -> flushResults(res)}
@@ -131,7 +136,6 @@ class GeneralDataSource(override val runner: WorkRunner,
                     authorizerId = params.authorizerId,
                     filesDir = filesDir,
                     db = db,
-                    signalClient = signalClient,
                     dataAddress = params.dataAddress,
                     key = params.key,
                     publishFn = { res -> flushResults(res) }
@@ -169,7 +173,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     accountDao = db.accountDao(),
                     storage = storage,
                     rawSessionDao = db.rawSessionDao(),
-                    signalClient = signalClient,
+                    appDB = db,
                     db = MailboxLocalDB.Default(db, filesDir),
                     httpClient = httpClient,
                     activeAccount = activeAccount!!,
@@ -191,6 +195,14 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.GetRemoteFile -> GetRemoteFileWorker(
                     uris = params.uris,
                     contentResolver = params.contentResolver,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.Set2FA -> TwoFAWorker(
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    activeAccount = activeAccount!!,
+                    twoFA = params.twoFA,
+                    httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
         }

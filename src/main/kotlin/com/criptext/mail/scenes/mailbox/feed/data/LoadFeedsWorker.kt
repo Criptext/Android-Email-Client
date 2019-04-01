@@ -31,11 +31,11 @@ class LoadFeedsWorker(private val feedItemDao: FeedItemDao,
     override val canBeParallelized = true
 
     override fun work(reporter: ProgressReporter<FeedResult.LoadFeed>): FeedResult.LoadFeed {
-        val items = feedItemDao.getAllFeedItems()
+        val items = feedItemDao.getAllFeedItems(activeAccount.id)
         val activityFeedItems = items.map {
             ActivityFeedItem(
                     feedItem = it,
-                    email = emailDao.findEmailById(it.emailId)!!,
+                    email = emailDao.findEmailById(it.emailId, activeAccount.id)!!,
                     contact = getContactForFeed(it.contactId),
                     file = if(it.fileId != null) fileDao.getFileById(it.fileId!!) else null
             )

@@ -5,24 +5,9 @@ import com.criptext.mail.utils.UIMessage
 
 sealed class SettingsResult{
 
-    sealed class CreateCustomLabel: SettingsResult() {
-        data class Success(val label: Label): CreateCustomLabel()
-        class Failure: CreateCustomLabel()
-    }
-
     sealed class Logout: SettingsResult() {
         class Success: Logout()
         class Failure: Logout()
-    }
-
-    sealed class GetCustomLabels : SettingsResult() {
-        data class Success(val labels: List<Label>): GetCustomLabels()
-        class Failure: GetCustomLabels()
-    }
-
-    sealed class ChangeVisibilityLabel : SettingsResult() {
-        class Success: ChangeVisibilityLabel()
-        class Failure: ChangeVisibilityLabel()
     }
 
     sealed class GetUserSettings : SettingsResult() {
@@ -35,16 +20,6 @@ sealed class SettingsResult{
     sealed class ResetPassword : SettingsResult() {
         class Success: ResetPassword()
         data class Failure(val message: UIMessage): ResetPassword()
-    }
-
-    sealed class RemoveDevice : SettingsResult() {
-        class Success(val deviceId: Int, val position: Int): RemoveDevice()
-        class Failure: RemoveDevice()
-    }
-
-    sealed class Set2FA: SettingsResult() {
-        data class Success(val hasTwoFA: Boolean): Set2FA()
-        data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
     }
 
     sealed class SyncBegin: SettingsResult() {

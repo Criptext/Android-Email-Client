@@ -12,8 +12,10 @@ interface SettingsLocalDB{
     val contactDao:ContactDao
     val pendingEventDao:PendingEventDao
     fun logoutNukeDB()
-    fun logout()
+    fun logout(accountId: Long)
+
     class Default(private val db: AppDatabase): SettingsLocalDB {
+
         override val labelDao: LabelDao = db.labelDao()
         override val accountDao: AccountDao = db.accountDao()
         override val contactDao: ContactDao = db.contactDao()
@@ -21,12 +23,11 @@ interface SettingsLocalDB{
         override fun logoutNukeDB() {
             db.clearAllTables()
         }
-        override fun logout() {
-            accountDao.nukeTable()
-            db.rawIdentityKeyDao().deleteAll()
-            db.rawPreKeyDao().deleteAll()
-            db.rawSessionDao().deleteAll()
-            db.rawSignedPreKeyDao().deleteAll()
+        override fun logout(accountId: Long) {
+            db.rawIdentityKeyDao().deleteAll(accountId)
+            db.rawPreKeyDao().deleteAll(accountId)
+            db.rawSessionDao().deleteAll(accountId)
+            db.rawSignedPreKeyDao().deleteAll(accountId)
         }
     }
 }

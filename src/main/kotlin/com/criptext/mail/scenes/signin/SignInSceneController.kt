@@ -12,13 +12,10 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
-import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.sha256
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
@@ -101,9 +98,12 @@ class SignInSceneController(
             is SignInResult.CheckUsernameAvailability.Success -> {
                 if(result.userExists) {
                     keyboard.hideKeyboard()
-                    val oldAccount = storage.getString(KeyValueStorage.StringKey.LastLoggedUser, "")
-                    if(oldAccount.isNotEmpty() && result.username != oldAccount)
-                        scene.showSignInWarningDialog(oldAccount.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX), result.username)
+                    val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                    if(oldAccounts.isNotEmpty() && result.username !in oldAccounts)
+                        scene.showSignInWarningDialog(
+                                oldAccountName = oldAccounts.joinToString { it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX) },
+                                newUserName = result.username
+                        )
                     else {
                         //LINK DEVICE FEATURE
                         model.state = SignInLayoutState.LoginValidation(username = result.username,
@@ -259,7 +259,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 }
 
             }
@@ -341,7 +342,8 @@ class SignInSceneController(
             val hashedPassword = currentState.password.sha256()
             val req = SignInRequest.AuthenticateUser(
                     username = currentState.username,
-                    password = hashedPassword
+                    password = hashedPassword,
+                    isMultiple = model.isMultiple
             )
             dataSource.submitRequest(req)
         }
@@ -396,7 +398,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
                             username = currentState.username,
-                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 })
             }
         }
@@ -452,7 +455,8 @@ class SignInSceneController(
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt))
+                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
+                            isMultiple = model.isMultiple))
                 }
                 is SignInResult.LinkData -> {
                     dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress, model.authorizerId))
@@ -549,7 +553,7 @@ class SignInSceneController(
         }
 
         override fun onSignUpLabelClicked() {
-            host.goToScene(SignUpParams(), false)
+            host.goToScene(SignUpParams(model.isMultiple), false)
         }
     }
 

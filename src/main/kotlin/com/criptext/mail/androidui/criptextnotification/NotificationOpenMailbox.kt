@@ -22,10 +22,7 @@ import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.services.MessagingInstance
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.Utility
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 
 class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(ctx) {
 
@@ -48,6 +45,7 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_OPEN_EMAIL)
                 .setContentTitle(pushData.title)
                 .setContentText(pushData.body)
+                .setSubText(pushData.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX))
                 .setAutoCancel(true)
                 .setContentIntent(clickIntent)
                 .setGroup(ACTION_OPEN)
