@@ -34,7 +34,8 @@ data class EmailMetadata(
         val secure: Boolean,
         val isSpam: Boolean,
         val isExternal: Boolean?,
-        val boundary: String?) {
+        val boundary: String?,
+        val inReplyTo: String?) {
 
     fun extractDBColumns(): DBColumns =
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
@@ -82,7 +83,8 @@ data class EmailMetadata(
                     fileKey = fileKey.key,
                     secure = secure,
                     isSpam = checkSpam(emailData),
-                    isExternal = isExternal
+                    isExternal = isExternal,
+                    inReplyTo = if(emailData.has("inReplyTo")) emailData.getString("inReplyTo") else null
             )
 
         }

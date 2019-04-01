@@ -165,7 +165,7 @@ class DrawerMenuView(navigationView: NavigationView,
             extraAccountsAvatars.visibility = if (visible) View.VISIBLE else View.GONE
             Picasso.get().load(
                     if(visible) R.drawable.arrowdown else
-                        R.drawable.arrowup).into(imageViewArrow)
+                        R.drawable.arrowup).into(openMenuArrow)
         }
 
         addAccountOption.setOnClickListener {
@@ -205,7 +205,7 @@ class DrawerMenuView(navigationView: NavigationView,
 
         navBody = navigationView.findViewById(R.id.nav_body)
 
-        imageViewArrow = navigationView.findViewById(R.id.imageViewArrow)
+        imageViewArrow = navigationView.findViewById(R.id.imageViewArrowLabels)
         recyclerViewLabels = navigationView.findViewById(R.id.recyclerViewLabels)
 
         textViewCounterInbox = navigationView.findViewById(R.id.count_inbox)
