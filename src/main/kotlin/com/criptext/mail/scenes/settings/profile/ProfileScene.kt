@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.SettingsLogoutDialog
@@ -68,6 +69,9 @@ interface ProfileScene{
 
         private val profileRecoveryEmailButton: View by lazy {
             view.findViewById<View>(R.id.profile_recovery_button)
+        }
+        private val textViewConfirmText: TextView by lazy {
+            view.findViewById<TextView>(R.id.not_confirmed_text)
         }
 
         private val profileReplyToEmailButton: View by lazy {
@@ -154,8 +158,22 @@ interface ProfileScene{
 
             nameText.text = model.userData.name
             emailText.text = model.userData.email
+            updateCurrentEmailStatus(model.userData.isEmailConfirmed)
+
             showProfilePictureProgress()
             UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.userData.name, Runnable { hideProfilePictureProgress() })
+        }
+
+        private fun updateCurrentEmailStatus(isEmailConfirmed: Boolean){
+            if(isEmailConfirmed) {
+                textViewConfirmText.setTextColor(ContextCompat.getColor(
+                        view.context, R.color.green))
+                textViewConfirmText.setText(R.string.status_confirmed)
+            }else{
+                textViewConfirmText.setTextColor(ContextCompat.getColor(
+                        view.context, R.color.red))
+                textViewConfirmText.setText(R.string.status_not_confirmed)
+            }
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

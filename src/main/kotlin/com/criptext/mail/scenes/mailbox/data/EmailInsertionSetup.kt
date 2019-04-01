@@ -317,24 +317,35 @@ object EmailInsertionSetup {
             crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")) crFile.cid else null
         }
 
+        val finalMetadata = if(metadata.inReplyTo != null) {
+            val emailByMessageId = dao.findEmailByMessageId(metadata.inReplyTo, activeAccount.id)
+            if(emailByMessageId != null)
+                metadata.copy(
+                        threadId = emailByMessageId.threadId
+                )
+            else
+                metadata
+        } else
+            metadata
+
 
         EmailUtils.saveEmailInFileSystem(
                 filesDir = filesDir,
                 recipientId = activeAccount.recipientId,
-                metadataKey = metadata.metadataKey,
+                metadataKey = finalMetadata.metadataKey,
                 content = decryptedBody,
                 headers = decryptedHeaders)
 
         val lonReturn = dao.runTransaction {
-            EmailInsertionSetup.exec(dao, metadata.extractDBColumns().copy(
+            EmailInsertionSetup.exec(dao, finalMetadata.extractDBColumns().copy(
                     unread = if(meAsSender && !meAsRecipient)
                                 false
                              else
-                                metadata.extractDBColumns().unread,
+                                finalMetadata.extractDBColumns().unread,
                     status = if(meAsSender && meAsRecipient) DeliveryTypes.DELIVERED
             else if(meAsSender && !meAsRecipient)DeliveryTypes.SENT
             else DeliveryTypes.NONE), HTMLUtils.createEmailPreview(decryptedBody), labels,
-                    metadata.files, decryptedFileKey, activeAccount.id)
+                    finalMetadata.files, decryptedFileKey, activeAccount.id)
         }
         println(lonReturn)
     }

@@ -336,7 +336,7 @@
             android:layout_weight="1"/>
 
         <ImageView
-            android:id="@+id/imageViewArrow"
+            android:id="@+id/imageViewArrowLabels"
             android:layout_width="40dp"
             android:layout_height="35dp"
             android:layout_marginEnd="20dp"
