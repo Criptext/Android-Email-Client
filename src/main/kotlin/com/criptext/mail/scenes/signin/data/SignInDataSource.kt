@@ -60,6 +60,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     username = params.username,
                     accountDao = accountDao,
+                    storage = keyValueStorage,
                     publishFn = { result ->
                         flushResults(result)
                     })

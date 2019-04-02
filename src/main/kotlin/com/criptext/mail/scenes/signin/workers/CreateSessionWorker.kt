@@ -60,8 +60,8 @@ class CreateSessionWorker(val httpClient: HttpClient,
                     } else {
                         if (lastLoggedUser.isNotEmpty() && username in lastLoggedUser) {
                             db.deleteDatabase(username)
-                            lastLoggedUser.remove(username)
-                            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.joinToString())
+                            lastLoggedUser.removeAll { it == username }
+                            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
                         }
                     }
 
