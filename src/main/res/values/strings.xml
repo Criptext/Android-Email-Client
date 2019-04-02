@@ -13,7 +13,7 @@
   <string name="mk_label_yesterday">Yesterday </string>
   <string name="mk_label_today">Today </string>
     <string name="error_no_app_for_file">You may not have a proper app for viewing this content</string>
-  <string name="web_view_open_in_chrome">Open in Chrome</string>
+  <string name="web_view_open_in_chrome">Open in %1$s</string>
   <string name="attachment_limit_reached">Only %1$d attachments per email allowed.</string>
   <string name="attachment_history_opened">opened:</string>
   <string name="title_sync">Mailbox Sync</string>
