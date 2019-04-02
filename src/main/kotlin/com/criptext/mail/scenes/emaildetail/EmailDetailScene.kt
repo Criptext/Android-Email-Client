@@ -279,11 +279,13 @@ interface EmailDetailScene {
         }
 
         override fun showMessage(message: UIMessage, showAction: Boolean) {
-            SnackBarHelper.show(
-                    emailDetailView,
-                    context.getLocalizedUIMessage(message), observer as UIObserver,
-                    showAction
-            )
+            if(observer != null){
+                SnackBarHelper.show(
+                        emailDetailView,
+                        context.getLocalizedUIMessage(message), observer as UIObserver,
+                        showAction
+                )
+            }
         }
 
         override fun showStartGuideEmailIsRead(view: View) {

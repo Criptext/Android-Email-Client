@@ -354,7 +354,7 @@ abstract class AppDatabase : RoomDatabase() {
                                             data TEXT NOT NULL,
                                             accountId INTEGER NOT NULL,
                                             FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
-                    database.execSQL("CREATE INDEX index_pending_event_id ON new_pendingEvent (id)")
+                    database.execSQL("CREATE INDEX IF NOT EXISTS index_pending_event_id ON new_pendingEvent (id)")
                     database.execSQL(
                             """INSERT INTO new_pendingEvent (id, data, accountId)
                                 SELECT id, data, accountId
@@ -369,7 +369,7 @@ abstract class AppDatabase : RoomDatabase() {
                                             contactId INTEGER NOT NULL,
                                             FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE,
                                             FOREIGN KEY(contactId) REFERENCES contact(id) ON DELETE CASCADE)""")
-                    database.execSQL("CREATE UNIQUE INDEX index_contact_account ON account_contact (accountId, contactId)")
+                    database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_contact_account ON account_contact (accountId, contactId)")
 
                     database.execSQL(
                             """INSERT INTO account_contact (contactId, accountId)

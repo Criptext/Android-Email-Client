@@ -2,11 +2,14 @@ package com.criptext.mail.scenes
 
 import android.annotation.TargetApi
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -15,14 +18,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.DownloadHelper
+import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.WebViewUtils
 import com.criptext.mail.utils.file.DownloadBlobInterface
+import com.criptext.mail.utils.getLocalizedUIMessage
 
 class WebViewActivity : AppCompatActivity() {
     val userAgent = "Mozilla/5.0 (Linux; Android 4.4.4; Nexus 5 Build/LMY48B) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
 
     val webViewCriptext: WebView by lazy { findViewById<WebView>(R.id.webViewCriptext) }
     var mUrl: String? = null
+    var browserName: String? = null
 
     private val client = object : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -141,6 +147,13 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_webview, menu)
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
+        val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        browserName = resolveInfo.activityInfo.packageName
+
+        menu.findItem(R.id.ac_open).title = this.getLocalizedUIMessage(UIMessage(
+                R.string.web_view_open_in_chrome, arrayOf(resolveInfo.loadLabel(packageManager).toString())
+        ))
         return super.onCreateOptionsMenu(menu)
     }
 
