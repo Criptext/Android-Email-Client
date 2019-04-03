@@ -66,7 +66,7 @@ class LogoutWorker(
                 Result.of {
                     val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
                     loggedOutAccounts.add(activeAccount.recipientId)
-                    storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.joinToString())
+                    storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.distinct().joinToString())
                 }
             }
 

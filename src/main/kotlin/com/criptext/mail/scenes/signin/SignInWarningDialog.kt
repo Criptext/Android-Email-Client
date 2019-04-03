@@ -27,9 +27,10 @@ class SignInWarningDialog(val context: Context) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.sign_in_warning_dialog, null)
+        val oldAccountsList = oldAccount.split(",").map { EmailAddressUtils.hideEmailAddress(it) }
         dialogView.findViewById<TextView>(R.id.message_text).text =
                 context.getLocalizedUIMessage(UIMessage(R.string.sign_in_warning_dialog_message,
-                        arrayOf(EmailAddressUtils.hideEmailAddress(oldAccount))))
+                        arrayOf(oldAccountsList.joinToString())))
 
         dialogBuilder.setView(dialogView)
 
