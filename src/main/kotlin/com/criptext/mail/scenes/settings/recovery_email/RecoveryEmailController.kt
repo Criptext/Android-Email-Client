@@ -170,6 +170,10 @@ class RecoveryEmailController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onResendConfirmationEmail(result: RecoveryEmailResult.ResendConfirmationLink){
         when(result) {
             is RecoveryEmailResult.ResendConfirmationLink.Success -> {

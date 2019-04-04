@@ -345,6 +345,11 @@ class SignInSceneController(
                     password = hashedPassword,
                     isMultiple = model.isMultiple
             )
+
+            val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
+            if(!lastLoggedAccounts.contains(currentState.username))
+                model.showRestoreBackupDialog = true
+
             dataSource.submitRequest(req)
         }
     }
@@ -492,7 +497,7 @@ class SignInSceneController(
         }
 
         override fun onProgressHolderFinish() {
-            host.goToScene(MailboxParams(), false)
+            host.goToScene(MailboxParams(askForRestoreBackup = model.showRestoreBackupDialog), false)
         }
 
         override fun onBackPressed() {
@@ -576,6 +581,10 @@ class SignInSceneController(
             scene.showError(activityMessage.message)
         }
 
+        return false
+    }
+
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 

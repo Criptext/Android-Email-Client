@@ -1,0 +1,73 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewRoot"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/medium_restore_cloud"
+        />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/restore_backup_dialog_title"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/textViewBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/restore_backup_dialog_message"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/restore_button"
+        android:layout_width="160dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_welcome_tour"
+        android:textColor="@drawable/btn_sign_in"
+        android:textAllCaps="false"
+        android:text="@string/restore_backup_dialog_button"
+        android:textSize="12sp"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/skip_restore"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/azure"
+        android:text="@string/restore_backup_dialog_skip_restore"
+        android:textSize="14sp"
+        android:padding="10dp"
+        android:clickable="true"
+        android:layout_marginBottom="10dp"/>
+
+</LinearLayout>

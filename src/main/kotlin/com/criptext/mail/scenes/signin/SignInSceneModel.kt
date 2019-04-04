@@ -24,4 +24,5 @@ class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var authorizerType = DeviceUtils.DeviceType.Android
     var retryTimeLinkDataReady = 0
     var retryTimeLinkStatus = 0
+    var showRestoreBackupDialog = false
 }

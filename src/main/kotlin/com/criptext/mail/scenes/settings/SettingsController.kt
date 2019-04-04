@@ -71,6 +71,10 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onCloudBackupClicked() {
+            host.goToScene(CloudBackupParams(), false)
+        }
+
         override fun onLabelsOptionClicked() {
             host.goToScene(LabelsParams(), false)
         }
@@ -260,6 +264,10 @@ class SettingsController(
         model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
         scene.setEmailPreview(model.showEmailPreview)
 
+        return false
+    }
+
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 

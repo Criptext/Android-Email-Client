@@ -29,6 +29,11 @@ data class IncompleteAccount(
                         identityKeyPairB64 = privateBundle.identityKeyPair,
                         domain = Contact.mainDomain,
                         isActive = true,
-                        isLoggedIn = true
+                        isLoggedIn = true,
+                        hasCloudBackup = false,
+                        lastTimeBackup = null,
+                        autoBackupFrequency = 0,
+                        wifiOnly = true,
+                        backupPassword = null
                 )
 }

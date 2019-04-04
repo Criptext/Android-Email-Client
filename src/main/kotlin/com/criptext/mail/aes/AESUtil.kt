@@ -158,6 +158,62 @@ class AESUtil(keyAndIV: String) {
             return outputFile.absolutePath
         }
 
+        fun encryptFileByChunksWithCustomPassword(fileToEncrypt: File, password: String): String {
+
+            val salt = ByteArray(8)
+            val srandom = SecureRandom()
+            srandom.nextBytes(salt)
+
+            val generator = PKCS5S2ParametersGenerator(SHA256Digest())
+            generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password.toCharArray()), salt, 10000)
+            val key = generator.generateDerivedMacParameters(128) as KeyParameter
+
+            val skey = SecretKeySpec(key.key, "AES")
+
+
+            val iv = generateSecureRandomBytes(128 / 8)
+            val ivspec = IvParameterSpec(iv)
+
+            val outFile = createTempFile(suffix = ".enc")
+
+            val out = FileOutputStream(outFile)
+            out.write(salt)
+            out.write(iv)
+
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.ENCRYPT_MODE, skey, ivspec)
+
+            FileInputStream(fileToEncrypt).use { `in` -> processFile(ci, `in`, out) }
+
+            return outFile.absolutePath
+        }
+
+        fun decryptFileByChunksWithCustomPassword(fileToDecrypt: File, password: String): String {
+            val `in` = FileInputStream(fileToDecrypt)
+            val iv = ByteArray(128 / 8)
+            val salt = ByteArray(8)
+            `in`.read(salt)
+            `in`.read(iv)
+
+            val generator = PKCS5S2ParametersGenerator(SHA256Digest())
+            generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password.toCharArray()), salt, 10000)
+            val key = generator.generateDerivedMacParameters(128) as KeyParameter
+
+            val skey = SecretKeySpec(key.key, "AES")
+
+            val ivspec = IvParameterSpec(iv)
+            val ci = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            ci.init(Cipher.DECRYPT_MODE, skey, ivspec)
+
+            val outputFile = createTempFile(suffix = ".ver")
+
+            FileOutputStream(outputFile).use { out -> processFile(ci, `in`, out) }
+
+            return outputFile.absolutePath
+        }
+
+
+
         @Throws(javax.crypto.IllegalBlockSizeException::class, javax.crypto.BadPaddingException::class, java.io.IOException::class)
         private fun processFile(ci: Cipher, `in`: InputStream, out: OutputStream) {
             val ibuf = ByteArray(STREAM_BUFFER_SIZE)

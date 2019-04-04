@@ -29,6 +29,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.*
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
@@ -45,6 +46,7 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
+import com.google.api.services.drive.Drive
 
 /**
  * Created by sebas on 1/30/18.
@@ -245,6 +247,17 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    val googleSignInListener = object: GoogleSignInObserver {
+        override fun signInSuccess(drive: Drive){
+            model.mDriveServiceHelper = drive
+            host.goToScene(RestoreBackupParams(), false)
+        }
+
+        override fun signInFailed(){
+            scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
+        }
+    }
+
     private val mObserver = object : ContentObserver(host.getHandler()) {
 
         override fun onChange(selfChange: Boolean) {
@@ -262,6 +275,15 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
 
+        override fun restoreFromBackupPressed() {
+            val gAccount = scene.getGoogleDriveService()
+            if (gAccount == null){
+                host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
+            } else {
+                model.mDriveServiceHelper = gAccount
+                host.goToScene(RestoreBackupParams(), false)
+            }
+        }
 
         override fun onSnackbarClicked() {
             scene.scrollTop()
@@ -487,9 +509,14 @@ class MailboxSceneController(private val scene: MailboxScene,
                 model.showWelcome = false
                 scene.showWelcomeDialog(observer)
             } else {
-                if (storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)) {
-                    scene.showSyncPhonebookDialog(observer)
-                    storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
+                if(model.askForRestoreBackup){
+                    model.askForRestoreBackup = false
+                    scene.showRestoreBackupDialog(observer)
+                } else {
+                    if (storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)) {
+                        scene.showSyncPhonebookDialog(observer)
+                        storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
+                    }
                 }
             }
 
@@ -501,6 +528,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
         }
 
+        return handleActivityMessage(activityMessage)
+    }
+
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return handleActivityMessage(activityMessage)
     }
 

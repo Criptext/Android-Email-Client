@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -34,11 +36,13 @@ import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
 import com.criptext.mail.scenes.mailbox.emailsource.EmailSourceModel
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.restorebackup.RestoreBackupModel
 import com.criptext.mail.scenes.search.SearchSceneModel
 import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
+import com.criptext.mail.scenes.settings.cloudbackup.CloudBackupModel
 import com.criptext.mail.scenes.settings.devices.DevicesModel
 import com.criptext.mail.scenes.settings.labels.LabelsModel
 import com.criptext.mail.scenes.settings.pinlock.PinLockModel
@@ -69,6 +73,10 @@ import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -241,6 +249,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             activityMessage = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (controller.onResume(activityMessage))
+            activityMessage = null
+    }
+
     override fun onStop() {
         handler.removeCallbacksAndMessages(null)
         mFirebaseAnalytics = null
@@ -344,7 +358,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is SearchParams -> SearchSceneModel()
             is SignUpParams -> SignUpSceneModel(params.isMultiple)
             is SignInParams -> SignInSceneModel(params.isMultiple)
-            is MailboxParams -> MailboxSceneModel(params.showWelcome)
+            is MailboxParams -> MailboxSceneModel(params.showWelcome, params.askForRestoreBackup)
             is  EmailDetailParams -> EmailDetailSceneModel(params.threadId,
                     params.currentLabel, params.threadPreview, params.doReply)
             is ComposerParams -> ComposerModel(params.type)
@@ -362,6 +376,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.userData)
             is ProfileParams -> ProfileModel(params.userData)
+            is CloudBackupParams -> CloudBackupModel()
+            is RestoreBackupParams -> RestoreBackupModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -581,6 +597,62 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 val bundle = Bundle()
                 bundle.putString("app_source", "Unknown")
                 mFirebaseAnalytics?.logEvent("invite_friend", bundle)
+            }
+            is ExternalActivityParams.ShareFile -> {
+                val file = File(params.filePath)
+                if(file.exists()){
+                    val fileUri: Uri? = try {
+                        FileProvider.getUriForFile(
+                                this,
+                                "com.criptext.mail.fileProvider",
+                                file)
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("File Selector",
+                                "The selected file can't be shared: ${file.name}")
+                        null
+                    }
+                    val share = Intent(android.content.Intent.ACTION_SEND)
+                    share.type = "text/plain"
+                    share.putExtra(Intent.EXTRA_SUBJECT, getLocalizedString(UIMessage(R.string.cloud_backup_share_intent_title)))
+                    share.putExtra(Intent.EXTRA_STREAM, fileUri)
+                    share.putExtra(Intent.EXTRA_TEXT, getLocalizedString(UIMessage(R.string.cloud_backup_share_intent_message)))
+
+                    startActivity(Intent.createChooser(share, getString(R.string.cloud_backup_share_intent_title)))
+                }
+            }
+            is ExternalActivityParams.SignInGoogleDrive -> {
+               val signInOptions =
+                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                        .build()
+                val client = GoogleSignIn.getClient(this, signInOptions)
+
+                // The result of the sign-in Intent is handled in onActivityResult.
+                startActivityForResult(client.signInIntent, ExternalActivityParams.REQUEST_CODE_SIGN_IN)
+            }
+            is ExternalActivityParams.SignOutGoogleDrive -> {
+                val signInOptions =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestEmail()
+                                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                                .build()
+                val client = GoogleSignIn.getClient(this, signInOptions)
+
+                client.signOut()
+            }
+            is ExternalActivityParams.ChangeAccountGoogleDrive -> {
+                val signInOptions =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestEmail()
+                                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                                .build()
+                val client = GoogleSignIn.getClient(this, signInOptions)
+
+                client.signOut()
+
+                // The result of the sign-in Intent is handled in onActivityResult.
+                startActivityForResult(client.signInIntent, ExternalActivityParams.REQUEST_CODE_SIGN_IN)
             }
             is ExternalActivityParams.OpenGooglePlay -> {
                 // you can also use BuildConfig.APPLICATION_ID

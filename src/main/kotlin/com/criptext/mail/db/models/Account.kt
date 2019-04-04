@@ -1,16 +1,18 @@
 package com.criptext.mail.db.models
 
+import androidx.annotation.Nullable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.*
 
 /**
  * Created by sebas on 2/6/18.
  */
 
-@Entity(tableName = "account", indices = [Index(value = "name"),
-    Index(value = "recipientId", name = "account_recipient_index", unique = true)] )
+@Entity(tableName = "account", indices = [Index(value = ["name"]),
+    Index(value = ["recipientId"], name = "account_recipient_index", unique = true)] )
 class Account(
 
         @PrimaryKey(autoGenerate = true)
@@ -48,7 +50,23 @@ class Account(
         var isActive: Boolean,
 
         @ColumnInfo(name = "isLoggedIn")
-        var isLoggedIn: Boolean
+        var isLoggedIn: Boolean,
+
+        @ColumnInfo(name = "hasCloudBackup")
+        var hasCloudBackup: Boolean,
+
+        @ColumnInfo(name = "lastTimeBackup")
+        @Nullable
+        var lastTimeBackup: Date?,
+
+        @ColumnInfo(name = "autoBackupFrequency")
+        var autoBackupFrequency : Int,
+
+        @ColumnInfo(name = "wifiOnly")
+        var wifiOnly : Boolean,
+
+        @ColumnInfo(name = "backupPassword")
+        var backupPassword : String?
 ) {
 
     override fun toString(): String {

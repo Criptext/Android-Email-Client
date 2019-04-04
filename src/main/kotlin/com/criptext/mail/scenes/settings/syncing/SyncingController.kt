@@ -87,6 +87,10 @@ class SyncingController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 

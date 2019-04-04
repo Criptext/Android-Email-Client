@@ -1,0 +1,152 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/label_chooser_shape"
+    android:orientation="vertical">
+
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingBottom="30dp"
+        android:paddingTop="15dp"
+        android:text="@string/cloud_backup_passphrase_title"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <Switch
+        android:id="@+id/set_password_switch"
+        android:layout_width="176dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:checked="true"
+        android:text="@string/cloud_backup_passphrase_switch"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="17sp" />
+
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/set_passphrase_text"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="@string/cloud_backup_passphrase_on_message"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:id="@+id/edit_text_password_layout"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="3dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp">
+            <ImageView
+                android:id="@+id/error_password"
+                android:visibility="gone"
+                android:src="@drawable/x_rounded"
+                android:tint="@color/red"
+                android:layout_gravity="center_vertical|start"
+                android:padding="3dp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+
+            <ImageView
+                android:id="@+id/success_password"
+                android:layout_gravity="center_vertical|start"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/success_circle"
+                android:padding="9dp"
+                android:src="@drawable/check"
+                android:tint="@color/colorOpened"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/password_input"
+            android:layout_width="206dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="top|center_horizontal"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+            app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/pass_hint_non_criptext_email_dialog"
+                android:textAppearance="@style/textinputlayout_non_criptext_email_send"
+                android:inputType="textVisiblePassword"
+                android:nextFocusDown="@+id/password_repeat"
+                android:singleLine="true"
+                android:textSize="15sp"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/switch_off_message"
+        android:layout_width="206dp"
+        android:layout_height="match_parent"
+        android:paddingTop="40dp"
+        android:paddingBottom="60dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/cloud_backup_passphrase_off_message"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="14sp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/dialog_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/non_criptext_email_cancel"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/label_button_left_bg"
+            android:stateListAnimator="@null"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/button_text_color"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/non_criptext_email_send"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/label_button_right_bg"
+            android:stateListAnimator="@null"
+            android:text="@string/save"
+            android:textAllCaps="false"
+            android:enabled="false"
+            android:textColor="@color/button_text_color"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+</LinearLayout>

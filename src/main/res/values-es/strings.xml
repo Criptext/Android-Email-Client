@@ -8,6 +8,16 @@
     <item>1 hora</item>
     <item>24 horas</item>
   </string-array>
+  <string-array name="auto_backup_options">
+    <item>Diario</item>
+    <item>Semanal</item>
+    <item>Mensual</item>
+    <item>Apagado</item>
+  </string-array>
+  <string-array name="wifi_backup_options">
+    <item>Solo con Wifi</item>
+    <item>Wifi o datos</item>
+  </string-array>
   <string name="app_name">Criptext</string>
   <string name="tour_title1">¡Bienvenido a Criptext!</string>
   <string name="mk_label_yesterday">Ayer</string>
@@ -186,6 +196,7 @@
   <string name="devices_toolbar_title">DISPOSITIVOS</string>
     <string name="labels_toolbar_title">ETIQUETAS</string>
   <string name="pin_toolbar_title">BLOQUEO PIN</string>
+  <string name="cloud_backup_toolbar_title">RESPALDO EN LA NUBE</string>
   <string name="profile_toolbar_title">PERFIL</string>
   <string name="email_source_toolbar_title">FUENTE DEL CORREO</string>
   <string name="pin_lock_switch_text">Usar PIN</string>
@@ -474,4 +485,42 @@
   <string name="privacy_two_fa_message">Una validación extra para proteger tu cuenta.</string>
   <string name="privacy_read_receipts_message">Saber cuando tus correos son abiertos o leídos. Si lo deshabilitas, no podrás enviar o recibir confirmaciones de lectura.</string>
   <string name="user_already_logged_in">¡La cuenta ya está agregada!</string>
+  <string name="title_cloud_backup">Respaldo en la nube</string>
+  <string name="cloud_backup_switch">Respaldo en Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Crear Respaldo</string>
+  <string name="cloud_backup_now">Respaldar Ahora</string>
+  <string name="cloud_backup_auto_backup">Respaldo Automático</string>
+  <string name="cloud_backup_change_google_account">Cambiar Cuenta Google</string>
+  <string name="cloud_backup_backup_over">Solo usar Wifi</string>
+  <string name="cloud_backup_create_file">Crear Archivo de Respaldo</string>
+  <string name="cloud_progress_upload_message">Subiendo a la nube (%1$d %%)</string>
+  <string name="cloud_backup_message_1">Respalda tu buzón con Google Drive así puedes restaurar tu cuenta de Criptext si pierdes este dispositivo. Nota: El respaldo que se sube a Google Drive no esta encriptado y Criptext no se responsabiliza por el mismo.</string>
+  <string name="cloud_backup_message_2"><b>Aviso:</b> El respaldo automático solo funciona con el respaldo en la nube activado.</string>
+  <string name="cloud_backup_create_file_progress_message">Por favor espera un momento…%1$d%%</string>
+  <string name="cloud_backup_share_intent_title">Comparte tu archivo</string>
+  <string name="cloud_backup_share_intent_message">Compartiendo tu bandeja de correo…</string>
+  <string name="cloud_backup_passphrase_title">Ingresa tu Clave</string>
+  <string name="cloud_backup_passphrase_switch">Encriptar Respaldo</string>
+  <string name="cloud_backup_passphrase_on_message">Si pierdes u olvidas esta clave no podrás restaurar tu respaldo.</string>
+  <string name="cloud_backup_passphrase_off_message"><b>Alerta:</b> por tu seguridad te recomendamos encriptar tu respaldo.</string>
+  <string name="cloud_backup_size"><b>Tamaño: </b></string>
+  <string name="cloud_backup_last_modified"><b>Último Respaldo: </b></string>
+  <string name="cloud_backup_backing_up">Respaldando…</string>
+  <string name="cloud_backup_mb">(%1$d MB)</string>
+  <string name="restore_backup_dialog_title">Restaurar Respaldo</string>
+  <string name="restore_backup_dialog_message">Restaura tus emails desde tu Google Drive antes de entrar a tu buzón de entrada.</string>
+  <string name="restore_backup_dialog_skip_restore">No Restaurar</string>
+  <string name="restore_backup_dialog_button">Restaurar desde Drive</string>
+  <string name="restore_backup_title">Respaldo encontrado</string>
+  <string name="restore_backup_title_encrypted">Respaldo encriptado encontrado</string>
+  <string name="restore_backup_last_modified">Último Respaldo: %1$s</string>
+  <string name="restore_backup_size">Tamaño: %1$d MB</string>
+  <string name="restore_backup_button">Restaurar</string>
+  <string name="restore_backup_not_found_message">¿Estás seguro que escogiste la cuenta de Drive correcta?, quizás debes intentarlo nuevamente.</string>
+  <string name="restore_backup_not_found_title">Respaldo no encontrado</string>
+  <string name="restore_backup_fail_message">Algo ha pasado que está retrasando el proceso</string>
+  <string name="restore_backup_fail_question">Quieres volver a intentar?</string>
+  <string name="restore_backup_retry">Reintentar</string>
+  <string name="restore_backup_no_account">No hay cuenta Google asociada</string>
+  <string name="restore_backup_restoring_title">Restaurando…</string>
 </resources>

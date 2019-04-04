@@ -38,7 +38,11 @@ class DateAndTimeUtils {
 
         fun getHoraVerdadera(timestamp: Long, at: String = "at"): String {
             val formattedDate = SimpleDateFormat("EEE, dd MMM yyyy '$at' h:mm a").format(timestamp)
-            return formattedDate.replace("P.M.".toRegex(), "PM").replace("A.M.".toRegex(), "AM")
+            return formattedDate.replace("P. M.".toRegex(), "PM").replace("A. M.".toRegex(), "AM")
+        }
+
+        fun getTimeForBackup(timestamp: Long): String {
+            return SimpleDateFormat("MMM dd, yyyy").format(timestamp)
         }
 
         fun isTheSameDay(timestampActual: Long, timestampAnterior: Long): Boolean {
@@ -73,8 +77,6 @@ class DateAndTimeUtils {
             if (diferenciaMeses == 0) {
                 if (diferenciaDias == 0) {
                     formattedDate = SimpleDateFormat("h:mm a").format(timestamp).toUpperCase()
-                    formattedDate = formattedDate.replace("P.M.".toRegex(), "PM")
-                    formattedDate = formattedDate.replace("A.M.".toRegex(), "AM")
                 } else if (diferenciaDias == 1 || diferenciaDias == -1) {
                     formattedDate = strAyer
                 } else if (diferenciaDias in 1..6) {
@@ -86,6 +88,8 @@ class DateAndTimeUtils {
             } else
                 formattedDate = SimpleDateFormat("MM/dd/yy").format(timestamp)
 
+            formattedDate = formattedDate.replace("P. M.".toRegex(), "PM")
+            formattedDate = formattedDate.replace("A. M.".toRegex(), "AM")
             return formattedDate
         }
 
@@ -109,8 +113,6 @@ class DateAndTimeUtils {
             if (diferenciaMeses == 0) {
                 if (diferenciaDias == 0) {
                     formattedDate = SimpleDateFormat("h:mm a").format(timestamp).toUpperCase()
-                    formattedDate = formattedDate.replace("P.M.".toRegex(), "PM")
-                    formattedDate = formattedDate.replace("A.M.".toRegex(), "AM")
                     formattedDate = unsent.plus(" ").plus(at).plus(": $formattedDate")
                 } else if (diferenciaDias == 1 || diferenciaDias == -1) {
                     formattedDate = unsent.plus(": $strAyer")
@@ -126,6 +128,8 @@ class DateAndTimeUtils {
                 formattedDate = SimpleDateFormat("dd MMM yyyy '$at' h:mm a").format(timestamp).format(timestamp)
                 formattedDate = unsent.plus(": $formattedDate")
             }
+            formattedDate = formattedDate.replace("P. M.".toRegex(), "PM")
+            formattedDate = formattedDate.replace("A. M.".toRegex(), "AM")
             return formattedDate
         }
 
@@ -156,8 +160,8 @@ class DateAndTimeUtils {
             } else
                 formattedDate = SimpleDateFormat("MMM dd, yyyy h:mm aa").format(timestamp)
 
-            formattedDate = formattedDate.replace("P.M.".toRegex(), "PM")
-            formattedDate = formattedDate.replace("A.M.".toRegex(), "AM")
+            formattedDate = formattedDate.replace("P. M.".toRegex(), "PM")
+            formattedDate = formattedDate.replace("A. M.".toRegex(), "AM")
 
             return formattedDate
         }

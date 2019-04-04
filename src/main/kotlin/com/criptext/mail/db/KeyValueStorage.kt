@@ -42,6 +42,9 @@ interface KeyValueStorage {
         HasDarkTheme("HasDarkTheme"),
         HasTimestampForCacheReset("HasTimestampForCacheReset"),
         CacheResetTimestamp("CacheResetTimestamp"),
+        UseWifiOnlyForBackup("UseWifiOnlyForBackup"),
+        LastBackupSize("LastBackupSize"),
+        LastBackupDate("LastBackupDate")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

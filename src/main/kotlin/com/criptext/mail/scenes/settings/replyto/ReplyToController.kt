@@ -77,6 +77,10 @@ class ReplyToController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onReplyEmailChanged(result: ReplyToResult.SetReplyToEmail){
         when(result) {
             is ReplyToResult.SetReplyToEmail.Success -> {

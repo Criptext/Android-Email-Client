@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/cloud_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/restore_cloud" />
+
+        <TextView
+            android:id="@+id/restore_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_title"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+        <LinearLayout
+            android:id="@+id/backup_found_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="visible">
+            <TextView
+                android:id="@+id/restore_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="15sp"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:gravity="center_horizontal"
+                fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+            <TextView
+                android:id="@+id/restore_last_modified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_last_modified"
+                fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+            <TextView
+                android:id="@+id/restore_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_size"
+                fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_input"
+                android:layout_width="206dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                app:errorEnabled="true"
+                android:visibility="gone"
+                app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+                app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/pass_hint_non_criptext_email_dialog"
+                    android:textAppearance="@style/textinputlayout_non_criptext_email_send"
+                    android:inputType="textVisiblePassword"
+                    android:nextFocusDown="@+id/password_repeat"
+                    android:singleLine="true"
+                    android:textSize="15sp"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/restore_button"
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_welcome_tour"
+                android:textColor="@drawable/btn_sign_in"
+                android:text="@string/restore_backup_button"
+                android:enabled="false"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:padding="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/backup_not_found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/restore_not_found_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginEnd="10dp"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_not_found_message"
+                fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/backup_need_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_fail_message"
+                fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_fail_question"
+                fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+            <Button
+                android:id="@+id/retry_button"
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_welcome_tour"
+                android:textColor="@drawable/btn_sign_in"
+                android:text="@string/restore_backup_retry"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:padding="10dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/restore_change_account_button"
+            android:layout_width="160dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/cloud_backup_change_google_account"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:padding="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:layout_marginTop="45dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:progressBackgroundTint="#ddf0ff"
+                android:progressTint="#0091ff"
+                android:progress="0"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/diamond_black"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:id="@+id/percentage_advanced"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/square_round_corners_black"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="3dp"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/skip_restore"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/azure"
+        android:text="@string/restore_backup_dialog_skip_restore"
+        android:textSize="16sp"
+        android:clickable="true"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

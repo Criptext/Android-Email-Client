@@ -8,6 +8,16 @@
     <item>1 hour</item>
     <item>24 hours</item>
   </string-array>
+  <string-array name="auto_backup_options">
+    <item>Daily</item>
+    <item>Weekly</item>
+    <item>Monthly</item>
+    <item>Off</item>
+  </string-array>
+  <string-array name="wifi_backup_options">
+    <item>Wifi only</item>
+    <item>Wifi or cellular</item>
+  </string-array>
   <string name="app_name">Criptext</string>
   <string name="tour_title1">Welcome to Criptext!</string>
   <string name="mk_label_yesterday">Yesterday </string>
@@ -186,6 +196,7 @@
     <string name="devices_toolbar_title">DEVICES</string>
     <string name="labels_toolbar_title">LABELS</string>
     <string name="pin_toolbar_title">PIN LOCK</string>
+    <string name="cloud_backup_toolbar_title">CLOUD BACKUP</string>
     <string name="profile_toolbar_title">PROFILE</string>
     <string name="email_source_toolbar_title">EMAIL SOURCE</string>
   <string name="pin_lock_switch_text">Use PIN Lock</string>
@@ -474,4 +485,42 @@
   <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
   <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
   <string name="user_already_logged_in">Account already added!</string>
+  <string name="title_cloud_backup">Cloud Backup</string>
+  <string name="cloud_backup_switch">Backup to Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Create Backup</string>
+  <string name="cloud_backup_now">Backup Now</string>
+  <string name="cloud_backup_auto_backup">Auto Backup</string>
+  <string name="cloud_backup_change_google_account">Change Google Account</string>
+  <string name="cloud_backup_backup_over">Use Wifi Only</string>
+  <string name="cloud_backup_create_file">Create Backup File</string>
+  <string name="cloud_progress_upload_message">Uploading to Cloud (%1$d %%)</string>
+  <string name="cloud_backup_message_1">Backup your entire mailbox to Google Drive so that you can restore your Criptext account to a new device if you lose this device. Note: Google Drive backups are not encrypted and Criptext is not responsible for your Google Drive data.</string>
+  <string name="cloud_backup_message_2"><b>Note:</b> Auto Backup works only with cloud backup</string>
+  <string name="cloud_backup_create_file_progress_message">Please wait a moment… %1$d%%</string>
+  <string name="cloud_backup_share_intent_title">Share your file</string>
+  <string name="cloud_backup_share_intent_message">Sharing your mailbox…</string>
+  <string name="cloud_backup_passphrase_title">Enter Passphrase</string>
+  <string name="cloud_backup_passphrase_switch">Encrypt Backup</string>
+  <string name="cloud_backup_passphrase_on_message">If you lose/forget this passphrase you won\'t be able to restore the backup in the future</string>
+  <string name="cloud_backup_passphrase_off_message"><b>Warning:</b> for your security we recommend you chose to encrypt your backup.</string>
+  <string name="cloud_backup_size"><b>Size: </b></string>
+  <string name="cloud_backup_last_modified"><b>Last Backup: </b></string>
+  <string name="cloud_backup_backing_up">Backing up…</string>
+  <string name="cloud_backup_mb">(%1$d MB)</string>
+  <string name="restore_backup_dialog_title">Restore Backup</string>
+  <string name="restore_backup_dialog_message">Restore your emails from Google Drive, before going to your inbox.</string>
+  <string name="restore_backup_dialog_skip_restore"><u>Skip Restore</u></string>
+  <string name="restore_backup_dialog_button">Restore from Drive</string>
+  <string name="restore_backup_title">Backup found</string>
+  <string name="restore_backup_title_encrypted">Encrypted backup found</string>
+  <string name="restore_backup_last_modified">Last Backup: %1$s</string>
+  <string name="restore_backup_size">Size: %1$d MB</string>
+  <string name="restore_backup_button">Restore</string>
+  <string name="restore_backup_not_found_message">Are you sure you chose the correct drive account?, maybe you should try again</string>
+  <string name="restore_backup_not_found_title">Backup not found</string>
+  <string name="restore_backup_fail_message">Something has happened that is delaying this process.</string>
+  <string name="restore_backup_fail_question">Do your want to keep trying?</string>
+  <string name="restore_backup_retry">Retry</string>
+  <string name="restore_backup_no_account">No Google Account Found</string>
+  <string name="restore_backup_restoring_title">Restoring…</string>
 </resources>

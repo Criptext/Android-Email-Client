@@ -87,7 +87,9 @@ class CreateSessionWorker(val httpClient: HttpClient,
             val account = Account(id = 0, recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true)
+                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true,
+                    hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
+                    backupPassword = null)
             Pair(registrationBundles, account)
         }
     }

@@ -35,13 +35,6 @@ import java.io.OutputStream
 import java.io.IOException
 import java.util.zip.GZIPInputStream
 
-
-
-
-
-
-
-
 class LinkDataWorker(private val authorizerId: Int,
                      val filesDir: File,
                      private var activeAccount: ActiveAccount,

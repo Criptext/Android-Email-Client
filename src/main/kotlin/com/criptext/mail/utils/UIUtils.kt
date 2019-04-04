@@ -27,7 +27,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.BufferedReader
 import android.graphics.Bitmap
-
+import android.widget.ProgressBar
 
 
 object UIUtils{
@@ -64,6 +64,18 @@ object UIUtils{
     }
 
     fun animationForProgressBar(progressBar: BootstrapProgressBar, progress: Int, progressBarNumber: TextView,
+                                duration: Long): ValueAnimator{
+        val anim = ValueAnimator.ofInt(progressBar.progress, progress)
+        anim.addUpdateListener { valueAnimator ->
+            val `val` = valueAnimator.animatedValue as Int
+            progressBarNumber.text = (`val`).toString().plus("%")
+            progressBar.progress = progress
+        }
+        anim.duration = duration
+        return anim
+    }
+
+    fun animationForProgressBar(progressBar: ProgressBar, progress: Int, progressBarNumber: TextView,
                                 duration: Long): ValueAnimator{
         val anim = ValueAnimator.ofInt(progressBar.progress, progress)
         anim.addUpdateListener { valueAnimator ->

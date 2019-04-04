@@ -9,6 +9,7 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult

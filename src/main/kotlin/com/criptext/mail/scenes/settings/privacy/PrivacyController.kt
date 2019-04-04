@@ -121,6 +121,10 @@ class PrivacyController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
