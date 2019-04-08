@@ -71,7 +71,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
 
     @Test
     fun when_marked_as_star_should_send_only_star_to_added_labels_and_nothing_on_removed() {
-        val expectedThreads = mailboxLocalDB.getThreadsIdsFromLabel(Label.LABEL_INBOX)
+        val expectedThreads = mailboxLocalDB.getThreadsIdsFromLabel(Label.LABEL_INBOX, activeAccount.id)
 
         val selectedLabels = SelectedLabels()
         selectedLabels.addMultipleSelected(listOf(LabelWrapper(Label.defaultItems.inbox),

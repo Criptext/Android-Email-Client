@@ -29,7 +29,7 @@ class UpdateUnreadStatusWorker(
         private val threadIds: List<String>,
         private val updateUnreadStatus: Boolean,
         private val currentLabel: Label,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         httpClient: HttpClient,
         storage: KeyValueStorage,
         accountDao: AccountDao,
@@ -59,7 +59,7 @@ class UpdateUnreadStatusWorker(
         val result = Result.of {
             val defaultLabels = Label.DefaultItems()
             val rejectedLabels = defaultLabels.rejectedLabelsByMailbox(currentLabel).map { it.id }
-            db.updateUnreadStatus(threadIds, updateUnreadStatus, rejectedLabels)
+            db.updateUnreadStatus(threadIds, updateUnreadStatus, rejectedLabels, activeAccount.id)
         }
 
         return when (result) {

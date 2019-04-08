@@ -12,6 +12,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.LinkingParams
+import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
@@ -36,7 +37,7 @@ class LabelsController(
         private val scene: LabelsScene,
         private val host: IHostActivity,
         private val keyboardManager: KeyboardManager,
-        private val activeAccount: ActiveAccount,
+        private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
@@ -137,8 +138,15 @@ class LabelsController(
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
-                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                        true, true)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
             }
         }
     }

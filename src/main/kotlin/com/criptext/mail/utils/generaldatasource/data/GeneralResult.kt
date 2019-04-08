@@ -19,7 +19,7 @@ import java.io.File
  */
 sealed class GeneralResult {
     sealed class DeviceRemoved: GeneralResult()  {
-        class Success: DeviceRemoved()
+        data class Success(val activeAccount: ActiveAccount?): DeviceRemoved()
         class Failure: DeviceRemoved()
     }
 
@@ -131,7 +131,7 @@ sealed class GeneralResult {
     }
 
     sealed class DeleteAccount: GeneralResult() {
-        class Success: DeleteAccount()
+        data class Success(val activeAccount: ActiveAccount?): DeleteAccount()
         data class Failure(val message: UIMessage): DeleteAccount()
     }
 

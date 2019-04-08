@@ -28,7 +28,7 @@ class SearchEmailWorkerTest{
     private lateinit var db: TestDatabase
     private lateinit var searchLocalDB: SearchLocalDB
 
-    private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
+    private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
@@ -49,6 +49,9 @@ class SearchEmailWorkerTest{
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true))
+
+        activeAccount = activeAccount.copy(id = db.accountDao().getLoggedInAccount()!!.id)
+
         searchLocalDB = SearchLocalDB.Default(db, mActivityRule.activity.filesDir)
 
         (1..2).forEach {

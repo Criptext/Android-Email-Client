@@ -234,7 +234,14 @@ class ProfileController(
         scene.toggleGeneralDialogLoad(false)
         when(result) {
             is GeneralResult.DeleteAccount.Success -> {
-                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
             }
             is GeneralResult.DeleteAccount.Failure -> {
                 scene.setGeneralDialogWithInputError(result.message)
@@ -283,10 +290,15 @@ class ProfileController(
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
-                host.exitToScene(SignInParams(),
-                        ActivityMessage.ShowUIMessage(
-                                UIMessage(R.string.device_removed_remotely_exception)),
-                        true, true)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
             }
         }
     }

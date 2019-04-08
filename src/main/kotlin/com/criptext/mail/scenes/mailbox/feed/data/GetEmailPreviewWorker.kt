@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.mailbox.feed.data
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Email
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
@@ -13,6 +14,7 @@ import com.criptext.mail.utils.EmailThreadValidator
  */
 
 class GetEmailPreviewWorker(private val email: Email,
+                            private val activeAccount: ActiveAccount,
                             private val mailboxLocalDB: MailboxLocalDB,
                             private val userEmail: String,
                             override val publishFn: (FeedResult.GetEmailPreview) -> Unit)
@@ -30,7 +32,8 @@ class GetEmailPreviewWorker(private val email: Email,
                 email = email,
                 userEmail = userEmail,
                 selectedLabel = Label.defaultItems.inbox.text,
-                rejectedLabels = listOf())
+                rejectedLabels = listOf(),
+                activeAccount = activeAccount)
         val labels = mailboxLocalDB.getLabelsFromThreadIds(listOf(email.threadId))
         return FeedResult.GetEmailPreview.Success(
                 emailPreview = EmailPreview.fromEmailThread(emailThread),

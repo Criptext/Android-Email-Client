@@ -40,7 +40,7 @@ class ComposerController(private val storage: KeyValueStorage,
                          private val model: ComposerModel,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
-                         private val activeAccount: ActiveAccount,
+                         private var activeAccount: ActiveAccount,
                          private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
                          private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
     : SceneController() {
@@ -338,7 +338,15 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
-                host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)), true, true)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
             }
         }
     }
