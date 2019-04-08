@@ -70,7 +70,8 @@ class LogoutWorkerTest{
         ))
 
         mailboxLocalDB.getThreadsIdsFromLabel(
-                labelName = Label.defaultItems.inbox.text
+                labelName = Label.defaultItems.inbox.text,
+                accountId = activeAccount.id
         ).size shouldBe 2
 
 
@@ -79,7 +80,8 @@ class LogoutWorkerTest{
         worker.work(mockk()) as SettingsResult.Logout.Success
 
         mailboxLocalDB.getThreadsIdsFromLabel(
-                labelName = Label.defaultItems.inbox.text
+                labelName = Label.defaultItems.inbox.text,
+                accountId = activeAccount.id
         ).size shouldBe 2
 
     }

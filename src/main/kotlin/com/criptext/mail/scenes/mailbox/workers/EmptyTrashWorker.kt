@@ -22,7 +22,7 @@ class EmptyTrashWorker(
         private val db: MailboxLocalDB,
         private val pendingDao: PendingEventDao,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         override val publishFn: (
@@ -48,8 +48,8 @@ class EmptyTrashWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.EmptyTrash>)
             : MailboxResult.EmptyTrash? {
-        val metadataKeys = db.getEmailMetadataKeysFromLabel(Label.LABEL_TRASH)
-        val result =  Result.of { db.deleteEmail(metadataKeys) }
+        val metadataKeys = db.getEmailMetadataKeysFromLabel(Label.LABEL_TRASH, activeAccount.id)
+        val result =  Result.of { db.deleteEmail(metadataKeys, activeAccount.id) }
 
         return when (result) {
             is Result.Success -> {

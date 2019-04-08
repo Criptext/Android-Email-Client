@@ -10,6 +10,7 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -31,6 +32,7 @@ class DeleteAccountWorker(private val db: EventLocalDB,
 
     override val canBeParallelized = true
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private var newActiveAccount: ActiveAccount? = null
 
     override fun catchException(ex: Exception): GeneralResult.DeleteAccount {
         return GeneralResult.DeleteAccount.Failure(createErrorMessage(ex))
@@ -46,9 +48,15 @@ class DeleteAccountWorker(private val db: EventLocalDB,
         else
             deleteOperation
 
+        val accounts = db.getLoggedAccounts()
+        if(accounts.isNotEmpty()){
+            db.setActiveAccount(accounts.first().id)
+            newActiveAccount = AccountUtils.setUserAsActiveAccount(accounts.first(), storage)
+        }
+
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.DeleteAccount.Success()
+                GeneralResult.DeleteAccount.Success(newActiveAccount)
             }
             is Result.Failure -> {
                 catchException(finalResult.error)

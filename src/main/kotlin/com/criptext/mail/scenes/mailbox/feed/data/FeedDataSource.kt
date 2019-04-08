@@ -32,24 +32,22 @@ class FeedDataSource(override val runner: WorkRunner,
                     fileDao,
                     params.lastTimeFeedOpened,
                     params.defaultContactName,
-                    activeAccount,
-                    { result -> flushResults(result) }
-            )
+                    activeAccount
+            ) { result -> flushResults(result) }
             is FeedRequest.DeleteFeedItem -> DeleteFeedItemWorker(feedItemLocalDB,
-                    params.item, { result ->
+                    params.item) { result ->
                 flushResults(result)
-            })
+            }
             is FeedRequest.MuteFeedItem -> MuteFeedItemWorker(
                     feedItemLocalDB,
-                    params,
-                    { result -> flushResults(result) }
-            )
+                    params
+            ) { result -> flushResults(result) }
             is FeedRequest.GetEmailPreview -> GetEmailPreviewWorker(
                     params.email,
+                    activeAccount,
                     mailboxLocalDB,
-                    params.userEmail,
-                    { result -> flushResults(result) }
-            )
+                    params.userEmail
+            ) { result -> flushResults(result) }
         }
     }
 }

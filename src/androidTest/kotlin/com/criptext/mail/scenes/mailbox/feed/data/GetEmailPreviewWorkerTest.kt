@@ -82,6 +82,7 @@ class GetEmailPreviewWorkerTest{
                     email = email,
                     userEmail = activeAccount.userEmail,
                     mailboxLocalDB = mailboxLocalDB,
+                    activeAccount = activeAccount,
                     publishFn = {})
 
 }

@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.generaldatasource.RemoveDeviceUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -27,6 +28,7 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
 
     override val canBeParallelized = false
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private var newActiveAccount: ActiveAccount? = null
 
     override fun catchException(ex: Exception): GeneralResult.DeviceRemoved {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -45,9 +47,16 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
         else
             deleteOperation
 
+        val accounts = db.accountDao().getLoggedInAccounts()
+        if(accounts.isNotEmpty()){
+            db.accountDao().updateActiveInAccount()
+            db.accountDao().updateActiveInAccount(accounts.first().id)
+            newActiveAccount = AccountUtils.setUserAsActiveAccount(accounts.first(), storage)
+        }
+
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.DeviceRemoved.Success()
+                GeneralResult.DeviceRemoved.Success(newActiveAccount)
             }
             is Result.Failure -> {
                 GeneralResult.DeviceRemoved.Failure()

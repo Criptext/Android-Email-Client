@@ -21,6 +21,7 @@ import com.criptext.mail.db.typeConverters.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
 import com.criptext.mail.utils.sha256
+import com.github.kittinunf.result.Result
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.*
 
@@ -222,8 +223,15 @@ abstract class AppDatabase : RoomDatabase() {
 
                     val account = database.query("SELECT * FROM account WHERE isActive=1")
                     account.moveToNext()
+                    
+                    val operation = Result.of { account.getLong(account.getColumnIndex("id")) }
+                    
+                    val accountId = when(operation){
+                        is Result.Success -> operation.value
+                        is Result.Failure -> 1
+                    }
 
-                    database.execSQL("""ALTER TABLE email ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE email ADD COLUMN accountId INTEGER DEFAULT $accountId""")
 
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_email (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -261,7 +269,7 @@ abstract class AppDatabase : RoomDatabase() {
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_metadataKey_index ON email (metadataKey, accountId)")
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_messageId_index ON email (messageId, accountId)")
 
-                    database.execSQL("""ALTER TABLE label ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE label ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""UPDATE label SET accountId=NULL WHERE type='SYSTEM'""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_label (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -282,7 +290,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_label_uuid ON label (uuid)")
 
-                    database.execSQL("""ALTER TABLE raw_identitykey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE raw_identitykey ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_raw_identitykey (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                             recipientId TEXT NOT NULL,
@@ -300,7 +308,7 @@ abstract class AppDatabase : RoomDatabase() {
                     database.execSQL("ALTER TABLE new_raw_identitykey RENAME TO raw_identitykey")
 
 
-                    database.execSQL("""ALTER TABLE raw_prekey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE raw_prekey ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""ALTER TABLE raw_prekey ADD COLUMN preKeyId INTEGER DEFAULT 1""")
                     database.execSQL("""UPDATE raw_prekey SET preKeyId=id""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_raw_prekey (
@@ -317,7 +325,7 @@ abstract class AppDatabase : RoomDatabase() {
                     database.execSQL("DROP TABLE raw_prekey")
                     database.execSQL("ALTER TABLE new_raw_prekey RENAME TO raw_prekey")
 
-                    database.execSQL("""ALTER TABLE raw_session ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE raw_session ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_raw_session (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                             recipientId TEXT NOT NULL,
@@ -334,7 +342,7 @@ abstract class AppDatabase : RoomDatabase() {
                     database.execSQL("DROP TABLE raw_session")
                     database.execSQL("ALTER TABLE new_raw_session RENAME TO raw_session")
 
-                    database.execSQL("""ALTER TABLE raw_signedprekey ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE raw_signedprekey ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_raw_signedprekey (
                                             id INTEGER PRIMARY KEY NOT NULL,
                                             byteString TEXT NOT NULL,
@@ -348,7 +356,7 @@ abstract class AppDatabase : RoomDatabase() {
                     database.execSQL("DROP TABLE raw_signedprekey")
                     database.execSQL("ALTER TABLE new_raw_signedprekey RENAME TO raw_signedprekey")
 
-                    database.execSQL("""ALTER TABLE pendingEvent ADD COLUMN accountId INTEGER DEFAULT ${account.getLong(account.getColumnIndex("id"))}""")
+                    database.execSQL("""ALTER TABLE pendingEvent ADD COLUMN accountId INTEGER DEFAULT $accountId""")
                     database.execSQL("""CREATE TABLE IF NOT EXISTS  new_pendingEvent (
                                             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                             data TEXT NOT NULL,
@@ -373,7 +381,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL(
                             """INSERT INTO account_contact (contactId, accountId)
-                                SELECT DISTINCT id, ${account.getLong(account.getColumnIndex("id"))}
+                                SELECT DISTINCT id, accountId
                                 FROM contact""")
                     database.setTransactionSuccessful()
                 }finally {

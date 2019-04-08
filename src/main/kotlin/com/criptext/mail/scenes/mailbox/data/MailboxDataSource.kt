@@ -53,6 +53,7 @@ class MailboxDataSource(
             is MailboxRequest.GetSelectedLabels -> GetSelectedLabelsWorker(
                     db = mailboxLocalDB,
                     threadIds = params.threadIds,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -63,6 +64,7 @@ class MailboxDataSource(
                     filterUnread = params.filterUnread,
                     labelNames = params.label,
                     userEmail = params.userEmail,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -115,6 +117,7 @@ class MailboxDataSource(
 
             is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
                     db = mailboxLocalDB,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     }
@@ -157,6 +160,7 @@ class MailboxDataSource(
                     mailboxLocalDB = mailboxLocalDB,
                     userEmail = params.userEmail,
                     doReply = params.doReply,
+                    activeAccount = activeAccount,
                     publishFn = { result ->
                         flushResults(result)
                     })

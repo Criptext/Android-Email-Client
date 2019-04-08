@@ -4,6 +4,7 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.EmailThread
@@ -17,6 +18,7 @@ import com.criptext.mail.utils.UIMessage
 
 class LoadEmailThreadsWorker(
         private val db: MailboxLocalDB,
+        private val activeAccount: ActiveAccount,
         private val loadParams: LoadParams,
         private val filterUnread: Boolean,
         private val labelNames: String,
@@ -43,20 +45,23 @@ class LoadEmailThreadsWorker(
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
             limit = loadParams.size,
             userEmail = userEmail,
-            filterUnread = filterUnread)
+            filterUnread = filterUnread,
+            activeAccount = activeAccount)
         is LoadParams.Reset -> db.getThreadsFromMailboxLabel(
             labelName = labelNames,
             startDate = null,
             rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
             limit = loadParams.size,
             userEmail = userEmail,
-            filterUnread = filterUnread)
+            filterUnread = filterUnread,
+            activeAccount = activeAccount)
         is LoadParams.UpdatePage -> {
             val newEmails = db.getNewThreadsFromMailboxLabel(
                     labelName = labelNames,
                     mostRecentDate = loadParams.mostRecentDate,
                     rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
-                    userEmail = userEmail
+                    userEmail = userEmail,
+                    activeAccount = activeAccount
             )
             db.getThreadsFromMailboxLabel(
                     labelName = labelNames,
@@ -64,7 +69,8 @@ class LoadEmailThreadsWorker(
                     rejectedLabels = Label.defaultItems.rejectedLabelsByFolder(labelNames),
                     limit = loadParams.size + newEmails.size,
                     userEmail = userEmail,
-                    filterUnread = filterUnread)
+                    filterUnread = filterUnread,
+                    activeAccount = activeAccount)
         }
     }
 

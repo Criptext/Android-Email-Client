@@ -32,7 +32,7 @@ class UpdateEmailThreadsLabelsWorker(
         private val currentLabel: Label,
         private val shouldRemoveCurrentLabel: Boolean,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         override val publishFn: (
@@ -86,7 +86,7 @@ class UpdateEmailThreadsLabelsWorker(
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
         val selectedLabelsList = selectedLabels.toList().map { it.label }
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
                 .filter { it.text != Label.LABEL_STARRED }
 
@@ -101,7 +101,7 @@ class UpdateEmailThreadsLabelsWorker(
 
 
         val emailIds = selectedThreadIds.flatMap { threadId ->
-            db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
+            db.getEmailsByThreadId(threadId, rejectedLabels, activeAccount.id).map { it.id }
         }
 
         val result =

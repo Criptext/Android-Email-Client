@@ -11,6 +11,7 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.github.omadahealth.lollipin.lib.managers.AppLockActivity
 
 class MessageAndProgressDialog(val context: Context, val message: UIMessage) {
 
@@ -20,7 +21,7 @@ class MessageAndProgressDialog(val context: Context, val message: UIMessage) {
     fun showDialog() {
 
         val dialogBuilder = AlertDialog.Builder(context)
-        val inflater = (context as BaseActivity).layoutInflater
+        val inflater = (context as AppLockActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.message_and_progress_dialog, null)
 
         dialogBuilder.setView(dialogView)

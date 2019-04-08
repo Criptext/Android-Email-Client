@@ -66,7 +66,8 @@ class EmptyTrashWorkerTest{
         ))
 
         mailboxLocalDB.getThreadsIdsFromLabel(
-                labelName = Label.defaultItems.trash.text
+                labelName = Label.defaultItems.trash.text,
+                accountId = activeAccount.id
         ).size shouldBe 2
 
 
@@ -75,7 +76,8 @@ class EmptyTrashWorkerTest{
         worker.work(mockk()) as MailboxResult.EmptyTrash.Success
 
         mailboxLocalDB.getThreadsIdsFromLabel(
-                labelName = Label.defaultItems.trash.text
+                labelName = Label.defaultItems.trash.text,
+                accountId = activeAccount.id
         ).size shouldBe 0
 
     }

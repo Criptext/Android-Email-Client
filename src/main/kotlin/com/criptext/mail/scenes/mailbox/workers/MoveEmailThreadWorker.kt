@@ -33,7 +33,7 @@ class MoveEmailThreadWorker(
         private val selectedThreadIds: List<String>,
         private val currentLabel: Label,
         httpClient: HttpClient,
-        activeAccount: ActiveAccount,
+        private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         override val publishFn: (
@@ -65,7 +65,7 @@ class MoveEmailThreadWorker(
 
     private fun getLabelEmailRelationsFromEmailIds(emailIds: List<Long>, label: String): List<EmailLabel> {
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelByName(label)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(label, activeAccount.id)))
 
 
         return emailIds.flatMap{ emailId ->
@@ -80,7 +80,7 @@ class MoveEmailThreadWorker(
 
         if(chosenLabel == null){
             //It means the threads will be deleted permanently
-            val result = Result.of { db.deleteThreads(threadIds = selectedThreadIds) }
+            val result = Result.of { db.deleteThreads(threadIds = selectedThreadIds, activeAccount = activeAccount) }
             return when (result) {
                 is Result.Success -> {
                     peerEventHandler.enqueueEvent(PeerDeleteThreadData(selectedThreadIds).toJSON())
@@ -94,15 +94,15 @@ class MoveEmailThreadWorker(
 
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val emailIds = selectedThreadIds.flatMap { threadId ->
-            db.getEmailsByThreadId(threadId, rejectedLabels).map { it.id }
+            db.getEmailsByThreadId(threadId, rejectedLabels, activeAccount.id).map { it.id }
         }
 
         val selectedLabels = SelectedLabels()
-        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel)))
+        selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel, activeAccount.id)))
 
 
         val selectedLabelsList = selectedLabels.toList().map { it.label }
-        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text })
+        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
 
         val peerSelectedLabels = selectedLabels.toList()
@@ -122,7 +122,7 @@ class MoveEmailThreadWorker(
                     val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
                     db.createLabelEmailRelations(labelEmails)
                     if(chosenLabel == Label.LABEL_TRASH){
-                        db.setTrashDate(emailIds)
+                        db.setTrashDate(emailIds, activeAccount.id)
                     }
                 }
 

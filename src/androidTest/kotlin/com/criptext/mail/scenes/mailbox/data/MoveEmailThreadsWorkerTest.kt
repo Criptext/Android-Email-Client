@@ -71,7 +71,8 @@ class MoveEmailThreadsWorkerTest{
                 labelName = Label.defaultItems.spam.text,
                 startDate = null,
                 limit = 20,
-                filterUnread = false
+                filterUnread = false,
+                activeAccount = activeAccount
         ).size shouldBe 0
 
         val emailThreads = mailboxLocalDB.getThreadsFromMailboxLabel(
@@ -80,7 +81,8 @@ class MoveEmailThreadsWorkerTest{
                 labelName = Label.defaultItems.inbox.text,
                 startDate = null,
                 limit = 20,
-                filterUnread = false
+                filterUnread = false,
+                activeAccount = activeAccount
         )
 
         val worker = newWorker(
@@ -96,7 +98,8 @@ class MoveEmailThreadsWorkerTest{
                 labelName = Label.defaultItems.spam.text,
                 startDate = null,
                 limit = 20,
-                filterUnread = false
+                filterUnread = false,
+                activeAccount = activeAccount
         ).size shouldBe 2
 
     }

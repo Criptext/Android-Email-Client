@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.mailbox.workers
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
@@ -16,6 +17,7 @@ import com.github.kittinunf.result.Result
  */
 
 class GetEmailPreviewWorker(private val threadId:String,
+                            private val activeAccount: ActiveAccount,
                             private val activityMessage: ActivityMessage?,
                             private val mailboxLocalDB: MailboxLocalDB,
                             private val doReply: Boolean = false,
@@ -35,6 +37,7 @@ class GetEmailPreviewWorker(private val threadId:String,
                 threadId = threadId,
                 userEmail = userEmail,
                 selectedLabel = Label.defaultItems.inbox.text,
+                activeAccount = activeAccount,
                 rejectedLabels = listOf())}
         return when(emailThreadResult) {
             is Result.Success -> {

@@ -4,6 +4,7 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.UIMessage
@@ -15,6 +16,7 @@ import com.criptext.mail.utils.UIMessage
 
 class GetSelectedLabelsWorker(
         private val db: MailboxLocalDB,
+        private val activeAccount: ActiveAccount,
         private val threadIds: List<String>,
         override val publishFn: (
                 MailboxResult.GetSelectedLabels) -> Unit)
@@ -29,7 +31,7 @@ class GetSelectedLabelsWorker(
     }
 
     override fun work(reporter: ProgressReporter<MailboxResult.GetSelectedLabels>): MailboxResult.GetSelectedLabels? {
-        val labels = db.getCustomLabels() as ArrayList<Label>
+        val labels = db.getCustomLabels(activeAccount.id) as ArrayList<Label>
         labels.add(Label.defaultItems.starred)
         val defaultSelectedLabels = db.getLabelsFromThreadIds(
                 threadIds = threadIds)
