@@ -166,7 +166,7 @@ class UpdateMailboxWorker(
     private fun checkTrashDates(){
         val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails(activeAccount.id)
         if(emailIds.isNotEmpty()){
-            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds, activeAccount.id) }
+            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds, activeAccount) }
             peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(emailIds).toJSON())
         }
     }

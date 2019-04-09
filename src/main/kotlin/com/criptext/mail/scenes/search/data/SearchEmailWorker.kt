@@ -31,19 +31,19 @@ class SearchEmailWorker(
                 startDate = loadParams.startDate,
                 limit = loadParams.size,
                 userEmail = userEmail,
-                accountId = activeAccount.id)
+                account = activeAccount)
         is LoadParams.UpdatePage -> db.searchMailsInDB(
                 queryText = queryText,
                 startDate = null,
                 limit = loadParams.size,
                 userEmail = userEmail,
-                accountId = activeAccount.id)
+                account = activeAccount)
         is LoadParams.Reset -> db.searchMailsInDB(
                 queryText = queryText,
                 startDate = null,
                 limit = loadParams.size,
                 userEmail = userEmail,
-                accountId = activeAccount.id)
+                account = activeAccount)
     }
 
     override fun work(reporter: ProgressReporter<SearchResult.SearchEmails>): SearchResult.SearchEmails? {

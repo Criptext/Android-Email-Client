@@ -1,9 +1,6 @@
 package com.criptext.mail.db
 
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.EmailLabel
-import com.criptext.mail.db.models.FullEmail
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
@@ -17,16 +14,16 @@ import java.util.*
 interface EmailDetailLocalDB {
 
     fun getLabelsFromThreadId(threadId: String): List<Label>
-    fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>, accountId: Long): List<FullEmail>
-    fun unsendEmail(emailId: Long, accountId: Long): Date
+    fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>, account: ActiveAccount): List<FullEmail>
+    fun unsendEmail(emailId: Long, account: ActiveAccount): Date
     fun getEmailMetadataKeyById(emailId: Long, accountId: Long): Long
     fun deleteRelationByEmailIds(emailIds: List<Long>)
     fun getLabelByName(labelName: String, accountId: Long): Label
     fun getLabelsByName(labelName: List<String>, accountId: Long): List<Label>
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean, accountId: Long)
-    fun deleteThread(threadId: String, accountId: Long)
-    fun deleteEmail(emailId: Long, accountId: Long)
+    fun deleteThread(threadId: String, account: ActiveAccount)
+    fun deleteEmail(emailId: Long, account: ActiveAccount)
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>, accountId: Long)
     fun getCustomLabels(accountId: Long): List<Label>
     fun setTrashDate(emailIds: List<Long>, accountId: Long)
@@ -46,27 +43,27 @@ interface EmailDetailLocalDB {
             db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
         }
 
-        override fun unsendEmail(emailId: Long, accountId: Long): Date {
+        override fun unsendEmail(emailId: Long, account: ActiveAccount): Date {
             val date = Date()
-            val metadataKey = db.emailDao().findEmailById(emailId, accountId)!!.metadataKey
-            db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND, accountId)
+            val metadataKey = db.emailDao().findEmailById(emailId, account.id)!!.metadataKey
+            db.emailDao().changeDeliveryType(emailId, DeliveryTypes.UNSEND, account.id)
             db.emailDao().unsendEmailById(emailId, "", "",
-                    date, accountId)
+                    date, account.id)
             db.fileDao().changeFileStatusByEmailid(emailId, 0)
             EmailUtils.deleteEmailInFileSystem(
                     filesDir = filesDir,
-                    recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                    recipientId = account.recipientId,
                     metadataKey = metadataKey
             )
             return date
         }
 
         override fun getFullEmailsFromThreadId(selectedLabel: String,
-                                               threadId: String, rejectedLabels: List<Long>, accountId: Long): List<FullEmail> {
+                                               threadId: String, rejectedLabels: List<Long>, account: ActiveAccount): List<FullEmail> {
             val emails = if(selectedLabel == Label.LABEL_SPAM || selectedLabel == Label.LABEL_TRASH)
-                db.emailDao().getEmailsFromThreadIdByLabel(db.labelDao().get(selectedLabel, accountId).id, listOf(threadId), accountId)
+                db.emailDao().getEmailsFromThreadIdByLabel(db.labelDao().get(selectedLabel, account.id).id, listOf(threadId), account.id)
             else
-                db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels, accountId)
+                db.emailDao().getEmailsFromThreadId(threadId, rejectedLabels, account.id)
             val fullEmails =  emails.map {
                 val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
@@ -79,7 +76,7 @@ interface EmailDetailLocalDB {
 
                 val emailContent = EmailUtils.getEmailContentFromFileSystem(filesDir,
                         it.metadataKey, it.content,
-                        db.accountDao().getLoggedInAccount()!!.recipientId)
+                        account.recipientId)
 
                 FullEmail(
                         email = it.copy(
@@ -130,28 +127,28 @@ interface EmailDetailLocalDB {
             db.emailDao().toggleRead(ids = emailIds, unread = updateUnreadStatus, accountId = accountId)
         }
 
-        override fun deleteThread(threadId: String, accountId: Long) {
+        override fun deleteThread(threadId: String, account: ActiveAccount) {
             db.emailDao().getAllEmailsByThreadId(threadId).forEach {
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
-                        recipientId = db.accountDao().getLoggedInAccount()!!.recipientId)
+                        recipientId = account.recipientId)
             }
-            db.emailDao().deleteThreads(listOf(threadId), accountId)
+            db.emailDao().deleteThreads(listOf(threadId), account.id)
         }
 
         override fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>, accountId: Long){
             db.emailLabelDao().deleteRelationByLabelAndEmailIds(labelId, emailIds)
         }
 
-        override fun deleteEmail(emailId: Long, accountId: Long) {
-            val email = db.emailDao().findEmailById(emailId, accountId)
+        override fun deleteEmail(emailId: Long, account: ActiveAccount) {
+            val email = db.emailDao().findEmailById(emailId, account.id)
             EmailUtils.deleteEmailInFileSystem(
                     filesDir = filesDir,
-                    recipientId = db.accountDao().getLoggedInAccount()!!.recipientId,
+                    recipientId = account.recipientId,
                     metadataKey = email!!.metadataKey
             )
-            db.emailDao().deleteById(emailId, accountId)
+            db.emailDao().deleteById(emailId, account.id)
         }
 
         override fun getCustomLabels(accountId: Long): List<Label>{

@@ -556,7 +556,7 @@ class EventHelper(private val db: EventLocalDB,
                     limit = Math.max(20, loadedThreadsCount?:30),
                     rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
                     userEmail = activeAccount.userEmail,
-                    accountId = activeAccount.id)
+                    activeAccount = activeAccount)
                     .map { EmailPreview.fromEmailThread(it) }
         else throw EventHelper.NothingNewException()
     }
@@ -580,7 +580,7 @@ class EventHelper(private val db: EventLocalDB,
             db.updateUnreadStatusByMetadataKeys(metadata.metadataKeys, metadata.unread, activeAccount.id)
 
     private fun updateUnsendEmailStatus(metadata: PeerUnsendEmailStatusUpdate) =
-            db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate, activeAccount.id)
+            db.updateUnsendStatusByMetadataKey(metadata.metadataKey, metadata.unsendDate, activeAccount)
 
 
     private fun updateUsernameStatus(metadata: PeerUsernameChangedStatusUpdate) {
@@ -595,10 +595,10 @@ class EventHelper(private val db: EventLocalDB,
             db.updateThreadLabels(metadata.threadIds, metadata.labelsAdded, metadata.labelsRemoved, activeAccount.id)
 
     private fun updateEmailDeletedPermanentlyStatus(metadata: PeerEmailDeletedStatusUpdate) =
-            db.updateDeleteEmailPermanently(metadata.metadataKeys, activeAccount.id)
+            db.updateDeleteEmailPermanently(metadata.metadataKeys, activeAccount)
 
     private fun updateThreadDeletedPermanentlyStatus(metadata: PeerThreadDeletedStatusUpdate) =
-            db.updateDeleteThreadPermanently(metadata.threadIds, activeAccount.id)
+            db.updateDeleteThreadPermanently(metadata.threadIds, activeAccount)
 
     private fun updateLabelCreatedStatus(metadata: PeerLabelCreatedStatusUpdate) =
             db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid, activeAccount.id)

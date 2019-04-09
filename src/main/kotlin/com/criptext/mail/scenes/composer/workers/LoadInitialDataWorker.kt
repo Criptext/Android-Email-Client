@@ -146,7 +146,7 @@ class LoadInitialDataWorker(
             }
 
     override fun work(reporter: ProgressReporter<ComposerResult.LoadInitialData>): ComposerResult.LoadInitialData? {
-        val loadedEmail = db.loadFullEmail(emailId, activeAccount.id)
+        val loadedEmail = db.loadFullEmail(emailId, activeAccount)
         return if (loadedEmail != null) {
             val composerInputData = createComposerInputData(loadedEmail)
             ComposerResult.LoadInitialData.Success(composerInputData)

@@ -123,7 +123,7 @@ class ResendEmailWorker(
 
     override fun work(reporter: ProgressReporter<GeneralResult.ResendEmail>)
             : GeneralResult.ResendEmail? {
-        val pendingEmail = db.getFullEmailById(emailId, activeAccount.id)
+        val pendingEmail = db.getFullEmailById(emailId, activeAccount)
         if(pendingEmail != null && (pendingEmail.email.delivered in listOf(DeliveryTypes.FAIL,
                         DeliveryTypes.SENDING))) {
             meAsRecipient = setMeAsRecipient(pendingEmail)

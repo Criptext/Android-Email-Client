@@ -65,7 +65,7 @@ class MoveEmailWorker(
 
         if(chosenLabel == null){
             //It means the email will be deleted permanently
-            val result = Result.of { db.deleteEmail(emailId, activeAccount.id) }
+            val result = Result.of { db.deleteEmail(emailId, activeAccount) }
             return when (result) {
                 is Result.Success -> {
                     peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())

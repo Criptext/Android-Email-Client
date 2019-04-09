@@ -53,8 +53,8 @@ interface MailboxLocalDB {
     fun getTotalCounterLabel(labelId: Long, accountId: Long): Int
     fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>, accountId: Long): List<Email>
     fun getEmailById(id: Long, accountId: Long): Email?
-    fun getFullEmailById(emailId: Long, accountId: Long): FullEmail?
-    fun getPendingEmails(deliveryTypes: List<Int>, accountId: Long): List<FullEmail>
+    fun getFullEmailById(emailId: Long, account: ActiveAccount): FullEmail?
+    fun getPendingEmails(deliveryTypes: List<Int>, account: ActiveAccount): List<FullEmail>
     fun deleteThreads(threadIds: List<String>, activeAccount: ActiveAccount)
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,
                                          rejectedLabels: List<Long>, userEmail: String, activeAccount: ActiveAccount): EmailThread
@@ -81,8 +81,8 @@ interface MailboxLocalDB {
             db.emailContactDao().increaseScore(emailIds, ContactTypes.FROM)
         }
 
-        override fun getFullEmailById(emailId: Long, accountId: Long): FullEmail? {
-            val email = db.emailDao().getEmailById(emailId, accountId) ?: return null
+        override fun getFullEmailById(emailId: Long, account: ActiveAccount): FullEmail? {
+            val email = db.emailDao().getEmailById(emailId, account.id) ?: return null
             val id = email.id
             val labels = db.emailLabelDao().getLabelsFromEmail(id)
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
@@ -94,7 +94,7 @@ interface MailboxLocalDB {
 
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                     email.metadataKey, email.content,
-                    db.accountDao().getLoggedInAccount()!!.recipientId)
+                    account.recipientId)
 
             return FullEmail(
                         email = email.copy(content = emailContent.first),
@@ -136,9 +136,9 @@ interface MailboxLocalDB {
             return db.emailExternalSessionDao().getExternalSessionByEmailId(id)
         }
 
-        override fun getPendingEmails(deliveryTypes: List<Int>, accountId: Long): List<FullEmail> {
+        override fun getPendingEmails(deliveryTypes: List<Int>, account: ActiveAccount): List<FullEmail> {
             val emails = db.emailDao().getPendingEmails(deliveryTypes,
-                    Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox).map { it.id }, accountId)
+                    Label.defaultItems.rejectedLabelsByMailbox(Label.defaultItems.inbox).map { it.id }, account.id)
             val fullEmails =  emails.map {
                 val id = it.id
                 val labels = db.emailLabelDao().getLabelsFromEmail(id)
@@ -151,7 +151,7 @@ interface MailboxLocalDB {
 
                 val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                         it.metadataKey, it.content,
-                        db.accountDao().getLoggedInAccount()!!.recipientId)
+                        account.recipientId)
 
                 FullEmail(
                         email = it.copy(content = emailContent.first),
