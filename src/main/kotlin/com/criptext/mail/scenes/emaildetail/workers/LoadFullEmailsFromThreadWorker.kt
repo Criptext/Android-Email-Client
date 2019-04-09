@@ -31,7 +31,7 @@ class LoadFullEmailsFromThreadWorker(
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val items = db.getFullEmailsFromThreadId(threadId = threadId,
                 rejectedLabels = rejectedLabels,
-                selectedLabel = currentLabel.text, accountId = activeAccount.id)
+                selectedLabel = currentLabel.text, account = activeAccount)
         val unreadEmails = items.filter { it.email.unread }.size
         items.forEach { it.email.unread = false }
         return EmailDetailResult.LoadFullEmailsFromThreadId.Success(items, unreadEmails, changeAccountMessage)

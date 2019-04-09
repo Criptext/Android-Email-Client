@@ -79,7 +79,7 @@ class UnsendFullEmailWorker(
 
         return when (finalResult) {
             is Result.Success -> {
-                val date = db.unsendEmail(emailId, activeAccount.id)
+                val date = db.unsendEmail(emailId, activeAccount)
                 EmailDetailResult.UnsendFullEmailFromEmailId.Success(position, date)
             }
             is Result.Failure -> {

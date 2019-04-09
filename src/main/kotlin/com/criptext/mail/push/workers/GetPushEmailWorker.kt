@@ -109,7 +109,7 @@ class GetPushEmailWorker(
                 if(metadataKey != null) {
                     val email = dbEvents.getEmailByMetadataKey(metadataKey, activeAccount.id)
                     if(email != null){
-                        val files = dbEvents.getFullEmailById(emailId = email.id, accountId = activeAccount.id)!!.files
+                        val files = dbEvents.getFullEmailById(emailId = email.id, activeAccount = activeAccount)!!.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
                         newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()

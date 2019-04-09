@@ -381,7 +381,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                     database.execSQL(
                             """INSERT INTO account_contact (contactId, accountId)
-                                SELECT DISTINCT id, accountId
+                                SELECT DISTINCT id, $accountId
                                 FROM contact""")
                     database.setTransactionSuccessful()
                 }finally {

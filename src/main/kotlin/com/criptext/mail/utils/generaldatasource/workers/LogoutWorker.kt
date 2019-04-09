@@ -67,7 +67,7 @@ class LogoutWorker(
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             .flatMap { Result.of {
                 if(shouldDeleteAllData)
-                    db.logoutNukeDB()
+                    db.logoutNukeDB(activeAccount)
                 else
                     db.logout(activeAccount.id)
             } }

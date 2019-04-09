@@ -67,14 +67,14 @@ class MoveEmailThreadWorker(
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
         val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels,
-                accountId = activeAccount.id).map {
+                account = activeAccount).map {
             it.email.id
         }
 
         if(chosenLabel == null){
             val result = Result.of {
                 db.deleteRelationByEmailIds(emailIds = emailIds)
-                db.deleteThread(threadId, activeAccount.id)
+                db.deleteThread(threadId, activeAccount)
             }
 
             return when (result){

@@ -56,7 +56,7 @@ class UpdateUnreadStatusWorker(
         Result.of {
             val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
             val emailIds = db.getFullEmailsFromThreadId(threadId = threadId,
-                    rejectedLabels = rejectedLabels, accountId = activeAccount.id).map {
+                    rejectedLabels = rejectedLabels, account = activeAccount).map {
                 it.email.id
             }
             db.updateUnreadStatus(emailIds, updateUnreadStatus, activeAccount.id)

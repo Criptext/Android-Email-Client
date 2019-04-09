@@ -71,7 +71,7 @@ class DeleteAccountWorker(private val db: EventLocalDB,
     private fun workOperation() : Result<Unit, Exception> = Result.of {apiClient.deleteAccount(password.sha256())}
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             .flatMap { Result.of {
-                db.logoutNukeDB()
+                db.logoutNukeDB(activeAccount)
             } }
             .flatMap {
                 Result.of {
