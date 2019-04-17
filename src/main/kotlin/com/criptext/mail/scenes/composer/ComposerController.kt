@@ -493,10 +493,19 @@ class ComposerController(private val storage: KeyValueStorage,
         PinLockUtils.resetLastMillisPin()
         PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
         if (activityMessage is ActivityMessage.AddAttachments) {
-            generateEmailFileKey()
-            addNewAttachments(activityMessage.filesMetadata)
+            if(activityMessage.filesMetadata.isNotEmpty()){
+                generateEmailFileKey()
+                addNewAttachments(activityMessage.filesMetadata)
+            }
             return true
-        }else if(activityMessage is ActivityMessage.ShowUIMessage){
+        } else if (activityMessage is ActivityMessage.AddUrls){
+            if(activityMessage.urls.isNotEmpty()){
+                activityMessage.urls.forEach {
+                    model.body = model.body.plus(it.plus("\n"))
+                }
+                bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
+            }
+        } else if(activityMessage is ActivityMessage.ShowUIMessage){
             scene.showError(activityMessage.message)
             return true
         }

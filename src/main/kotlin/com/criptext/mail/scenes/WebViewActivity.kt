@@ -147,13 +147,15 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_webview, menu)
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
-        val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        browserName = resolveInfo.activityInfo.packageName
+        if(!mUrl.isNullOrEmpty()) {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
+            val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            browserName = resolveInfo.activityInfo.packageName
 
-        menu.findItem(R.id.ac_open).title = this.getLocalizedUIMessage(UIMessage(
-                R.string.web_view_open_in_chrome, arrayOf(resolveInfo.loadLabel(packageManager).toString())
-        ))
+            menu.findItem(R.id.ac_open)?.title = this.getLocalizedUIMessage(UIMessage(
+                    R.string.web_view_open_in_chrome, arrayOf(resolveInfo.loadLabel(packageManager).toString())
+            ))
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

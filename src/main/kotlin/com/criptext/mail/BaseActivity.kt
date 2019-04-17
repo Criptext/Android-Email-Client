@@ -467,16 +467,17 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 Intent.ACTION_SEND_MULTIPLE -> {
                     val data = intent
                     if(data != null) {
-                        val account = intent.extras.getString("account")
+                        val account = intent.extras.getString("account") ?: ActiveAccount.loadFromStorage(this)!!.recipientId
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
                                 val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                                 if (attachment != null)
-                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment), account)
+                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment), listOf(), account)
                             }
                         }else{
                             val attachmentList = mutableListOf<Pair<String, Long>>()
+                            val urlList = mutableListOf<String>()
                             for (i in 0 until clipData.itemCount) {
                                 clipData.getItemAt(i).also { item ->
                                     if (item.uri != null) {
@@ -485,10 +486,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                         if (attachment != null)
                                             attachmentList.add(attachment)
                                     }
+                                    if(item.text != null){
+                                        urlList.add("<a href=\"${item.text}\">${item.text}</a>")
+                                    }
                                 }
                             }
-                            if (attachmentList.isNotEmpty())
-                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList, account)
+                            if (attachmentList.isNotEmpty() || urlList.isNotEmpty())
+                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList, urlList, account)
                         }
                     }
                 }
