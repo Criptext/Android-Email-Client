@@ -10,7 +10,6 @@ import android.view.View
 import com.criptext.mail.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
@@ -551,7 +550,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             Intent.ACTION_SEND_MULTIPLE,
             Intent.ACTION_SEND -> {
                 val extrasMail = extras as IntentExtrasData.IntentExtrasSend
-                val composerMessage = ActivityMessage.AddAttachments(extrasMail.files)
+                val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files)
+                else ActivityMessage.AddUrls(extrasMail.urls)
                 host.exitToScene(ComposerParams(type = ComposerType.Empty()), composerMessage, false, true)
             }
         }
@@ -1085,6 +1085,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.TotalUnreadEmails.Success -> {
                 scene.setToolbarNumberOfEmails(resultData.activeAccountTotal)
                 scene.setMenuAccounts(model.extraAccounts, resultData.extraAccountsData.map { it.second })
+                resultData.extraAccountsData.forEach { if(it.second > 0) scene.showExtraAccountsBadge(true) }
                 scene.updateBadges(resultData.extraAccountsData)
 
             }
@@ -1134,7 +1135,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 if(resultData.isActiveAccount)
                     handleSuccessfulMailboxUpdate(resultData)
                 else {
-                    scene.showExtraAccountsBadge(true)
                     generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                 }

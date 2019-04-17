@@ -79,7 +79,6 @@ class RegisterUserWorker(
     }
 
     override fun work(reporter: ProgressReporter<RegisterUser>): RegisterUser? {
-        db.clearAllTables()
         val registrationBundle = signalKeyGenerator.register(
                 recipientId = incompleteAccount.username,
                 deviceId = 1)

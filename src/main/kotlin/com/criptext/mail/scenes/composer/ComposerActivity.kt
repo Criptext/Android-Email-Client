@@ -2,7 +2,9 @@ package com.criptext.mail.scenes.composer
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.OpenableColumns
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
@@ -21,12 +23,9 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
-import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import droidninja.filepicker.FilePickerConst
-import java.io.File
 
 
 class ComposerActivity : BaseActivity() {

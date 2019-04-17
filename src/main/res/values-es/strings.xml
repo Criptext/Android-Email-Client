@@ -14,6 +14,7 @@
   <string name="mk_label_today">Hoy</string>
     <string name="error_no_app_for_file">Puede que no tengas una aplicación que pueda abrir este tipo de archivo.</string>
   <string name="web_view_open_in_chrome">Abrir en %1$s</string>
+  <string name="web_view_open_in_browser">Abrir en Navegador</string>
   <string name="attachment_limit_reached">Solo se permite %1$d archivos por correo.</string>
   <string name="attachment_history_opened">abierto:</string>
   <string name="title_sync">Sincronización de Buzón</string>
