@@ -15,7 +15,7 @@ class SearchHistoryManagerTest {
     private lateinit var manager: SearchHistoryManager
 
     @Before
-    open fun setUp(){
+    fun setUp(){
         storage = mockk()
         manager = spyk(SearchHistoryManager(storage))
     }

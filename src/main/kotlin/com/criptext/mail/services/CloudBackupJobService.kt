@@ -8,12 +8,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Build
 import android.util.Log
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.cloudbackup.CloudBackupController
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupDataSource
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
@@ -37,7 +37,7 @@ class CloudBackupJobService: JobService() {
     private val progressListener = JobServiceProgressListener()
     private var hasOldFile = false
     private var isBackupDone = false
-    private var oldFileId: String? = null
+    private var oldFileIds: List<String> = listOf()
 
     private val dataSourceListener: (CloudBackupResult) -> Unit = { result ->
         when(result) {
@@ -51,13 +51,31 @@ class CloudBackupJobService: JobService() {
         val componentName = ComponentName(context, CloudBackupJobService::class.java)
         val builder = JobInfo.Builder(JOB_ID, componentName)
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-        builder.setPeriodic(intervalMillis)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            builder.setPeriodic(intervalMillis, JobInfo.getMinFlexMillis())
+        }else {
+            builder.setPeriodic(intervalMillis)
+        }
+        builder.setPersisted(true)
         jobScheduler.schedule(builder.build())
+        isJobServiceOn(context)
     }
 
     fun cancel(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
         jobScheduler.cancel(JOB_ID)
+        Log.e("JOBSERVICE:", "Canceled!!!")
+    }
+
+    private fun isJobServiceOn(context: Context) {
+        val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+
+        for (jobInfo in scheduler.allPendingJobs) {
+            if (jobInfo.id == JOB_ID) {
+                Log.e("JOBSERVICE:", "Is Running!!!")
+                break
+            }
+        }
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
@@ -107,10 +125,10 @@ class CloudBackupJobService: JobService() {
         when(result){
             is CloudBackupResult.UploadBackupToDrive.Success -> {
                 hasOldFile = result.hasOldFile
-                oldFileId = result.oldFileId
+                oldFileIds = result.oldFileIds
                 if(hasOldFile && isBackupDone) {
                     isBackupDone = false
-                    dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileId!!))
+                    dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileIds!!))
                     hasOldFile = false
                 }
                 Log.e("Cloud Backup",
@@ -141,10 +159,10 @@ class CloudBackupJobService: JobService() {
                 MediaHttpUploader.UploadState.MEDIA_IN_PROGRESS -> {}
                 MediaHttpUploader.UploadState.MEDIA_COMPLETE -> {
                     isBackupDone = true
-                    if(hasOldFile && oldFileId != null) {
-                        dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileId!!))
+                    if(hasOldFile && oldFileIds.isNotEmpty()) {
+                        dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileIds))
                         hasOldFile = false
-                        oldFileId = null
+                        oldFileIds = listOf()
                     }
                 }
             }

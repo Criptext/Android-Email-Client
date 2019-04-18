@@ -10,7 +10,9 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
@@ -21,6 +23,7 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.google.api.client.googleapis.media.MediaHttpDownloader
 import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener
+import com.google.api.services.drive.Drive
 
 class RestoreBackupController(
         private val model: RestoreBackupModel,
@@ -47,6 +50,17 @@ class RestoreBackupController(
     }
 
     private val progressListener = RestoreProgressListener()
+
+    val googleSignInListener = object: GoogleSignInObserver {
+        override fun signInSuccess(drive: Drive){
+            model.mDriveServiceHelper = drive
+            dataSource.submitRequest(RestoreBackupRequest.CheckForBackup(model.mDriveServiceHelper!!))
+        }
+
+        override fun signInFailed(){
+            scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
+        }
+    }
 
     private val uiObserver = object: RestoreBackupUIObserver{
         override fun onPasswordChangedListener(password: String) {
@@ -105,16 +119,6 @@ class RestoreBackupController(
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
-        if (activityMessage is ActivityMessage.GoogleDriveSignIn) {
-            if(activityMessage.driveService != null) {
-                model.mDriveServiceHelper = activityMessage.driveService
-                dataSource.submitRequest(RestoreBackupRequest.CheckForBackup(model.mDriveServiceHelper!!))
-            }else{
-                scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
-            }
-
-            return true
-        }
         return false
     }
 

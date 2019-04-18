@@ -10,6 +10,8 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
+import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
@@ -22,6 +24,7 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener
+import com.google.api.services.drive.Drive
 import java.io.IOException
 
 class CloudBackupController(
@@ -50,6 +53,18 @@ class CloudBackupController(
 
     private val progressListener = CloudBackupProgressListener()
 
+    val googleSignInListener = object: GoogleSignInObserver {
+        override fun signInSuccess(drive: Drive){
+            model.mDriveService = drive
+            uiObserver.backUpNowPressed()
+        }
+
+        override fun signInFailed(){
+            scene.setCloudBackupSwitchState(false)
+            scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
+        }
+    }
+
     private val uiObserver = object: CloudBackupUIObserver{
         override fun backUpNowPressed() {
             scene.backingUpNow(true)
@@ -58,6 +73,7 @@ class CloudBackupController(
                 dataSource.submitRequest(CloudBackupRequest.DataFileCreation(null))
                 scene.showProgressDialog()
             }else{
+                host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
                 host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
             }
         }
@@ -146,17 +162,6 @@ class CloudBackupController(
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
-        if (activityMessage is ActivityMessage.GoogleDriveSignIn) {
-            if(activityMessage.driveService != null) {
-                model.mDriveService = activityMessage.driveService
-                uiObserver.backUpNowPressed()
-            }else{
-                scene.setCloudBackupSwitchState(false)
-                scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
-            }
-
-            return true
-        }
         return false
     }
 
@@ -195,20 +200,23 @@ class CloudBackupController(
                     model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
                     scene.scheduleCloudBackupJob(model.autoBackupFrequency)
                 }
-                if(model.hasCloudBackup != result.cloudBackupData.hasCloudBackup && result.cloudBackupData.hasCloudBackup) {
-                    model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
-                    if(model.autoBackupFrequency != 3) {
-                        scene.removeFromScheduleCloudBackupJob()
-                        scene.scheduleCloudBackupJob(model.autoBackupFrequency)
-                    } else
-                        scene.removeFromScheduleCloudBackupJob()
-                    host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
+                if(model.hasCloudBackup != result.cloudBackupData.hasCloudBackup){
+                    if(result.cloudBackupData.hasCloudBackup) {
+                        model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
+                        if(model.autoBackupFrequency != 3) {
+                            scene.removeFromScheduleCloudBackupJob()
+                            scene.scheduleCloudBackupJob(model.autoBackupFrequency)
+                        } else
+                            scene.removeFromScheduleCloudBackupJob()
+                        host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
 
-                } else {
-                    model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
-                    scene.removeFromScheduleCloudBackupJob()
-                    host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
+                    } else {
+                        model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
+                        scene.removeFromScheduleCloudBackupJob()
+                        host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
+                    }
                 }
+
             }
             is CloudBackupResult.SetCloudBackupActive.Failure -> {
                 scene.setCloudBackupSwitchState(!result.cloudBackupData.hasCloudBackup)
@@ -235,15 +243,15 @@ class CloudBackupController(
     private fun onUploadBackupToDrive(result: CloudBackupResult.UploadBackupToDrive){
         when(result){
             is CloudBackupResult.UploadBackupToDrive.Success -> {
-                model.hasCloudBackup = result.hasOldFile
-                model.oldFileId = result.oldFileId
+                model.hasOldFile = result.hasOldFile
+                model.oldFileId = result.oldFileIds
                 model.fileLength = result.fileLength
                 model.lastTimeBackup = result.lastModified
                 scene.backingUpNow(false)
                 scene.updateFileInfo(model.fileLength, model.lastTimeBackup)
                 if(model.hasOldFile && model.isBackupDone) {
                     model.isBackupDone = false
-                    dataSource.submitRequest(CloudBackupRequest.DeleteFileInDrive(model.mDriveService!!, model.oldFileId!!))
+                    dataSource.submitRequest(CloudBackupRequest.DeleteFileInDrive(model.mDriveService!!, model.oldFileId))
                     model.hasOldFile = false
                 }
             }

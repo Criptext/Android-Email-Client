@@ -9,5 +9,5 @@ sealed class CloudBackupRequest{
     data class UploadBackupToDrive(val filePath: String, val mDriveServiceHelper: Drive,
                                    val progressListener: MediaHttpUploaderProgressListener?): CloudBackupRequest()
     data class DataFileCreation(val passphrase: String?, val isFromJob: Boolean = false): CloudBackupRequest()
-    data class DeleteFileInDrive(val mDriveServiceHelper: Drive, val fileId: String): CloudBackupRequest()
+    data class DeleteFileInDrive(val mDriveServiceHelper: Drive, val fileId: List<String>): CloudBackupRequest()
 }
