@@ -39,8 +39,8 @@
   <string name="push_deny">Reject</string>
   <string name="push_link_error_title">Device Validation</string>
   <string name="push_link_device_message">Do you want to approve: %1$s?</string>
-  <string name="push_link_error_message_approve">Error approving device, resend authentication request.</string>
-  <string name="push_link_error_message_deny">Error denying device. Check your internet connection.</string>
+  <string name="push_link_error_message_approve">Unable to approve device, resend authentication request.</string>
+  <string name="push_link_error_message_deny">Unable to deny device.</string>
   <string name="push_read">Mark as Read</string>
   <string name="push_trash">Delete</string>
   <string name="push_reply">Reply</string>

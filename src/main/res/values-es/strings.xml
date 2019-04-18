@@ -39,8 +39,8 @@
   <string name="push_deny">Rechazar</string>
   <string name="push_link_error_title">Validación de dispositivo</string>
   <string name="push_link_device_message">¿Quieres aprobar a: %1$s?</string>
-  <string name="push_link_error_message_approve">Error al aprobar dispositivo, reenvía una petición de autenticación de nuevo.</string>
-  <string name="push_link_error_message_deny">Error al desactivar dispositivo. Comprueba tu conexión de internet.</string>
+  <string name="push_link_error_message_approve">No se pudo aprobar el dispositivo, reenvía la petición de autenticación.</string>
+  <string name="push_link_error_message_deny">No se pudo negar el dispositivo.</string>
   <string name="push_read">Marcar como Leído</string>
   <string name="push_trash">Eliminar</string>
   <string name="push_reply">Responder</string>

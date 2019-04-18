@@ -171,7 +171,8 @@ import java.util.*
         left join email_contact on email.id = email_contact.emailId
         left join contact on email_contact.contactId = contact.id
         and date < :starterDate
-        where not exists
+        where email.accountId = :accountId
+        and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
         having contactNames like :queryText
@@ -179,7 +180,6 @@ import java.util.*
         or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
-        AND accountId = :accountId
         order by date DESC limit :limit
         """)
     fun searchEmailThreads(
@@ -411,7 +411,8 @@ import java.util.*
         inner join email_label on email.id = email_label.emailId
         left join email_contact on email.id = email_contact.emailId
         left join contact on email_contact.contactId = contact.id
-        where not exists
+        where email.accountId = :accountId
+        and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         group by uniqueId
         having contactNames like :queryText
@@ -419,7 +420,6 @@ import java.util.*
         or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
-        AND accountId = :accountId
         order by date DESC limit :limit
         """)
     fun searchInitialEmailThreads(
