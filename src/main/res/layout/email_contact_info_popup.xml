@@ -13,7 +13,7 @@
 
         <LinearLayout
             android:id="@+id/from_container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:layout_marginStart="10dp"
@@ -23,7 +23,7 @@
             <TextView
                 android:id="@+id/title_from"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="wrap_content"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:gravity="center_vertical"
@@ -36,7 +36,7 @@
                 android:id="@+id/from_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="20dp"
                 android:layout_toEndOf="@+id/title_from"
                 android:text="Intermatico: Confirmacion de carga de transferencia interbancaria"
                 android:textColor="?attr/criptextPrimaryTextColor"
@@ -52,7 +52,7 @@
                 android:layout_toEndOf="@+id/from_name"
                 android:gravity="center_vertical"
                 android:text="intermail@bancodelpacifico.com.ec"
-                android:layout_weight="1"
+                android:layout_weight="0.6"
                 android:textColor="@color/azure"
                 android:textIsSelectable="true"
                 android:textSize="13sp"/>
@@ -115,9 +115,8 @@
 
             <TextView
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="0dip"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/to_popup"
                 android:textColor="?attr/criptextPrimaryTextColor"
@@ -127,7 +126,7 @@
                 android:id="@+id/contacts_to_recycler"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="49dp"/>
+                android:layout_marginStart="20dp" />
 
         </LinearLayout>
 
@@ -142,9 +141,8 @@
 
             <TextView
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="0dip"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/cc_popup"
                 android:textColor="?attr/criptextPrimaryTextColor"
@@ -154,7 +152,7 @@
                 android:id="@+id/contacts_cc_recycler"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="49dp"/>
+                android:layout_marginStart="20dp"/>
 
         </LinearLayout>
 
@@ -169,9 +167,8 @@
 
             <TextView
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="0dip"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.20"
                 android:gravity="center_vertical"
                 android:text="@string/bcc_popup"
                 android:textColor="?attr/criptextPrimaryTextColor"
@@ -181,7 +178,7 @@
                 android:id="@+id/contacts_bcc_recycler"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="49dp"/>
+                android:layout_marginStart="20dp"/>
 
         </LinearLayout>
 
@@ -196,7 +193,7 @@
             <TextView
                 android:id="@+id/title_date"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="wrap_content"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
@@ -209,7 +206,7 @@
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="34dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/title_date"
                 android:gravity="center_vertical"
@@ -231,7 +228,7 @@
             <TextView
                 android:id="@+id/title_subject"
                 fontPath="fonts/NunitoSans-Bold.ttf"
-                android:layout_width="wrap_content"
+                android:layout_width="55dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
@@ -244,7 +241,7 @@
                 android:id="@+id/subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="19dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/title_subject"
                 android:gravity="center_vertical"

@@ -5,6 +5,8 @@ object ServerCodes{
     const val Success = 200
     const val SuccessAndRepeat = 201
 
+    const val NoContent = 204
+
 
     //Error Codes
     const val BadRequest = 400
