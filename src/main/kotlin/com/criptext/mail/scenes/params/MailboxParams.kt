@@ -7,7 +7,7 @@ import com.criptext.mail.scenes.mailbox.MailboxActivity
  * Created by sebas on 3/5/18.
  */
 
-open class MailboxParams(val showWelcome: Boolean = false): SceneParams() {
+open class MailboxParams(val showWelcome: Boolean = false, val askForRestoreBackup: Boolean = false): SceneParams() {
     override val activityClass = MailboxActivity::class.java
 
     override fun equals(other: Any?): Boolean {

@@ -34,7 +34,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class, AccountContact::class],
-        version = 12,
+        version = 13,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -73,7 +73,7 @@ abstract class AppDatabase : RoomDatabase() {
                         "encriptedMail1")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
-                                MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+                                MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -393,6 +393,16 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_11_12: Migration = object: Migration(11, 12) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_pending_event_id ON pendingEvent (id)")
+            }
+        }
+
+        val MIGRATION_12_13: Migration = object : Migration(12, 13) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE account ADD COLUMN hasCloudBackup INTEGER NOT NULL DEFAULT 0""")
+                database.execSQL("""ALTER TABLE account ADD COLUMN lastTimeBackup INTEGER""")
+                database.execSQL("""ALTER TABLE account ADD COLUMN autoBackupFrequency INTEGER NOT NULL DEFAULT 0""")
+                database.execSQL("""ALTER TABLE account ADD COLUMN wifiOnly INTEGER NOT NULL DEFAULT 0""")
+                database.execSQL("""ALTER TABLE account ADD COLUMN backupPassword TEXT DEFAULT NULL""")
             }
         }
     }

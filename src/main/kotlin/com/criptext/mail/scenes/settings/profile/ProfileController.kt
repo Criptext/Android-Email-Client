@@ -211,6 +211,10 @@ class ProfileController(
         return handleActivityMessage(activityMessage)
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onLogout(result: GeneralResult.Logout){
         when(result) {
             is GeneralResult.Logout.Success -> {

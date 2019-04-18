@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.criptext.mail.db.models.Account
+import java.util.*
 
 /**
  * Created by sebas on 3/3/18.
@@ -29,6 +30,14 @@ interface AccountDao {
     @Query("SELECT * FROM account WHERE id=:id")
     fun getAccountById(id: Long) : Account?
 
+    @Query("""UPDATE account
+        SET
+        hasCloudBackup=:googleDriveIsActive,
+        wifiOnly=:wifiOnly,
+        autoBackupFrequency=:backupFrequency
+        WHERE id=:id""")
+    fun setGoogleDriveActive(id: Long, googleDriveIsActive: Boolean, wifiOnly: Boolean, backupFrequency: Int)
+
     @Query("SELECT * FROM account WHERE isActive=1")
     fun getLoggedInAccount() : Account?
 
@@ -37,6 +46,9 @@ interface AccountDao {
 
     @Query("UPDATE account SET isActive=0")
     fun updateActiveInAccount()
+
+    @Query("UPDATE account SET lastTimeBackup=:lastBackupDate")
+    fun updateLastBackupDate(lastBackupDate: Date)
 
     @Query("UPDATE account SET isActive=1 WHERE id=:id")
     fun updateActiveInAccount(id: Long)

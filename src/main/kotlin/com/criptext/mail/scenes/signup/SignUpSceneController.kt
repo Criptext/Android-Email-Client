@@ -329,6 +329,10 @@ class SignUpSceneController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     override fun onStop() {
         dataSource.listener = null
         scene.uiObserver = null

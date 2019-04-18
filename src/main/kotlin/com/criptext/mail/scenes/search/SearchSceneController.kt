@@ -138,6 +138,10 @@ class SearchSceneController(private val scene: SearchScene,
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     override fun onStop() {
 
     }

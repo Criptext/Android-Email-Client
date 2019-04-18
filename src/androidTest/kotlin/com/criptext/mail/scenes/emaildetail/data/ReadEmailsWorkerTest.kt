@@ -44,7 +44,8 @@ class ReadEmailsWorkerTest {
         db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
                 name = "Tester", registrationId = 1,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
-                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true))
+                signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         mockWebServer = MockWebServer()
         mockWebServer.start()
         storage = mockk(relaxed = true)

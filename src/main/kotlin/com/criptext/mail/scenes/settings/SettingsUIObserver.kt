@@ -22,6 +22,7 @@ interface SettingsUIObserver: UIObserver {
     fun onShowPreviewSwitched(isChecked: Boolean)
     fun onDarkThemeSwitched(isChecked: Boolean)
     fun onSyncPhonebookContacts()
+    fun onCloudBackupClicked()
     fun onSyncMailbox()
     fun onSyncMailboxCanceled()
 }

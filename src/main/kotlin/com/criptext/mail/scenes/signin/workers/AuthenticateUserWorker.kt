@@ -94,7 +94,9 @@ class AuthenticateUserWorker(
             val account = Account(id = 0, recipientId = username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
-                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true)
+                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true,
+                    autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
+                    backupPassword = null)
             Pair(registrationBundles, account)
         }
     }

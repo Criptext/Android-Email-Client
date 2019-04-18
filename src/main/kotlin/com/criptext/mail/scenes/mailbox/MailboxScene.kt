@@ -32,16 +32,24 @@ import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
 import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
 import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
+import com.criptext.mail.scenes.mailbox.ui.RestoreBackupDialog
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.navigation.NavigationView
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.mail_item_left_name.view.*
+import java.util.*
 
 /**
  * Created by sebas on 1/23/18.
@@ -73,6 +81,7 @@ interface MailboxScene{
     fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener, currentFolder: String)
     fun showDialogDeleteThread(onDeleteThreadListener: OnDeleteThreadListener)
     fun showWelcomeDialog(observer: MailboxUIObserver)
+    fun showRestoreBackupDialog(observer: MailboxUIObserver)
     fun setToolbarNumberOfEmails(emailsSize: Int)
     fun openNotificationFeed()
     fun onFetchedSelectedLabels(defaultSelectedLabels: List<Label>, labels: List<Label>)
@@ -105,6 +114,7 @@ interface MailboxScene{
     fun showStartGuideMultiple()
     fun showNotification()
     fun setEmtpyMailboxBackground(label: Label)
+    fun getGoogleDriveService(): Drive?
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -135,6 +145,7 @@ interface MailboxScene{
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
+        private val restoreBackupDialog = RestoreBackupDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -337,6 +348,23 @@ interface MailboxScene{
 
         override fun showWelcomeDialog(observer: MailboxUIObserver) {
             welcomeDialog.showWelcomeTourDialog(observer)
+        }
+
+        override fun showRestoreBackupDialog(observer: MailboxUIObserver) {
+            restoreBackupDialog.showDialog(observer)
+        }
+
+        override fun getGoogleDriveService(): Drive? {
+            val googleAccount = GoogleSignIn.getLastSignedInAccount(context) ?: return null
+            val credential = GoogleAccountCredential.usingOAuth2(
+                    context, Collections.singleton(DriveScopes.DRIVE_FILE))
+            credential.selectedAccount = googleAccount.account
+            return Drive.Builder(
+                    AndroidHttp.newCompatibleTransport(),
+                    GsonFactory(),
+                    credential)
+                    .setApplicationName("Criptext Secure Email")
+                    .build()
         }
 
         override fun dismissConfirmPasswordDialog() {

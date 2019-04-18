@@ -7,6 +7,7 @@ import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.utils.UIMessage
+import com.google.api.services.drive.Drive
 import java.io.File
 
 /**
@@ -35,4 +36,5 @@ sealed class ActivityMessage {
     data class ShowUIMessage(val message: UIMessage): ActivityMessage()
     data class ActivatePin(val isSuccess: Boolean): ActivityMessage()
     class SyncMailbox: ActivityMessage()
+    data class GoogleDriveSignIn(val driveService: Drive?): ActivityMessage()
 }

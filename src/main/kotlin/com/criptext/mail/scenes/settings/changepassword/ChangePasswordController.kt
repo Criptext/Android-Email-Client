@@ -140,6 +140,10 @@ class ChangePasswordController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun checkPasswords(passwords: Pair<String, String>) {
         if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
             scene.showPasswordDialogError(null)

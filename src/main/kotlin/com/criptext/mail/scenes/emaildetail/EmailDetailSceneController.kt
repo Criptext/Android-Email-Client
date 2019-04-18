@@ -788,6 +788,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     override fun onStop() {
         dataSource.listener = null
         websocketEvents.clearListener(webSocketEventListener)

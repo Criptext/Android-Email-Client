@@ -137,6 +137,10 @@ class DevicesController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onRemoveDevice(result: DevicesResult.RemoveDevice){
         scene.removeDeviceDialogToggleLoad(false)
         when(result) {

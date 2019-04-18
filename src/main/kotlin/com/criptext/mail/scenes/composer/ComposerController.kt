@@ -563,6 +563,10 @@ class ComposerController(private val storage: KeyValueStorage,
         return handleActivityMessage(activityMessage)
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     override fun onStop() {
         // save state
         val data = scene.getDataInputByUser()

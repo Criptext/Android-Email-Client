@@ -22,7 +22,17 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.websocket.WebSocketSingleton
 import android.content.Intent
+import com.criptext.mail.ExternalActivityParams
+import com.criptext.mail.scenes.ActivityMessage
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
+import java.util.*
 
 
 /**
@@ -35,6 +45,7 @@ class MailboxActivity : BaseActivity() {
     override val toolbarId = R.id.mailbox_toolbar
 
     private lateinit var notificationMenuClickListener: () -> Unit
+    private lateinit var googleSignInListener: GoogleSignInObserver
 
     // Only use this during development
     private fun seedEmails(appDB: AppDatabase) {
@@ -72,6 +83,7 @@ class MailboxActivity : BaseActivity() {
                 storage = storage
                 )
         notificationMenuClickListener = controller.menuClickListener
+        googleSignInListener = controller.googleSignInListener
         return controller
     }
 
@@ -170,6 +182,37 @@ class MailboxActivity : BaseActivity() {
                     feedController = initFeedController(appDB, activity, db,
                             model.feedModel, hostActivity, activeAccount)
             )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            ExternalActivityParams.REQUEST_CODE_SIGN_IN -> {
+                when(resultCode){
+                    Activity.RESULT_OK -> {
+                        if(data != null){
+                            GoogleSignIn.getSignedInAccountFromIntent(data)
+                                    .addOnSuccessListener { googleAccount ->
+
+                                        val credential = GoogleAccountCredential.usingOAuth2(
+                                                this, Collections.singleton(DriveScopes.DRIVE_FILE))
+                                        credential.selectedAccount = googleAccount.account
+                                        val googleDriveService = Drive.Builder(
+                                                AndroidHttp.newCompatibleTransport(),
+                                                GsonFactory(),
+                                                credential)
+                                                .setApplicationName("Criptext Secure Email")
+                                                .build()
+
+                                        googleSignInListener.signInSuccess(googleDriveService)
+                                    }
+                                    .addOnFailureListener { googleSignInListener.signInFailed() }
+                        }
+                    }
+                }
+
+            }
         }
     }
 

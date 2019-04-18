@@ -61,6 +61,9 @@ interface SettingsScene{
         private val settingsLabels: View by lazy {
             view.findViewById<View>(R.id.settings_labels)
         }
+        private val settingsCloudBackup: View by lazy {
+            view.findViewById<View>(R.id.settings_cloud_backup)
+        }
         private val settingsMailboxSync: View by lazy {
             view.findViewById<View>(R.id.settings_sync_mailbox)
         }
@@ -248,6 +251,9 @@ interface SettingsScene{
             }
             settingsSyncPhonebookContacts.setOnClickListener {
                 settingsUIObserver?.onSyncPhonebookContacts()
+            }
+            settingsCloudBackup.setOnClickListener {
+                settingsUIObserver?.onCloudBackupClicked()
             }
             settingsMailboxSync.setOnClickListener {
                 settingsUIObserver?.onSyncMailbox()

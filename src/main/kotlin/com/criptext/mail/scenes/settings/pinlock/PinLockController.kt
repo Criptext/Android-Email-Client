@@ -141,6 +141,10 @@ class PinLockController(
         return handleMessage
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.ActivatePin) {
             if(activityMessage.isSuccess) {

@@ -135,6 +135,10 @@ class LabelsController(
         return false
     }
 
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        return false
+    }
+
     private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
