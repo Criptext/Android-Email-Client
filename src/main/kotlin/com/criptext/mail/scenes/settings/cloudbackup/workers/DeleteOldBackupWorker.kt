@@ -22,7 +22,7 @@ import java.io.IOException
 import java.util.*
 
 
-class DeleteOldBackupWorker(private val fileId: String,
+class DeleteOldBackupWorker(private val fileId: List<String>,
                             private val mDriveServiceHelper: Drive,
                             override val publishFn: (CloudBackupResult) -> Unit)
     : BackgroundWorker<CloudBackupResult.DeleteFileInDrive> {
@@ -42,7 +42,7 @@ class DeleteOldBackupWorker(private val fileId: String,
 
     override fun work(reporter: ProgressReporter<CloudBackupResult.DeleteFileInDrive>): CloudBackupResult.DeleteFileInDrive? {
         val result =  Result.of {
-            mDriveServiceHelper.files().delete(fileId).execute()
+            fileId.forEach { mDriveServiceHelper.files().delete(it).execute() }
         }
 
         return when (result) {

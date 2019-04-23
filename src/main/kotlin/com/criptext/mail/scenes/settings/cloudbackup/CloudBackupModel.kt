@@ -14,7 +14,7 @@ class CloudBackupModel {
     var passwordForNonCriptextUsers: String? = null
     var lastBackupSize = 0
     var hasOldFile = false
-    var oldFileId: String? = null
+    var oldFileId: List<String> = listOf()
     var fileLength = 0L
     var isBackupDone = false
 }

@@ -14,6 +14,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupDataSource
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -33,6 +34,8 @@ class RestoreBackupActivity: BaseActivity(){
     override val layoutId = R.layout.activity_restore_backup
     override val toolbarId = null
 
+    private lateinit var googleSignInListener: GoogleSignInObserver
+
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as RestoreBackupModel
         val view = findViewById<ViewGroup>(R.id.main_content)
@@ -50,7 +53,7 @@ class RestoreBackupActivity: BaseActivity(){
                 db = appDB,
                 filesDir = this.filesDir
         )
-        return RestoreBackupController(
+        val controller = RestoreBackupController(
                 model = model,
                 scene = scene,
                 websocketEvents = webSocketEvents,
@@ -59,6 +62,8 @@ class RestoreBackupActivity: BaseActivity(){
                 storage = KeyValueStorage.SharedPrefs(this),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
+        googleSignInListener = controller.googleSignInListener
+        return controller
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -80,9 +85,9 @@ class RestoreBackupActivity: BaseActivity(){
                                                 credential)
                                                 .setApplicationName("Criptext Secure Email")
                                                 .build()
-                                        setActivityMessage(ActivityMessage.GoogleDriveSignIn(googleDriveService))
+                                        googleSignInListener.signInSuccess(googleDriveService)
                                     }
-                                    .addOnFailureListener { setActivityMessage(ActivityMessage.GoogleDriveSignIn(null)) }
+                                    .addOnFailureListener { googleSignInListener.signInFailed() }
                         }
                     }
                 }

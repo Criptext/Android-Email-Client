@@ -9,6 +9,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -59,7 +60,13 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
                         Pair(driveFile.getSize() / (1024 * 1024), driveFile.modifiedTime.value)
                     }
                 }
-            } else Pair(storage.getLong(KeyValueStorage.StringKey.LastBackupSize, 0), storage.getLong(KeyValueStorage.StringKey.LastBackupDate, 0))
+            } else {
+                val savedCloudDataString = storage.getString(KeyValueStorage.StringKey.SavedBackupData, "")
+                if(savedCloudDataString.isEmpty()) throw Exception()
+                val savedCloudData = SavedCloudData.fromJson(savedCloudDataString)
+                val accountSavedData = savedCloudData.find { it.accountId == account.id } ?: throw Exception()
+                Pair(accountSavedData.backupSize, accountSavedData.lastModified)
+            }
             Triple(account, info.first, info.second)
         }
 

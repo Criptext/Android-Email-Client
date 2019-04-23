@@ -8,6 +8,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
@@ -31,7 +32,7 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
 
     override val canBeParallelized = true
 
-    var oldFile = com.google.api.services.drive.model.FileList()
+    var oldFiles = com.google.api.services.drive.model.FileList()
 
     override fun catchException(ex: Exception): CloudBackupResult.UploadBackupToDrive {
         return if(ex is ServerErrorException) {
@@ -47,7 +48,9 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
     override fun work(reporter: ProgressReporter<CloudBackupResult.UploadBackupToDrive>): CloudBackupResult.UploadBackupToDrive? {
         val result =  Result.of {
 
-            val criptextFolder = mDriveServiceHelper.files().list().setQ("name='Criptext Backups'").execute()
+            val criptextFolder = mDriveServiceHelper.files().list()
+                    .setQ("name='Criptext Backups'")
+                    .execute()
             val rootFolder = if(criptextFolder.files.isEmpty()){
 
                 val folderMetadata = com.google.api.services.drive.model.File()
@@ -76,7 +79,7 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
                 folder.files.first()
             }
 
-            oldFile = mDriveServiceHelper.files().list()
+            oldFiles = mDriveServiceHelper.files().list()
                     .setQ("name contains 'Mailbox Backup' and ('${parentFolder.id}' in parents) and trashed=false")
                     .execute()
 
@@ -101,14 +104,25 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
                 val size = File(filePath).length() / (1024*1024)
                 val lastModified = Date()
 
-                storage.putLong(KeyValueStorage.StringKey.LastBackupSize, size)
-                storage.putLong(KeyValueStorage.StringKey.LastBackupDate, lastModified.time)
+                val savedCloudDataString = storage.getString(KeyValueStorage.StringKey.SavedBackupData, "")
+                val savedCloudData = if(savedCloudDataString.isNotEmpty()) SavedCloudData.fromJson(savedCloudDataString)
+                                            else listOf()
+                val mutableSavedData = mutableListOf<SavedCloudData>()
+                mutableSavedData.addAll(savedCloudData)
+                mutableSavedData.remove(mutableSavedData.find { it.accountId == activeAccount.id })
+                mutableSavedData.add(SavedCloudData(
+                        accountId = activeAccount.id,
+                        backupSize = size,
+                        lastModified = lastModified.time
+                ))
+                storage.putString(KeyValueStorage.StringKey.SavedBackupData, SavedCloudData.toJSON(mutableSavedData).toString())
+
 
                 CloudBackupResult.UploadBackupToDrive.Success(
                     fileLength = size,
                     lastModified = lastModified,
-                    hasOldFile = oldFile.files.isNotEmpty(),
-                    oldFileId = if(oldFile.files.isNotEmpty()) oldFile.files.first().id else null
+                    hasOldFile = oldFiles.files.isNotEmpty(),
+                    oldFileIds = if(oldFiles.files.isNotEmpty()) oldFiles.files.map { it.id } else listOf()
                     )
             }
             is Result.Failure -> catchException(result.error)
