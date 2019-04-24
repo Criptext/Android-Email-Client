@@ -16,6 +16,7 @@ object EmailUtils {
     const val RECIPIENT_LIMIT = 300
     const val ATTACHMENT_LIMIT = 5
     const val ATTACHMENT_SIZE_LIMIT = 25000000
+    const val DRAFT_HEADER_PLACEHOLDER = "DRAFT_HEADER"
 
     fun getMailRecipients(to: List<Contact>, cc: List<Contact>, bcc: List<Contact>,
                                   recipientId: String): MailRecipients {

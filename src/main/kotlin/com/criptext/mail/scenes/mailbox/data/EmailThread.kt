@@ -16,7 +16,8 @@ class EmailThread(val latestEmail: FullEmail,
                   val currentLabel: String,
                   val totalEmails: Int,
                   val hasFiles: Boolean,
-                  val allFilesAreInline: Boolean) {
+                  val allFilesAreInline: Boolean,
+                  val headerData: List<HeaderData>) {
 
     val unread :Boolean
         get() = latestEmail.email.unread
@@ -40,4 +41,6 @@ class EmailThread(val latestEmail: FullEmail,
 
     val isStarred: Boolean
         get() = EmailThreadValidator.isLabelInList(latestEmail.labels, Label.LABEL_STARRED)
+
+    data class HeaderData(val name: String, val isMe: Boolean, val isDraft: Boolean, val isUnread: Boolean)
 }

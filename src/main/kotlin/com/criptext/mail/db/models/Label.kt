@@ -50,7 +50,7 @@ data class Label (
 
         fun getLabelIdWildcard(labelName: String, labels: List<Label>): String{
             return if(labelName == Label.LABEL_ALL_MAIL) "%" else
-                "%${labels.findLast {
+                "%L${labels.findLast {
                     label ->label.text == labelName
                 }?.id}%"
         }

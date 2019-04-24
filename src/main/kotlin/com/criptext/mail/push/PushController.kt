@@ -2,7 +2,6 @@ package com.criptext.mail.push
 
 import android.graphics.Bitmap
 import com.criptext.mail.R
-import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
@@ -10,6 +9,7 @@ import com.criptext.mail.push.data.PushRequest
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 
@@ -160,7 +160,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                         result.pushData, result.shouldPostNotification))
             }
             is PushResult.NewEmail.Failure -> {
-                if(!(result.exception is ServerErrorException && result.exception.errorCode == ServerCodes.NoContent))
+                if(result.exception !is EventHelper.NoContentFoundException)
                     createAndNotifyPush(result.pushData, result.shouldPostNotification, false, null)
             }
         }

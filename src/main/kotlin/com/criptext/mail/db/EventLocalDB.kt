@@ -283,10 +283,11 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
         val emails = db.emailDao().getEmailsFromThreadId(email.threadId, rejectedLabels, activeAccount.id)
         var totalFiles = 0
+        val headerData = mutableListOf<EmailThread.HeaderData>()
         val participants = emails.flatMap {
             val contacts = mutableListOf<Contact>()
+            val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
             if(selectedLabel == Label.defaultItems.sent.text){
-                val emailLabels = db.emailLabelDao().getLabelsFromEmail(it.id)
                 if(EmailThreadValidator.isLabelInList(emailLabels, Label.LABEL_SENT)){
                     contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.TO))
                     contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
@@ -295,10 +296,26 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             else{
                 contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
             }
-            contacts.map { contact ->
-                if(contact.email == userEmail){
-                    //It's difficult to reach String resources, so I will leave the 'me' string for now
-                    contact.name = "me"
+            contacts.forEach { contact ->
+                when {
+                    EmailThreadValidator.isLabelInList(emailLabels, Label.LABEL_DRAFT) -> headerData.add(EmailThread.HeaderData(
+                            name = EmailUtils.DRAFT_HEADER_PLACEHOLDER,
+                            isDraft = true,
+                            isMe = false,
+                            isUnread = it.unread
+                    ))
+                    contact.email == userEmail -> headerData.add(EmailThread.HeaderData(
+                            name = contact.name,
+                            isDraft = false,
+                            isMe = true,
+                            isUnread = it.unread
+                    ))
+                    else -> headerData.add(EmailThread.HeaderData(
+                            name = contact.name,
+                            isDraft = false,
+                            isMe = false,
+                            isUnread = it.unread
+                    ))
                 }
             }
             totalFiles += db.fileDao().getAttachmentsFromEmail(it.id).size
@@ -333,7 +350,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         headers = emailContent.second),
                 totalEmails = emails.size,
                 hasFiles = totalFiles > 0,
-                allFilesAreInline = files.filter { it.cid != null }.size == totalFiles
+                allFilesAreInline = files.filter { it.cid != null }.size == totalFiles,
+                headerData = headerData
         )
     }
 

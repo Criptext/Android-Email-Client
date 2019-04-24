@@ -34,8 +34,8 @@ interface CloudBackupScene{
     fun disableSaveButtonOnDialog()
     fun enableSaveButtonOnDialog()
     fun getGoogleDriveService(): Drive?
-    fun scheduleCloudBackupJob(period: Int)
-    fun removeFromScheduleCloudBackupJob()
+    fun scheduleCloudBackupJob(period: Int, accountId: Long)
+    fun removeFromScheduleCloudBackupJob(accountId: Long)
     fun checkCloudBackupIcon()
     fun backingUpNow(isBackingUp: Boolean)
 
@@ -217,14 +217,14 @@ interface CloudBackupScene{
                     .build()
         }
 
-        override fun scheduleCloudBackupJob(period: Int) {
+        override fun scheduleCloudBackupJob(period: Int, accountId: Long) {
             val cloudBackupJobService = CloudBackupJobService()
-            cloudBackupJobService.schedule(context, getFrequencyPeriod(period))
+            cloudBackupJobService.schedule(context, getFrequencyPeriod(period), accountId)
         }
 
-        override fun removeFromScheduleCloudBackupJob() {
+        override fun removeFromScheduleCloudBackupJob(accountId: Long) {
             val cloudBackupJobService = CloudBackupJobService()
-            cloudBackupJobService.cancel(context)
+            cloudBackupJobService.cancel(context, accountId)
         }
 
         override fun checkCloudBackupIcon() {

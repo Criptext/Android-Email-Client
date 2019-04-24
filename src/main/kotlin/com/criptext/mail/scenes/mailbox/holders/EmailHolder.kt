@@ -1,7 +1,12 @@
 package com.criptext.mail.scenes.mailbox.holders
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +17,7 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.*
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -99,7 +105,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                     "fonts/NunitoSans-Regular.ttf")
         }
 
-        headerView.text = emailPreview.topText
+        headerView.text = getHeaderTextFromHeaderData(emailPreview.headerData)
 
 
         if(emailPreview.count > 1){
@@ -113,6 +119,35 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         setIcons(emailPreview.deliveryStatus, emailPreview.isStarred, (emailPreview.hasFiles && !emailPreview.allFilesAreInline))
         toggleStatus(emailPreview.isSelected, emailPreview.unread)
 
+    }
+
+    private fun getHeaderTextFromHeaderData(headerData: List<EmailThread.HeaderData>): SpannableString{
+        val draftText = context.getLocalizedUIMessage(UIMessage(R.string.draft))
+        val meText = context.getLocalizedUIMessage(UIMessage(R.string.me))
+        val bolds = mutableListOf<Pair<String, Int>>()
+        var headerString = ""
+        val doShortName = headerData.size != 1
+        headerData.forEach {
+            val name = if(doShortName) it.name.substringBefore(" ") else it.name
+            headerString = headerString.plus("$name, ")
+            val index = headerString.lastIndexOf(name)
+            if(it.isUnread && index >= 0)
+                bolds.add(Pair(name, index))
+            if(it.isMe && index >= 0)
+                headerString = headerString.replaceRange(index, index + name.length, meText)
+
+            if(it.isDraft && index >= 0)
+                headerString = headerString.replaceRange(index, index + name.length, draftText)
+        }
+        headerString = headerString.removeSuffix(", ")
+        val spannable = SpannableString(headerString)
+        bolds.forEach { bold ->
+            spannable.setSpan(StyleSpan(Typeface.BOLD), bold.second, (bold.second + bold.first.length), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        val draftIndex = headerString.indexOf(draftText)
+        if(draftIndex == -1) return spannable
+        spannable.setSpan(ForegroundColorSpan(Color.RED), draftIndex, (draftIndex + draftText.length), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannable
     }
 
     private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, showClip: Boolean){

@@ -47,8 +47,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 63
-        versionName "0.19.0"
+        versionCode 64
+        versionName "0.19.1"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -117,7 +117,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.1.0-alpha03"
 
     //sqlite-android
-    implementation 'io.requery:sqlite-android:3.26.0'
+    implementation 'io.requery:sqlite-android:3.27.2'
 
     // Robolectric
     testImplementation 'junit:junit:4.12'

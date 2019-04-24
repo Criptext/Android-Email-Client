@@ -27,4 +27,5 @@ class MailboxSceneModel(var showWelcome: Boolean = false, var askForRestoreBacku
     var extraAccounts = listOf<Account>()
     var waitForAccountSwitch = false
     var mDriveServiceHelper: Drive? = null
+    var extraAccountHasUnreads = false
 }

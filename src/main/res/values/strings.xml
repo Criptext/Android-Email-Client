@@ -288,6 +288,7 @@
   <string name="titulo_mailbox_spam">Spam</string>
   <string name="titulo_mailbox_trash">Trash</string>
   <string name="titulo_mailbox_all_mail">All Mail</string>
+  <string name="titulo_mailbox_custom">%1$s</string>
   <string name="title_settings">SETTINGS</string>
   <string name="spam">Spam</string>
     <string name="cancel">Cancel</string>
@@ -523,4 +524,5 @@
   <string name="restore_backup_retry">Retry</string>
   <string name="restore_backup_no_account">No Google Account Found</string>
   <string name="restore_backup_restoring_title">Restoring…</string>
+  <string name="me">me</string>
 </resources>

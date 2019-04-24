@@ -39,7 +39,12 @@ object EventLoader{
             val eventJSONString = JSONObject(responseData.body).toString()
             if (eventJSONString.isNotEmpty()) {
                 Event.fromJSON(eventJSONString)
-            } else throw Exception()
+            } else {
+                if(noContentFound(responseData.code))
+                    throw EventHelper.NoContentFoundException()
+                else
+                    throw Exception()
+            }
         }
     }
 
@@ -56,7 +61,11 @@ object EventLoader{
         }
     }
 
-    private fun shouldCallGetEventsAgain(respondeCode: Int): Boolean{
-        return respondeCode == ServerCodes.SuccessAndRepeat
+    private fun shouldCallGetEventsAgain(responseCode: Int): Boolean{
+        return responseCode == ServerCodes.SuccessAndRepeat
+    }
+
+    private fun noContentFound(responseCode: Int): Boolean{
+        return responseCode == ServerCodes.NoContent
     }
 }
