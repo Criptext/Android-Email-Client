@@ -17,7 +17,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                         val latestEmailUnsentDate: Date?,
                         val emailId: Long, val metadataKey: Long, val threadId: String,
                         var isSelected: Boolean, var isStarred: Boolean, val hasFiles: Boolean,
-                        val allFilesAreInline: Boolean) {
+                        val allFilesAreInline: Boolean, val headerData: List<EmailThread.HeaderData>) {
 
     companion object {
         private fun getSenderNameFromEmailThread(e: EmailThread): String {
@@ -32,7 +32,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     count = e.totalEmails, timestamp = e.timestamp, threadId = e.threadId,
                     isSelected = false, isStarred = e.isStarred, hasFiles = e.hasFiles,
                     latestEmailUnsentDate = e.latestEmail.email.unsentDate, metadataKey = e.metadataKey,
-                    allFilesAreInline = e.allFilesAreInline)
+                    allFilesAreInline = e.allFilesAreInline, headerData = e.headerData)
         }
 
         fun emailPreviewToJSON(e: EmailPreview): String {
@@ -71,7 +71,8 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     latestEmailUnsentDate = if(json.has("latestEmailUnsentDate"))
                     DateAndTimeUtils.getDateFromString(
                             json.getString("latestEmailUnsentDate"), null) else null, metadataKey = json.getLong("metadataKey"),
-                    allFilesAreInline = json.getBoolean("allFilesAreInline"))
+                    allFilesAreInline = json.getBoolean("allFilesAreInline"),
+                    headerData = listOf())
         }
     }
 }

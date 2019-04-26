@@ -149,7 +149,7 @@ object UIUtils{
             Label.LABEL_DRAFT -> UIMessage(R.string.titulo_mailbox_draft)
             Label.LABEL_TRASH -> UIMessage(R.string.titulo_mailbox_trash)
             Label.LABEL_ALL_MAIL -> UIMessage(R.string.titulo_mailbox_all_mail)
-            else -> UIMessage(R.string.titulo_mailbox)
+            else -> UIMessage(R.string.titulo_mailbox_custom, arrayOf(title))
         }
     }
 

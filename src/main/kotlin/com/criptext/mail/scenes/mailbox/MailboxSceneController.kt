@@ -187,6 +187,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onAccountClicked(account: Account) {
             scene.hideDrawer()
+            model.extraAccountHasUnreads = false
             scene.showExtraAccountsBadge(false)
             scene.hideMultipleAccountsMenu()
             threadListController.clear()
@@ -358,6 +359,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             if(model.isInMultiSelect){
                 changeMode(multiSelectON = false, silent = false)
                 threadListController.reRenderAll()
+                if(model.extraAccountHasUnreads)
+                    scene.showExtraAccountsBadge(true)
             }
         }
 
@@ -409,7 +412,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         if (!multiSelectON) {
             model.selectedThreads.clear()
+            if(model.extraAccountHasUnreads)
+                scene.showExtraAccountsBadge(true)
         }
+        scene.showExtraAccountsBadge(false)
         model.isInMultiSelect = multiSelectON
         threadListController.toggleMultiSelectMode(multiSelectON, silent)
         scene.refreshToolbarItems()
@@ -644,6 +650,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             showMultiModeBar()
         } else {
             hideMultiModeBar()
+            if(model.extraAccountHasUnreads)
+                scene.showExtraAccountsBadge(true)
         }
     }
 
@@ -1116,7 +1124,12 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.TotalUnreadEmails.Success -> {
                 scene.setToolbarNumberOfEmails(resultData.activeAccountTotal)
                 scene.setMenuAccounts(model.extraAccounts, resultData.extraAccountsData.map { it.second })
-                resultData.extraAccountsData.forEach { if(it.second > 0) scene.showExtraAccountsBadge(true) }
+                resultData.extraAccountsData.forEach {
+                    if(it.second > 0) {
+                        model.extraAccountHasUnreads = true
+                        scene.showExtraAccountsBadge(true)
+                    }
+                }
                 scene.updateBadges(resultData.extraAccountsData)
 
             }

@@ -71,7 +71,7 @@
                     android:text="@string/titulo_mailbox"
                     android:gravity="left|center_vertical"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     fontPath="fonts/NunitoSans-Bold.ttf"
                     />
             </LinearLayout>

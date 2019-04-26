@@ -46,10 +46,11 @@ class CloudBackupJobService: JobService() {
         }
     }
 
-    fun schedule(context: Context, intervalMillis: Long) {
+    fun schedule(context: Context, intervalMillis: Long, accountId: Long) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
         val componentName = ComponentName(context, CloudBackupJobService::class.java)
-        val builder = JobInfo.Builder(JOB_ID, componentName)
+        val jobId = JOB_ID.toString().plus(accountId)
+        val builder = JobInfo.Builder(jobId.toInt(), componentName)
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setPeriodic(intervalMillis, JobInfo.getMinFlexMillis())
@@ -61,9 +62,10 @@ class CloudBackupJobService: JobService() {
         isJobServiceOn(context)
     }
 
-    fun cancel(context: Context) {
+    fun cancel(context: Context, accountId: Long) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        jobScheduler.cancel(JOB_ID)
+        val jobId = JOB_ID.toString().plus(accountId)
+        jobScheduler.cancel(jobId.toInt())
         Log.e("JOBSERVICE:", "Canceled!!!")
     }
 

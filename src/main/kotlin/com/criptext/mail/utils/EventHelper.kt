@@ -640,4 +640,5 @@ class EventHelper(private val db: EventLocalDB,
     }
 
     class NothingNewException: Exception()
+    class NoContentFoundException: Exception()
 }

@@ -89,13 +89,13 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
         and date < :startDate
         where case when :isTrashOrSpam
-        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        then email_label.labelId = (select id from label where label.id= cast(trim(trim(:selectedLabel, '%'), 'L') as integer))
         else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
@@ -114,13 +114,13 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
         and date < :startDate
         where unread = 1 AND case when :isTrashOrSpam
-        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        then email_label.labelId = (select id from label where label.id= cast(trim(trim(:selectedLabel, '%'), 'L') as integer))
         else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
@@ -139,13 +139,13 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
         and date > :startDate
         where case when :isTrashOrSpam
-        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        then email_label.labelId = (select id from label where label.id= cast(trim(trim(:selectedLabel, '%'), 'L') as integer))
         else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
@@ -358,12 +358,12 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
         where case when :isTrashOrSpam
-        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        then email_label.labelId = (select id from label where label.id= cast(trim(trim(:selectedLabel, '%'), 'L') as integer))
         else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
@@ -381,12 +381,12 @@ import java.util.*
 
     @Query("""
         select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread, max(email.date)
         from email
         left join email_label on email.id = email_label.emailId
         where unread = 1 AND case when :isTrashOrSpam
-        then email_label.labelId = (select id from label where label.id= cast(trim(:selectedLabel, '%') as integer))
+        then email_label.labelId = (select id from label where label.id= cast(trim(trim(:selectedLabel, '%'), 'L') as integer))
         else not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
@@ -430,7 +430,7 @@ import java.util.*
 
     @Query("""
         select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
         left join email_label on email.id = email_label.emailId
@@ -445,7 +445,7 @@ import java.util.*
 
     @Query("""
         select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat(email_label.labelId) as allLabels,
+        group_concat('L' || email_label.labelId) as allLabels,
         max(email.unread) as unread
         from email
         left join email_label on email.id = email_label.emailId

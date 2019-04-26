@@ -196,23 +196,23 @@ class CloudBackupController(
                 model.wifiOnly = result.cloudBackupData.useWifiOnly
                 storage.putBool(KeyValueStorage.StringKey.UseWifiOnlyForBackup, model.wifiOnly)
                 if(model.autoBackupFrequency != result.cloudBackupData.autoBackupFrequency){
-                    scene.removeFromScheduleCloudBackupJob()
+                    scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                     model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
-                    scene.scheduleCloudBackupJob(model.autoBackupFrequency)
+                    scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id)
                 }
                 if(model.hasCloudBackup != result.cloudBackupData.hasCloudBackup){
                     if(result.cloudBackupData.hasCloudBackup) {
                         model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
                         if(model.autoBackupFrequency != 3) {
-                            scene.removeFromScheduleCloudBackupJob()
-                            scene.scheduleCloudBackupJob(model.autoBackupFrequency)
+                            scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                            scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id)
                         } else
-                            scene.removeFromScheduleCloudBackupJob()
+                            scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                         host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
 
                     } else {
                         model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
-                        scene.removeFromScheduleCloudBackupJob()
+                        scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                         host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
                     }
                 }
