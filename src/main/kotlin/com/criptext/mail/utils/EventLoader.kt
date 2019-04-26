@@ -23,7 +23,7 @@ object EventLoader{
     private fun fetchPendingEvent(apiClient: MailboxAPIClient, rowId: Int): Result<HttpResponseData, Exception> {
         return Result.of {
             val responseText = apiClient.getPendingEvent(rowId)
-            if (responseText.body.isEmpty()) HttpResponseData(ServerCodes.Success, "[]") else responseText
+            if (responseText.body.isEmpty()) HttpResponseData(ServerCodes.Success, "{}") else responseText
         }
     }
 

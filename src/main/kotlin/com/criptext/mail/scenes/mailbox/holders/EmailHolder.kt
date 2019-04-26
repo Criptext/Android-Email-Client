@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.mailbox.holders
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -128,16 +127,36 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         var headerString = ""
         val doShortName = headerData.size != 1
         headerData.forEach {
-            val name = if(doShortName) it.name.substringBefore(" ") else it.name
-            headerString = headerString.plus("$name, ")
-            val index = headerString.lastIndexOf(name)
-            if(it.isUnread && index >= 0)
-                bolds.add(Pair(name, index))
-            if(it.isMe && index >= 0)
-                headerString = headerString.replaceRange(index, index + name.length, meText)
 
-            if(it.isDraft && index >= 0)
-                headerString = headerString.replaceRange(index, index + name.length, draftText)
+            when {
+                it.isUnread -> {
+                    val name = if(doShortName) it.name.substringBefore(" ") else it.name
+                    if(!headerString.contains(name)){
+                        headerString =  headerString.plus("$name, ")
+                        val index = headerString.lastIndexOf(name)
+                        bolds.add(Pair(name, index))
+                    }
+                    else {
+                        val index = headerString.lastIndexOf(name)
+                        bolds.add(Pair(name, index))
+                    }
+                }
+                it.isMe -> {
+                    if(!headerString.contains(meText)){
+                        headerString = headerString.plus("$meText, ")
+                    }
+                }
+                it.isDraft -> {
+                    if(!headerString.contains(draftText)){
+                        headerString =  headerString.plus("$draftText, ")
+                    }
+                }
+                else -> {
+                    val name = if(doShortName) it.name.substringBefore(" ") else it.name
+                    if(!headerString.contains(name))
+                        headerString =  headerString.plus("$name, ")
+                }
+            }
         }
         headerString = headerString.removeSuffix(", ")
         val spannable = SpannableString(headerString)
@@ -146,7 +165,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         }
         val draftIndex = headerString.indexOf(draftText)
         if(draftIndex == -1) return spannable
-        spannable.setSpan(ForegroundColorSpan(Color.RED), draftIndex, (draftIndex + draftText.length), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.unsent_content)), draftIndex, (draftIndex + draftText.length), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return spannable
     }
 
