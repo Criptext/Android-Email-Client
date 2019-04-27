@@ -12,7 +12,7 @@ sealed class GeneralRequest {
     data class ResetPassword(val recipientId: String): GeneralRequest()
     data class UpdateMailbox(
             val isActiveAccount: Boolean,
-            val activeAccount: ActiveAccount?,
+            val recipientId: String,
             val label: Label,
             val loadedThreadsCount: Int): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()

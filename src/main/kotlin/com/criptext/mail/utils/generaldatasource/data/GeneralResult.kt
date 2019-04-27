@@ -51,6 +51,7 @@ sealed class GeneralResult {
 
         data class SuccessAndRepeat(
                 val isActiveAccount: Boolean,
+                val recipientId: String,
                 val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,

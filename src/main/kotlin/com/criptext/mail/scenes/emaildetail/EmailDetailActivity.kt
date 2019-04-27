@@ -57,15 +57,18 @@ class  EmailDetailActivity: BaseActivity() {
 
         val emailDetailSceneView = EmailDetailScene.EmailDetailSceneView(
                 findViewById(R.id.include_emails_detail), this)
+        val storage = KeyValueStorage.SharedPrefs(this)
 
-
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
         val downloadDir = AndroidFs.getDownloadsCacheDir(this).absolutePath
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,

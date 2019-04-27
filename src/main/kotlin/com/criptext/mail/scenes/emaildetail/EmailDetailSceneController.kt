@@ -230,16 +230,24 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onMailboxUpdate(result: GeneralResult.UpdateMailbox){
         when (result) {
             is GeneralResult.UpdateMailbox.Success -> {
-                dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
-                        model.threadId, model.currentLabel, null))
+                if(result.isActiveAccount) {
+                    dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
+                            model.threadId, model.currentLabel, null))
+                }
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
-                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
+                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
+                        result.isActiveAccount, result.recipientId, model.currentLabel, 1
+                ))
             }
-            is GeneralResult.UpdateMailbox.Unauthorized ->
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
-            is GeneralResult.UpdateMailbox.Forbidden ->
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            is GeneralResult.UpdateMailbox.Unauthorized -> {
+                if (result.isActiveAccount)
+                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is GeneralResult.UpdateMailbox.Forbidden -> {
+                if (result.isActiveAccount)
+                    scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            }
         }
     }
 
@@ -539,7 +547,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onSourceOptionSelected(fullEmail: FullEmail) {
             if(fullEmail.headers != null && fullEmail.email.boundary != null)
                 host.goToScene(EmailSourceParams(EmailUtils.getEmailSource(
-                        headers = fullEmail.headers!!,
+                        headers = fullEmail.headers,
                         boundary = fullEmail.email.boundary!!,
                         content = fullEmail.email.content
                 )), true)
@@ -980,9 +988,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
-            })
+            if(activeAccount.recipientId == trustedDeviceInfo.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+                })
+            }
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
@@ -1002,9 +1012,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-            })
+            if(activeAccount.recipientId == untrustedDeviceInfo.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+                })
+            }
         }
 
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
@@ -1015,8 +1027,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         }
 
-        override fun onNewEvent() {
-            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(true, null, model.currentLabel, 1))
+        override fun onNewEvent(recipientId: String) {
+            generalDataSource.submitRequest(
+                    GeneralRequest.UpdateMailbox(
+                            recipientId == activeAccount.recipientId, recipientId,
+                            model.currentLabel, 1
+                    ))
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {

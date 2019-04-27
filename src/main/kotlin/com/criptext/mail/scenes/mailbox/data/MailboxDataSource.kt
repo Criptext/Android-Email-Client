@@ -118,6 +118,7 @@ class MailboxDataSource(
             is MailboxRequest.GetMenuInformation -> GetMenuInformationWorker(
                     db = mailboxLocalDB,
                     activeAccount = activeAccount,
+                    storage = storage,
                     publishFn = { result ->
                         flushResults(result)
                     }

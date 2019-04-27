@@ -35,7 +35,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
         val event = Event.fromJSON(text)
         when (event.cmd) {
             Event.Cmd.lowOnPreKeys,
-            Event.Cmd.newEvent -> currentListener?.onNewEvent()
+            Event.Cmd.newEvent -> currentListener?.onNewEvent(event.recipientId)
             Event.Cmd.recoveryEmailChanged -> {
                 val email = JSONObject(event.params).getString("address")
                 currentListener?.onRecoveryEmailChanged(email)
@@ -65,7 +65,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
                 currentListener?.onSyncRequestDeny()
             }
             Event.Cmd.syncBeginRequest -> {
-                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo.fromJSON(event.params)
+                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, event.recipientId)
                 currentListener?.onSyncBeginRequest(trustedDeviceInfo)
             }
 
@@ -89,7 +89,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
 
     companion object {
         private fun createCriptextSocketServerURL(jwt: String): String {
-            return """${Hosts.webSocketBaseUrl}?token=$jwt"""
+            return """${Hosts.webSocketBaseUrl}?token=${jwt.replace(", ", "%2C")}"""
         }
     }
 

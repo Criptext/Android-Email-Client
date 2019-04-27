@@ -43,11 +43,16 @@ class RestoreBackupActivity: BaseActivity(){
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val storage = KeyValueStorage.SharedPrefs(this)
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
 
         val dataSource = RestoreBackupDataSource(
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 db = appDB,
@@ -59,7 +64,7 @@ class RestoreBackupActivity: BaseActivity(){
                 websocketEvents = webSocketEvents,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
         googleSignInListener = controller.googleSignInListener

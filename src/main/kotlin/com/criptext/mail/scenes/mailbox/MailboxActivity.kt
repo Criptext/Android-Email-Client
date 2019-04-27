@@ -126,8 +126,12 @@ class MailboxActivity : BaseActivity() {
             val db: MailboxLocalDB.Default = MailboxLocalDB.Default(appDB, activity.filesDir)
             val activeAccount = ActiveAccount.loadFromStorage(activity)!!
             val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
-            val webSocketEvents = WebSocketSingleton.getInstance(
-                    activeAccount = activeAccount)
+
+            val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+            val webSocketEvents = if(jwts.isNotEmpty())
+                WebSocketSingleton.getInstance(jwts)
+            else
+                WebSocketSingleton.getInstance(activeAccount.jwt)
 
             val mailboxDataSource = MailboxDataSource(
                 filesDir = activity.filesDir,

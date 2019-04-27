@@ -76,7 +76,7 @@ class UpdateMailboxWorkerTest {
 
     private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
             UpdateMailboxWorker(label = label,
-                    activeAccount = activeAccount, loadedThreadsCount = loadedThreadsCount,
+                    recipientId = activeAccount.recipientId, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
                     pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true,
                     db = db)

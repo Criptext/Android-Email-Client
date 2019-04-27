@@ -218,9 +218,11 @@ class PrivacyController(
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-            })
+            if(activeAccount.recipientId == untrustedDeviceInfo.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+                })
+            }
         }
 
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
@@ -231,7 +233,7 @@ class PrivacyController(
 
         }
 
-        override fun onNewEvent() {
+        override fun onNewEvent(recipientId: String) {
 
         }
 

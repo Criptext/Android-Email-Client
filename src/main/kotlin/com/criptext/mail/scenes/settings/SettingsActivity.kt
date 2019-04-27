@@ -31,18 +31,23 @@ class SettingsActivity: BaseActivity(){
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val scene = SettingsScene.Default(view)
         val db = SettingsLocalDB.Default(appDB)
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val storage = KeyValueStorage.SharedPrefs(this)
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
         val dataSource = SettingsDataSource(
                 settingsLocalDB = db,
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
                 runner = AsyncTaskWorkRunner(),
-                storage = KeyValueStorage.SharedPrefs(this))
+                storage = storage)
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
@@ -57,7 +62,7 @@ class SettingsActivity: BaseActivity(){
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 host = this)
     }
 

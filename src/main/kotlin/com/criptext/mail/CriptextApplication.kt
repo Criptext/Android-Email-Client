@@ -35,7 +35,11 @@ class CriptextApplication : MultiDexApplication() {
                 lockManager.enableAppLock(this, LockScreenActivity::class.java)
                 configureAppLock(lockManager)
             }
-            WebSocketSingleton.getInstance(activeAccount)
+            val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+            if(jwts.isNotEmpty())
+                WebSocketSingleton.getInstance(jwts)
+            else
+                WebSocketSingleton.getInstance(activeAccount.jwt)
         }
     }
 

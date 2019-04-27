@@ -33,10 +33,10 @@ import java.io.File
 
 class UpdateMailboxWorker(
         private val isActiveAccount: Boolean,
-        db: AppDatabase,
+        private val db: AppDatabase,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
-        private val activeAccount: ActiveAccount,
+        private val recipientId: String,
         private val loadedThreadsCount: Int,
         private val label: Label,
         private val httpClient: HttpClient,
@@ -49,12 +49,14 @@ class UpdateMailboxWorker(
 
     override val canBeParallelized = false
 
-    private val signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
-    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
-    private val mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+    private lateinit var activeAccount: ActiveAccount
 
-    private var eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
-    private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao, storage, accountDao)
+    private lateinit var signalClient: SignalClient.Default
+    private lateinit var apiClient: GeneralAPIClient
+    private lateinit var mailboxApiClient: MailboxAPIClient
+
+    private lateinit var eventHelper: EventHelper
+    private lateinit var peerEventsApiHandler: PeerEventsApiHandler.Default
 
     private var shouldCallAgain = false
 
@@ -85,8 +87,21 @@ class UpdateMailboxWorker(
             catchException(failure.error)
     }
 
+    private fun setup(): Boolean {
+        val account = accountDao.getAccountByRecipientId(recipientId) ?: return false
+        activeAccount = ActiveAccount.loadFromDB(account)?: return false
+        signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
+        apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+        mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
+
+        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
+        peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao, storage, accountDao)
+        return true
+    }
+
     override fun work(reporter: ProgressReporter<GeneralResult.UpdateMailbox>)
             : GeneralResult.UpdateMailbox? {
+        if(!setup()) return  GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(Exception()), Exception())
         eventHelper.setupForMailbox(label, loadedThreadsCount)
         val operationResult = workOperation()
 
@@ -112,7 +127,8 @@ class UpdateMailboxWorker(
                             updateBannerData = finalResult.value.updateBannerData,
                             syncEventsList = finalResult.value.deviceInfo,
                             shouldNotify = finalResult.value.shouldNotify,
-                            isActiveAccount = isActiveAccount
+                            isActiveAccount = isActiveAccount,
+                            recipientId = activeAccount.recipientId
                     )
                 }else {
                     GeneralResult.UpdateMailbox.Success(

@@ -43,7 +43,8 @@ interface KeyValueStorage {
         HasTimestampForCacheReset("HasTimestampForCacheReset"),
         CacheResetTimestamp("CacheResetTimestamp"),
         UseWifiOnlyForBackup("UseWifiOnlyForBackup"),
-        SavedBackupData("SavedBackupData")
+        SavedBackupData("SavedBackupData"),
+        JWTS("JWTS")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

@@ -32,19 +32,24 @@ class LabelsActivity: BaseActivity(){
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val storage = KeyValueStorage.SharedPrefs(this)
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
 
         val dataSource = LabelsDataSource(
                 httpClient = HttpClient.Default(),
                 activeAccount = activeAccount,
                 runner = AsyncTaskWorkRunner(),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 settingsLocalDB = SettingsLocalDB.Default(appDB))
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
@@ -58,7 +63,7 @@ class LabelsActivity: BaseActivity(){
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
     }

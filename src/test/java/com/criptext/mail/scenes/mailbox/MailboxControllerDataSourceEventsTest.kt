@@ -56,7 +56,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         // verify UpdateMailbox request sent
         verify {
             generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = loadedThreads.size, isActiveAccount = true, activeAccount = null))
+                loadedThreadsCount = loadedThreads.size, isActiveAccount = true, recipientId = activeAccount.recipientId))
         }
     }
 

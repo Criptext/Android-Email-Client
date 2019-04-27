@@ -138,7 +138,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
 
         val sentRequest = sentGeneralRequests
         sentRequest `should contain` GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = 20, isActiveAccount = true, activeAccount = null)
+                loadedThreadsCount = 20, isActiveAccount = true, recipientId = activeAccount.recipientId)
     }
 
     @Test

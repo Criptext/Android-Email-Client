@@ -15,7 +15,7 @@ interface WebSocketEventListener {
     /**
      * Invoked when an event has been received.
      */
-    fun onNewEvent()
+    fun onNewEvent(recipientId: String)
 
     /**
      * Invoked when a new device locked event has been received. Subscribers should try to
