@@ -8,22 +8,16 @@ import com.criptext.mail.db.models.ActiveAccount
  */
 
 object WebSocketSingleton {
-    private var lastRecipientId: String = ""
     private var INSTANCE : WebSocketController? = null
 
-    private fun newInstance(activeAccount: ActiveAccount): WebSocketController {
+    private fun newInstance(jwts: String): WebSocketController {
         INSTANCE = WebSocketController(
-                NVWebSocketClient(), activeAccount.jwt)
+                NVWebSocketClient(), jwts)
         return INSTANCE!!
     }
 
-    fun getInstance(activeAccount: ActiveAccount): WebSocketController {
-        if(lastRecipientId != activeAccount.recipientId){
-            INSTANCE?.disconnect()
-            INSTANCE = null
-            lastRecipientId = activeAccount.recipientId
-        }
-        return INSTANCE ?: newInstance(activeAccount)
+    fun getInstance(jwts: String): WebSocketController {
+        return INSTANCE ?: newInstance(jwts)
     }
 
 }

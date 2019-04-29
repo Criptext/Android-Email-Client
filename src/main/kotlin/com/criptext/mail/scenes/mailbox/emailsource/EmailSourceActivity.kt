@@ -29,13 +29,18 @@ class EmailSourceActivity: BaseActivity(){
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val storage = KeyValueStorage.SharedPrefs(this)
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
 
         val generalDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 db = appDB,
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
@@ -46,7 +51,7 @@ class EmailSourceActivity: BaseActivity(){
                 activeAccount = activeAccount,
                 model = model,
                 scene = scene,
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 websocketEvents = webSocketEvents,
                 generalDataSource = generalDataSource,
                 keyboardManager = KeyboardManager(this),

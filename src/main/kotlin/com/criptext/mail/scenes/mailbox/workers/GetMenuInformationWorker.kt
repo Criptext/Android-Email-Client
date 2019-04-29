@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.mailbox.data.MailboxResult
 class GetMenuInformationWorker(
         private val db: MailboxLocalDB,
         private val activeAccount: ActiveAccount,
+        private val storage: KeyValueStorage,
         override val publishFn: (MailboxResult.GetMenuInformation) -> Unit)
     : BackgroundWorker<MailboxResult.GetMenuInformation> {
 
@@ -27,13 +28,18 @@ class GetMenuInformationWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.GetMenuInformation>)
             : MailboxResult.GetMenuInformation? {
         val account = db.getAccountByRecipientId(activeAccount.recipientId) ?: return MailboxResult.GetMenuInformation.Failure()
+
+        val accounts = db.getLoggedAccounts()
+        val jwts = accounts.map { it.jwt }.joinToString()
+        storage.putString(KeyValueStorage.StringKey.JWTS, jwts)
+
         return MailboxResult.GetMenuInformation.Success(
                 account = account,
                 totalInbox = db.getUnreadCounterLabel(Label.defaultItems.inbox.id, account.id),
                 totalSpam = db.getUnreadCounterLabel(Label.defaultItems.spam.id, account.id),
                 totalDraft = db.getTotalCounterLabel(Label.defaultItems.draft.id, account.id),
                 labels = db.getCustomAndVisibleLabels(account.id),
-                accounts = db.getLoggedAccounts())
+                accounts = accounts)
     }
 
     override fun cancel() {

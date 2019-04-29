@@ -255,9 +255,11 @@ class LabelsController(
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-            })
+            if(activeAccount.recipientId == untrustedDeviceInfo.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+                })
+            }
         }
 
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
@@ -268,7 +270,7 @@ class LabelsController(
 
         }
 
-        override fun onNewEvent() {
+        override fun onNewEvent(recipientId: String) {
 
         }
 

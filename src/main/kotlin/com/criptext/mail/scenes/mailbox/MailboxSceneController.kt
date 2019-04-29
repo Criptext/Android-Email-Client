@@ -564,7 +564,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             SyncDeviceActionService.APPROVE -> {
                 val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
-                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.deviceId, extrasDevice.deviceName,
+                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.account, extrasDevice.deviceId, extrasDevice.deviceName,
                         extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
                 if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                     generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
@@ -771,7 +771,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     label = mailboxLabel,
                     loadedThreadsCount = model.threads.size,
                     isActiveAccount = true,
-                    activeAccount = null
+                    recipientId = activeAccount.recipientId
             )
             generalDataSource.submitRequest(req)
         }
@@ -820,7 +820,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
-                    websocketEvents = WebSocketSingleton.getInstance(activeAccount)
+
+                    val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                    websocketEvents = if(jwts.isNotEmpty())
+                        WebSocketSingleton.getInstance(jwts)
+                    else
+                        WebSocketSingleton.getInstance(activeAccount.jwt)
+
                     websocketEvents.setListener(webSocketEventListener)
 
                     scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
@@ -1221,7 +1227,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         label = model.selectedLabel,
                         loadedThreadsCount = model.threads.size,
                         isActiveAccount = false,
-                        activeAccount = ActiveAccount.loadFromDB(it)
+                        recipientId = it.recipientId
                 ))
             }
         }
@@ -1260,9 +1266,11 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
-            })
+            if(trustedDeviceInfo.recipientId == activeAccount.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+                })
+            }
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
@@ -1290,13 +1298,27 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-            })
+            if(untrustedDeviceInfo.recipientId == activeAccount.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+                })
+            }
         }
 
-        override fun onNewEvent() {
-            reloadViewAfterSocketEvent()
+        override fun onNewEvent(recipientId: String) {
+            if(recipientId == activeAccount.recipientId)
+                reloadViewAfterSocketEvent()
+            else{
+                val account = model.extraAccounts.find { it.recipientId == recipientId }
+                if(account != null){
+                    generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
+                            label = model.selectedLabel,
+                            loadedThreadsCount = model.threads.size,
+                            isActiveAccount = false,
+                            recipientId = account.recipientId
+                    ))
+                }
+            }
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {

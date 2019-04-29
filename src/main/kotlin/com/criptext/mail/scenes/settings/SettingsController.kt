@@ -449,10 +449,12 @@ class SettingsController(
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if (!model.isWaitingForSync){
-                host.runOnUiThread(Runnable {
-                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
-                })
+            if(activeAccount.recipientId == trustedDeviceInfo.recipientId) {
+                if (!model.isWaitingForSync){
+                    host.runOnUiThread(Runnable {
+                        scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+                    })
+                }
             }
         }
 
@@ -492,12 +494,14 @@ class SettingsController(
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            host.runOnUiThread(Runnable {
-                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-            })
+            if(activeAccount.recipientId == untrustedDeviceInfo.recipientId) {
+                host.runOnUiThread(Runnable {
+                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+                })
+            }
         }
 
-        override fun onNewEvent() {
+        override fun onNewEvent(recipientId: String) {
 
         }
 

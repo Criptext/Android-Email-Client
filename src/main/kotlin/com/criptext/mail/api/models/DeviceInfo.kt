@@ -4,14 +4,15 @@ import com.criptext.mail.utils.DeviceUtils
 import org.json.JSONObject
 
 sealed class DeviceInfo{
-    data class TrustedDeviceInfo (val deviceId: Int, val deviceFriendlyName: String,
+    data class TrustedDeviceInfo (val recipientId: String, val deviceId: Int, val deviceFriendlyName: String,
                                   val deviceType: DeviceUtils.DeviceType, val randomId: String, val syncFileVersion: Int): DeviceInfo()
     {
         companion object {
 
-            fun fromJSON(jsonString: String): TrustedDeviceInfo {
+            fun fromJSON(jsonString: String, recipientId: String): TrustedDeviceInfo {
                 val json = JSONObject(jsonString).getJSONObject("requestingDeviceInfo")
                 return TrustedDeviceInfo(
+                        recipientId = recipientId,
                         randomId = JSONObject(jsonString).getString("randomId"),
                         deviceId = json.getInt("deviceId"),
                         deviceFriendlyName = json.getString("deviceFriendlyName"),

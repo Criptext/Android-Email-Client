@@ -44,14 +44,19 @@ class CloudBackupActivity: BaseActivity(){
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
-        val webSocketEvents = WebSocketSingleton.getInstance(
-                activeAccount = activeAccount)
+        val storage = KeyValueStorage.SharedPrefs(this)
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        val webSocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
 
         val dataSource = CloudBackupDataSource(
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 db = appDB,
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 filesDir = this.filesDir
         )
         val controller = CloudBackupController(
@@ -59,7 +64,7 @@ class CloudBackupActivity: BaseActivity(){
                 scene = scene,
                 websocketEvents = webSocketEvents,
                 keyboardManager = KeyboardManager(this),
-                storage = KeyValueStorage.SharedPrefs(this),
+                storage = storage,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this,
                 dataSource = dataSource)

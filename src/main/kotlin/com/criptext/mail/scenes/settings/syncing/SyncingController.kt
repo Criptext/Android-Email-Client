@@ -124,7 +124,7 @@ class SyncingController(
 
         }
 
-        override fun onNewEvent() {
+        override fun onNewEvent(recipientId: String) {
 
         }
 

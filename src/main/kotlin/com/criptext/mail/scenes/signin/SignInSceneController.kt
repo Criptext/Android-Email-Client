@@ -417,7 +417,7 @@ class SignInSceneController(
 
         }
 
-        override fun onNewEvent() {
+        override fun onNewEvent(recipientId: String) {
 
         }
 
