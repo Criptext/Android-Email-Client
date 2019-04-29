@@ -143,6 +143,7 @@ object UIUtils{
 
     fun getLocalizedSystemLabelName(title: String): UIMessage{
         return when(title){
+            Label.LABEL_INBOX -> UIMessage(R.string.titulo_mailbox)
             Label.LABEL_SENT -> UIMessage(R.string.titulo_mailbox_sent)
             Label.LABEL_STARRED -> UIMessage(R.string.titulo_mailbox_starred)
             Label.LABEL_SPAM -> UIMessage(R.string.titulo_mailbox_spam)
