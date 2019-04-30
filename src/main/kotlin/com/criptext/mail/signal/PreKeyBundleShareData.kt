@@ -11,6 +11,7 @@ import java.util.*
  */
 
 data class PreKeyBundleShareData(val recipientId: String,
+                                 val domain: String,
                                  val registrationId: Int,
                                  val deviceId: Int,
                                  val signedPreKeyId: Int,
@@ -24,6 +25,7 @@ data class PreKeyBundleShareData(val recipientId: String,
         fun toJSON(): JSONObject {
             val json = JSONObject()
             json.put("registrationId", shareData.registrationId)
+            json.put("domain", shareData.domain)
             json.put("deviceId", shareData.deviceId)
             json.put("recipientId", shareData.recipientId)
             json.put("signedPreKeyId", shareData.signedPreKeyId)
@@ -47,6 +49,7 @@ data class PreKeyBundleShareData(val recipientId: String,
                 val registrationId = json.getInt("registrationId")
                 val deviceId = json.getInt("deviceId")
                 val recipientId = json.getString("recipientId")
+                val domain = json.getString("domain")
                 val signedPreKeyId = json.getInt("signedPreKeyId")
                 val signedPreKeyPublic = json.getString("signedPreKeyPublic")
                 val identityPublicKey = json.getString("identityPublicKey")
@@ -66,7 +69,8 @@ data class PreKeyBundleShareData(val recipientId: String,
                         deviceId = deviceId, signedPreKeyId = signedPreKeyId,
                         signedPreKeyPublic = signedPreKeyPublic,
                         signedPreKeySignature = signedPreKeySignature,
-                        identityPublicKey = identityPublicKey)
+                        identityPublicKey = identityPublicKey,
+                        domain = domain)
 
                 return DownloadBundle(shareData = shareData, preKey = preKey)
             }

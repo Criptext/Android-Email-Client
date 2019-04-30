@@ -1,5 +1,7 @@
 package com.criptext.mail.signal
 
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.ChunkFileReader
 import org.whispersystems.libsignal.IdentityKey
@@ -81,10 +83,15 @@ interface SignalClient {
                 val identityPublicKeyBytes = Encoding.stringToByteArray(identityPublicKeyString)
                 val identityPublicKey = IdentityKey(identityPublicKeyBytes, 0)
 
+                val recipientId = if(downloadBundle.shareData.domain == Contact.mainDomain)
+                    downloadBundle.shareData.recipientId
+                else
+                    downloadBundle.shareData.recipientId.plus("@${downloadBundle.shareData.domain}")
+
                 val preKeyBundle = PreKeyBundle(registrationId, deviceId, preKeyId, publicPreKey,
                                    signedPreKeyId, signedPreKeyPublic, signedPreKeySignature,
                                    identityPublicKey)
-                NewSessionParams(recipientId = downloadBundle.shareData.recipientId,
+                NewSessionParams(recipientId = recipientId,
                                preKeyBundle = preKeyBundle)
             }
 

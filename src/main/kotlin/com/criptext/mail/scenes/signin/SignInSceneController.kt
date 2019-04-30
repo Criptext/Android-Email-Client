@@ -6,6 +6,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
@@ -101,14 +102,19 @@ class SignInSceneController(
                     val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
                     if(oldAccounts.isNotEmpty() && result.username !in oldAccounts)
                         scene.showSignInWarningDialog(
-                                oldAccountName = oldAccounts.joinToString { it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX) },
-                                newUserName = result.username
+                                oldAccountName = oldAccounts.joinToString {
+                                    if(AccountDataValidator.validateEmailAddress(it) is FormData.Valid) it
+                                    else it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
+                                },
+                                newUserName = result.username,
+                                domain = result.domain
                         )
                     else {
                         //LINK DEVICE FEATURE
                         model.state = SignInLayoutState.LoginValidation(username = result.username,
+                                domain = result.domain,
                                 hasTwoFA = model.hasTwoFA)
-                        dataSource.submitRequest(SignInRequest.LinkBegin(result.username))
+                        dataSource.submitRequest(SignInRequest.LinkBegin(result.username, result.domain))
                     }
                 }
                 else{
@@ -128,7 +134,7 @@ class SignInSceneController(
                 model.ephemeralJwt = result.ephemeralJwt
                 model.hasTwoFA = result.hasTwoFA
                 if(model.hasTwoFA){
-                    onAcceptPasswordLogin(currentState.username)
+                    onAcceptPasswordLogin(currentState.username, currentState.domain)
                 }else{
                     scene.initLayout(model.state, uiObserver)
                     handleNewTemporalWebSocket()
@@ -139,7 +145,7 @@ class SignInSceneController(
             is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
             is SignInResult.LinkBegin.NoDevicesAvailable -> {
                 val currentState = model.state as SignInLayoutState.LoginValidation
-                onAcceptPasswordLogin(currentState.username)
+                onAcceptPasswordLogin(currentState.username, currentState.domain)
             }
         }
     }
@@ -156,7 +162,7 @@ class SignInSceneController(
             is SignInResult.LinkAuth.Success -> {
                 if(model.hasTwoFA) {
                     val currentState = model.state as SignInLayoutState.InputPassword
-                    model.state = SignInLayoutState.LoginValidation(currentState.username, model.hasTwoFA)
+                    model.state = SignInLayoutState.LoginValidation(currentState.username, currentState.domain, model.hasTwoFA)
                     scene.initLayout(model.state, uiObserver)
                 }
                 handleNewTemporalWebSocket()
@@ -291,19 +297,20 @@ class SignInSceneController(
         }
     }
 
-    private fun onAcceptPasswordLogin(username: String){
+    private fun onAcceptPasswordLogin(username: String, domain: String){
         model.state = SignInLayoutState.InputPassword(
                 username = username,
                 password = "",
                 buttonState = ProgressButtonState.disabled,
+                domain = domain,
                 hasTwoFA = model.hasTwoFA)
         scene.initLayout(model.state, uiObserver)
     }
 
     private val passwordLoginDialogListener = object : OnPasswordLoginDialogListener {
 
-        override fun acceptPasswordLogin(username: String) {
-            onAcceptPasswordLogin(username)
+        override fun acceptPasswordLogin(username: String, domain: String) {
+            onAcceptPasswordLogin(username, domain)
         }
 
         override fun cancelPasswordLogin() {
@@ -324,7 +331,15 @@ class SignInSceneController(
         val userInput = AccountDataValidator.validateUsername(currentState.username)
         when (userInput) {
             is FormData.Valid -> {
-                val newRequest = SignInRequest.CheckUserAvailability(userInput.value)
+                val (recipientId, domain) = if(AccountDataValidator.validateEmailAddress(userInput.value) is FormData.Valid) {
+                    val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(userInput.value)
+                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(userInput.value, nonCriptextDomain),
+                            nonCriptextDomain
+                    )
+                } else {
+                    Pair(userInput.value, Contact.mainDomain)
+                }
+                val newRequest = SignInRequest.CheckUserAvailability(recipientId, domain)
                 dataSource.submitRequest(newRequest)
                 scene.setSubmitButtonState(ProgressButtonState.waiting)
             }
@@ -340,9 +355,9 @@ class SignInSceneController(
             scene.setSubmitButtonState(newButtonState)
 
             val hashedPassword = currentState.password.sha256()
+            val userData = UserData(currentState.username, currentState.domain, hashedPassword)
             val req = SignInRequest.AuthenticateUser(
-                    username = currentState.username,
-                    password = hashedPassword,
+                    userData = userData,
                     isMultiple = model.isMultiple
             )
 
@@ -444,11 +459,12 @@ class SignInSceneController(
 
     private val uiObserver = object : SignInUIObserver {
 
-        override fun onSignInWarningContinue(userName: String) {
+        override fun onSignInWarningContinue(userName: String, domain: String) {
             //LINK DEVICE FEATURE
             model.state = SignInLayoutState.LoginValidation(username = userName,
+                    domain = domain,
                     hasTwoFA = model.hasTwoFA)
-            dataSource.submitRequest(SignInRequest.LinkBegin(userName))
+            dataSource.submitRequest(SignInRequest.LinkBegin(userName, domain))
         }
 
         override fun onRetrySyncOk(result: SignInResult) {
@@ -639,7 +655,7 @@ class SignInSceneController(
         fun onCancelSync()
         fun onRetrySyncOk(result: SignInResult)
         fun onRetrySyncCancel()
-        fun onSignInWarningContinue(userName: String)
+        fun onSignInWarningContinue(userName: String, domain: String)
     }
 
     companion object {
