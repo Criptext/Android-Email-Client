@@ -5,6 +5,6 @@ package com.criptext.mail.scenes.signin
  */
 
 interface OnPasswordLoginDialogListener {
-    fun acceptPasswordLogin(username: String)
+    fun acceptPasswordLogin(username: String, domain: String)
     fun cancelPasswordLogin()
 }

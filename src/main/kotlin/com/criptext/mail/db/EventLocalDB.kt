@@ -104,7 +104,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         location = "",
                         seen = false,
                         emailId = existingEmail.id,
-                        contactId = db.contactDao().getContact("${it.from}@${Contact.mainDomain}", accountId)!!.id,
+                        contactId = db.contactDao().getContact(it.from, accountId)!!.id,
                         fileId = null
                 ))
             }

@@ -22,7 +22,8 @@ class SignInWarningDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showDialog(observer: SignInSceneController.SignInUIObserver?, oldAccount: String, newUserName: String) {
+    fun showDialog(observer: SignInSceneController.SignInUIObserver?, oldAccount: String, newUserName: String,
+                   domain: String) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -34,11 +35,12 @@ class SignInWarningDialog(val context: Context) {
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer, newUserName)
+        dialog = createDialog(dialogView, dialogBuilder, observer, newUserName, domain)
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: SignInSceneController.SignInUIObserver?, newUserName: String): AlertDialog {
+                             observer: SignInSceneController.SignInUIObserver?, newUserName: String,
+                             domain: String): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -50,14 +52,15 @@ class SignInWarningDialog(val context: Context) {
                 R.drawable.dialog_label_chooser_shape)
         newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
 
-        assignButtonEvents(dialogView, newLogoutDialog, observer, newUserName)
+        assignButtonEvents(dialogView, newLogoutDialog, observer, newUserName, domain)
 
 
         return newLogoutDialog
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: SignInSceneController.SignInUIObserver?, newUserName: String) {
+                                   observer: SignInSceneController.SignInUIObserver?, newUserName: String,
+                                   domain: String) {
 
         val btn_yes = view.findViewById(R.id.settings_logout_yes) as Button
         btn_yes.isEnabled = false
@@ -66,7 +69,7 @@ class SignInWarningDialog(val context: Context) {
 
         btn_yes.setOnClickListener {
             dialog.dismiss()
-            observer?.onSignInWarningContinue(newUserName)
+            observer?.onSignInWarningContinue(newUserName, domain)
         }
 
         btn_no.setOnClickListener {

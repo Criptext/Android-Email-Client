@@ -152,6 +152,6 @@ class LoginValidationHolder(
     }
 
     fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-        passwordLoginDialog.showPasswordLoginDialog(initialState.username, onPasswordLoginDialogListener)
+        passwordLoginDialog.showPasswordLoginDialog(initialState.username, initialState.domain, onPasswordLoginDialogListener)
     }
 }

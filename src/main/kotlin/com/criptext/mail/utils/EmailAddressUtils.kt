@@ -15,6 +15,9 @@ object EmailAddressUtils {
     val extractRecipientIdFromCriptextAddress: (String) -> String =
             { address -> address.substring(0, address.length - CRIPTEXT_DOMAIN_SUFFIX.length) }
 
+    val extractRecipientIdFromAddress: (String, String) -> String =
+            { address, domain -> address.substring(0, address.length - (domain.length + 1)) }
+
     fun checkIfOnlyHasEmail(contactAddress: String): Boolean{
         if(contactAddress.contains("<") && contactAddress.lastIndexOf("<") == 0)
             return true
@@ -34,6 +37,10 @@ object EmailAddressUtils {
                 .replace(">", "")
                 .replace("\"", "")
                 .toLowerCase()
+    }
+
+    fun extractEmailAddressDomain(contactAddress: String): String{
+        return contactAddress.substring(contactAddress.lastIndexOf("@") + 1)
     }
 
     fun extractName(contactAddress: String): String{

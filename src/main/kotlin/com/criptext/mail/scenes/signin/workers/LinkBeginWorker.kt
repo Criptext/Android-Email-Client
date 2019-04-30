@@ -16,6 +16,7 @@ import org.json.JSONObject
 
 class LinkBeginWorker(val httpClient: HttpClient,
                       private val username: String,
+                      private val domain: String,
                       override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.LinkBegin> {
 
@@ -35,7 +36,7 @@ class LinkBeginWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.LinkBegin>): SignInResult.LinkBegin? {
-        val result = Result.of { apiClient.postLinkBegin(username).body }
+        val result = Result.of { apiClient.postLinkBegin(username, domain).body }
                 .flatMap { Result.of {
                     val json = JSONObject(it)
                     Pair(json.getString("token"), json.getInt("twoFactorAuth") == 1)
