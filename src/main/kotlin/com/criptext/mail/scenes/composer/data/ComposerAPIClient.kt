@@ -13,9 +13,7 @@ import org.json.JSONObject
 class ComposerAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun findKeyBundles(recipients: List<String>, knownAddresses: Map<String, List<Int>>): HttpResponseData {
-        val jsonObject = JSONObject()
-        jsonObject.put("recipients", JSONArray(recipients))
-        jsonObject.put("knownAddresses", JSONObject(knownAddresses))
+        val jsonObject = FindKeybundleData.toJSON(recipients, knownAddresses)
         return httpClient.post(path = "/keybundle/find", authToken = token, body = jsonObject)
     }
 

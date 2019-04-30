@@ -29,6 +29,10 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post("/user", null, jsonObject)
     }
 
+    fun userCanLogin(username: String, domain: String): HttpResponseData {
+        return httpClient.get("/user/canlogin?username=$username&domain=$domain", null)
+    }
+
     fun isUsernameAvailable(username: String): HttpResponseData {
         return httpClient.get("/user/available?username=$username", null)
     }

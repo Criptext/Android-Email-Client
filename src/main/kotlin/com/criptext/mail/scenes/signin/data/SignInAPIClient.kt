@@ -16,13 +16,12 @@ import java.io.InputStream
 
 class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(httpClient) {
 
-    fun authenticateUser(
-            username: String,
-            password: String)
+    fun authenticateUser(userData: UserData)
             : HttpResponseData {
         val jsonObject = JSONObject()
-        jsonObject.put("username", username)
-        jsonObject.put("password", password)
+        jsonObject.put("username", userData.username)
+        jsonObject.put("domain", userData.domain)
+        jsonObject.put("password", userData.password)
         return httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
     }
 
@@ -41,9 +40,10 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
     }
 
-    fun postLinkBegin(recipientId: String): HttpResponseData{
+    fun postLinkBegin(recipientId: String, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("targetUsername", recipientId)
+        jsonPut.put("domain", domain)
         jsonPut.put("version", UserDataWriter.FILE_SYNC_VERSION)
 
         return httpClient.post(path = "/link/begin", authToken = null, body = jsonPut)
