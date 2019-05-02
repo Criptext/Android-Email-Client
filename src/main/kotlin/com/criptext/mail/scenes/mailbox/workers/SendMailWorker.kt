@@ -130,7 +130,7 @@ class SendMailWorker(private val signalClient: SignalClient,
             : List<PostEmailBody.CriptextEmail> {
         return criptextRecipients
                 .filter { it !in guestEmails?.to ?: listOf()}
-                .filter { it !in guestEmails?.to ?: listOf() }
+                .filter { it !in guestEmails?.cc ?: listOf() }
                 .filter { it !in guestEmails?.to ?: listOf() }
                 .map { emailAddress ->
             val domain: String
