@@ -22,7 +22,8 @@ object AccountDataValidator {
 
         return if (sanitizedValue.length < 3)
             FormData.Error(UIMessage(R.string.username_length_error))
-        else if (! validCriptextUserPattern.matcher(sanitizedValue).matches())
+        else if (! (validCriptextUserPattern.matcher(sanitizedValue).matches() ||
+                        validEmailAddressPattern.matcher(sanitizedValue).matches()))
             FormData.Error(UIMessage(R.string.username_invalid_error))
         else
             FormData.Valid(sanitizedValue)

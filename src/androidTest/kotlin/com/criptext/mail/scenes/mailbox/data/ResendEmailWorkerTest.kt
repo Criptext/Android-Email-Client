@@ -129,6 +129,7 @@ class ResendEmailWorkerTest {
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
         val date = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         val strDate = dateFormat.format(date)
@@ -173,6 +174,7 @@ class ResendEmailWorkerTest {
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
         val date = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         val strDate = dateFormat.format(date)

@@ -133,6 +133,7 @@ class SendEmailWorkerTest {
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
@@ -170,8 +171,10 @@ class SendEmailWorkerTest {
         //Add blacklisted devices to test for removal
         val jsonBlacklistObject = JSONObject()
         jsonBlacklistObject.put("name", "jose")
+        jsonBlacklistObject.put("domain", "criptext.com")
         jsonBlacklistObject.put("devices", JSONArray().put(1))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray().put(jsonBlacklistObject))
+        jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
@@ -229,6 +232,7 @@ class SendEmailWorkerTest {
         val jsonFindKeyBundleResponse = JSONObject()
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
+        jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(

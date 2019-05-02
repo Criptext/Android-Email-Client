@@ -15,9 +15,10 @@ data class TrackingUpdate (val metadataKey: Long, val type: DeliveryTypes, val d
 
         fun fromJSON(jsonString: String): TrackingUpdate {
             val json = JSONObject(jsonString)
+            val jsonFrom = json.getJSONObject("fromDomain")
             return TrackingUpdate(
                     metadataKey = json.getLong("metadataKey"),
-                    from = json.getString("from"),
+                    from = jsonFrom.getString("recipientId").plus("@${jsonFrom.getString("domain")}"),
                     type = DeliveryTypes.fromInt(json.getInt("type")),
                     date = Date()
             )

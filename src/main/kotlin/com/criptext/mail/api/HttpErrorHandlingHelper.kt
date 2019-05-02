@@ -59,10 +59,17 @@ object HttpErrorHandlingHelper {
                     accountDao.updateJwt(account.recipientId, JSONObject(refreshAndSession).getString("token"))
                     accountDao.updateRefreshToken(account.recipientId, JSONObject(refreshAndSession).getString("refreshToken"))
                 }else{
-                    val sessionToken = apiClient.refreshSession(account.refreshToken).body
-                    if (isActiveAccount)
-                        account.updateUserWithSessionData(storage, sessionToken)
-                    accountDao.updateJwt(account.recipientId, sessionToken)
+                    val session = apiClient.refreshSession(account.refreshToken)
+                    if (session.code == ServerCodes.SuccessAndRepeat){
+                        if (isActiveAccount)
+                            account.updateUserWithTokensData(storage, session.body)
+                        accountDao.updateJwt(account.recipientId, JSONObject(session.body).getString("token"))
+                        accountDao.updateRefreshToken(account.recipientId, JSONObject(session.body).getString("refreshToken"))
+                    } else {
+                        if (isActiveAccount)
+                            account.updateUserWithSessionData(storage, session.body)
+                        accountDao.updateJwt(account.recipientId, session.body)
+                    }
                 }
             }
         }

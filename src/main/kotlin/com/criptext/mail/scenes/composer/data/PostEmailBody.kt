@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.JSONData
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalEncryptedData
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONArray
@@ -47,7 +49,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
 
     abstract class CriptextEmail: JSONData
 
-    data class CompleteCriptextEmail(val recipientId: String, val deviceId: Int,
+    data class CompleteCriptextEmail(val recipientId: String, val domain: String, val deviceId: Int,
                                      val messageType: SignalEncryptedData.Type,
                                      val type: RecipientTypes, val body: String, val fileKey: String?,
                                      val fileKeys: List<String>?, val preview: String,
@@ -66,6 +68,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("fileKey", fileKey)
             json.put("fileKeys", JSONArray(fileKeys))
             jsonOuter.put("username", recipientId)
+            jsonOuter.put("domain", domain)
             jsonOuter.put("emails", JSONArray().put(json))
             return jsonOuter
         }
