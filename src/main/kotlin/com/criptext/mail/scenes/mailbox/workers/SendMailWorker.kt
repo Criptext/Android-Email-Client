@@ -131,7 +131,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         return criptextRecipients
                 .filter { it !in guestEmails?.to ?: listOf()}
                 .filter { it !in guestEmails?.cc ?: listOf() }
-                .filter { it !in guestEmails?.to ?: listOf() }
+                .filter { it !in guestEmails?.bcc ?: listOf() }
                 .map { emailAddress ->
             val domain: String
             val recipientId = if(EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
