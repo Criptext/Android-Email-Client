@@ -10,6 +10,7 @@ import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.scenes.settings.workers.LogoutWorker
@@ -35,7 +36,8 @@ class LogoutWorkerTest{
     private lateinit var settingsLocalDB: SettingsLocalDB
     private lateinit var storage: KeyValueStorage
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
+            domain = Contact.mainDomain)
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 

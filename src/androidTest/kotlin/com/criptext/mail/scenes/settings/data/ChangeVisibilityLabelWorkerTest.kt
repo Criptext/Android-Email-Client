@@ -8,6 +8,7 @@ import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.settings.labels.workers.ChangeVisibilityLabelWorker
 import io.mockk.mockk
@@ -29,7 +30,8 @@ class ChangeVisibilityLabelWorkerTest{
     private val labelName = "Cute Dogs"
     private var labelId: Long = 0
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
+            domain = Contact.mainDomain)
 
     @Before
     fun setup() {

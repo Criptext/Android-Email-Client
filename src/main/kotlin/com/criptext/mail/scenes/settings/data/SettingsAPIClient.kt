@@ -38,9 +38,10 @@ class SettingsAPIClient(private val httpClient: HttpClient, var token: String): 
         return httpClient.post(path = "/user/logout", authToken = token, body = JSONObject())
     }
 
-    fun postForgotPassword(recipientId: String): HttpResponseData{
+    fun postForgotPassword(recipientId: String, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
+        jsonPut.put("domain", domain)
 
         return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
     }

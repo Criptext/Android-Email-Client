@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordRequest
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -92,7 +93,8 @@ class ChangePasswordController(
         }
 
         override fun onForgotPasswordPressed() {
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId,
+                    EmailAddressUtils.extractEmailAddressDomain(activeAccount.userEmail)))
         }
 
         override fun onBackButtonPressed() {
