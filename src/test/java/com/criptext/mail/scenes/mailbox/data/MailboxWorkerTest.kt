@@ -9,6 +9,7 @@ import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.mocks.MockedWorkRunner
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.runTransactionsAsTheyAreInvoked
@@ -51,7 +52,8 @@ open class MailboxWorkerTest {
     fun setup() {
         lastResult = null
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
-                jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1)
+                jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
+                domain = Contact.mainDomain)
         signalClient = mockk()
         db = mockk()
         appDB = mockk()

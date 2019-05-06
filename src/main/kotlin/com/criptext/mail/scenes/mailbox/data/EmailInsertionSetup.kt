@@ -217,7 +217,8 @@ object EmailInsertionSetup {
 
     private fun getSenderId(metadata: EmailMetadata): Pair<Int?, String>{
         val senderDeviceId = metadata.senderDeviceId
-        var senderRecipientId = metadata.senderRecipientId
+        var senderRecipientId = if(metadata.senderDomain.isEmpty() || metadata.senderDomain == Contact.mainDomain) metadata.senderRecipientId
+        else metadata.senderRecipientId.plus("@${metadata.senderDomain}")
         if (metadata.isExternal != null && metadata.isExternal) {
             senderRecipientId = SignalUtils.externalRecipientId
         }
@@ -239,7 +240,6 @@ object EmailInsertionSetup {
         } else
             body
     }
-
 
     private fun getDecryptedFileKey(signalClient: SignalClient,
                                       metadata: EmailMetadata): String? {

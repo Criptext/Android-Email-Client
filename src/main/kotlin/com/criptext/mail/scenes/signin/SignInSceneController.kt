@@ -137,9 +137,10 @@ class SignInSceneController(
                     onAcceptPasswordLogin(currentState.username, currentState.domain)
                 }else{
                     scene.initLayout(model.state, uiObserver)
+                    scene.toggleResendClickable(true)
                     handleNewTemporalWebSocket()
                     dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
-                            model.ephemeralJwt))
+                            model.ephemeralJwt, currentState.domain))
                 }
             }
             is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
@@ -166,7 +167,6 @@ class SignInSceneController(
                     scene.initLayout(model.state, uiObserver)
                 }
                 handleNewTemporalWebSocket()
-                scene.toggleResendClickable(true)
                 model.linkDeviceState = LinkDeviceState.Auth()
                 host.postDelay(Runnable{
                     if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
@@ -507,9 +507,9 @@ class SignInSceneController(
             }
         }
 
-        override fun onResendDeviceLinkAuth(username: String) {
+        override fun onResendDeviceLinkAuth(username: String, domain: String) {
             dataSource.submitRequest(SignInRequest.LinkAuth(username, model.ephemeralJwt,
-                    model.realSecurePassword))
+                    domain, model.realSecurePassword))
         }
 
         override fun onProgressHolderFinish() {
@@ -530,7 +530,7 @@ class SignInSceneController(
                         val currentState = model.state as SignInLayoutState.InputPassword
                         model.realSecurePassword = currentState.password.sha256()
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
-                                model.ephemeralJwt, model.realSecurePassword))
+                                model.ephemeralJwt, currentState.domain, model.realSecurePassword))
                     }else{
                         onSignInButtonClicked(state)
                     }
@@ -541,7 +541,8 @@ class SignInSceneController(
         override fun onForgotPasswordClick() {
             scene.toggleForgotPasswordClickable(false)
             val currentState = model.state as SignInLayoutState.InputPassword
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword(currentState.username))
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(currentState.username,
+                    currentState.domain))
         }
 
         override fun onCantAccessDeviceClick(){
@@ -646,7 +647,7 @@ class SignInSceneController(
         fun onSignUpLabelClicked()
         fun userLoginReady()
         fun onCantAccessDeviceClick()
-        fun onResendDeviceLinkAuth(username: String)
+        fun onResendDeviceLinkAuth(username: String, domain: String)
         fun onPasswordChangeListener(newPassword: String)
         fun onUsernameTextChanged(newUsername: String)
         fun onForgotPasswordClick()

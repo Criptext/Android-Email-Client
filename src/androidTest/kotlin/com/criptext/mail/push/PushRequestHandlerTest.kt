@@ -37,7 +37,8 @@ class PushRequestHandlerTest {
     private lateinit var db: TestDatabase
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
+            domain = Contact.mainDomain)
 
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>

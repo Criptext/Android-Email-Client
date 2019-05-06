@@ -14,11 +14,11 @@ sealed class SignInRequest{
 
     data class CheckUserAvailability(val username: String, val domain: String): SignInRequest()
 
-    data class ForgotPassword(val username: String): SignInRequest()
+    data class ForgotPassword(val username: String, val domain: String): SignInRequest()
 
     data class LinkBegin(val username: String, val domain: String): SignInRequest()
 
-    data class LinkAuth(val username: String, val ephemeralJwt: String, val password: String? = null): SignInRequest()
+    data class LinkAuth(val username: String, val ephemeralJwt: String, val domain: String, val password: String? = null): SignInRequest()
 
     data class CreateSessionFromLink(val name: String, val username: String, val randomId: Int,
                                      val ephemeralJwt: String, val isMultiple: Boolean): SignInRequest()

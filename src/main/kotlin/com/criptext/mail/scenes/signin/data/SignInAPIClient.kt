@@ -53,9 +53,10 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.get(path = "/link/status", authToken = jwt)
     }
 
-    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem, password: String?): HttpResponseData{
+    fun postLinkAuth(recipientId: String, jwt: String, device: DeviceItem, password: String?, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
+        jsonPut.put("domain", domain)
         jsonPut.put("deviceName", device.name)
         jsonPut.put("deviceFriendlyName", device.friendlyName)
         jsonPut.put("deviceType", device.deviceType)

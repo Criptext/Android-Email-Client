@@ -32,7 +32,7 @@ class PasswordLoginHolder(
     private val progressBar: View = view.findViewById(R.id.signin_progress_login)
 
     init {
-        username.text  = "${initialState.username}@${Contact.mainDomain}"
+        username.text  = "${initialState.username}@${initialState.domain}"
         password.text = SpannableStringBuilder(initialState.password)
         passwordInput.isPasswordVisibilityToggleEnabled = true
         passwordInput.setPasswordVisibilityToggleTintList(

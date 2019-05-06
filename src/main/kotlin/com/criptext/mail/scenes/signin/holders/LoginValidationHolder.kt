@@ -147,7 +147,7 @@ class LoginValidationHolder(
         }
 
         buttonResend.setOnClickListener {
-            uiObserver?.onResendDeviceLinkAuth(initialState.username)
+            uiObserver?.onResendDeviceLinkAuth(initialState.username, initialState.domain)
             setEnableButtons(false)
         }
     }

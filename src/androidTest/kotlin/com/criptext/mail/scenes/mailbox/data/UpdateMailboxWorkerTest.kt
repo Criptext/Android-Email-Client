@@ -44,7 +44,8 @@ class UpdateMailboxWorkerTest {
     private lateinit var storage: KeyValueStorage
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
+            domain = Contact.mainDomain)
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase

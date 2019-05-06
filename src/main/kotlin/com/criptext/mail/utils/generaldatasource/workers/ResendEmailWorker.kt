@@ -156,7 +156,8 @@ class ResendEmailWorker(
     private fun processSend(): Result<Unit, Exception>{
         return if(currentFullEmail != null) {
             val mailRecipients = EmailUtils.getMailRecipients(currentFullEmail!!.to,
-                    currentFullEmail!!.cc, currentFullEmail!!.bcc, activeAccount.recipientId)
+                    currentFullEmail!!.cc, currentFullEmail!!.bcc, activeAccount.recipientId,
+                    activeAccount.domain)
             checkEncryptionKeysOperation(mailRecipients)
                     .flatMap { encryptOperation(mailRecipients) }
                     .flatMap(sendEmailOperation)

@@ -33,8 +33,8 @@ import java.util.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
-                     , PendingEvent::class, AccountContact::class],
-        version = 13,
+                     , PendingEvent::class, AccountContact::class, AntiPushMap::class],
+        version = 14,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -63,6 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun openDao(): OpenDao
     abstract fun emailExternalSessionDao(): EmailExternalSessionDao
     abstract fun pendingEventDao(): PendingEventDao
+    abstract fun antiPushMapDao(): AntiPushMapDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
@@ -73,7 +74,8 @@ abstract class AppDatabase : RoomDatabase() {
                         "encriptedMail1")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
-                                MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+                                MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
+                                MIGRATION_13_14)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -403,6 +405,15 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""ALTER TABLE account ADD COLUMN autoBackupFrequency INTEGER NOT NULL DEFAULT 0""")
                 database.execSQL("""ALTER TABLE account ADD COLUMN wifiOnly INTEGER NOT NULL DEFAULT 0""")
                 database.execSQL("""ALTER TABLE account ADD COLUMN backupPassword TEXT DEFAULT NULL""")
+            }
+        }
+
+        val MIGRATION_13_14: Migration = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  antiPushMap (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        value TEXT NOT NULL,
+                                        FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
             }
         }
     }
