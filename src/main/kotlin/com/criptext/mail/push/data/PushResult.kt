@@ -54,14 +54,16 @@ sealed class PushResult {
                 val isManual: Boolean,
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,
-                val senderImage: Bitmap?): NewEmail()
+                val senderImage: Bitmap?,
+                val notificationId: Int): NewEmail()
 
         data class Failure(
                 val mailboxLabel: Label,
                 val message: UIMessage,
                 val exception: Exception?,
                 val pushData: Map<String, String>,
-                val shouldPostNotification: Boolean): NewEmail()
+                val shouldPostNotification: Boolean,
+                val notificationId: Int): NewEmail()
     }
 
     sealed class LinkAccept: PushResult() {
@@ -72,5 +74,10 @@ sealed class PushResult {
     sealed class LinkDeny: PushResult() {
         data class Success(val notificationId: Int): LinkDeny()
         data class Failure(val message: UIMessage): LinkDeny()
+    }
+
+    sealed class RemoveNotification: PushResult() {
+        data class Success(val notificationId: Int): RemoveNotification()
+        data class Failure(val message: UIMessage): RemoveNotification()
     }
 }

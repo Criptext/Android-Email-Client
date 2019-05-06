@@ -992,7 +992,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onGetMenuInformation(result: MailboxResult){
             when (result) {
                 is MailboxResult.GetMenuInformation.Success -> {
-                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${Contact.mainDomain}")
+                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${result.account.domain}")
                     scene.setCounterLabel(NavigationMenuOptions.INBOX, result.totalInbox)
                     scene.setCounterLabel(NavigationMenuOptions.DRAFT, result.totalDraft)
                     scene.setCounterLabel(NavigationMenuOptions.SPAM, result.totalSpam)

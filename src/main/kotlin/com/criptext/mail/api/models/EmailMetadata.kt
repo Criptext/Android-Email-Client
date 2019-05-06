@@ -21,6 +21,7 @@ data class EmailMetadata(
         val from: String,
         val replyTo: String?,
         val senderRecipientId: String,
+        val senderDomain: String,
         val senderDeviceId: Int?,
         val fromContact: Contact,
         val messageId: String,
@@ -54,7 +55,8 @@ data class EmailMetadata(
                 null
             val fromEmail = EmailAddressUtils.extractEmailAddress(from)
             val fromName = EmailAddressUtils.extractName(from)
-            val fromRecipientId = fromEmail.substring(0, fromEmail.indexOf("@"))
+            val fromRecipientId = emailData.getString("senderId")
+            val fromDomain = if(emailData.has("senderDomain")) emailData.getString("senderDomain") else ""
             val fromContact = Contact(id = 0, email = fromEmail, name = fromName, isTrusted = false, score = 0)
             val messageType = emailData.optInt("messageType")
             val senderDeviceId = emailData.optInt("senderDeviceId")
@@ -66,6 +68,7 @@ data class EmailMetadata(
             return EmailMetadata(
                     from = from,
                     senderRecipientId = fromRecipientId,
+                    senderDomain = fromDomain,
                     senderDeviceId = if (senderDeviceId != 0) senderDeviceId else null,
                     fromContact = fromContact,
                     to = getToArray(emailData),

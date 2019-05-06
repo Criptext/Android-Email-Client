@@ -42,7 +42,7 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_OPEN_EMAIL)
                 .setContentTitle(pushData.title)
                 .setContentText(pushData.body)
-                .setSubText(pushData.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX))
+                .setSubText(pushData.recipientId.plus("@${pushData.domain}"))
                 .setAutoCancel(true)
                 .setContentIntent(clickIntent)
                 .setGroup(ACTION_OPEN)

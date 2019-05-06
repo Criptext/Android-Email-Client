@@ -38,19 +38,20 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
         okAction.action = LinkDeviceActionService.APPROVE
         okAction.addCategory(Intent.CATEGORY_LAUNCHER)
         okAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        okAction.putExtra("notificationId", notificationId)
         okAction.putExtra("randomId", pushData.randomId)
         okAction.putExtra("deviceType", pushData.deviceType.ordinal)
         okAction.putExtra("version", pushData.syncFileVersion)
         okAction.putExtra("account", pushData.recipientId)
-        val okPendingIntent = PendingIntent.getActivity(ctx, 0, okAction,
+        val okPendingIntent = PendingIntent.getActivity(ctx, notificationId, okAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
         val denyAction = Intent(ctx, LinkDeviceActionService::class.java)
         denyAction.action = LinkDeviceActionService.DENY
-        denyAction.putExtra("notificationId", LINK_DEVICE_ID)
+        denyAction.putExtra("notificationId", notificationId)
         denyAction.putExtra("randomId", pushData.randomId)
         denyAction.putExtra("account", pushData.recipientId)
-        val denyPendingIntent = PendingIntent.getService(ctx, 0, denyAction,
+        val denyPendingIntent = PendingIntent.getService(ctx, notificationId, denyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
 
@@ -70,7 +71,7 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
                         ctx.getLocalizedUIMessage(UIMessage(R.string.push_link_device_message,
                                 arrayOf(data.deviceName)))
                 )
-                .setSubText(pushData.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX))
+                .setSubText(pushData.recipientId.plus("@${pushData.domain}"))
                 .setAutoCancel(true)
                 .setSound(defaultSound)
                 .setContentIntent(clickIntent)

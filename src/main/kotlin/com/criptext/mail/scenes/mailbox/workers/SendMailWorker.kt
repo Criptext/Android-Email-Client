@@ -310,7 +310,7 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
         val mailRecipients = EmailUtils.getMailRecipients(composerInputData.to,
-                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId)
+                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId, activeAccount.domain)
 
         val currentEmail = db.getEmailById(emailId, activeAccount.id)
 
