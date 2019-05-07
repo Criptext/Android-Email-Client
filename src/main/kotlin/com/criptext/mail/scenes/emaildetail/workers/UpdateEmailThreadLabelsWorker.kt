@@ -55,22 +55,22 @@ class UpdateEmailThreadLabelsWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.UpdateEmailThreadsLabelsRelations>)
             : EmailDetailResult.UpdateEmailThreadsLabelsRelations? {
 
-
-        val selectedLabelsList = selectedLabels.toList().map { it.label }
-        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val selectedLabelsList = db.getLabelsById(selectedLabels.toList().map { it.label.id }, activeAccount.id)
+        val trueCurrentLabel = db.getLabelById(currentLabel.id, activeAccount.id)
+        val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(trueCurrentLabel).map { it.id }
         val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
                 .filter { it.text != Label.LABEL_STARRED }
         val emails = db.getFullEmailsFromThreadId(threadId = threadId,
                 rejectedLabels = rejectedLabels, account = activeAccount)
         val emailIds = emails.map { it.email.id }
-        val removedLabels = if(currentLabel == Label.defaultItems.starred
-                || currentLabel == Label.defaultItems.sent) listOf(Label.defaultItems.inbox.text)
+        val removedLabels = if(trueCurrentLabel == Label.defaultItems.starred
+                || trueCurrentLabel == Label.defaultItems.sent) listOf(Label.defaultItems.inbox.text)
         else
-            listOf(currentLabel.text)
+            listOf(trueCurrentLabel.text)
 
         val peerSelectedLabels = selectedLabels.toList()
-                .filter { it.text != currentLabel.text }
+                .filter { it.text != trueCurrentLabel.text }
                 .toList().map { it.text }
         val peerRemovedLabels = db.getLabelsFromThreadId(threadId)
                 .filter { !selectedLabelsList.contains(it) }
@@ -82,18 +82,18 @@ class UpdateEmailThreadLabelsWorker(
 
         val result =
             if(removeCurrentLabel){
-                if(currentLabel == Label.defaultItems.spam){
+                if(trueCurrentLabel == Label.defaultItems.spam){
                     peerRemovedLabels.removeAll(peerRemovedLabels)
                     peerRemovedLabels.add(Label.LABEL_SPAM)
                 }else
-                    peerRemovedLabels.add(currentLabel.text)
+                    peerRemovedLabels.add(trueCurrentLabel.text)
                     Result.of {
-                        if(currentLabel == Label.defaultItems.starred
-                                || currentLabel == Label.defaultItems.sent){
+                        if(trueCurrentLabel == Label.defaultItems.starred
+                                || trueCurrentLabel == Label.defaultItems.sent){
                             db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds, activeAccount.id)
                         }
                         else{
-                            db.deleteRelationByLabelAndEmailIds(currentLabel.id, emailIds, activeAccount.id)
+                            db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id)
                     } }
 
             } else {

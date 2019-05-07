@@ -42,7 +42,7 @@ class CheckForBackupWorker(
                 else {
                     val driveFile = file.files.first()
                     val isEncrypted = driveFile.fileExtension == "enc"
-                    Triple(driveFile.getSize() / (1024 * 1024), driveFile.modifiedTime.value, isEncrypted)
+                    Triple(driveFile.getSize(), driveFile.modifiedTime.value, isEncrypted)
                 }
             }
         }

@@ -184,7 +184,7 @@ class RestoreBackupController(
         when(result){
             is RestoreBackupResult.CheckForBackup.Success -> {
                 model.lastModified = result.lastModified
-                model.backupSize = result.fileSize.toInt()
+                model.backupSize = result.fileSize
                 model.isFileEncrypted = result.isEncrypted
                 scene.enableRestoreButton(!result.isEncrypted)
                 scene.showBackupFoundLayout(model.isFileEncrypted)
@@ -232,13 +232,17 @@ class RestoreBackupController(
         override fun progressChanged(downloader: MediaHttpDownloader) {
             when (downloader.downloadState) {
                 MediaHttpDownloader.DownloadState.MEDIA_IN_PROGRESS -> {
-                    scene.setProgress((downloader.progress * 100).toInt())
+                    host.runOnUiThread(Runnable {
+                        scene.setProgress((downloader.progress * 100).toInt())
+                    })
                 }
                 MediaHttpDownloader.DownloadState.MEDIA_COMPLETE -> {
                     if(!model.hasPathReady && model.backupFilePath.isNotEmpty()) {
                         model.hasPathReady = true
-                        scene.setProgress(60)
                         dataSource.submitRequest(RestoreBackupRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                        host.runOnUiThread(Runnable {
+                            scene.setProgress(60)
+                        })
                     }
                 }
             }

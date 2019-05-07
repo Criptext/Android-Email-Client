@@ -73,12 +73,12 @@ class DeviceRemovedWorker(private val letAPIKnow: Boolean,
         }
         .flatMap { Result.of {
             EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-            RemoveDeviceUtils.clearAllData(db, storage)
+            RemoveDeviceUtils.clearAllData(db, storage, activeAccount.recipientId)
         }}}
     else
         Result.of {
             EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-            RemoveDeviceUtils.clearAllData(db, storage)
+            RemoveDeviceUtils.clearAllData(db, storage, activeAccount.recipientId)
         }
 
     private fun newRetryWithNewSessionOperation()

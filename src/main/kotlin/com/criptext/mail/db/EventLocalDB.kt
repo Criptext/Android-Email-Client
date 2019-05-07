@@ -46,7 +46,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     fun logoutNukeDB(activeAccount: ActiveAccount) {
         EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-        db.clearAllTables()
+        db.accountDao().deleteAccountByRecipientId(activeAccount.recipientId)
     }
 
     fun logout(accountId: Long){
@@ -294,7 +294,17 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 }
             }
             else{
-                contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
+                val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
+                val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+                    dbContact[0]
+                }else Contact(
+                        id = 0,
+                        email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
+                        name = EmailAddressUtils.extractName(email.fromAddress),
+                        isTrusted = contactsFROM[0].isTrusted,
+                        score = contactsFROM[0].score
+                )
+                contacts.addAll(listOf(fromContact))
             }
             contacts.forEach { contact ->
                 when {

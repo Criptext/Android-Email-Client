@@ -8,10 +8,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.UIUtils
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.textfield.TextInputLayout
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -32,7 +29,7 @@ interface RestoreBackupScene{
     fun showBackupNotFoundLayout()
     fun showBackupRetryLayout()
     fun getGoogleDriveService(): Drive?
-    fun updateFileData(fileSize: Int, lastModified: Long)
+    fun updateFileData(fileSize: Long, lastModified: Long)
     fun enableRestoreButton(isEnabled: Boolean)
 
 
@@ -178,8 +175,8 @@ interface RestoreBackupScene{
                     .build()
         }
 
-        override fun updateFileData(fileSize: Int, lastModified: Long) {
-            textViewSize.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_size, arrayOf(fileSize)))
+        override fun updateFileData(fileSize: Long, lastModified: Long) {
+            textViewSize.text = Utility.humanReadableByteCount(fileSize, true)
             textViewLastModified.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_last_modified,
                     arrayOf(DateAndTimeUtils.getTimeForBackup(lastModified))))
         }

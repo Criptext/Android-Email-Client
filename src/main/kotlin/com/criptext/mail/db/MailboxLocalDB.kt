@@ -42,6 +42,8 @@ interface MailboxLocalDB {
     fun deleteRelationByLabelAndEmailIds(labelId: Long, emailIds: List<Long>)
     fun getLabelByName(labelName: String, accountId: Long): Label
     fun getLabelsByName(labelName: List<String>, accountId: Long): List<Label>
+    fun getLabelsById(ids: List<Long>, accountId: Long): List<Label>
+    fun getLabelById(id: Long, accountId: Long): Label
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
                                metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
     fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long)
@@ -365,6 +367,14 @@ interface MailboxLocalDB {
             return db.labelDao().get(labelName, accountId)
         }
 
+        override fun getLabelsById(ids: List<Long>, accountId: Long): List<Label> {
+            return db.labelDao().getById(ids, accountId)
+        }
+
+        override fun getLabelById(id: Long, accountId: Long): Label {
+            return db.labelDao().getById(id, accountId)
+        }
+
         override fun deleteRelationByEmailIds(emailIds: List<Long>) {
             db.emailLabelDao().deleteRelationByEmailIds(emailIds)
         }
@@ -465,7 +475,17 @@ interface MailboxLocalDB {
                         contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.CC))
                     }
                 } else {
-                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM))
+                    val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
+                    val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+                        dbContact[0]
+                    }else Contact(
+                            id = 0,
+                            email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
+                            name = EmailAddressUtils.extractName(email.fromAddress),
+                            isTrusted = contactsFROM[0].isTrusted,
+                            score = contactsFROM[0].score
+                    )
+                    contacts.addAll(listOf(fromContact))
                 }
                 contacts.map { contact ->
                     when {
@@ -492,7 +512,6 @@ interface MailboxLocalDB {
                 totalFiles += db.fileDao().getAttachmentsFromEmail(it.id).size
                 contacts
             }
-
 
             val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
                 contactsFROM[0]

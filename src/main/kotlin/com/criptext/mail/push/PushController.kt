@@ -147,7 +147,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
-                parsePushPayload(result.pushData, result.shouldPostNotification)
+                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
+                        result.pushData, result.shouldPostNotification))
             }
         }
     }

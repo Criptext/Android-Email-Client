@@ -4,10 +4,13 @@ import android.app.Activity
 import android.view.View
 import android.widget.*
 import com.criptext.mail.R
-import com.criptext.mail.services.CloudBackupJobService
+import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.services.jobs.CriptextJobCreator
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.evernote.android.job.JobManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -120,6 +123,7 @@ interface CloudBackupScene{
 
         override fun attachView(model: CloudBackupModel, cloudBackupUIObserver1: CloudBackupUIObserver) {
             this.cloudBackupUIObserver = cloudBackupUIObserver1
+            JobManager.create(context).addJobCreator(CriptextJobCreator())
 
             accountEmail.text = model.activeAccountEmail
             enableCloudBackup(cloudBackupSwitch.isChecked)
@@ -127,7 +131,7 @@ interface CloudBackupScene{
         }
 
         override fun updateCloudBackupData(model: CloudBackupModel) {
-            updateFileInfo(model.lastBackupSize.toLong(), model.lastTimeBackup)
+            updateFileInfo(model.lastBackupSize, model.lastTimeBackup)
             setCloudBackupSwitchState(model.hasCloudBackup)
             setWifiOnlySwitchState(model.wifiOnly)
             accountEmail.text = model.activeAccountEmail
@@ -162,7 +166,7 @@ interface CloudBackupScene{
         override fun updateFileInfo(fileSize: Long, date: Date?) {
             if(fileSize > 0L && date != null) {
                 backupFileInfo.visibility = View.VISIBLE
-                backupSize.text = context.getLocalizedUIMessage(UIMessage(R.string.cloud_backup_mb, arrayOf(fileSize)))
+                backupSize.text = Utility.humanReadableByteCount(fileSize, true)
                 backupLastModified.text = DateAndTimeUtils.getTimeForBackup(date.time)
             }
         }

@@ -43,6 +43,7 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import java.net.URLDecoder
+import java.util.*
 
 /**
  * Created by sebas on 3/12/18.
@@ -364,7 +365,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     model.emails[result.position].email.unsentDate = result.unsentDate
                     scene.notifyFullEmailChanged(result.position + 1)
                 }
-                setEmailAtPositionAsUnsend(result.position)
+                setEmailAtPositionAsUnsend(result.position, result.unsentDate)
             }
 
             is EmailDetailResult.UnsendFullEmailFromEmailId.Failure -> {
@@ -383,7 +384,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
-    private fun setEmailAtPositionAsUnsend(position: Int) {
+    private fun setEmailAtPositionAsUnsend(position: Int, unsentDate: Date) {
         val fullEmail = model.emails[position]
         fullEmail.email.delivered = DeliveryTypes.UNSEND
         for(file in fullEmail.files){
@@ -395,7 +396,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         if (latestEmailWasUpdated) {
 
             model.threadPreview = model.threadPreview.copy(
-                    deliveryStatus = DeliveryTypes.UNSEND)
+                    deliveryStatus = DeliveryTypes.UNSEND,
+                    latestEmailUnsentDate = unsentDate)
         }
     }
 

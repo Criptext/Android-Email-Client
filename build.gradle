@@ -48,7 +48,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 64
-        versionName "0.19.1"
+        versionName "0.19.2"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -244,6 +244,9 @@ dependencies {
     implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+    //JOB SCHEDULER
+    implementation 'com.evernote:android-job:1.2.6'
 }
 
 
