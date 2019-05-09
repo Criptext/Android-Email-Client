@@ -5,7 +5,7 @@ import com.google.api.services.drive.Drive
 class RestoreBackupModel() {
     var accountEmail = ""
     var mDriveServiceHelper: Drive? = null
-    var backupSize = 0
+    var backupSize = 0L
     var lastModified = 0L
     var backupFilePath = ""
     var isFileEncrypted = false

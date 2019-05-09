@@ -84,14 +84,15 @@ class UpdateEmailThreadsLabelsWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
-        val selectedLabelsList = selectedLabels.toList().map { it.label }
-        val rejectedLabels = defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
+        val selectedLabelsList = db.getLabelsById(selectedLabels.toList().map { it.label.id }, activeAccount.id)
+        val trueCurrentLabel = db.getLabelById(currentLabel.id, activeAccount.id)
+        val rejectedLabels = defaultItems.rejectedLabelsByMailbox(trueCurrentLabel).map { it.id }
         val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }
                 .filter { it.text != Label.LABEL_STARRED }
 
         val peerSelectedLabels = selectedLabels.toList()
-                .filter { it.text != currentLabel.text }
+                .filter { it.text != trueCurrentLabel.text }
                 .toList().map { it.text }
         val peerRemovedLabels = db.getLabelsFromThreadIds(selectedThreadIds)
                 .filter { !selectedLabelsList.contains(it) }
@@ -106,11 +107,11 @@ class UpdateEmailThreadsLabelsWorker(
 
         val result =
             if(shouldRemoveCurrentLabel) {
-                if(currentLabel == Label.defaultItems.spam){
+                if(trueCurrentLabel == Label.defaultItems.spam){
                     peerRemovedLabels.removeAll(peerRemovedLabels)
                     peerRemovedLabels.add(Label.LABEL_SPAM)
                 }else
-                    peerRemovedLabels.add(currentLabel.text)
+                    peerRemovedLabels.add(trueCurrentLabel.text)
                 Result.of { removeCurrentLabelFromEmails(emailIds)}
             }else {
                 Result.of{ updateLabelEmailRelations(emailIds) }

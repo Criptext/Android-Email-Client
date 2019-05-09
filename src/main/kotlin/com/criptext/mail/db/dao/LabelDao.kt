@@ -49,6 +49,14 @@ interface LabelDao {
             WHERE text in (:labelNames) AND (accountId IS NULL OR accountId = :accountId)""")
     fun get(labelNames: List<String>, accountId: Long): List<Label>
 
+    @Query("""SELECT * FROM label
+            WHERE id = :labelId AND (accountId IS NULL OR accountId = :accountId)""")
+    fun getById(labelId: Long, accountId: Long): Label
+
+    @Query("""SELECT * FROM label
+            WHERE id in (:labelIds) AND (accountId IS NULL OR accountId = :accountId)""")
+    fun getById(labelIds: List<Long>, accountId: Long): List<Label>
+
     @Query("""UPDATE label
             SET visible=:visibility
             where id=:id AND (accountId IS NULL OR accountId = :accountId)""")

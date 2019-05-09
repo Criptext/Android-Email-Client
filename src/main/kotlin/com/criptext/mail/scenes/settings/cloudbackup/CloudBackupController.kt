@@ -11,11 +11,11 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
-import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
@@ -26,6 +26,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener
 import com.google.api.services.drive.Drive
 import java.io.IOException
+
 
 class CloudBackupController(
         private val model: CloudBackupModel,
@@ -213,6 +214,14 @@ class CloudBackupController(
                     } else {
                         model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
                         scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                        val savedCloudDataString = storage.getString(KeyValueStorage.StringKey.SavedBackupData, "")
+                        val savedCloudData = if(savedCloudDataString.isNotEmpty()) SavedCloudData.fromJson(savedCloudDataString)
+                        else listOf()
+                        val mutableSavedData = mutableListOf<SavedCloudData>()
+                        mutableSavedData.addAll(savedCloudData)
+                        val data = mutableSavedData.find { it.accountId == activeAccount.id }
+                        if(data != null) mutableSavedData.remove(data)
+                        storage.putString(KeyValueStorage.StringKey.SavedBackupData, SavedCloudData.toJSON(mutableSavedData).toString())
                         host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
                     }
                 }
@@ -336,10 +345,20 @@ class CloudBackupController(
         @Throws(IOException::class)
         override fun progressChanged(uploader: MediaHttpUploader) {
             when (uploader.uploadState) {
-                MediaHttpUploader.UploadState.INITIATION_STARTED -> scene.setUploadProgress(20)
-                MediaHttpUploader.UploadState.INITIATION_COMPLETE -> scene.setUploadProgress(40)
+                MediaHttpUploader.UploadState.INITIATION_STARTED -> {
+                    host.runOnUiThread(Runnable {
+                        scene.setUploadProgress(20)
+                    })
+                }
+                MediaHttpUploader.UploadState.INITIATION_COMPLETE -> {
+                    host.runOnUiThread(Runnable {
+                        scene.setUploadProgress(40)
+                    })
+                }
                 MediaHttpUploader.UploadState.MEDIA_IN_PROGRESS -> {
-                    scene.setUploadProgress((uploader.progress * 100).toInt())
+                    host.runOnUiThread(Runnable {
+                        scene.setUploadProgress((uploader.progress * 100).toInt())
+                    })
                 }
                 MediaHttpUploader.UploadState.MEDIA_COMPLETE -> {
                     model.isBackupDone = true

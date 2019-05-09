@@ -101,7 +101,7 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
 
         return when (result) {
             is Result.Success -> {
-                val size = File(filePath).length() / (1024*1024)
+                val size = File(filePath).length()
                 val lastModified = Date()
 
                 val savedCloudDataString = storage.getString(KeyValueStorage.StringKey.SavedBackupData, "")
@@ -109,7 +109,8 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
                                             else listOf()
                 val mutableSavedData = mutableListOf<SavedCloudData>()
                 mutableSavedData.addAll(savedCloudData)
-                mutableSavedData.remove(mutableSavedData.find { it.accountId == activeAccount.id })
+                val data = mutableSavedData.find { it.accountId == activeAccount.id }
+                if(data != null) mutableSavedData.remove(data)
                 mutableSavedData.add(SavedCloudData(
                         accountId = activeAccount.id,
                         backupSize = size,

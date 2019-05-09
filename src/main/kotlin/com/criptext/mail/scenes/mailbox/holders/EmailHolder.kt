@@ -82,7 +82,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         else
             avatarView.setImageBitmap(
                     Utility.getBitmapFromText(
-                            emailPreview.sender.name,
+                            contactFrom.name,
                             250,
                             250))
 

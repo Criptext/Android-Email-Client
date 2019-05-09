@@ -12,7 +12,7 @@ class CloudBackupModel {
     var mDriveService: Drive? = null
     var firstTimeOpen = true
     var passwordForNonCriptextUsers: String? = null
-    var lastBackupSize = 0
+    var lastBackupSize = 0L
     var hasOldFile = false
     var oldFileId: List<String> = listOf()
     var fileLength = 0L

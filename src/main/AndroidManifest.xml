@@ -154,8 +154,6 @@
         </service>
         <service android:name=".push.services.NewMailActionService" />
         <service android:name=".push.services.SyncDeviceActionService" />
-        <service android:name=".services.CloudBackupJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

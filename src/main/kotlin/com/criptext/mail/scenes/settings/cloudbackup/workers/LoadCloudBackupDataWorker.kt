@@ -57,7 +57,7 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
                         throw Exception()
                     else {
                         val driveFile = file.files.first()
-                        Pair(driveFile.getSize() / (1024 * 1024), driveFile.modifiedTime.value)
+                        Pair(driveFile.getSize(), driveFile.modifiedTime.value)
                     }
                 }
             } else {
@@ -77,7 +77,7 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
                         useWifiOnly = result.value.first.wifiOnly,
                         autoBackupFrequency = result.value.first.autoBackupFrequency,
                         lastModified = Date(result.value.third),
-                        fileSize = result.value.second.toInt()
+                        fileSize = result.value.second
                     )
             )
 

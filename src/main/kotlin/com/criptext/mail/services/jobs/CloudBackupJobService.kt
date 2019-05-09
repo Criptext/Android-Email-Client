@@ -1,4 +1,4 @@
-package com.criptext.mail.services
+package com.criptext.mail.services.jobs
 
 import android.app.job.JobInfo
 import android.app.job.JobParameters
@@ -17,6 +17,10 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupDataSource
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.services.data.JobIdData
+import com.evernote.android.job.Job
+import com.evernote.android.job.JobManager
+import com.evernote.android.job.JobRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -29,9 +33,7 @@ import java.io.IOException
 import java.util.*
 
 
-class CloudBackupJobService: JobService() {
-
-    private val JOB_ID = 2120
+class CloudBackupJobService: Job() {
     private var dataSource: CloudBackupDataSource? = null
     private var mDriveService: Drive? = null
     private val progressListener = JobServiceProgressListener()
@@ -47,64 +49,74 @@ class CloudBackupJobService: JobService() {
     }
 
     fun schedule(context: Context, intervalMillis: Long, accountId: Long) {
-        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val componentName = ComponentName(context, CloudBackupJobService::class.java)
-        val jobId = JOB_ID.toString().plus(accountId)
-        val builder = JobInfo.Builder(jobId.toInt(), componentName)
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        val builder = JobRequest.Builder(CloudBackupJobService.JOB_TAG)
+        builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setPeriodic(intervalMillis, JobInfo.getMinFlexMillis())
         }else {
             builder.setPeriodic(intervalMillis)
         }
-        builder.setPersisted(true)
-        jobScheduler.schedule(builder.build())
-        isJobServiceOn(context)
+        val id = builder.build()
+                .schedule()
+        val storage = KeyValueStorage.SharedPrefs(context)
+        val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
+        val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
+        else JobIdData.fromJson(savedJobsString)
+        val accountSavedData = listOfJobs.find { it.accountId == accountId}
+        if(accountSavedData != null) {
+            listOfJobs.remove(accountSavedData)
+        }
+        listOfJobs.add(JobIdData(accountId, id))
+        storage.putString(KeyValueStorage.StringKey.SavedJobs, JobIdData.toJSON(listOfJobs).toString())
+
+        isJobServiceOn(context, id)
     }
 
     fun cancel(context: Context, accountId: Long) {
-        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val jobId = JOB_ID.toString().plus(accountId)
-        jobScheduler.cancel(jobId.toInt())
-        Log.e("JOBSERVICE:", "Canceled!!!")
+        val storage = KeyValueStorage.SharedPrefs(context)
+        val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
+        val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
+        else JobIdData.fromJson(savedJobsString)
+        val accountSavedData = listOfJobs.find { it.accountId == accountId}
+        if(accountSavedData != null) {
+            JobManager.instance().cancel(accountSavedData.jobId)
+            Log.e("JOBSERVICE:", "Canceled!!!")
+        }
+
     }
 
-    private fun isJobServiceOn(context: Context) {
+    private fun isJobServiceOn(context: Context, id: Int) {
         val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-
         for (jobInfo in scheduler.allPendingJobs) {
-            if (jobInfo.id == JOB_ID) {
+            if (jobInfo.id == id) {
                 Log.e("JOBSERVICE:", "Is Running!!!")
                 break
             }
         }
     }
 
-    override fun onStopJob(params: JobParameters?): Boolean {
-        return false
-    }
-
-    override fun onStartJob(params: JobParameters?): Boolean {
-        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    override fun onRunJob(params: Params): Result {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnected == true
         val isWiFi: Boolean = activeNetwork?.type == ConnectivityManager.TYPE_WIFI
-        val storage = KeyValueStorage.SharedPrefs(this)
+        val storage = KeyValueStorage.SharedPrefs(context)
         val useWifiOnly = storage.getBool(KeyValueStorage.StringKey.UseWifiOnlyForBackup, true)
         if(useWifiOnly && isConnected && isWiFi) {
             startWorking()
         } else if(!useWifiOnly && isConnected && !isWiFi) {
             startWorking()
         }
-        return false
+        return Result.SUCCESS
     }
+
 
     private fun startWorking(){
         dataSource = CloudBackupDataSource(
-                activeAccount = ActiveAccount.loadFromStorage(applicationContext)!!,
-                filesDir = applicationContext.filesDir,
-                db = AppDatabase.getAppDatabase(applicationContext),
-                storage = KeyValueStorage.SharedPrefs(this),
+                activeAccount = ActiveAccount.loadFromStorage(context)!!,
+                filesDir = context.filesDir,
+                db = AppDatabase.getAppDatabase(context),
+                storage = KeyValueStorage.SharedPrefs(context),
                 runner = AsyncTaskWorkRunner()
         )
         dataSource?.listener = dataSourceListener
@@ -140,9 +152,9 @@ class CloudBackupJobService: JobService() {
     }
 
     private fun getGoogleDriveService(): Drive? {
-        val googleAccount = GoogleSignIn.getLastSignedInAccount(this) ?: return null
+        val googleAccount = GoogleSignIn.getLastSignedInAccount(context) ?: return null
         val credential = GoogleAccountCredential.usingOAuth2(
-                this, Collections.singleton(DriveScopes.DRIVE_FILE))
+                context, Collections.singleton(DriveScopes.DRIVE_FILE))
         credential.selectedAccount = googleAccount.account
         return Drive.Builder(
                 AndroidHttp.newCompatibleTransport(),
@@ -169,6 +181,10 @@ class CloudBackupJobService: JobService() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val JOB_TAG = "CRIPTEXT_CLOUD_BACKUP_JOB_SERVICE"
     }
 
 }
