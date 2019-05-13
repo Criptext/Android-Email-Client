@@ -17,10 +17,11 @@ sealed class GeneralRequest {
             val loadedThreadsCount: Int): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     data class LinkDenied(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
-    class DataFileCreation: GeneralRequest()
+    class DataFileCreation(val recipientId: String): GeneralRequest()
     data class PostUserData(val deviceID: Int, val filePath: String, val key: ByteArray,
                             val randomId: String,
-                            val keyBundle: PreKeyBundleShareData.DownloadBundle?): GeneralRequest()
+                            val keyBundle: PreKeyBundleShareData.DownloadBundle?,
+                            val activeAccount: ActiveAccount): GeneralRequest()
     data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
     data class SyncPhonebook(val contentResolver: ContentResolver): GeneralRequest()
     data class Logout(val shouldDeleteAllData: Boolean): GeneralRequest()

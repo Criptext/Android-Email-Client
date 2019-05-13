@@ -18,6 +18,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 
@@ -34,6 +35,7 @@ interface ChangePasswordScene{
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
 
     class Default(val view: View): ChangePasswordScene{
         private lateinit var changePasswordUIObserver: ChangePasswordUIObserver
@@ -78,6 +80,7 @@ interface ChangePasswordScene{
 
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
         override fun attachView(uiObserver: ChangePasswordUIObserver, keyboardManager: KeyboardManager,
                                 model: ChangePasswordModel) {
@@ -201,6 +204,13 @@ interface ChangePasswordScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(changePasswordUIObserver, trustedDeviceInfo)
         }
 
         override fun showMessage(message: UIMessage) {

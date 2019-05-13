@@ -96,7 +96,7 @@ sealed class GeneralResult {
     }
 
     sealed class LinkAccept: GeneralResult() {
-        data class Success(val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): LinkAccept()
+        data class Success(val linkAccount: ActiveAccount, val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): LinkAccept()
         data class Failure(val message: UIMessage): LinkAccept()
     }
 
@@ -166,7 +166,7 @@ sealed class GeneralResult {
     }
 
     sealed class SyncAccept: GeneralResult() {
-        data class Success(val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): SyncAccept()
+        data class Success(val syncAccount: ActiveAccount, val deviceId: Int, val uuid: String, val deviceType: DeviceUtils.DeviceType): SyncAccept()
         data class Failure(val message: UIMessage): SyncAccept()
     }
 

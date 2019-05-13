@@ -20,6 +20,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -35,6 +36,7 @@ interface DevicesScene{
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun getDeviceListView(): VirtualListView
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
@@ -57,6 +59,7 @@ interface DevicesScene{
 
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
 
         override fun attachView(devicesUIObserver: DevicesUIObserver, keyboardManager: KeyboardManager,
@@ -80,6 +83,13 @@ interface DevicesScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, trustedDeviceInfo)
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

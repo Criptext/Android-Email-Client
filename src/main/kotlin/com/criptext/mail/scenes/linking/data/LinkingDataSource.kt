@@ -25,7 +25,7 @@ class LinkingDataSource(
                     storage = storage,
                     accountDao = accountDao,
                     deviceId = params.deviceId,
-                    activeAccount = activeAccount,
+                    activeAccount = params.incomingAccount,
                     httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result) }

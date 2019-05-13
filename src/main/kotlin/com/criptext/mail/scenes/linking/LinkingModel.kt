@@ -1,9 +1,10 @@
 package com.criptext.mail.scenes.linking
 
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
 
-class LinkingModel(val email: String, var remoteDeviceId: Int, val randomId: String,
+class LinkingModel(val incomingAccount: ActiveAccount, var remoteDeviceId: Int, val randomId: String,
                    val deviceType: DeviceUtils.DeviceType) {
     var untrustedDevicePostedKeyBundle: Boolean = false
     var dataFileHasBeenCreated = false

@@ -11,6 +11,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 
@@ -20,6 +21,7 @@ interface PrivacyScene{
                    keyboardManager: KeyboardManager, model: PrivacyModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -49,6 +51,7 @@ interface PrivacyScene{
 
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
 
         override fun attachView(uiObserver: PrivacyUIObserver, keyboardManager: KeyboardManager,
@@ -122,6 +125,13 @@ interface PrivacyScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, trustedDeviceInfo)
         }
 
         override fun showMessage(message: UIMessage) {

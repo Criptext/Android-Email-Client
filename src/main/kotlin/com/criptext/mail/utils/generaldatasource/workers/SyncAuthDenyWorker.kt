@@ -8,6 +8,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -16,23 +17,26 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 
 class SyncAuthDenyWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo,
-                         private val activeAccount: ActiveAccount,
+                         private var activeAccount: ActiveAccount,
                          private val httpClient: HttpClient,
                          private val accountDao: AccountDao,
                          private val storage: KeyValueStorage,
-                         override val publishFn: (GeneralResult.LinkDeny) -> Unit
-                          ) : BackgroundWorker<GeneralResult.LinkDeny> {
+                         override val publishFn: (GeneralResult.SyncDeny) -> Unit
+                          ) : BackgroundWorker<GeneralResult.SyncDeny> {
 
     override val canBeParallelized = false
 
-    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private var apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): GeneralResult.LinkDeny {
+    override fun catchException(ex: Exception): GeneralResult.SyncDeny {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun work(reporter: ProgressReporter<GeneralResult.LinkDeny>)
-            : GeneralResult.LinkDeny? {
+    override fun work(reporter: ProgressReporter<GeneralResult.SyncDeny>)
+            : GeneralResult.SyncDeny? {
+
+        val account = accountDao.getAccountByRecipientId(trustedDeviceInfo.recipientId) ?: return GeneralResult.SyncDeny.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId != activeAccount.recipientId) setup(account)
 
         val operation = workOperation()
 
@@ -45,10 +49,10 @@ class SyncAuthDenyWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevice
 
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.LinkDeny.Success()
+                GeneralResult.SyncDeny.Success()
             }
             is Result.Failure -> {
-                GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_error_exception))
+                GeneralResult.SyncDeny.Failure(UIMessage(R.string.server_error_exception))
             }
         }
     }
@@ -56,6 +60,12 @@ class SyncAuthDenyWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevice
     override fun cancel() {
         TODO("not implemented")
     }
+
+    private fun setup(account: Account){
+        activeAccount = ActiveAccount.loadFromDB(account)!!
+        apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    }
+
 
     private fun workOperation() : Result<String, Exception> = Result.of {
         apiClient.postSyncDeny(trustedDeviceInfo.randomId).body

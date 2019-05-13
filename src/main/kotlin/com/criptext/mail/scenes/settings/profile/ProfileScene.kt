@@ -24,6 +24,7 @@ interface ProfileScene{
     fun attachView(uiObserver: ProfileUIObserver, recipientId: String, model: ProfileModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -108,6 +109,7 @@ interface ProfileScene{
 
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val attachmentBottomDialog = BottomDialog(context)
         private val settingsProfileNameDialog = ProfileNameDialog(context)
         private val settingLogoutDialog = SettingsLogoutDialog(context)
@@ -197,6 +199,13 @@ interface ProfileScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, trustedDeviceInfo)
         }
 
         override fun showBottomDialog(observer: ProfileUIObserver?) {
