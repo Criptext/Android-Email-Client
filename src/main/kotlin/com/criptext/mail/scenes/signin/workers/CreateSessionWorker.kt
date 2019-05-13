@@ -54,9 +54,10 @@ class CreateSessionWorker(val httpClient: HttpClient,
                     if(!isMultiple) {
                         if (lastLoggedUser.isNotEmpty())
                             db.deleteDatabase(lastLoggedUser)
-                        else
+                        else {
                             db.deleteDatabase()
-                        keyValueStorage.clearAll()
+                            keyValueStorage.clearAll()
+                        }
                     } else {
                         if (lastLoggedUser.isNotEmpty() && username in lastLoggedUser) {
                             db.deleteDatabase(username)

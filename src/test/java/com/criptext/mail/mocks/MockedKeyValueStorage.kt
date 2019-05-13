@@ -6,6 +6,16 @@ import com.criptext.mail.db.KeyValueStorage
  * Created by gabriel on 3/8/18.
  */
 class MockedKeyValueStorage: KeyValueStorage {
+    override fun remove(keyList: List<KeyValueStorage.StringKey>) {
+        keyList.forEach {
+            boolMap.remove(it.stringKey)
+            intMap.remove(it.stringKey)
+            longMap.remove(it.stringKey)
+            stringSetMap.remove(it.stringKey)
+            stringMap.remove(it.stringKey)
+        }
+    }
+
     override fun getBool(key: KeyValueStorage.StringKey, default: Boolean): Boolean {
         return boolMap[key.stringKey] ?: default
     }

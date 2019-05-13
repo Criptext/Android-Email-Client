@@ -185,6 +185,16 @@ class CloudBackupJobService: Job() {
 
     companion object {
         const val JOB_TAG = "CRIPTEXT_CLOUD_BACKUP_JOB_SERVICE"
+
+        fun cancelJob(storage: KeyValueStorage, accountId: Long){
+            val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
+            val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
+            else JobIdData.fromJson(savedJobsString)
+            val accountSavedData = listOfJobs.find { it.accountId == accountId}
+            if(accountSavedData != null) {
+                JobManager.instance().cancel(accountSavedData.jobId)
+            }
+        }
     }
 
 }

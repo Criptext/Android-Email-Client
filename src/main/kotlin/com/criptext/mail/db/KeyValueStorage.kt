@@ -22,6 +22,7 @@ interface KeyValueStorage {
     fun putInt(key: StringKey, value: Int)
     fun getBool(key: StringKey, default: Boolean): Boolean
     fun putBool(key: StringKey, value: Boolean)
+    fun remove(keyList: List<StringKey>)
     fun clearAll()
 
     enum class StringKey(val stringKey: String) {
@@ -105,6 +106,10 @@ interface KeyValueStorage {
 
         override fun putBool(key: StringKey, value: Boolean) {
             withApply { editor -> editor.putBoolean(key.stringKey, value) }
+        }
+
+        override fun remove(keyList: List<StringKey>) {
+            withApply { editor -> keyList.forEach { editor.remove(it.stringKey) } }
         }
 
         override fun clearAll() {

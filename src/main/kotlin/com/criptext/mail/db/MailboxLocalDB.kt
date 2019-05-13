@@ -486,6 +486,8 @@ interface MailboxLocalDB {
                             score = contactsFROM[0].score
                     )
                     contacts.addAll(listOf(fromContact))
+                    contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
+                            .filter { contact -> contact.id != fromContact.id })
                 }
                 contacts.map { contact ->
                     when {

@@ -305,6 +305,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         score = contactsFROM[0].score
                 )
                 contacts.addAll(listOf(fromContact))
+                contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
+                        .filter { contact -> contact.id != fromContact.id })
             }
             contacts.forEach { contact ->
                 when {
