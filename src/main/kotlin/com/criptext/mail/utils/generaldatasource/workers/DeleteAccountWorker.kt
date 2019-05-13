@@ -10,6 +10,8 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.services.data.JobIdData
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
@@ -75,7 +77,7 @@ class DeleteAccountWorker(private val db: EventLocalDB,
             } }
             .flatMap {
                 Result.of {
-                    storage.clearAll()
+                    CloudBackupJobService.cancelJob(storage, activeAccount.id)
                 }
             }
 

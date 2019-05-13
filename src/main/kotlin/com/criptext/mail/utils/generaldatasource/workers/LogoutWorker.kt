@@ -8,6 +8,7 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -70,6 +71,9 @@ class LogoutWorker(
                     db.logoutNukeDB(activeAccount)
                 else
                     db.logout(activeAccount.id)
+            } }
+            .flatMap { Result.of {
+                CloudBackupJobService.cancelJob(storage, activeAccount.id)
             } }
             .flatMap {
                 Result.of {

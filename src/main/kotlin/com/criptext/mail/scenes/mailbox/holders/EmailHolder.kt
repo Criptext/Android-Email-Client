@@ -125,7 +125,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         val meText = context.getLocalizedUIMessage(UIMessage(R.string.me))
         val bolds = mutableListOf<Pair<String, Int>>()
         var headerString = ""
-        val doShortName = headerData.size != 1
+        val doShortName = headerData.size > 1
         headerData.forEach {
 
             when {

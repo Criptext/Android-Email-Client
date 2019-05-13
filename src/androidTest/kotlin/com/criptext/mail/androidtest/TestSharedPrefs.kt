@@ -9,6 +9,10 @@ import com.criptext.mail.db.KeyValueStorage
  * Created by gabriel on 5/24/18.
  */
 class TestSharedPrefs(ctx: Context): KeyValueStorage {
+    override fun remove(keyList: List<KeyValueStorage.StringKey>) {
+        keyList.forEach { withApply { editor -> editor.remove(it.stringKey) } }
+    }
+
     override fun getString(file: String, key: KeyValueStorage.StringKey, default: String): String {
         return prefs.getString("_test_" + key.stringKey, default)
     }
