@@ -43,16 +43,32 @@
             android:src="@drawable/device_m"
             android:tint="#9b9b9b" />
 
-        <TextView
-            android:id="@+id/message_text"
-            fontPath="fonts/NunitoSans-Bold.ttf"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Google Android"
-            android:textColor="?attr/criptextSecondaryTextColor"
-            android:textSize="15sp" />
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/message_text"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Google Android"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/account_email"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:textSize="15sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

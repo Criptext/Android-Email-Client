@@ -73,7 +73,7 @@ interface LinkingScene{
 
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
             this.linkingUIObserver = linkingUIObserver
-            textViewEmail.text = model.email
+            textViewEmail.text = model.incomingAccount.userEmail
             when (model.deviceType){
                 DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
                 DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,

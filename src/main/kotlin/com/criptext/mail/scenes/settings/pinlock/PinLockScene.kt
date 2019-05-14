@@ -13,6 +13,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.github.omadahealth.lollipin.lib.managers.LockManager
 
@@ -23,6 +24,7 @@ interface PinLockScene{
                    keyboardManager: KeyboardManager, model: PinLockModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -62,6 +64,7 @@ interface PinLockScene{
 
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
         private val selectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -151,6 +154,13 @@ interface PinLockScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(pinLockUIObserver, trustedDeviceInfo)
         }
 
         override fun showMessage(message: UIMessage) {

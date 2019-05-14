@@ -73,10 +73,11 @@ class LinkingController(
             when(result){
                 is GeneralResult.PostUserData -> {
                     generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle))
+                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
+                            model.incomingAccount))
                 }
                 is GeneralResult.DataFileCreation -> {
-                    generalDataSource.submitRequest(GeneralRequest.DataFileCreation())
+                    generalDataSource.submitRequest(GeneralRequest.DataFileCreation(model.incomingAccount.recipientId))
                 }
             }
         }
@@ -133,7 +134,7 @@ class LinkingController(
         generalDataSource.listener = generalDataSourceListener
         if(activityMessage != null && activityMessage is ActivityMessage.SyncMailbox)
             model.untrustedDevicePostedKeyBundle = true
-        generalDataSource.submitRequest(GeneralRequest.DataFileCreation())
+        generalDataSource.submitRequest(GeneralRequest.DataFileCreation(model.incomingAccount.recipientId))
         return false
     }
 
@@ -170,7 +171,8 @@ class LinkingController(
                     if (model.dataFileHasBeenCreated) {
                         scene.setProgress(UIMessage(R.string.uploading_mailbox), UPLOADING_MAILBOX_PERCENTAGE)
                         generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                                model.dataFilePath, model.dataFileKey!!, model.randomId, null))
+                                model.dataFilePath, model.dataFileKey!!, model.randomId, null,
+                                model.incomingAccount))
                     }
                 }
             })
@@ -233,7 +235,8 @@ class LinkingController(
                 if(model.untrustedDevicePostedKeyBundle){
                     scene.setProgress(UIMessage(R.string.uploading_mailbox), UPLOADING_MAILBOX_PERCENTAGE)
                     generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle))
+                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
+                            model.incomingAccount))
                 }else{
                     delayPostCheckForKeyBundle()
                 }
@@ -255,7 +258,8 @@ class LinkingController(
                     model.keyBundle = result.keyBundle
                     scene.setProgress(UIMessage(R.string.uploading_mailbox), UPLOADING_MAILBOX_PERCENTAGE)
                     generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle))
+                            model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
+                            model.incomingAccount))
                 }
             }
             is LinkingResult.CheckForKeyBundle.Failure -> {
@@ -270,7 +274,7 @@ class LinkingController(
         host.postDelay(Runnable {
             if(model.retryTimesCheckForKeyBundle < RETRY_TIMES_DEFAULT) {
                 if (!model.untrustedDevicePostedKeyBundle)
-                    dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.remoteDeviceId))
+                    dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.incomingAccount, model.remoteDeviceId))
                 model.retryTimesCheckForKeyBundle++
             }else{
                 scene.showKeepWaitingDialog()

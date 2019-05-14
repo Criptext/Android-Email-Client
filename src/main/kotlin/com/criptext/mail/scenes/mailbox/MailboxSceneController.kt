@@ -1153,8 +1153,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
+                host.exitToScene(LinkingParams(resultData.linkAccount,
+                        resultData.deviceId, resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
             is GeneralResult.LinkAccept.Failure -> {
@@ -1166,7 +1166,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
                         resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
                         false, true)
             }
@@ -1266,11 +1266,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.recipientId == activeAccount.recipientId) {
-                host.runOnUiThread(Runnable {
-                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
-                })
-            }
+            host.runOnUiThread(Runnable {
+                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+            })
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
@@ -1298,11 +1296,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.recipientId == activeAccount.recipientId) {
-                host.runOnUiThread(Runnable {
-                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-                })
-            }
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
         }
 
         override fun onNewEvent(recipientId: String) {

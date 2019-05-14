@@ -68,12 +68,13 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.DataFileCreation -> DataFileCreationWorker(
                     filesDir = filesDir,
                     db = db,
+                    recipientId = params.recipientId,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(
                     db = db,
                     httpClient = httpClient,
-                    activeAccount = activeAccount!!,
+                    activeAccount = params.activeAccount,
                     randomId = params.randomId,
                     filePath = params.filePath,
                     deviceId = params.deviceID,

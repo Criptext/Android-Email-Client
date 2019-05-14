@@ -8,6 +8,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -16,7 +17,7 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 
 class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo,
-                           private val activeAccount: ActiveAccount,
+                           private var activeAccount: ActiveAccount,
                            private val httpClient: HttpClient,
                            private val accountDao: AccountDao,
                            private val storage: KeyValueStorage,
@@ -25,7 +26,7 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
 
     override val canBeParallelized = false
 
-    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private var apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.SyncAccept {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -33,6 +34,9 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
 
     override fun work(reporter: ProgressReporter<GeneralResult.SyncAccept>)
             : GeneralResult.SyncAccept? {
+
+        val account = accountDao.getAccountByRecipientId(trustedDeviceInfo.recipientId) ?: return GeneralResult.SyncAccept.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId != activeAccount.recipientId) setup(account)
 
         val operation = workOperation()
 
@@ -45,7 +49,7 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
 
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.SyncAccept.Success(trustedDeviceInfo.deviceId, trustedDeviceInfo.randomId, trustedDeviceInfo.deviceType)
+                GeneralResult.SyncAccept.Success(activeAccount, trustedDeviceInfo.deviceId, trustedDeviceInfo.randomId, trustedDeviceInfo.deviceType)
             }
             is Result.Failure -> {
                 GeneralResult.SyncAccept.Failure(UIMessage(R.string.server_error_exception))
@@ -55,6 +59,11 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
 
     override fun cancel() {
         TODO("not implemented")
+    }
+
+    private fun setup(account: Account){
+        activeAccount = ActiveAccount.loadFromDB(account)!!
+        apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {

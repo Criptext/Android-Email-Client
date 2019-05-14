@@ -16,6 +16,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -30,6 +31,7 @@ interface LabelsScene{
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun getLabelLocalizedName(name: String): String
     fun getLabelListView(): VirtualListView
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
@@ -51,6 +53,7 @@ interface LabelsScene{
 
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
 
         override fun attachView(labelsUIObserver: LabelsUIObserver,
@@ -70,6 +73,13 @@ interface LabelsScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, trustedDeviceInfo)
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

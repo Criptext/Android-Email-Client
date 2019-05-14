@@ -366,7 +366,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is SignatureParams -> SignatureModel(params.recipientId)
             is RecoveryEmailParams -> RecoveryEmailModel(params.userData)
             is ChangePasswordParams -> ChangePasswordModel()
-            is LinkingParams -> LinkingModel(params.email, params.deviceId, params.randomId, params.deviceType)
+            is LinkingParams -> LinkingModel(params.activeAccount,
+                    params.deviceId, params.randomId, params.deviceType)
             is PinLockParams -> PinLockModel()
             is DevicesParams -> DevicesModel(params.devices)
             is LabelsParams -> LabelsModel()

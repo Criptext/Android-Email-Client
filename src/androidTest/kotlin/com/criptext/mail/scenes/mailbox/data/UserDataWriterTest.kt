@@ -113,8 +113,9 @@ class UserDataWriterTest {
 
     @Test
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
+        val account = db.accountDao().getLoggedInAccount()!!
         val dataWriter = UserDataWriter(db, mActivityRule.activity.filesDir)
-        val result = dataWriter.createFile()
+        val result = dataWriter.createFile(account)
 
         val lines: List<String> = File(result).readLines()
         lines `shouldEqual` deviceLinkFileExpectedContent

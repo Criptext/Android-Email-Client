@@ -165,7 +165,7 @@ class PinLockController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
                         resultData.uuid, resultData.deviceType), null,
                         false, true)
             }
@@ -178,7 +178,7 @@ class PinLockController(
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(activeAccount.userEmail, resultData.deviceId,
+                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
                         resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
                         false, true)
             }
@@ -222,7 +222,9 @@ class PinLockController(
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
+            host.runOnUiThread(Runnable {
+                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+            })
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
@@ -242,11 +244,9 @@ class PinLockController(
         }
 
         override fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(activeAccount.recipientId == untrustedDeviceInfo.recipientId) {
-                host.runOnUiThread(Runnable {
-                    scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
-                })
-            }
+            host.runOnUiThread(Runnable {
+                scene.showLinkDeviceAuthConfirmation(untrustedDeviceInfo)
+            })
         }
 
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {

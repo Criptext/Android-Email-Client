@@ -1,6 +1,5 @@
 package com.criptext.mail.utils.generaldatasource.data
 
-import android.content.res.Resources
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
@@ -10,19 +9,17 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import org.json.JSONObject
 import java.io.File
-import javax.security.auth.login.LoginException
 
 class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
 
     data class DataMapper(val idsMap: MutableMap<Long, Long>)
 
-    fun createFile():String? {
+    fun createFile(account: Account):String? {
         try {
 
 
             val tmpFileLinkData = createTempFile()
-            val account = db.accountDao().getLoggedInAccount() ?: throw LoginException()
 
             addContactsToFile(db.contactDao(), tmpFileLinkData, account.id)
             addLabelsToFile(db.labelDao(), tmpFileLinkData, account.id)

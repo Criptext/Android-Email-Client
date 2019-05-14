@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 class LinkNewDeviceAlertDialog(val context: Context) {
@@ -48,9 +49,11 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         newLinkDeviceAuthDialog.setCanceledOnTouchOutside(false)
 
         val textView = dialogView.findViewById(R.id.message_text) as TextView
+        val accountTextView = dialogView.findViewById(R.id.account_email) as TextView
         val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
         textView.text = context.getString(R.string.link_auth_message,
                 untrustedDeviceInfo.deviceFriendlyName)
+        accountTextView.text = untrustedDeviceInfo.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
         when(untrustedDeviceInfo.deviceType){
             DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
             DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,

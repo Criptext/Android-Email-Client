@@ -19,6 +19,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 
@@ -44,6 +45,7 @@ interface RecoveryEmailScene{
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -91,6 +93,7 @@ interface RecoveryEmailScene{
         private val enterPasswordDialog = EnterPasswordDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
         override fun attachView(recoveryEmailUIObserver: RecoveryEmailUIObserver, keyboardManager: KeyboardManager,
                                 model: RecoveryEmailModel) {
@@ -180,6 +183,13 @@ interface RecoveryEmailScene{
                 linkAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, untrustedDeviceInfo)
             else if(linkAuthDialog.isShowing() == null)
                 linkAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, trustedDeviceInfo)
         }
 
         override fun disableChangeButton() {
