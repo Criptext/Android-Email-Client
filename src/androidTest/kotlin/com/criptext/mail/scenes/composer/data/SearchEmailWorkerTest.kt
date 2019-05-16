@@ -29,7 +29,8 @@ class SearchEmailWorkerTest{
     private lateinit var searchLocalDB: SearchLocalDB
 
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
+            domain = Contact.mainDomain)
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()

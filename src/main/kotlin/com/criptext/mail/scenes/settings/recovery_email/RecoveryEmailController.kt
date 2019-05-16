@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
@@ -99,7 +100,8 @@ class RecoveryEmailController(
         }
 
         override fun onForgotPasswordPressed() {
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId))
+            generalDataSource.submitRequest(GeneralRequest.ResetPassword(activeAccount.recipientId,
+                    EmailAddressUtils.extractEmailAddressDomain(activeAccount.userEmail)))
         }
 
         override fun onRecoveryEmailTextChanged(text: String) {

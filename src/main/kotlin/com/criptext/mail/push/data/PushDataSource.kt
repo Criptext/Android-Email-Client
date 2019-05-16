@@ -9,6 +9,7 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.workers.GetPushEmailWorker
+import com.criptext.mail.push.workers.RemoveNotificationWorker
 import com.criptext.mail.push.workers.UpdateMailboxWorker
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -61,6 +62,12 @@ class PushDataSource(
                     activeAccount = activeAccount, httpClient = httpClient,
                     deviceId = params.randomId,
                     notificationId = params.notificationId,
+                    publishFn = { res -> flushResults(res)}
+            )
+            is PushRequest.RemoveNotification -> RemoveNotificationWorker(
+                    db = db,
+                    notificationValue = params.value,
+                    pushData = params.pushData,
                     publishFn = { res -> flushResults(res)}
             )
         }

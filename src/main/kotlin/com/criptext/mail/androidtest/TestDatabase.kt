@@ -19,8 +19,8 @@ import com.criptext.mail.db.typeConverters.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
-                     , PendingEvent::class, AccountContact::class],
-        version = 4,
+                     , PendingEvent::class, AccountContact::class, AntiPushMap::class],
+        version = 5,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,

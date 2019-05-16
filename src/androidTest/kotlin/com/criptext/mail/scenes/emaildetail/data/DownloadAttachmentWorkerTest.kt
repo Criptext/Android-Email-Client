@@ -12,6 +12,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.workers.UploadAttachmentWorker
 import com.criptext.mail.scenes.emaildetail.workers.DownloadAttachmentWorker
@@ -46,7 +47,8 @@ class DownloadAttachmentWorkerTest {
     private lateinit var emailDetailLocalDB: EmailDetailLocalDB
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
-            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1)
+            deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
+            domain = Contact.mainDomain)
 
     private var filetoken = ""
     private val reporter: ProgressReporter<ComposerResult.UploadFile> =

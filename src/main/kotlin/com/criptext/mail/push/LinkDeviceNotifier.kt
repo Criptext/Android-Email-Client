@@ -18,7 +18,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
     private fun postNotification(ctx: Context, isPostNougat: Boolean) {
         val cn = NotificationLinkDevice(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification,
+        cn.notify(notification.first, notification.second,
                 CriptextNotification.ACTION_LINK_DEVICE)
     }
 
@@ -29,7 +29,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
                 CriptextNotification.ACTION_LINK_DEVICE)
     }
 
-    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Notification
+    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun notifyPushEvent(ctx: Context) {
@@ -41,16 +41,16 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
         }
     }
 
-    class Open(data: PushData.LinkDevice): LinkDeviceNotifier(data) {
+    class Open(data: PushData.LinkDevice, private val notificationId: Int): LinkDeviceNotifier(data) {
 
         @RequiresApi(Build.VERSION_CODES.O)
-        override fun buildNotification(ctx: Context, cn: CriptextNotification): Notification {
+        override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.createNotification(clickIntent = pendingIntent,
+            return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent,
                     data = data,
-                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
+                    notificationId = notificationId))
 
         }
     }

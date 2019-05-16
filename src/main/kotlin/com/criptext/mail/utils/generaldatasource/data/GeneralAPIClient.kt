@@ -27,9 +27,10 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
         return httpClient.delete(path = "/user", authToken = token, body = json)
     }
 
-    fun postForgotPassword(recipientId: String): HttpResponseData{
+    fun postForgotPassword(recipientId: String, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
+        jsonPut.put("domain", domain)
 
         return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
     }

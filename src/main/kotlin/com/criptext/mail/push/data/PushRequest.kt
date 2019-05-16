@@ -19,5 +19,7 @@ sealed class PushRequest{
     data class LinkAccept(val randomId: String, val notificationId: Int): PushRequest()
     data class LinkDenied(val randomId: String, val notificationId: Int): PushRequest()
 
+    data class RemoveNotification(val pushData: Map<String, String>, val value: String): PushRequest()
+
 
 }
