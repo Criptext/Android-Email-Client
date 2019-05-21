@@ -21,7 +21,7 @@ interface EmailDetailLocalDB {
     fun getLabelByName(labelName: String, accountId: Long): Label
     fun getLabelsByName(labelName: List<String>, accountId: Long): List<Label>
     fun getLabelsById(ids: List<Long>, accountId: Long): List<Label>
-    fun getLabelById(id: Long, accountId: Long): Label
+    fun getLabelById(id: Long, accountId: Long): Label?
     fun createLabelEmailRelations(emailLabels: List<EmailLabel>)
     fun updateUnreadStatus(emailIds: List<Long>, updateUnreadStatus: Boolean, accountId: Long)
     fun deleteThread(threadId: String, account: ActiveAccount)
@@ -121,7 +121,7 @@ interface EmailDetailLocalDB {
             return db.labelDao().get(labelName, accountId)
         }
 
-        override fun getLabelById(id: Long, accountId: Long): Label {
+        override fun getLabelById(id: Long, accountId: Long): Label? {
             return db.labelDao().getLabelById(id, accountId)
         }
 

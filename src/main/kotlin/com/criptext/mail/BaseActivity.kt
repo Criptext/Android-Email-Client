@@ -476,7 +476,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 }
                 Intent.ACTION_VIEW -> {
                     val mailTo = intent.data
-                    val account = intent.extras.getString("account")
+                    val account = intent.extras.getString("account")?: ActiveAccount.loadFromStorage(this)!!.recipientId
                     if(mailTo.toString().contains("mailto:"))
                         return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"), account)
                 }

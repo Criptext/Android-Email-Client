@@ -582,7 +582,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 return
             }
             val email = model.emails[emailPosition]
-            val attachment = email.files[attachmentPosition]
+            val attachment = email.files.filter { it.cid == null }[attachmentPosition]
             if(attachment.status != 0) {
                 downloadFile(email.email.id, attachment.token, getFileKey(attachment, email), attachment.name,
                         attachment.size)
