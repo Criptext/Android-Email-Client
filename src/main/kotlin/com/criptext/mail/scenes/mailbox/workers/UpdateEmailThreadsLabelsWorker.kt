@@ -85,7 +85,7 @@ class UpdateEmailThreadsLabelsWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.UpdateEmailThreadsLabelsRelations>)
             : MailboxResult.UpdateEmailThreadsLabelsRelations? {
         val selectedLabelsList = db.getLabelsById(selectedLabels.toList().map { it.label.id }, activeAccount.id)
-        val trueCurrentLabel = db.getLabelById(currentLabel.id, activeAccount.id)
+        val trueCurrentLabel = db.getLabelById(currentLabel.id, activeAccount.id) ?: Label.defaultItems.all_mail
         val rejectedLabels = defaultItems.rejectedLabelsByMailbox(trueCurrentLabel).map { it.id }
         val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
                 .filter { !rejectedLabels.contains(it.id) }

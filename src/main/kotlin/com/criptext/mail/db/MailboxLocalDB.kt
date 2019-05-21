@@ -43,7 +43,7 @@ interface MailboxLocalDB {
     fun getLabelByName(labelName: String, accountId: Long): Label
     fun getLabelsByName(labelName: List<String>, accountId: Long): List<Label>
     fun getLabelsById(ids: List<Long>, accountId: Long): List<Label>
-    fun getLabelById(id: Long, accountId: Long): Label
+    fun getLabelById(id: Long, accountId: Long): Label?
     fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
                                metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
     fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long)
@@ -371,7 +371,7 @@ interface MailboxLocalDB {
             return db.labelDao().getById(ids, accountId)
         }
 
-        override fun getLabelById(id: Long, accountId: Long): Label {
+        override fun getLabelById(id: Long, accountId: Long): Label? {
             return db.labelDao().getById(id, accountId)
         }
 

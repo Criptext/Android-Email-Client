@@ -365,7 +365,7 @@ class ProfileController(
 
     private fun setBitmapOnProfileImage(imagePath: String){
         val file = File(imagePath)
-        val bitmapImage = Utility.getBitmapFromFile(file)
+        val bitmapImage = Utility.getBitmapFromFile(file) ?: return
 
         scene.showProfilePictureProgress()
         val exif = ExifInterface(file.path)

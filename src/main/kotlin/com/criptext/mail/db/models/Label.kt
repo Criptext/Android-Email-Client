@@ -108,6 +108,10 @@ data class Label (
                 type = LabelTypes.SYSTEM, visible = true, uuid = "00000000-0000-0000-0000-000000000007",
                 accountId = null)
 
+        val all_mail = Label(id = -1, color = "000000", text = Label.LABEL_ALL_MAIL,
+        visible = true, type = LabelTypes.SYSTEM, uuid = "00000000-0000-0000-0000-000000000000",
+        accountId = -1)
+
         fun toList() = listOf(draft, inbox, sent, trash, starred, spam)
 
         fun rejectedLabelsByMailbox(label: Label?): List<Label> =

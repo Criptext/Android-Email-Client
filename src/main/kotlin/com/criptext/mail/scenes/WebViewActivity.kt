@@ -166,8 +166,10 @@ class WebViewActivity : AppCompatActivity() {
                 return true
             }
             R.id.ac_open -> {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
-                startActivity(browserIntent)
+                if(!mUrl.isNullOrEmpty()) {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
+                    startActivity(browserIntent)
+                }
             }
         }
         return super.onOptionsItemSelected(item)

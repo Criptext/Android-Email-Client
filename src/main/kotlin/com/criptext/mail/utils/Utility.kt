@@ -78,10 +78,10 @@ class Utility {
 
         }
 
-        fun getBitmapFromFile(file: File): Bitmap{
+        fun getBitmapFromFile(file: File): Bitmap? {
             val filePath = file.path
             val options = BitmapFactory.Options()
-            val bitmap = BitmapFactory.decodeFile(filePath, options)
+            val bitmap = BitmapFactory.decodeFile(filePath, options) ?: return null
             var width = bitmap.width
             var height = bitmap.height
 
