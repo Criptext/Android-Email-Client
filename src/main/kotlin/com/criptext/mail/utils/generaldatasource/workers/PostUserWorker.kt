@@ -10,9 +10,11 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -95,7 +97,12 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                 fileApiClient.postFileStream(filePath, randomId)
             } }
             .flatMap { Result.of {
-                signalClient.encryptBytes(activeAccount.recipientId, deviceId, fileKey)
+                val recipientId = if(EmailAddressUtils.isFromCriptextDomain(activeAccount.userEmail)) {
+                    EmailAddressUtils.extractRecipientIdFromCriptextAddress(activeAccount.userEmail)
+                }else {
+                    activeAccount.userEmail
+                }
+                signalClient.encryptBytes(recipientId, deviceId, fileKey)
             } }
             .flatMap { Result.of {
                 apiClient.postLinkDataReady(deviceId, it.encryptedB64).body

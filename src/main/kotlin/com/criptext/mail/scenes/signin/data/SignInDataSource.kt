@@ -94,6 +94,7 @@ class SignInDataSource(override val runner: WorkRunner,
             )
             is SignInRequest.CreateSessionFromLink -> CreateSessionWorker(
                     name = params.name,
+                    domain = params.domain,
                     httpClient = httpClient, randomId = params.randomId,
                     username = params.username, db = signInLocalDB,
                     accountDao = accountDao, ephemeralJwt = params.ephemeralJwt,
