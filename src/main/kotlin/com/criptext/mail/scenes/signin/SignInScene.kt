@@ -79,7 +79,7 @@ interface SignInScene {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_connection, viewGroup)
-                    ConnectionHolder(newLayout, state.username, state.authorizerType,signInUIObserver)
+                    ConnectionHolder(newLayout, state.username, state.domain, state.authorizerType,signInUIObserver)
                 }
 
                 is SignInLayoutState.InputPassword -> {

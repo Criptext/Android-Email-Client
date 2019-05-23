@@ -260,11 +260,12 @@ class SignInSceneController(
                     model.randomId = result.linkStatusData.deviceId
                     model.authorizerId = result.linkStatusData.authorizerId
                     model.authorizerType = result.linkStatusData.authorizerType
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username, currentState.domain, model.authorizerType)
                     scene.initLayout(model.state, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
+                            domain = currentState.domain,
                             randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
                             isMultiple = model.isMultiple))
                 }
@@ -413,11 +414,13 @@ class SignInSceneController(
                     model.randomId = linkStatusData.deviceId
                     model.authorizerId = linkStatusData.authorizerId
                     model.authorizerType = linkStatusData.authorizerType
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username,
+                            currentState.domain, model.authorizerType)
                     scene.initLayout(model.state, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
                             username = currentState.username,
+                            domain = currentState.domain,
                             randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt,
                             isMultiple = model.isMultiple))
                 })
@@ -471,11 +474,13 @@ class SignInSceneController(
             when(result){
                 is SignInResult.CreateSessionFromLink -> {
                     val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
+                    model.state = SignInLayoutState.WaitForApproval(currentState.username,
+                            currentState.domain, model.authorizerType)
                     scene.initLayout(model.state, this)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
+                            domain = currentState.domain,
                             randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
                             isMultiple = model.isMultiple))
                 }

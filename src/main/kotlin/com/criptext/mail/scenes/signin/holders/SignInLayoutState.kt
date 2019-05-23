@@ -11,5 +11,5 @@ sealed class SignInLayoutState {
     data class LoginValidation(val username: String, val domain: String, val hasTwoFA: Boolean = false): SignInLayoutState()
     data class InputPassword(val username: String, val password: String, val domain: String,
                              val buttonState: ProgressButtonState, val hasTwoFA: Boolean = false): SignInLayoutState()
-    data class WaitForApproval(val username: String, val authorizerType: DeviceUtils.DeviceType) : SignInLayoutState()
+    data class WaitForApproval(val username: String, val domain: String, val authorizerType: DeviceUtils.DeviceType) : SignInLayoutState()
 }

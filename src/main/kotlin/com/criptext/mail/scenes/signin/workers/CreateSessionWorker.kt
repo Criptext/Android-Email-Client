@@ -29,6 +29,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
                           signUpDao: SignUpDao,
                           private val name : String,
                           private val username: String,
+                          private val domain: String,
                           private val accountDao: AccountDao,
                           private val keyValueStorage: KeyValueStorage,
                           private val keyGenerator: SignalKeyGenerator,
@@ -59,9 +60,13 @@ class CreateSessionWorker(val httpClient: HttpClient,
                             keyValueStorage.clearAll()
                         }
                     } else {
-                        if (lastLoggedUser.isNotEmpty() && username in lastLoggedUser) {
-                            db.deleteDatabase(username)
-                            lastLoggedUser.removeAll { it == username }
+                        val recipientId = if(domain != Contact.mainDomain)
+                            username.plus("@$domain")
+                        else
+                            username
+                        if (lastLoggedUser.isNotEmpty() && recipientId in lastLoggedUser) {
+                            db.deleteDatabase(recipientId)
+                            lastLoggedUser.removeAll { it == recipientId }
                             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
                         }
                     }
@@ -82,13 +87,17 @@ class CreateSessionWorker(val httpClient: HttpClient,
     private fun signalRegistrationOperation()
             : Result<Pair<SignalKeyGenerator.RegistrationBundles, Account>, Exception>  {
         return Result.of {
-            val registrationBundles = keyGenerator.register(username,
+            val recipientId = if(domain != Contact.mainDomain)
+                username.plus("@$domain")
+            else
+                username
+            val registrationBundles = keyGenerator.register(recipientId,
                     randomId)
             val privateBundle = registrationBundles.privateBundle
             val account = Account(id = 0, recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true,
+                    signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                     hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
                     backupPassword = null)
             Pair(registrationBundles, account)
