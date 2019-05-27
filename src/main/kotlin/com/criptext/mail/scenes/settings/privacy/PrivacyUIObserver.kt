@@ -6,4 +6,5 @@ interface PrivacyUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onTwoFASwitched(isChecked: Boolean)
     fun onReadReceiptsSwitched(isChecked: Boolean)
+    fun onHasEncryptionSwitched(isChecked: Boolean)
 }

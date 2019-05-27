@@ -72,19 +72,15 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         }
 
         val contactFrom = emailPreview.sender
-        if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
-            UIUtils.setProfilePicture(
-                    iv = avatarView,
-                    resources = context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
-                    name = contactFrom.name,
-                    runnable = null)
-        else
-            avatarView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            contactFrom.name,
-                            250,
-                            250))
+
+        val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
+        UIUtils.setProfilePicture(
+                iv = avatarView,
+                resources = context.resources,
+                recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
+                name = contactFrom.name,
+                runnable = null,
+                domain = domain)
 
         dateView.text = DateAndTimeUtils.getFormattedDate(emailPreview.timestamp.time, context)
 

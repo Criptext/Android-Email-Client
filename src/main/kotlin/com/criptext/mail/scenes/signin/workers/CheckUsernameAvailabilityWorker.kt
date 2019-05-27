@@ -46,8 +46,8 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.CheckUsernameAvailability>): SignInResult.CheckUsernameAvailability? {
 
-        val loggedUsers = accountDao.getLoggedInAccounts().map { it.recipientId }
-        if(username in loggedUsers) return SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.user_already_logged_in))
+        val loggedUsers = accountDao.getLoggedInAccounts().map { it.recipientId.plus("@${it.domain}") }
+        if(username.plus("@$domain") in loggedUsers) return SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.user_already_logged_in))
 
         val result = Result.of { apiClient.userCanLogin(username, domain) }
 

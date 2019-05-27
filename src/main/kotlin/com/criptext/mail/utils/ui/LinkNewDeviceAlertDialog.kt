@@ -53,7 +53,7 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
         textView.text = context.getString(R.string.link_auth_message,
                 untrustedDeviceInfo.deviceFriendlyName)
-        accountTextView.text = untrustedDeviceInfo.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
+        accountTextView.text = untrustedDeviceInfo.recipientId.plus("@${untrustedDeviceInfo.domain}")
         when(untrustedDeviceInfo.deviceType){
             DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
             DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,

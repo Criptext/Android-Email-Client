@@ -50,19 +50,15 @@ class ContactsFilterAdapter(context : Context, objects : List<Contact>)
             nameTextView.visibility = View.VISIBLE
         }
 
-        if(EmailAddressUtils.isFromCriptextDomain(item.email))
-            UIUtils.setProfilePicture(
+        val domain = EmailAddressUtils.extractEmailAddressDomain(item.email)
+
+        UIUtils.setProfilePicture(
                     iv = circleView,
                     resources = context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(item.email),
+                    recipientId = EmailAddressUtils.extractRecipientIdFromAddress(item.email, domain),
                     name = item.name,
-                    runnable = null)
-        else
-            circleView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            item.name,
-                            250,
-                            250))
+                    runnable = null,
+                    domain = domain)
 
         return view
     }

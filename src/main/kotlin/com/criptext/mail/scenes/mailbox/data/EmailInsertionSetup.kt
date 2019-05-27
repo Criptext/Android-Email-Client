@@ -283,7 +283,7 @@ object EmailInsertionSetup {
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                        dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount,
                                        filesDir: File) {
-        val meAsSender = (metadata.senderRecipientId == activeAccount.recipientId)
+        val meAsSender = (metadata.senderRecipientId == activeAccount.recipientId && metadata.senderDomain == activeAccount.domain)
                 && (metadata.from.contains(activeAccount.userEmail))
         val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
                 || metadata.cc.contains(activeAccount.userEmail)
