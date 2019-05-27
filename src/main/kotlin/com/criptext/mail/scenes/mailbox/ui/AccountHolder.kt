@@ -23,19 +23,15 @@ class AccountHolder(val view: View) : RecyclerView.ViewHolder(view){
         nameView.text = account.name
         val email = account.recipientId.plus("@").plus(account.domain)
         mailView.text = email
-        if(EmailAddressUtils.isFromCriptextDomain(email))
-            UIUtils.setProfilePicture(
-                    iv = avatarView,
-                    resources = avatarView.context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
-                    name = account.name,
-                    runnable = null)
-        else
-            avatarView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            account.name,
-                            250,
-                            250))
+
+        UIUtils.setProfilePicture(
+                iv = avatarView,
+                resources = avatarView.context.resources,
+                recipientId = account.recipientId,
+                name = account.name,
+                runnable = null,
+                domain = account.domain)
+
         if(badgeCount > 0) {
             badgeNumber.visibility = View.VISIBLE
             badgeNumber.text = badgeCount.toString()

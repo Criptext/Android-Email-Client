@@ -32,8 +32,8 @@ import android.widget.ProgressBar
 
 object UIUtils{
 
-    fun setProfilePicture(iv: ImageView, resources: Resources, recipientId: String, name: String, runnable: Runnable?) {
-        val url = Hosts.restApiBaseUrl.plus("/user/avatar/$recipientId")
+    fun setProfilePicture(iv: ImageView, resources: Resources, domain: String, recipientId: String, name: String, runnable: Runnable?) {
+        val url = Hosts.restApiBaseUrl.plus("/user/avatar/$domain/$recipientId")
         val bitmapFromText = Utility.getBitmapFromText(
                 name,250, 250)
         Picasso.get()

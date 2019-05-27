@@ -241,19 +241,16 @@ class DrawerMenuView(navigationView: NavigationView,
     fun initNavHeader(fullName: String, email: String){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName
-        if(EmailAddressUtils.isFromCriptextDomain(email))
-            UIUtils.setProfilePicture(
-                    iv = avatarView,
-                    resources = avatarView.context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
-                    name = safeFullName,
-                    runnable = null)
-        else
-            avatarView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            fullName,
-                            250,
-                            250))
+
+        val domain = EmailAddressUtils.extractEmailAddressDomain(email)
+        UIUtils.setProfilePicture(
+                iv = avatarView,
+                resources = avatarView.context.resources,
+                recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
+                name = safeFullName,
+                runnable = null,
+                domain = domain)
+
         textViewNombre.text = safeFullName
         textViewCorreo.text = email
     }
@@ -351,19 +348,15 @@ class DrawerMenuView(navigationView: NavigationView,
                                          account: Account, badgeText: TextView){
         layout.visibility = View.VISIBLE
         val email = account.recipientId.plus("@").plus(account.domain)
-        if(EmailAddressUtils.isFromCriptextDomain(email))
-            UIUtils.setProfilePicture(
-                    iv = avatar,
-                    resources = avatar.context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
-                    name = account.name,
-                    runnable = null)
-        else
-            avatar.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            account.name,
-                            250,
-                            250))
+
+        UIUtils.setProfilePicture(
+                iv = avatar,
+                resources = avatar.context.resources,
+                recipientId = account.recipientId,
+                name = account.name,
+                runnable = null,
+                domain = account.domain)
+
         avatar.setOnClickListener {
             drawerMenuItemListener.onAccountClicked(account)
         }

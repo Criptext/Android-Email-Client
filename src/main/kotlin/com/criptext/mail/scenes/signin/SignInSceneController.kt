@@ -100,7 +100,7 @@ class SignInSceneController(
                 if(result.userExists) {
                     keyboard.hideKeyboard()
                     val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
-                    if(oldAccounts.isNotEmpty() && result.username !in oldAccounts)
+                    if(oldAccounts.isNotEmpty() && result.username.plus("@${result.domain}") !in oldAccounts)
                         scene.showSignInWarningDialog(
                                 oldAccountName = oldAccounts.joinToString {
                                     if(AccountDataValidator.validateEmailAddress(it) is FormData.Valid) it
@@ -629,12 +629,18 @@ class SignInSceneController(
                     true
             }
             is SignInLayoutState.LoginValidation -> {
-                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                val username = if(currentState.domain != Contact.mainDomain)
+                    currentState.username.plus("@${currentState.domain}")
+                else currentState.username
+                model.state = SignInLayoutState.Start(username, firstTime = false)
                 resetLayout()
                 false
             }
             is SignInLayoutState.InputPassword -> {
-                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                val username = if(currentState.domain != Contact.mainDomain)
+                    currentState.username.plus("@${currentState.domain}")
+                else currentState.username
+                model.state = SignInLayoutState.Start(username, firstTime = false)
                 resetLayout()
                 false
             }

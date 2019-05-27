@@ -238,12 +238,14 @@ interface MailboxScene{
         }
 
         override fun initMailboxAvatar(fullName: String, email: String) {
+            val domain = EmailAddressUtils.extractEmailAddressDomain(email)
             UIUtils.setProfilePicture(
                     iv = navButton,
                     resources = context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(email),
+                    recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
                     name = fullName,
-                    runnable = null)
+                    runnable = null,
+                    domain = domain)
         }
 
         override fun showExtraAccountsBadge(show: Boolean) {

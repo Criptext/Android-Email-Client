@@ -132,10 +132,11 @@ class GetPushEmailWorker(
                         newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
                         val emailAddress = newData["email"]
                         val bm = try {
-                            if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress))
+                            if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
+                                val domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
                                 Picasso.get().load(Hosts.restApiBaseUrl
-                                        .plus("/user/avatar/${EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)}")).get()
-                            else
+                                        .plus("/user/avatar/$domain/${EmailAddressUtils.extractRecipientIdFromAddress(emailAddress, domain)}")).get()
+                            } else
                                 null
                         } catch (ex: Exception){
                             null

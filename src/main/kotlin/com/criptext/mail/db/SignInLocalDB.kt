@@ -2,6 +2,8 @@ package com.criptext.mail.db
 
 import android.content.Context
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
 import java.io.File
 
@@ -14,7 +16,7 @@ interface SignInLocalDB {
     fun login(): Boolean
     fun accountExistsLocally(username: String): Boolean
     fun deleteDatabase(account: Account)
-    fun deleteDatabase(user: String)
+    fun deleteDatabase(user: String, domain: String)
     fun deleteDatabase(users: List<String>)
     fun deleteDatabase()
 
@@ -37,18 +39,25 @@ interface SignInLocalDB {
             db.clearAllTables()
         }
 
-        override fun deleteDatabase(user: String) {
-            EmailUtils.deleteEmailsInFileSystem(filesDir, user)
-            db.accountDao().deleteAccountByRecipientId(user)
+        override fun deleteDatabase(user: String, domain: String) {
+            val username = if(domain == Contact.mainDomain) user
+            else user.plus("@$domain")
+            EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+            db.accountDao().deleteAccountByRecipientId(user, domain)
         }
 
         override fun deleteDatabase(users: List<String>) {
-            users.forEach { EmailUtils.deleteEmailsInFileSystem(filesDir, it) }
-            db.accountDao().deleteAccountsByRecipientId(users)
+            users.forEach {
+                val domain = EmailAddressUtils.extractEmailAddressDomain(it)
+                val recipientId = EmailAddressUtils.extractRecipientIdFromAddress(it, domain)
+                deleteDatabase(recipientId, domain)
+            }
         }
 
         override fun deleteDatabase(account: Account) {
-            EmailUtils.deleteEmailsInFileSystem(filesDir, account.recipientId)
+            val username = if(account.domain == Contact.mainDomain) account.recipientId
+            else account.recipientId.plus("@${account.domain}")
+            EmailUtils.deleteEmailsInFileSystem(filesDir, username)
             db.accountDao().delete(account)
         }
 
