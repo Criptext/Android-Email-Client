@@ -161,7 +161,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         headerString = headerString.removeSuffix(", ")
         val spannable = SpannableString(headerString)
         bolds.forEach { bold ->
-            spannable.setSpan(StyleSpan(Typeface.BOLD), bold.second, (bold.second + bold.first.length), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(StyleSpan(Typeface.BOLD), bold.second, (bold.second + (bold.first.length - 1)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         val draftIndex = headerString.indexOf(draftText)
         if(draftIndex == -1) return spannable

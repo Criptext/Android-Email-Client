@@ -32,7 +32,8 @@ import com.criptext.mail.validation.ProgressButtonState
 class SignInStartHolder(
         val view: View,
         initialUsername: String,
-        firstTime: Boolean): BaseSignInHolder() {
+        firstTime: Boolean,
+        isMultipleAccountLogin: Boolean): BaseSignInHolder() {
 
     private val rootLayout: View = view.findViewById<View>(R.id.viewRoot)
     private val usernameInput : AppCompatEditText = view.findViewById(R.id.input_username)
@@ -41,6 +42,7 @@ class SignInStartHolder(
     private val signUpTextView: TextView = view.findViewById(R.id.signup_textview)
     private val progressBar: ProgressBar = view.findViewById(R.id.signin_progress_login)
     private val imageError: ImageView = view.findViewById(R.id.signin_error_image)
+    private val backButton: View = view.findViewById(R.id.icon_back)
 
     init {
         usernameInput.text = SpannableStringBuilder(initialUsername)
@@ -55,6 +57,9 @@ class SignInStartHolder(
         if(initialUsername.isNotEmpty()){
             setSubmitButtonState(ProgressButtonState.enabled)
         }
+
+        if(isMultipleAccountLogin)
+            backButton.visibility = View.VISIBLE
     }
 
     private fun addGlobalLayout(){
@@ -101,6 +106,9 @@ class SignInStartHolder(
         }
         usernameInputLayout.setOnFocusChangeListener { _, isFocused ->
             uiObserver?.toggleUsernameFocusState(isFocused)
+        }
+        backButton.setOnClickListener{
+            uiObserver?.onBackPressed()
         }
 
         usernameInput.addTextChangedListener(object: TextWatcher {

@@ -365,23 +365,25 @@ class ProfileController(
 
     private fun setBitmapOnProfileImage(imagePath: String){
         val file = File(imagePath)
-        val bitmapImage = Utility.getBitmapFromFile(file) ?: return
+        val bitmapImage = Utility.getBitmapFromFile(file)
 
-        scene.showProfilePictureProgress()
-        val exif = ExifInterface(file.path)
-        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
-        val matrix = Matrix()
-        when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-            else -> {
+        if(bitmapImage != null) {
+            scene.showProfilePictureProgress()
+            val exif = ExifInterface(file.path)
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                else -> {
+                }
             }
+            val rotatedBitmap = Bitmap.createBitmap(bitmapImage, 0, 0,
+                    bitmapImage.width, bitmapImage.height, matrix, true)
+            dataSource.submitRequest(ProfileRequest.SetProfilePicture(rotatedBitmap))
+            scene.updateProfilePicture(rotatedBitmap)
         }
-        val rotatedBitmap = Bitmap.createBitmap(bitmapImage, 0, 0,
-                bitmapImage.width, bitmapImage.height, matrix, true)
-        dataSource.submitRequest(ProfileRequest.SetProfilePicture(rotatedBitmap))
-        scene.updateProfilePicture(rotatedBitmap)
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {

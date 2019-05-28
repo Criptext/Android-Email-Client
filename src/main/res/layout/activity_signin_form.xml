@@ -7,159 +7,170 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:id="@+id/viewRoot"
 android:focusableInTouchMode="true" >
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_gravity="center"
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/back_signup"
+        android:visibility="gone"/>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:src="@drawable/logo_splash"
-                android:tint="@color/white"
-                android:layout_gravity="center"
-                android:layout_width="80dp"
-                android:layout_height="80dp"/>
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:text="@string/tour_title1"
-                android:textColor="@color/white"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="26sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="60dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal|top"
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/signin_error_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:visibility="invisible"
-                    android:layout_marginTop="22dp"
-                    android:layout_marginEnd="3dp"
-                    android:padding="3dp"
-                    android:src="@drawable/x_rounded"
-                    android:layout_toStartOf="@+id/viewUsername"
-                    android:background="@drawable/error_circle"/>
-
-                <LinearLayout
-                    android:id="@+id/viewUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:src="@drawable/logo_splash"
+                    android:tint="@color/white"
                     android:layout_gravity="center"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/input_username_layout"
-                        android:textColorHint="@color/signup_hint_color"
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/input_username"
-                            app:backgroundTint="@color/white"
-                            android:textSize="16sp"
-                            android:textColor="@color/white"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:hint="@string/username_hint" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        fontPath="fonts/NunitoSans-Regular.ttf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/criptext_com"
-                        android:gravity="bottom"
-                        android:textColor="@color/white"
-                        android:layout_gravity="right"
-                        android:textSize="16sp"/>
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <ProgressBar
-                android:id="@+id/signin_progress_login"
-                android:visibility="gone"
-                android:layout_width="270dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/login_shape"/>
-
-            <Button
-                android:id="@+id/signin_button"
-                android:layout_width="270dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/btn_signup_background"
-                android:textColor="@drawable/btn_sign_in"
-                android:text="@string/login"
-                android:enabled="false"
-                android:textAllCaps="false"
-                android:layout_marginTop="10dp"/>
-
-            <LinearLayout
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:focusable="true">
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"/>
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_height="50dp"
-                    android:text="@string/not_registered"
-                    android:gravity="end"
-                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
-                    android:textSize="14sp"/>
-                <Space
-                    android:layout_height="20dp"
-                    android:layout_width="10dp" />
-
-                <TextView
-                    android:id="@+id/signup_textview"
                     android:layout_height="50dp"
-                    android:text="@string/sign_up"
-                    android:gravity="start"
+                    android:text="@string/tour_title1"
                     android:textColor="@color/white"
-                    android:layout_width="wrap_content"
-                    android:textSize="14sp"
-                    fontPath="fonts/NunitoSans-Bold.ttf"/>
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="26sp"/>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="60dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/signin_error_image"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:visibility="invisible"
+                        android:layout_marginTop="22dp"
+                        android:layout_marginEnd="3dp"
+                        android:padding="3dp"
+                        android:src="@drawable/x_rounded"
+                        android:layout_toStartOf="@+id/viewUsername"
+                        android:background="@drawable/error_circle"/>
+
+                    <LinearLayout
+                        android:id="@+id/viewUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/input_username_layout"
+                            android:textColorHint="@color/signup_hint_color"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/input_username"
+                                app:backgroundTint="@color/white"
+                                android:textSize="16sp"
+                                android:textColor="@color/white"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:hint="@string/username_hint" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <TextView
+                            fontPath="fonts/NunitoSans-Regular.ttf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="5dp"
+                            android:text="@string/criptext_com"
+                            android:gravity="bottom"
+                            android:textColor="@color/white"
+                            android:layout_gravity="right"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <ProgressBar
+                    android:id="@+id/signin_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="270dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:padding="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/login_shape"/>
+
+                <Button
+                    android:id="@+id/signin_button"
+                    android:layout_width="270dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_signup_background"
+                    android:textColor="@drawable/btn_sign_in"
+                    android:text="@string/login"
+                    android:enabled="false"
+                    android:textAllCaps="false"
+                    android:layout_marginTop="10dp"/>
+
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:focusable="true">
+                    <TextView
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_height="50dp"
+                        android:text="@string/not_registered"
+                        android:gravity="end"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:textSize="14sp"/>
+                    <Space
+                        android:layout_height="20dp"
+                        android:layout_width="10dp" />
+
+                    <TextView
+                        android:id="@+id/signup_textview"
+                        android:layout_height="50dp"
+                        android:text="@string/sign_up"
+                        android:gravity="start"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:textSize="14sp"
+                        fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 </LinearLayout>
