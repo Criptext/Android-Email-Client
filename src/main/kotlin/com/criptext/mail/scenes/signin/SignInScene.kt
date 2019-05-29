@@ -22,7 +22,8 @@ interface SignInScene {
     fun showError(message: UIMessage)
     fun drawInputError(error: UIMessage)
     fun drawSuccess()
-    fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver)
+    fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver,
+                   isMultiple: Boolean)
     fun showResetPasswordDialog(emailAddress: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
@@ -68,11 +69,13 @@ interface SignInScene {
             val signInLayout = View.inflate(
                     view.context,
                     R.layout.activity_signin_form, viewGroup)
-            holder = SignInStartHolder(signInLayout, "", true)
+            holder = SignInStartHolder(signInLayout, "", true, false)
         }
 
 
-        override fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver) {
+        override fun initLayout(state: SignInLayoutState,
+                                signInUIObserver: SignInSceneController.SignInUIObserver,
+                                isMultiple: Boolean) {
             removeAllViews()
             holder = when (state) {
                 is SignInLayoutState.WaitForApproval -> {
@@ -100,7 +103,7 @@ interface SignInScene {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_signin_form, viewGroup)
-                    SignInStartHolder(newLayout, state.username, state.firstTime)
+                    SignInStartHolder(newLayout, state.username, state.firstTime, isMultiple)
                 }
             }
             holder.uiObserver = signInUIObserver

@@ -130,7 +130,7 @@ class SignInSceneController(
                 if(model.hasTwoFA){
                     onAcceptPasswordLogin(currentState.username)
                 }else{
-                    scene.initLayout(model.state, uiObserver)
+                    scene.initLayout(model.state, uiObserver, model.isMultiple)
                     handleNewTemporalWebSocket()
                     dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
                             model.ephemeralJwt))
@@ -147,7 +147,7 @@ class SignInSceneController(
     private fun returnToStart(message: UIMessage){
         val currentState = model.state as SignInLayoutState.LoginValidation
         model.state = SignInLayoutState.Start(currentState.username, false)
-        scene.initLayout(model.state, uiObserver)
+        scene.initLayout(model.state, uiObserver, model.isMultiple)
         scene.showError(message)
     }
 
@@ -157,7 +157,7 @@ class SignInSceneController(
                 if(model.hasTwoFA) {
                     val currentState = model.state as SignInLayoutState.InputPassword
                     model.state = SignInLayoutState.LoginValidation(currentState.username, model.hasTwoFA)
-                    scene.initLayout(model.state, uiObserver)
+                    scene.initLayout(model.state, uiObserver, model.isMultiple)
                 }
                 handleNewTemporalWebSocket()
                 scene.toggleResendClickable(true)
@@ -255,7 +255,7 @@ class SignInSceneController(
                     model.authorizerId = result.linkStatusData.authorizerId
                     model.authorizerType = result.linkStatusData.authorizerType
                     model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
-                    scene.initLayout(model.state, uiObserver)
+                    scene.initLayout(model.state, uiObserver, model.isMultiple)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
@@ -297,7 +297,7 @@ class SignInSceneController(
                 password = "",
                 buttonState = ProgressButtonState.disabled,
                 hasTwoFA = model.hasTwoFA)
-        scene.initLayout(model.state, uiObserver)
+        scene.initLayout(model.state, uiObserver, model.isMultiple)
     }
 
     private val passwordLoginDialogListener = object : OnPasswordLoginDialogListener {
@@ -399,7 +399,7 @@ class SignInSceneController(
                     model.authorizerId = linkStatusData.authorizerId
                     model.authorizerType = linkStatusData.authorizerType
                     model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
-                    scene.initLayout(model.state, uiObserver)
+                    scene.initLayout(model.state, uiObserver, model.isMultiple)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
                             username = currentState.username,
@@ -456,7 +456,7 @@ class SignInSceneController(
                 is SignInResult.CreateSessionFromLink -> {
                     val currentState = model.state as SignInLayoutState.LoginValidation
                     model.state = SignInLayoutState.WaitForApproval(currentState.username, model.authorizerType)
-                    scene.initLayout(model.state, this)
+                    scene.initLayout(model.state, this, model.isMultiple)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
@@ -563,7 +563,7 @@ class SignInSceneController(
     }
 
     private fun resetLayout() {
-        scene.initLayout(model.state, uiObserver)
+        scene.initLayout(model.state, uiObserver, model.isMultiple)
     }
 
     private fun stopTempWebSocket(){
@@ -576,7 +576,7 @@ class SignInSceneController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
-        scene.initLayout(state = model.state, signInUIObserver = uiObserver)
+        scene.initLayout(state = model.state, signInUIObserver = uiObserver, isMultiple = model.isMultiple)
         if(activityMessage != null && activityMessage is ActivityMessage.ShowUIMessage){
             scene.showError(activityMessage.message)
         }
@@ -599,7 +599,13 @@ class SignInSceneController(
     override fun onBackPressed(): Boolean {
         val currentState = model.state
         return when (currentState) {
-            is SignInLayoutState.Start -> true
+            is SignInLayoutState.Start -> {
+                if(model.isMultiple) {
+                    host.finishScene()
+                    false
+                } else
+                    true
+            }
             is SignInLayoutState.LoginValidation -> {
                 model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
                 resetLayout()
