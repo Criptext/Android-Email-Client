@@ -51,7 +51,7 @@ class SyncDeviceAlertDialog(val context: Context) {
         val textView = dialogView.findViewById(R.id.message_text) as TextView
         val accountTextView = dialogView.findViewById(R.id.account_email) as TextView
         val imageView = dialogView.findViewById(R.id.imageViewDeviceType) as ImageView
-        accountTextView.text = trustedDeviceInfo.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
+        accountTextView.text = trustedDeviceInfo.recipientId.plus("@${trustedDeviceInfo.domain}")
         textView.text = context.getString(R.string.link_auth_message,
                 trustedDeviceInfo.deviceFriendlyName)
         when(trustedDeviceInfo.deviceType){

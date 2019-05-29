@@ -81,19 +81,16 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                     fullEmail.from.name
                 }
         val contactFrom = fullEmail.from
-        if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
-            UIUtils.setProfilePicture(
-                    iv = leftImageView,
-                    resources = view.context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
-                    name = contactFrom.name,
-                    runnable = null)
-        else
-            leftImageView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            contactFrom.name,
-                            250,
-                            250))
+        val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
+
+        UIUtils.setProfilePicture(
+                iv = leftImageView,
+                resources = view.context.resources,
+                recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
+                name = contactFrom.name,
+                runnable = null,
+                domain = domain)
+
 
         setIcons(fullEmail.email.delivered, fullEmail.files.isNotEmpty())
     }

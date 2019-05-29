@@ -72,7 +72,7 @@ class AuthenticateUserWorker(
                 db.deleteDatabase(lastLoggedUsers)
             }
             storedValue = ""
-            lastLoggedUsers.removeAll { it == userData.username }
+            lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.distinct().joinToString())
         }
         val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticateUser() else storedValue

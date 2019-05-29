@@ -60,13 +60,10 @@ class CreateSessionWorker(val httpClient: HttpClient,
                             keyValueStorage.clearAll()
                         }
                     } else {
-                        val recipientId = if(domain != Contact.mainDomain)
-                            username.plus("@$domain")
-                        else
-                            username
-                        if (lastLoggedUser.isNotEmpty() && recipientId in lastLoggedUser) {
-                            db.deleteDatabase(recipientId)
-                            lastLoggedUser.removeAll { it == recipientId }
+                        val email = username.plus("@$domain")
+                        if (lastLoggedUser.isNotEmpty() && email in lastLoggedUser) {
+                            db.deleteDatabase(username, domain)
+                            lastLoggedUser.removeAll { it == email }
                             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
                         }
                     }

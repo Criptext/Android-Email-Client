@@ -204,7 +204,7 @@ class ProfileController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
 
-        scene.attachView(uiObserver, activeAccount.recipientId, model)
+        scene.attachView(uiObserver, activeAccount.recipientId, activeAccount.domain, model)
         generalDataSource.listener = generalDataSourceListener
         dataSource.listener = dataSourceListener
 

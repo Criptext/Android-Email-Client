@@ -45,8 +45,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun logoutNukeDB(activeAccount: ActiveAccount) {
-        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-        db.accountDao().deleteAccountByRecipientId(activeAccount.recipientId)
+        val username = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
+        else activeAccount.userEmail
+        EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+        db.accountDao().deleteAccountById(activeAccount.id)
     }
 
     fun logout(accountId: Long){

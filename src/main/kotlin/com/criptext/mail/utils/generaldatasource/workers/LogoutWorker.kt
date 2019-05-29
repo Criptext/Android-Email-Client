@@ -86,7 +86,7 @@ class LogoutWorker(
                     }
                     if(!shouldDeleteAllData) {
                         val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
-                        loggedOutAccounts.add(activeAccount.recipientId)
+                        loggedOutAccounts.add(activeAccount.userEmail)
                         storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.distinct().joinToString())
                     }
                 }

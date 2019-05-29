@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -82,6 +83,10 @@ class PrivacyController(
             generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
         }
 
+        override fun onHasEncryptionSwitched(isChecked: Boolean) {
+            AccountUtils.saveExternalEncryptionSetting(storage, activeAccount.userEmail, isChecked)
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
 
         }
@@ -114,7 +119,8 @@ class PrivacyController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
 
-        scene.attachView(uiObserver, keyboardManager, model)
+        scene.attachView(uiObserver, keyboardManager, model,
+                AccountUtils.hasExternalEncryption(storage, activeAccount.userEmail))
         generalDataSource.listener = generalDataSourceListener
 
 
