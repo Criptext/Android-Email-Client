@@ -8,6 +8,7 @@ import com.criptext.mail.db.models.Account
  * Created by gabriel on 3/6/18.
  */
 @Entity(tableName = "raw_identitykey",
+        indices = [Index(value = ["accountId"], name = "identitykey_accountId_index")],
         foreignKeys = [ForeignKey(entity = Account::class,
                 parentColumns = ["id"],
                 onDelete = ForeignKey.CASCADE,

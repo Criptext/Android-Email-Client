@@ -31,10 +31,7 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
-        notBuild.ledARGB = Color.CYAN
         notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
-        notBuild.ledOnMS = 1000
-        notBuild.ledOffMS = 1000
 
         return notBuild
     }

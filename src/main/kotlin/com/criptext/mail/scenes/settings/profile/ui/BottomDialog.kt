@@ -35,7 +35,7 @@ class BottomDialog(val context: Context) {
         val inflater = (context as AppCompatActivity).layoutInflater
         view = inflater.inflate(R.layout.dialog_profile_bottom, null)
         initializeLayoutComponents()
-        assignButtonEvents(observer)
+        assignButtonEvents()
 
         dialog?.setContentView(view)
         uiObserver = observer
@@ -52,7 +52,7 @@ class BottomDialog(val context: Context) {
         rootView = view.findViewById(R.id.rootView)
     }
 
-    private fun assignButtonEvents(observer: ProfileUIObserver?) {
+    private fun assignButtonEvents() {
 
         buttonCamera.setOnClickListener {
             uiObserver?.onNewCamPictureRequested()

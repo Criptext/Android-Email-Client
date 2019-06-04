@@ -20,7 +20,7 @@ class ConfirmationSentDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showDialog(observer: RecoveryEmailUIObserver?) {
+    fun showDialog() {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -28,30 +28,28 @@ class ConfirmationSentDialog(val context: Context) {
 
         dialogBuilder.setView(dialogView)
 
-        dialog = createDialog(dialogView, dialogBuilder, observer)
+        dialog = createDialog(dialogView, dialogBuilder)
     }
 
-    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: RecoveryEmailUIObserver?): AlertDialog {
+    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
         val window = newLogoutDialog.window
         newLogoutDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
+        newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
 
-        assignButtonEvents(dialogView, newLogoutDialog, observer)
+        assignButtonEvents(dialogView, newLogoutDialog)
 
 
         return newLogoutDialog
     }
 
-    private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: RecoveryEmailUIObserver?) {
+    private fun assignButtonEvents(view: View, dialog: AlertDialog) {
 
         val btn_yes = view.findViewById(R.id.recovery_email_ok) as Button
 

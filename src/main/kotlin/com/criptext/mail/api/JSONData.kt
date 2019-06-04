@@ -26,6 +26,7 @@ fun List<Long>.toJSONLongArray():
         return jsonArray
     }
 
+@Suppress("UNCHECKED_CAST")
 fun <T> JSONArray.toList(): List<T> {
     val list = mutableListOf<T>()
     for(i in 0 until this.length()) list.add(this[i] as T)

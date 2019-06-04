@@ -62,14 +62,13 @@ class LoginValidationHolder(
     private fun startLoadingAnimation(){
 
         rootLayout.post {
-            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
-                    view.findViewById(R.id.imageViewWatch))
+            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow))
             animLoading!!.start()
         }
 
     }
 
-    private fun initLoadingAnimatorSet(viewArrow: View, viewWatch: View): AnimatorSet{
+    private fun initLoadingAnimatorSet(viewArrow: View): AnimatorSet{
 
         val animArray = arrayOfNulls<ObjectAnimator>(2)
         var animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 45f)

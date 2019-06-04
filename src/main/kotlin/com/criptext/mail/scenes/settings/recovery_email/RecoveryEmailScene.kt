@@ -222,7 +222,7 @@ interface RecoveryEmailScene{
         }
 
         override fun showConfirmationSentDialog() {
-            confirmationSentDialog.showDialog(recoveryEmailUIObserver)
+            confirmationSentDialog.showDialog()
             resendLinkButton.visibility = View.VISIBLE
             resendLinkButton.isEnabled = false
             resendLinkProgressButton.visibility = View.GONE

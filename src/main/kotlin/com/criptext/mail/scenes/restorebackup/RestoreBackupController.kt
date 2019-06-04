@@ -111,14 +111,10 @@ class RestoreBackupController(
 
         scene.attachView(model = model, uiObserver = uiObserver)
         dataSource.listener = dataSourceListener
-        return handleActivityMessage(activityMessage)
+        return false
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
-        return handleActivityMessage(activityMessage)
-    }
-
-    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 
@@ -245,6 +241,7 @@ class RestoreBackupController(
                         })
                     }
                 }
+                else -> {}
             }
         }
     }

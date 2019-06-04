@@ -1,10 +1,7 @@
 package com.criptext.mail.db.models.signal
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.criptext.mail.db.models.Account
 
 /**
@@ -12,6 +9,7 @@ import com.criptext.mail.db.models.Account
  */
 
 @Entity(tableName = "raw_prekey",
+        indices = [ Index(value = ["accountId"], name = "preKey_accountId_index") ],
         foreignKeys = [ForeignKey(entity = Account::class,
             parentColumns = ["id"],
             onDelete = ForeignKey.CASCADE,

@@ -581,9 +581,10 @@ interface MailboxScene{
 
         override fun showNotification() {
             val vibrate: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (Build.VERSION.SDK_INT >= 26) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrate.vibrate(VibrationEffect.createOneShot(400,10))
             } else {
+                @Suppress("DEPRECATION")
                 vibrate.vibrate(400)
             }
 

@@ -201,7 +201,7 @@ class GetPushEmailWorker(
     }
 
     private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
-            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount!!)
+            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
             dbEvents.updateExistingEmail(metadata, activeAccount)

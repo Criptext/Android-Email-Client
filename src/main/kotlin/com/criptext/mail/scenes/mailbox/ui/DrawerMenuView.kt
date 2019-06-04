@@ -282,6 +282,7 @@ class DrawerMenuView(navigationView: NavigationView,
             NavigationMenuOptions.ALL_MAIL -> {
                 setResourcesSelected(sliderAllMail, textViewTitleAllMail, imageViewAllMail)
             }
+            else -> {}
         }
     }
 
@@ -308,6 +309,7 @@ class DrawerMenuView(navigationView: NavigationView,
                 textViewCounterSpam.visibility = if (total > 0) View.VISIBLE else View.GONE
                 textViewCounterSpam.text = total.toString()
             }
+            else -> {}
         }
     }
 

@@ -1,8 +1,9 @@
 package com.criptext.mail.scenes.mailbox.holders
 
-import androidx.legacy.widget.Space
+
 import android.view.View
 import android.widget.ImageView
+import android.widget.Space
 import android.widget.TextView
 import com.criptext.mail.R
 

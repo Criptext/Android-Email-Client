@@ -46,16 +46,15 @@ class SearchThreadAdapter(private val mContext : Context,
             goToMail(emailThread = mail)
         }
 
-        holder.itemView.setOnLongClickListener({
+        holder.itemView.setOnLongClickListener {
             toggleThreadSelection(mail, position)
             true
-        })
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is EmailHolder -> {
-                if (holder.itemView == null) return
                 val mail = threadList[position]
                 // TODO use email preview virtual list
                 holder.bindEmailPreview(EmailPreview.fromEmailThread(mail))

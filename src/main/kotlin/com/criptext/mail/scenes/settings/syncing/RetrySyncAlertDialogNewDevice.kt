@@ -34,11 +34,11 @@ class RetrySyncAlertDialogNewDevice(val context: Context) {
         val newLinkDeviceAuthDialog = dialogBuilder.create()
         val window = newLinkDeviceAuthDialog.window
         newLinkDeviceAuthDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
-        newLinkDeviceAuthDialog.window.setBackgroundDrawable(drawableBackground)
+        newLinkDeviceAuthDialog.window?.setBackgroundDrawable(drawableBackground)
 
         newLinkDeviceAuthDialog.setCancelable(false)
         newLinkDeviceAuthDialog.setCanceledOnTouchOutside(false)

@@ -155,14 +155,10 @@ class CloudBackupController(
         scene.attachView(model = model, cloudBackupUIObserver1 = uiObserver)
         dataSource.listener = dataSourceListener
         dataSource.submitRequest(CloudBackupRequest.LoadCloudBackupData(model.mDriveService))
-        return handleActivityMessage(activityMessage)
+        return false
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
-        return handleActivityMessage(activityMessage)
-    }
-
-    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 
@@ -363,13 +359,14 @@ class CloudBackupController(
                 MediaHttpUploader.UploadState.MEDIA_COMPLETE -> {
                     model.isBackupDone = true
                     if(model.hasOldFile) {
-                        dataSource.submitRequest(CloudBackupRequest.DeleteFileInDrive(model.mDriveService!!, model.oldFileId!!))
+                        dataSource.submitRequest(CloudBackupRequest.DeleteFileInDrive(model.mDriveService!!, model.oldFileId))
                         model.hasOldFile = false
                     }
                     host.runOnUiThread(Runnable {
                         updateUploadDone()
                     })
                 }
+                else -> {}
             }
         }
     }

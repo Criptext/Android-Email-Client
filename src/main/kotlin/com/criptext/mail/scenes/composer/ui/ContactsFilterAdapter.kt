@@ -33,37 +33,37 @@ class ContactsFilterAdapter(context : Context, objects : List<Contact>)
         return createViewFromResource(LayoutInflater.from(context), position, convertView, parent, R.layout.autocomplete_item);
     }
 
-    fun createViewFromResource(inflater : LayoutInflater, position : Int, convertView: View?, parent: ViewGroup?, resource: Int) : View{
+    private fun createViewFromResource(inflater : LayoutInflater, position : Int, convertView: View?, parent: ViewGroup?, resource: Int) : View{
         val view: View = convertView ?: inflater.inflate(resource, parent, false)
 
         val nameTextView = view.findViewById<TextView>(R.id.auto_name)
-        val mailTextView = view.findViewById<TextView>(R.id.auto_mail) as TextView
-        val circleView = view.findViewById<CircleImageView>(R.id.auto_circle) as CircleImageView
+        val mailTextView = view.findViewById(R.id.auto_mail) as TextView
+        val circleView = view.findViewById(R.id.auto_circle) as CircleImageView
 
         val item = getItem(position)
-        nameTextView.text = item.name
-        mailTextView.text = item.email
-        if(item.email.contains(item.name)){
-            nameTextView.visibility = View.GONE
-        }
-        else{
-            nameTextView.visibility = View.VISIBLE
-        }
+        if(item != null) {
+            nameTextView.text = item.name
+            mailTextView.text = item.email
+            if (item.email.contains(item.name)) {
+                nameTextView.visibility = View.GONE
+            } else {
+                nameTextView.visibility = View.VISIBLE
+            }
 
-        if(EmailAddressUtils.isFromCriptextDomain(item.email))
-            UIUtils.setProfilePicture(
-                    iv = circleView,
-                    resources = context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(item.email),
-                    name = item.name,
-                    runnable = null)
-        else
-            circleView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            item.name,
-                            250,
-                            250))
-
+            if (EmailAddressUtils.isFromCriptextDomain(item.email))
+                UIUtils.setProfilePicture(
+                        iv = circleView,
+                        resources = context.resources,
+                        recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(item.email),
+                        name = item.name,
+                        runnable = null)
+            else
+                circleView.setImageBitmap(
+                        Utility.getBitmapFromText(
+                                item.name,
+                                250,
+                                250))
+        }
         return view
     }
 

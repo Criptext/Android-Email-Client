@@ -29,12 +29,12 @@ class LabelChooserDialog(private val context: Context, private val rootView: Vie
         newLabelChooserDialog.show()
 
         val window = newLabelChooserDialog.window
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(context, R.drawable.dialog_label_chooser_shape)
-        newLabelChooserDialog.window.setBackgroundDrawable(drawableBackground)
-        assignButtonEvents(dialogView, newLabelChooserDialog, controller.dialogLabelsListener)
+        newLabelChooserDialog.window?.setBackgroundDrawable(drawableBackground)
+        assignButtonEvents(dialogView, controller.dialogLabelsListener)
         return newLabelChooserDialog
     }
 
@@ -63,7 +63,7 @@ class LabelChooserDialog(private val context: Context, private val rootView: Vie
         controller.start()
     }
 
-    private fun assignButtonEvents(view: View, dialog: AlertDialog,
+    private fun assignButtonEvents(view: View,
                            dialogLabelsListener: DialogLabelsListener
                            ) {
         val btnAdd = view.findViewById<Button>(R.id.label_add)

@@ -23,7 +23,6 @@ class LabelWrapperAdapter(private val mContext : Context,
     }
 
     override fun onBindViewHolder(holder: LabelHolder, position: Int) {
-        if(holder.itemView == null) return
         val labelThread = labelList[position]
         holder.bindLabel(labelThread)
 
@@ -32,9 +31,9 @@ class LabelWrapperAdapter(private val mContext : Context,
         }
         holder.setOnCheckboxClickedListener(itemClickListener)
 
-        holder.itemView.setOnClickListener({
+        holder.itemView.setOnClickListener {
             onToggleLabelSelection(labelThread, position)
-        })
+        }
     }
 
     override fun getItemCount(): Int {

@@ -53,11 +53,11 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
         val newPasswordLoginDialog = dialogBuilder.create()
         val window = newPasswordLoginDialog.window
         newPasswordLoginDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newPasswordLoginDialog.window.setBackgroundDrawable(drawableBackground)
+        newPasswordLoginDialog.window?.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView, newPasswordLoginDialog, observer)
         editTextEmail = dialogView.findViewById(R.id.input)

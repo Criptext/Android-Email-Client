@@ -14,7 +14,7 @@ import java.util.regex.Pattern
  * Created by gabriel on 2/26/18.
  */
 @Entity(tableName = "contact",
-        indices = [Index(value = "email", unique = true)] )
+        indices = [Index(value = ["email"], unique = true)] )
 
 open class Contact(
 

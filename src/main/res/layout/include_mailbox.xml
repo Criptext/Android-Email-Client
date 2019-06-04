@@ -58,7 +58,7 @@
                     android:padding="10dp"
                     android:layout_height="70dp"
                     android:layout_width="70dp" />
-                <androidx.legacy.widget.Space
+                <Space
                     android:id="@+id/mailbox_toolbar_multi_mode_separator"
                     android:layout_width="15dp"
                     android:visibility="visible"

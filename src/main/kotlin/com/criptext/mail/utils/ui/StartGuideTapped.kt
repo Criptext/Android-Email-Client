@@ -3,6 +3,7 @@ package com.criptext.mail.utils.ui
 import android.app.Activity
 import android.content.Context
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
@@ -25,8 +26,8 @@ class StartGuideTapped(val context: Context) {
                 .setTarget(view)
                 .setFocalPadding(res.getDimension(dimension))
                 .setFocalRadius(res.getDimension(focal))
-                .setFocalColour(res.getColor(color))
-                .setBackgroundColour(res.getColor(android.R.color.transparent))
+                .setFocalColour(ContextCompat.getColor(context, color))
+                .setBackgroundColour(ContextCompat.getColor(context, android.R.color.transparent))
                 .setPromptBackground(DimmedPromptBackground())
                 .setPrimaryText(res.getString(title))
                 .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))
@@ -37,8 +38,8 @@ class StartGuideTapped(val context: Context) {
     private fun showTapViewTarget(view: View, activity: Activity, title: Int){
         MaterialTapTargetPrompt.Builder(activity)
                 .setTarget(view)
-                .setFocalColour(res.getColor(R.color.white))
-                .setBackgroundColour(res.getColor(android.R.color.transparent))
+                .setFocalColour(ContextCompat.getColor(context, R.color.white))
+                .setBackgroundColour(ContextCompat.getColor(context, android.R.color.transparent))
                 .setPromptBackground(DimmedPromptBackground())
                 .setPrimaryText(res.getString(title))
                 .setPrimaryTextSize(res.getDimension(R.dimen.start_guide_text))

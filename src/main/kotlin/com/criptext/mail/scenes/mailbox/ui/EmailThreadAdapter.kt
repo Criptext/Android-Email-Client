@@ -61,7 +61,6 @@ class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is EmailHolder -> {
-                if (holder.itemView == null) return
                 val mail = threadList[position]
                 holder.bindEmailPreview(mail)
                 setEmailHolderListeners(holder, position, mail)

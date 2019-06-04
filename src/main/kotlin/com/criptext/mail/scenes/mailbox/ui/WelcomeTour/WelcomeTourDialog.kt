@@ -50,12 +50,12 @@ class WelcomeTourDialog(val context: Context) {
         newWelcomeTourDialog.show()
 
         val window = newWelcomeTourDialog.window
-        window.setLayout(width, height)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, height)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
-        newWelcomeTourDialog.window.setBackgroundDrawable(drawableBackground)
+        newWelcomeTourDialog.window?.setBackgroundDrawable(drawableBackground)
         newWelcomeTourDialog.setCanceledOnTouchOutside(false)
         newWelcomeTourDialog.setCancelable(false)
 

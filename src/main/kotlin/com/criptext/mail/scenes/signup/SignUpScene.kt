@@ -19,12 +19,6 @@ interface SignUpScene {
 
     fun isPasswordErrorShown() : Boolean
     fun isUsernameErrorShown() : Boolean
-
-    /**
-     * Show or hide the check mark that informs the user that the username is available.
-     * @param visible if true, show the check mark otherwise hide it.
-     */
-    fun toggleUserAvailableCheckmark(visible: Boolean)
     fun enableCreateAccountButton()
     fun disableCreateAccountButton()
     fun togglePasswordSuccess(show: Boolean)
@@ -155,10 +149,6 @@ interface SignUpScene {
 
         private fun assignBackButtonListener() {
             signUpFormHolder?.assignBackButtonListener()
-        }
-
-        override fun toggleUserAvailableCheckmark(visible: Boolean) {
-            signUpFormHolder?.toggleUserAvailableCheckmark(visible)
         }
 
         override fun showFormHolder() {

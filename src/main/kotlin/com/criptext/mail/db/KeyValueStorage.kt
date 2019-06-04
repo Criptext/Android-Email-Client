@@ -60,11 +60,11 @@ interface KeyValueStorage {
         }
 
         override fun getString(key: StringKey, default: String): String =
-                prefs.getString(key.stringKey, default)
+                prefs.getString(key.stringKey, default)!!
 
         override fun getString(file: String, key: StringKey, default: String): String  {
             val mPrefs = ctx.getSharedPreferences(file, Context.MODE_PRIVATE)
-            return mPrefs.getString(key.stringKey, default)
+            return mPrefs.getString(key.stringKey, default)!!
         }
 
         override fun putString(key: StringKey, value: String) {

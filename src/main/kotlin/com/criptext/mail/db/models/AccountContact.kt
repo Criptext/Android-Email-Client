@@ -7,7 +7,8 @@ import org.json.JSONObject
 
 
 @Entity(tableName = "account_contact",
-        indices = [ (Index("accountId", "contactId", unique = true)) ],
+        indices = [ (Index("accountId", "contactId", unique = true)),
+            (Index("contactId", name = "contactId_index"))],
         foreignKeys = [
             ForeignKey(entity = Account::class,
                 parentColumns = ["id"],

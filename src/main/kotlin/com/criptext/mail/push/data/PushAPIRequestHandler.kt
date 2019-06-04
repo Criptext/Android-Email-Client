@@ -212,7 +212,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
     }
 
-    private fun postNotification(data: PushData.Error, cn: CriptextNotification,
+    private fun postNotification(cn: CriptextNotification,
                                  notification: Notification) {
         cn.notify(if(isPostNougat) PushTypes.linkDevice.requestCodeRandom() else
             PushTypes.linkDevice.requestCode(), notification,
@@ -229,6 +229,6 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         if(isPostNougat) {
             postHeaderNotification(cn, data)
         }
-        postNotification(data, cn, notification)
+        postNotification(cn, notification)
     }
 }

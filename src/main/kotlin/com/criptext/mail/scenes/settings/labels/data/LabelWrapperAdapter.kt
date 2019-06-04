@@ -29,13 +29,12 @@ class LabelWrapperAdapter(private val mContext : Context,
 
         when(holder){
             is LabelHolder -> {
-                if(holder.itemView == null) return
                 val labelThread = labelList[position]
                 holder.bindLabel(labelThread)
-                holder.setOnCheckboxClickedListener({
+                holder.setOnCheckboxClickedListener {
                     labelThread.isSelected = !labelThread.isSelected
                     labelsUIObserver?.onToggleLabelSelection(labelThread)
-                })
+                }
             }
             is FooterLabelHolder -> {
                 holder.setOnCreateLabelClickedListener {

@@ -74,8 +74,8 @@ class DataFileCreationWorker(
                 filePath = path
                 reporter.report(CloudBackupResult.DataFileCreation.Progress(55))
                 if(isFromJob) {
-                    val account = db.accountDao().getAccountById(activeAccount.id) ?: throw Exception()
-                    passphrase = account.backupPassword
+                    val accountById = db.accountDao().getAccountById(activeAccount.id) ?: throw Exception()
+                    passphrase = accountById.backupPassword
                 }
                 if(passphrase == null)
                     return CloudBackupResult.DataFileCreation.Success(filePath)

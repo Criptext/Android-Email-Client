@@ -77,13 +77,13 @@ interface HttpClient {
 
         private fun deleteJSON(url: String, authToken: String?, json: JSONObject): Request {
             val newUrl = HttpUrl.parse(url)!!.newBuilder()
-            val url = newUrl.build()
+            val httpUrl = newUrl.build()
             val body = RequestBody.create(JSON, json.toString())
             return Request.Builder()
                     .addAuthorizationHeader(authToken)
                     .addApiVersionHeader()
                     .addSystemHeader()
-                    .url(url)
+                    .url(httpUrl)
                     .delete(body)
                     .build()
         }

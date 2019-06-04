@@ -50,7 +50,8 @@ class GetRemoteFileWorker(private val uris: List<String>,
 
             val stream = contentResolver.openInputStream(realUri)
             stream.use { input ->
-                File(file.absolutePath).outputStream().use { input.copyTo(it) }
+                if(input != null)
+                    File(file.absolutePath).outputStream().use { input.copyTo(it) }
             }
 
             attachmentList.add(Pair(file.absolutePath, file.length()))

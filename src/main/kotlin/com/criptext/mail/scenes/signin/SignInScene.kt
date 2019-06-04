@@ -120,11 +120,6 @@ interface SignInScene {
             signInUIObserver.userLoginReady()
         }
 
-        private val showKeyGenerationAfterLink = {
-            signInUIObserver: SignInSceneController.SignInUIObserver ->
-            showKeyGenerationHolder()
-        }
-
         override fun resetInput() {
             val currentHolder = holder
             when (currentHolder) {

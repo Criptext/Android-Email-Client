@@ -1,6 +1,5 @@
 package com.criptext.mail.utils.file
 
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -10,8 +9,6 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.webkit.MimeTypeMap
-import droidninja.filepicker.utils.FileUtils
 import java.io.*
 import java.net.URISyntaxException
 
@@ -28,7 +25,7 @@ object PathUtil {
     @Throws(URISyntaxException::class)
     fun getPath(context: Context, rawUri: Uri): String? {
         var uri = rawUri
-        val needToCheckUri = Build.VERSION.SDK_INT >= 19
+        val needToCheckUri = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
         var selection: String? = null
         var selectionArgs: Array<String>? = null
         // Uri is different in versions after KITKAT (Android 4.4), we need to
@@ -78,7 +75,7 @@ object PathUtil {
         }
         if ("content".equals(uri.scheme!!, ignoreCase = true)) {
             val projection = arrayOf(MediaStore.Images.Media.DATA)
-            var cursor: Cursor? = null
+            val cursor: Cursor?
             try {
                 cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
                 val columnIndex = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
@@ -128,15 +125,13 @@ object PathUtil {
         val projection = arrayOf(column)
 
         try {
-            cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
-            if (cursor != null && cursor!!.moveToFirst()) {
-                val index = cursor!!.getColumnIndexOrThrow(column)
-                val path =  cursor!!.getString(index)
-                return path
+            cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val index = cursor.getColumnIndexOrThrow(column)
+                return cursor.getString(index)
             }
         } finally {
-            if (cursor != null)
-                cursor!!.close()
+            cursor?.close()
         }
         return null
     }

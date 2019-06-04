@@ -54,7 +54,7 @@ class SyncDeviceActionService : IntentService("Sync Device Action Service") {
     }
 
     private fun getIntentData(intent: Intent?, activeRecipientId: String): IntentData {
-        val action = intent!!.action
+        val action = intent!!.action ?: ""
         val notificationId = intent.getIntExtra("notificationId", 0)
         val randomId = intent.getStringExtra("randomId")
         val version = intent.getIntExtra("version", -1)

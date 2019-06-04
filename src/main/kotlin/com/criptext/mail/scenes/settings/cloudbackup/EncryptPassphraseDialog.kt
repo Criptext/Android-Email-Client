@@ -46,26 +46,25 @@ class EncryptPassphraseDialog(val context: Context) {
         dialogBuilder.setView(view)
         uiObserver = observer
 
-        dialog = createDialog(view, dialogBuilder, uiObserver)
+        dialog = createDialog(view, dialogBuilder)
     }
 
-    private fun createDialog(view: View, dialogBuilder: AlertDialog.Builder,
-                             observer: CloudBackupUIObserver?): AlertDialog {
+    private fun createDialog(view: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
 
         val width = res.getDimension(R.dimen.non_criptext_email_send_dialog_width).toInt()
         val nonCriptextEmailSendDialog = dialogBuilder.create()
         val window = nonCriptextEmailSendDialog.window
         nonCriptextEmailSendDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(view.context,
                 R.drawable.dialog_label_chooser_shape)
-        nonCriptextEmailSendDialog.window.setBackgroundDrawable(drawableBackground)
+        nonCriptextEmailSendDialog.window?.setBackgroundDrawable(drawableBackground)
 
         initializeLayoutComponents()
 
         //Assign event listeners
-        assignButtonEvents(view, nonCriptextEmailSendDialog, observer)
+        assignButtonEvents(nonCriptextEmailSendDialog)
         assignPasswordTextListener()
 
         setPasswordSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -130,8 +129,7 @@ class EncryptPassphraseDialog(val context: Context) {
 
 
 
-    private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: CloudBackupUIObserver?) {
+    private fun assignButtonEvents(dialog: AlertDialog) {
 
         btnSend.setOnClickListener {
                 uiObserver?.encryptDialogButtonPressed()

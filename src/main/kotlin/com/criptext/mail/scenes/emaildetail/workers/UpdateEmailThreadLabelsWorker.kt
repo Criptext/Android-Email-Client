@@ -64,10 +64,6 @@ class UpdateEmailThreadLabelsWorker(
         val emails = db.getFullEmailsFromThreadId(threadId = threadId,
                 rejectedLabels = rejectedLabels, account = activeAccount)
         val emailIds = emails.map { it.email.id }
-        val removedLabels = if(trueCurrentLabel == Label.defaultItems.starred
-                || trueCurrentLabel == Label.defaultItems.sent) listOf(Label.defaultItems.inbox.text)
-        else
-            listOf(trueCurrentLabel.text)
 
         val peerSelectedLabels = selectedLabels.toList()
                 .filter { it.text != trueCurrentLabel.text }

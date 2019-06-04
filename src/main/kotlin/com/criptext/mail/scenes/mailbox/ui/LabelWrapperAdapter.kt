@@ -24,7 +24,6 @@ class LabelWrapperAdapter(private val mContext : Context,
 
         when(holder){
             is LabelHolder -> {
-                if(holder.itemView == null) return
                 val labelThread = labelList[position]
                 holder.bindLabel(labelThread)
                 holder.setOnClickedListener {
