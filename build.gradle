@@ -94,6 +94,8 @@ configurations.all {
     }
     exclude group: 'com.android.support', module: 'support-v13'
     exclude group: 'com.google.guava', module: 'listenablefuture'
+    exclude group: 'commons-logging', module: 'commons-logging'
+    exclude group: 'org.apache.httpcomponents'
 }
 
 
@@ -237,13 +239,9 @@ dependencies {
     implementation 'com.g00fy2:versioncompare:1.2.8'
 
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation 'com.google.http-client:google-http-client-gson:1.26.0'
-    implementation('com.google.api-client:google-api-client-android:1.26.0') {
-        exclude group: 'org.apache.httpcomponents'
-    }
-    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
-        exclude group: 'org.apache.httpcomponents'
-    }
+    implementation 'com.google.http-client:google-http-client-gson:1.29.2'
+    implementation('com.google.api-client:google-api-client-android:1.29.2')
+    implementation('com.google.apis:google-api-services-drive:v3-rev165-1.25.0')
 
     //JOB SCHEDULER
     implementation 'com.evernote:android-job:1.2.6'
