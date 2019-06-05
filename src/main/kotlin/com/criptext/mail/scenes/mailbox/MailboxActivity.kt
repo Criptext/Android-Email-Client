@@ -1,34 +1,35 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
+import android.content.Intent
 import android.view.Menu
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.*
-import com.criptext.mail.db.models.*
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
-import com.criptext.mail.scenes.mailbox.feed.data.FeedDataSource
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
 import com.criptext.mail.scenes.mailbox.feed.FeedController
 import com.criptext.mail.scenes.mailbox.feed.FeedModel
+import com.criptext.mail.scenes.mailbox.feed.data.FeedDataSource
 import com.criptext.mail.scenes.mailbox.feed.ui.FeedScene
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
-import com.criptext.mail.websocket.WebSocketSingleton
-import android.content.Intent
-import com.criptext.mail.ExternalActivityParams
-import com.criptext.mail.scenes.ActivityMessage
-import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -203,7 +204,7 @@ class MailboxActivity : BaseActivity() {
                                                 this, Collections.singleton(DriveScopes.DRIVE_FILE))
                                         credential.selectedAccount = googleAccount.account
                                         val googleDriveService = Drive.Builder(
-                                                AndroidHttp.newCompatibleTransport(),
+                                                NetHttpTransport(),
                                                 GsonFactory(),
                                                 credential)
                                                 .setApplicationName("Criptext Secure Email")

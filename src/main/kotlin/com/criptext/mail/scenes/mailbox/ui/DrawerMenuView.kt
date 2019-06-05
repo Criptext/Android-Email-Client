@@ -347,7 +347,6 @@ class DrawerMenuView(navigationView: NavigationView,
     private fun setAvatarViewAndListener(avatar: CircleImageView, layout: RelativeLayout,
                                          account: Account, badgeText: TextView){
         layout.visibility = View.VISIBLE
-        val email = account.recipientId.plus("@").plus(account.domain)
 
         UIUtils.setProfilePicture(
                 iv = avatar,

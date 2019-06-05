@@ -65,4 +65,7 @@ interface LabelDao {
     @Query("DELETE FROM label WHERE accountId=:accountId")
     fun nukeTable(accountId: Long)
 
+    @Query("DELETE FROM label")
+    fun nukeTable()
+
 }

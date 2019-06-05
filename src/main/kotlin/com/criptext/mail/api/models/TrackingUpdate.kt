@@ -1,6 +1,7 @@
 package com.criptext.mail.api.models
 
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 import java.util.*
@@ -15,7 +16,13 @@ data class TrackingUpdate (val metadataKey: Long, val type: DeliveryTypes, val d
 
         fun fromJSON(jsonString: String): TrackingUpdate {
             val json = JSONObject(jsonString)
-            val jsonFrom = json.getJSONObject("fromDomain")
+            val jsonFrom = if(json.has("fromDomain")) json.getJSONObject("fromDomain")
+            else {
+                val tmpJson = JSONObject()
+                tmpJson.put("recipientId", json.getString("from"))
+                tmpJson.put("domain", Contact.mainDomain)
+                tmpJson
+            }
             return TrackingUpdate(
                     metadataKey = json.getLong("metadataKey"),
                     from = jsonFrom.getString("recipientId").plus("@${jsonFrom.getString("domain")}"),

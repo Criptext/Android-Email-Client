@@ -379,11 +379,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.to.addAll(data.to.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.cc.clear()
-        model.cc.addAll(data.cc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.cc.addAll(data.cc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.body = data.body
         model.subject = data.subject
     }

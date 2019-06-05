@@ -68,7 +68,12 @@ class AuthenticateUserWorker(
         val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
         if(lastLoggedUsers.isNotEmpty()) {
             if(!shouldKeepData){
-                keyValueStorage.clearAll()
+                if(isMultiple)
+                    keyValueStorage.remove(listOf(
+                            KeyValueStorage.StringKey.LastLoggedUser
+                    ))
+                else
+                    keyValueStorage.clearAll()
                 db.deleteDatabase(lastLoggedUsers)
             }
             storedValue = ""

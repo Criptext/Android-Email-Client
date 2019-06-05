@@ -37,12 +37,12 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
     override fun defaultObject(completionText: String): Contact {
         val isValidEmailAddress = android.util.Patterns.EMAIL_ADDRESS
                                   .matcher(completionText).matches()
-        if (isValidEmailAddress) {
+        return if (isValidEmailAddress) {
             val index = completionText.indexOf('@')
             val name = completionText.substring(0, index)
-            return Contact(id = 0, name = name, email = completionText, isTrusted = false, score = 0)
+            Contact(id = 0, name = name, email = completionText.toLowerCase(), isTrusted = false, score = 0)
         } else {
-            return Contact.Invalid(name = completionText, email = completionText)
+            Contact.Invalid(name = completionText, email = completionText.toLowerCase())
         }
     }
 

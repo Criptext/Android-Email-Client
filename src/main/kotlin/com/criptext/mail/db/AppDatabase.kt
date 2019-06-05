@@ -427,7 +427,9 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""CREATE TABLE IF NOT EXISTS  antiPushMap (
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                         value TEXT NOT NULL,
+                                        accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
+                database.execSQL("CREATE INDEX IF NOT EXISTS antiPushMap_accountId_index ON antiPushMap (accountId)")
             }
         }
     }

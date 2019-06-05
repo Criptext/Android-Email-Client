@@ -14,7 +14,7 @@ sealed class SyncDeviceNotifier(val data: PushData.SyncDevice): Notifier {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun postNotification(ctx: Context, isPostNougat: Boolean) {
+    private fun postNotification(ctx: Context) {
         val cn = NotificationSyncDevice(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(notification.first, notification.second,
@@ -36,7 +36,7 @@ sealed class SyncDeviceNotifier(val data: PushData.SyncDevice): Notifier {
             if(data.isPostNougat) {
                 postHeaderNotification(ctx)
             }
-            postNotification(ctx, data.isPostNougat)
+            postNotification(ctx)
         }
     }
 

@@ -6,13 +6,12 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
-import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.utils.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.textfield.TextInputLayout
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -168,7 +167,7 @@ interface RestoreBackupScene{
                     context, Collections.singleton(DriveScopes.DRIVE_FILE))
             credential.selectedAccount = googleAccount.account
             return Drive.Builder(
-                    AndroidHttp.newCompatibleTransport(),
+                    NetHttpTransport(),
                     GsonFactory(),
                     credential)
                     .setApplicationName("Criptext Secure Email")

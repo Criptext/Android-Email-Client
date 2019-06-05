@@ -15,7 +15,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun postNotification(ctx: Context, isPostNougat: Boolean) {
+    private fun postNotification(ctx: Context) {
         val cn = NotificationLinkDevice(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(notification.first, notification.second,
@@ -37,7 +37,7 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
             if(data.isPostNougat) {
                 postHeaderNotification(ctx)
             }
-            postNotification(ctx, data.isPostNougat)
+            postNotification(ctx)
         }
     }
 

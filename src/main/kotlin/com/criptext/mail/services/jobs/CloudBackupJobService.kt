@@ -1,10 +1,7 @@
 package com.criptext.mail.services.jobs
 
 import android.app.job.JobInfo
-import android.app.job.JobParameters
 import android.app.job.JobScheduler
-import android.app.job.JobService
-import android.content.ComponentName
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -23,10 +20,10 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -166,7 +163,7 @@ class CloudBackupJobService: Job() {
                 context, Collections.singleton(DriveScopes.DRIVE_FILE))
         credential.selectedAccount = googleAccount.account
         return Drive.Builder(
-                AndroidHttp.newCompatibleTransport(),
+                NetHttpTransport(),
                 GsonFactory(),
                 credential)
                 .setApplicationName("Criptext Secure Email")

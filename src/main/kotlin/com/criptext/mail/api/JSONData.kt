@@ -32,7 +32,7 @@ fun <T> JSONArray.toList(): List<T> {
     for(i in 0 until this.length()) list.add(this[i] as T)
     return list
 }
-
+@Suppress("UNCHECKED_CAST")
 fun <T> JSONArray.toMutableList(): MutableList<T> {
     val list = mutableListOf<T>()
     for(i in 0 until this.length()) list.add(this[i] as T)

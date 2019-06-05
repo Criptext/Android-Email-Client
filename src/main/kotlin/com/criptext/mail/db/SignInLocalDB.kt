@@ -19,6 +19,7 @@ interface SignInLocalDB {
     fun deleteDatabase(user: String, domain: String)
     fun deleteDatabase(users: List<String>)
     fun deleteDatabase()
+    fun deleteSystemLabels()
 
     class Default(applicationContext: Context, private val filesDir: File): SignInLocalDB {
 
@@ -59,6 +60,10 @@ interface SignInLocalDB {
             else account.recipientId.plus("@${account.domain}")
             EmailUtils.deleteEmailsInFileSystem(filesDir, username)
             db.accountDao().delete(account)
+        }
+
+        override fun deleteSystemLabels() {
+            db.labelDao().nukeTable()
         }
 
     }

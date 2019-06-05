@@ -1,8 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
 import android.content.Context
-import android.media.AudioManager
-import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.VibrationEffect
@@ -22,7 +20,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Account
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -41,8 +38,8 @@ import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.navigation.NavigationView
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -362,7 +359,7 @@ interface MailboxScene{
                     context, Collections.singleton(DriveScopes.DRIVE_FILE))
             credential.selectedAccount = googleAccount.account
             return Drive.Builder(
-                    AndroidHttp.newCompatibleTransport(),
+                    NetHttpTransport(),
                     GsonFactory(),
                     credential)
                     .setApplicationName("Criptext Secure Email")

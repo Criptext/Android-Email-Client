@@ -41,7 +41,7 @@ class ContactsFilterAdapter(context : Context, objects : List<Contact>)
         val circleView = view.findViewById(R.id.auto_circle) as CircleImageView
 
         val item = getItem(position)
-        
+
         if(item != null) {
             nameTextView.text = item.name
             mailTextView.text = item.email
