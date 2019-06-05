@@ -16,7 +16,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
     }
 
 
-    private fun postNotification(ctx: Context, isPostNougat: Boolean) {
+    private fun postNotification(ctx: Context) {
         val cn = NotificationNewMail(ctx)
         val notification = buildNotification(ctx, cn)
         cn.notify(notification.first, notification.second, CriptextNotification.ACTION_INBOX)
@@ -37,7 +37,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
             if(data.isPostNougat) {
                 postHeaderNotification(ctx)
             }
-            postNotification(ctx, data.isPostNougat)
+            postNotification(ctx)
         }
     }
 

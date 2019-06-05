@@ -99,30 +99,40 @@ abstract class CriptextNotification(open val ctx: Context) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getNotificationChannel(group: String):NotificationChannel?{
+    private fun getNotificationChannel(group: String):NotificationChannel {
         return when(group){
             ACTION_INBOX -> {
                 val channelInfo = Pair("new_email_channel", ctx.getString(R.string.new_email_notification))
-                NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                not.lightColor = Color.CYAN
+                not.enableVibration(true)
+                not
             }
             ACTION_OPEN -> {
                 val channelInfo = Pair("open_email_channel", ctx.getString(R.string.email_open_notification))
-                NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_LOW)
+                val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_LOW)
+                not.lightColor = Color.CYAN
+                not
             }
             ACTION_LINK_DEVICE -> {
                 val channelInfo = Pair("link_device_channel", ctx.getString(R.string.link_device_notification))
-                NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                not.lightColor = Color.CYAN
+                not.enableVibration(true)
+                not
             }
             ACTION_SYNC_DEVICE -> {
                 val channelInfo = Pair("sync_device_channel", ctx.getString(R.string.sync_device_notification))
-                NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
+                not.lightColor = Color.CYAN
+                not.enableVibration(true)
+                not
             }
-            ACTION_ERROR -> {
+            else -> {
+                //Error Channel
                 val channelInfo = Pair("error_channel", ctx.getString(R.string.error_notification))
                 NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_HIGH)
             }
-            else -> null
-
         }
     }
 }

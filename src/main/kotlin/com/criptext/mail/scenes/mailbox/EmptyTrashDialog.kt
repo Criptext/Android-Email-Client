@@ -35,12 +35,12 @@ class EmptyTrashDialog(val context: Context) {
         newEmptyTrashDialog.show()
 
         val window = newEmptyTrashDialog.window
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
-        newEmptyTrashDialog.window.setBackgroundDrawable(drawableBackground)
+        newEmptyTrashDialog.window?.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView,
                 newEmptyTrashDialog,

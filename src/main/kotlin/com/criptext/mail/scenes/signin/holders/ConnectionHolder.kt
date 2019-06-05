@@ -37,11 +37,7 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
     fun startSucceedAnimation(launchMailboxScene: (
             signInUIObserver: SignInSceneController.SignInUIObserver) -> Unit) {
         loadingView.post {
-            val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.viewCircle1),
-                    view.findViewById(R.id.viewCircle2),
-                    view.findViewById(R.id.viewCircle3), view.findViewById(R.id.viewCircle4),
-                    view.findViewById(R.id.imageViewDevice1), view.findViewById(R.id.imageViewDevice2),
-                    view.findViewById(R.id.imageViewSucceed))
+            val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.imageViewSucceed))
 
             animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
                 override fun onAnimationStart(p0: Animator?) {
@@ -51,7 +47,7 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
                 }
 
                 override fun onAnimationEnd(p0: Animator?) {
-                    launchMailboxScene(signInUIObserver!!)
+                    launchMailboxScene(signInUIObserver)
                 }
 
                 override fun onAnimationCancel(p0: Animator?) {
@@ -92,8 +88,7 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
     }
 
 
-    private fun initSuccessAnimatorSet(circle1: View, circle2: View, circle3: View, circle4: View,
-                                       device1: View, device2: View, viewSucceed: View): AnimatorSet {
+    private fun initSuccessAnimatorSet(viewSucceed: View): AnimatorSet {
 
         val animArray = arrayOfNulls<ObjectAnimator>(1)
         val animObj = ObjectAnimator.ofFloat(viewSucceed, "alpha", 0.0f, 1f)

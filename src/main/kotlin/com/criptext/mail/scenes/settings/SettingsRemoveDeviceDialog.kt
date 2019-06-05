@@ -52,11 +52,11 @@ class SettingsRemoveDeviceDialog(val context: Context) {
         val newRemoveDeviceDialog = dialogBuilder.create()
         val window = newRemoveDeviceDialog.window
         newRemoveDeviceDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newRemoveDeviceDialog.window.setBackgroundDrawable(drawableBackground)
+        newRemoveDeviceDialog.window?.setBackgroundDrawable(drawableBackground)
         newRemoveDeviceDialog.setCanceledOnTouchOutside(false)
         newRemoveDeviceDialog.setCancelable(false)
 

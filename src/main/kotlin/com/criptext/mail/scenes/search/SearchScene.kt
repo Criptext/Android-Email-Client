@@ -102,7 +102,7 @@ interface SearchScene{
                 }
             })
 
-            editTextSearch.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+            editTextSearch.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH
                         && editTextSearch.text.toString().isNotEmpty()) {
                     observer?.onSearchButtonClicked(editTextSearch.text.toString())

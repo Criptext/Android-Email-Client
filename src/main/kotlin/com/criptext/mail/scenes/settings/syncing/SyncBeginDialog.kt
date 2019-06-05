@@ -52,11 +52,11 @@ class SyncBeginDialog(val context: Context, val message: UIMessage) {
         val newLogoutDialog = dialogBuilder.create()
         val window = newLogoutDialog.window
         newLogoutDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
+        newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
         newLogoutDialog.setCanceledOnTouchOutside(false)
         newLogoutDialog.setCancelable(false)
         rootLayout = dialogView.findViewById(R.id.viewRoot)
@@ -93,14 +93,13 @@ class SyncBeginDialog(val context: Context, val message: UIMessage) {
     private fun startLoadingAnimation(view: View){
 
         rootLayout?.post {
-            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
-                    view.findViewById(R.id.imageViewWatch))
+            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow))
             animLoading!!.start()
         }
 
     }
 
-    private fun initLoadingAnimatorSet(viewArrow: View, viewWatch: View): AnimatorSet{
+    private fun initLoadingAnimatorSet(viewArrow: View): AnimatorSet{
 
         val animArray = arrayOfNulls<ObjectAnimator>(2)
         var animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 45f)

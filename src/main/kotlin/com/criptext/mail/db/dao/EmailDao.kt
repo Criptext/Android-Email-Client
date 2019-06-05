@@ -14,7 +14,7 @@ import java.util.*
     @Insert
     fun insertAll(emails : List<Email>): List<Long>
 
-    @Query("""SELECT * FROM email
+    @Query("""SELECT email.* FROM email
             left join email_label on email.id = email_label.emailId
             WHERE delivered in (:deliveryTypes) AND (date <= ((SELECT strftime('%s','now')) * 1000) AND date >= ((SELECT strftime('%s','now', '-3 days')) * 1000))
             AND accountId = :accountId
@@ -88,9 +88,8 @@ import java.util.*
     fun getNotArchivedEmailThreads(accountId: Long) : List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
-        max(email.unread) as unread, max(email.date)
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         left join email_label on email.id = email_label.emailId
         and date < :startDate
@@ -100,8 +99,8 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
         AND accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
@@ -113,9 +112,8 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
-        max(email.unread) as unread, max(email.date)
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         left join email_label on email.id = email_label.emailId
         and date < :startDate
@@ -125,8 +123,8 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
         AND accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabelFiltered(
@@ -138,9 +136,8 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
-        max(email.unread) as unread, max(email.date)
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         left join email_label on email.id = email_label.emailId
         and date > :startDate
@@ -150,8 +147,8 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
         AND accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         order by date DESC
             """)
     fun getNewEmailThreadsFromMailboxLabel(
@@ -162,10 +159,8 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        max(email.unread) as unread, max(email.date),
-        group_concat(distinct(contact.name)) as contactNames,
-        group_concat(distinct(contact.email)) as contactEmails
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         inner join email_label on email.id = email_label.emailId
         left join email_contact on email.id = email_contact.emailId
@@ -174,9 +169,9 @@ import java.util.*
         where email.accountId = :accountId
         and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
-        group by uniqueId
-        having contactNames like :queryText
-        or contactEmails like :queryText
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having (group_concat(distinct(contact.name))) like :queryText
+        or (group_concat(distinct(contact.email))) like :queryText
         or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
@@ -266,7 +261,7 @@ import java.util.*
     @Update
     fun update(emails: List<Email>)
 
-    @Query("""SELECT * FROM email
+    @Query("""SELECT email.* FROM email
             left join email_label on email.id = email_label.emailId
             WHERE threadId=:threadId
             AND accountId = :accountId
@@ -276,7 +271,7 @@ import java.util.*
             ORDER BY date ASC""")
     fun getEmailsFromThreadId(threadId: String, rejectedLabels: List<Long>, accountId: Long): List<Email>
 
-    @Query("""SELECT * FROM email
+    @Query("""SELECT email.* FROM email
             left join email_label on email.id = email_label.emailId
             WHERE threadId=:threadId
             AND accountId = :accountId
@@ -357,9 +352,8 @@ import java.util.*
     fun findEmailById(id: Long, accountId: Long): Email?
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
-        max(email.unread) as unread, max(email.date)
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         left join email_label on email.id = email_label.emailId
         where case when :isTrashOrSpam
@@ -368,8 +362,8 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
         AND accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabel(
@@ -380,9 +374,8 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
-        max(email.unread) as unread, max(email.date)
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         left join email_label on email.id = email_label.emailId
         where unread = 1 AND case when :isTrashOrSpam
@@ -391,8 +384,8 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         end
         AND accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabelFiltered(
@@ -403,10 +396,8 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*,CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        max(email.unread) as unread, max(email.date),
-        group_concat(distinct(contact.name)) as contactNames,
-        group_concat(distinct(contact.email)) as contactEmails
+        select email.*,
+        max(email.unread) as unread, max(email.date) as date
         from email
         inner join email_label on email.id = email_label.emailId
         left join email_contact on email.id = email_contact.emailId
@@ -414,9 +405,9 @@ import java.util.*
         where email.accountId = :accountId
         and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
-        group by uniqueId
-        having contactNames like :queryText
-        or contactEmails like :queryText
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having group_concat(distinct(contact.name)) like :queryText
+        or group_concat(distinct(contact.email)) like :queryText
         or bodyPreview like :queryText
         or content like :queryText
         or subject like :queryText
@@ -429,8 +420,7 @@ import java.util.*
             accountId: Long): List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
+        select email.*,
         max(email.unread) as unread
         from email
         left join email_label on email.id = email_label.emailId
@@ -438,20 +428,19 @@ import java.util.*
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
         and unread = 1
         AND email.accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         """)
     fun getTotalUnreadThreads(rejectedLabels: List<Long>, selectedLabel: String, accountId: Long): List<Email>
 
     @Query("""
-        select email.*, CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END as uniqueId,
-        group_concat('L' || email_label.labelId) as allLabels,
+        select email.*,
         max(email.unread) as unread
         from email
         left join email_label on email.id = email_label.emailId
         WHERE email.accountId = :accountId
-        group by uniqueId
-        having coalesce(allLabels, "") like :selectedLabel
+        group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
+        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
         """)
     fun getTotalThreads(selectedLabel: String, accountId: Long): List<Email>
 

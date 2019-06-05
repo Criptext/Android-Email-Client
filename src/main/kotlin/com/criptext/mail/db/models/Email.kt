@@ -14,7 +14,9 @@ import java.util.*
 @Entity(tableName = "email",
         indices = [
                 Index(value = ["metadataKey", "accountId"], name = "email_metadataKey_index", unique = true),
-                Index(value = ["messageId", "accountId"], name = "email_messageId_index", unique = true)],
+                Index(value = ["messageId", "accountId"], name = "email_messageId_index", unique = true),
+                Index(value = ["accountId"], name = "email_accountId_index")
+        ],
         foreignKeys = [ForeignKey(entity = Account::class,
                 parentColumns = ["id"],
                 onDelete = ForeignKey.CASCADE,

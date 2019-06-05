@@ -22,8 +22,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
     private val context = anchorView.context
 
     fun createPopup(
-            fullEmail: FullEmail,
-            emailContactInfoListener: EmailContactInfoListener?
+            fullEmail: FullEmail
     ) {
 
         val inflater = context.getSystemService(

@@ -79,11 +79,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     viewOpen = false)
         }
         threePointsView.setOnClickListener {
-            displayPopMenu(emailListener, fullEmail, adapter, position - 1)
+            displayPopMenu(emailListener, fullEmail, position - 1)
         }
 
         moreButton.setOnClickListener {
-            contactInfoPopUp.createPopup(fullEmail, null)
+            contactInfoPopUp.createPopup(fullEmail)
         }
 
         continueDraftView.setOnClickListener{
@@ -117,8 +117,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         rootView.layoutParams = params
     }
 
-    private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail,
-                               adapter: FullEmailListAdapter, position: Int){
+    private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail, position: Int){
         val popupMenu = createPopupMenu(fullEmail)
         if(fullEmail.email.delivered == DeliveryTypes.NONE && fullEmail.email.boundary != null)
             popupMenu.menu.findItem(R.id.source).isVisible = true

@@ -10,7 +10,8 @@ import org.json.JSONObject
  */
 
 @Entity(tableName = "email_contact",
-        indices = [ (Index("emailId", "type", "contactId")) ],
+        indices = [ (Index("emailId", "type", "contactId")),
+            Index(value = ["contactId"], name = "email_contact_contactId_index") ],
         foreignKeys = [
             ForeignKey(entity = Email::class,
                 parentColumns = ["id"],

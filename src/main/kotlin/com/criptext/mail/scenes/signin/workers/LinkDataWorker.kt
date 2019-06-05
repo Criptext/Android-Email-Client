@@ -162,7 +162,7 @@ class LinkDataWorker(private val authorizerId: Int,
         }
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
         UIMessage(resId = R.string.forgot_password_error)
     }
 

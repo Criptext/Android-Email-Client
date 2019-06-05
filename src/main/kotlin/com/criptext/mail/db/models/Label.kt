@@ -9,7 +9,8 @@ import org.json.JSONObject
  */
 
 @Entity(tableName = "label",
-        indices = [(Index(value = ["uuid"], unique = true))],
+        indices = [(Index(value = ["uuid"], unique = true)),
+            Index(value = ["accountId"], name = "label_accountId_index")],
         foreignKeys = [ForeignKey(entity = Account::class,
                 parentColumns = ["id"],
                 onDelete = ForeignKey.CASCADE,

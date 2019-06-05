@@ -43,7 +43,6 @@ class AESUtil(keyAndIV: String) {
 
             cipherENC = Cipher.getInstance("AES/CBC/PKCS5Padding")
             cipherDEC = Cipher.getInstance("AES/CBC/PKCS5Padding")
-            val params = cipherENC.parameters
             cipherENC.init(Cipher.ENCRYPT_MODE, secret, IvParameterSpec(Encoding.stringToByteArray(strIV)))
             cipherDEC.init(Cipher.DECRYPT_MODE, secret, IvParameterSpec(Encoding.stringToByteArray(strIV)))
         } catch (ex: Exception) {

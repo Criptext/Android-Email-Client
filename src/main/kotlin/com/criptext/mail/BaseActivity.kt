@@ -424,73 +424,67 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun getIntentExtras(): IntentExtrasData? {
-        if(intent.extras != null && !intent.extras.isEmpty) {
+        val extras = intent.extras
+        if(extras != null && !extras.isEmpty) {
             PinLockUtils.disablePinLock()
-            when(intent.action){
+            val action = intent.action ?: return null
+            when(action){
                 Intent.ACTION_MAIN ->    {
-                    val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
-                    val account = intent.extras.getString("account")
-                    if(intent.extras != null) {
-                        for (key in intent.extras.keySet()){
-                            intent.removeExtra(key)
-                        }
+                    val threadId = extras.getString(MessagingInstance.THREAD_ID) ?: return null
+                    val account = extras.getString("account") ?: return null
+                    for (key in extras.keySet()){
+                        intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasDataMail(intent.action, threadId, account)
+                    return IntentExtrasData.IntentExtrasDataMail(action, threadId, account)
                 }
                 LinkDeviceActionService.APPROVE ->    {
-                    val uuid = intent.extras.get("randomId").toString()
-                    val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
-                    val version = intent.extras.getInt("version")
-                    val account = intent.extras.getString("account")
-                    if(intent.extras != null) {
-                        for (key in intent.extras.keySet()){
-                            intent.removeExtra(key)
-                        }
+                    val uuid = extras.getString("randomId") ?: return null
+                    val deviceType = DeviceUtils.getDeviceType(extras.getInt("deviceType"))
+                    val version = extras.getInt("version")
+                    val account = extras.getString("account") ?: return null
+                    for (key in extras.keySet()){
+                        intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasDataDevice(intent.action, uuid, deviceType, version, account)
+                    return IntentExtrasData.IntentExtrasDataDevice(action, uuid, deviceType, version, account)
                 }
                 SyncDeviceActionService.APPROVE ->    {
-                    val uuid = intent.extras.get("randomId").toString()
-                    val deviceType = DeviceUtils.getDeviceType(intent.extras.getInt("deviceType"))
-                    val version = intent.extras.getInt("version")
-                    val deviceId = intent.extras.getInt("deviceId")
-                    val deviceName = intent.extras.getString("deviceName")
-                    val account = intent.extras.getString("account")
-                    if(intent.extras != null) {
-                        for (key in intent.extras.keySet()){
-                            intent.removeExtra(key)
-                        }
+                    val uuid = extras.getString("randomId") ?: return null
+                    val deviceType = DeviceUtils.getDeviceType(extras.getInt("deviceType"))
+                    val version = extras.getInt("version")
+                    val deviceId = extras.getInt("deviceId")
+                    val deviceName = extras.getString("deviceName") ?: return null
+                    val account = extras.getString("account") ?: return null
+                    for (key in extras.keySet()){
+                        intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasSyncDevice(intent.action, uuid, deviceId, deviceName, deviceType, version, account)
+                    return IntentExtrasData.IntentExtrasSyncDevice(action, uuid, deviceId, deviceName, deviceType, version, account)
                 }
                 NewMailActionService.REPLY -> {
-                    val threadId = intent.extras.get(MessagingInstance.THREAD_ID).toString()
-                    val metadataKey = intent.extras.getLong("metadataKey")
-                    val account = intent.extras.getString("account")
-                    if(intent.extras != null) {
-                        for (key in intent.extras.keySet()){
-                            intent.removeExtra(key)
-                        }
+                    val threadId = extras.getString(MessagingInstance.THREAD_ID) ?: return null
+                    val metadataKey = extras.getLong("metadataKey")
+                    val account = extras.getString("account") ?: return null
+                    for (key in extras.keySet()){
+                        intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasReply(intent.action, threadId, metadataKey, account)
+                    return IntentExtrasData.IntentExtrasReply(action, threadId, metadataKey, account)
                 }
                 Intent.ACTION_VIEW -> {
-                    val mailTo = intent.data
-                    val account = intent.extras.getString("account")?: ActiveAccount.loadFromStorage(this)!!.recipientId
+                    val mailTo = intent.data ?: return null
+                    val account = extras.getString("account")?: ActiveAccount.loadFromStorage(this)!!.recipientId
                     if(mailTo.toString().contains("mailto:"))
-                        return IntentExtrasData.IntentExtrasMailTo(intent.action, mailTo.toString().removePrefix("mailto:"), account)
+                        return IntentExtrasData.IntentExtrasMailTo(action, mailTo.toString().removePrefix("mailto:"), account)
                 }
                 Intent.ACTION_SEND,
                 Intent.ACTION_SEND_MULTIPLE -> {
                     val data = intent
                     if(data != null) {
-                        val account = intent.extras.getString("account") ?: ActiveAccount.loadFromStorage(this)!!.recipientId
+                        val account = extras.getString("account") ?: ActiveAccount.loadFromStorage(this)!!.recipientId
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
                                 val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                                 if (attachment != null)
-                                    return IntentExtrasData.IntentExtrasSend(intent.action, listOf(attachment), listOf(), account)
+                                    return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account)
                             }
                         }else{
                             val attachmentList = mutableListOf<Pair<String, Long>>()
@@ -509,7 +503,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                 }
                             }
                             if (attachmentList.isNotEmpty() || urlList.isNotEmpty())
-                                return IntentExtrasData.IntentExtrasSend(intent.action, attachmentList, urlList, account)
+                                return IntentExtrasData.IntentExtrasSend(action, attachmentList, urlList, account)
                         }
                     }
                 }

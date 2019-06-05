@@ -45,11 +45,11 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
         val newLogoutDialog = dialogBuilder.create()
         val window = newLogoutDialog.window
         newLogoutDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
+        newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
         newLogoutDialog.setCancelable(false)
         newLogoutDialog.setCanceledOnTouchOutside(false)
 

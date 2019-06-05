@@ -59,7 +59,7 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
         textViewDetail.text = getSubtitle(activityFeedItem)
         textViewDate.text = DateAndTimeUtils.getFormattedDate(activityFeedItem.date.time, view.context)
 
-        checkIsNew(lastTimeFeedOpened, position, activityFeedItem)
+        checkIsNew(lastTimeFeedOpened, activityFeedItem)
         checkFeedType(activityFeedItem)
         checkIsMuted(activityFeedItem)
         setListeners(activityFeedItem, position, listener)
@@ -80,7 +80,7 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
         }
     }
 
-    private fun checkIsNew(lastTimeFeedOpened: Long, position: Int,
+    private fun checkIsNew(lastTimeFeedOpened: Long,
                            activityFeedItem: ActivityFeedItem){
 
         if(activityFeedItem.date.time > lastTimeFeedOpened){

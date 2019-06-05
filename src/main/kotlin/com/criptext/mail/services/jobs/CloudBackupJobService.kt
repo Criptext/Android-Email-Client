@@ -7,6 +7,7 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
 import android.util.Log
@@ -99,7 +100,15 @@ class CloudBackupJobService: Job() {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnected == true
-        val isWiFi: Boolean = activeNetwork?.type == ConnectivityManager.TYPE_WIFI
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val isWiFi: Boolean = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+        } else {
+            @Suppress("DEPRECATION")
+            connectivityManager.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI
+        }
         val storage = KeyValueStorage.SharedPrefs(context)
         val useWifiOnly = storage.getBool(KeyValueStorage.StringKey.UseWifiOnlyForBackup, true)
         if(useWifiOnly && isConnected && isWiFi) {
@@ -142,7 +151,7 @@ class CloudBackupJobService: Job() {
                 oldFileIds = result.oldFileIds
                 if(hasOldFile && isBackupDone) {
                     isBackupDone = false
-                    dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileIds!!))
+                    dataSource?.submitRequest(CloudBackupRequest.DeleteFileInDrive(mDriveService!!, oldFileIds))
                     hasOldFile = false
                 }
                 Log.e("Cloud Backup",
@@ -179,6 +188,7 @@ class CloudBackupJobService: Job() {
                         oldFileIds = listOf()
                     }
                 }
+                else -> {}
             }
         }
     }

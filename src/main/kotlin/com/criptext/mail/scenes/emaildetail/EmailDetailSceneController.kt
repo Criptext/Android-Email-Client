@@ -562,7 +562,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onStarredButtonPressed(isStarred: Boolean) {
             model.threadPreview.isStarred = isStarred
             val selectedLabels = SelectedLabels()
-            val nonSelectedLabels = SelectedLabels()
             val labelsWithoutFilter = model.emails.flatMap { it.labels }.toMutableList()
             val labels = if(isStarred){
                 labelsWithoutFilter.add(Label.defaultItems.starred)

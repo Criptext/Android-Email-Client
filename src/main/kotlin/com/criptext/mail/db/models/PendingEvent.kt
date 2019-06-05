@@ -3,7 +3,9 @@ package com.criptext.mail.db.models
 import androidx.room.*
 
 @Entity(tableName = "pendingEvent",
-        indices = [ (Index(value = ["id"], name = "index_pending_event_id")) ],
+        indices = [ (Index(value = ["id"], name = "index_pending_event_id")),
+                (Index(value = ["accountId"], name = "index_pending_event_accountId"))
+        ],
         foreignKeys = [ForeignKey(entity = Account::class,
                 parentColumns = ["id"],
                 onDelete = ForeignKey.CASCADE,

@@ -37,13 +37,6 @@ class FullEmailRecyclerView(
         recyclerView.adapter = fullEmailListAdapter
     }
 
-    fun updateAndNotify(fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
-                        fileDetailList: Map<Long, List<FileDetail>>,
-                        labels: VirtualList<Label>,
-                        isStarred: Boolean){
-
-    }
-
     fun notifyFullEmailListChanged() {
         fullEmailListAdapter.notifyDataSetChanged()
     }

@@ -26,11 +26,7 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
-        notBuild.defaults = Notification.DEFAULT_VIBRATE
-        notBuild.ledARGB = Color.CYAN
         notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
-        notBuild.ledOnMS = 1000
-        notBuild.ledOffMS = 1000
 
         return notBuild
     }

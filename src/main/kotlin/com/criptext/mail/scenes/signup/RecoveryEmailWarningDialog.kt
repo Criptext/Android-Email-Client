@@ -38,12 +38,12 @@ class RecoveryEmailWarningDialog(val context: Context) {
         newRecoveryEmailWarningDialog.show()
 
         val window = newRecoveryEmailWarningDialog.window
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
 
         val drawableBackground = ContextCompat.getDrawable(
                 dialogView.context, R.drawable.dialog_label_chooser_shape)
-        newRecoveryEmailWarningDialog.window.setBackgroundDrawable(drawableBackground)
+        newRecoveryEmailWarningDialog.window?.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView,
                 newRecoveryEmailWarningDialog,

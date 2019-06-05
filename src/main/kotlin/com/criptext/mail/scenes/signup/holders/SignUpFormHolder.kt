@@ -78,10 +78,6 @@ class SignUpFormHolder(val view: View) {
         recoveryEmailWarningDialog.showRecoveryEmailWarningDialog(onRecoveryEmailWarningListener)
     }
 
-    fun toggleUserAvailableCheckmark(visible: Boolean) {
-        // usernameInput.setValidStatus(visible)
-    }
-
     fun showPasswordSuccess() {
         passwordSuccessImage.visibility = View.VISIBLE
         confirmPasswordSuccessImage.visibility = View.VISIBLE

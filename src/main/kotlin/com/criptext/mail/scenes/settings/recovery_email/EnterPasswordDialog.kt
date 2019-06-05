@@ -50,11 +50,11 @@ class EnterPasswordDialog(val context: Context) {
         val newLogoutDialog = dialogBuilder.create()
         val window = newLogoutDialog.window
         newLogoutDialog.show()
-        window.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-        window.setGravity(Gravity.CENTER_VERTICAL)
+        window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        window?.setGravity(Gravity.CENTER_VERTICAL)
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
-        newLogoutDialog.window.setBackgroundDrawable(drawableBackground)
+        newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
 
         password = dialogView.findViewById(R.id.input) as AppCompatEditText
         passwordInput = dialogView.findViewById(R.id.input_layout)

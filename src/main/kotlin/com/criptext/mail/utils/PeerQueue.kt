@@ -26,7 +26,7 @@ abstract class PeerQueue{
         override fun enqueue(jsonObject: JSONObject) {
             val peerEvent = PendingEvent(0, jsonObject.toString(), activeAccount.id)
             pendingEventDao.insert(peerEvent)
-            val op = dispatchAndDequeue(pick())
+            dispatchAndDequeue(pick())
         }
 
         override fun pick(batchSize: Int): List<PendingEvent> {

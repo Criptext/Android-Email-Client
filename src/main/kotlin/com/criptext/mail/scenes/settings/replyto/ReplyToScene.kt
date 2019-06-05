@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 
 interface ReplyToScene{
 
-    fun attachView(replyToUIObserver: ReplyToUIObserver, signature: String,
+    fun attachView(replyToUIObserver: ReplyToUIObserver, replyToEmail: String,
                    keyboardManager: KeyboardManager)
     fun showMessage(message: UIMessage)
     fun setEmailError(message: UIMessage?)

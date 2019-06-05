@@ -43,7 +43,6 @@ class CloudBackupActivity: BaseActivity(){
         val scene = CloudBackupScene.Default(view)
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))
         val storage = KeyValueStorage.SharedPrefs(this)
 
         val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")

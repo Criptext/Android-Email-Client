@@ -34,7 +34,7 @@ class AttachmentsBottomDialog(val context: Context) {
         val inflater = (context as AppCompatActivity).layoutInflater
         view = inflater.inflate(R.layout.dialog_attachment, null)
         initializeLayoutComponents()
-        assignButtonEvents(observer)
+        assignButtonEvents()
 
         dialog?.setContentView(view)
         uiObserver = observer
@@ -51,7 +51,7 @@ class AttachmentsBottomDialog(val context: Context) {
         rootView = view.findViewById(R.id.rootView)
     }
 
-    private fun assignButtonEvents(observer: ComposerUIObserver?) {
+    private fun assignButtonEvents() {
 
         buttonCamera.setOnClickListener {
             uiObserver?.onNewCamAttachmentRequested()

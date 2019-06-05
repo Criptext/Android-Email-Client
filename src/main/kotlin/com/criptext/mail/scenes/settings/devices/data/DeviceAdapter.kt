@@ -21,7 +21,6 @@ class DeviceAdapter(private val mContext : Context,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is DeviceHolder -> {
-                if(holder.itemView == null) return
                 val device = deviceList[position]
                 holder.bindDevice(device)
                 holder.setOnClickListener {

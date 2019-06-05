@@ -96,17 +96,10 @@ class EmailSourceController(
         scene.attachView(uiObserver, keyboardManager, model)
         generalDataSource.listener = generalDataSourceListener
 
-        val handleMessage = handleActivityMessage(activityMessage)
-
-
-        return handleMessage
-    }
-
-    override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 
-    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+    override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
     }
 

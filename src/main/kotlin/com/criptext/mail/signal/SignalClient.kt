@@ -141,7 +141,7 @@ interface SignalClient {
 
         override fun encryptFileByChunks(fileToEncrypt: File, recipientId: String, deviceId: Int, chunkSize: Int, outputFileName: String): String {
             val encryptedFile = createTempFile(outputFileName)
-            val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index -> encryptedFile.appendText(encryptBytes(recipientId, deviceId,chunk).encryptedB64.plus("\n")) }
+            val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, _ -> encryptedFile.appendText(encryptBytes(recipientId, deviceId,chunk).encryptedB64.plus("\n")) }
             ChunkFileReader.read(fileToEncrypt, chunkSize, onNewChunkRead)
             return encryptedFile.absolutePath
         }
