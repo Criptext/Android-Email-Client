@@ -9,16 +9,17 @@ import org.json.JSONObject
  * Created by gabriel on 3/22/18.
  */
 
-data class ActiveAccount(val id: Long, val name: String, val recipientId: String,
+data class ActiveAccount(val id: Long, val name: String, val recipientId: String, val domain: String,
                          val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String) : JSONData {
 
-    val userEmail = "$recipientId@${Contact.mainDomain}"
+    val userEmail = "$recipientId@$domain"
 
     override fun toJSON(): JSONObject {
         val json = JSONObject()
         json.put("id", id)
         json.put("name", name)
         json.put("recipientId", recipientId)
+        json.put("domain", domain)
         json.put("deviceId", deviceId)
         json.put("jwt", jwt)
         json.put("refreshToken", refreshToken)
@@ -67,14 +68,16 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
             val jwt = json.getString("jwt")
             val refreshToken = json.optString("refreshToken")
             val signature = json.getString("signature")
+            val domain = if(json.has("domain")) json.getString("domain") else Contact.mainDomain
 
             return ActiveAccount(id = if(id == 0L) 1 else id, name = name, recipientId = recipientId, deviceId = deviceId,
-                    jwt = jwt, signature = signature, refreshToken = refreshToken)
+                    jwt = jwt, signature = signature, refreshToken = refreshToken, domain = domain)
         }
 
         fun loadFromDB(account: Account): ActiveAccount? {
             return ActiveAccount(id= account.id, name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
-                    jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken)
+                    jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken,
+                    domain = account.domain)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

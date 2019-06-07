@@ -14,10 +14,10 @@ sealed class SyncDeviceNotifier(val data: PushData.SyncDevice): Notifier {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun postNotification(ctx: Context, isPostNougat: Boolean) {
+    private fun postNotification(ctx: Context) {
         val cn = NotificationSyncDevice(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(if(isPostNougat) type.requestCodeRandom() else type.requestCode(), notification,
+        cn.notify(notification.first, notification.second,
                 CriptextNotification.ACTION_SYNC_DEVICE)
     }
 
@@ -28,7 +28,7 @@ sealed class SyncDeviceNotifier(val data: PushData.SyncDevice): Notifier {
                 CriptextNotification.ACTION_SYNC_DEVICE)
     }
 
-    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Notification
+    protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun notifyPushEvent(ctx: Context) {
@@ -36,20 +36,20 @@ sealed class SyncDeviceNotifier(val data: PushData.SyncDevice): Notifier {
             if(data.isPostNougat) {
                 postHeaderNotification(ctx)
             }
-            postNotification(ctx, data.isPostNougat)
+            postNotification(ctx)
         }
     }
 
-    class Open(data: PushData.SyncDevice): SyncDeviceNotifier(data) {
+    class Open(data: PushData.SyncDevice, private val notificationId: Int): SyncDeviceNotifier(data) {
 
         @RequiresApi(Build.VERSION_CODES.O)
-        override fun buildNotification(ctx: Context, cn: CriptextNotification): Notification {
+        override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 null, data.isPostNougat)
 
-            return cn.createNotification(clickIntent = pendingIntent,
+            return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent,
                     data = data,
-                    notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
+                    notificationId = notificationId))
 
         }
     }

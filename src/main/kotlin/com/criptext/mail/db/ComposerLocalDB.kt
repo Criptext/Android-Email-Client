@@ -24,7 +24,7 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
         val files = fileDao.getAttachmentsFromEmail(id)
         val fileKey = fileKeyDao.getAttachmentKeyFromEmail(id)
 
-        val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+        val fromContact = if(email.fromAddress.isEmpty()){
             contactsFROM[0]
         }else Contact(
                 id = contactsFROM[0].id,

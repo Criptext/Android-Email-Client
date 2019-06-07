@@ -6,10 +6,12 @@ import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.signin.workers.AuthenticateUserWorker
 import com.criptext.mail.scenes.signup.data.RegisterUserTestUtils
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.EmailAddressUtils
 import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
@@ -51,7 +53,7 @@ class AuthenticateUserWorkerTest {
 
     private fun newWorker(username: String, password: String): AuthenticateUserWorker =
             AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
-                    keyGenerator = keyGenerator, username = username, password = password,
+                    keyGenerator = keyGenerator, userData = UserData(username, Contact.mainDomain, password),
                     publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
                     isMultiple = false)
 
@@ -112,7 +114,7 @@ class AuthenticateUserWorkerTest {
         }
         verify {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","name":"A Tester","recipientId":"tester","id":1,"deviceId":2,"refreshToken":"__REFRESH__"}""")
+                    """{"signature":"","jwt":"__JWTOKEN__","domain":"criptext.com","name":"A Tester","recipientId":"tester","id":1,"deviceId":2,"refreshToken":"__REFRESH__"}""")
         }
 
         // request snapshots

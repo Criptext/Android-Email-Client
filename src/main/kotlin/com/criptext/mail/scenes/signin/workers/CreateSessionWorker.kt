@@ -29,6 +29,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
                           signUpDao: SignUpDao,
                           private val name : String,
                           private val username: String,
+                          private val domain: String,
                           private val accountDao: AccountDao,
                           private val keyValueStorage: KeyValueStorage,
                           private val keyGenerator: SignalKeyGenerator,
@@ -52,16 +53,19 @@ class CreateSessionWorker(val httpClient: HttpClient,
         val result = Result.of {
                     val lastLoggedUser = AccountUtils.getLastLoggedAccounts(keyValueStorage)
                     if(!isMultiple) {
-                        if (lastLoggedUser.isNotEmpty())
+                        if (lastLoggedUser.isNotEmpty()) {
                             db.deleteDatabase(lastLoggedUser)
-                        else {
+                            db.deleteSystemLabels()
+                            keyValueStorage.remove(listOf(KeyValueStorage.StringKey.LastLoggedUser))
+                        } else {
                             db.deleteDatabase()
                             keyValueStorage.clearAll()
                         }
                     } else {
-                        if (lastLoggedUser.isNotEmpty() && username in lastLoggedUser) {
-                            db.deleteDatabase(username)
-                            lastLoggedUser.removeAll { it == username }
+                        val email = username.plus("@$domain")
+                        if (lastLoggedUser.isNotEmpty() && email in lastLoggedUser) {
+                            db.deleteDatabase(username, domain)
+                            lastLoggedUser.removeAll { it == email }
                             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
                         }
                     }
@@ -82,13 +86,17 @@ class CreateSessionWorker(val httpClient: HttpClient,
     private fun signalRegistrationOperation()
             : Result<Pair<SignalKeyGenerator.RegistrationBundles, Account>, Exception>  {
         return Result.of {
-            val registrationBundles = keyGenerator.register(username,
+            val recipientId = if(domain != Contact.mainDomain)
+                username.plus("@$domain")
+            else
+                username
+            val registrationBundles = keyGenerator.register(recipientId,
                     randomId)
             val privateBundle = registrationBundles.privateBundle
             val account = Account(id = 0, recipientId = username, deviceId = randomId,
                     name = name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
-                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true,
+                    signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                     hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
                     backupPassword = null)
             Pair(registrationBundles, account)

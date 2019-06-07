@@ -1,10 +1,7 @@
 package com.criptext.mail.scenes.mailbox.workers
 
 import com.criptext.mail.R
-import com.criptext.mail.api.Hosts
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.*
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
@@ -52,6 +49,7 @@ class ResendEmailsWorker(
 
     private var meAsRecipient: Boolean = false
     private var currentFullEmail: FullEmail? = null
+    private var guests: List<String> = listOf()
 
     private fun getDeliveryType(): DeliveryTypes{
         return if(meAsRecipient)
@@ -153,7 +151,8 @@ class ResendEmailsWorker(
     private fun processSend(): Result<Unit, Exception>{
         return if(currentFullEmail != null) {
             val mailRecipients = EmailUtils.getMailRecipients(currentFullEmail!!.to,
-                    currentFullEmail!!.cc, currentFullEmail!!.bcc, activeAccount.recipientId)
+                    currentFullEmail!!.cc, currentFullEmail!!.bcc, activeAccount.recipientId,
+                    activeAccount.domain)
             checkEncryptionKeysOperation(mailRecipients)
                     .flatMap { encryptOperation(mailRecipients) }
                     .flatMap(sendEmailOperation)
@@ -186,10 +185,11 @@ class ResendEmailsWorker(
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
         val bundlesJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("keyBundles")
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
+        guests = JSONObject(findKeyBundlesResponse.body).getJSONArray("guestDomains").toList()
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
-            signalClient.createSessionsFromBundles(downloadedBundles)
+            signalClient.createSessionsFromBundles(downloadedBundles.filter { it.shareData.domain !in guests })
         }
         if (blackListedJSONArray.length() > 0) {
             for (i in 0 until blackListedJSONArray.length())
@@ -202,8 +202,15 @@ class ResendEmailsWorker(
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
-        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients, activeAccount.id)
+        val existingSessions = (rawSessionDao.getKnownAddresses(criptextRecipients.map {
+            if (EmailAddressUtils.isFromCriptextDomain(it))
+                EmailAddressUtils.extractRecipientIdFromCriptextAddress(it)
+            else
+                it
+        }, activeAccount.id))
         existingSessions.forEach { knownAddress: KnownAddress ->
+            if(!knownAddress.recipientId.contains("@"))
+                knownAddress.recipientId = knownAddress.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
             knownAddresses[knownAddress.recipientId] = knownAddresses[knownAddress.recipientId]
                     ?.plus(knownAddress.deviceId)
                     ?: listOf(knownAddress.deviceId)
@@ -228,8 +235,18 @@ class ResendEmailsWorker(
                                              availableAddresses: Map<String, List<Int>>,
                                              type: PostEmailBody.RecipientTypes)
             : List<PostEmailBody.CriptextEmail> {
-        return criptextRecipients.map { recipientId ->
-            val devices = availableAddresses[recipientId]
+        return criptextRecipients
+                .filter { EmailAddressUtils.extractEmailAddressDomain(it) !in guests }
+                .map { emailAddress ->
+            val domain: String
+            val recipientId = if(EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
+                domain = Contact.mainDomain
+                EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)
+            }else {
+                domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
+                emailAddress
+            }
+            val devices = availableAddresses[emailAddress]
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
@@ -245,12 +262,16 @@ class ResendEmailsWorker(
                 }
                 when(encryptOperation){
                     is Result.Success -> {
-                        PostEmailBody.CompleteCriptextEmail(recipientId = recipientId, deviceId = deviceId,
+                        PostEmailBody.CompleteCriptextEmail(recipientId = if(domain != Contact.mainDomain)
+                            EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain)
+                        else
+                            recipientId, deviceId = deviceId,
                                 type = type, body = encryptOperation.value.first.encryptedB64,
                                 messageType = encryptOperation.value.first.type, fileKey = if(getFileKey(fullEmail.fileKey, fullEmail.files) != null)
                             signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
                         else null, fileKeys = getEncryptedFileKeys(fullEmail, recipientId, deviceId),
-                                preview = encryptOperation.value.second.encryptedB64, previewMessageType = encryptOperation.value.second.type)
+                                preview = encryptOperation.value.second.encryptedB64, previewMessageType = encryptOperation.value.second.type,
+                                domain = domain)
                     }
                     is Result.Failure -> {
                         PostEmailBody.EmptyCriptextEmail(recipientId)
@@ -270,9 +291,9 @@ class ResendEmailsWorker(
                             criptextEmails = criptextEmails,
                             guestEmail = getGuestEmails(currentFullEmail!!,
                                     EmailUtils.getMailRecipientsNonCriptext(
-                                            currentFullEmail!!.to,
-                                            currentFullEmail!!.cc,
-                                            currentFullEmail!!.bcc,
+                                            currentFullEmail!!.to.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
+                                            currentFullEmail!!.cc.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
+                                            currentFullEmail!!.bcc.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
                                             activeAccount.recipientId
                                     )),
                             attachments = createCriptextAttachment(currentFullEmail!!.files))

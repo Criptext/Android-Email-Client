@@ -16,6 +16,7 @@ import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.signin.data.SignInAPIClient
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.data.SignInSession
+import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -37,8 +38,7 @@ class AuthenticateUserWorker(
         private val accountDao: AccountDao,
         private val keyValueStorage: KeyValueStorage,
         private val keyGenerator: SignalKeyGenerator,
-        private val username: String,
-        private val password: String,
+        private val userData: UserData,
         private val messagingInstance: MessagingInstance,
         override val publishFn: (SignInResult.AuthenticateUser) -> Unit)
     : BackgroundWorker<SignInResult.AuthenticateUser> {
@@ -53,11 +53,12 @@ class AuthenticateUserWorker(
     }
 
     private val shouldKeepData: Boolean by lazy {
-        username in AccountUtils.getLastLoggedAccounts(keyValueStorage)
+        userData.username in AccountUtils.getLastLoggedAccounts(keyValueStorage) ||
+        userData.username.plus("@${userData.domain}") in AccountUtils.getLastLoggedAccounts(keyValueStorage)
     }
 
     private fun authenticateUser(): String {
-        val responseString = apiClient.authenticateUser(username, password).body
+        val responseString = apiClient.authenticateUser(userData).body
         keyValueStorage.putString(KeyValueStorage.StringKey.SignInSession, responseString)
         return responseString
     }
@@ -67,11 +68,16 @@ class AuthenticateUserWorker(
         val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
         if(lastLoggedUsers.isNotEmpty()) {
             if(!shouldKeepData){
-                keyValueStorage.clearAll()
+                if(isMultiple)
+                    keyValueStorage.remove(listOf(
+                            KeyValueStorage.StringKey.LastLoggedUser
+                    ))
+                else
+                    keyValueStorage.clearAll()
                 db.deleteDatabase(lastLoggedUsers)
             }
             storedValue = ""
-            lastLoggedUsers.removeAll { it == username }
+            lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.distinct().joinToString())
         }
         val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticateUser() else storedValue
@@ -80,28 +86,32 @@ class AuthenticateUserWorker(
 
     }
 
-    fun signInOperation(): Result<SignInSession, Exception> =
+    private fun signInOperation(): Result<SignInSession, Exception> =
         Result.of { getSignInSession() }
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
-    val signalRegistrationOperation
+    private val signalRegistrationOperation
             : (SignInSession) ->
             Result<Pair<SignalKeyGenerator.RegistrationBundles, Account>, Exception> = {
         signInSession ->
         Result.of {
-            val registrationBundles = keyGenerator.register(username, signInSession.deviceId)
+            val recipientId = if(userData.domain != Contact.mainDomain)
+                userData.username.plus("@${userData.domain}")
+            else
+                userData.username
+            val registrationBundles = keyGenerator.register(recipientId, signInSession.deviceId)
             val privateBundle = registrationBundles.privateBundle
-            val account = Account(id = 0, recipientId = username, deviceId = signInSession.deviceId,
+            val account = Account(id = 0, recipientId = userData.username, deviceId = signInSession.deviceId,
                     name = signInSession.name, registrationId = privateBundle.registrationId,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
-                    signature = "", refreshToken = "", isActive = true, domain = Contact.mainDomain, isLoggedIn = true,
+                    signature = "", refreshToken = "", isActive = true, domain = userData.domain, isLoggedIn = true,
                     autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
                     backupPassword = null)
             Pair(registrationBundles, account)
         }
     }
 
-    val storeAccountOperation
+    private val storeAccountOperation
             : (Pair<SignalKeyGenerator.RegistrationBundles, Account>) -> Result<Unit, Exception> = {
         (registrationBundles, account) ->
         Result.of {
@@ -113,8 +123,8 @@ class AuthenticateUserWorker(
                 account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
-                accountDao.updateJwt(username, account.jwt)
-                accountDao.updateRefreshToken(username, account.refreshToken)
+                accountDao.updateJwt(userData.username, account.jwt)
+                accountDao.updateRefreshToken(userData.username, account.refreshToken)
             }
 
             storeAccountTransaction.run(account = account,

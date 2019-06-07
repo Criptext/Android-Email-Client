@@ -555,7 +555,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             LinkDeviceActionService.APPROVE -> {
                 val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
-                val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId,
+                val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId, activeAccount.domain,
                         "", "", extrasDevice.deviceType, extrasDevice.syncFileVersion)
                 if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                     generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
@@ -564,7 +564,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             SyncDeviceActionService.APPROVE -> {
                 val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
-                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.account, extrasDevice.deviceId, extrasDevice.deviceName,
+                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.account, activeAccount.domain, extrasDevice.deviceId, extrasDevice.deviceName,
                         extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
                 if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
                     generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
@@ -992,7 +992,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onGetMenuInformation(result: MailboxResult){
             when (result) {
                 is MailboxResult.GetMenuInformation.Success -> {
-                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${Contact.mainDomain}")
+                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${result.account.domain}")
                     scene.setCounterLabel(NavigationMenuOptions.INBOX, result.totalInbox)
                     scene.setCounterLabel(NavigationMenuOptions.DRAFT, result.totalDraft)
                     scene.setCounterLabel(NavigationMenuOptions.SPAM, result.totalSpam)

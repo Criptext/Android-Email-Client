@@ -21,7 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 interface ProfileScene{
 
-    fun attachView(uiObserver: ProfileUIObserver, recipientId: String, model: ProfileModel)
+    fun attachView(uiObserver: ProfileUIObserver, recipientId: String, domain: String, model: ProfileModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -117,7 +117,7 @@ interface ProfileScene{
         private var messageAndProgressDialog: MessageAndProgressDialog? = null
 
 
-        override fun attachView(uiObserver: ProfileUIObserver, recipientId: String,
+        override fun attachView(uiObserver: ProfileUIObserver, recipientId: String, domain: String,
                                 model: ProfileModel) {
 
             profileUIObserver = uiObserver
@@ -163,7 +163,9 @@ interface ProfileScene{
             updateCurrentEmailStatus(model.userData.isEmailConfirmed)
 
             showProfilePictureProgress()
-            UIUtils.setProfilePicture(profilePicture, context.resources, recipientId, model.userData.name, Runnable { hideProfilePictureProgress() })
+            UIUtils.setProfilePicture(profilePicture, context.resources, domain, recipientId,
+                    model.userData.name,
+                    Runnable { hideProfilePictureProgress() })
         }
 
         private fun updateCurrentEmailStatus(isEmailConfirmed: Boolean){

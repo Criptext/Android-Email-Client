@@ -18,18 +18,19 @@ sealed class PushData {
     data class NewMail(val name: String, val email: String, val subject: String, val threadId: String,
                        val metadataKey: Long, val isPostNougat: Boolean, val preview: String, val hasInlineImages: Boolean,
                        val shouldPostNotification:Boolean, val activeEmail: String, val senderImage: Bitmap?,
-                       val recipientId: String, val account: String): PushData()
+                       val recipientId: String, val account: String, val domain: String): PushData()
     data class OpenMailbox(val title: String, val body: String, val recipientId: String,
-                           val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
+                           val isPostNougat: Boolean, val shouldPostNotification:Boolean, val domain: String): PushData()
 
     data class Error(val title: UIMessage, val body: UIMessage,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
 
     data class LinkDevice(val title: String, val body: String, val randomId: String, val recipientId: String,
                           val deviceType: DeviceUtils.DeviceType, val deviceName: String, val syncFileVersion: Int,
-                           val isPostNougat: Boolean, val shouldPostNotification:Boolean): PushData()
+                           val isPostNougat: Boolean, val shouldPostNotification:Boolean, val domain: String): PushData()
 
     data class SyncDevice(val title: String, val body: String, val randomId: String, val deviceId: Int,
                           val deviceType: DeviceUtils.DeviceType, val deviceName: String, val syncFileVersion: Int,
-                          val isPostNougat: Boolean, val shouldPostNotification:Boolean, val recipientId: String): PushData()
+                          val isPostNougat: Boolean, val shouldPostNotification:Boolean, val recipientId: String,
+                          val domain: String): PushData()
 }

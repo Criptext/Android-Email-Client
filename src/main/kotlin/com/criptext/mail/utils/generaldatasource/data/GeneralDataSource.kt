@@ -39,6 +39,7 @@ class GeneralDataSource(override val runner: WorkRunner,
             )
             is GeneralRequest.ResetPassword -> ForgotPasswordWorker(
                     recipientId = params.recipientId,
+                    domain = params.domain,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )

@@ -74,7 +74,7 @@ class ProfileControllerTest{
         listenerSlot = CapturingSlot()
 
         every {
-            scene.attachView(capture(observerSlot), activeAccount.recipientId, model)
+            scene.attachView(capture(observerSlot), activeAccount.recipientId, activeAccount.domain, model)
         } just Runs
 
         every {

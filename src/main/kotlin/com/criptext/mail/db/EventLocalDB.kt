@@ -45,8 +45,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun logoutNukeDB(activeAccount: ActiveAccount) {
-        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
-        db.accountDao().deleteAccountByRecipientId(activeAccount.recipientId)
+        val username = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
+        else activeAccount.userEmail
+        EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+        db.accountDao().deleteAccountById(activeAccount.id)
     }
 
     fun logout(accountId: Long){
@@ -104,7 +106,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                         location = "",
                         seen = false,
                         emailId = existingEmail.id,
-                        contactId = db.contactDao().getContact("${it.from}@${Contact.mainDomain}", accountId)!!.id,
+                        contactId = db.contactDao().getContact(it.from, accountId)!!.id,
                         fileId = null
                 ))
             }
@@ -295,14 +297,14 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             }
             else{
                 val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
-                val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+                val fromContact = if(email.fromAddress.isEmpty()){
                     dbContact[0]
                 }else Contact(
-                        id = 0,
+                        id = dbContact[0].id,
                         email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                         name = EmailAddressUtils.extractName(email.fromAddress),
-                        isTrusted = contactsFROM[0].isTrusted,
-                        score = contactsFROM[0].score
+                        isTrusted = dbContact[0].isTrusted,
+                        score = dbContact[0].score
                 )
                 contacts.addAll(listOf(fromContact))
                 contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
@@ -334,10 +336,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             contacts
         }
 
-        val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+        val fromContact = if(email.fromAddress.isEmpty()){
             contactsFROM[0]
         }else Contact(
-                id = 0,
+                id = contactsFROM[0].id,
                 email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                 name = EmailAddressUtils.extractName(email.fromAddress),
                 isTrusted = contactsFROM[0].isTrusted,
@@ -363,7 +365,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 totalEmails = emails.size,
                 hasFiles = totalFiles > 0,
                 allFilesAreInline = files.filter { it.cid != null }.size == totalFiles,
-                headerData = headerData
+                headerData = headerData.distinctBy { it.name }
         )
     }
 

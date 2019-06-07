@@ -18,8 +18,9 @@ class PasswordLoginDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
     private var username: String = ""
+    private var domain: String = ""
 
-    fun showPasswordLoginDialog(username: String,
+    fun showPasswordLoginDialog(username: String, domain: String,
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -28,6 +29,7 @@ class PasswordLoginDialog(val context: Context) {
         dialogBuilder.setView(dialogView)
 
         this.username = username
+        this.domain = domain
         dialog = createDialog(dialogView,
                 dialogBuilder,
                 onPasswordLoginDialogListener)
@@ -62,7 +64,7 @@ class PasswordLoginDialog(val context: Context) {
         val btn_no = view.findViewById(R.id.password_login_no) as Button
 
         btn_yes.setOnClickListener {
-            onPasswordLoginDialogListener.acceptPasswordLogin(username)
+            onPasswordLoginDialogListener.acceptPasswordLogin(username, domain)
             dialog.dismiss()
         }
 

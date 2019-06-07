@@ -78,17 +78,19 @@ android:focusableInTouchMode="true" >
 
                     <LinearLayout
                         android:id="@+id/viewUsername"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_centerHorizontal="true"
                         android:gravity="center_horizontal"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:layout_marginStart="80dp"
+                        android:layout_marginEnd="80dp">
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/input_username_layout"
                             android:textColorHint="@color/signup_hint_color"
-                            android:layout_width="150dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp">
 
@@ -100,45 +102,34 @@ android:focusableInTouchMode="true" >
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="text"
-                                android:hint="@string/username_hint" />
+                                android:hint="@string/email_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            fontPath="fonts/NunitoSans-Regular.ttf"
-                            android:layout_width="wrap_content"
-                            android:layout_height="50dp"
-                            android:layout_marginLeft="5dp"
-                            android:text="@string/criptext_com"
-                            android:gravity="bottom"
-                            android:textColor="@color/white"
-                            android:layout_gravity="right"
-                            android:textSize="16sp"/>
+                        <ProgressBar
+                            android:id="@+id/signin_progress_login"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:padding="5dp"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/login_shape"/>
+
+                        <Button
+                            android:id="@+id/signin_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/btn_signup_background"
+                            android:textColor="@drawable/btn_sign_in"
+                            android:text="@string/login"
+                            android:enabled="false"
+                            android:textAllCaps="false"
+                            android:layout_marginTop="10dp"/>
                     </LinearLayout>
 
                 </RelativeLayout>
-
-                <ProgressBar
-                    android:id="@+id/signin_progress_login"
-                    android:visibility="gone"
-                    android:layout_width="270dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:padding="5dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/login_shape"/>
-
-                <Button
-                    android:id="@+id/signin_button"
-                    android:layout_width="270dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/btn_signup_background"
-                    android:textColor="@drawable/btn_sign_in"
-                    android:text="@string/login"
-                    android:enabled="false"
-                    android:textAllCaps="false"
-                    android:layout_marginTop="10dp"/>
 
                 <LinearLayout
                     android:layout_marginTop="20dp"

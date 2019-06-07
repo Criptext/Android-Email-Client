@@ -1,6 +1,7 @@
 package com.criptext.mail.services
 
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import com.criptext.mail.api.HttpClient
@@ -48,6 +49,12 @@ class MessagingService : FirebaseMessagingService(){
 
     fun notifyPushEvent(notifier: Notifier?){
         notifier?.notifyPushEvent(this)
+    }
+
+    fun cancelPush(notificationId: Int){
+        val manager = this.applicationContext
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.cancel(notificationId)
     }
 
     companion object {

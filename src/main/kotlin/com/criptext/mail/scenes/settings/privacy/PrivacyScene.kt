@@ -18,7 +18,7 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 interface PrivacyScene{
 
     fun attachView(uiObserver: PrivacyUIObserver,
-                   keyboardManager: KeyboardManager, model: PrivacyModel)
+                   keyboardManager: KeyboardManager, model: PrivacyModel, hasEncryption: Boolean)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -31,6 +31,9 @@ interface PrivacyScene{
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun updateTwoFa(isChecked: Boolean)
+    fun enableHasEncryptionSwitch(isEnabled: Boolean)
+    fun updateHasEncryption(isChecked: Boolean)
+
 
     class Default(val view: View): PrivacyScene{
         private lateinit var privacyUIObserver: PrivacyUIObserver
@@ -45,6 +48,10 @@ interface PrivacyScene{
             view.findViewById<Switch>(R.id.privacy_read_receipts_switch)
         }
 
+        private val hasEncryptionSwitch: Switch by lazy {
+            view.findViewById<Switch>(R.id.privacy_has_encryption_switch)
+        }
+
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
@@ -55,7 +62,7 @@ interface PrivacyScene{
         private val twoFADialog = Settings2FADialog(context)
 
         override fun attachView(uiObserver: PrivacyUIObserver, keyboardManager: KeyboardManager,
-                                model: PrivacyModel) {
+                                model: PrivacyModel, hasEncryption: Boolean) {
 
             privacyUIObserver = uiObserver
 
@@ -67,6 +74,8 @@ interface PrivacyScene{
             updateReadReceipts(model.readReceipts)
             enableTwoFASwitch(true)
             updateTwoFa(model.twoFA)
+            enableHasEncryptionSwitch(true)
+            updateHasEncryption(hasEncryption)
 
             setSwitchListener()
         }
@@ -111,12 +120,25 @@ interface PrivacyScene{
             setSwitchListener()
         }
 
+        override fun enableHasEncryptionSwitch(isEnabled: Boolean) {
+            hasEncryptionSwitch.isEnabled = isEnabled
+        }
+
+        override fun updateHasEncryption(isChecked: Boolean) {
+            hasEncryptionSwitch.setOnCheckedChangeListener { _, _ ->  }
+            hasEncryptionSwitch.isChecked = isChecked
+            setSwitchListener()
+        }
+
         private fun setSwitchListener(){
             readReceiptsSwitch.setOnCheckedChangeListener { _, isChecked ->
                 privacyUIObserver.onReadReceiptsSwitched(isChecked)
             }
             twoFASwitch.setOnCheckedChangeListener { _, isChecked ->
                 privacyUIObserver.onTwoFASwitched(isChecked)
+            }
+            hasEncryptionSwitch.setOnCheckedChangeListener { _, isChecked ->
+                privacyUIObserver.onHasEncryptionSwitched(isChecked)
             }
         }
 

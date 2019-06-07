@@ -1,4 +1,5 @@
 {
     "password": "securePassword123",
+    "domain": "criptext.com",
     "username": "tester"
 }

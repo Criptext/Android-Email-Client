@@ -27,6 +27,9 @@ interface AccountDao {
     @Query("SELECT * FROM account WHERE recipientId=:recipientId")
     fun getAccountByRecipientId(recipientId: String) : Account?
 
+    @Query("SELECT * FROM account WHERE recipientId=:recipientId AND domain=:domain")
+    fun getAccount(recipientId: String, domain: String) : Account?
+
     @Query("SELECT * FROM account WHERE id=:id")
     fun getAccountById(id: Long) : Account?
 
@@ -66,8 +69,12 @@ interface AccountDao {
     fun deleteAll(accounts: List<Account>)
 
     @Query("""DELETE FROM account
-            WHERE recipientId=:recipientId""")
-    fun deleteAccountByRecipientId(recipientId: String)
+            WHERE id=:accountId""")
+    fun deleteAccountById(accountId: Long)
+
+    @Query("""DELETE FROM account
+            WHERE recipientId=:recipientId AND domain=:domain""")
+    fun deleteAccountByRecipientId(recipientId: String, domain: String)
 
     @Query("""DELETE FROM account
             WHERE recipientId in (:recipientIds)""")

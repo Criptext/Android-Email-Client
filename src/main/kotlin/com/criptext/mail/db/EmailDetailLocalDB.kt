@@ -86,10 +86,10 @@ interface EmailDetailLocalDB {
                         ),
                         bcc = contactsBCC,
                         cc = contactsCC,
-                        from = if(EmailAddressUtils.checkIfOnlyHasEmail(it.fromAddress)){
+                        from = if(it.fromAddress.isEmpty()){
                             contactsFROM[0]
                         }else Contact(
-                                id = 0,
+                                id = contactsFROM[0].id,
                                 email = EmailAddressUtils.extractEmailAddress(it.fromAddress),
                                 name = EmailAddressUtils.extractName(it.fromAddress),
                                 isTrusted = contactsFROM[0].isTrusted,

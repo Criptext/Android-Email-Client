@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signup.data
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DeviceUtils
@@ -22,7 +23,8 @@ object RegisterUserTestUtils {
                                 signedPreKeyPublic = "__SIGNED_PRE_KEY_PUBLIC__",
                                 signedPreKeySignature = "__SIGNED_PRE_KEY_SIGNATURE__",
                                 identityPublicKey = "__IDENTITY_PUBLIC_KEY__",
-                                registrationId = registrationId), preKeys = preKeys,
+                                registrationId = registrationId,
+                                domain = Contact.mainDomain), preKeys = preKeys,
                                 deviceName = "__TEST__", deviceFriendlyName = "__TEST__",
                                 deviceType = DeviceUtils.DeviceType.Android)
         )

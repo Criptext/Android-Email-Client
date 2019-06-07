@@ -41,13 +41,11 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
         }
     }
 
-    class Single(data: PushData.NewMail): NewMailNotifier(data) {
+    class Single(data: PushData.NewMail, private val notificationId: Int): NewMailNotifier(data) {
 
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
                 data.threadId, data.isPostNougat, data.account)
-
-            val notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode()
 
             return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent, data = data,
                     notificationId = notificationId))

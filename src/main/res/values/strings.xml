@@ -127,6 +127,7 @@
   <string name="title_allow_notifications">Allow Notifications</string>
   <string name="title_allow_preview">Notification Preview</string>
   <string name="title_two_fa">Two-Factor Authentication</string>
+  <string name="title_external_encryption">Encrypt Emails to Externals</string>
   <string name="title_dark_theme">Dark Theme</string>
   <string name="title_read_receipts">Read Receipts</string>
   <string name="title_privacy">Privacy</string>
@@ -241,6 +242,7 @@
   <string name="fullname_hint">Full Name</string>
   <string name="recovery_optional_hint">Recovery email (optional)</string>
   <string name="username_hint">Username</string>
+  <string name="email_hint">Email Address</string>
   <string name="login">Sign In</string>
     <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
   <string name="didnt_get_prompt">Didn\'t get the prompt?</string>
@@ -484,6 +486,7 @@
   <string name="title_labels">Labels</string>
   <string name="title_pin_lock">Pin Lock</string>
   <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
+  <string name="privacy_encrypt_external">When sending emails to non-criptext accounts, if this is turned on we will always ask you if you wish to encrypt that email with a password.</string>
   <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
   <string name="user_already_logged_in">Account already added!</string>
   <string name="title_cloud_backup">Cloud Backup</string>

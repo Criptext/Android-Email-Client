@@ -266,19 +266,14 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             unsendProgressBar.visibility = View.INVISIBLE
 
         val contactFrom = fullEmail.from
-        if(EmailAddressUtils.isFromCriptextDomain(contactFrom.email))
-            UIUtils.setProfilePicture(
-                    iv = leftImageView,
-                    resources = context.resources,
-                    recipientId = EmailAddressUtils.extractRecipientIdFromCriptextAddress(contactFrom.email),
-                    name = contactFrom.name,
-                    runnable = null)
-        else
-            leftImageView.setImageBitmap(
-                    Utility.getBitmapFromText(
-                            contactFrom.name,
-                            250,
-                            250))
+        val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
+        UIUtils.setProfilePicture(
+                iv = leftImageView,
+                resources = context.resources,
+                recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
+                name = contactFrom.name,
+                runnable = null,
+                domain = domain)
 
         setToText(fullEmail)
         setDraftIcon(fullEmail)

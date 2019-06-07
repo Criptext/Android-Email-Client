@@ -29,13 +29,18 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post("/user", null, jsonObject)
     }
 
+    fun userCanLogin(username: String, domain: String): HttpResponseData {
+        return httpClient.get("/user/canlogin?username=$username&domain=$domain", null)
+    }
+
     fun isUsernameAvailable(username: String): HttpResponseData {
         return httpClient.get("/user/available?username=$username", null)
     }
 
-    fun postForgotPassword(recipientId: String): HttpResponseData{
+    fun postForgotPassword(recipientId: String, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)
+        jsonPut.put("domain", domain)
 
         return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
     }

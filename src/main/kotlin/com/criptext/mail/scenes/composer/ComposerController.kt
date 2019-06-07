@@ -22,6 +22,7 @@ import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
@@ -378,11 +379,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.to.addAll(data.to.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.cc.clear()
-        model.cc.addAll(data.cc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.cc.addAll(data.cc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.decapitalize(), it.name, it.isTrusted, it.score) })
+        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
         model.body = data.body
         model.subject = data.subject
     }
@@ -436,8 +437,13 @@ class ComposerController(private val storage: KeyValueStorage,
             else
                 if(Validator.criptextOnlyContacts(data))
                     saveEmailAsDraft(data, onlySave = false)
-                else
-                    scene.showNonCriptextEmailSendDialog(observer)
+                else {
+                    if(AccountUtils.hasExternalEncryption(storage, activeAccount.userEmail))
+                        scene.showNonCriptextEmailSendDialog(observer)
+                    else{
+                        observer.sendDialogButtonPressed()
+                    }
+                }
         } else if(model.isUploadingAttachments && model.attachments.isNotEmpty()) {
             scene.showError(UIMessage(R.string.wait_for_attachments))
         } else {

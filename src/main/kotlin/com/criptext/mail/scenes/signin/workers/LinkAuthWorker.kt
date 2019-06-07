@@ -16,6 +16,7 @@ import com.github.kittinunf.result.Result
 class LinkAuthWorker(val httpClient: HttpClient,
                      private val jwt: String,
                      private val username: String,
+                     private val domain: String,
                      private val password: String?,
                      override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.LinkAuth> {
@@ -39,7 +40,7 @@ class LinkAuthWorker(val httpClient: HttpClient,
 
         val device = DeviceItem()
 
-        val result =  Result.of { apiClient.postLinkAuth(username, jwt, device, password) }
+        val result =  Result.of { apiClient.postLinkAuth(username, jwt, device, password, domain) }
 
         return when (result) {
             is Result.Success ->{

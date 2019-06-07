@@ -21,7 +21,7 @@ import com.criptext.mail.utils.*
  * Created by sebas on 3/2/18.
  */
 
-class ConnectionHolder(val view: View, val username: String, val authorizerType: DeviceUtils.DeviceType,
+class ConnectionHolder(val view: View, val username: String, val domain: String, val authorizerType: DeviceUtils.DeviceType,
                        private val signInUIObserver: SignInSceneController.SignInUIObserver): BaseSignInHolder() {
 
     private val loadingView: View
@@ -110,7 +110,7 @@ class ConnectionHolder(val view: View, val username: String, val authorizerType:
         loadingView = view.findViewById(R.id.viewAnimation)
         textViewStatus = view.findViewById(R.id.textViewStatus)
         textViewEmail = view.findViewById(R.id.textViewEmail)
-        textViewEmail.text = username.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
+        textViewEmail.text = username.plus("@$domain")
         progressBar = view.findViewById(R.id.progressBar)
         progressBarNumber = view.findViewById(R.id.percentage_advanced)
         cancelSyncText = view.findViewById(R.id.cancelSync)

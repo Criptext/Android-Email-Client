@@ -9,7 +9,7 @@ import com.criptext.mail.signal.PreKeyBundleShareData
 sealed class GeneralRequest {
     data class DeviceRemoved(val letAPIKnow: Boolean): GeneralRequest()
     data class ConfirmPassword(val password: String): GeneralRequest()
-    data class ResetPassword(val recipientId: String): GeneralRequest()
+    data class ResetPassword(val recipientId: String, val domain: String): GeneralRequest()
     data class UpdateMailbox(
             val isActiveAccount: Boolean,
             val recipientId: String,

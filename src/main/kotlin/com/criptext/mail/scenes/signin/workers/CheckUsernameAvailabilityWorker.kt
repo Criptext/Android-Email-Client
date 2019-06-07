@@ -25,6 +25,7 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
                                       private val storage: KeyValueStorage,
                                       private val accountDao: AccountDao,
                                       private val username: String,
+                                      private val domain: String,
                                       override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.CheckUsernameAvailability> {
 
@@ -45,24 +46,18 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.CheckUsernameAvailability>): SignInResult.CheckUsernameAvailability? {
 
-        val loggedUsers = accountDao.getLoggedInAccounts().map { it.recipientId }
-        if(username in loggedUsers) return SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.user_already_logged_in))
+        val loggedUsers = accountDao.getLoggedInAccounts().map { it.recipientId.plus("@${it.domain}") }
+        if(username.plus("@$domain") in loggedUsers) return SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.user_already_logged_in))
 
-        val result = Result.of { apiClient.isUsernameAvailable(username) }
+        val result = Result.of { apiClient.userCanLogin(username, domain) }
 
         val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
         loggedOutAccounts.removeAll(loggedUsers)
         storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.distinct().joinToString())
 
         return when (result) {
-            is Result.Success -> SignInResult.CheckUsernameAvailability.Success(userExists = false, username = username)
-            is Result.Failure -> {
-                val error = result.error
-                if (error is ServerErrorException && error.errorCode == ServerCodes.BadRequest)
-                    SignInResult.CheckUsernameAvailability.Success(userExists = true, username = username)
-                else
-                    catchException(error)
-            }
+            is Result.Success -> SignInResult.CheckUsernameAvailability.Success(userExists = true, username = username, domain = domain)
+            is Result.Failure -> catchException(result.error)
         }
     }
 

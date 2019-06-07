@@ -36,7 +36,7 @@ interface SignInScene {
     fun setLinkProgress(message: UIMessage, progress: Int)
     fun disableCancelSync()
     fun showSyncRetryDialog(result: SignInResult)
-    fun showSignInWarningDialog(oldAccountName: String, newUserName: String)
+    fun  showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -82,7 +82,7 @@ interface SignInScene {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_connection, viewGroup)
-                    ConnectionHolder(newLayout, state.username, state.authorizerType,signInUIObserver)
+                    ConnectionHolder(newLayout, state.username, state.domain, state.authorizerType,signInUIObserver)
                 }
 
                 is SignInLayoutState.InputPassword -> {
@@ -131,8 +131,8 @@ interface SignInScene {
             retrySyncDialog.showLinkDeviceAuthDialog(signInUIObserver, result)
         }
 
-        override fun showSignInWarningDialog(oldAccountName: String, newUserName: String) {
-            signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserName)
+        override fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String) {
+            signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserName, domain)
         }
 
         override fun showLinkAuthError() {

@@ -78,14 +78,14 @@ interface SearchLocalDB{
                 }
                 else{
                     val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
-                    val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+                    val fromContact = if(email.fromAddress.isEmpty()){
                         dbContact[0]
                     }else Contact(
-                            id = 0,
+                            id = dbContact[0].id,
                             email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                             name = EmailAddressUtils.extractName(email.fromAddress),
-                            isTrusted = contactsFROM[0].isTrusted,
-                            score = contactsFROM[0].score
+                            isTrusted = dbContact[0].isTrusted,
+                            score = dbContact[0].score
                     )
                     contacts.addAll(listOf(fromContact))
                     contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
@@ -118,7 +118,7 @@ interface SearchLocalDB{
             }
 
 
-            val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+            val fromContact = if(email.fromAddress.isEmpty()){
                 contactsFROM[0]
             }else Contact(
                     id = contactsFROM[0].id,
@@ -149,7 +149,7 @@ interface SearchLocalDB{
                     totalEmails = emails.size,
                     hasFiles = totalFiles > 0,
                     allFilesAreInline = files.filter { it.cid != null }.size == totalFiles,
-                    headerData = headerData
+                    headerData = headerData.distinctBy { it.name }
             )
         }
 

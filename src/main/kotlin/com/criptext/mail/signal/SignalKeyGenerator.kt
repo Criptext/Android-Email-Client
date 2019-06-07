@@ -1,7 +1,11 @@
 package com.criptext.mail.signal
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.Encoding
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
 import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.state.PreKeyRecord
 import org.whispersystems.libsignal.state.SignedPreKeyRecord
@@ -42,8 +46,17 @@ interface SignalKeyGenerator {
         private fun createUploadBundle(recipientId: String, deviceId: Int,
                                        registrationData: RegistrationData)
                 : PreKeyBundleShareData.UploadBundle {
+            val (recipient, domain) = if(AccountDataValidator.validateEmailAddress(recipientId) is FormData.Valid) {
+                val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(recipientId)
+                Pair(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, nonCriptextDomain),
+                        nonCriptextDomain
+                )
+            } else {
+                Pair(recipientId, Contact.mainDomain)
+            }
             val shareData = PreKeyBundleShareData(
-                        recipientId = recipientId,
+                        recipientId = recipient,
+                        domain = domain,
                         deviceId = deviceId,
                         signedPreKeyId = registrationData.signedPreKeyId,
                         registrationId = registrationData.registrationId,

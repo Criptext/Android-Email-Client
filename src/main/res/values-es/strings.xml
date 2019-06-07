@@ -127,6 +127,7 @@
   <string name="title_allow_notifications">Permitir Notificaciones</string>
   <string name="title_allow_preview">Vista Previa en Notificaciones</string>
   <string name="title_two_fa">Autenticación de Dos Factores</string>
+  <string name="title_external_encryption">Encriptar Correos a Externos</string>
   <string name="title_dark_theme">Tema Oscuro</string>
   <string name="title_read_receipts">Confirmaciones de Lectura</string>
     <string name="title_privacy">Privacidad</string>
@@ -241,6 +242,7 @@
   <string name="fullname_hint">Nombre Completo</string>
   <string name="recovery_optional_hint">Correo de Recuperación (opcional)</string>
   <string name="username_hint">Usuario</string>
+  <string name="email_hint">Dirección Correo</string>
   <string name="login">Iniciar Sesión</string>
     <string name="login_body">Revisa y aprueba desde un dispositivo existente de Criptext para continuar.</string>
   <string name="didnt_get_prompt">¿No recibiste el aviso?</string>
@@ -484,6 +486,7 @@
   <string name="title_labels">Etiquetas</string>
   <string name="title_pin_lock">Bloqueo Pin</string>
   <string name="privacy_two_fa_message">Una validación extra para proteger tu cuenta.</string>
+  <string name="privacy_encrypt_external">Si enciendes esta opción, cada vez que envies un correo a una cuenta que no es de Criptext, te preguntaremos si deseas encriptarlo con una contraseña.</string>
   <string name="privacy_read_receipts_message">Saber cuando tus correos son abiertos o leídos. Si lo deshabilitas, no podrás enviar o recibir confirmaciones de lectura.</string>
   <string name="user_already_logged_in">¡La cuenta ya está agregada!</string>
   <string name="title_cloud_backup">Respaldo en la nube</string>

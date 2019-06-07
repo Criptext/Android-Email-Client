@@ -1,6 +1,7 @@
 package com.criptext.mail.db
 
 import com.criptext.mail.db.models.*
+import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
@@ -476,14 +477,14 @@ interface MailboxLocalDB {
                     }
                 } else {
                     val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
-                    val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+                    val fromContact = if(email.fromAddress.isEmpty()){
                         dbContact[0]
                     }else Contact(
-                            id = 0,
+                            id = dbContact[0].id,
                             email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                             name = EmailAddressUtils.extractName(email.fromAddress),
-                            isTrusted = contactsFROM[0].isTrusted,
-                            score = contactsFROM[0].score
+                            isTrusted = dbContact[0].isTrusted,
+                            score = dbContact[0].score
                     )
                     contacts.addAll(listOf(fromContact))
                     contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
@@ -515,7 +516,7 @@ interface MailboxLocalDB {
                 contacts
             }
 
-            val fromContact = if(EmailAddressUtils.checkIfOnlyHasEmail(email.fromAddress)){
+            val fromContact = if(email.fromAddress.isEmpty()){
                 contactsFROM[0]
             }else Contact(
                     id = contactsFROM[0].id,
@@ -546,7 +547,7 @@ interface MailboxLocalDB {
                     totalEmails = getEmailCount(emailsInSelectedLabel, emails.size, selectedLabel),
                     hasFiles = totalFiles > 0,
                     allFilesAreInline = files.filter { it.cid != null }.size == totalFiles,
-                    headerData = headerData
+                    headerData = headerData.distinctBy { it.name }
             )
         }
 

@@ -3,10 +3,7 @@ package com.criptext.mail.scenes.mailbox.workers
 import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
-import com.criptext.mail.api.Hosts
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpErrorHandlingHelper
-import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.*
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
@@ -16,6 +13,7 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.EmailExternalSession
 import com.criptext.mail.db.models.KnownAddress
 import com.criptext.mail.scenes.composer.data.*
@@ -69,8 +67,15 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
-        val existingSessions = rawSessionDao.getKnownAddresses(criptextRecipients, activeAccount.id)
+        val existingSessions = (rawSessionDao.getKnownAddresses(criptextRecipients.map {
+            if (EmailAddressUtils.isFromCriptextDomain(it))
+                EmailAddressUtils.extractRecipientIdFromCriptextAddress(it)
+            else
+                it
+        }, activeAccount.id))
         existingSessions.forEach { knownAddress: KnownAddress ->
+            if(!knownAddress.recipientId.contains("@"))
+                knownAddress.recipientId = knownAddress.recipientId.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
             knownAddresses[knownAddress.recipientId] = knownAddresses[knownAddress.recipientId]
                                                 ?.plus(knownAddress.deviceId)
                                                 ?: listOf(knownAddress.deviceId)
@@ -84,11 +89,13 @@ class SendMailWorker(private val signalClient: SignalClient,
         val findKeyBundlesResponse = apiClient.findKeyBundles(criptextRecipients, knownAddresses)
         val bundlesJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("keyBundles")
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
+        val guestDomains = JSONObject(findKeyBundlesResponse.body).getJSONArray("guestDomains").toList<String>()
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
-            signalClient.createSessionsFromBundles(downloadedBundles)
+            signalClient.createSessionsFromBundles(downloadedBundles.filter { it.shareData.domain !in guestDomains })
         }
+        setGuestEmails(guestDomains)
         if (blackListedJSONArray.length() > 0) {
             for (i in 0 until blackListedJSONArray.length())
             {
@@ -96,6 +103,18 @@ class SendMailWorker(private val signalClient: SignalClient,
                 signalClient.deleteSessions(addresses)
             }
         }
+    }
+
+    private fun setGuestEmails(guests: List<String>){
+        val mailRecipientsNonCriptext = EmailUtils.getMailRecipientsNonCriptext(
+                composerInputData.to.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
+                composerInputData.cc.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
+                composerInputData.bcc.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
+                activeAccount.recipientId)
+        guestEmails = if(!mailRecipientsNonCriptext.isEmpty)
+            getGuestEmails(mailRecipientsNonCriptext)
+        else
+            null
     }
 
     private fun getDeliveryType(): DeliveryTypes{
@@ -109,8 +128,20 @@ class SendMailWorker(private val signalClient: SignalClient,
                                              availableAddresses: Map<String, List<Int>>,
                                              type: PostEmailBody.RecipientTypes)
             : List<PostEmailBody.CriptextEmail> {
-        return criptextRecipients.map { recipientId ->
-            val devices = availableAddresses[recipientId]
+        return criptextRecipients
+                .filter { it !in guestEmails?.to ?: listOf()}
+                .filter { it !in guestEmails?.cc ?: listOf() }
+                .filter { it !in guestEmails?.bcc ?: listOf() }
+                .map { emailAddress ->
+            val domain: String
+            val recipientId = if(EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
+                domain = Contact.mainDomain
+                EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)
+            }else {
+                domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
+                emailAddress
+            }
+            val devices = availableAddresses[emailAddress]
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
@@ -127,13 +158,17 @@ class SendMailWorker(private val signalClient: SignalClient,
                 }
                 when(encryptOperation){
                     is Result.Success -> {
-                        PostEmailBody.CompleteCriptextEmail(recipientId = recipientId, deviceId = deviceId,
+                        PostEmailBody.CompleteCriptextEmail(recipientId = if(domain != Contact.mainDomain)
+                            EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain)
+                        else
+                            recipientId, deviceId = deviceId,
                                 type = type, body = encryptOperation.value.first.encryptedB64,
                                 messageType = encryptOperation.value.first.type, fileKey = if(getFileKey() != null)
                             signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64
                         else null, fileKeys = getEncryptedFileKeys(recipientId, deviceId),
                                 preview = encryptOperation.value.second.encryptedB64,
-                                previewMessageType = encryptOperation.value.second.type)
+                                previewMessageType = encryptOperation.value.second.type,
+                                domain = domain)
                     }
                     is Result.Failure -> {
                         PostEmailBody.EmptyCriptextEmail(recipientId)
@@ -275,13 +310,7 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     override fun work(reporter: ProgressReporter<MailboxResult.SendMail>): MailboxResult.SendMail? {
         val mailRecipients = EmailUtils.getMailRecipients(composerInputData.to,
-                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId)
-        val mailRecipientsNonCriptext = EmailUtils.getMailRecipientsNonCriptext(composerInputData.to,
-                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId)
-        guestEmails = if(!mailRecipientsNonCriptext.isEmpty)
-            getGuestEmails(mailRecipientsNonCriptext)
-        else
-            null
+                composerInputData.cc, composerInputData.bcc, activeAccount.recipientId, activeAccount.domain)
 
         val currentEmail = db.getEmailById(emailId, activeAccount.id)
 
@@ -326,7 +355,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         }
     }
 
-    private fun workOperation(mailRecipients: EmailUtils.MailRecipients): Result<Unit, Exception> = checkEncryptionKeysOperation(mailRecipients)
+    private fun workOperation(mailRecipients: EmailUtils.MailRecipients): Result<Unit, Exception> =
+            checkEncryptionKeysOperation(mailRecipients)
             .flatMap { encryptOperation(mailRecipients) }
             .flatMap(sendEmailOperation)
             .flatMap(updateSentMailInDB)

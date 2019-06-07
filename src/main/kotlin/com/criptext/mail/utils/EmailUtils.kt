@@ -19,20 +19,13 @@ object EmailUtils {
     const val DRAFT_HEADER_PLACEHOLDER = "DRAFT_HEADER"
 
     fun getMailRecipients(to: List<Contact>, cc: List<Contact>, bcc: List<Contact>,
-                                  recipientId: String): MailRecipients {
+                                  recipientId: String, domain: String): MailRecipients {
         val toAddresses = to.map(Contact.toAddress)
         val ccAddresses = cc.map(Contact.toAddress)
         val bccAddresses = bcc.map(Contact.toAddress)
 
-        val toCriptext = toAddresses.filter(EmailAddressUtils.isFromCriptextDomain)
-                .map(EmailAddressUtils.extractRecipientIdFromCriptextAddress)
-        val ccCriptext = ccAddresses.filter(EmailAddressUtils.isFromCriptextDomain)
-                .map(EmailAddressUtils.extractRecipientIdFromCriptextAddress)
-        val bccCriptext = bccAddresses.filter(EmailAddressUtils.isFromCriptextDomain)
-                .map(EmailAddressUtils.extractRecipientIdFromCriptextAddress)
-
-        return MailRecipients(toCriptext = toCriptext, ccCriptext = ccCriptext,
-                bccCriptext = bccCriptext, peerCriptext = listOf(recipientId))
+        return MailRecipients(toCriptext = toAddresses, ccCriptext = ccAddresses,
+                bccCriptext = bccAddresses, peerCriptext = listOf(recipientId.plus("@$domain")))
     }
 
     fun getMailRecipientsNonCriptext(to: List<Contact>, cc: List<Contact>, bcc: List<Contact>,
