@@ -336,7 +336,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             contacts
         }
 
-        val fromContact = if(email.fromAddress.isEmpty()){
+        val fromContact = if(email.fromAddress.isEmpty()){ 
             contactsFROM[0]
         }else Contact(
                 id = contactsFROM[0].id,

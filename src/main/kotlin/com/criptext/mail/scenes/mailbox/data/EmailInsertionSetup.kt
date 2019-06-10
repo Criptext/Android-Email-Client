@@ -14,6 +14,7 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
+import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
@@ -314,7 +315,8 @@ object EmailInsertionSetup {
         val decryptedFileKey = if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
         metadata.files.forEachIndexed { index, crFile ->
             crFile.fileKey = decryptedFileKeys[index]
-            crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")) crFile.cid else null
+            crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")
+                    && FileUtils.isAPicture(crFile.name)) crFile.cid else null
         }
 
         val finalMetadata = if(metadata.inReplyTo != null) {

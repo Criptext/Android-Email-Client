@@ -36,7 +36,9 @@ interface SignInScene {
     fun setLinkProgress(message: UIMessage, progress: Int)
     fun disableCancelSync()
     fun showSyncRetryDialog(result: SignInResult)
-    fun  showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
+    fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
+    fun showPasswordDialogError(message: UIMessage?)
+    fun toggleChangePasswordButton(enable: Boolean)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -91,7 +93,12 @@ interface SignInScene {
                             R.layout.activity_password_login, viewGroup)
                     PasswordLoginHolder(newLayout, state)
                 }
-
+                is SignInLayoutState.ChangePassword -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_change_password_login, viewGroup)
+                    ChangePasswordLoginHolder(newLayout, state)
+                }
                 is SignInLayoutState.LoginValidation -> {
                     val newLayout = View.inflate(
                             view.context,
@@ -147,6 +154,7 @@ interface SignInScene {
             when (currentHolder) {
                 is PasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
                 is SignInStartHolder -> currentHolder.setSubmitButtonState(state)
+                is ChangePasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
             }
         }
 
@@ -188,6 +196,16 @@ interface SignInScene {
         override fun setLinkProgress(message: UIMessage, progress: Int) {
             val currentHolder = holder as ConnectionHolder
             currentHolder.setProgress(message, progress)
+        }
+
+        override fun showPasswordDialogError(message: UIMessage?) {
+            val currentHolder = holder as ChangePasswordLoginHolder
+            currentHolder.showPasswordDialogError(message)
+        }
+
+        override fun toggleChangePasswordButton(enable: Boolean) {
+            val currentHolder = holder as ChangePasswordLoginHolder
+            currentHolder.toggleChangePasswordButton(enable)
         }
 
         override fun showKeyGenerationHolder() {

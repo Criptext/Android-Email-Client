@@ -12,7 +12,7 @@ import java.util.*
  */
 
 @Entity(tableName = "account", indices = [Index(value = ["name"]),
-    Index(value = ["recipientId"], name = "account_recipient_index", unique = true)] )
+    Index(value = ["recipientId", "domain"], name = "account_email_index", unique = true)] )
 class Account(
 
         @PrimaryKey(autoGenerate = true)

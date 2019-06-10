@@ -17,7 +17,7 @@ data class ExpectedRequest(val expectedAuthScheme: ExpectedAuthScheme, val metho
 
 sealed class MockedResponse {
     class Ok(val body: String): MockedResponse()
-    class ServerError: MockedResponse()
+    data class ServerError(val errorCode: Int = 500): MockedResponse()
     class Timeout: MockedResponse()
 
 }
@@ -28,7 +28,7 @@ fun MockWebServer.enqueueResponses(responses: List<MockedResponse>) {
             is MockedResponse.Ok ->
                 this.enqueue(MockResponse().setResponseCode(200).setBody(res.body))
             is MockedResponse.ServerError ->
-                this.enqueue(MockResponse().setResponseCode(500).setBody("simulated server crash"))
+                this.enqueue(MockResponse().setResponseCode(res.errorCode).setBody("simulated server crash"))
             is MockedResponse.Timeout ->
                 this.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
         }

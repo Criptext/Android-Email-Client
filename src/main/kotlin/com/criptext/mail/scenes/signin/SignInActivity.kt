@@ -30,8 +30,8 @@ class SignInActivity : BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val appCtx = this.applicationContext
-        val db: SignInLocalDB.Default = SignInLocalDB.Default(appCtx, appCtx.filesDir)
         val appDB = AppDatabase.getAppDatabase(appCtx)
+        val db: SignInLocalDB.Default = SignInLocalDB.Default(appDB, appCtx.filesDir)
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel
         val generalDataSource = GeneralDataSource(
