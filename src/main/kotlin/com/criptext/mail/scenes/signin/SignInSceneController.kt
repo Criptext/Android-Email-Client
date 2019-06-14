@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signin
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
@@ -11,6 +12,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
+import com.criptext.mail.scenes.settings.changepassword.ChangePasswordController
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.*
@@ -19,6 +21,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
+import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.validation.ProgressButtonState
 import com.criptext.mail.websocket.CriptextWebSocketFactory
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -42,6 +45,9 @@ class SignInSceneController(
 
     private var tempWebSocket: WebSocketEventPublisher? = null
     private var webSocket: WebSocketEventPublisher? = null
+
+    private val arePasswordsMatching: Boolean
+        get() = model.passwordText == model.confirmPasswordText
 
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
@@ -294,7 +300,20 @@ class SignInSceneController(
             is SignInResult.AuthenticateUser.Success -> {
                 scene.showKeyGenerationHolder()
             }
-            is SignInResult.AuthenticateUser.Failure -> onAuthenticationFailed(result)
+            is SignInResult.AuthenticateUser.Failure -> {
+                if(result.exception is ServerErrorException
+                        && result.exception.errorCode == ServerCodes.PreconditionFail){
+                    val currentState = model.state as SignInLayoutState.InputPassword
+                    model.state = SignInLayoutState.ChangePassword(
+                            username = currentState.username,
+                            buttonState = ProgressButtonState.disabled,
+                            domain = currentState.domain,
+                            oldPassword = currentState.password)
+                    scene.initLayout(model.state, uiObserver, model.isMultiple)
+                } else {
+                    onAuthenticationFailed(result)
+                }
+            }
         }
     }
 
@@ -349,14 +368,31 @@ class SignInSceneController(
         }
     }
 
-    private fun onSignInButtonClicked(currentState: SignInLayoutState.InputPassword) {
-        if (currentState.password.isNotEmpty()) {
+    private fun onSignInButtonClicked(currentState: SignInLayoutState) {
+        if (currentState is SignInLayoutState.InputPassword && currentState.password.isNotEmpty()) {
             val newButtonState = ProgressButtonState.waiting
             model.state = currentState.copy(buttonState = newButtonState)
             scene.setSubmitButtonState(newButtonState)
 
             val hashedPassword = currentState.password.sha256()
-            val userData = UserData(currentState.username, currentState.domain, hashedPassword)
+            val userData = UserData(currentState.username, currentState.domain, hashedPassword, null)
+            val req = SignInRequest.AuthenticateUser(
+                    userData = userData,
+                    isMultiple = model.isMultiple
+            )
+
+            val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
+            if(!lastLoggedAccounts.contains(currentState.username))
+                model.showRestoreBackupDialog = true
+
+            dataSource.submitRequest(req)
+        } else if(currentState is SignInLayoutState.ChangePassword){
+            val newButtonState = ProgressButtonState.waiting
+            model.state = currentState.copy(buttonState = newButtonState)
+            scene.setSubmitButtonState(newButtonState)
+
+            val hashedPassword = model.confirmPasswordText.sha256()
+            val userData = UserData(currentState.username, currentState.domain, hashedPassword, currentState.oldPassword.sha256())
             val req = SignInRequest.AuthenticateUser(
                     userData = userData,
                     isMultiple = model.isMultiple
@@ -540,6 +576,10 @@ class SignInSceneController(
                         onSignInButtonClicked(state)
                     }
                 }
+                is SignInLayoutState.ChangePassword -> {
+                    keyboard.hideKeyboard()
+                    onSignInButtonClicked(state)
+                }
             }
         }
 
@@ -570,8 +610,44 @@ class SignInSceneController(
                         password = newPassword,
                         buttonState = newButtonState)
                 scene.setSubmitButtonState(state = newButtonState)
+            } else if(currentState is SignInLayoutState.ChangePassword) {
+                model.passwordText = newPassword
+                if(model.confirmPasswordText.isNotEmpty())
+                    checkPasswords(Pair(model.passwordText, model.confirmPasswordText))
             }
         }
+
+        override fun onConfirmPasswordChangeListener(confirmPassword: String) {
+            val currentState = model.state
+            if(currentState is SignInLayoutState.ChangePassword) {
+                model.confirmPasswordText = confirmPassword
+                checkPasswords(Pair(model.confirmPasswordText, model.passwordText))
+            }
+        }
+
+        private fun checkPasswords(passwords: Pair<String, String>) {
+            if (arePasswordsMatching && passwords.first.length >= ChangePasswordController.minimumPasswordLength) {
+                scene.showPasswordDialogError(null)
+                model.passwordState = FormInputState.Valid()
+                if (model.passwordState is FormInputState.Valid)
+                    scene.toggleChangePasswordButton(true)
+            } else if (arePasswordsMatching && passwords.first.isEmpty()) {
+                scene.showPasswordDialogError(null)
+                model.passwordState = FormInputState.Unknown()
+                scene.toggleChangePasswordButton(false)
+            } else if (arePasswordsMatching && passwords.first.length < ChangePasswordController.minimumPasswordLength) {
+                val errorMessage = UIMessage(R.string.password_length_error)
+                model.passwordState = FormInputState.Error(errorMessage)
+                scene.showPasswordDialogError(errorMessage)
+                scene.toggleChangePasswordButton(false)
+            } else {
+                val errorMessage = UIMessage(R.string.password_mismatch_error)
+                model.passwordState = FormInputState.Error(errorMessage)
+                scene.showPasswordDialogError(errorMessage)
+                scene.toggleChangePasswordButton(false)
+            }
+        }
+
         override fun onUsernameTextChanged(newUsername: String) {
             model.state = SignInLayoutState.Start(username = newUsername, firstTime = false)
             val buttonState = if (newUsername.isNotEmpty()) ProgressButtonState.enabled
@@ -644,6 +720,14 @@ class SignInSceneController(
                 resetLayout()
                 false
             }
+            is SignInLayoutState.ChangePassword -> {
+                val username = if(currentState.domain != Contact.mainDomain)
+                    currentState.username.plus("@${currentState.domain}")
+                else currentState.username
+                model.state = SignInLayoutState.Start(username, firstTime = false)
+                resetLayout()
+                false
+            }
             is SignInLayoutState.WaitForApproval -> {
                 false
             }
@@ -666,6 +750,7 @@ class SignInSceneController(
         fun onCantAccessDeviceClick()
         fun onResendDeviceLinkAuth(username: String, domain: String)
         fun onPasswordChangeListener(newPassword: String)
+        fun onConfirmPasswordChangeListener(confirmPassword: String)
         fun onUsernameTextChanged(newUsername: String)
         fun onForgotPasswordClick()
         fun onBackPressed()

@@ -21,9 +21,7 @@ interface SignInLocalDB {
     fun deleteDatabase()
     fun deleteSystemLabels()
 
-    class Default(applicationContext: Context, private val filesDir: File): SignInLocalDB {
-
-        private val db = AppDatabase.getAppDatabase(applicationContext)
+    class Default(private val db: AppDatabase, private val filesDir: File): SignInLocalDB {
 
         override fun accountExistsLocally(username: String): Boolean {
             val account = db.accountDao().getLoggedInAccount()

@@ -18,11 +18,21 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
 
     fun authenticateUser(userData: UserData)
             : HttpResponseData {
-        val jsonObject = JSONObject()
-        jsonObject.put("username", userData.username)
-        jsonObject.put("domain", userData.domain)
-        jsonObject.put("password", userData.password)
-        return httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
+        return if(userData.oldPassword != null) {
+            val jsonObject = JSONObject()
+            jsonObject.put("username", userData.username)
+            jsonObject.put("domain", userData.domain)
+            jsonObject.put("oldPassword", userData.oldPassword)
+            jsonObject.put("newPassword", userData.password)
+            httpClient.post(path = "/user/auth/first", body = jsonObject, authToken = null)
+        } else {
+            val jsonObject = JSONObject()
+            jsonObject.put("username", userData.username)
+            jsonObject.put("domain", userData.domain)
+            jsonObject.put("password", userData.password)
+            httpClient.post(path = "/user/auth", body = jsonObject, authToken = null)
+        }
+
     }
 
     fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): HttpResponseData {

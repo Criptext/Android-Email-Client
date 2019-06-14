@@ -1,0 +1,6 @@
+{
+    "oldPassword": "oldSecurePassword123",
+    "domain": "criptext.com",
+    "newPassword": "securePassword123",
+    "username": "tester"
+}

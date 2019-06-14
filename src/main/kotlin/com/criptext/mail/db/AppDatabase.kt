@@ -430,6 +430,38 @@ abstract class AppDatabase : RoomDatabase() {
                                         accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX IF NOT EXISTS antiPushMap_accountId_index ON antiPushMap (accountId)")
+
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  new_account (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                            recipientId TEXT NOT NULL,
+                                            deviceId INTEGER NOT NULL,
+                                            name TEXT NOT NULL,
+                                            jwt TEXT NOT NULL,
+                                            refreshToken TEXT NOT NULL,
+                                            identityKeyPairB64 TEXT NOT NULL,
+                                            registrationId INTEGER NOT NULL,
+                                            signature TEXT NOT NULL,
+                                            domain TEXT NOT NULL,
+                                            isActive INTEGER NOT NULL,
+                                            isLoggedIn INTEGER NOT NULL,
+                                            hasCloudBackup INTEGER NOT NULL DEFAULT 0,
+                                            lastTimeBackup INTEGER,
+                                            autoBackupFrequency INTEGER NOT NULL DEFAULT 0,
+                                            wifiOnly INTEGER NOT NULL DEFAULT 0,
+                                            backupPassword TEXT DEFAULT NULL)""")
+                database.execSQL(
+                        """INSERT INTO new_account (id, recipientId, deviceId, name, jwt, refreshToken, identityKeyPairB64,
+                                registrationId, signature, domain, isActive, isLoggedIn, hasCloudBackup, lastTimeBackup,
+                                autoBackupFrequency, wifiOnly, backupPassword)
+                                SELECT id, recipientId, deviceId, name, jwt, refreshToken, identityKeyPairB64,
+                                registrationId, signature, domain, isActive, isLoggedIn, hasCloudBackup, lastTimeBackup,
+                                autoBackupFrequency, wifiOnly, backupPassword
+                                FROM account""")
+
+                database.execSQL("DROP TABLE account")
+                database.execSQL("ALTER TABLE new_account RENAME TO account")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS account_email_index ON account (recipientId, domain)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_account_name ON account (name)")
             }
         }
     }

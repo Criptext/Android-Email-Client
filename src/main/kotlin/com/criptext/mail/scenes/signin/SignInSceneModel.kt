@@ -5,6 +5,7 @@ import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.signin.data.LinkDeviceState
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.validation.FormInputState
 
 /**
  * Created by sebas on 2/23/18.
@@ -25,4 +26,7 @@ class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var retryTimeLinkDataReady = 0
     var retryTimeLinkStatus = 0
     var showRestoreBackupDialog = false
+    var passwordText: String = ""
+    var confirmPasswordText: String = ""
+    var passwordState: FormInputState = FormInputState.Unknown()
 }
