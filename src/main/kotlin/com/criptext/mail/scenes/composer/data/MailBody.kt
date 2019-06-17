@@ -33,13 +33,16 @@ data class MailBody(val htmlForImage: String, val htmlForPlainText: String)  {
 
             val builder = StringBuilder("")
             builder.append("<br/><br/>----------${template.message}----------<br/>")
-            builder.append("${template.from} ${fullEmail.from}<br/>")
+            builder.append("${template.from} " +
+                    "${fullEmail.email.fromAddress.replace("<", "&#60;")
+                            .replace(">", "&#62;")}<br/>"
+            )
             builder.append("${template.date} ${DateAndTimeUtils.getHoraVerdadera(fullEmail.email.date.time,
                     template.at)}<br/>")
             builder.append("${template.subject} ${fullEmail.email.subject}<br/>")
             val to = fullEmail.to + fullEmail.cc
             if(to.isNotEmpty())
-                builder.append("${template.to} ${to.joinToString()}<br/>")
+                builder.append("${template.to} ${to.joinToString { it.name.plus(" &#60;${it.email}&#62;") }}<br/>")
             builder.append(replyBodyContainerTagStart)
             builder.append(blockQuoteStart)
             builder.append(fullEmail.email.content)
