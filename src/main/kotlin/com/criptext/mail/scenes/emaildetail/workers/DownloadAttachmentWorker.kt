@@ -55,6 +55,8 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                     EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.DownloadFile.Forbidden()
+                ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
+                    EmailDetailResult.DownloadFile.EnterpriseSuspended()
                 else -> EmailDetailResult.DownloadFile.Failure(emailId, fileToken, createErrorMessage(ex))
             }
         }

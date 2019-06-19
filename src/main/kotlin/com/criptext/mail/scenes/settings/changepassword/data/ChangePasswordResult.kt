@@ -8,6 +8,7 @@ sealed class ChangePasswordResult{
         class Success: ChangePassword()
         data class Failure(val message: UIMessage,
                            val exception: Exception?): ChangePassword()
+        class EnterpriseSuspended: ChangePassword()
     }
 
 }

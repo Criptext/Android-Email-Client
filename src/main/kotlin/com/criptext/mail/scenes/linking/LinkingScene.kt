@@ -3,40 +3,24 @@ package com.criptext.mail.scenes.linking
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.content.Context
-import androidx.core.content.ContextCompat
-import android.util.TypedValue
 import android.view.View
 import android.view.animation.Animation
-import android.widget.ProgressBar
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
-import com.criptext.mail.scenes.signin.SignInSceneController
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
-import com.criptext.mail.utils.ui.ScrollingGradient
-import android.graphics.drawable.AnimationDrawable
-import android.graphics.drawable.ClipDrawable
-import android.graphics.drawable.LayerDrawable
-import android.os.Build.VERSION
-import android.os.Build.VERSION.SDK_INT
-import androidx.annotation.DrawableRes
-import android.graphics.drawable.Drawable
-import android.os.Build
-import android.view.Gravity
-import android.graphics.Paint
-import android.graphics.drawable.ShapeDrawable
-import android.view.ViewGroup
-import android.widget.ImageView
-import com.beardedhen.androidbootstrap.BootstrapProgressBar
-import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.UIUtils
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 
 interface LinkingScene{
@@ -48,6 +32,8 @@ interface LinkingScene{
             linkingUIObserver: LinkingUIObserver) -> Unit)
     fun showKeepWaitingDialog()
     fun showRetrySyncDialog(result: GeneralResult)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
 
     var linkingUIObserver: LinkingUIObserver?
@@ -58,7 +44,7 @@ interface LinkingScene{
 
         override var linkingUIObserver: LinkingUIObserver? = null
 
-
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         private val loadingView: View = view.findViewById(R.id.viewAnimation)
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
@@ -160,6 +146,14 @@ interface LinkingScene{
 
         override fun showKeepWaitingDialog() {
             keepWaitingDialog.showLinkDeviceAuthDialog(linkingUIObserver)
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
 

@@ -8,10 +8,7 @@ import com.criptext.mail.scenes.settings.Settings2FADialog
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.ForgotPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 
@@ -33,6 +30,8 @@ interface PrivacyScene{
     fun updateTwoFa(isChecked: Boolean)
     fun enableHasEncryptionSwitch(isEnabled: Boolean)
     fun updateHasEncryption(isChecked: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
 
     class Default(val view: View): PrivacyScene{
@@ -60,6 +59,7 @@ interface PrivacyScene{
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         override fun attachView(uiObserver: PrivacyUIObserver, keyboardManager: KeyboardManager,
                                 model: PrivacyModel, hasEncryption: Boolean) {
@@ -129,6 +129,15 @@ interface PrivacyScene{
             hasEncryptionSwitch.isChecked = isChecked
             setSwitchListener()
         }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
+        }
+
 
         private fun setSwitchListener(){
             readReceiptsSwitch.setOnCheckedChangeListener { _, isChecked ->

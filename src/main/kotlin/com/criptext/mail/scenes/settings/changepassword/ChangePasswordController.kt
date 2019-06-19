@@ -4,37 +4,41 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordDataSource
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordRequest
 import com.criptext.mail.scenes.settings.changepassword.data.ChangePasswordResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 
 class ChangePasswordController(
         private var activeAccount: ActiveAccount,
         private val model: ChangePasswordModel,
         private val scene: ChangePasswordScene,
         private val host: IHostActivity,
+        private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
-        private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<ChangePasswordRequest, ChangePasswordResult>)
+        private var websocketEvents: WebSocketEventPublisher,
+        private val generalDataSource: GeneralDataSource,
+        private val dataSource: ChangePasswordDataSource)
     : SceneController(){
 
     val arePasswordsMatching: Boolean
@@ -49,6 +53,7 @@ class ChangePasswordController(
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -70,7 +75,15 @@ class ChangePasswordController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -178,6 +191,9 @@ class ChangePasswordController(
             is ChangePasswordResult.ChangePassword.Failure -> {
                 scene.showOldPasswordError(UIMessage(R.string.password_enter_error))
             }
+            is ChangePasswordResult.ChangePassword.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
+            }
         }
     }
 
@@ -218,6 +234,28 @@ class ChangePasswordController(
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
     private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
@@ -250,7 +288,27 @@ class ChangePasswordController(
         websocketEvents.clearListener(webSocketEventListener)
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(changePasswordUIObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

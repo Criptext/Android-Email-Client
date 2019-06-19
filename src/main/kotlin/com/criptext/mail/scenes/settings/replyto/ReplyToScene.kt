@@ -6,9 +6,15 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import com.criptext.mail.R
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.AccountSuspendedDialog
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
+import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.google.android.material.textfield.TextInputLayout
 
 interface ReplyToScene{
@@ -20,10 +26,22 @@ interface ReplyToScene{
     fun enableSaveButton()
     fun disableSaveButton()
     fun clearTextBox()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun dismissConfirmPasswordDialog()
+    fun setConfirmPasswordError(message: UIMessage)
+    fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
+    fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): ReplyToScene{
 
         private val context = view.context
+
+        private val confirmPassword = ConfirmPasswordDialog(context)
+        private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
+        private val syncAuthDialog = SyncDeviceAlertDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.mailbox_back_button)
@@ -53,20 +71,23 @@ interface ReplyToScene{
             view.findViewById<Button>(R.id.change_email_button)
         }
 
+        var observer: ReplyToUIObserver? = null
+
         override fun attachView(replyToUIObserver: ReplyToUIObserver, replyToEmail: String,
                                 keyboardManager: KeyboardManager) {
 
+            observer = replyToUIObserver
             backButton.setOnClickListener {
-                replyToUIObserver.onBackButtonPressed()
+                observer?.onBackButtonPressed()
             }
 
             changeEmailButton.setOnClickListener {
-                replyToUIObserver.onRecoveryChangeButonPressed()
+                observer?.onRecoveryChangeButonPressed()
             }
 
-            textListener(replyToUIObserver)
+            textListener(observer)
 
-            displayReplyTo(replyToEmail, keyboardManager, replyToUIObserver)
+            displayReplyTo(replyToEmail, keyboardManager, observer)
         }
 
         private fun hidePasswordError() {
@@ -95,10 +116,10 @@ interface ReplyToScene{
             changeEmailButton.isEnabled = true
         }
 
-        private fun textListener(uiObserver: ReplyToUIObserver) {
+        private fun textListener(uiObserver: ReplyToUIObserver?) {
             bodyEditText.addTextChangedListener( object : TextWatcher {
                 override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    uiObserver.onRecoveryEmailChanged(text.toString())
+                    uiObserver?.onRecoveryEmailChanged(text.toString())
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
@@ -112,7 +133,42 @@ interface ReplyToScene{
             bodyEditText.setText("")
         }
 
-        private fun displayReplyTo(replyToEmail: String, keyboardManager: KeyboardManager, uiObserver: ReplyToUIObserver) {
+        override fun showConfirmPasswordDialog(observer: UIObserver) {
+            confirmPassword.showDialog(observer)
+        }
+
+        override fun dismissConfirmPasswordDialog() {
+            confirmPassword.dismissDialog()
+        }
+
+        override fun setConfirmPasswordError(message: UIMessage) {
+            confirmPassword.setPasswordError(message)
+        }
+
+        override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
+            if(linkAuthDialog.isShowing() != null && linkAuthDialog.isShowing() == false)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+            else if(linkAuthDialog.isShowing() == null)
+                linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
+        }
+
+        override fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            if(syncAuthDialog.isShowing() != null && syncAuthDialog.isShowing() == false)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+            else if(syncAuthDialog.isShowing() == null)
+                syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
+        }
+
+        private fun displayReplyTo(replyToEmail: String, keyboardManager: KeyboardManager,
+                                   uiObserver: ReplyToUIObserver?) {
             bodyEditText.setText(replyToEmail)
             if(replyToEmail.isNotEmpty()){
                 swicthStatus.isChecked = true
@@ -128,7 +184,7 @@ interface ReplyToScene{
                     keyboardManager.showKeyboard(bodyEditText)
                 }
                 else{
-                    uiObserver.onTurnOffReplyTo()
+                    uiObserver?.onTurnOffReplyTo()
                     keyboardManager.hideKeyboard()
                 }
             }

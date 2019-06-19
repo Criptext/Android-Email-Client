@@ -44,6 +44,7 @@ class SetProfilePictureWorker(val httpClient: HttpClient,
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
                 ServerCodes.MethodNotAllowed -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.message_warning_two_fa), ex)
+                ServerCodes.EnterpriseAccountSuspended -> ProfileResult.SetProfilePicture.EnterpriseSuspended()
                 else -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
             }
         }else {

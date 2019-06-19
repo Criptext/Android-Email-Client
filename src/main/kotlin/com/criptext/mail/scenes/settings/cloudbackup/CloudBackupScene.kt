@@ -10,6 +10,8 @@ import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.AccountSuspendedDialog
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.evernote.android.job.JobManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -41,6 +43,8 @@ interface CloudBackupScene{
     fun removeFromScheduleCloudBackupJob(accountId: Long)
     fun checkCloudBackupIcon()
     fun backingUpNow(isBackingUp: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     var cloudBackupUIObserver: CloudBackupUIObserver?
 
@@ -110,6 +114,7 @@ interface CloudBackupScene{
 
         private val progressDialog = ProgressDialog(view.context as Activity)
         private val encryptPassphraseDialog = EncryptPassphraseDialog(view.context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         private val autoBackupSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -206,6 +211,14 @@ interface CloudBackupScene{
                 progressBarBackupNow.visibility = View.INVISIBLE
                 backUpNowText.text = context.getLocalizedUIMessage(UIMessage(R.string.cloud_backup_now))
             }
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         override fun getGoogleDriveService(): Drive? {

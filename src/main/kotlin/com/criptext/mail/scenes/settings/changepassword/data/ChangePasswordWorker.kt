@@ -3,11 +3,13 @@ package com.criptext.mail.scenes.settings.changepassword.data
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
@@ -28,6 +30,8 @@ class ChangePasswordWorker(
     private val apiClient = ChangePasswordAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): ChangePasswordResult.ChangePassword {
+        if(ex is ServerErrorException && ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
+            return ChangePasswordResult.ChangePassword.EnterpriseSuspended()
         return ChangePasswordResult.ChangePassword.Failure(UIMessage(R.string.password_enter_error), ex)
     }
 

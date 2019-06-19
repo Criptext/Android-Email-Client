@@ -17,6 +17,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
+import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.emaildetail.data.EmailInlineDownloadData
@@ -33,6 +34,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.PathUtil
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -40,8 +42,10 @@ import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 import java.net.URLDecoder
 import java.util.*
 
@@ -54,9 +58,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                  private val model: EmailDetailSceneModel,
                                  private val host: IHostActivity,
                                  private var activeAccount: ActiveAccount,
-                                 private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-                                 private val dataSource: BackgroundWorkManager<EmailDetailRequest, EmailDetailResult>,
-                                 private val websocketEvents: WebSocketEventPublisher,
+                                 private val generalDataSource: GeneralDataSource,
+                                 private val dataSource: EmailDetailDataSource,
+                                 private var websocketEvents: WebSocketEventPublisher,
                                  private val keyboard: KeyboardManager) : SceneController() {
 
 
@@ -68,6 +72,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ResendEmail -> onResendEmail(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -105,7 +110,15 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
@@ -228,6 +241,29 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
     private fun onMailboxUpdate(result: GeneralResult.UpdateMailbox){
         when (result) {
             is GeneralResult.UpdateMailbox.Success -> {
@@ -248,6 +284,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.UpdateMailbox.Forbidden -> {
                 if (result.isActiveAccount)
                     scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            }
+            is GeneralResult.UpdateMailbox.EnterpriseSuspended -> {
+                if (result.isActiveAccount)
+                    showSuspendedAccountDialog()
             }
         }
     }
@@ -430,6 +470,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            }
+            is EmailDetailResult.DownloadFile.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }
@@ -987,7 +1030,27 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(emailDetailUIObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

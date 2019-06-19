@@ -18,6 +18,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.profile.data.ProfileDataSource
 import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
 import com.criptext.mail.scenes.settings.profile.data.ProfileResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
@@ -25,6 +26,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -35,6 +37,7 @@ import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.NetworkPolicy
@@ -50,9 +53,9 @@ class ProfileController(
         private val host: IHostActivity,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
-        private val websocketEvents: WebSocketEventPublisher,
-        private val dataSource: BackgroundWorkManager<ProfileRequest, ProfileResult>,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
+        private var websocketEvents: WebSocketEventPublisher,
+        private val dataSource: ProfileDataSource,
+        private val generalDataSource: GeneralDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = null
@@ -67,6 +70,7 @@ class ProfileController(
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
             is GeneralResult.DeleteAccount -> onDeleteAccount(result)
             is GeneralResult.Logout -> onLogout(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -171,6 +175,9 @@ class ProfileController(
                             scene.toggleGeneralDialogLoad(true)
                             generalDataSource.submitRequest(GeneralRequest.DeleteAccount(result.textInput))
                         }
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
                     }
                 }
             }
@@ -230,6 +237,29 @@ class ProfileController(
             is GeneralResult.Logout.Failure -> {
                 scene.dismissMessageAndProgressDialog()
                 scene.showMessage(UIMessage(R.string.error_login_out))
+            }
+        }
+    }
+
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
             }
         }
     }
@@ -334,6 +364,9 @@ class ProfileController(
                 scene.hideProfilePictureProgress()
                 scene.showMessage(UIMessage(R.string.profile_picture_update_failed))
             }
+            is ProfileResult.SetProfilePicture.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
+            }
         }
     }
 
@@ -346,6 +379,9 @@ class ProfileController(
             }
             is ProfileResult.DeleteProfilePicture.Failure -> {
                 scene.showMessage(UIMessage(R.string.profile_picture_delete_failed))
+            }
+            is ProfileResult.DeleteProfilePicture.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }
@@ -407,7 +443,27 @@ class ProfileController(
         return false
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

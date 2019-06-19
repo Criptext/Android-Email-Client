@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.settings.cloudbackup
 
+import com.criptext.mail.utils.uiobserver.UIObserver
 
-interface CloudBackupUIObserver {
+
+interface CloudBackupUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onCloudBackupActivated(isActive: Boolean)
     fun onFrequencyChanged(frequency: Int)

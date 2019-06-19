@@ -20,7 +20,7 @@ class ComposerDataSource(
         private val filesDir: File,
         private val httpClient: HttpClient,
         private val composerLocalDB: ComposerLocalDB,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val emailInsertionDao: EmailInsertionDao,
         override val runner: WorkRunner)

@@ -49,7 +49,8 @@ interface PeerEventsApiHandler {
             when(errorCode){
                 ServerCodes.Unauthorized,
                 ServerCodes.Forbidden,
-                ServerCodes.TooManyRequests -> return true
+                ServerCodes.TooManyRequests,
+                ServerCodes.EnterpriseAccountSuspended-> return true
             }
             return false
         }

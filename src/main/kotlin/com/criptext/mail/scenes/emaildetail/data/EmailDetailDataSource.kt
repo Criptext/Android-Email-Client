@@ -24,7 +24,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                             private val storage: KeyValueStorage,
                             private val emailContactDao: EmailContactJoinDao,
                             private val httpClient: HttpClient,
-                            private val activeAccount: ActiveAccount,
+                            var activeAccount: ActiveAccount,
                             private val emailDetailLocalDB: EmailDetailLocalDB,
                             private val filesHttpClient: HttpClient,
                             private val downloadDir: String)

@@ -8,12 +8,14 @@ sealed class ProfileResult{
         class Success: SetProfilePicture()
         data class Failure(val message: UIMessage,
                            val exception: Exception?): SetProfilePicture()
+        class EnterpriseSuspended: SetProfilePicture()
     }
 
     sealed class DeleteProfilePicture : ProfileResult() {
         class Success: DeleteProfilePicture()
         data class Failure(val message: UIMessage,
                            val exception: Exception?): DeleteProfilePicture()
+        class EnterpriseSuspended: DeleteProfilePicture()
     }
 
 }

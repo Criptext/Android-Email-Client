@@ -13,7 +13,7 @@ import java.io.File
 
 class ProfileDataSource(
         private val cacheDir: File,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,

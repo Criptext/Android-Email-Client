@@ -202,6 +202,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                     MailboxResult.SendMail.Forbidden()
                 ex.errorCode == ServerCodes.TooManyRequests ->
                     MailboxResult.SendMail.Failure(UIMessage(R.string.send_limit_reached))
+                ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
+                    MailboxResult.SendMail.EnterpriseSuspended()
 
                 else -> MailboxResult.SendMail.Failure(createErrorMessage(ex))
             }

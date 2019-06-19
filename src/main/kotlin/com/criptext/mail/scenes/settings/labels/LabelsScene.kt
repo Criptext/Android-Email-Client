@@ -13,10 +13,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.ForgotPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -35,6 +32,8 @@ interface LabelsScene{
     fun getLabelLocalizedName(name: String): String
     fun getLabelListView(): VirtualListView
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): LabelsScene{
         private lateinit var labelsUIObserver: LabelsUIObserver
@@ -55,6 +54,7 @@ interface LabelsScene{
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         override fun attachView(labelsUIObserver: LabelsUIObserver,
                                 model: LabelsModel) {
@@ -104,6 +104,14 @@ interface LabelsScene{
 
         override fun showCreateLabelDialog(keyboardManager: KeyboardManager) {
             settingCustomLabelDialog.showCustomLabelDialog(labelsUIObserver, keyboardManager)
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         override fun getLabelLocalizedName(name: String): String {

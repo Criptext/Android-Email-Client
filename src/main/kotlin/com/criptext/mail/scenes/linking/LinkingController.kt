@@ -9,6 +9,7 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.linking.data.LinkingDataSource
 import com.criptext.mail.scenes.linking.data.LinkingRequest
 import com.criptext.mail.scenes.linking.data.LinkingResult
 import com.criptext.mail.scenes.params.MailboxParams
@@ -16,9 +17,11 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -27,11 +30,11 @@ class LinkingController(
         private val scene: LinkingScene,
         private val host: IHostActivity,
         private val keyboardManager: KeyboardManager,
-        private val activeAccount: ActiveAccount,
+        private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<LinkingRequest, LinkingResult>)
+        private val generalDataSource: GeneralDataSource,
+        private val dataSource: LinkingDataSource)
     : SceneController(){
 
     
@@ -43,6 +46,7 @@ class LinkingController(
         when(result) {
             is GeneralResult.DataFileCreation -> onDataFileCreation(result)
             is GeneralResult.PostUserData -> onPostUserData(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -66,7 +70,15 @@ class LinkingController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun onRetrySyncOk(result: GeneralResult) {
@@ -142,7 +154,27 @@ class LinkingController(
         return false
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(linkingUIObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
@@ -221,6 +253,19 @@ class LinkingController(
             }
             is GeneralResult.PostUserData.Failure -> {
                 scene.showRetrySyncDialog(result)
+            }
+        }
+    }
+
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                scene.dismissAccountSuspendedDialog()
+
+                host.exitToScene(MailboxParams(), null, false, true)
             }
         }
     }

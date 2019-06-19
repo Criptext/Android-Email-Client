@@ -21,10 +21,7 @@ import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.SnackBarHelper
-import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualList
 
@@ -69,6 +66,8 @@ interface EmailDetailScene {
     fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String,
                           isForward: Boolean)
     fun expandAllThread()
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -86,6 +85,7 @@ interface EmailDetailScene {
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -276,6 +276,14 @@ interface EmailDetailScene {
                     context.getLocalizedUIMessage(message),
                     duration)
             toast.show()
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         override fun showMessage(message: UIMessage, showAction: Boolean) {

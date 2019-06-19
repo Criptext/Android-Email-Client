@@ -22,14 +22,18 @@ import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.websocket.WebSocketSingleton
 import java.io.File
 
 
@@ -42,8 +46,8 @@ class ComposerController(private val storage: KeyValueStorage,
                          private val scene: ComposerScene,
                          private val host: IHostActivity,
                          private var activeAccount: ActiveAccount,
-                         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-                         private val dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>)
+                         private val generalDataSource: GeneralDataSource,
+                         private val dataSource: ComposerDataSource)
     : SceneController() {
 
     private val dataSourceController = DataSourceController(dataSource)
@@ -66,7 +70,15 @@ class ComposerController(private val storage: KeyValueStorage,
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun leaveComposer() {
@@ -181,12 +193,13 @@ class ComposerController(private val storage: KeyValueStorage,
         }
     }
 
-    private val remoteChangeDataSourceListener: (GeneralResult) -> Unit = { result ->
+    private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -199,6 +212,12 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
         }
+    }
+
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(observer, activeAccount.userEmail, showButton)
     }
 
     private fun onLoadedInitialData(result: ComposerResult.LoadInitialData) {
@@ -226,6 +245,21 @@ class ComposerController(private val storage: KeyValueStorage,
                 model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
                 handleNextUpload()
+            }
+        }
+    }
+
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
             }
         }
     }
@@ -267,6 +301,9 @@ class ComposerController(private val storage: KeyValueStorage,
                 removeAttachmentByPath(result.filepath)
                 scene.showPayloadTooLargeDialog(result.filepath, result.headers.getLong("Max-Size"))
                 handleNextUpload()
+            }
+            is ComposerResult.UploadFile.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
         scene.notifyAttachmentSetChanged()
@@ -556,7 +593,7 @@ class ComposerController(private val storage: KeyValueStorage,
         PinLockUtils.enablePinLock()
 
         dataSourceController.setDataSourceListener()
-        generalDataSource.listener = remoteChangeDataSourceListener
+        generalDataSource.listener = generalDataSourceListener
 
         if (model.initialized)
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)

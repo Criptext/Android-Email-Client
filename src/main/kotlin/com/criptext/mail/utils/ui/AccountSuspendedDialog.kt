@@ -1,37 +1,37 @@
 package com.criptext.mail.utils.ui
 
-import android.app.AlertDialog
 import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
-import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 
-class GeneralDialogConfirmation(val context: Context, val data: DialogData.DialogConfirmationData) {
+class AccountSuspendedDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
     private lateinit var btnOk: Button
-    private lateinit var btnCancel: Button
 
     private lateinit var view: View
 
-    fun showDialog(observer: UIObserver?) {
+    fun showDialog(observer: UIObserver?, email: String, showButton: Boolean) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        view = inflater.inflate(R.layout.general_confirmation_dialog, null)
-        view.findViewById<TextView>(R.id.title).text = context.getLocalizedUIMessage(data.title)
-        view.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message.first())
+        view = inflater.inflate(R.layout.enterprise_account_suspended_dialog, null)
+        view.findViewById<TextView>(R.id.account_suspended_message).text =
+                context.getString(R.string.account_suspended_dialog_message, email)
+        btnOk = view.findViewById(R.id.switch_account_button) as Button
+
+        btnOk.visibility = if(showButton) View.VISIBLE else View.GONE
 
         dialogBuilder.setView(view)
 
@@ -62,27 +62,10 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
                                    observer: UIObserver?) {
 
-        btnOk = view.findViewById(R.id.btn_ok) as Button
-        btnCancel = view.findViewById(R.id.btn_cancel) as Button
+
 
         btnOk.setOnClickListener {
-            observer?.onGeneralOkButtonPressed(createResult())
-            dialog.dismiss()
-        }
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-    }
-
-    private fun createResult(): DialogResult {
-        return when(data.type){
-            is DialogType.DeleteAccount,
-            is DialogType.ReplyToChange ->
-                DialogResult.DialogWithInput("", data.type)
-            is DialogType.ManualSyncConfirmation,
-            is DialogType.SwitchAccount ->
-                DialogResult.DialogConfirmation(data.type)
+            observer?.onGeneralOkButtonPressed(DialogResult.DialogConfirmation(DialogType.SwitchAccount()))
         }
     }
 
