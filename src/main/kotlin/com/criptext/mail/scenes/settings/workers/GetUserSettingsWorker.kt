@@ -37,6 +37,8 @@ class GetUserSettingsWorker(
                     SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerCodes.Forbidden ->
                     SettingsResult.GetUserSettings.Forbidden()
+                ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
+                    SettingsResult.GetUserSettings.EnterpriseSuspended()
                 else -> SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
             }
         }
