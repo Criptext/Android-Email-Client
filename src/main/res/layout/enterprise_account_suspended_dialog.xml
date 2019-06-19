@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/account_suspended_dialog_title"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="18sp"/>
+
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/account_suspended_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/account_suspended_dialog_message"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/button_text_color"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/switch_account_button"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/account_suspended_dialog_button" />
+
+    </LinearLayout>
+</LinearLayout>

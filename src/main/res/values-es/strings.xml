@@ -531,4 +531,7 @@
   <string name="no_account_to_sync">No existe cuenta para sincronizar buzón.</string>
   <string name="change_password_login_btn">Cambiar Contraseña</string>
   <string name="change_password_login_title">Cambiar la contraseña para:</string>
+  <string name="account_suspended_dialog_title">Cuenta Suspendida</string>
+  <string name="account_suspended_dialog_message">La cuenta <b>%1$s</b> ha sido suspendida temporalmente por tu administrador. Por favor, contacta al administrador de tu compañía para más información.</string>
+  <string name="account_suspended_dialog_button">Cambiar de Cuenta</string>
 </resources>

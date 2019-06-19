@@ -11,17 +11,21 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
+import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
-import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
+import com.criptext.mail.scenes.settings.cloudbackup.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener
 import com.google.api.services.drive.Drive
@@ -33,15 +37,22 @@ class CloudBackupController(
         private val scene: CloudBackupScene,
         private val host: IHostActivity,
         private val keyboardManager: KeyboardManager,
-        private val activeAccount: ActiveAccount,
+        private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
-        private val websocketEvents: WebSocketEventPublisher,
-        private val dataSource: BackgroundWorkManager<CloudBackupRequest, CloudBackupResult>)
+        private var websocketEvents: WebSocketEventPublisher,
+        private val generalDataSource: GeneralDataSource,
+        private val dataSource: CloudBackupDataSource)
     : SceneController(){
 
 
 
     override val menuResourceId: Int? = null
+
+    private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
+        when(result) {
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+        }
+    }
 
     private val dataSourceListener: (CloudBackupResult) -> Unit = { result ->
         when(result) {
@@ -67,6 +78,46 @@ class CloudBackupController(
     }
 
     private val uiObserver = object: CloudBackupUIObserver{
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onOkButtonPressed(password: String) {
+
+        }
+
+        override fun onCancelButtonPressed() {
+
+        }
+
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
+
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
+
+        }
+
+        override fun onSnackbarClicked() {
+
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+
+        }
+
         override fun backUpNowPressed() {
             scene.backingUpNow(true)
             if(model.mDriveService == null) model.mDriveService = scene.getGoogleDriveService()
@@ -154,6 +205,7 @@ class CloudBackupController(
         model.activeAccountEmail = activeAccount.userEmail
         scene.attachView(model = model, cloudBackupUIObserver1 = uiObserver)
         dataSource.listener = dataSourceListener
+        generalDataSource.listener = generalDataSourceListener
         dataSource.submitRequest(CloudBackupRequest.LoadCloudBackupData(model.mDriveService))
         return false
     }
@@ -271,7 +323,51 @@ class CloudBackupController(
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail) {
+                    showSuspendedAccountDialog()
+                }
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }

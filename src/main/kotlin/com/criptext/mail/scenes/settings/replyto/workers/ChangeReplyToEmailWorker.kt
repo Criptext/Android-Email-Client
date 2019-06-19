@@ -37,6 +37,8 @@ class ChangeReplyToEmailWorker(
                 ServerCodes.MethodNotAllowed ->
                     ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.recovery_email_change_fail_same))
                 ServerCodes.BadRequest -> ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.password_enter_error))
+                ServerCodes.Forbidden -> ReplyToResult.SetReplyToEmail.Forbidden()
+                ServerCodes.EnterpriseAccountSuspended -> ReplyToResult.SetReplyToEmail.EnterpriseSuspended()
                 else -> ReplyToResult.SetReplyToEmail.Failure(UIMessage(R.string.server_error_exception))
             }
         }else {

@@ -18,5 +18,6 @@ object ServerCodes{
     const val PayloadTooLarge = 413
     const val TooManyRequests = 429
     const val TooManyDevices = 439
+    const val EnterpriseAccountSuspended = 451
     const val InternalServerError = 500
 }

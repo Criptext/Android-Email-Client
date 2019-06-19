@@ -42,6 +42,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -72,6 +73,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -302,7 +304,15 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
         
         override fun onUpdateBannerXPressed() {
@@ -817,31 +827,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSetActiveAccount(resultData: MailboxResult.SetActiveAccount){
             when(resultData){
                 is MailboxResult.SetActiveAccount.Success -> {
-                    activeAccount = resultData.activeAccount
-                    generalDataSource.activeAccount = activeAccount
-                    dataSource.activeAccount = activeAccount
-
-                    val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
-                    websocketEvents = if(jwts.isNotEmpty())
-                        WebSocketSingleton.getInstance(jwts)
-                    else
-                        WebSocketSingleton.getInstance(activeAccount.jwt)
-
-                    websocketEvents.setListener(webSocketEventListener)
-
-                    scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
-
-                    scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
-
-                    val req = MailboxRequest.LoadEmailThreads(
-                            label = model.selectedLabel.text,
-                            filterUnread = model.showOnlyUnread,
-                            loadParams = LoadParams.Reset(20),
-                            userEmail = activeAccount.userEmail)
-                    dataSource.submitRequest(req)
-                    feedController.reloadFeeds()
-                    dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                    generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+                    activateAccount(resultData.activeAccount)
                 }
             }
         }
@@ -974,6 +960,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.SendMail.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
                 }
+                is MailboxResult.SendMail.EnterpriseSuspended -> {
+                    showSuspendedAccountDialog()
+                }
             }
         }
 
@@ -1039,6 +1028,34 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
             }
         }
+    }
+
+    private fun activateAccount(newActiveAccount: ActiveAccount){
+        activeAccount = newActiveAccount
+        generalDataSource.activeAccount = activeAccount
+        dataSource.activeAccount = activeAccount
+
+        val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+        websocketEvents = if(jwts.isNotEmpty())
+            WebSocketSingleton.getInstance(jwts)
+        else
+            WebSocketSingleton.getInstance(activeAccount.jwt)
+
+        websocketEvents.setListener(webSocketEventListener)
+
+        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
+
+        scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+        val req = MailboxRequest.LoadEmailThreads(
+                label = model.selectedLabel.text,
+                filterUnread = model.showOnlyUnread,
+                loadParams = LoadParams.Reset(20),
+                userEmail = activeAccount.userEmail)
+        dataSource.submitRequest(req)
+        feedController.reloadFeeds()
+        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+        generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
     }
 
     private fun handleSuccessfulMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Success) {
@@ -1150,6 +1167,15 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun onChangeToNextAccount(resultData: GeneralResult.ChangeToNextAccount){
+        when(resultData) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activateAccount(resultData.activeAccount)
+                scene.dismissAccountSuspendedDialog()
+            }
+        }
+    }
+
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
@@ -1220,6 +1246,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                 if (resultData.isActiveAccount)
                     scene.showConfirmPasswordDialog(observer)
             }
+            is GeneralResult.UpdateMailbox.EnterpriseSuspended -> {
+                isActiveAccount = resultData.isActiveAccount
+                if(resultData.isActiveAccount)
+                    showSuspendedAccountDialog()
+            }
         }
         if(shouldSync && isActiveAccount) {
             model.extraAccounts.forEach {
@@ -1264,7 +1295,27 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(observer, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

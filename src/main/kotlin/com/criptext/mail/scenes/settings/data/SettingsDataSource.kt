@@ -13,7 +13,7 @@ import com.criptext.mail.scenes.settings.workers.*
 class SettingsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
         private val storage: KeyValueStorage,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val httpClient: HttpClient,
         override val runner: WorkRunner)
     : BackgroundWorkManager<SettingsRequest, SettingsResult>(){

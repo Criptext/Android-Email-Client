@@ -93,6 +93,13 @@ sealed class GeneralResult {
                 return mailboxLabel
             }
         }
+
+        data class EnterpriseSuspended(val isActiveAccount: Boolean,
+                                       val mailboxLabel: Label): UpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
     }
 
     sealed class LinkAccept: GeneralResult() {
@@ -195,5 +202,10 @@ sealed class GeneralResult {
     sealed class Set2FA: GeneralResult() {
         data class Success(val hasTwoFA: Boolean): Set2FA()
         data class Failure(val message: UIMessage, val twoFAAttempt: Boolean): Set2FA()
+    }
+
+    sealed class ChangeToNextAccount: GeneralResult() {
+        data class Success(val activeAccount: ActiveAccount): ChangeToNextAccount()
+        class Failure: ChangeToNextAccount()
     }
 }

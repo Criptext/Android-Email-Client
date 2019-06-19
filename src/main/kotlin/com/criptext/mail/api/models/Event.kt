@@ -64,6 +64,10 @@ data class Event(val rowid: Long, val recipientId: String, val cmd: Int, val par
 
             const val openEmail = 500
 
+            //Enterprise admin events
+            const val suspendEnterepriseAccount = 600
+            const val unsuspendEnterepriseAccount = 601
+
         }
     }
 }

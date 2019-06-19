@@ -14,7 +14,7 @@ import com.criptext.mail.scenes.settings.labels.workers.GetCustomLabelsWorker
 class LabelsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
         private val storage: KeyValueStorage,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val httpClient: HttpClient,
         override val runner: WorkRunner)
     : BackgroundWorkManager<LabelsRequest, LabelsResult>(){

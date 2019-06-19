@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings.devices.workers
 
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -10,6 +11,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.devices.data.DevicesResult
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -32,6 +34,8 @@ class RemoveDeviceWorker(
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): DevicesResult.RemoveDevice {
+        if(ex is ServerErrorException && ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
+            return DevicesResult.RemoveDevice.EnterpriseSuspend()
         return DevicesResult.RemoveDevice.Failure()
     }
 

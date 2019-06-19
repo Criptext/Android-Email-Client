@@ -15,22 +15,22 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
-import com.criptext.mail.scenes.settings.devices.data.DeviceItem
-import com.criptext.mail.scenes.settings.devices.data.DeviceWrapperListController
-import com.criptext.mail.scenes.settings.devices.data.DevicesRequest
-import com.criptext.mail.scenes.settings.devices.data.DevicesResult
+import com.criptext.mail.scenes.settings.devices.data.*
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 
 class DevicesController(
         private val model: DevicesModel,
@@ -39,9 +39,9 @@ class DevicesController(
         private val keyboardManager: KeyboardManager,
         private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
-        private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<DevicesRequest, DevicesResult>)
+        var websocketEvents: WebSocketEventPublisher,
+        private val generalDataSource: GeneralDataSource,
+        private val dataSource: DevicesDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = null
@@ -54,6 +54,7 @@ class DevicesController(
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -94,7 +95,15 @@ class DevicesController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
@@ -151,6 +160,9 @@ class DevicesController(
             }
             is DevicesResult.RemoveDevice.Failure -> {
                 scene.setRemoveDeviceError(UIMessage(R.string.password_enter_error))
+            }
+            is DevicesResult.RemoveDevice.EnterpriseSuspend -> {
+                showSuspendedAccountDialog()
             }
         }
     }
@@ -209,7 +221,50 @@ class DevicesController(
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(devicesUIObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

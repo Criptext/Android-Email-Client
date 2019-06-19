@@ -60,6 +60,7 @@ class ChangePasswordActivity: BaseActivity(){
                 model = model,
                 scene = scene,
                 websocketEvents = webSocketEvents,
+                storage = storage,
                 generalDataSource = generalDataSource,
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),

@@ -10,7 +10,7 @@ import com.criptext.mail.scenes.settings.cloudbackup.workers.*
 import java.io.File
 
 class CloudBackupDataSource(
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val filesDir: File,
         private val storage: KeyValueStorage,
         private val db: AppDatabase,

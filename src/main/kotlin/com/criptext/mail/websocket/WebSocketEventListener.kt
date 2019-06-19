@@ -43,31 +43,31 @@ interface WebSocketEventListener {
     fun onRecoveryEmailConfirmed()
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when an untrusted device is requesting a link device process. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onDeviceLinkAuthRequest(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the link request has been accepted by a trusted device. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData)
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the link request has been denied by a trusted device. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onDeviceLinkAuthDeny()
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the old device has uploaded its encrypted data to the data transfer server. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int)
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the new device trying to sync/link has uploaded its keybundle. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onKeyBundleUploaded(deviceId: Int)
@@ -78,16 +78,28 @@ interface WebSocketEventListener {
     fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the sync request has been accepted by a trusted device. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onSyncRequestAccept(syncStatusData: SyncStatusData)
 
     /**
-     * Invoked when the recovery email has been confirmed. Subscribers should try to
+     * Invoked when the sync request has been denied by a trusted device. Subscribers should try to
      * add the update to the list of notifications in the UI.
      */
     fun onSyncRequestDeny()
+
+    /**
+     * Invoked when the enterprise account has been suspended. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onAccountSuspended(accountEmail: String)
+
+    /**
+     * Invoked when the enterprise account has been unsuspended. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onAccountUnsuspended(accountEmail: String)
 
     /**
      * Called when something went wrong processing the event. Subscribers may want to display an

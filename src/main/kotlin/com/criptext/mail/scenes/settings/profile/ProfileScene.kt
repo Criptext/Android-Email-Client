@@ -44,6 +44,8 @@ interface ProfileScene{
     fun toggleGeneralDialogLoad(isLoading: Boolean)
     fun showMessageAndProgressDialog(message: UIMessage)
     fun dismissMessageAndProgressDialog()
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -115,6 +117,7 @@ interface ProfileScene{
         private val settingLogoutDialog = SettingsLogoutDialog(context)
         private var generalDialogWithInputPassword: GeneralDialogWithInputPassword? = null
         private var messageAndProgressDialog: MessageAndProgressDialog? = null
+        private val accountSuspended = AccountSuspendedDialog(context)
 
 
         override fun attachView(uiObserver: ProfileUIObserver, recipientId: String, domain: String,
@@ -271,6 +274,14 @@ interface ProfileScene{
 
         override fun dismissMessageAndProgressDialog() {
             messageAndProgressDialog?.dismiss()
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         override fun showMessage(message: UIMessage) {

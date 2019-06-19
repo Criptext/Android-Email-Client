@@ -95,7 +95,9 @@ interface MailboxScene{
     fun setMenuAccounts(accounts: List<Account>, badgeCount: List<Int>)
     fun clearMenuActiveLabel()
     fun dismissConfirmPasswordDialog()
+    fun dismissAccountSuspendedDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
     fun setConfirmPasswordError(message: UIMessage)
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
@@ -139,6 +141,7 @@ interface MailboxScene{
         private val emptyTrashDialog = EmptyTrashDialog(context)
         private val welcomeDialog = WelcomeTourDialog(context)
         private val confirmPassword = ConfirmPasswordDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
@@ -370,12 +373,20 @@ interface MailboxScene{
             confirmPassword.dismissDialog()
         }
 
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
         override fun setConfirmPasswordError(message: UIMessage) {
             confirmPassword.setPasswordError(message)
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {
             confirmPassword.showDialog(observer)
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {

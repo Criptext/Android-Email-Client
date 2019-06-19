@@ -68,6 +68,18 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
                 val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, event.recipientId)
                 currentListener?.onSyncBeginRequest(trustedDeviceInfo)
             }
+            Event.Cmd.suspendEnterepriseAccount -> {
+                val params = JSONObject(event.params)
+                val recipientId = params.getString("recipientId")
+                val domain = params.getString("domain")
+                currentListener?.onAccountSuspended(recipientId.plus("@$domain"))
+            }
+            Event.Cmd.unsuspendEnterepriseAccount -> {
+                val params = JSONObject(event.params)
+                val recipientId = params.getString("recipientId")
+                val domain = params.getString("domain")
+                currentListener?.onAccountUnsuspended(recipientId.plus("@$domain"))
+            }
 
             else -> currentListener?.onError(UIMessage(R.string.web_socket_error,
                     arrayOf(event.cmd)))

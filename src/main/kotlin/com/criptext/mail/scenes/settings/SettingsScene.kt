@@ -38,6 +38,8 @@ interface SettingsScene{
     fun syncBeginDialogDenied()
     fun clearThemeSwitchListener()
     fun setEmailPreview(isChecked: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
 
     var settingsUIObserver: SettingsUIObserver?
@@ -111,6 +113,7 @@ interface SettingsScene{
         private val twoFADialog = Settings2FADialog(context)
         private val syncBeginDialog = SyncBeginDialog(context, UIMessage(R.string.title_sync))
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
@@ -231,6 +234,14 @@ interface SettingsScene{
             return context.getLocalizedUIMessage(
                     UIUtils.getLocalizedSystemLabelName(name)
             )
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
         }
 
         private fun setListeners(){

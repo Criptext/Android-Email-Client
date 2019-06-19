@@ -16,10 +16,7 @@ import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHol
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.ConfirmPasswordDialog
-import com.criptext.mail.utils.ui.ForgotPasswordDialog
-import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
-import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 
@@ -46,6 +43,8 @@ interface RecoveryEmailScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -94,6 +93,7 @@ interface RecoveryEmailScene{
         private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
+        private val accountSuspended = AccountSuspendedDialog(context)
 
         override fun attachView(recoveryEmailUIObserver: RecoveryEmailUIObserver, keyboardManager: KeyboardManager,
                                 model: RecoveryEmailModel) {
@@ -191,6 +191,15 @@ interface RecoveryEmailScene{
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(recoveryEmailUIObserver, trustedDeviceInfo)
         }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
+        }
+
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
+        }
+
 
         override fun disableChangeButton() {
             changeEmailButton.isEnabled = false

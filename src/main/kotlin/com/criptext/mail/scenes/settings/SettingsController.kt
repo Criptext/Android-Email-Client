@@ -19,6 +19,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
@@ -26,6 +27,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -34,18 +36,19 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
+import com.criptext.mail.websocket.WebSocketSingleton
 import java.util.*
 
 class SettingsController(
         private val model: SettingsModel,
         private val scene: SettingsScene,
         private val host: IHostActivity,
-        private val websocketEvents: WebSocketController,
+        private var websocketEvents: WebSocketController,
         private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>,
-        private val dataSource: BackgroundWorkManager<SettingsRequest, SettingsResult>)
+        private val generalDataSource: GeneralDataSource,
+        private val dataSource: SettingsDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = null
@@ -59,6 +62,7 @@ class SettingsController(
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -145,6 +149,9 @@ class SettingsController(
                             scene.showSyncBeginDialog()
                             dataSource.submitRequest(SettingsRequest.SyncBegin())
                             model.isWaitingForSync = true
+                        }
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
                     }
                 }
@@ -407,6 +414,9 @@ class SettingsController(
             is SettingsResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(settingsUIObserver)
             }
+            is SettingsResult.GetUserSettings.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
+            }
         }
     }
 
@@ -447,7 +457,50 @@ class SettingsController(
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(settingsUIObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             if (!model.isWaitingForSync){
                 host.runOnUiThread(Runnable {

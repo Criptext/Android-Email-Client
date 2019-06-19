@@ -18,12 +18,15 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import com.criptext.mail.websocket.WebSocketSingleton
 
 
 class PrivacyController(
@@ -33,8 +36,8 @@ class PrivacyController(
         private val host: IHostActivity,
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
-        private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
+        private var websocketEvents: WebSocketEventPublisher,
+        private val generalDataSource: GeneralDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = null
@@ -46,6 +49,7 @@ class PrivacyController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SetReadReceipts -> onReadReceipts(result)
+            is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
     }
 
@@ -88,7 +92,15 @@ class PrivacyController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogConfirmation -> {
+                    when(result.type){
+                        is DialogType.SwitchAccount -> {
+                            generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                    }
+                }
+            }
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -170,6 +182,27 @@ class PrivacyController(
         }
     }
 
+    private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
+        when(result) {
+            is GeneralResult.ChangeToNextAccount.Success -> {
+                activeAccount = result.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                websocketEvents = if(jwts.isNotEmpty())
+                    WebSocketSingleton.getInstance(jwts)
+                else
+                    WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                websocketEvents.setListener(webSocketEventListener)
+
+                scene.dismissAccountSuspendedDialog()
+
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
+                host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
     private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
@@ -202,7 +235,27 @@ class PrivacyController(
         websocketEvents.clearListener(webSocketEventListener)
     }
 
+    private fun showSuspendedAccountDialog(){
+        val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
+        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
+        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, showButton)
+    }
+
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    showSuspendedAccountDialog()
+            })
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                if (accountEmail == activeAccount.userEmail)
+                    scene.dismissAccountSuspendedDialog()
+            })
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             host.runOnUiThread(Runnable {
                 scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)

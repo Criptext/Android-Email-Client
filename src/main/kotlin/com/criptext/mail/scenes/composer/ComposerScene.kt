@@ -21,6 +21,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
@@ -52,6 +53,7 @@ interface ComposerScene {
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
@@ -60,6 +62,7 @@ interface ComposerScene {
     fun enableSendButtonOnDialog()
     fun setPasswordForNonCriptextFromDialog(password: String?)
     fun dismissConfirmPasswordDialog()
+    fun dismissAccountSuspendedDialog()
     fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
@@ -73,6 +76,7 @@ interface ComposerScene {
         private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
         private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
         private val confirmPassword = ConfirmPasswordDialog(ctx)
+        private val accountSuspended = AccountSuspendedDialog(ctx)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
@@ -280,8 +284,16 @@ interface ComposerScene {
             confirmPassword.showDialog(observer)
         }
 
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
+            accountSuspended.showDialog(observer, email, showButton)
+        }
+
         override fun dismissConfirmPasswordDialog() {
             confirmPassword.dismissDialog()
+        }
+
+        override fun dismissAccountSuspendedDialog() {
+            accountSuspended.dismissDialog()
         }
 
         override fun setConfirmPasswordError(message: UIMessage) {

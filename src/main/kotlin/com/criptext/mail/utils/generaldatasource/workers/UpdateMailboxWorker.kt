@@ -67,6 +67,8 @@ class UpdateMailboxWorker(
                     GeneralResult.UpdateMailbox.Unauthorized(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.Forbidden ->
                     GeneralResult.UpdateMailbox.Forbidden(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
+                    GeneralResult.UpdateMailbox.EnterpriseSuspended(isActiveAccount, label)
                 else -> GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
             }
         }

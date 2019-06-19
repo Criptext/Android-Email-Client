@@ -5,9 +5,11 @@ import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.mocks.MockedKeyValueStorage
+import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.scenes.composer.data.ComposerRequest
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.ComposerType
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import io.mockk.mockk
@@ -16,8 +18,8 @@ open class ComposerControllerTest {
     protected lateinit var scene: ComposerScene
     protected lateinit var model: ComposerModel
     protected lateinit var controller: ComposerController
-    protected lateinit var dataSource: BackgroundWorkManager<ComposerRequest, ComposerResult>
-    protected lateinit var generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>
+    protected lateinit var dataSource: ComposerDataSource
+    protected lateinit var generalDataSource: GeneralDataSource
     protected lateinit var host: IHostActivity
     protected lateinit var storage: MockedKeyValueStorage
     protected lateinit var activeAccount: ActiveAccount

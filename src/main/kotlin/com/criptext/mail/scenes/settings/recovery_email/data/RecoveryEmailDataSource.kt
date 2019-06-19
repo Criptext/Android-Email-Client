@@ -13,7 +13,7 @@ import com.criptext.mail.scenes.settings.recovery_email.workers.ResendLinkWorker
 class RecoveryEmailDataSource(
         private val accountDao: AccountDao,
         private val storage: KeyValueStorage,
-        private val activeAccount: ActiveAccount,
+        var activeAccount: ActiveAccount,
         private val httpClient: HttpClient,
         override val runner: WorkRunner)
     : BackgroundWorkManager<RecoveryEmailRequest, RecoveryEmailResult>(){

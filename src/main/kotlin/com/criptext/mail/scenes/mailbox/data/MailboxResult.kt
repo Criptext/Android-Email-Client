@@ -68,6 +68,7 @@ sealed class MailboxResult {
         data class Failure(val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
         class Forbidden: SendMail()
+        class EnterpriseSuspended: SendMail()
     }
 
     sealed class GetMenuInformation : MailboxResult() {
@@ -111,6 +112,7 @@ sealed class MailboxResult {
     sealed class ResendEmails: MailboxResult() {
         class Success: ResendEmails()
         class Failure: ResendEmails()
+        class EnterpriseSuspended: ResendEmails()
     }
 
     sealed class ResendPeerEvents: MailboxResult() {

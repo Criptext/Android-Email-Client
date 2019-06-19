@@ -113,8 +113,13 @@ class ResendEmailsWorker(
         }
     }
 
-    override fun catchException(ex: Exception): MailboxResult.ResendEmails =
-            MailboxResult.ResendEmails.Failure()
+    override fun catchException(ex: Exception): MailboxResult.ResendEmails
+    {
+        if(ex is ServerErrorException && ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
+            return MailboxResult.ResendEmails.EnterpriseSuspended()
+        return MailboxResult.ResendEmails.Failure()
+    }
+
 
     override fun work(reporter: ProgressReporter<MailboxResult.ResendEmails>)
             : MailboxResult.ResendEmails? {

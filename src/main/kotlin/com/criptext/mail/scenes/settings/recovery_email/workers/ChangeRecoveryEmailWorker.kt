@@ -42,6 +42,7 @@ class ChangeRecoveryEmailWorker(
                 ServerCodes.MethodNotAllowed ->
                     RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.recovery_email_change_fail_same, arrayOf(newEmail)))
                 ServerCodes.BadRequest -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.password_enter_error))
+                ServerCodes.EnterpriseAccountSuspended -> RecoveryEmailResult.ChangeRecoveryEmail.EnterpriseSuspended()
                 else -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.server_error_exception))
             }
         }else {

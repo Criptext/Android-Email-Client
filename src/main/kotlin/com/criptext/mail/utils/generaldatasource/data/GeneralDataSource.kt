@@ -207,6 +207,11 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.ChangeToNextAccount -> ChangeToNextAccountWorker(
+                    storage = storage,
+                    db = MailboxLocalDB.Default(db, filesDir),
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

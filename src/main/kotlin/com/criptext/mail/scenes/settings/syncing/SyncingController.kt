@@ -92,6 +92,14 @@ class SyncingController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onAccountSuspended(accountEmail: String) {
+
+        }
+
+        override fun onAccountUnsuspended(accountEmail: String) {
+
+        }
+
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
