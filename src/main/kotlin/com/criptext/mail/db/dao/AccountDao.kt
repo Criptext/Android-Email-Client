@@ -77,22 +77,22 @@ interface AccountDao {
     fun deleteAccountByRecipientId(recipientId: String, domain: String)
 
     @Query("""DELETE FROM account
-            WHERE recipientId in (:recipientIds)""")
-    fun deleteAccountsByRecipientId(recipientIds: List<String>)
+            WHERE recipientId in (:recipientIds) AND domain in (:domain)""")
+    fun deleteAccountsByRecipientId(recipientIds: List<String>, domain: List<String>)
 
     @Query("""UPDATE account
             SET name=:name
-            where recipientId=:recipientId""")
-    fun updateProfileName(name: String, recipientId: String)
+            where recipientId=:recipientId AND domain=:domain""")
+    fun updateProfileName(name: String, recipientId: String, domain: String)
 
     @Query("""UPDATE account
             SET jwt=:jwt
-            where recipientId=:recipientId""")
-    fun updateJwt(recipientId: String, jwt: String)
+            where recipientId=:recipientId AND domain=:domain""")
+    fun updateJwt(recipientId: String, domain: String, jwt: String)
 
     @Query("""UPDATE account
             SET refreshToken=:token
-            where recipientId=:recipientId""")
-    fun updateRefreshToken(recipientId: String, token: String)
+            where recipientId=:recipientId AND domain=:domain""")
+    fun updateRefreshToken(recipientId: String, domain: String, token: String)
 
 }

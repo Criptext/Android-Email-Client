@@ -63,9 +63,11 @@ object EmailUtils {
         return email.threadId
     }
 
-    fun deleteEmailInFileSystem(filesDir: File, recipientId: String, metadataKey: Long){
+    fun deleteEmailInFileSystem(filesDir: File, recipientId: String, domain: String, metadataKey: Long){
+        val userName = if(domain == Contact.mainDomain) recipientId else
+            recipientId.plus("@$domain")
         Result.of {
-            val emailDir = File(filesDir.path + "/$recipientId/emails/$metadataKey")
+            val emailDir = File(filesDir.path + "/$userName/emails/$metadataKey")
             if (emailDir.isDirectory) {
                 val children = emailDir.list()
                 for (i in children.indices) {
@@ -76,9 +78,11 @@ object EmailUtils {
         }
     }
 
-    fun deleteEmailsInFileSystem(filesDir: File, recipientId: String){
+    fun deleteEmailsInFileSystem(filesDir: File, recipientId: String, domain: String){
+        val userName = if(domain == Contact.mainDomain) recipientId else
+            recipientId.plus("@$domain")
         Result.of {
-            val emailDir = File(filesDir.path + "/$recipientId/emails/")
+            val emailDir = File(filesDir.path + "/$userName/emails/")
             if (emailDir.isDirectory) {
                 val children = emailDir.list()
                 for (i in children.indices) {
@@ -89,13 +93,15 @@ object EmailUtils {
         }
     }
 
-    fun saveEmailInFileSystem(filesDir: File, recipientId: String, metadataKey: Long, content: String, headers: String?){
-        val dir = File(filesDir.path + "/$recipientId/emails/")
+    fun saveEmailInFileSystem(filesDir: File, recipientId: String, domain: String, metadataKey: Long, content: String, headers: String?){
+        val userName = if(domain == Contact.mainDomain) recipientId else
+            recipientId.plus("@$domain")
+        val dir = File(filesDir.path + "/$userName/emails/")
 
         if(!dir.exists())
             dir.mkdirs()
 
-        val emailDir = File(filesDir.path + "/$recipientId/emails/$metadataKey")
+        val emailDir = File(filesDir.path + "/$userName/emails/$metadataKey")
         emailDir.mkdir()
 
 
@@ -104,8 +110,10 @@ object EmailUtils {
     }
 
     fun getEmailContentFromFileSystem(filesDir: File, metadataKey: Long, dbContent: String,
-                                              recipientId: String): Pair<String, String?> {
-        val dir = File(filesDir.path + "/$recipientId/emails/$metadataKey")
+                                              recipientId: String, domain: String): Pair<String, String?> {
+        val userName = if(domain == Contact.mainDomain) recipientId else
+            recipientId.plus("@$domain")
+        val dir = File(filesDir.path + "/$userName/emails/$metadataKey")
         if(!dir.exists()) return Pair(dbContent, null)
 
         val content = File(dir.path + "/body.txt")

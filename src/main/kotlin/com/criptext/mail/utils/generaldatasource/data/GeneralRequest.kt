@@ -13,11 +13,12 @@ sealed class GeneralRequest {
     data class UpdateMailbox(
             val isActiveAccount: Boolean,
             val recipientId: String,
+            val domain: String,
             val label: Label,
             val loadedThreadsCount: Int): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     data class LinkDenied(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
-    class DataFileCreation(val recipientId: String): GeneralRequest()
+    class DataFileCreation(val recipientId: String, val domain: String): GeneralRequest()
     data class PostUserData(val deviceID: Int, val filePath: String, val key: ByteArray,
                             val randomId: String,
                             val keyBundle: PreKeyBundleShareData.DownloadBundle?,
@@ -34,7 +35,7 @@ sealed class GeneralRequest {
     data class SyncAccept(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
     data class SyncDenied(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
     data class ResendEmail(val emailId: Long, val position: Int): GeneralRequest()
-    data class ChangeContactName(val fullName: String, val recipientId: String) : GeneralRequest()
+    data class ChangeContactName(val fullName: String, val recipientId: String, val domain: String) : GeneralRequest()
     class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): GeneralRequest()
     data class Set2FA(val twoFA: Boolean): GeneralRequest()
     class ChangeToNextAccount: GeneralRequest()

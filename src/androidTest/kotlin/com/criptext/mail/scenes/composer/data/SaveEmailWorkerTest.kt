@@ -76,7 +76,8 @@ class SaveEmailWorkerTest {
                 mActivityRule.activity.filesDir,
                 it.metadataKey,
                 it.content,
-                activeAccount.recipientId).first }
+                activeAccount.recipientId,
+                activeAccount.domain).first }
         val insertedContacts = db.contactDao().getAll()
         val insertedContactsAddresses = insertedContacts.map { contact -> contact.email }
 
@@ -120,7 +121,8 @@ class SaveEmailWorkerTest {
                 mActivityRule.activity.filesDir,
                 it.metadataKey,
                 it.content,
-                activeAccount.recipientId).first }
+                activeAccount.recipientId,
+                activeAccount.domain).first }
 
         insertedEmails.single().content `shouldEqual` "Hello, I have finished my draft"
     }

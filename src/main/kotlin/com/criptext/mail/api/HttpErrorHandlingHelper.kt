@@ -50,25 +50,25 @@ object HttpErrorHandlingHelper {
                                    accountDao: AccountDao, isActiveAccount: Boolean = false)
             : Result<Unit, Exception> {
         return Result.of {
-            val accountInDB = accountDao.getLoggedInAccount()
+            val accountInDB = accountDao.getAccountById(account.id)
             if(accountInDB != null){
                 if(accountInDB.refreshToken.isEmpty()){
                     val refreshAndSession = apiClient.getRefreshToken(account.jwt).body
                     if (isActiveAccount)
                         account.updateUserWithTokensData(storage, refreshAndSession)
-                    accountDao.updateJwt(account.recipientId, JSONObject(refreshAndSession).getString("token"))
-                    accountDao.updateRefreshToken(account.recipientId, JSONObject(refreshAndSession).getString("refreshToken"))
+                    accountDao.updateJwt(account.recipientId, account.domain, JSONObject(refreshAndSession).getString("token"))
+                    accountDao.updateRefreshToken(account.recipientId, account.domain, JSONObject(refreshAndSession).getString("refreshToken"))
                 }else{
                     val session = apiClient.refreshSession(account.refreshToken)
                     if (session.code == ServerCodes.SuccessAndRepeat){
                         if (isActiveAccount)
                             account.updateUserWithTokensData(storage, session.body)
-                        accountDao.updateJwt(account.recipientId, JSONObject(session.body).getString("token"))
-                        accountDao.updateRefreshToken(account.recipientId, JSONObject(session.body).getString("refreshToken"))
+                        accountDao.updateJwt(account.recipientId, account.domain, JSONObject(session.body).getString("token"))
+                        accountDao.updateRefreshToken(account.recipientId, account.domain, JSONObject(session.body).getString("refreshToken"))
                     } else {
                         if (isActiveAccount)
                             account.updateUserWithSessionData(storage, session.body)
-                        accountDao.updateJwt(account.recipientId, session.body)
+                        accountDao.updateJwt(account.recipientId, account.domain, session.body)
                     }
                 }
             }

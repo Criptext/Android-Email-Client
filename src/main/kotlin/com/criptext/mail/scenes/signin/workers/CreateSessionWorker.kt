@@ -115,8 +115,8 @@ class CreateSessionWorker(val httpClient: HttpClient,
                 account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
-                accountDao.updateJwt(username, account.jwt)
-                accountDao.updateRefreshToken(username, account.refreshToken)
+                accountDao.updateJwt(username, domain, account.jwt)
+                accountDao.updateRefreshToken(username, domain, account.refreshToken)
             }
 
             storeAccountTransaction.run(account = account,

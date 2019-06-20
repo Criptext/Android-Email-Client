@@ -95,8 +95,8 @@ class AuthenticateUserWorkerTest {
                     defaultLabels = any(), accountDao = any())
         } answers { extraStepsSlot.captured.run() }
 
-        every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
-        every { accountDao.updateRefreshToken("tester", "__REFRESH__") } just Runs
+        every { accountDao.updateJwt("tester", Contact.mainDomain,"__JWTOKEN__") } just Runs
+        every { accountDao.updateRefreshToken("tester", Contact.mainDomain, "__REFRESH__") } just Runs
         every { accountDao.updateActiveInAccount() } just Runs
         every { accountDao.getLoggedInAccount() } returns Account(id = 1, recipientId = "tester", deviceId = 2,
                 name = "A Tester", registrationId = 1,
@@ -161,8 +161,8 @@ class AuthenticateUserWorkerTest {
                     defaultLabels = any(), accountDao = any())
         } answers { extraStepsSlot.captured.run() }
 
-        every { accountDao.updateJwt("tester", "__JWTOKEN__") } just Runs
-        every { accountDao.updateRefreshToken("tester", "__REFRESH__") } just Runs
+        every { accountDao.updateJwt("tester", Contact.mainDomain,"__JWTOKEN__") } just Runs
+        every { accountDao.updateRefreshToken("tester", Contact.mainDomain,"__REFRESH__") } just Runs
         every { accountDao.updateActiveInAccount() } just Runs
         every { accountDao.getLoggedInAccount() } returns Account(id = 1, recipientId = "tester", deviceId = 2,
                 name = "A Tester", registrationId = 1,

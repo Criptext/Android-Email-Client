@@ -35,8 +35,8 @@ class LinkAuthDenyWorker(private val untrustedDeviceInfo: DeviceInfo.UntrustedDe
     override fun work(reporter: ProgressReporter<GeneralResult.LinkDeny>)
             : GeneralResult.LinkDeny? {
 
-        val account = accountDao.getAccountByRecipientId(untrustedDeviceInfo.recipientId) ?: return GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_error_exception))
-        if(account.recipientId != activeAccount.recipientId) setup(account)
+        val account = accountDao.getAccount(untrustedDeviceInfo.recipientId, untrustedDeviceInfo.domain) ?: return GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId.plus("@${account.domain}") != activeAccount.userEmail) setup(account)
 
         val operation = workOperation()
 

@@ -17,6 +17,7 @@ import com.github.kittinunf.result.mapError
 class ChangeContactNameWorker(
         private val fullName: String,
         private val recipientId: String,
+        private val domain: String,
         private val db: AppDatabase,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
@@ -44,8 +45,8 @@ class ChangeContactNameWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", fullName, activeAccount.id)
-                db.accountDao().updateProfileName(fullName, recipientId)
+                db.contactDao().updateContactName("$recipientId@$domain", fullName, activeAccount.id)
+                db.accountDao().updateProfileName(fullName, recipientId, domain)
 
                 GeneralResult.ChangeContactName.Success(fullName)
             }

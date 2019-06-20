@@ -63,7 +63,7 @@ class DataFileCreationWorker(
             : CloudBackupResult.DataFileCreation? {
         val dataWriter = UserDataWriter(db, filesDir)
         reporter.report(CloudBackupResult.DataFileCreation.Progress(15))
-        val account = db.accountDao().getAccountByRecipientId(activeAccount.recipientId) ?: return CloudBackupResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
+        val account = db.accountDao().getAccountById(activeAccount.id) ?: return CloudBackupResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
         val getFileResult = dataWriter.createFile(account)
         return if(getFileResult != null){
             reporter.report(CloudBackupResult.DataFileCreation.Progress(35))

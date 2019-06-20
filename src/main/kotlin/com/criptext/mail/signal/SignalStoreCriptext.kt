@@ -141,7 +141,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
             val user = if(activeAccount == null)
                 accountDao.getLoggedInAccount()
             else
-                accountDao.getAccountByRecipientId(activeAccount.recipientId)
+                accountDao.getAccountById(activeAccount.id)
             return user ?: throw Exception("Please Log In")
         }
 
@@ -221,7 +221,7 @@ class SignalStoreCriptext(rawSessionDao: RawSessionDao, rawIdentityKeyDao: RawId
             val user = if(activeAccount == null)
                 accountDao.getLoggedInAccount()
             else
-                accountDao.getAccountByRecipientId(activeAccount.recipientId)
+                accountDao.getAccountById(activeAccount.id)
             return user ?: throw Exception("Please Log In")
         }
 

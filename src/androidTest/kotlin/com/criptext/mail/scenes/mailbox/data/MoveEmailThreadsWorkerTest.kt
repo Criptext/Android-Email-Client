@@ -58,7 +58,8 @@ class MoveEmailThreadsWorkerTest{
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
     }
 
     @Test

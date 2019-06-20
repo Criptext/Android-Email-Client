@@ -27,7 +27,7 @@ class GetMenuInformationWorker(
 
     override fun work(reporter: ProgressReporter<MailboxResult.GetMenuInformation>)
             : MailboxResult.GetMenuInformation? {
-        val account = db.getAccountByRecipientId(activeAccount.recipientId) ?: return MailboxResult.GetMenuInformation.Failure()
+        val account = db.getAccountById(activeAccount.id) ?: return MailboxResult.GetMenuInformation.Failure()
 
         val accounts = db.getLoggedAccounts()
         val jwts = accounts.map { it.jwt }.joinToString()

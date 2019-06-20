@@ -35,7 +35,7 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
         val event = Event.fromJSON(text)
         when (event.cmd) {
             Event.Cmd.lowOnPreKeys,
-            Event.Cmd.newEvent -> currentListener?.onNewEvent(event.recipientId)
+            Event.Cmd.newEvent -> currentListener?.onNewEvent(event.recipientId, JSONObject(event.params).getString("domain"))
             Event.Cmd.recoveryEmailChanged -> {
                 val email = JSONObject(event.params).getString("address")
                 currentListener?.onRecoveryEmailChanged(email)

@@ -189,6 +189,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
     private fun addMailsToFile(emailDao: EmailDao, tmpFile: File, accountId: Long)
     {
         fun flushMails(allMails: List<Email>): Long {
+            val account = db.accountDao().getLoggedInAccount()!!
             var lastId = 0L
             val jsonArrayAllMails = mutableListOf<String>()
             for (mail in allMails) {
@@ -196,7 +197,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                     lastId = mail.id
                 val emailContent = EmailUtils.getEmailContentFromFileSystem(
                         filesDir, mail.metadataKey, mail.content,
-                        db.accountDao().getLoggedInAccount()!!.recipientId)
+                        account.recipientId,
+                        account.domain)
                 val jsonObject = JSONObject()
                 jsonObject.put("id", mail.id)
                 jsonObject.put("messageId", mail.messageId)

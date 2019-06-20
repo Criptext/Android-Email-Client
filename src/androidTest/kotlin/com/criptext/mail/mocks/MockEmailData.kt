@@ -30,6 +30,7 @@ object MockEmailData {
     fun createNewEmails(max: Int, accountId: Long) = (1..max).map{ createNewEmail(it, accountId)}
 
     fun insertEmailsNeededForTests(db: TestDatabase, labels: List<Label>, filesDir: File, recipientId: String,
+                                   domain: String,
                                    toList: List<String> = listOf("gabriel@criptext.com"), accountId: Long){
         (1..2).forEach {
             val seconds = if (it < 10) "0$it" else it.toString()
@@ -45,7 +46,8 @@ object MockEmailData {
                     recipientId = recipientId,
                     metadataKey = metadata.metadataKey,
                     content = decryptedBody,
-                    headers = null)
+                    headers = null,
+                    domain = domain)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(),
                     metadataColumns = metadata, preview = decryptedBody,
                     labels = labels, files = emptyList(), fileKey = null, accountId = accountId)

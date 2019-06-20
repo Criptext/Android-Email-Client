@@ -444,6 +444,19 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showMessage(UIMessage(R.string.sending_email))
                 true
             }
+            is ActivityMessage.LogoutAccount -> {
+                val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }.toMutableList()
+                val oldAccount = model.extraAccounts.find {
+                    it.recipientId.plus("@${it.domain}") == activityMessage.oldAccountEmail
+                }
+                if(oldAccount != null) {
+                    jwts.remove(oldAccount.jwt)
+                    storage.putString(KeyValueStorage.StringKey.JWTS, jwts.joinToString())
+
+                }
+                activateAccount(activityMessage.newAccount)
+                true
+            }
             is ActivityMessage.UpdateUnreadStatusThread -> {
                 threadListController.updateUnreadStatusAndNotifyItem(activityMessage.threadId,
                         activityMessage.unread)
@@ -781,7 +794,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                     label = mailboxLabel,
                     loadedThreadsCount = model.threads.size,
                     isActiveAccount = true,
-                    recipientId = activeAccount.recipientId
+                    recipientId = activeAccount.recipientId,
+                    domain = activeAccount.domain
             )
             generalDataSource.submitRequest(req)
         }
@@ -1258,7 +1272,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                         label = model.selectedLabel,
                         loadedThreadsCount = model.threads.size,
                         isActiveAccount = false,
-                        recipientId = it.recipientId
+                        recipientId = it.recipientId,
+                        domain = it.domain
                 ))
             }
         }
@@ -1352,17 +1367,18 @@ class MailboxSceneController(private val scene: MailboxScene,
             })
         }
 
-        override fun onNewEvent(recipientId: String) {
-            if(recipientId == activeAccount.recipientId)
+        override fun onNewEvent(recipientId: String, domain: String) {
+            if(recipientId == activeAccount.recipientId && domain == activeAccount.domain)
                 reloadViewAfterSocketEvent()
             else{
-                val account = model.extraAccounts.find { it.recipientId == recipientId }
+                val account = model.extraAccounts.find { it.recipientId == recipientId && it.domain == domain }
                 if(account != null){
                     generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
                             label = model.selectedLabel,
                             loadedThreadsCount = model.threads.size,
                             isActiveAccount = false,
-                            recipientId = account.recipientId
+                            recipientId = account.recipientId,
+                            domain = account.domain
                     ))
                 }
             }

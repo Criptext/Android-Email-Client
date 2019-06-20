@@ -550,7 +550,7 @@ class SettingsController(
             })
         }
 
-        override fun onNewEvent(recipientId: String) {
+        override fun onNewEvent(recipientId: String, domain: String) {
 
         }
 

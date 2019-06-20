@@ -52,6 +52,7 @@ sealed class GeneralResult {
         data class SuccessAndRepeat(
                 val isActiveAccount: Boolean,
                 val recipientId: String,
+                val domain: String,
                 val shouldNotify: Boolean,
                 val mailboxLabel: Label,
                 val mailboxThreads: List<EmailPreview>?,
@@ -134,7 +135,7 @@ sealed class GeneralResult {
     }
 
     sealed class Logout: GeneralResult() {
-        data class Success(val activeAccount: ActiveAccount?): Logout()
+        data class Success(val activeAccount: ActiveAccount?, val oldAccountEmail: String): Logout()
         class Failure: Logout()
     }
 

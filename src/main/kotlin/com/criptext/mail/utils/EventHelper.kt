@@ -585,7 +585,7 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun updateUsernameStatus(metadata: PeerUsernameChangedStatusUpdate) {
         activeAccount.updateFullName(storage, metadata.name)
-        db.updateUserName(activeAccount.recipientId, metadata.name, activeAccount.id)
+        db.updateUserName(activeAccount.recipientId, activeAccount.domain, metadata.name, activeAccount.id)
     }
 
     private fun updateEmailLabelChangedStatus(metadata: PeerEmailLabelsChangedStatusUpdate) =

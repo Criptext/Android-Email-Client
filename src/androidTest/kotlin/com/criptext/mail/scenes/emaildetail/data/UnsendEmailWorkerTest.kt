@@ -66,7 +66,8 @@ class UnsendEmailWorkerTest {
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, listOf("gabriel@criptext.com", "mayer@gmail.com"),
+                mActivityRule.activity.filesDir, activeAccount.recipientId, activeAccount.domain,
+                listOf("gabriel@criptext.com", "mayer@gmail.com"),
                 activeAccount.id)
         mockWebServer = MockWebServer()
         mockWebServer.start()
@@ -95,7 +96,8 @@ class UnsendEmailWorkerTest {
                 dbContent = emailToUnsend.content,
                 filesDir = mActivityRule.activity.filesDir,
                 metadataKey = emailToUnsend.metadataKey,
-                recipientId = activeAccount.recipientId
+                recipientId = activeAccount.recipientId,
+                domain = activeAccount.domain
         )
 
         emailContentBeforeUnsend.first shouldNotBeEqualTo ""
@@ -123,7 +125,8 @@ class UnsendEmailWorkerTest {
                 dbContent = unsentEmailFromDB!!.content,
                 filesDir = mActivityRule.activity.filesDir,
                 metadataKey = unsentEmailFromDB.metadataKey,
-                recipientId = activeAccount.recipientId
+                recipientId = activeAccount.recipientId,
+                domain = activeAccount.domain
         )
 
         emailContentAfterUnsend.first shouldEqual ""

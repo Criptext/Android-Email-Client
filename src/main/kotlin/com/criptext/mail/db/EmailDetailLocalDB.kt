@@ -55,6 +55,7 @@ interface EmailDetailLocalDB {
             EmailUtils.deleteEmailInFileSystem(
                     filesDir = filesDir,
                     recipientId = account.recipientId,
+                    domain = account.domain,
                     metadataKey = metadataKey
             )
             return date
@@ -78,7 +79,7 @@ interface EmailDetailLocalDB {
 
                 val emailContent = EmailUtils.getEmailContentFromFileSystem(filesDir,
                         it.metadataKey, it.content,
-                        account.recipientId)
+                        account.recipientId, account.domain)
 
                 FullEmail(
                         email = it.copy(
@@ -142,7 +143,8 @@ interface EmailDetailLocalDB {
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
-                        recipientId = account.recipientId)
+                        recipientId = account.recipientId,
+                        domain = account.domain)
             }
             db.emailDao().deleteThreads(listOf(threadId), account.id)
         }
@@ -156,6 +158,7 @@ interface EmailDetailLocalDB {
             EmailUtils.deleteEmailInFileSystem(
                     filesDir = filesDir,
                     recipientId = account.recipientId,
+                    domain = account.domain,
                     metadataKey = email!!.metadataKey
             )
             db.emailDao().deleteById(emailId, account.id)

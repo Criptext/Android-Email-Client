@@ -120,7 +120,8 @@ class ProfileController(
             model.userData.name = name
             generalDataSource.submitRequest(GeneralRequest.ChangeContactName(
                     fullName = name,
-                    recipientId = activeAccount.recipientId
+                    recipientId = activeAccount.recipientId,
+                    domain = activeAccount.domain
             ))
         }
 
@@ -229,8 +230,9 @@ class ProfileController(
                     host.exitToScene(SignInParams(), null, false, true)
                 else {
                     activeAccount = result.activeAccount
+
                     host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            ActivityMessage.LogoutAccount(result.oldAccountEmail, result.activeAccount),
                             false, true)
                 }
             }
@@ -500,7 +502,7 @@ class ProfileController(
 
         }
 
-        override fun onNewEvent(recipientId: String) {
+        override fun onNewEvent(recipientId: String, domain: String) {
 
         }
 

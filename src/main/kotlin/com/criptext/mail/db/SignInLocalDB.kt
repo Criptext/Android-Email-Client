@@ -39,9 +39,7 @@ interface SignInLocalDB {
         }
 
         override fun deleteDatabase(user: String, domain: String) {
-            val username = if(domain == Contact.mainDomain) user
-            else user.plus("@$domain")
-            EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+            EmailUtils.deleteEmailsInFileSystem(filesDir, user, domain)
             db.accountDao().deleteAccountByRecipientId(user, domain)
         }
 
@@ -54,9 +52,7 @@ interface SignInLocalDB {
         }
 
         override fun deleteDatabase(account: Account) {
-            val username = if(account.domain == Contact.mainDomain) account.recipientId
-            else account.recipientId.plus("@${account.domain}")
-            EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+            EmailUtils.deleteEmailsInFileSystem(filesDir, account.recipientId, account.domain)
             db.accountDao().delete(account)
         }
 

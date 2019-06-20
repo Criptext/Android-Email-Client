@@ -123,8 +123,8 @@ class AuthenticateUserWorker(
                 account.refreshToken = json.getString("refreshToken")
                 if(messagingInstance.token != null)
                     apiClient.putFirebaseToken(messagingInstance.token ?: "", account.jwt)
-                accountDao.updateJwt(userData.username, account.jwt)
-                accountDao.updateRefreshToken(userData.username, account.refreshToken)
+                accountDao.updateJwt(userData.username, userData.domain, account.jwt)
+                accountDao.updateRefreshToken(userData.username, userData.domain, account.refreshToken)
             }
 
             storeAccountTransaction.run(account = account,

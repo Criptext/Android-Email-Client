@@ -35,8 +35,8 @@ class SyncAuthAcceptWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevi
     override fun work(reporter: ProgressReporter<GeneralResult.SyncAccept>)
             : GeneralResult.SyncAccept? {
 
-        val account = accountDao.getAccountByRecipientId(trustedDeviceInfo.recipientId) ?: return GeneralResult.SyncAccept.Failure(UIMessage(R.string.server_error_exception))
-        if(account.recipientId != activeAccount.recipientId) setup(account)
+        val account = accountDao.getAccount(trustedDeviceInfo.recipientId, trustedDeviceInfo.domain) ?: return GeneralResult.SyncAccept.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId.plus("@${account.domain}") != activeAccount.userEmail) setup(account)
 
         val operation = workOperation()
 
