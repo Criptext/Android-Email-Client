@@ -534,4 +534,5 @@
   <string name="account_suspended_dialog_title">Account Suspended</string>
   <string name="account_suspended_dialog_message">The account <b>%1$s</b> has been temporarily suspended by your administrator. Please contact your company administrator for more information.</string>
   <string name="account_suspended_dialog_button">Switch Account</string>
+  <string name="account_suspended_sign_in_error">This account is suspended.</string>
 </resources>
