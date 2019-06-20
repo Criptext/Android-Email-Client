@@ -53,14 +53,13 @@ class AccountSuspendedDialog(val context: Context) {
         newLogoutDialog.setCancelable(false)
         newLogoutDialog.setCanceledOnTouchOutside(false)
 
-        assignButtonEvents(dialogView, newLogoutDialog, observer)
+        assignButtonEvents(observer)
 
 
         return newLogoutDialog
     }
 
-    private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: UIObserver?) {
+    private fun assignButtonEvents(observer: UIObserver?) {
 
 
 

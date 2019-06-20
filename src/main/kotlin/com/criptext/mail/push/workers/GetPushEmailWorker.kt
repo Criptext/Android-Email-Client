@@ -81,7 +81,7 @@ class GetPushEmailWorker(
     override fun work(reporter: ProgressReporter<PushResult.NewEmail>)
             : PushResult.NewEmail? {
 
-        val dbAccount = dbEvents.getAccountByRecipientId(pushData["account"]) ?: return PushResult.NewEmail.Failure(
+        val dbAccount = dbEvents.getAccount(pushData["account"], pushData["domain"]) ?: return PushResult.NewEmail.Failure(
                 mailboxLabel = label,
                 message = createErrorMessage(EventHelper.NothingNewException()),
                 exception = EventHelper.NothingNewException(),

@@ -48,6 +48,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
                     recipientId = params.recipientId,
+                    domain = params.domain,
                     label = params.label,
                     isActiveAccount = params.isActiveAccount,
                     loadedThreadsCount = params.loadedThreadsCount,
@@ -70,6 +71,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     filesDir = filesDir,
                     db = db,
                     recipientId = params.recipientId,
+                    domain = params.domain,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(
@@ -188,6 +190,7 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.ChangeContactName -> ChangeContactNameWorker(
                     fullName = params.fullName,
                     recipientId = params.recipientId,
+                    domain = params.domain,
                     db = db,
                     activeAccount = activeAccount!!,
                     httpClient = httpClient,

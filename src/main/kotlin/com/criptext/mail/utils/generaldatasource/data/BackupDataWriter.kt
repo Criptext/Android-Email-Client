@@ -116,7 +116,13 @@ class EmailDataWriter(private val emailDao: EmailDao,
     private fun insertAllEmails(batch: List<Email>){
         val oldIds = mutableListOf<Long>()
         batch.forEach {
-            EmailUtils.saveEmailInFileSystem(filesDir, activeAccount.recipientId, it.metadataKey, it.content, it.headers)
+            EmailUtils.saveEmailInFileSystem(
+                    filesDir = filesDir,
+                    recipientId = activeAccount.recipientId,
+                    domain = activeAccount.domain,
+                    metadataKey = it.metadataKey,
+                    content = it.content,
+                    headers = it.headers)
             oldIds.add(it.id)
             it.id = 0
         }

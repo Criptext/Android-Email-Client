@@ -27,6 +27,7 @@ class DataFileCreationWorker(
         private val filesDir: File,
         private val db: AppDatabase,
         private val recipientId: String,
+        private val domain: String,
         override val publishFn: (
                 GeneralResult.DataFileCreation) -> Unit)
     : BackgroundWorker<GeneralResult.DataFileCreation> {
@@ -65,7 +66,7 @@ class DataFileCreationWorker(
 
     override fun work(reporter: ProgressReporter<GeneralResult.DataFileCreation>)
             : GeneralResult.DataFileCreation? {
-        val account = db.accountDao().getAccountByRecipientId(recipientId) ?: return GeneralResult.DataFileCreation.Failure(UIMessage(resId = R.string.no_account_to_sync))
+        val account = db.accountDao().getAccount(recipientId, domain) ?: return GeneralResult.DataFileCreation.Failure(UIMessage(resId = R.string.no_account_to_sync))
         val dataWriter = UserDataWriter(db, filesDir)
         reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 40))
         val getFileResult = dataWriter.createFile(account)

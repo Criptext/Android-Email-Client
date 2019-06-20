@@ -92,7 +92,7 @@ class RestoreMailboxWorker(private val filesDir: File,
         db.pendingEventDao().nukeTable(activeAccount.id)
         db.labelDao().nukeTable(activeAccount.id)
         db.emailDao().nukeTable(activeAccount.id)
-        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId)
+        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId, activeAccount.domain)
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

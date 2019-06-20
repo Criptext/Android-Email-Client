@@ -93,7 +93,8 @@ class LoadInitialDataWorkerTest {
                 recipientId = activeAccount.recipientId,
                 metadataKey = metadata.metadataKey,
                 content = decryptedBody,
-                headers = null)
+                headers = null,
+                domain = activeAccount.domain)
 
             return EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
                     preview = decryptedBody, labels = labels, files = emptyList(), fileKey = fileKey,

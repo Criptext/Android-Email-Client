@@ -336,7 +336,8 @@ object EmailInsertionSetup {
                 recipientId = activeAccount.recipientId,
                 metadataKey = finalMetadata.metadataKey,
                 content = decryptedBody,
-                headers = decryptedHeaders)
+                headers = decryptedHeaders,
+                domain = activeAccount.domain)
 
         val lonReturn = dao.runTransaction {
             EmailInsertionSetup.exec(dao, finalMetadata.extractDBColumns().copy(

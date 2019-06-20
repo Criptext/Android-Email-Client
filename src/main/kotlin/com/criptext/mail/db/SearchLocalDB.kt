@@ -130,7 +130,7 @@ interface SearchLocalDB{
 
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                     email.metadataKey, email.content,
-                    account.recipientId)
+                    account.recipientId, account.domain)
 
 
             return EmailThread(

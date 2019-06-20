@@ -10,9 +10,7 @@ import java.io.File
 
 object RemoveDeviceUtils{
     fun clearAllData(db: AppDatabase, storage: KeyValueStorage, activeAccount: ActiveAccount, filesDir: File){
-        val username = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
-        else activeAccount.userEmail
-        EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId, activeAccount.domain)
         db.accountDao().deleteAccountById(activeAccount.id)
         CloudBackupJobService.cancelJob(storage, activeAccount.id)
     }

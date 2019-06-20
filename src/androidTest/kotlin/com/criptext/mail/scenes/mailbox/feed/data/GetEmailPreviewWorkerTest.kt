@@ -61,7 +61,8 @@ class GetEmailPreviewWorkerTest{
                 recipientId = activeAccount.recipientId,
                 metadataKey = metadata.metadataKey,
                 content = decryptedBody,
-                headers = null)
+                headers = null,
+                domain = activeAccount.domain)
         val emailId = EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
                 preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null, accountId = activeAccount.id)
         return db.emailDao().findEmailById(emailId, activeAccount.id)!!

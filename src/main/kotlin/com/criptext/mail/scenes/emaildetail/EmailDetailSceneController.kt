@@ -274,7 +274,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
                 generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
-                        result.isActiveAccount, result.recipientId, model.currentLabel, 1
+                        result.isActiveAccount, result.recipientId, result.domain, model.currentLabel, 1
                 ))
             }
             is GeneralResult.UpdateMailbox.Unauthorized -> {
@@ -1087,10 +1087,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         }
 
-        override fun onNewEvent(recipientId: String) {
+        override fun onNewEvent(recipientId: String, domain: String) {
             generalDataSource.submitRequest(
                     GeneralRequest.UpdateMailbox(
-                            recipientId == activeAccount.recipientId, recipientId,
+                            (recipientId == activeAccount.recipientId && domain == activeAccount.domain),
+                            recipientId, domain,
                             model.currentLabel, 1
                     ))
         }

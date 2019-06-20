@@ -89,7 +89,10 @@ class LinkingController(
                             model.incomingAccount))
                 }
                 is GeneralResult.DataFileCreation -> {
-                    generalDataSource.submitRequest(GeneralRequest.DataFileCreation(model.incomingAccount.recipientId))
+                    generalDataSource.submitRequest(
+                            GeneralRequest.DataFileCreation(model.incomingAccount.recipientId,
+                                    model.incomingAccount.domain)
+                    )
                 }
             }
         }
@@ -146,7 +149,10 @@ class LinkingController(
         generalDataSource.listener = generalDataSourceListener
         if(activityMessage != null && activityMessage is ActivityMessage.SyncMailbox)
             model.untrustedDevicePostedKeyBundle = true
-        generalDataSource.submitRequest(GeneralRequest.DataFileCreation(model.incomingAccount.recipientId))
+        generalDataSource.submitRequest(
+                GeneralRequest.DataFileCreation(model.incomingAccount.recipientId,
+                        model.incomingAccount.domain)
+        )
         return false
     }
 
@@ -218,7 +224,7 @@ class LinkingController(
 
         }
 
-        override fun onNewEvent(recipientId: String) {
+        override fun onNewEvent(recipientId: String, domain: String) {
 
         }
 

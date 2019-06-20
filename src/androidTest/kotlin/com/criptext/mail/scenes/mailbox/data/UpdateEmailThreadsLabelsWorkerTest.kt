@@ -61,7 +61,8 @@ class UpdateEmailThreadsLabelsWorkerTest {
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
     }
 
     private fun newWorker(selectedThreadIds: List<String>, currentLabel: Label, selectedLabels: SelectedLabels):

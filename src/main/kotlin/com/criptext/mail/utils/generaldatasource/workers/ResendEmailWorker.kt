@@ -314,6 +314,7 @@ class ResendEmailWorker(
                             filesDir = filesDir,
                             metadataKey = email.metadataKey,
                             recipientId = activeAccount.recipientId,
+                            domain = activeAccount.domain,
                             dbContent = email.content
                     )
                     val sentMailData = SentMailData.fromJSON(JSONObject(response))
@@ -326,10 +327,11 @@ class ResendEmailWorker(
 
                     EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,
                             recipientId = activeAccount.recipientId, metadataKey = sentMailData.metadataKey,
-                            headers = emailContent.second)
+                            headers = emailContent.second, domain = activeAccount.domain)
 
                     EmailUtils.deleteEmailInFileSystem(filesDir = filesDir,
-                            metadataKey = email.metadataKey, recipientId = activeAccount.recipientId)
+                            metadataKey = email.metadataKey, recipientId = activeAccount.recipientId,
+                            domain = activeAccount.domain)
                 }
             }
 

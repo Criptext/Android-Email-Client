@@ -58,7 +58,8 @@ class EmptyTrashWorkerTest{
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
     }
 
     @Test

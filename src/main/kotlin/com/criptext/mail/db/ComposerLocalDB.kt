@@ -33,9 +33,10 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                 isTrusted = contactsFROM[0].isTrusted,
                 score = contactsFROM[0].score
         )
+
         val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                 email.metadataKey, email.content,
-                account.recipientId)
+                account.recipientId, account.domain)
 
         return FullEmail(
                 email = email.copy(content = emailContent.first),

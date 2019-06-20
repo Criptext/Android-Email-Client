@@ -37,6 +37,7 @@ class UpdateMailboxWorker(
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
         private val recipientId: String,
+        private val domain: String,
         private val loadedThreadsCount: Int,
         private val label: Label,
         private val httpClient: HttpClient,
@@ -90,7 +91,7 @@ class UpdateMailboxWorker(
     }
 
     private fun setup(): Boolean {
-        val account = accountDao.getAccountByRecipientId(recipientId) ?: return false
+        val account = accountDao.getAccount(recipientId, domain) ?: return false
         activeAccount = ActiveAccount.loadFromDB(account)?: return false
         signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
@@ -130,7 +131,8 @@ class UpdateMailboxWorker(
                             syncEventsList = finalResult.value.deviceInfo,
                             shouldNotify = finalResult.value.shouldNotify,
                             isActiveAccount = isActiveAccount,
-                            recipientId = activeAccount.recipientId
+                            recipientId = activeAccount.recipientId,
+                            domain = activeAccount.domain
                     )
                 }else {
                     GeneralResult.UpdateMailbox.Success(
@@ -167,7 +169,7 @@ class UpdateMailboxWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromDB(accountDao.getAccountByRecipientId(activeAccount.recipientId)!!)!!
+                val account = ActiveAccount.loadFromDB(accountDao.getAccountById(activeAccount.id)!!)!!
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 

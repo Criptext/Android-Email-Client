@@ -35,8 +35,8 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: DeviceInfo.Untrusted
 
     override fun work(reporter: ProgressReporter<GeneralResult.LinkAccept>)
             : GeneralResult.LinkAccept? {
-        val account = accountDao.getAccountByRecipientId(untrustedDeviceInfo.recipientId) ?: return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
-        if(account.recipientId != activeAccount.recipientId) setup(account)
+        val account = accountDao.getAccount(untrustedDeviceInfo.recipientId, untrustedDeviceInfo.domain) ?: return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId.plus("@${account.domain}") != activeAccount.userEmail) setup(account)
 
         val operation = workOperation()
 

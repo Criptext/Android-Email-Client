@@ -35,8 +35,8 @@ class SyncAuthDenyWorker(private val trustedDeviceInfo: DeviceInfo.TrustedDevice
     override fun work(reporter: ProgressReporter<GeneralResult.SyncDeny>)
             : GeneralResult.SyncDeny? {
 
-        val account = accountDao.getAccountByRecipientId(trustedDeviceInfo.recipientId) ?: return GeneralResult.SyncDeny.Failure(UIMessage(R.string.server_error_exception))
-        if(account.recipientId != activeAccount.recipientId) setup(account)
+        val account = accountDao.getAccount(trustedDeviceInfo.recipientId, trustedDeviceInfo.domain) ?: return GeneralResult.SyncDeny.Failure(UIMessage(R.string.server_error_exception))
+        if(account.recipientId.plus("@${account.domain}") != activeAccount.userEmail) setup(account)
 
         val operation = workOperation()
 

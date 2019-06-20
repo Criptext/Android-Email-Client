@@ -80,7 +80,7 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId, loadedThreadsCount = loadedThreadsCount,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
                     pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true,
-                    db = db)
+                    db = db, domain = activeAccount.domain)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
@@ -101,7 +101,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)
@@ -149,7 +150,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)
@@ -198,7 +200,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)
@@ -211,7 +214,7 @@ class UpdateMailboxWorkerTest {
         val newLocalEmails = db.emailDao().getAll(activeAccount.id)
         newLocalEmails.forEach { it.content = EmailUtils.getEmailContentFromFileSystem(
                 mActivityRule.activity.filesDir, it.metadataKey, it.content, activeAccount.recipientId
-        ).first }
+                , activeAccount.domain).first }
         newLocalEmails.size `shouldBe` 5
         // assert that the new emails got in
         val latestEmails = newLocalEmails.subList(3, 5)
@@ -251,7 +254,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)
@@ -300,7 +304,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)
@@ -356,7 +361,8 @@ class UpdateMailboxWorkerTest {
                     recipientId = activeAccount.recipientId,
                     metadataKey = it.metadataKey,
                     content = it.content,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             it.content = ""
         }
         db.emailDao().insertAll(localEmails)

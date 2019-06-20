@@ -18,9 +18,9 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
-    fun getAccountByRecipientId(recipientId: String?): Account? {
-        if(recipientId == null) return null
-        return db.accountDao().getAccountByRecipientId(recipientId)
+    fun getAccount(recipientId: String?, domain: String?): Account? {
+        if(recipientId == null || domain == null) return null
+        return db.accountDao().getAccount(recipientId, domain)
     }
 
     fun setActiveAccount(id: Long) {
@@ -45,9 +45,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun logoutNukeDB(activeAccount: ActiveAccount) {
-        val username = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
-        else activeAccount.userEmail
-        EmailUtils.deleteEmailsInFileSystem(filesDir, username)
+        EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId, activeAccount.domain)
         db.accountDao().deleteAccountById(activeAccount.id)
     }
 
@@ -80,7 +78,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
         val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                 email.metadataKey, email.content,
-                activeAccount.recipientId)
+                activeAccount.recipientId, activeAccount.domain)
 
         return FullEmail(
                 email = email.copy(content = emailContent.first),
@@ -146,7 +144,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
-                        recipientId = activeAccount.recipientId)
+                        recipientId = activeAccount.recipientId,
+                        domain = activeAccount.domain)
             }
             db.emailDao().deleteThreads(threadIds, listOf(Label.defaultItems.trash.id, Label.defaultItems.spam.id), activeAccount.id)
         }
@@ -160,7 +159,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
-                        recipientId = activeAccount.recipientId)
+                        recipientId = activeAccount.recipientId,
+                        domain = activeAccount.domain)
             }
             db.emailDao().deleteAll(emails)
         }
@@ -237,9 +237,9 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         }
     }
 
-    fun updateUserName(recipientId: String, name: String, accountId: Long) {
-        db.contactDao().updateContactName("$recipientId@${Contact.mainDomain}", name, accountId)
-        db.accountDao().updateProfileName(name, recipientId)
+    fun updateUserName(recipientId: String, domain: String, name: String, accountId: Long) {
+        db.contactDao().updateContactName("$recipientId@$domain", name, accountId)
+        db.accountDao().updateProfileName(name, recipientId, domain)
     }
 
     fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: Date, activeAccount: ActiveAccount) {
@@ -250,7 +250,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         EmailUtils.deleteEmailInFileSystem(
                 filesDir = filesDir,
                 metadataKey = metadataKey,
-                recipientId = activeAccount.recipientId
+                recipientId = activeAccount.recipientId,
+                domain = activeAccount.domain
         )
     }
 
@@ -347,7 +348,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         )
         val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                 email.metadataKey, email.content,
-                activeAccount.recipientId)
+                activeAccount.recipientId, activeAccount.domain)
 
         return EmailThread(
                 participants = participants.distinctBy { it.id },
@@ -402,7 +403,7 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
         emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                 filesDir, it.metadataKey, it.content,
-                activeAccount.recipientId).first) }
+                activeAccount.recipientId, activeAccount.domain).first) }
 
         return emails.map { email ->
             getEmailThreadFromEmail(email, labelName,

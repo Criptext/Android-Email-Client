@@ -66,7 +66,8 @@ class SearchEmailWorkerTest{
                     recipientId = activeAccount.recipientId,
                     metadataKey = metadata.metadataKey,
                     content = decryptedBody,
-                    headers = null)
+                    headers = null,
+                    domain = activeAccount.domain)
             EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
                     preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null,
                     accountId = activeAccount.id)
@@ -81,7 +82,8 @@ class SearchEmailWorkerTest{
                 recipientId = activeAccount.recipientId,
                 metadataKey = metadata.metadataKey,
                 content = decryptedBody,
-                headers = null)
+                headers = null,
+                domain = activeAccount.domain)
         EmailInsertionSetup.exec(dao = db.emailInsertionDao(), metadataColumns = metadata,
                 preview = decryptedBody, labels = labels, files = emptyList(), fileKey = null,
                 accountId = activeAccount.id)

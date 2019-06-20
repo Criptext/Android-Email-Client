@@ -62,7 +62,8 @@ class LogoutWorkerTest{
         settingsLocalDB = SettingsLocalDB.Default(db)
 
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id)
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
     }
 
     @Test

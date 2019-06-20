@@ -72,12 +72,13 @@ interface MailboxLocalDB {
     fun updateFileToken(id: Long, newToken: String)
     fun getFileKeyByFileId(id: Long): String?
     fun increaseContactScore(emailIds: List<Long>)
-    fun getAccountByRecipientId(recipientId: String): Account?
+    fun getAccountById(accountId: Long): Account?
 
 
     class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
-        override fun getAccountByRecipientId(recipientId: String): Account? {
-            return db.accountDao().getAccountByRecipientId(recipientId)
+
+        override fun getAccountById(accountId: Long): Account? {
+            return db.accountDao().getAccountById(accountId)
         }
 
         override fun increaseContactScore(emailIds: List<Long>) {
@@ -97,7 +98,7 @@ interface MailboxLocalDB {
 
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                     email.metadataKey, email.content,
-                    account.recipientId)
+                    account.recipientId, account.domain)
 
             return FullEmail(
                         email = email.copy(content = emailContent.first),
@@ -154,7 +155,7 @@ interface MailboxLocalDB {
 
                 val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                         it.metadataKey, it.content,
-                        account.recipientId)
+                        account.recipientId, account.domain)
 
                 FullEmail(
                         email = it.copy(content = emailContent.first),
@@ -303,7 +304,7 @@ interface MailboxLocalDB {
 
             emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                     filesDir, it.metadataKey, it.content,
-                    activeAccount.recipientId).first) }
+                    activeAccount.recipientId, activeAccount.domain).first) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -344,7 +345,7 @@ interface MailboxLocalDB {
             emails = emails.map { it.copy(content = EmailUtils.getEmailContentFromFileSystem(
                     filesDir,
                     it.metadataKey, it.content,
-                    activeAccount.recipientId).first) }
+                    activeAccount.recipientId, activeAccount.domain).first) }
 
             return if (emails.isNotEmpty()){
                 emails.map { email ->
@@ -443,7 +444,8 @@ interface MailboxLocalDB {
                 EmailUtils.deleteEmailInFileSystem(
                         filesDir = filesDir,
                         metadataKey = it.metadataKey,
-                        recipientId = activeAccount.recipientId)
+                        recipientId = activeAccount.recipientId,
+                        domain = activeAccount.domain)
             }
             db.emailDao().deleteThreads(threadIds, activeAccount.id)
         }
@@ -525,10 +527,9 @@ interface MailboxLocalDB {
                     isTrusted = contactsFROM[0].isTrusted,
                     score = contactsFROM[0].score
             )
-
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                     email.metadataKey, email.content,
-                    activeAccount.recipientId)
+                    activeAccount.recipientId, activeAccount.domain)
 
             return EmailThread(
                     participants = participants.distinctBy { it.id },
