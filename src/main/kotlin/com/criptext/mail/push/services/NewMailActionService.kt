@@ -11,6 +11,7 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.push.data.PushAPIRequestHandler
 
 
@@ -32,8 +33,8 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val db = AppDatabase.getAppDatabase(this)
-        if(activeAccount.recipientId != data.recipientId)
-            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccountByRecipientId(data.recipientId)!!)!!
+        if(activeAccount.userEmail != data.recipientId.plus("@${data.domain}"))
+            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccount(data.recipientId, data.domain)!!)!!
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
                 activeAccount, HttpClient.Default(),
                 storage)
@@ -64,8 +65,10 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val notificationId = intent.getIntExtra("notificationId", 0)
         val metadataKey = intent.getLongExtra("metadataKey", 0)
         val recipientId = intent.getStringExtra("account") ?: activeRecipientId
-        return IntentData(action, metadataKey, notificationId, recipientId)
+        val domain = intent.getStringExtra("domain") ?: Contact.mainDomain
+        return IntentData(action, metadataKey, notificationId, recipientId, domain)
     }
 
-    private data class IntentData(val action: String, val metadataKey: Long, val notificationId: Int, val recipientId: String)
+    private data class IntentData(val action: String, val metadataKey: Long, val notificationId: Int,
+                                  val recipientId: String, val domain: String)
 }

@@ -10,6 +10,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
 import com.criptext.mail.signal.SignalClient
@@ -128,7 +129,9 @@ class LinkDataWorker(private val authorizerId: Int,
             .flatMap { readIntoFile(it) }
             .flatMap { Result.of {
                 reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80))
-                Pair(signalClient.decryptBytes(activeAccount.recipientId,
+                val user = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
+                else activeAccount.userEmail
+                Pair(signalClient.decryptBytes(user,
                         authorizerId,
                         SignalEncryptedData(key, SignalEncryptedData.Type.preKey)),
                         it

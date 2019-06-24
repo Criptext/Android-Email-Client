@@ -59,6 +59,8 @@ interface EmailDetailScene {
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun showStartGuideEmailIsRead(view: View)
     fun showStartGuideMenu(view: View)
     fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String,
@@ -203,6 +205,14 @@ interface EmailDetailScene {
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun setConfirmPasswordError(message: UIMessage) {

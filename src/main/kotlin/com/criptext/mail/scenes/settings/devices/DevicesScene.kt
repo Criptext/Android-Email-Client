@@ -34,6 +34,8 @@ interface DevicesScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun getDeviceListView(): VirtualListView
     fun showRemoveDeviceDialog(deviceId: Int, position: Int)
     fun removeDeviceDialogToggleLoad(loading: Boolean)
@@ -90,6 +92,14 @@ interface DevicesScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(devicesUIObserver, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

@@ -81,6 +81,7 @@ class EventHelper(private val db: EventLocalDB,
         if(eventIdsToAcknowledge.isNotEmpty()){
 
             Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
 
             val cache = File(db.getCacheDir(), "picasso-cache")
             if (cache.exists() && cache.isDirectory) {

@@ -1,8 +1,6 @@
 package com.criptext.mail.db
 
-import android.content.Context
 import com.criptext.mail.db.models.Account
-import com.criptext.mail.db.models.Contact
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
 import java.io.File

@@ -46,6 +46,7 @@ class NotificationSyncDevice(override val ctx: Context): CriptextNotification(ct
         okAction.putExtra("deviceType", pushData.deviceType.ordinal)
         okAction.putExtra("version", pushData.syncFileVersion)
         okAction.putExtra("account", pushData.recipientId)
+        okAction.putExtra("domain", pushData.domain)
         val okPendingIntent = PendingIntent.getActivity(ctx, notificationId, okAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 
@@ -55,6 +56,7 @@ class NotificationSyncDevice(override val ctx: Context): CriptextNotification(ct
         denyAction.putExtra("randomId", pushData.randomId)
         denyAction.putExtra("version", pushData.syncFileVersion)
         denyAction.putExtra("account", pushData.recipientId)
+        denyAction.putExtra("domain", pushData.domain)
         val denyPendingIntent = PendingIntent.getService(ctx, notificationId, denyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
 

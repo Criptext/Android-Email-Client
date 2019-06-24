@@ -48,7 +48,7 @@ sealed class MailboxRequest{
     class GetMenuInformation : MailboxRequest()
 
     data class SetActiveAccount(val account: Account) : MailboxRequest()
-    data class SetActiveAccountFromPush(val recipientId: String, val extras: IntentExtrasData) : MailboxRequest()
+    data class SetActiveAccountFromPush(val recipientId: String, val domain: String, val extras: IntentExtrasData) : MailboxRequest()
 
     data class UpdateUnreadStatus(val threadIds: List<String>,
                                   val updateUnreadStatus: Boolean,

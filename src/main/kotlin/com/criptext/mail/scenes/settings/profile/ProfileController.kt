@@ -112,7 +112,7 @@ class ProfileController(
         }
 
         override fun onSignatureOptionClicked() {
-            host.goToScene(SignatureParams(activeAccount.recipientId), true)
+            host.goToScene(SignatureParams(activeAccount.recipientId, activeAccount.domain), true)
         }
 
         override fun onProfileNameChanged(name: String) {
@@ -358,6 +358,7 @@ class ProfileController(
         when(result) {
             is ProfileResult.SetProfilePicture.Success -> {
                 Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+                Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
                 scene.hideProfilePictureProgress()
                 scene.showMessage(UIMessage(R.string.profile_picture_updated))
             }
@@ -452,6 +453,18 @@ class ProfileController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onLinkDeviceDismiss(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                scene.dismissLinkDeviceDialog()
+            })
+        }
+
+        override fun onSyncDeviceDismiss(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                scene.dismissSyncDeviceDialog()
+            })
+        }
+
         override fun onAccountSuspended(accountEmail: String) {
             host.runOnUiThread(Runnable {
                 if (accountEmail == activeAccount.userEmail)

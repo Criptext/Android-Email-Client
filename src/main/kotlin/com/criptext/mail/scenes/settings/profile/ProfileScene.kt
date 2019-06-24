@@ -25,6 +25,8 @@ interface ProfileScene{
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -211,6 +213,14 @@ interface ProfileScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(profileUIObserver, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun showBottomDialog(observer: ProfileUIObserver?) {

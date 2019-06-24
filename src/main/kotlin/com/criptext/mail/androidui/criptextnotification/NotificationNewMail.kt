@@ -47,6 +47,7 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
         readAction.action = NewMailActionService.READ
         readAction.putExtra("notificationId", notificationId)
         readAction.putExtra("account", pushData.account)
+        readAction.putExtra("domain", pushData.domain)
         readAction.putExtra("metadataKey", pushData.metadataKey)
         val readPendingIntent = PendingIntent.getService(ctx, notificationId, readAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
@@ -55,6 +56,7 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
         trashAction.action = NewMailActionService.TRASH
         trashAction.putExtra("notificationId", notificationId)
         trashAction.putExtra("account", pushData.account)
+        trashAction.putExtra("domain", pushData.domain)
         trashAction.putExtra("metadataKey", pushData.metadataKey)
         val trashPendingIntent = PendingIntent.getService(ctx, notificationId, trashAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)
@@ -65,6 +67,7 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
         replyAction.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         replyAction.putExtra("metadataKey", pushData.metadataKey)
         replyAction.putExtra("account", pushData.account)
+        replyAction.putExtra("domain", pushData.domain)
         replyAction.putExtra(MessagingInstance.THREAD_ID, pushData.threadId)
         val replyPendingAction = PendingIntent.getActivity(ctx, 0, replyAction,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_ONE_SHOT)

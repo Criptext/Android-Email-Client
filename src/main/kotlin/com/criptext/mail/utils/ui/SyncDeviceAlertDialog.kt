@@ -71,6 +71,10 @@ class SyncDeviceAlertDialog(val context: Context) {
         return dialog?.isShowing
     }
 
+    fun dismiss(){
+        dialog?.dismiss()
+    }
+
     private fun assignButtonEvents(observer: UIObserver?, view: View,
                                    dialog: AlertDialog, trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 

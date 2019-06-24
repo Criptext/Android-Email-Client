@@ -19,6 +19,8 @@ interface PrivacyScene{
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun dismissConfirmPasswordDialog()
     fun setConfirmPasswordError(message: UIMessage)
@@ -163,6 +165,14 @@ interface PrivacyScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(privacyUIObserver, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun showMessage(message: UIMessage) {
