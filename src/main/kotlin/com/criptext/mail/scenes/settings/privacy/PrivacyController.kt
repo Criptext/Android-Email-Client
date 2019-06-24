@@ -242,6 +242,18 @@ class PrivacyController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onLinkDeviceDismiss(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                scene.dismissLinkDeviceDialog()
+            })
+        }
+
+        override fun onSyncDeviceDismiss(accountEmail: String) {
+            host.runOnUiThread(Runnable {
+                scene.dismissSyncDeviceDialog()
+            })
+        }
+
         override fun onAccountSuspended(accountEmail: String) {
             host.runOnUiThread(Runnable {
                 if (accountEmail == activeAccount.userEmail)

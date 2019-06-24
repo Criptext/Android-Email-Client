@@ -5,7 +5,7 @@ import org.json.JSONObject
 /**
  * Created by gabriel on 4/26/18.
  */
-data class Event(val rowid: Long, val recipientId: String, val cmd: Int, val params: String) {
+data class Event(val rowid: Long, val recipientId: String, val domain: String, val cmd: Int, val params: String) {
     companion object {
         fun fromJSON(jsonEventString: String): Event {
             val json = JSONObject(jsonEventString)
@@ -15,6 +15,7 @@ data class Event(val rowid: Long, val recipientId: String, val cmd: Int, val par
                                 -1
             return Event(rowid = rowId,
                     recipientId = if(json.has("recipientId")) json.getString("recipientId") else "",
+                    domain = if(json.has("domain")) json.getString("domain") else "",
                     cmd = json.getInt("cmd"),
                     params = json.getString("params"))
         }
@@ -35,6 +36,7 @@ data class Event(val rowid: Long, val recipientId: String, val cmd: Int, val par
             const val deviceDataUploadComplete = 204
             const val deviceRemoved = 205
             const val deviceAuthDenied = 206
+            const val deviceLinkDismiss = 207
 
             //Events triggered by devices
             const val peerEmailReadStatusUpdate = 301
@@ -55,6 +57,7 @@ data class Event(val rowid: Long, val recipientId: String, val cmd: Int, val par
             const val syncBeginRequest = 211
             const val syncAccept = 212
             const val syncDeny = 216
+            const val syncDismiss = 217
 
             //Get Events
             const val newEvent = 400

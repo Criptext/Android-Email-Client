@@ -108,6 +108,8 @@ interface MailboxScene{
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
@@ -268,6 +270,14 @@ interface MailboxScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun onBackPressed(): Boolean {

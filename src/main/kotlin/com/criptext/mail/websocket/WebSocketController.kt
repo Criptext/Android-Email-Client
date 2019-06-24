@@ -68,6 +68,12 @@ class WebSocketController(private val wsClient: WebSocketClient, jwt: String): W
                 val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, event.recipientId)
                 currentListener?.onSyncBeginRequest(trustedDeviceInfo)
             }
+            Event.Cmd.deviceLinkDismiss -> {
+                currentListener?.onLinkDeviceDismiss(event.recipientId.plus("@${event.domain}"))
+            }
+            Event.Cmd.syncDismiss -> {
+                currentListener?.onSyncDeviceDismiss(event.recipientId.plus("@${event.domain}"))
+            }
             Event.Cmd.suspendEnterepriseAccount -> {
                 val params = JSONObject(event.params)
                 val recipientId = params.getString("recipientId")

@@ -31,8 +31,8 @@ class GetTotalUnreadMailsByLabelWorker(private val emailDao: EmailDao,
         val operation = Result.of {
             val labelId = Label.getLabelIdWildcard(labelName = currentLabel, labels = Label.defaultItems.toList())
             val extraLabelId = Label.getLabelIdWildcard(labelName = Label.LABEL_INBOX, labels = Label.defaultItems.toList())
-            val extraAccounts = db.getLoggedAccounts().filter { it.recipientId != activeAccount.recipientId }
-            val extraAccountsData = extraAccounts.map { Pair(it.recipientId,
+            val extraAccounts = db.getLoggedAccounts().filter { it.recipientId.plus("@${it.domain}") != activeAccount.userEmail }
+            val extraAccountsData = extraAccounts.map { Pair(it.recipientId.plus("@${it.domain}"),
                     emailDao.getTotalUnreadThreads(rejectedLabels, extraLabelId, it.id).size) }
             Pair(emailDao.getTotalUnreadThreads(rejectedLabels, labelId, activeAccount.id).size, extraAccountsData)
         }

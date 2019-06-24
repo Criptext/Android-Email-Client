@@ -18,6 +18,7 @@ import com.github.kittinunf.result.Result
 
 class SetActiveAccountFromPushWorker(
         private val recipientId: String,
+        private val domain: String,
         private val extras: IntentExtrasData,
         private val db: MailboxLocalDB,
         private val storage: KeyValueStorage,
@@ -33,7 +34,7 @@ class SetActiveAccountFromPushWorker(
     override fun work(reporter: ProgressReporter<MailboxResult.SetActiveAccountFromPush>)
             : MailboxResult.SetActiveAccountFromPush? {
         val operation =  Result.of {
-            val account = db.getLoggedAccounts().find { it.recipientId == recipientId } ?: throw Resources.NotFoundException()
+            val account = db.getLoggedAccounts().find { it.recipientId == recipientId && it.domain == domain } ?: throw Resources.NotFoundException()
             db.setActiveAccount(account.id)
             AccountUtils.setUserAsActiveAccount(account, storage)
         }

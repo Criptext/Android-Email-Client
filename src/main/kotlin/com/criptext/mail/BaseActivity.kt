@@ -191,7 +191,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 }
                 SIGNATURE_MODEL -> {
                     SignatureModel(
-                            recipientId = savedInstanceState.getString("recipientId")!!
+                            recipientId = savedInstanceState.getString("recipientId")!!,
+                            domain = savedInstanceState.getString("domain")!!
                     )
                 }
                 else -> null
@@ -325,6 +326,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is SignatureModel -> {
                 outState.putString("type", SIGNATURE_MODEL)
                 outState.putString("recipientId", currentModel.recipientId)
+                outState.putString("domain", currentModel.domain)
             }
         }
     }
@@ -363,7 +365,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     params.currentLabel, params.threadPreview, params.doReply)
             is ComposerParams -> ComposerModel(params.type)
             is SettingsParams -> SettingsModel(params.hasChangedTheme)
-            is SignatureParams -> SignatureModel(params.recipientId)
+            is SignatureParams -> SignatureModel(params.recipientId, params.domain)
             is RecoveryEmailParams -> RecoveryEmailModel(params.userData)
             is ChangePasswordParams -> ChangePasswordModel()
             is LinkingParams -> LinkingModel(params.activeAccount,
@@ -432,20 +434,22 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 Intent.ACTION_MAIN ->    {
                     val threadId = extras.getString(MessagingInstance.THREAD_ID) ?: return null
                     val account = extras.getString("account") ?: return null
+                    val domain = extras.getString("domain") ?: return null
                     for (key in extras.keySet()){
                         intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasDataMail(action, threadId, account)
+                    return IntentExtrasData.IntentExtrasDataMail(action, threadId, account, domain)
                 }
                 LinkDeviceActionService.APPROVE ->    {
                     val uuid = extras.getString("randomId") ?: return null
                     val deviceType = DeviceUtils.getDeviceType(extras.getInt("deviceType"))
                     val version = extras.getInt("version")
                     val account = extras.getString("account") ?: return null
+                    val domain = extras.getString("domain") ?: return null
                     for (key in extras.keySet()){
                         intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasDataDevice(action, uuid, deviceType, version, account)
+                    return IntentExtrasData.IntentExtrasDataDevice(action, uuid, deviceType, version, account, domain)
                 }
                 SyncDeviceActionService.APPROVE ->    {
                     val uuid = extras.getString("randomId") ?: return null
@@ -454,37 +458,44 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     val deviceId = extras.getInt("deviceId")
                     val deviceName = extras.getString("deviceName") ?: return null
                     val account = extras.getString("account") ?: return null
+                    val domain = extras.getString("domain") ?: return null
                     for (key in extras.keySet()){
                         intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasSyncDevice(action, uuid, deviceId, deviceName, deviceType, version, account)
+                    return IntentExtrasData.IntentExtrasSyncDevice(action, uuid, deviceId, deviceName, deviceType, version, account, domain)
                 }
                 NewMailActionService.REPLY -> {
                     val threadId = extras.getString(MessagingInstance.THREAD_ID) ?: return null
                     val metadataKey = extras.getLong("metadataKey")
                     val account = extras.getString("account") ?: return null
+                    val domain = extras.getString("domain") ?: return null
                     for (key in extras.keySet()){
                         intent.removeExtra(key)
                     }
-                    return IntentExtrasData.IntentExtrasReply(action, threadId, metadataKey, account)
+                    return IntentExtrasData.IntentExtrasReply(action, threadId, metadataKey, account, domain)
                 }
                 Intent.ACTION_VIEW -> {
                     val mailTo = intent.data ?: return null
-                    val account = extras.getString("account")?: ActiveAccount.loadFromStorage(this)!!.recipientId
+                    val activeAccount = ActiveAccount.loadFromStorage(this)!!
+                    val account = extras.getString("account")?: activeAccount.recipientId
+                    val domain = extras.getString("domain") ?: activeAccount.domain
                     if(mailTo.toString().contains("mailto:"))
-                        return IntentExtrasData.IntentExtrasMailTo(action, mailTo.toString().removePrefix("mailto:"), account)
+                        return IntentExtrasData.IntentExtrasMailTo(action, mailTo.toString().removePrefix("mailto:"),
+                                account, domain)
                 }
                 Intent.ACTION_SEND,
                 Intent.ACTION_SEND_MULTIPLE -> {
                     val data = intent
                     if(data != null) {
-                        val account = extras.getString("account") ?: ActiveAccount.loadFromStorage(this)!!.recipientId
+                        val activeAccount = ActiveAccount.loadFromStorage(this)!!
+                        val account = extras.getString("account")?: activeAccount.recipientId
+                        val domain = extras.getString("domain") ?: activeAccount.domain
                         val clipData = data.clipData
                         if(clipData == null) {
                             data.data?.also { uri ->
                                 val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
                                 if (attachment != null)
-                                    return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account)
+                                    return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account, domain)
                             }
                         }else{
                             val attachmentList = mutableListOf<Pair<String, Long>>()
@@ -503,7 +514,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                 }
                             }
                             if (attachmentList.isNotEmpty() || urlList.isNotEmpty())
-                                return IntentExtrasData.IntentExtrasSend(action, attachmentList, urlList, account)
+                                return IntentExtrasData.IntentExtrasSend(action, attachmentList, urlList, account, domain)
                         }
                     }
                 }

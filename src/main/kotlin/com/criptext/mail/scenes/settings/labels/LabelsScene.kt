@@ -29,6 +29,8 @@ interface LabelsScene{
     fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
+    fun dismissLinkDeviceDialog()
+    fun dismissSyncDeviceDialog()
     fun getLabelLocalizedName(name: String): String
     fun getLabelListView(): VirtualListView
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
@@ -80,6 +82,14 @@ interface LabelsScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(labelsUIObserver, trustedDeviceInfo)
+        }
+
+        override fun dismissLinkDeviceDialog() {
+            linkAuthDialog.dismiss()
+        }
+
+        override fun dismissSyncDeviceDialog() {
+            syncAuthDialog.dismiss()
         }
 
         override fun showConfirmPasswordDialog(observer: UIObserver) {

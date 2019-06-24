@@ -92,6 +92,14 @@ class SyncingController(
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
+        override fun onLinkDeviceDismiss(accountEmail: String) {
+
+        }
+
+        override fun onSyncDeviceDismiss(accountEmail: String) {
+
+        }
+
         override fun onAccountSuspended(accountEmail: String) {
 
         }

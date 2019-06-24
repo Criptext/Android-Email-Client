@@ -38,11 +38,11 @@ interface SignatureScene{
             view.findViewById<View>(R.id.view_signature)
         }
 
-        private val bodyEditText: HTMLEditText by lazy({
+        private val bodyEditText: HTMLEditText by lazy {
             HTMLEditText(
                     richEditor = view.findViewById(R.id.editor),
                     hint = context.getString(R.string.write_signature))
-        })
+        }
 
         override fun attachView(signatureUIObserver: SignatureUIObserver, signature: String,
                                 keyboardManager: KeyboardManager) {

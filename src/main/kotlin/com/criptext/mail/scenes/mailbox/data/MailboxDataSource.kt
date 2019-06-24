@@ -133,6 +133,7 @@ class MailboxDataSource(
             )
             is MailboxRequest.SetActiveAccountFromPush -> SetActiveAccountFromPushWorker(
                     recipientId = params.recipientId,
+                    domain = params.domain,
                     extras = params.extras,
                     db = mailboxLocalDB,
                     storage = storage,

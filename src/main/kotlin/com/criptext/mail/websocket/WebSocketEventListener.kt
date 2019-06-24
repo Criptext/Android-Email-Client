@@ -102,6 +102,18 @@ interface WebSocketEventListener {
     fun onAccountUnsuspended(accountEmail: String)
 
     /**
+     * Invoked when the link device process has already been accepted/denied by other device. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onLinkDeviceDismiss(accountEmail: String)
+
+    /**
+     * Invoked when the sync device process has already been accepted/denied by other device. Subscribers should try to
+     * add the update to the list of notifications in the UI.
+     */
+    fun onSyncDeviceDismiss(accountEmail: String)
+
+    /**
      * Called when something went wrong processing the event. Subscribers may want to display an
      * error message.
      * @param uiMessage: Object with localized error message

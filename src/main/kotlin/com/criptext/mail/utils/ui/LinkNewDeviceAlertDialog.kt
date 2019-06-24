@@ -71,6 +71,10 @@ class LinkNewDeviceAlertDialog(val context: Context) {
         return dialog?.isShowing
     }
 
+    fun dismiss(){
+        dialog?.dismiss()
+    }
+
     private fun assignButtonEvents(observer: UIObserver?, view: View,
                                    dialog: AlertDialog, untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 

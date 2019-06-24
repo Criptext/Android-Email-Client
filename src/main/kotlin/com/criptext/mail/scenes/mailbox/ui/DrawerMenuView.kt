@@ -359,7 +359,7 @@ class DrawerMenuView(navigationView: NavigationView,
         avatar.setOnClickListener {
             drawerMenuItemListener.onAccountClicked(account)
         }
-        badgeMap[account.recipientId] = badgeText
+        badgeMap[account.recipientId.plus("@${account.domain}")] = badgeText
     }
 
     fun clearActiveLabel(){

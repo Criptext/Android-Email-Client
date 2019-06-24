@@ -196,6 +196,7 @@ class UpdateMailboxWorker(
         val millisInADays = (24 * 60 * 60 * 1000).toLong()
         val savedTime = storage.getLong(KeyValueStorage.StringKey.CacheResetTimestamp, 0L)
         if(savedTime < currentMillis - millisInADays){
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
             Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
             storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, currentMillis)
             clearImageDiskCache()

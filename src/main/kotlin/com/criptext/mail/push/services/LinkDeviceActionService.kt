@@ -10,6 +10,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.push.data.PushAPIRequestHandler
 
 
@@ -27,8 +28,8 @@ class LinkDeviceActionService : IntentService("Link Device Action Service") {
         var activeAccount = ActiveAccount.loadFromStorage(storage)!!
         val data = getIntentData(intent, activeAccount.recipientId)
         val db = AppDatabase.getAppDatabase(this)
-        if(activeAccount.recipientId != data.recipientId)
-            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccountByRecipientId(data.recipientId)!!)!!
+        if(activeAccount.userEmail != data.recipientId.plus("@${data.domain}"))
+            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccount(data.recipientId, data.domain)!!)!!
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
@@ -51,8 +52,10 @@ class LinkDeviceActionService : IntentService("Link Device Action Service") {
         val notificationId = intent.getIntExtra("notificationId", 0)
         val randomId = intent.getStringExtra("randomId")
         val recipientId = intent.getStringExtra("account") ?: activeRecipientId
-        return IntentData(action, randomId, notificationId, recipientId)
+        val domain = intent.getStringExtra("domain") ?: Contact.mainDomain
+        return IntentData(action, randomId, notificationId, recipientId, domain)
     }
 
-    private data class IntentData(val action: String, val randomId: String, val notificationId: Int, val recipientId: String)
+    private data class IntentData(val action: String, val randomId: String, val notificationId: Int,
+                                  val recipientId: String, val domain: String)
 }
