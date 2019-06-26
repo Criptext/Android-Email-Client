@@ -44,7 +44,11 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         view = inflater.inflate(R.layout.general_dialog_with_password_input, null)
-        view.findViewById<TextView>(R.id.title).text = context.getLocalizedUIMessage(data.title)
+        val titleTextView = view.findViewById<TextView>(R.id.title)
+        titleTextView.text = context.getLocalizedUIMessage(data.title)
+        if(data.type is DialogType.DeleteAccount)
+            titleTextView.setTextColor(ContextCompat.getColor(context, R.color.colorUnsent))
+
         view.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message.first())
 
         dialogBuilder.setView(view)
@@ -84,6 +88,10 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
                                    observer: UIObserver?) {
 
         btnOk = view.findViewById(R.id.btn_ok) as Button
+        if(data.type is DialogType.DeleteAccount) {
+            btnOk.text = context.getLocalizedUIMessage(UIMessage(R.string.delete))
+            btnOk.setTextColor(ContextCompat.getColor(context, R.color.colorUnsent))
+        }
         btnCancel = view.findViewById(R.id.btn_cancel) as Button
         progressBar = view.findViewById(R.id.check_password_progress) as ProgressBar
 
@@ -101,8 +109,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
             is DialogType.DeleteAccount,
             is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput(password.text.toString(), data.type)
-            is DialogType.ManualSyncConfirmation ->
-                DialogResult.DialogConfirmation(data.type)
+            is DialogType.ManualSyncConfirmation,
+            is DialogType.SignIn,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
         }

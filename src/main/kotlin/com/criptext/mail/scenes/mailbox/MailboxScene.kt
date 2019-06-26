@@ -33,6 +33,7 @@ import com.criptext.mail.scenes.mailbox.ui.RestoreBackupDialog
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -97,7 +98,7 @@ interface MailboxScene{
     fun dismissConfirmPasswordDialog()
     fun dismissAccountSuspendedDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun setConfirmPasswordError(message: UIMessage)
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
@@ -395,8 +396,8 @@ interface MailboxScene{
             confirmPassword.showDialog(observer)
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun setToolbarNumberOfEmails(emailsSize: Int) {

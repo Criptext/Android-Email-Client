@@ -63,12 +63,12 @@ class SettingsController(
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
-            is SettingsResult.GetUserSettings -> onGetUserSettings(result)
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
         }
@@ -152,6 +152,9 @@ class SettingsController(
                         }
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                        is DialogType.SignIn -> {
+                            host.goToScene(SignInParams(true), true)
                         }
                     }
                 }
@@ -265,7 +268,7 @@ class SettingsController(
                     email = activeAccount.userEmail,
                     model = model,
                     settingsUIObserver = settingsUIObserver)
-            dataSource.submitRequest(SettingsRequest.GetUserSettings())
+            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         }
 
         model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
@@ -392,9 +395,9 @@ class SettingsController(
         }
     }
 
-    private fun onGetUserSettings(result: SettingsResult.GetUserSettings){
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
         when(result) {
-            is SettingsResult.GetUserSettings.Success -> {
+            is GeneralResult.GetUserSettings.Success -> {
                 model.devices.clear()
                 model.devices.addAll(result.userSettings.devices)
                 model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
@@ -405,16 +408,16 @@ class SettingsController(
                 model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
                 scene.updateUserSettings(model)
             }
-            is SettingsResult.GetUserSettings.Failure -> {
+            is GeneralResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)
             }
-            is SettingsResult.GetUserSettings.Unauthorized -> {
+            is GeneralResult.GetUserSettings.Unauthorized -> {
                 generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
-            is SettingsResult.GetUserSettings.Forbidden -> {
+            is GeneralResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(settingsUIObserver)
             }
-            is SettingsResult.GetUserSettings.EnterpriseSuspended -> {
+            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
             }
         }
@@ -482,8 +485,9 @@ class SettingsController(
 
     private fun showSuspendedAccountDialog(){
         val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
-        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
-        scene.showAccountSuspendedDialog(settingsUIObserver, activeAccount.userEmail, showButton)
+        val dialogType = if(jwtList.isNotEmpty() && jwtList.size > 1) DialogType.SwitchAccount()
+        else DialogType.SignIn()
+        scene.showAccountSuspendedDialog(settingsUIObserver, activeAccount.userEmail, dialogType)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {

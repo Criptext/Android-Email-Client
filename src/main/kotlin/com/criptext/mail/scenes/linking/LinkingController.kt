@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.linking.data.LinkingDataSource
 import com.criptext.mail.scenes.linking.data.LinkingRequest
 import com.criptext.mail.scenes.linking.data.LinkingResult
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
@@ -75,6 +76,9 @@ class LinkingController(
                     when(result.type){
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
+                        }
+                        is DialogType.SignIn -> {
+                            host.goToScene(SignInParams(true), true)
                         }
                     }
                 }
@@ -162,8 +166,9 @@ class LinkingController(
 
     private fun showSuspendedAccountDialog(){
         val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
-        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
-        scene.showAccountSuspendedDialog(linkingUIObserver, activeAccount.userEmail, showButton)
+        val dialogType = if(jwtList.isNotEmpty() && jwtList.size > 1) DialogType.SwitchAccount()
+        else DialogType.SignIn()
+        scene.showAccountSuspendedDialog(linkingUIObserver, activeAccount.userEmail, dialogType)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {

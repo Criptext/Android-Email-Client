@@ -18,6 +18,7 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -41,7 +42,7 @@ interface DevicesScene{
     fun removeDeviceDialogToggleLoad(loading: Boolean)
     fun setRemoveDeviceError(message: UIMessage)
     fun removeDeviceDialogDismiss()
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): DevicesScene{
@@ -139,8 +140,8 @@ interface DevicesScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun showMessage(message: UIMessage) {

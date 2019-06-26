@@ -11,4 +11,5 @@ interface DrawerMenuItemListener {
     fun onInviteFriendOptionClicked()
     fun onSupportOptionClicked()
     fun onAddAccountClicked()
+    fun onProfileClicked()
 }

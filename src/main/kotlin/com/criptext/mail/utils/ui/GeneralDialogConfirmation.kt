@@ -81,6 +81,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
             is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput("", data.type)
             is DialogType.ManualSyncConfirmation,
+            is DialogType.SignIn,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
         }

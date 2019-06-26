@@ -535,4 +535,5 @@
   <string name="account_suspended_dialog_message">La cuenta <b>%1$s</b> ha sido suspendida temporalmente por tu administrador. Por favor, contacta al administrador de tu compañía para más información.</string>
   <string name="account_suspended_dialog_button">Cambiar de Cuenta</string>
   <string name="account_suspended_sign_in_error">La cuenta ha sido suspendida.</string>
+  <string name="profile_danger_separator">ZONA DE PELIGRO</string>
 </resources>

@@ -96,6 +96,11 @@ class DrawerMenuView(navigationView: NavigationView,
     private val badgeMap = mutableMapOf<String, TextView>()
 
     private fun setListeners() {
+
+        avatarView.setOnClickListener {
+            drawerMenuItemListener.onProfileClicked()
+        }
+
         sliderInbox.setOnClickListener {
             setActiveLabel(NavigationMenuOptions.INBOX)
             drawerMenuItemListener.onNavigationItemClick(

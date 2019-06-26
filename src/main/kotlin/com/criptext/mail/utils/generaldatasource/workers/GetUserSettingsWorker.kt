@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 
@@ -24,28 +25,28 @@ class GetUserSettingsWorker(
         private val accountDao: AccountDao,
         private val storage: KeyValueStorage,
         override val publishFn: (
-                SettingsResult.GetUserSettings) -> Unit)
-    : BackgroundWorker<SettingsResult.GetUserSettings> {
+                GeneralResult.GetUserSettings) -> Unit)
+    : BackgroundWorker<GeneralResult.GetUserSettings> {
 
     override val canBeParallelized = true
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): SettingsResult.GetUserSettings {
+    override fun catchException(ex: Exception): GeneralResult.GetUserSettings {
         return if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    SettingsResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    GeneralResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
                 ex.errorCode == ServerCodes.Forbidden ->
-                    SettingsResult.GetUserSettings.Forbidden()
+                    GeneralResult.GetUserSettings.Forbidden()
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
-                    SettingsResult.GetUserSettings.EnterpriseSuspended()
-                else -> SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
+                    GeneralResult.GetUserSettings.EnterpriseSuspended()
+                else -> GeneralResult.GetUserSettings.Failure(createErrorMessage(ex))
             }
         }
-        else SettingsResult.GetUserSettings.Failure(createErrorMessage(ex))
+        else GeneralResult.GetUserSettings.Failure(createErrorMessage(ex))
     }
 
-    override fun work(reporter: ProgressReporter<SettingsResult.GetUserSettings>): SettingsResult.GetUserSettings? {
+    override fun work(reporter: ProgressReporter<GeneralResult.GetUserSettings>): GeneralResult.GetUserSettings? {
         val getSettingsOperation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(getSettingsOperation)
@@ -61,7 +62,7 @@ class GetUserSettingsWorker(
                 val devices = settings.devices.map { if(it.id == activeAccount.deviceId) it.copy(
                         isCurrent = true
                 ) else it }
-                SettingsResult.GetUserSettings.Success(settings.copy(
+                GeneralResult.GetUserSettings.Success(settings.copy(
                         devices = (devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }).sorted()
                 ))
             }

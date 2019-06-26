@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.settings.profile.ui.ProfileNameDialog
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -46,7 +47,7 @@ interface ProfileScene{
     fun toggleGeneralDialogLoad(isLoading: Boolean)
     fun showMessageAndProgressDialog(message: UIMessage)
     fun dismissMessageAndProgressDialog()
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): ProfileScene{
@@ -290,8 +291,8 @@ interface ProfileScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun showMessage(message: UIMessage) {

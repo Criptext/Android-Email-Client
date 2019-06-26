@@ -39,4 +39,5 @@ sealed class GeneralRequest {
     class GetRemoteFile(val uris: List<String>, val contentResolver: ContentResolver): GeneralRequest()
     data class Set2FA(val twoFA: Boolean): GeneralRequest()
     class ChangeToNextAccount: GeneralRequest()
+    class GetUserSettings: GeneralRequest()
 }

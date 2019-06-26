@@ -14,6 +14,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -34,7 +35,7 @@ interface LabelsScene{
     fun getLabelLocalizedName(name: String): String
     fun getLabelListView(): VirtualListView
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): LabelsScene{
@@ -120,8 +121,8 @@ interface LabelsScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun getLabelLocalizedName(name: String): String {

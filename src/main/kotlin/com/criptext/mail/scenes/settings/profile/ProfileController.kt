@@ -179,6 +179,8 @@ class ProfileController(
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
+                        is DialogType.SignIn ->
+                            host.goToScene(SignInParams(true), true)
                     }
                 }
             }
@@ -205,7 +207,11 @@ class ProfileController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(SettingsParams(), null,true)
+            if(model.comesFromMailbox){
+                host.exitToScene(MailboxParams(), null,true, true)
+            } else {
+                host.exitToScene(SettingsParams(), null,true)
+            }
         }
     }
 
@@ -428,28 +434,35 @@ class ProfileController(
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         PinLockUtils.resetLastMillisPin()
         PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
-        if (activityMessage is ActivityMessage.ProfilePictureFile) {
-            return if(activityMessage.filesMetadata.second != -1L) {
-                setBitmapOnProfileImage(activityMessage.filesMetadata.first)
-                true
-            }else{
-                val resolver = host.getContentResolver()
-                if(resolver != null) {
-                    scene.showPreparingFileDialog()
-                    generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
-                            listOf(activityMessage.filesMetadata.first), resolver)
-                    )
+        return when (activityMessage) {
+            is ActivityMessage.ProfilePictureFile -> {
+                if (activityMessage.filesMetadata.second != -1L) {
+                    setBitmapOnProfileImage(activityMessage.filesMetadata.first)
+                    true
+                } else {
+                    val resolver = host.getContentResolver()
+                    if (resolver != null) {
+                        scene.showPreparingFileDialog()
+                        generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
+                                listOf(activityMessage.filesMetadata.first), resolver)
+                        )
+                    }
+                    true
                 }
+            }
+            is ActivityMessage.ComesFromMailbox -> {
+                model.comesFromMailbox = true
                 true
             }
+            else -> false
         }
-        return false
     }
 
     private fun showSuspendedAccountDialog(){
         val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
-        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
-        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, showButton)
+        val dialogType = if(jwtList.isNotEmpty() && jwtList.size > 1) DialogType.SwitchAccount()
+        else DialogType.SignIn()
+        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, dialogType)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {

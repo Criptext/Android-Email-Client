@@ -20,6 +20,7 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 
@@ -32,7 +33,7 @@ interface LinkingScene{
             linkingUIObserver: LinkingUIObserver) -> Unit)
     fun showKeepWaitingDialog()
     fun showRetrySyncDialog(result: GeneralResult)
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
 
@@ -152,8 +153,8 @@ interface LinkingScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
 

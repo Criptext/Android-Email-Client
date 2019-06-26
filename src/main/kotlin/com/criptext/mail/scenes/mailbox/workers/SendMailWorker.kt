@@ -370,7 +370,8 @@ class SendMailWorker(private val signalClient: SignalClient,
         if(composerInputData.passwordForNonCriptextUsers == null) {
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
+                    if(activeAccount.domain != Contact.mainDomain) composerInputData.body
+                    else HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
                     fileKeys = getFileKeys())
         }else {
             val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)

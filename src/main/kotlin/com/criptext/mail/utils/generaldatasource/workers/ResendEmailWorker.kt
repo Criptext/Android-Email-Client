@@ -340,7 +340,8 @@ class ResendEmailWorker(
         return if(externalData == null) {
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    HTMLUtils.addCriptextFooter(fullEmail.email.content), null, null, null,
+                    if(activeAccount.domain != Contact.mainDomain)fullEmail.email.content
+                    else HTMLUtils.addCriptextFooter(fullEmail.email.content), null, null, null,
                     fullEmail.fileKey, fileKeys = getFileKeys(fullEmail.files))
         }else {
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,

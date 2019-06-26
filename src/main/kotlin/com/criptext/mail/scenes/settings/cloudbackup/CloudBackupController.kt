@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
+import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.cloudbackup.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
@@ -85,6 +86,8 @@ class CloudBackupController(
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
+                        is DialogType.SignIn ->
+                            host.goToScene(SignInParams(true), true)
                     }
                 }
             }
@@ -348,8 +351,9 @@ class CloudBackupController(
 
     private fun showSuspendedAccountDialog(){
         val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
-        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
-        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, showButton)
+        val dialogType = if(jwtList.isNotEmpty() && jwtList.size > 1) DialogType.SwitchAccount()
+        else DialogType.SignIn()
+        scene.showAccountSuspendedDialog(uiObserver, activeAccount.userEmail, dialogType)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
