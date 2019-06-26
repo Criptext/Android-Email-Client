@@ -14,6 +14,7 @@ import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.SyncDeviceAlertDialog
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.google.android.material.textfield.TextInputLayout
 
@@ -33,7 +34,7 @@ interface ReplyToScene{
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
     fun dismissSyncDeviceDialog()
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     class Default(val view: View): ReplyToScene{
@@ -173,8 +174,8 @@ interface ReplyToScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         private fun displayReplyTo(replyToEmail: String, keyboardManager: KeyboardManager,

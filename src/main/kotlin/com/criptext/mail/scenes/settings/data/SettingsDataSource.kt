@@ -7,8 +7,8 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.labels.workers.GetCustomLabelsWorker
 import com.criptext.mail.scenes.settings.workers.*
+import com.criptext.mail.utils.generaldatasource.workers.GetUserSettingsWorker
 
 class SettingsDataSource(
         private val settingsLocalDB: SettingsLocalDB,
@@ -25,13 +25,6 @@ class SettingsDataSource(
             is SettingsRequest.Logout -> LogoutWorker(
                     storage = storage,
                     db = settingsLocalDB,
-                    activeAccount = activeAccount,
-                    httpClient = httpClient,
-                    publishFn = { res -> flushResults(res) }
-            )
-            is SettingsRequest.GetUserSettings -> GetUserSettingsWorker(
-                    storage = storage,
-                    accountDao = settingsLocalDB.accountDao,
                     activeAccount = activeAccount,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }

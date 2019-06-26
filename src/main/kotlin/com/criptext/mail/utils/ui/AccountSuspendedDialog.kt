@@ -22,7 +22,7 @@ class AccountSuspendedDialog(val context: Context) {
 
     private lateinit var view: View
 
-    fun showDialog(observer: UIObserver?, email: String, showButton: Boolean) {
+    fun showDialog(observer: UIObserver?, email: String, type: DialogType) {
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
@@ -30,16 +30,24 @@ class AccountSuspendedDialog(val context: Context) {
         view.findViewById<TextView>(R.id.account_suspended_message).text =
                 context.getString(R.string.account_suspended_dialog_message, email)
         btnOk = view.findViewById(R.id.switch_account_button) as Button
-
-        btnOk.visibility = if(showButton) View.VISIBLE else View.GONE
+        when(type){
+            is DialogType.SwitchAccount -> {
+                btnOk.text = context.getString(R.string.account_suspended_dialog_button)
+            }
+            is DialogType.SignIn -> {
+                btnOk.text = context.getString(R.string.login)
+            }
+        }
+        btnOk.setOnClickListener {
+            observer?.onGeneralOkButtonPressed(DialogResult.DialogConfirmation(type))
+        }
 
         dialogBuilder.setView(view)
 
-        dialog = createDialog(view, dialogBuilder, observer)
+        dialog = createDialog(view, dialogBuilder)
     }
 
-    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: UIObserver?): AlertDialog {
+    private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newLogoutDialog = dialogBuilder.create()
@@ -53,19 +61,9 @@ class AccountSuspendedDialog(val context: Context) {
         newLogoutDialog.setCancelable(false)
         newLogoutDialog.setCanceledOnTouchOutside(false)
 
-        assignButtonEvents(observer)
 
 
         return newLogoutDialog
-    }
-
-    private fun assignButtonEvents(observer: UIObserver?) {
-
-
-
-        btnOk.setOnClickListener {
-            observer?.onGeneralOkButtonPressed(DialogResult.DialogConfirmation(DialogType.SwitchAccount()))
-        }
     }
 
     fun dismissDialog(){

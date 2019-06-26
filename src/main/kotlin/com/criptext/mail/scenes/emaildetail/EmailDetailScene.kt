@@ -22,6 +22,7 @@ import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualList
 
@@ -68,7 +69,7 @@ interface EmailDetailScene {
     fun printAllFullEmail(info: List<HTMLUtils.PrintHeaderInfo>, content: List<String>, documentName: String,
                           isForward: Boolean)
     fun expandAllThread()
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     class EmailDetailSceneView(
@@ -292,8 +293,8 @@ interface EmailDetailScene {
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun showMessage(message: UIMessage, showAction: Boolean) {

@@ -8,6 +8,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
+import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
@@ -208,5 +209,13 @@ sealed class GeneralResult {
     sealed class ChangeToNextAccount: GeneralResult() {
         data class Success(val activeAccount: ActiveAccount): ChangeToNextAccount()
         class Failure: ChangeToNextAccount()
+    }
+
+    sealed class GetUserSettings : GeneralResult() {
+        data class Success(val userSettings: UserSettingsData): GetUserSettings()
+        data class Failure(val message: UIMessage): GetUserSettings()
+        data class Unauthorized(val message: UIMessage): GetUserSettings()
+        class Forbidden: GetUserSettings()
+        class EnterpriseSuspended: GetUserSettings()
     }
 }

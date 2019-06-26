@@ -215,6 +215,13 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = MailboxLocalDB.Default(db, filesDir),
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.GetUserSettings -> GetUserSettingsWorker(
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

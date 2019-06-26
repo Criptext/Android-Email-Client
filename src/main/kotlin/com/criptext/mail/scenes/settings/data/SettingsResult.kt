@@ -10,14 +10,6 @@ sealed class SettingsResult{
         class Failure: Logout()
     }
 
-    sealed class GetUserSettings : SettingsResult() {
-        data class Success(val userSettings: UserSettingsData): GetUserSettings()
-        data class Failure(val message: UIMessage): GetUserSettings()
-        data class Unauthorized(val message: UIMessage): GetUserSettings()
-        class Forbidden: GetUserSettings()
-        class EnterpriseSuspended: GetUserSettings()
-    }
-
     sealed class ResetPassword : SettingsResult() {
         class Success: ResetPassword()
         data class Failure(val message: UIMessage): ResetPassword()

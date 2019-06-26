@@ -32,6 +32,7 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -74,6 +75,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -186,6 +188,9 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
+        override fun onProfileClicked() {
+            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+        }
 
         override fun onAccountClicked(account: Account) {
             scene.hideDrawer()
@@ -310,6 +315,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
+                        is DialogType.SignIn ->
+                            host.goToScene(SignInParams(true), true)
                     }
                 }
             }
@@ -1190,6 +1197,35 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                val userData = ProfileUserData(
+                        name = activeAccount.name,
+                        email = activeAccount.userEmail,
+                        replyToEmail = result.userSettings.replyTo,
+                        recoveryEmail = result.userSettings.recoveryEmail,
+                        isLastDeviceWith2FA = result.userSettings.devices.size == 1
+                                && result.userSettings.hasTwoFA,
+                        isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
+                )
+                host.goToScene(ProfileParams(userData), true, activityMessage = ActivityMessage.ComesFromMailbox())
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is GeneralResult.GetUserSettings.Forbidden -> {
+                scene.showConfirmPasswordDialog(observer)
+            }
+            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
+            }
+        }
+    }
+
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
@@ -1312,8 +1348,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun showSuspendedAccountDialog(){
         val jwtList = storage.getString(KeyValueStorage.StringKey.JWTS, "").split(",").map { it.trim() }
-        val showButton = jwtList.isNotEmpty() && jwtList.size > 1
-        scene.showAccountSuspendedDialog(observer, activeAccount.userEmail, showButton)
+        val dialogType = if(jwtList.isNotEmpty() && jwtList.size > 1) DialogType.SwitchAccount()
+        else DialogType.SignIn()
+        scene.showAccountSuspendedDialog(observer, activeAccount.userEmail, dialogType)
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {

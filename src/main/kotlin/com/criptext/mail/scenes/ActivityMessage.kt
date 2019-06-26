@@ -38,4 +38,5 @@ sealed class ActivityMessage {
     data class ActivatePin(val isSuccess: Boolean): ActivityMessage()
     class SyncMailbox: ActivityMessage()
     data class GoogleDriveSignIn(val driveService: Drive?): ActivityMessage()
+    class ComesFromMailbox: ActivityMessage()
 }

@@ -25,6 +25,7 @@ import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.LinkNewDeviceAlertDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.squareup.picasso.Picasso
 import com.tokenautocomplete.TokenCompleteTextView
@@ -53,7 +54,7 @@ interface ComposerScene {
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
     fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
@@ -284,8 +285,8 @@ interface ComposerScene {
             confirmPassword.showDialog(observer)
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun dismissConfirmPasswordDialog() {

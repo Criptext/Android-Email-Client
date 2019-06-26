@@ -11,6 +11,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.evernote.android.job.JobManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,7 +44,7 @@ interface CloudBackupScene{
     fun removeFromScheduleCloudBackupJob(accountId: Long)
     fun checkCloudBackupIcon()
     fun backingUpNow(isBackingUp: Boolean)
-    fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean)
+    fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
     var cloudBackupUIObserver: CloudBackupUIObserver?
@@ -217,8 +218,8 @@ interface CloudBackupScene{
             accountSuspended.dismissDialog()
         }
 
-        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, showButton: Boolean) {
-            accountSuspended.showDialog(observer, email, showButton)
+        override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
+            accountSuspended.showDialog(observer, email, dialogType)
         }
 
         override fun getGoogleDriveService(): Drive? {

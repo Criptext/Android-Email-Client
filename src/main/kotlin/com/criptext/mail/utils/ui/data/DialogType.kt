@@ -5,4 +5,5 @@ sealed class DialogType{
     class ManualSyncConfirmation: DialogType()
     class ReplyToChange: DialogType()
     class SwitchAccount: DialogType()
+    class SignIn: DialogType()
 }
