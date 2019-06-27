@@ -7,4 +7,5 @@ import com.criptext.mail.validation.TextInput
 data class RecoveryEmailModel(val userData: ProfileUserData): SceneModel{
     var lastTimeConfirmationLinkSent: Long = 0
     var newRecoveryEmail: TextInput = TextInput.blank()
+    var comesFromMailbox = false
 }

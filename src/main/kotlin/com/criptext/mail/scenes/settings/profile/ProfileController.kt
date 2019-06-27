@@ -21,6 +21,7 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.profile.data.ProfileDataSource
 import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
 import com.criptext.mail.scenes.settings.profile.data.ProfileResult
+import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
@@ -71,6 +72,7 @@ class ProfileController(
             is GeneralResult.DeleteAccount -> onDeleteAccount(result)
             is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -100,11 +102,13 @@ class ProfileController(
         }
 
         override fun onRecoveryEmailOptionClicked() {
-            host.goToScene(RecoveryEmailParams(model.userData), false)
+            val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
+            host.goToScene(RecoveryEmailParams(model.userData), false, activityMessage = message)
         }
 
         override fun onReplyToChangeClicked() {
-            host.goToScene(ReplyToParams(model.userData), false)
+            val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
+            host.goToScene(ReplyToParams(model.userData), false, activityMessage = message)
         }
 
         override fun onChangePasswordOptionClicked() {
@@ -218,6 +222,9 @@ class ProfileController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
 
+        if(activityMessage is ActivityMessage.ComesFromMailbox)
+            model.comesFromMailbox = true
+
         scene.attachView(uiObserver, activeAccount.recipientId, activeAccount.domain, model)
         generalDataSource.listener = generalDataSourceListener
         dataSource.listener = dataSourceListener
@@ -268,6 +275,37 @@ class ProfileController(
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                val userData = ProfileUserData(
+                        name = activeAccount.name,
+                        email = activeAccount.userEmail,
+                        replyToEmail = result.userSettings.replyTo,
+                        recoveryEmail = result.userSettings.recoveryEmail,
+                        isLastDeviceWith2FA = result.userSettings.devices.size == 1
+                                && result.userSettings.hasTwoFA,
+                        isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
+                )
+                model.userData = userData
+                scene.updateCurrentEmailStatus(model.userData.isEmailConfirmed)
+                scene.enableProfileSettings(true)
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is GeneralResult.GetUserSettings.Forbidden -> {
+                scene.showConfirmPasswordDialog(uiObserver)
+            }
+            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }
@@ -451,7 +489,7 @@ class ProfileController(
                 }
             }
             is ActivityMessage.ComesFromMailbox -> {
-                model.comesFromMailbox = true
+                generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
                 true
             }
             else -> false

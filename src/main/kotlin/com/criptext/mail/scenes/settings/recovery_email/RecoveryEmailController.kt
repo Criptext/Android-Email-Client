@@ -152,7 +152,8 @@ class RecoveryEmailController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(ProfileParams(model.userData), null,false)
+            val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
+            host.exitToScene(ProfileParams(model.userData), message,false)
         }
 
         override fun onResendRecoveryLinkPressed() {
@@ -179,6 +180,8 @@ class RecoveryEmailController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        if(activityMessage is ActivityMessage.ComesFromMailbox)
+            model.comesFromMailbox = true
         websocketEvents.setListener(webSocketEventListener)
         model.lastTimeConfirmationLinkSent = lastTimeConfirmationLinkSent
         scene.attachView(recoveryEmailUIObserver, keyboardManager, model)

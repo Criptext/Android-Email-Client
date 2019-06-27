@@ -134,11 +134,14 @@ class ReplyToController(
 
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
-            host.exitToScene(ProfileParams(model.userData), null, false)
+            val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
+            host.exitToScene(ProfileParams(model.userData), message, false)
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        if(activityMessage is ActivityMessage.ComesFromMailbox)
+            model.comesFromMailbox = true
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
