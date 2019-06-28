@@ -46,7 +46,7 @@ interface MailboxLocalDB {
     fun getLabelsByName(labelName: List<String>, accountId: Long): List<Label>
     fun getLabelsById(ids: List<Long>, accountId: Long): List<Label>
     fun getLabelById(id: Long, accountId: Long): Label?
-    fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String,
+    fun updateEmailAndAddLabel(id: Long, threadId : String, messageId: String, isSecure: Boolean,
                                metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
     fun updateDeliveryType(id: Long, status: DeliveryTypes, accountId: Long)
     fun getExistingAccount(): Account?
@@ -391,16 +391,17 @@ interface MailboxLocalDB {
         }
 
         private fun updateEmail(id: Long, threadId: String, messageId : String, metadataKey: Long,
-                        date: Date, status: DeliveryTypes, accountId: Long) {
+                        date: Date, status: DeliveryTypes, accountId: Long, isSecure: Boolean) {
             db.emailDao().updateEmail(id = id, threadId = threadId, messageId = messageId,
-                    metadataKey = metadataKey, date = date, status = status, accountId = accountId)
+                    metadataKey = metadataKey, date = date, status = status, accountId = accountId,
+                    isSecure = isSecure)
         }
 
-        override fun updateEmailAndAddLabel(id: Long, threadId: String, messageId: String,
+        override fun updateEmailAndAddLabel(id: Long, threadId: String, messageId: String, isSecure: Boolean,
                                             metadataKey: Long, date: Date, status: DeliveryTypes,
                                             accountId: Long) {
             db.runInTransaction {
-                updateEmail(id = id, threadId = threadId, messageId = messageId,
+                updateEmail(id = id, threadId = threadId, messageId = messageId, isSecure = isSecure,
                         metadataKey = metadataKey, date = date, status = status, accountId = accountId)
                 deleteRelationByEmailIds(arrayListOf(id))
                 createLabelEmailSent(id)

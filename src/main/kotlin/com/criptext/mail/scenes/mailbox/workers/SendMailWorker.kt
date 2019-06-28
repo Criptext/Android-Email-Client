@@ -60,6 +60,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
 
     private var guestEmails: PostEmailBody.GuestEmail? = null
+    private var isSecure = true
 
     private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(activeAccount.userEmail)
             || composerInputData.cc.map { it.email }.contains(activeAccount.userEmail)
@@ -145,7 +146,8 @@ class SendMailWorker(private val signalClient: SignalClient,
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                return listOf(PostEmailBody.EmptyCriptextEmail(recipientId))
+                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain))
+                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
@@ -171,7 +173,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                                 domain = domain)
                     }
                     is Result.Failure -> {
-                        PostEmailBody.EmptyCriptextEmail(recipientId)
+                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain)
+                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain)
                     }
                 }
 
@@ -298,7 +301,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                        messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                        status = getDeliveryType(),
                        date = DateAndTimeUtils.getDateFromString(sentMailData.date, null),
-                       accountId = activeAccount.id
+                       accountId = activeAccount.id, isSecure = isSecure
                    )
 
                    EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,
@@ -318,21 +321,21 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         val currentEmail = db.getEmailById(emailId, activeAccount.id)
 
-        if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null)
+        if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null, false)
 
         val result = workOperation(mailRecipients)
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
 
         val finalResult = if(sessionExpired)
-            newRetryWithNewSessionOperation(mailRecipients )
+            newRetryWithNewSessionOperation(mailRecipients)
         else
             result
 
         return when (finalResult) {
             is Result.Success -> {
                 db.increaseContactScore(listOf(emailId))
-                MailboxResult.SendMail.Success(emailId)
+                MailboxResult.SendMail.Success(emailId, isSecure)
             }
             is Result.Failure -> {
                 db.updateDeliveryType(emailId, DeliveryTypes.FAIL, activeAccount.id)
@@ -368,6 +371,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     private fun getGuestEmails(mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
         val postGuestEmailBody: PostEmailBody.GuestEmail?
         if(composerInputData.passwordForNonCriptextUsers == null) {
+            isSecure = false
             postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     if(activeAccount.domain != Contact.mainDomain) composerInputData.body

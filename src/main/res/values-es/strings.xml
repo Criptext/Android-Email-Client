@@ -402,6 +402,7 @@
   <string name="to_me">Para mí</string>
   <string name="label_as">Etiquetar como</string>
   <string name="email_sent">Correo Enviado</string>
+  <string name="email_sent_secure">🔒 Correo Enviado</string>
   <string name="from_popup">De:</string>
   <string name="to_popup">Para:\u0020</string>
   <string name="cc_popup">CC:\u0020\u0020\u0020</string>
@@ -536,4 +537,5 @@
   <string name="account_suspended_dialog_button">Cambiar de Cuenta</string>
   <string name="account_suspended_sign_in_error">La cuenta ha sido suspendida.</string>
   <string name="profile_danger_separator">ZONA DE PELIGRO</string>
+  <string name="start_guide_secure">Este icono significa que\n este correo está encriptado.</string>
 </resources>

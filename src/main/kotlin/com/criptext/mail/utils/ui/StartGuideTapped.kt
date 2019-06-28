@@ -16,6 +16,7 @@ class StartGuideTapped(val context: Context) {
             R.string.start_guide_notification -> showTapViewTarget(view, activity, title, dimension, 260f, android.R.color.transparent, R.dimen.focal_radius_small_views)
             R.string.start_guide_email_read -> showTapViewTarget(view, activity, title, dimension, 320f, R.color.white, R.dimen.focal_radius)
             R.string.start_guide_secure_attachments -> showTapViewTarget(view, activity, title)
+            R.string.start_guide_secure -> showTapViewTarget(view, activity, title, dimension, 320f, android.R.color.transparent, R.dimen.focal_radius_small_views)
             else -> showTapViewTarget(view, activity, title, dimension, 260f, R.color.white, R.dimen.focal_radius)
         }
     }

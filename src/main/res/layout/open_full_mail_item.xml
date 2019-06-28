@@ -62,9 +62,21 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"/>
 
+                    <ImageView
+                        android:id="@+id/email_is_secure"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:gravity="end"
+                        android:src="@drawable/ic_secinb"
+                        android:tint="@color/attachmentGray"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:visibility="visible"/>
+
                     <TextView
                         fontPath="fonts/NunitoSans-Regular.ttf"
                         android:id="@+id/email_date"
+                        android:layout_marginStart="5dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="13sp"

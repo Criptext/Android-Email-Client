@@ -238,7 +238,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                             deliveryStatus = DeliveryTypes.SENT)
                 }
 
-                scene.showMessage(UIMessage(R.string.email_sent))
+                if(resultData.isSecure){
+                    scene.showMessage(UIMessage(R.string.email_sent_secure))
+                } else {
+                    scene.showMessage(UIMessage(R.string.email_sent))
+                }
             }
         }
     }

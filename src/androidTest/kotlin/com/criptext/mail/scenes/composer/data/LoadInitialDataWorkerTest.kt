@@ -49,7 +49,7 @@ class LoadInitialDataWorkerTest {
     private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
             sender = mayerContact, deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
             emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false, latestEmailUnsentDate = Date(),
-            metadataKey = 1, allFilesAreInline = false, headerData = listOf())
+            metadataKey = 1, allFilesAreInline = false, headerData = listOf(), isSecure = true)
 
     @Before
     fun setup() {

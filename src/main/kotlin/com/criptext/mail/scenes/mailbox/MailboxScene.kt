@@ -114,6 +114,7 @@ interface MailboxScene{
     fun showSyncPhonebookDialog(observer: MailboxUIObserver)
     fun showStartGuideEmail()
     fun showStartGuideMultiple()
+    fun showSecureLockGuide(position: Int)
     fun showNotification()
     fun setEmtpyMailboxBackground(label: Label)
     fun getGoogleDriveService(): Drive?
@@ -352,6 +353,13 @@ interface MailboxScene{
             if(recyclerView.adapter != null && recyclerView.adapter!!.itemCount > 2) {
                 val view = recyclerView.findViewHolderForAdapterPosition(0) ?: return
                 observer?.showStartGuideMultiple(view.itemView.mail_item_left_name)
+            }
+        }
+
+        override fun showSecureLockGuide(position: Int) {
+            if(recyclerView.adapter != null && recyclerView.adapter!!.itemCount > 2) {
+                val view = recyclerView.findViewHolderForAdapterPosition(position) ?: return
+                observer?.showSecureIconGuide(view.itemView.findViewById(R.id.email_is_secure))
             }
         }
 

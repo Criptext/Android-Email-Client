@@ -42,5 +42,8 @@ class EmailThread(val latestEmail: FullEmail,
     val isStarred: Boolean
         get() = EmailThreadValidator.isLabelInList(latestEmail.labels, Label.LABEL_STARRED)
 
+    val isSecure: Boolean
+        get() = latestEmail.email.secure
+
     data class HeaderData(val name: String, val isMe: Boolean, val isDraft: Boolean, val isUnread: Boolean)
 }

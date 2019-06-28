@@ -14,7 +14,7 @@ import java.util.*
 data class EmailPreview(val subject: String, val topText: String, val bodyPreview: String,
                         val sender: Contact, val deliveryStatus: DeliveryTypes,
                         val unread: Boolean, val count: Int, val timestamp: Date,
-                        val latestEmailUnsentDate: Date?,
+                        val latestEmailUnsentDate: Date?, val isSecure: Boolean,
                         val emailId: Long, val metadataKey: Long, val threadId: String,
                         var isSelected: Boolean, var isStarred: Boolean, val hasFiles: Boolean,
                         val allFilesAreInline: Boolean, val headerData: List<EmailThread.HeaderData>) {
@@ -32,7 +32,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     count = e.totalEmails, timestamp = e.timestamp, threadId = e.threadId,
                     isSelected = false, isStarred = e.isStarred, hasFiles = e.hasFiles,
                     latestEmailUnsentDate = e.latestEmail.email.unsentDate, metadataKey = e.metadataKey,
-                    allFilesAreInline = e.allFilesAreInline, headerData = e.headerData)
+                    allFilesAreInline = e.allFilesAreInline, headerData = e.headerData, isSecure = e.isSecure)
         }
 
         fun emailPreviewToJSON(e: EmailPreview): String {
@@ -54,6 +54,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
             if(e.latestEmailUnsentDate != null)
                 json.put("latestEmailUnsentDate", DateAndTimeUtils.printDateWithServerFormat(e.latestEmailUnsentDate))
             json.put("metadataKey", e.metadataKey)
+            json.put("isSecure", e.isSecure)
 
             return json.toString()
         }
@@ -72,7 +73,7 @@ data class EmailPreview(val subject: String, val topText: String, val bodyPrevie
                     DateAndTimeUtils.getDateFromString(
                             json.getString("latestEmailUnsentDate"), null) else null, metadataKey = json.getLong("metadataKey"),
                     allFilesAreInline = json.getBoolean("allFilesAreInline"),
-                    headerData = listOf())
+                    headerData = listOf(), isSecure = json.optBoolean("isSecure"))
         }
     }
 }

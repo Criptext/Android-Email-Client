@@ -38,6 +38,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val countView : TextView
     private val context : Context
     private val attachment : ImageView
+    private val isSecure : ImageView
     private val avatarView: CircleImageView
     private val iconBack: ImageView
     private val check: ImageView
@@ -60,7 +61,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
                     DateAndTimeUtils.getUnsentDate(emailPreview.latestEmailUnsentDate.time, context)
             previewView.text = previewText
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.unsent_content))
-        }else {
+        } else {
             previewView.setTextColor(ContextCompat.getColor(view.context, R.color.mail_preview))
             previewView.text = if (emailPreview.bodyPreview.isEmpty() && !emailPreview.hasFiles) {
                 previewView.setTypeface(null, Typeface.ITALIC)
@@ -111,7 +112,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             countView.visibility = View.GONE
         }
 
-        setIcons(emailPreview.deliveryStatus, emailPreview.isStarred, (emailPreview.hasFiles && !emailPreview.allFilesAreInline))
+        setIcons(emailPreview.deliveryStatus, emailPreview.isStarred,
+                (emailPreview.hasFiles && !emailPreview.allFilesAreInline), emailPreview.isSecure)
         toggleStatus(emailPreview.isSelected, emailPreview.unread)
 
     }
@@ -165,7 +167,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         return spannable
     }
 
-    private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, showClip: Boolean){
+    private fun setIcons(deliveryType: DeliveryTypes, isStarred: Boolean, showClip: Boolean, secure: Boolean){
 
         check.visibility = View.VISIBLE
 
@@ -193,6 +195,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
         starIcon.visibility = if(isStarred) View.VISIBLE else View.GONE
         attachment.visibility = if(showClip) View.VISIBLE else View.GONE
+        isSecure.visibility = if(secure) View.VISIBLE else View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
@@ -247,6 +250,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         iconBack = view.findViewById(R.id.icon_back)
         layout = view.findViewById(R.id.mail_item_layout)
         attachment = view.findViewById(R.id.email_has_attachments)
+        isSecure = view.findViewById(R.id.email_is_secure)
         starIcon = view.findViewById(R.id.starred)
         context = view.context
     }
