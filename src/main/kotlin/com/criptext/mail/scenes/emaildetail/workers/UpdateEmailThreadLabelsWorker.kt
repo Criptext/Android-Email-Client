@@ -65,7 +65,7 @@ class UpdateEmailThreadLabelsWorker(
                 rejectedLabels = rejectedLabels, account = activeAccount)
         val emailIds = emails.map { it.email.id }
 
-        val peerSelectedLabels = selectedLabels.toList()
+        val peerSelectedLabels = selectedLabelsList
                 .filter { it.text != trueCurrentLabel.text }
                 .toList().map { it.text }
         val peerRemovedLabels = db.getLabelsFromThreadId(threadId)
