@@ -2,10 +2,7 @@ package com.criptext.mail.scenes.settings.profile
 
 import android.graphics.Bitmap
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
@@ -49,6 +46,8 @@ interface ProfileScene{
     fun dismissMessageAndProgressDialog()
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun enableProfileSettings(enable: Boolean)
+    fun updateCurrentEmailStatus(isEmailConfirmed: Boolean)
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -76,6 +75,19 @@ interface ProfileScene{
         private val profileRecoveryEmailButton: View by lazy {
             view.findViewById<View>(R.id.profile_recovery_button)
         }
+
+        private val profileRecoveryEmailLoad: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.recovery_email_progress)
+        }
+
+        private val profileRecoveryEmailArrow: View by lazy {
+            view.findViewById<View>(R.id.recovery_select_arrow)
+        }
+
+        private val profileRecoveryEmailConfirmText: TextView by lazy {
+            view.findViewById<TextView>(R.id.not_confirmed_text)
+        }
+
         private val textViewConfirmText: TextView by lazy {
             view.findViewById<TextView>(R.id.not_confirmed_text)
         }
@@ -128,6 +140,9 @@ interface ProfileScene{
 
             profileUIObserver = uiObserver
 
+            enableProfileSettings(!model.comesFromMailbox)
+
+
             backButton.setOnClickListener {
                 profileUIObserver.onBackButtonPressed()
             }
@@ -174,7 +189,7 @@ interface ProfileScene{
                     Runnable { hideProfilePictureProgress() })
         }
 
-        private fun updateCurrentEmailStatus(isEmailConfirmed: Boolean){
+        override fun updateCurrentEmailStatus(isEmailConfirmed: Boolean){
             if(isEmailConfirmed) {
                 textViewConfirmText.setTextColor(ContextCompat.getColor(
                         view.context, R.color.green))
@@ -289,6 +304,16 @@ interface ProfileScene{
 
         override fun dismissAccountSuspendedDialog() {
             accountSuspended.dismissDialog()
+        }
+
+        override fun enableProfileSettings(enable: Boolean) {
+            profileRecoveryEmailConfirmText.visibility = if(enable) View.VISIBLE else View.INVISIBLE
+            profileRecoveryEmailArrow.visibility = if(enable) View.VISIBLE else View.INVISIBLE
+            profileRecoveryEmailLoad.visibility = if(enable) View.GONE else View.VISIBLE
+            profileRecoveryEmailButton.isClickable = enable
+            profileRecoveryEmailButton.isEnabled = enable
+            profileReplyToEmailButton.isEnabled = enable
+            profileReplyToEmailButton.isClickable = enable
         }
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {

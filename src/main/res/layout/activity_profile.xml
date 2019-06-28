@@ -283,6 +283,7 @@
                         android:layout_weight="1"/>
 
                     <ImageView
+                        android:id="@+id/recovery_select_arrow"
                         android:layout_width="32dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="10dp"
@@ -291,6 +292,15 @@
                         android:layout_gravity="center_vertical"
                         android:tint="#e3e3e3"
                         android:src="@drawable/arrow_right"/>
+
+                    <ProgressBar
+                        android:id="@+id/recovery_email_progress"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="20dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="visible"
+                        android:layout_gravity="end|center_vertical"/>
 
                 </LinearLayout>
 

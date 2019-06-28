@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
@@ -38,7 +39,8 @@ class MessagingService : FirebaseMessagingService(){
                                 cacheDir = this.cacheDir),
                         host = this,
                         isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
-                        activeAccount = account)
+                        activeAccount = account,
+                        storage = storage)
             }
         }
         if(remoteMessage.data.isNotEmpty()) {
@@ -51,10 +53,15 @@ class MessagingService : FirebaseMessagingService(){
         notifier?.notifyPushEvent(this)
     }
 
-    fun cancelPush(notificationId: Int){
+    fun cancelPush(notificationId: Int, storage: KeyValueStorage){
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         manager.cancel(notificationId)
+        if((notCount - 1) == 0) {
+            manager.cancel(CriptextNotification.INBOX_ID)
+        }
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
     }
 
     companion object {

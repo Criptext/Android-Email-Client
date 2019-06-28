@@ -75,7 +75,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
-            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -189,7 +188,15 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
         override fun onProfileClicked() {
-            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+            val userData = ProfileUserData(
+                    name = activeAccount.name,
+                    email = activeAccount.userEmail,
+                    replyToEmail = "",
+                    recoveryEmail = "",
+                    isLastDeviceWith2FA = false,
+                    isEmailConfirmed = false
+            )
+            host.goToScene(ProfileParams(userData), true, activityMessage = ActivityMessage.ComesFromMailbox())
         }
 
         override fun onAccountClicked(account: Account) {
@@ -1193,35 +1200,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activateAccount(resultData.activeAccount)
                 scene.dismissAccountSuspendedDialog()
-            }
-        }
-    }
-
-    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
-        when(result) {
-            is GeneralResult.GetUserSettings.Success -> {
-                val userData = ProfileUserData(
-                        name = activeAccount.name,
-                        email = activeAccount.userEmail,
-                        replyToEmail = result.userSettings.replyTo,
-                        recoveryEmail = result.userSettings.recoveryEmail,
-                        isLastDeviceWith2FA = result.userSettings.devices.size == 1
-                                && result.userSettings.hasTwoFA,
-                        isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
-                )
-                host.goToScene(ProfileParams(userData), true, activityMessage = ActivityMessage.ComesFromMailbox())
-            }
-            is GeneralResult.GetUserSettings.Failure -> {
-                scene.showMessage(result.message)
-            }
-            is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
-            }
-            is GeneralResult.GetUserSettings.Forbidden -> {
-                scene.showConfirmPasswordDialog(observer)
-            }
-            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
-                showSuspendedAccountDialog()
             }
         }
     }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.criptext.mail.R
 import com.criptext.mail.api.toList
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
@@ -30,7 +31,8 @@ import org.json.JSONArray
  */
 
 class PushController(private val dataSource: PushDataSource, private val host: MessagingService,
-                     private val isPostNougat: Boolean, private val activeAccount: ActiveAccount) {
+                     private val isPostNougat: Boolean, private val activeAccount: ActiveAccount,
+                     private val storage: KeyValueStorage) {
 
     private val dataSourceListener = { result: PushResult ->
         when (result) {
@@ -175,7 +177,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private fun onRemoveNotification(result: PushResult.RemoveNotification){
         when(result){
             is PushResult.RemoveNotification.Success -> {
-                host.cancelPush(result.notificationId)
+                host.cancelPush(result.notificationId, storage)
             }
         }
     }
