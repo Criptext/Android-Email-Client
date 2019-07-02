@@ -297,16 +297,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 }
             }
             else{
-                val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
-                val fromContact = if(email.fromAddress.isEmpty()){
-                    dbContact[0]
-                }else Contact(
-                        id = dbContact[0].id,
-                        email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
-                        name = EmailAddressUtils.extractName(email.fromAddress),
-                        isTrusted = dbContact[0].isTrusted,
-                        score = dbContact[0].score
-                )
+                val fromContact = ContactUtils.getFromContact(db.emailContactDao(), db.contactDao(),
+                        activeAccount.id, it.id, it.fromAddress)
                 contacts.addAll(listOf(fromContact))
                 contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
                         .filter { contact -> contact.id != fromContact.id })
@@ -337,15 +329,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             contacts
         }
 
-        val fromContact = if(email.fromAddress.isEmpty()){ 
-            contactsFROM[0]
-        }else Contact(
-                id = contactsFROM[0].id,
-                email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
-                name = EmailAddressUtils.extractName(email.fromAddress),
-                isTrusted = contactsFROM[0].isTrusted,
-                score = contactsFROM[0].score
-        )
+        val fromContact = ContactUtils.getFromContact(db.emailContactDao(), db.contactDao(),
+                activeAccount.id, email.id, email.fromAddress)
         val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                 email.metadataKey, email.content,
                 activeAccount.recipientId, activeAccount.domain)

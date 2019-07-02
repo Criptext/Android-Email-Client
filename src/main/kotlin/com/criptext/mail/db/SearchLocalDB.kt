@@ -2,6 +2,7 @@ package com.criptext.mail.db
 
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.mailbox.data.EmailThread
+import com.criptext.mail.utils.ContactUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.EmailUtils
@@ -77,16 +78,8 @@ interface SearchLocalDB{
                     }
                 }
                 else{
-                    val dbContact = db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
-                    val fromContact = if(email.fromAddress.isEmpty()){
-                        dbContact[0]
-                    }else Contact(
-                            id = dbContact[0].id,
-                            email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
-                            name = EmailAddressUtils.extractName(email.fromAddress),
-                            isTrusted = dbContact[0].isTrusted,
-                            score = dbContact[0].score
-                    )
+                    val fromContact = ContactUtils.getFromContact(db.emailContactDao(), db.contactDao(),
+                            account.id, it.id, it.fromAddress)
                     contacts.addAll(listOf(fromContact))
                     contacts.addAll(db.emailContactDao().getContactsFromEmail(it.id, ContactTypes.FROM)
                             .filter { contact -> contact.id != fromContact.id })
@@ -118,15 +111,8 @@ interface SearchLocalDB{
             }
 
 
-            val fromContact = if(email.fromAddress.isEmpty()){
-                contactsFROM[0]
-            }else Contact(
-                    id = contactsFROM[0].id,
-                    email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
-                    name = EmailAddressUtils.extractName(email.fromAddress),
-                    isTrusted = contactsFROM[0].isTrusted,
-                    score = contactsFROM[0].score
-            )
+            val fromContact = ContactUtils.getFromContact(db.emailContactDao(), db.contactDao(),
+                    account.id, email.id, email.fromAddress)
 
             val emailContent =  EmailUtils.getEmailContentFromFileSystem(filesDir,
                     email.metadataKey, email.content,

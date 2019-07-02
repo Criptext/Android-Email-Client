@@ -45,7 +45,7 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
 
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
-                data.threadId, data.isPostNougat, data.account)
+                data.threadId, data.isPostNougat, data.account, data.domain)
 
             return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent, data = data,
                     notificationId = notificationId))

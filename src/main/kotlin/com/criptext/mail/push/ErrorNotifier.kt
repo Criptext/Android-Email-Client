@@ -45,7 +45,7 @@ sealed class ErrorNotifier(val data: PushData.Error): Notifier {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun buildNotification(ctx: Context, cn: NotificationError): Notification {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
-                null, data.isPostNougat)
+                extraParam = null, isPostNougat = data.isPostNougat, account = null, domain = null)
 
             return cn.createNotification(clickIntent = pendingIntent,
                     data = data, notificationId = if(data.isPostNougat) type.requestCodeRandom() else type.requestCode())
