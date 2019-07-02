@@ -53,6 +53,7 @@ class ResendEmailWorker(
     private var meAsRecipient: Boolean = false
     private var currentFullEmail: FullEmail? = null
     private var guests: List<String> = listOf()
+    private var isSecure = true
 
     private fun getDeliveryType(): DeliveryTypes{
         return if(meAsRecipient)
@@ -140,7 +141,7 @@ class ResendEmailWorker(
             return GeneralResult.ResendEmail.Failure()
         }
         db.increaseContactScore(listOf(emailId))
-        return GeneralResult.ResendEmail.Success(position)
+        return GeneralResult.ResendEmail.Success(position, isSecure)
     }
 
     override fun cancel() {
@@ -255,7 +256,8 @@ class ResendEmailWorker(
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                return listOf(PostEmailBody.EmptyCriptextEmail(recipientId))
+                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain))
+                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
@@ -279,7 +281,8 @@ class ResendEmailWorker(
                                 domain = domain)
                     }
                     is Result.Failure -> {
-                        PostEmailBody.EmptyCriptextEmail(recipientId)
+                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain)
+                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain)
                     }
                 }
             }
@@ -322,7 +325,7 @@ class ResendEmailWorker(
                             messageId = sentMailData.messageId, metadataKey = sentMailData.metadataKey,
                             status = getDeliveryType(),
                             date = DateAndTimeUtils.getDateFromString(sentMailData.date, null),
-                            accountId = activeAccount.id
+                            accountId = activeAccount.id, isSecure = isSecure
                     )
 
                     EmailUtils.saveEmailInFileSystem(filesDir = filesDir, content = emailContent.first,
@@ -338,6 +341,7 @@ class ResendEmailWorker(
     private fun getGuestEmails(fullEmail: FullEmail, mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
         val externalData = db.getExternalData(fullEmail.email.id)
         return if(externalData == null) {
+            isSecure = false
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
                     if(activeAccount.domain != Contact.mainDomain)fullEmail.email.content

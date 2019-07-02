@@ -425,6 +425,14 @@ class MailboxSceneController(private val scene: MailboxScene,
                 )
             }
         }
+
+        override fun showSecureIconGuide(view: View) {
+            host.showStartGuideView(
+                    view,
+                    R.string.start_guide_secure,
+                    R.dimen.focal_padding_attachments
+            )
+        }
     }
 
     val menuClickListener = {
@@ -974,7 +982,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             when (result) {
                 is MailboxResult.SendMail.Success -> {
                     if(result.emailId != null) {
-                        scene.showMessage(UIMessage(R.string.email_sent))
+                        if(result.isSecure){
+                            scene.showMessage(UIMessage(R.string.email_sent_secure))
+                        } else {
+                            scene.showMessage(UIMessage(R.string.email_sent))
+                        }
                         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                         reloadMailboxThreads()
                     }
@@ -1016,6 +1028,14 @@ class MailboxSceneController(private val scene: MailboxScene,
                     model.extraAccounts = result.accounts.filter { !it.isActive }
                     scene.setMenuLabels(result.labels.map { LabelWrapper(it) })
                     scene.setMenuAccounts(model.extraAccounts, model.extraAccounts.map { 0 })
+                    val position = model.threads.indexOfFirst { it.isSecure }
+                    if(position > -1){
+                        val secureLockHasShown = storage.getBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, false)
+                        if(!secureLockHasShown) {
+                            scene.showSecureLockGuide(position)
+                            storage.putBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, true)
+                        }
+                    }
                 }
                 is MailboxResult.GetMenuInformation.Failure -> {
                     scene.showMessage(UIMessage(R.string.error_getting_counters))

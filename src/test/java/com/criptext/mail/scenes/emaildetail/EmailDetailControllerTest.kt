@@ -35,7 +35,7 @@ open class EmailDetailControllerTest {
             deliveryStatus = DeliveryTypes.DELIVERED, emailId = 1L, isSelected = false,
             sender = Contact(0, "", "", false, 0), unread = false, hasFiles = false, isStarred = false,
             latestEmailUnsentDate = Date(System.currentTimeMillis()), metadataKey = 1L, allFilesAreInline = false,
-            headerData = listOf())
+            headerData = listOf(), isSecure = true)
 
     protected lateinit var model: EmailDetailSceneModel
     protected lateinit var scene: EmailDetailScene

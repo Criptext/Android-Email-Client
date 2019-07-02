@@ -55,6 +55,17 @@
                 android:rotation="90"
                 android:visibility="visible"/>
 
+            <ImageView
+                android:id="@+id/email_is_secure"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:gravity="end"
+                android:src="@drawable/ic_secinb"
+                android:tint="@color/attachmentGray"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:visibility="visible"/>
+
             <TextView
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:id="@+id/email_date"

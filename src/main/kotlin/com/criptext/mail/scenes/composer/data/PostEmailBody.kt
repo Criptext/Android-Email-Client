@@ -74,11 +74,12 @@ class PostEmailBody(val threadId: String?, val subject: String,
         }
     }
 
-    data class EmptyCriptextEmail(val recipientId: String): CriptextEmail() {
+    data class EmptyCriptextEmail(val recipientId: String, val domain: String): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val jsonOuter = JSONObject()
             jsonOuter.put("username", recipientId)
+            jsonOuter.put("domain", domain)
             jsonOuter.put("emails", JSONArray())
             return jsonOuter
         }

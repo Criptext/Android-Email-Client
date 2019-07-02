@@ -19,5 +19,6 @@ interface MailboxUIObserver: UIObserver {
     fun onStartGuideEmail()
     fun showStartGuideEmail(view: View)
     fun showStartGuideMultiple(view: View)
+    fun showSecureIconGuide(view: View)
     fun restoreFromBackupPressed()
 }

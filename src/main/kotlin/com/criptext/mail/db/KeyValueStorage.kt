@@ -37,6 +37,7 @@ interface KeyValueStorage {
         StartGuideShowEmail("StartGuideShowEmail"),
         StartGuideShowAttachments("StartGuideShowAttachments"),
         StartGuideShowMultiple("StartGuideShowMultiple"),
+        StartGuideShowSecureEmail("StartGuideShowSecureEmail"),
         StartGuideShowNotification("StartGuideShowNotification"),
         StartGuideShowOptions("StartGuideShowOptions"),
         StartGuideShowEmailRead("StartGuideShowEmailRead"),

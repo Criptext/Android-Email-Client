@@ -402,6 +402,7 @@
     <string name="to_me">To me</string>
   <string name="label_as">Label as</string>
     <string name="email_sent">Email Sent</string>
+    <string name="email_sent_secure">🔒 Email Sent</string>
   <string name="from_popup">From:</string>
   <string name="to_popup">To:\u0020\u0020</string>
   <string name="cc_popup">CC:\u0020\u0020</string>
@@ -536,4 +537,5 @@
   <string name="account_suspended_dialog_button">Switch Account</string>
   <string name="account_suspended_sign_in_error">This account is suspended.</string>
   <string name="profile_danger_separator">DANGER ZONE</string>
+  <string name="start_guide_secure">Lock icon means this\n email is encrypted.</string>
 </resources>

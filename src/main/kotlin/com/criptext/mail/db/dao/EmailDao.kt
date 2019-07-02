@@ -249,9 +249,11 @@ import java.util.*
             messageId=:messageId,
             metadataKey=:metadataKey,
             date=:date,
-            delivered=:status
+            delivered=:status,
+            secure=:isSecure
             where id=:id AND accountId = :accountId""")
-    fun updateEmail(id: Long, threadId: String, messageId: String, metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long)
+    fun updateEmail(id: Long, threadId: String, messageId: String, metadataKey: Long, date: Date, status: DeliveryTypes, accountId: Long,
+                    isSecure: Boolean)
 
     @Query("""UPDATE email
             SET delivered=:status

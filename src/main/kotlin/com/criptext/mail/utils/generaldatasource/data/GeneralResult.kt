@@ -185,7 +185,7 @@ sealed class GeneralResult {
     }
 
     sealed class ResendEmail: GeneralResult() {
-        data class Success(val position: Int): ResendEmail()
+        data class Success(val position: Int, val isSecure: Boolean): ResendEmail()
         class Failure: ResendEmail()
     }
 
