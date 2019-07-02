@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.crashlytics.android.Crashlytics
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -37,15 +38,12 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())
-        val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val lockManager = LockManager.getInstance()
         if(lockManager.appLock != null && lockManager.appLock.isPasscodeSet && lockManager.isAppLockEnabled
                 && storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){
             lockManager.appLock.enable()
         }
-        notificationManager.cancelAll()
-        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
-        storage.putInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
+        cancelNotifications()
         val timeToWait = try {
             if(db.inTransaction())
                 WelcomeTimeout.inTransactionTimeout
@@ -56,6 +54,16 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         }
         welcomeTimeout = WelcomeTimeout(timeToWait, this)
         welcomeTimeout!!.start()
+    }
+
+    private fun cancelNotifications(){
+        val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(CriptextNotification.INBOX_ID)
+        notificationManager.cancel(CriptextNotification.OPEN_ID)
+        notificationManager.cancel(CriptextNotification.ERROR_ID)
+        notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        storage.putInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }
 
     private fun hasActiveAccount(): Boolean =

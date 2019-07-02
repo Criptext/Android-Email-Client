@@ -12,9 +12,6 @@ import com.criptext.mail.utils.UIMessage
 
 sealed class PushData {
 
-    /**
-     * POJO that holds all the data from the NewMail push notification
-     */
     data class NewMail(val name: String, val email: String, val subject: String, val threadId: String,
                        val metadataKey: Long, val isPostNougat: Boolean, val preview: String, val hasInlineImages: Boolean,
                        val shouldPostNotification:Boolean, val activeEmail: String, val senderImage: Bitmap?,
@@ -33,4 +30,8 @@ sealed class PushData {
                           val deviceType: DeviceUtils.DeviceType, val deviceName: String, val syncFileVersion: Int,
                           val isPostNougat: Boolean, val shouldPostNotification:Boolean, val recipientId: String,
                           val domain: String): PushData()
+
+    data class JobBackup(val title: String, val body: String, val isPostNougat: Boolean,
+                         val shouldPostNotification:Boolean, val recipientId: String,
+                         val domain: String, val progress: Int): PushData()
 }

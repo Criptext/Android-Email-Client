@@ -47,8 +47,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 85
-        versionName "0.21.8"
+        versionCode 86
+        versionName "0.21.9"
         applicationId "com.criptext.mail"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -244,7 +244,7 @@ dependencies {
     implementation('com.google.apis:google-api-services-drive:v3-rev165-1.25.0')
 
     //JOB SCHEDULER
-    implementation 'com.evernote:android-job:1.2.6'
+    implementation 'com.evernote:android-job:1.3.0-rc1'
 }
 
 

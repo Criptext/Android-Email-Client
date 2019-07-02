@@ -1,35 +1,19 @@
 package com.criptext.mail.push
 
-import android.app.NotificationManager
-import android.content.Context
 import android.graphics.Bitmap
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
-import com.criptext.mail.api.toList
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.data.PushRequest
 import com.criptext.mail.push.data.PushResult
+import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.EventHelper
-import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
-import org.json.JSONArray
-
-/**
- * Controller designed to be used by EmailFirebaseMessageService. Exposes a single function:
- * parsePushPayload() which takes in the Map object with the push data and returns a Notifier
- * object, which the service can use to display a notification by invoking its notifyPushEvent()
- * method.
- *
- * The constructor receives a lambda function that performs a partial update. This function is
- * expected to throw a few exceptions related to connectivity issues every now and then, which are
- * handled by the controller to configure the resulting Notifier object.
- * Created by gabriel on 8/18/17.
- */
 
 class PushController(private val dataSource: PushDataSource, private val host: MessagingService,
                      private val isPostNougat: Boolean, private val activeAccount: ActiveAccount,
@@ -155,10 +139,8 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                     when(subAction){
                         "delete_new_email" -> {
                             val metadataKeys = pushData["metadataKeys"]?.split(",")
-                            if(metadataKeys != null){
-                                metadataKeys.forEach {
-                                    dataSource.submitRequest(PushRequest.RemoveNotification(pushData, it))
-                                }
+                            metadataKeys?.forEach {
+                                dataSource.submitRequest(PushRequest.RemoveNotification(pushData, it))
                             }
                         }
                         "delete_sync_link" -> {
@@ -170,6 +152,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                     }
                     null
                 }
+                else -> null
             }
             host.notifyPushEvent(notifier)
         }

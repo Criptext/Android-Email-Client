@@ -444,11 +444,11 @@ interface MailboxLocalDB {
         override fun getUnreadCounterLabel(labelId: Long, accountId: Long): Int {
             val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(
                     db.labelDao().getLabelById(labelId, accountId)).map { it.id }
-            return db.emailDao().getTotalUnreadThreads(rejectedLabels, "%L$labelId%", accountId).size
+            return db.emailDao().getTotalUnreadThreads(rejectedLabels, "%L${labelId}L%", accountId).size
         }
 
         override fun getTotalCounterLabel(labelId: Long,accountId: Long): Int {
-            return db.emailDao().getTotalThreads("%L$labelId%", accountId).size
+            return db.emailDao().getTotalThreads("%L${labelId}L%", accountId).size
         }
 
         override fun getEmailsByThreadId(threadId: String, rejectedLabels: List<Long>, accountId: Long): List<Email> {

@@ -100,7 +100,7 @@ import java.util.*
         end
         AND accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabel(
@@ -124,7 +124,7 @@ import java.util.*
         end
         AND accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         order by date DESC limit :limit
             """)
     fun getEmailThreadsFromMailboxLabelFiltered(
@@ -148,7 +148,7 @@ import java.util.*
         end
         AND accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         order by date DESC
             """)
     fun getNewEmailThreadsFromMailboxLabel(
@@ -365,7 +365,7 @@ import java.util.*
         end
         AND accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabel(
@@ -387,7 +387,7 @@ import java.util.*
         end
         AND accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         order by date DESC limit :limit
         """)
     fun getInitialEmailThreadsFromMailboxLabelFiltered(
@@ -431,7 +431,7 @@ import java.util.*
         and unread = 1
         AND email.accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         """)
     fun getTotalUnreadThreads(rejectedLabels: List<Long>, selectedLabel: String, accountId: Long): List<Email>
 
@@ -442,7 +442,7 @@ import java.util.*
         left join email_label on email.id = email_label.emailId
         WHERE email.accountId = :accountId
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
-        having coalesce(group_concat('L' || email_label.labelId), "") like :selectedLabel
+        having coalesce(group_concat('L' || email_label.labelId || 'L'), "") like :selectedLabel
         """)
     fun getTotalThreads(selectedLabel: String, accountId: Long): List<Email>
 

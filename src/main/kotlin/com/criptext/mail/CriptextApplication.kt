@@ -1,20 +1,19 @@
 package com.criptext.mail
 
-import android.os.AsyncTask
 import androidx.multidex.MultiDexApplication
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.pinlock.pinscreen.LockScreenActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signup.SignUpActivity
+import com.criptext.mail.services.jobs.CriptextJobCreator
 import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.websocket.WebSocketSingleton
+import com.evernote.android.job.JobManager
 import com.facebook.stetho.Stetho
 import com.github.omadahealth.lollipin.lib.managers.AppLockActivity
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import com.github.omadahealth.lollipin.lib.managers.LockManager
-
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 
 class CriptextApplication : MultiDexApplication() {
@@ -28,6 +27,7 @@ class CriptextApplication : MultiDexApplication() {
         )
         if(BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
+        JobManager.create(this).addJobCreator(CriptextJobCreator())
         if(activeAccount != null) {
             val storage = KeyValueStorage.SharedPrefs(this)
             val lockManager = LockManager.getInstance()

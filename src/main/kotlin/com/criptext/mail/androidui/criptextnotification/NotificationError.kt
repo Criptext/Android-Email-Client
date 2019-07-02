@@ -28,6 +28,9 @@ import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
 
 class NotificationError(override val ctx: Context): CriptextNotification(ctx) {
+    override fun updateNotification(notificationId: Int, data: PushData): Notification {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

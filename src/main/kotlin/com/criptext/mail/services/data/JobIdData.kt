@@ -3,7 +3,7 @@ package com.criptext.mail.services.data
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class JobIdData(val accountId: Long, val jobId: Int) {
+data class JobIdData(val accountId: Long, val jobId: Int, var useWifiOnly: Boolean = true) {
 
     companion object {
         fun toJSON(list: List<JobIdData>): JSONObject{
@@ -13,6 +13,7 @@ data class JobIdData(val accountId: Long, val jobId: Int) {
                 val json = JSONObject()
                 json.put("accountId", it.accountId)
                 json.put("jobId", it.jobId)
+                json.put("useWifiOnly", it.useWifiOnly)
                 jsonArray.put(json)
             }
             returnJson.put("jobIdData", jsonArray)
@@ -29,7 +30,11 @@ data class JobIdData(val accountId: Long, val jobId: Int) {
                         val jsonItem = jsonArray.getJSONObject(it)
                         savedDataList.add(JobIdData(
                                 jsonItem.getLong("accountId"),
-                                jsonItem.getInt("jobId")
+                                jsonItem.getInt("jobId"),
+                                if(jsonItem.has("useWifiOnly"))
+                                    jsonItem.getBoolean("useWifiOnly")
+                                else
+                                    true
                         ))
                     }
             return savedDataList

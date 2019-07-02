@@ -3,6 +3,7 @@ package com.criptext.mail.db
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.criptext.mail.services.data.JobIdData
 
 /**
  * Created by gabriel on 3/8/18.
@@ -32,7 +33,7 @@ interface KeyValueStorage {
         LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
         ShowSyncPhonebookDialog("ShowSyncPhonebookDialog"), SyncNotificationCount("SyncPushCount"),
         ShowEmailPreview("ShowEmailPreview"), HasLockPinActive("HasLockPinActive"),
-        PIN("pin"), AskForPin("AskForPin"), PINTimeout("PINTimeout"),
+        PINTimeout("PINTimeout"),
         UserHasAcceptedPhonebookSync("UserHasAcceptedPhonebookSync"),
         StartGuideShowEmail("StartGuideShowEmail"),
         StartGuideShowAttachments("StartGuideShowAttachments"),
@@ -44,11 +45,11 @@ interface KeyValueStorage {
         HasDarkTheme("HasDarkTheme"),
         HasTimestampForCacheReset("HasTimestampForCacheReset"),
         CacheResetTimestamp("CacheResetTimestamp"),
-        UseWifiOnlyForBackup("UseWifiOnlyForBackup"),
         SavedBackupData("SavedBackupData"),
         JWTS("JWTS"),
         SavedJobs("SavedJobs"),
-        ShowCriptextFooter("ShowCriptextFooter")
+        ShowCriptextFooter("ShowCriptextFooter"),
+        CloudBackupNotificationCount("CloudBackupNotificationCount")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {
