@@ -9,7 +9,10 @@
     android:paddingBottom="10dp"
     android:paddingStart="5dp"
     android:paddingEnd="15dp"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <include layout="@layout/mail_item_left_name"
         android:layout_width="wrap_content"

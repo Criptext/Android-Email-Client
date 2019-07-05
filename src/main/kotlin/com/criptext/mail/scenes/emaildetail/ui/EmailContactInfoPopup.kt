@@ -11,6 +11,8 @@ import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.emaildetail.EmailContactInfoListener
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.ui.PopupUtils
 
@@ -73,7 +75,7 @@ class EmailContactInfoPopup(private val anchorView: View) {
             containerBCC.visibility = View.GONE
         }
 
-        date.text = DateAndTimeUtils.getFormattedDate(fullEmail.email.date.time, context)
+        date.text = DateAndTimeUtils.getHoraVerdadera(fullEmail.email.date.time, context.getLocalizedUIMessage(UIMessage(R.string.mail_template_at)))
         subject.text = fullEmail.email.subject
     }
 
