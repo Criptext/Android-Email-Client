@@ -46,4 +46,5 @@
     <attr name="criptextEmptyFeedImage" format="reference"/>
     <attr name="criptextEmptySearchImage" format="reference"/>
     <attr name="criptextSearchImage" format="reference"/>
+    <attr name="criptextSelectableItemBackground" format="reference|color"/>
 </resources>

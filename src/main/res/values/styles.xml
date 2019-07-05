@@ -4,14 +4,14 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorControlHighlight">#cecece</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/colorBackground</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:itemBackground">@color/colorBackground</item>
         <item name="colorControlNormal">@color/black</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
+        <item name="criptextSelectableItemBackground">#cecece</item>
         <item name="criptextColorBackground">@color/colorBackground</item>
         <item name="criptextLeftMenuHeader">@color/colorSecondaryBackground</item>
         <item name="criptextLeftMenuBackground">@color/colorNavBodyBackground</item>
@@ -64,10 +64,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:itemBackground">@color/colorPrimaryDark</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
+        <item name="criptextSelectableItemBackground">@color/mail_item_not_selected</item>
         <item name="criptextColorBackground">@color/settings_bg_color_dark</item>
         <item name="criptextLeftMenuHeader">@color/menu_header_dark</item>
         <item name="criptextLeftMenuBackground">@color/menu_body_dark</item>
@@ -184,9 +183,17 @@
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:colorControlHighlight">?attr/criptextSelectableItemBackground</item>
+        <item name="android:colorBackground">?attr/criptextColorBackground</item>
+        <item name="android:textColor">?attr/criptextPrimaryTextColor</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:colorControlHighlight">?attr/criptextSelectableItemBackground</item>
+        <item name="android:colorBackground">?attr/criptextColorBackground</item>
+        <item name="android:textColor">?attr/criptextPrimaryTextColor</item>
+    </style>
 
     <style name="email_detail_popup_menu" parent="Widget.AppCompat.PopupMenu">
         <item name="android:dropDownHorizontalOffset">-4dp</item>

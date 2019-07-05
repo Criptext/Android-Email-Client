@@ -45,10 +45,10 @@ class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
             else toggleThreadSelection(mail, position)
         }
 
-        holder.itemView.setOnLongClickListener({
+        holder.itemView.setOnLongClickListener {
             toggleThreadSelection(mail, position)
             true
-        })
+        }
     }
 
     override fun createEmptyViewHolder(parent: ViewGroup): EmptyViewHolder {

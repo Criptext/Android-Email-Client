@@ -6,6 +6,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.settings.SettingsLogoutDialog
 import com.criptext.mail.scenes.settings.profile.ui.BottomDialog
 import com.criptext.mail.scenes.settings.profile.ui.ProfileNameDialog
@@ -100,6 +101,14 @@ interface ProfileScene{
             view.findViewById<View>(R.id.profile_logout_button)
         }
 
+        private val profileLineBeforeDangerZone: View by lazy {
+            view.findViewById<View>(R.id.before_danger_zone_line)
+        }
+
+        private val profileDangerZoneSeparator: View by lazy {
+            view.findViewById<View>(R.id.danger_zone_separator)
+        }
+
         private val profileDeleteAccountButton: View by lazy {
             view.findViewById<View>(R.id.profile_delete_account_button)
         }
@@ -182,6 +191,12 @@ interface ProfileScene{
             nameText.text = model.userData.name
             emailText.text = model.userData.email
             updateCurrentEmailStatus(model.userData.isEmailConfirmed)
+
+            if(domain != Contact.mainDomain){
+                profileDeleteAccountButton.visibility = View.GONE
+                profileDangerZoneSeparator.visibility = View.GONE
+                profileLineBeforeDangerZone.visibility = View.VISIBLE
+            }
 
             showProfilePictureProgress()
             UIUtils.setProfilePicture(profilePicture, context.resources, domain, recipientId,

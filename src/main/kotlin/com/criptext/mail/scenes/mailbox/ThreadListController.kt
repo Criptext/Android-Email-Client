@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.mailbox
 
-import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.virtuallist.VirtualListView
 
