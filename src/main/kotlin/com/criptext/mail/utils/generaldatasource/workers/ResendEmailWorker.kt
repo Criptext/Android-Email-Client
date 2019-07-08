@@ -73,7 +73,7 @@ class ResendEmailWorker(
     private fun getFileKey(fileKey: String?, attachments: List<CRFile>): String?{
         if(fileKey == null) return null
         val attachmentsThatNeedDuplicate = attachments.filter { db.fileNeedsDuplicate(it.id) }
-        return if(attachments.containsAll(attachmentsThatNeedDuplicate)) {
+        return if(attachmentsThatNeedDuplicate.isNotEmpty() && attachments.containsAll(attachmentsThatNeedDuplicate)) {
             attachmentsThatNeedDuplicate.first().fileKey
         }else{
             fileKey
