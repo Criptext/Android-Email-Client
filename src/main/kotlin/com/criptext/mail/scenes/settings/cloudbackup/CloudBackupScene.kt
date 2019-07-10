@@ -11,6 +11,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
+import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.evernote.android.job.JobManager
@@ -46,6 +47,8 @@ interface CloudBackupScene{
     fun backingUpNow(isBackingUp: Boolean)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun showPreparingFileDialog()
+    fun dismissPreparingFileDialog()
 
     var cloudBackupUIObserver: CloudBackupUIObserver?
 
@@ -112,10 +115,17 @@ interface CloudBackupScene{
         private val progressBarBackupNow: ProgressBar by lazy {
             view.findViewById<ProgressBar>(R.id.back_up_now_progress)
         }
+        private val exportBackupFile: View by lazy {
+            view.findViewById<View>(R.id.export_backup_file)
+        }
+        private val restoreBackupFile: View by lazy {
+            view.findViewById<View>(R.id.restore_backup)
+        }
 
         private val progressDialog = ProgressDialog(view.context as Activity)
         private val encryptPassphraseDialog = EncryptPassphraseDialog(view.context)
         private val accountSuspended = AccountSuspendedDialog(context)
+        private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
 
         private val autoBackupSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -249,6 +259,14 @@ interface CloudBackupScene{
             cloudBackupIcon.setImageResource(R.drawable.small_check_cloud)
         }
 
+        override fun showPreparingFileDialog() {
+            preparingFileDialog.showDialog()
+        }
+
+        override fun dismissPreparingFileDialog() {
+            preparingFileDialog.dismiss()
+        }
+
         private fun getFrequencyPeriod(period: Int): Long {
             return when(period){
                 1 -> 86400000L * 7L
@@ -274,6 +292,12 @@ interface CloudBackupScene{
             }
             backUpNow.setOnClickListener {
                 cloudBackupUIObserver?.backUpNowPressed()
+            }
+            exportBackupFile.setOnClickListener {
+                cloudBackupUIObserver?.exportBackupPressed()
+            }
+            restoreBackupFile.setOnClickListener {
+                cloudBackupUIObserver?.restoreBackupPressed()
             }
         }
 

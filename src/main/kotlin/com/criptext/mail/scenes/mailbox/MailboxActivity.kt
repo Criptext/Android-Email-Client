@@ -15,6 +15,7 @@ import com.criptext.mail.db.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
@@ -25,6 +26,8 @@ import com.criptext.mail.scenes.mailbox.feed.ui.FeedScene
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
+import com.criptext.mail.utils.file.ActivityMessageUtils
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -33,6 +36,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import droidninja.filepicker.FilePickerConst
 import java.util.*
 
 
@@ -190,6 +194,16 @@ class MailboxActivity : BaseActivity() {
         }
     }
 
+    private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
+        when(filePickerConst){
+            FilePickerConst.KEY_SELECTED_DOCS -> {
+                if(data != null) {
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
+                }
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -217,6 +231,9 @@ class MailboxActivity : BaseActivity() {
                     }
                 }
 
+            }
+            FilePickerConst.REQUEST_CODE_DOC -> {
+                setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)
             }
         }
     }

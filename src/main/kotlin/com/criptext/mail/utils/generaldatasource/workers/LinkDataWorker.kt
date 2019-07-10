@@ -19,6 +19,7 @@ import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.exceptions.SyncFileException
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -177,8 +178,16 @@ class LinkDataWorker(private val authorizerId: Int,
         EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId, activeAccount.domain)
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
-        UIMessage(resId = R.string.forgot_password_error)
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        when(ex){
+            is SyncFileException.OutdatedException -> {
+                UIMessage(resId = R.string.restore_backup_version_incompatible)
+            }
+            is SyncFileException.UserNotValidException -> {
+                UIMessage(resId = R.string.restore_backup_account_incompatible)
+            }
+            else -> UIMessage(resId = R.string.restore_backup_fail_message)
+        }
     }
 
 }

@@ -6,14 +6,22 @@ import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.R
+import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupDataSource
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.file.ActivityMessageUtils
+import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -21,6 +29,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import droidninja.filepicker.FilePickerConst
 import java.util.*
 
 class RestoreBackupActivity: BaseActivity(){
@@ -51,17 +60,43 @@ class RestoreBackupActivity: BaseActivity(){
                 db = appDB,
                 filesDir = this.filesDir
         )
+        val generalDataSource = GeneralDataSource(
+                signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount)),
+                eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
+                storage = storage,
+                db = appDB,
+                runner = AsyncTaskWorkRunner(),
+                activeAccount = activeAccount,
+                httpClient = HttpClient.Default(),
+                filesDir = this.filesDir
+        )
         val controller = RestoreBackupController(
                 model = model,
                 scene = scene,
                 websocketEvents = webSocketEvents,
                 dataSource = dataSource,
+                generalDataSource = generalDataSource,
                 keyboardManager = KeyboardManager(this),
                 storage = storage,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
         googleSignInListener = controller.googleSignInListener
         return controller
+    }
+
+    private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
+        when(filePickerConst){
+            FilePickerConst.KEY_SELECTED_DOCS -> {
+                if(data != null) {
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
+                }
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -91,6 +126,7 @@ class RestoreBackupActivity: BaseActivity(){
                 }
 
             }
+            FilePickerConst.REQUEST_CODE_DOC -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)
         }
     }
 

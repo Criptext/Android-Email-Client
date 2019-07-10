@@ -18,6 +18,7 @@ class RestoreBackupDialog(val context: Context) {
     private var uiObserver: MailboxUIObserver? = null
     private var rootLayout: View? = null
     private var restoreFromBackup: Button? = null
+    private var restoreFromLocalBackup: Button? = null
 
     fun showDialog(mailboxUIObserver: MailboxUIObserver?) {
 
@@ -54,6 +55,11 @@ class RestoreBackupDialog(val context: Context) {
             uiObserver?.restoreFromBackupPressed()
         }
 
+        restoreFromLocalBackup?.setOnClickListener{
+            dialog?.dismiss()
+            uiObserver?.restoreFromLocalBackupPressed()
+        }
+
         dialogView.findViewById<TextView>(R.id.skip_restore).setOnClickListener {
             dismiss()
         }
@@ -64,6 +70,7 @@ class RestoreBackupDialog(val context: Context) {
 
     private fun loadViews(dialogView: View){
         restoreFromBackup = dialogView.findViewById(R.id.restore_button)
+        restoreFromLocalBackup = dialogView.findViewById(R.id.restore_local_button)
     }
 
     fun dismiss() {

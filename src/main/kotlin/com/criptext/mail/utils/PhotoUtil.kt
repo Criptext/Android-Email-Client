@@ -3,6 +3,7 @@ package com.criptext.mail.utils
 import android.os.Environment
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 
 interface PhotoUtil{
@@ -33,7 +34,7 @@ interface PhotoUtil{
         override fun createImageFile(): File? {
             // Create an image file name
             try {
-                val timeStamp = System.currentTimeMillis().toString()
+                val timeStamp = DateAndTimeUtils.printDateWithServerFormat(Date(System.currentTimeMillis()))
                 val imageFileName = "JPEG_" + timeStamp + "_"
                 val storageDir = getAlbumDir()
                 if (storageDir != null) {

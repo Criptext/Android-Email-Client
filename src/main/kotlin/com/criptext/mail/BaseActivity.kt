@@ -65,6 +65,7 @@ import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
@@ -380,7 +381,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ReplyToParams -> ReplyToModel(params.userData)
             is ProfileParams -> ProfileModel(params.userData)
             is CloudBackupParams -> CloudBackupModel()
-            is RestoreBackupParams -> RestoreBackupModel()
+            is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -594,7 +595,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 }
             }
             is ExternalActivityParams.InviteFriend -> {
-                val share = Intent(android.content.Intent.ACTION_SEND)
+                val share = Intent(Intent.ACTION_SEND)
                 share.type = "text/plain"
                 share.putExtra(Intent.EXTRA_SUBJECT, "Invite a Friend")
                 share.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_text))
@@ -604,7 +605,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 bundle.putString("app_source", "Unknown")
                 mFirebaseAnalytics?.logEvent("invite_friend", bundle)
             }
-            is ExternalActivityParams.ShareFile -> {
+            is ExternalActivityParams.ExportBackupFile -> {
                 val file = File(params.filePath)
                 if(file.exists()){
                     val fileUri: Uri? = try {
@@ -617,13 +618,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                 "The selected file can't be shared: ${file.name}")
                         null
                     }
-                    val share = Intent(android.content.Intent.ACTION_SEND)
-                    share.type = "text/plain"
-                    share.putExtra(Intent.EXTRA_SUBJECT, getLocalizedString(UIMessage(R.string.cloud_backup_share_intent_title)))
-                    share.putExtra(Intent.EXTRA_STREAM, fileUri)
-                    share.putExtra(Intent.EXTRA_TEXT, getLocalizedString(UIMessage(R.string.cloud_backup_share_intent_message)))
-
-                    startActivity(Intent.createChooser(share, getString(R.string.cloud_backup_share_intent_title)))
+                    val extension = if(params.isEncrypted) ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}"
+                    else ".${UserDataWriter.FILE_UNENCRYPTED_EXTENSION}"
+                    val saveIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                    saveIntent.putExtra(Intent.EXTRA_TITLE, "Backup-${DateAndTimeUtils
+                            .printDateWithServerFormat(Date(System.currentTimeMillis())).plus(extension)}")
+                    saveIntent.setDataAndType(fileUri, "application/octet-stream")
+                    startActivityForResult(saveIntent, ExternalActivityParams.WRITE_REQUEST_CODE)
                 }
             }
             is ExternalActivityParams.SignInGoogleDrive -> {

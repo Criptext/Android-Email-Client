@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
+import com.criptext.mail.ExternalActivityParams.Companion.WRITE_REQUEST_CODE
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
@@ -12,12 +13,15 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupDataSource
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
+import com.criptext.mail.utils.file.ActivityMessageUtils
+import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -26,7 +30,10 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import droidninja.filepicker.FilePickerConst
 import java.util.*
+
+
 
 
 class CloudBackupActivity: BaseActivity(){
@@ -82,6 +89,21 @@ class CloudBackupActivity: BaseActivity(){
         return controller
     }
 
+    private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {
+        when(filePickerConst){
+            FilePickerConst.KEY_SELECTED_DOCS -> {
+                if(data != null) {
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
+                }
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -108,6 +130,18 @@ class CloudBackupActivity: BaseActivity(){
                     }
                 }
 
+            }
+            FilePickerConst.REQUEST_CODE_DOC -> {
+                setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)
+            }
+            WRITE_REQUEST_CODE -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        if (data != null && data.data != null) {
+                            setActivityMessage(ActivityMessage.SaveFileToLocalStorage(data.data!!))
+                        }
+                    }
+                }
             }
         }
     }

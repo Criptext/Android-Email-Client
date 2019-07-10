@@ -7,7 +7,9 @@ import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
 import com.criptext.mail.R
+import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.textfield.TextInputLayout
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -23,13 +25,16 @@ interface RestoreBackupScene{
     fun attachView(model: RestoreBackupModel, uiObserver: RestoreBackupUIObserver)
     fun showMessage(message : UIMessage)
     fun setProgress(progress: Int)
-    fun showBackupFoundLayout(isEncrypted: Boolean)
-    fun showProgressLayout()
-    fun showBackupNotFoundLayout()
-    fun showBackupRetryLayout()
+    fun showBackupFoundLayout(isEncrypted: Boolean, isLocal: Boolean)
+    fun showProgressLayout(isLocal: Boolean)
+    fun showBackupNotFoundLayout(isLocal: Boolean)
+    fun showBackupRetryLayout(isLocal: Boolean)
     fun getGoogleDriveService(): Drive?
-    fun updateFileData(fileSize: Long, lastModified: Long)
+    fun updateFileData(fileSize: Long, lastModified: Long, isLocal: Boolean)
     fun enableRestoreButton(isEnabled: Boolean)
+    fun showPreparingFileDialog()
+    fun dismissPreparingFileDialog()
+    fun localPercentageAnimation()
 
 
     var uiObserver: RestoreBackupUIObserver?
@@ -40,7 +45,7 @@ interface RestoreBackupScene{
 
         override var uiObserver: RestoreBackupUIObserver? = null
 
-
+        private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
 
         private val backupFoundLayout: View = view.findViewById(R.id.backup_found_text)
         private val progressLayout: View = view.findViewById(R.id.progress_layout)
@@ -57,16 +62,27 @@ interface RestoreBackupScene{
         private val changeAccountButton: Button = view.findViewById(R.id.restore_change_account_button)
         private val cancelRestore: TextView = view.findViewById(R.id.skip_restore)
         private val cloudIcon: ImageView = view.findViewById(R.id.cloud_icon)
+        private val notFoundMessage: TextView = view.findViewById(R.id.restore_not_found_message)
 
         private val password: AppCompatEditText = view.findViewById(R.id.password)
         private val passwordInput: TextInputLayout = view.findViewById(R.id.password_input)
+
+        private val timer = IntervalTimer()
 
         override fun attachView(model: RestoreBackupModel, uiObserver: RestoreBackupUIObserver) {
             this.uiObserver = uiObserver
             textViewEmail.text = model.accountEmail
             textViewSize.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title, arrayOf(0)))
-            textViewLastModified.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_last_modified, arrayOf(model.lastModified)))
-            textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title))
+            textViewLastModified.text = if(model.isLocal) context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_backed_up, arrayOf(model.lastModified)))
+            else context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_last_modified, arrayOf(model.lastModified)))
+            if(model.isLocal){
+                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_local_title))
+                cancelRestore.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_dialog_cancel_restore))
+                changeAccountButton.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_change_button))
+            } else {
+                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title))
+            }
+
 
             passwordInput.isPasswordVisibilityToggleEnabled = true
             passwordInput.setPasswordVisibilityToggleTintList(
@@ -106,24 +122,41 @@ interface RestoreBackupScene{
             }
         }
 
-        override fun showBackupFoundLayout(isEncrypted: Boolean) {
-            cloudIcon.setImageResource(R.drawable.restore_cloud)
+        override fun showBackupFoundLayout(isEncrypted: Boolean, isLocal: Boolean) {
+            when {
+                isLocal && isEncrypted -> {
+                    cloudIcon.setImageResource(R.drawable.img_restoremail)
+                    textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_local_title))
+                    passwordInput.visibility = View.VISIBLE
+                }
+                isLocal && !isEncrypted -> {
+                    cloudIcon.setImageResource(R.drawable.img_restoremail)
+                    textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_local_title))
+                    passwordInput.visibility = View.GONE
+                }
+                !isLocal && isEncrypted -> {
+                    cloudIcon.setImageResource(R.drawable.restore_cloud)
+                    textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title_encrypted))
+                    passwordInput.visibility = View.VISIBLE
+                }
+                !isLocal && !isEncrypted -> {
+                    cloudIcon.setImageResource(R.drawable.restore_cloud)
+                    textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title))
+                    passwordInput.visibility = View.GONE
+                }
+            }
             backupFoundLayout.visibility = View.VISIBLE
             progressLayout.visibility = View.GONE
             backupNotFoundLayout.visibility = View.GONE
             backupNeedRetryLayout.visibility = View.GONE
             changeAccountButton.visibility = View.VISIBLE
-            if(isEncrypted) {
-                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title_encrypted))
-                passwordInput.visibility = View.VISIBLE
-            } else {
-                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_title))
-                passwordInput.visibility = View.GONE
-            }
         }
 
-        override fun showProgressLayout() {
-            cloudIcon.setImageResource(R.drawable.restore_cloud)
+        override fun showProgressLayout(isLocal: Boolean) {
+            if(isLocal)
+                cloudIcon.setImageResource(R.drawable.img_restoremail)
+            else
+                cloudIcon.setImageResource(R.drawable.restore_cloud)
             textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_restoring_title))
             progressLayout.visibility = View.VISIBLE
             backupFoundLayout.visibility = View.GONE
@@ -132,9 +165,16 @@ interface RestoreBackupScene{
             changeAccountButton.visibility = View.GONE
         }
 
-        override fun showBackupNotFoundLayout() {
-            cloudIcon.setImageResource(R.drawable.no_cloud)
-            textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_not_found_title))
+        override fun showBackupNotFoundLayout(isLocal: Boolean) {
+            if(isLocal) {
+                cloudIcon.setImageResource(R.drawable.img_restorefail)
+                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_fail_title))
+                notFoundMessage.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_fail))
+            } else {
+                cloudIcon.setImageResource(R.drawable.no_cloud)
+                textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_not_found_title))
+                notFoundMessage.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_not_found_message))
+            }
             progressLayout.visibility = View.GONE
             backupFoundLayout.visibility = View.GONE
             backupNotFoundLayout.visibility = View.VISIBLE
@@ -142,8 +182,11 @@ interface RestoreBackupScene{
             changeAccountButton.visibility = View.VISIBLE
         }
 
-        override fun showBackupRetryLayout() {
-            cloudIcon.setImageResource(R.drawable.oops_cloud)
+        override fun showBackupRetryLayout(isLocal: Boolean) {
+            if(isLocal)
+                cloudIcon.setImageResource(R.drawable.img_restorefail)
+            else
+                cloudIcon.setImageResource(R.drawable.oops_cloud)
             textViewTitle.text = context.getLocalizedUIMessage(UIMessage(R.string.keep_waiting_title))
             backupFoundLayout.visibility = View.GONE
             backupNotFoundLayout.visibility = View.GONE
@@ -159,6 +202,9 @@ interface RestoreBackupScene{
         override fun setProgress(progress: Int) {
             val anim = UIUtils.animationForProgressBar(progressBar, progress, progressBarNumber, 1000)
             anim.start()
+            if(progress >= 100){
+                timer.stop()
+            }
         }
 
         override fun getGoogleDriveService(): Drive? {
@@ -174,12 +220,29 @@ interface RestoreBackupScene{
                     .build()
         }
 
-        override fun updateFileData(fileSize: Long, lastModified: Long) {
+        override fun updateFileData(fileSize: Long, lastModified: Long, isLocal: Boolean) {
             textViewSize.text = Utility.humanReadableByteCount(fileSize, true)
-            textViewLastModified.text = context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_last_modified,
-                    arrayOf(DateAndTimeUtils.getTimeForBackup(lastModified))))
+            textViewLastModified.text = if(isLocal) context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_backed_up, arrayOf(DateAndTimeUtils.getTimeForBackup(lastModified))))
+            else context.getLocalizedUIMessage(UIMessage(R.string.restore_backup_last_modified, arrayOf(DateAndTimeUtils.getTimeForBackup(lastModified))))
         }
 
+        override fun showPreparingFileDialog() {
+            preparingFileDialog.showDialog()
+        }
+
+        override fun dismissPreparingFileDialog() {
+            preparingFileDialog.dismiss()
+        }
+
+        override fun localPercentageAnimation() {
+            timer.start(25, Runnable {
+                val progress = this.progressBar.progress + 1
+                setProgress(progress)
+                if(progress >= 100){
+                    uiObserver?.onLocalProgressFinished()
+                }
+            })
+        }
 
         override fun showMessage(message: UIMessage) {
             val duration = Toast.LENGTH_LONG

@@ -5,13 +5,13 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
+import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.cloudbackup.data.*
@@ -22,6 +22,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -30,6 +31,7 @@ import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.api.client.googleapis.media.MediaHttpUploader
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener
 import com.google.api.services.drive.Drive
+import java.io.File
 import java.io.IOException
 
 
@@ -52,6 +54,7 @@ class CloudBackupController(
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -61,6 +64,7 @@ class CloudBackupController(
             is CloudBackupResult.LoadCloudBakcupData -> onLoadCloudBackupData(result)
             is CloudBackupResult.UploadBackupToDrive -> onUploadBackupToDrive(result)
             is CloudBackupResult.DataFileCreation -> onDataFileCreated(result)
+            is CloudBackupResult.SaveFileInLocalStorage -> onSaveFileInLocalStorage(result)
         }
     }
 
@@ -79,6 +83,14 @@ class CloudBackupController(
     }
 
     private val uiObserver = object: CloudBackupUIObserver{
+        override fun exportBackupPressed() {
+            scene.showEncryptBackupDialog(this)
+        }
+
+        override fun restoreBackupPressed() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -135,24 +147,24 @@ class CloudBackupController(
 
         override fun onPasswordChangedListener(password: String) {
             if(password.isNotEmpty() && password.length >= 3) {
-                model.passwordForNonCriptextUsers = password
+                model.passphraseForEncryptedFile = password
                 scene.enableSaveButtonOnDialog()
             }else{
-                model.passwordForNonCriptextUsers = null
+                model.passphraseForEncryptedFile = null
                 scene.disableSaveButtonOnDialog()
             }
         }
 
         override fun setOnCheckedChangeListener(isChecked: Boolean) {
             if(!isChecked){
-                model.passwordForNonCriptextUsers = null
+                model.passphraseForEncryptedFile = null
             }else{
                 scene.disableSaveButtonOnDialog()
             }
         }
 
         override fun encryptDialogButtonPressed() {
-            dataSource.submitRequest(CloudBackupRequest.DataFileCreation(model.passwordForNonCriptextUsers))
+            dataSource.submitRequest(CloudBackupRequest.DataFileCreation(model.passphraseForEncryptedFile, isLocal = true))
             scene.showProgressDialog()
         }
 
@@ -210,6 +222,52 @@ class CloudBackupController(
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         dataSource.submitRequest(CloudBackupRequest.LoadCloudBackupData(model.mDriveService))
+        return handleActivityMessage(activityMessage)
+    }
+
+
+    private fun handleRestoreFile(filesMetadata: List<Pair<String, Long>>) {
+        val file = filesMetadata.firstOrNull() ?: return
+        if(file.second == -1L) {
+            val resolver = host.getContentResolver()
+            if(resolver != null) {
+                scene.showPreparingFileDialog()
+                generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
+                        listOf(file.first), resolver)
+                )
+            }
+        } else {
+            val localFile = File(file.first)
+            if (localFile.extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
+                            UserDataWriter.FILE_GZIP_EXTENSION)) {
+                scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
+            } else {
+                val isFileEncrypted = localFile.extension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
+                host.exitToScene(RestoreBackupParams(true, Pair(file.first, isFileEncrypted)), null, false, true)
+            }
+        }
+    }
+
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.resetLastMillisPin()
+        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+        if (activityMessage is ActivityMessage.AddAttachments) {
+            if(activityMessage.filesMetadata.isNotEmpty()){
+                handleRestoreFile(activityMessage.filesMetadata)
+            }
+            return true
+        }
+        if(activityMessage is ActivityMessage.SaveFileToLocalStorage){
+            if(model.localFilePath != null) {
+                dataSource.submitRequest(CloudBackupRequest.SaveFileInLocalStorage(
+                        contentResolver = host.getContentResolver()!!,
+                        filePath = model.localFilePath!!,
+                        fileUri = activityMessage.uri
+                ))
+                model.localFilePath = null
+            }
+            return true
+        }
         return false
     }
 
@@ -222,13 +280,19 @@ class CloudBackupController(
             is CloudBackupResult.DataFileCreation.Success -> {
                 scene.setProgressDialog(100)
                 scene.hideProgressDialog()
-                if (model.mDriveService != null){
-                    scene.showUploadProgressBar(true)
-                    scene.setUploadProgress(0)
-                    dataSource.submitRequest(CloudBackupRequest.UploadBackupToDrive(result.filePath,
-                            model.mDriveService!!, progressListener))
-                }else{
-                    scene.backingUpNow(false)
+                if(result.isLocal){
+                    model.localFilePath = result.filePath
+                    host.launchExternalActivityForResult(
+                            ExternalActivityParams.ExportBackupFile(result.filePath, result.isEncrypted))
+                } else {
+                    if (model.mDriveService != null) {
+                        scene.showUploadProgressBar(true)
+                        scene.setUploadProgress(0)
+                        dataSource.submitRequest(CloudBackupRequest.UploadBackupToDrive(result.filePath,
+                                model.mDriveService!!, progressListener))
+                    } else {
+                        scene.backingUpNow(false)
+                    }
                 }
             }
             is CloudBackupResult.DataFileCreation.Progress -> {
@@ -237,6 +301,17 @@ class CloudBackupController(
             is CloudBackupResult.DataFileCreation.Failure -> {
                 scene.backingUpNow(false)
                 scene.hideProgressDialog()
+                scene.showMessage(result.message)
+            }
+        }
+    }
+
+    private fun onSaveFileInLocalStorage(result: CloudBackupResult.SaveFileInLocalStorage){
+        when(result){
+            is CloudBackupResult.SaveFileInLocalStorage.Success -> {
+                scene.showMessage(UIMessage(R.string.export_backup_file_ready))
+            }
+            is CloudBackupResult.SaveFileInLocalStorage.Failure -> {
                 scene.showMessage(result.message)
             }
         }
@@ -345,6 +420,21 @@ class CloudBackupController(
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
+        when (result) {
+            is GeneralResult.GetRemoteFile.Success -> {
+                scene.dismissPreparingFileDialog()
+                val file = result.remoteFiles.first()
+                if(File(file.first).extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
+                                UserDataWriter.FILE_GZIP_EXTENSION)){
+                    scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
+                } else {
+                    host.exitToScene(RestoreBackupParams(true, Pair(file.first, false)), null, false, true)
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.signal.PreKeyBundleShareData
 
 sealed class GeneralRequest {
@@ -42,4 +43,5 @@ sealed class GeneralRequest {
     class GetUserSettings: GeneralRequest()
     class LinkCancel: GeneralRequest()
     class SyncCancel: GeneralRequest()
+    data class RestoreMailbox(val filePath: String, val passphrase: String?, val isLocal: Boolean = false): GeneralRequest()
 }

@@ -46,6 +46,7 @@ class CloudBackupDataSource(
             is CloudBackupRequest.DataFileCreation -> DataFileCreationWorker(
                     passphrase = params.passphrase,
                     isFromJob = params.isFromJob,
+                    isLocal = params.isLocal,
                     activeAccount = activeAccount,
                     db = db,
                     filesDir = filesDir,
@@ -54,6 +55,12 @@ class CloudBackupDataSource(
             is CloudBackupRequest.DeleteFileInDrive -> DeleteOldBackupWorker(
                     fileId = params.fileId,
                     mDriveServiceHelper = params.mDriveServiceHelper,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is CloudBackupRequest.SaveFileInLocalStorage -> SaveFileInLocalStorageWorker(
+                    filePath = params.filePath,
+                    uri = params.fileUri,
+                    contentResolver = params.contentResolver,
                     publishFn = { res -> flushResults(res) }
             )
         }

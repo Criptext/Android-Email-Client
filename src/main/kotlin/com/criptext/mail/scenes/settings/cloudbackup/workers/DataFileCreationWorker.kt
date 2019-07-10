@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.cloudbackup.workers
 
+import android.service.autofill.UserData
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.bgworker.BackgroundWorker
@@ -22,6 +23,7 @@ class DataFileCreationWorker(
         private val db: AppDatabase,
         private var passphrase: String?,
         private val isFromJob: Boolean,
+        private val isLocal: Boolean,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
                 CloudBackupResult.DataFileCreation) -> Unit)
@@ -38,7 +40,8 @@ class DataFileCreationWorker(
     }
 
     private fun compress(sourceFile: String): String? {
-        val targetFile = createTempFile("compressed", ".gz")
+        val targetFile = createTempFile("compressed",
+                if(passphrase == null) ".${UserDataWriter.FILE_UNENCRYPTED_EXTENSION}" else ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}")
         try {
             val fos = FileOutputStream(targetFile)
             val gzos = GZIPOutputStream(fos)
@@ -78,11 +81,11 @@ class DataFileCreationWorker(
                     passphrase = accountById.backupPassword
                 }
                 if(passphrase == null)
-                    return CloudBackupResult.DataFileCreation.Success(filePath)
+                    return CloudBackupResult.DataFileCreation.Success(filePath, isLocal, passphrase != null)
                 reporter.report(CloudBackupResult.DataFileCreation.Progress(75))
                 val encryptedFilePath = AESUtil.encryptFileByChunksWithCustomPassword(File(filePath), passphrase!!)
                 reporter.report(CloudBackupResult.DataFileCreation.Progress(95))
-                CloudBackupResult.DataFileCreation.Success(encryptedFilePath)
+                CloudBackupResult.DataFileCreation.Success(encryptedFilePath, isLocal, passphrase != null)
             }
         }else
             CloudBackupResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))

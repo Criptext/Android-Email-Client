@@ -32,7 +32,7 @@ class GetRemoteFileWorker(private val uris: List<String>,
 
         for (uri in uris) {
             val realUri = Uri.parse(uri)
-            val extension = if (realUri.scheme == ContentResolver.SCHEME_CONTENT) {
+            var extension = if (realUri.scheme == ContentResolver.SCHEME_CONTENT) {
                 val mime = MimeTypeMap.getSingleton()
                 mime.getExtensionFromMimeType(contentResolver.getType(realUri))
             } else {
@@ -44,7 +44,12 @@ class GetRemoteFileWorker(private val uris: List<String>,
                 it.getString(nameIndex)
             }
 
-            var cleanedName = if(name == null) null else FileUtils.getBasenameAndExtension(name).first
+            var cleanedName = if(name == null) null
+            else {
+                val baseAndExtension = FileUtils.getBasenameAndExtension(name)
+                extension = baseAndExtension.second
+                baseAndExtension.first
+            }
             if(cleanedName != null && cleanedName.length < 3) cleanedName = cleanedName.plus("_tmp")
             val file = createTempFile(prefix = cleanedName ?: "tmp", suffix = ".".plus(extension))
 

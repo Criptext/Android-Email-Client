@@ -26,7 +26,7 @@ sealed class CloudBackupResult{
     }
 
     sealed class DataFileCreation: CloudBackupResult() {
-        data class Success(val filePath: String): DataFileCreation()
+        data class Success(val filePath: String, val isLocal: Boolean, val isEncrypted: Boolean): DataFileCreation()
         data class Progress(val progress: Int): DataFileCreation()
         data class Failure(val message: UIMessage): DataFileCreation()
     }
@@ -35,6 +35,11 @@ sealed class CloudBackupResult{
         class Success: DeleteFileInDrive()
         data class Failure(val message: UIMessage,
                            val exception: Exception?): DeleteFileInDrive()
+    }
+
+    sealed class SaveFileInLocalStorage : CloudBackupResult() {
+        class Success: SaveFileInLocalStorage()
+        data class Failure(val message: UIMessage): SaveFileInLocalStorage()
     }
 
 }

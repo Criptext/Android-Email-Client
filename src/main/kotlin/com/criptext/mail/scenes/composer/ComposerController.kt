@@ -719,30 +719,8 @@ class ComposerController(private val storage: KeyValueStorage,
         if (shouldGoBackWithoutSave()) {
             exitToEmailDetailScene()
         } else {
-            showDraftDialog()
+            saveEmailAsDraft(composerInputData = scene.getDataInputByUser(), onlySave = true)
         }
-    }
-
-    private fun exitDeletingDraft() {
-        val draftType = model.type as? ComposerType.Draft
-        if (draftType != null)
-            dataSource.submitRequest(ComposerRequest.DeleteDraft(draftType.draftId))
-        else
-            exitToEmailDetailScene()
-    }
-
-    private fun showDraftDialog(){
-        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-            when (which) {
-                DialogInterface.BUTTON_POSITIVE ->
-                    saveEmailAsDraft(composerInputData = scene.getDataInputByUser(), onlySave = true)
-
-                DialogInterface.BUTTON_NEGATIVE ->
-                    exitDeletingDraft()
-            }
-        }
-
-        scene.showDraftDialog(dialogClickListener)
     }
 
     override fun onOptionsItemSelected(itemId: Int) {

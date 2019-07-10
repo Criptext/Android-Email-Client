@@ -8,7 +8,6 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.restorebackup.workers.CheckForBackupWorker
 import com.criptext.mail.scenes.restorebackup.workers.DownloadFileWorker
-import com.criptext.mail.scenes.restorebackup.workers.RestoreMailboxWorker
 import java.io.File
 
 class RestoreBackupDataSource(
@@ -32,16 +31,6 @@ class RestoreBackupDataSource(
                     activeAccount = activeAccount,
                     mDriveServiceHelper = params.mDriveService,
                     progressListener = params.progressListener,
-                    publishFn = { result ->
-                        flushResults(result)
-                    }
-            )
-            is RestoreBackupRequest.RestoreMailbox -> RestoreMailboxWorker(
-                    activeAccount = activeAccount,
-                    filePath = params.filePath,
-                    db = db,
-                    filesDir = filesDir,
-                    passphrase = params.passphrase,
                     publishFn = { result ->
                         flushResults(result)
                     }

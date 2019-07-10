@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes
 
 import android.graphics.Bitmap
+import android.net.Uri
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
@@ -39,4 +40,5 @@ sealed class ActivityMessage {
     class SyncMailbox: ActivityMessage()
     data class GoogleDriveSignIn(val driveService: Drive?): ActivityMessage()
     class ComesFromMailbox: ActivityMessage()
+    data class SaveFileToLocalStorage(val uri: Uri): ActivityMessage()
 }
