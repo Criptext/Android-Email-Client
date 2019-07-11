@@ -90,7 +90,7 @@ class FeedControllerTest {
                     email = testEmail,
                     file = null,
                     contact = Contact(id = 1, email = "daniel@jigl.com", name = "Daniel", isTrusted = true,
-                            score = 0))
+                            score = 0, spamScore = 0))
 
         }.reversed()
     }

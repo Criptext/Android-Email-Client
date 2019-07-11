@@ -30,8 +30,21 @@ interface EmailDetailLocalDB {
     fun getCustomLabels(accountId: Long): List<Label>
     fun setTrashDate(emailIds: List<Long>, accountId: Long)
     fun getInternalFilesDir(): String
+    fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String)
+    fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String)
 
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
+        override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String) {
+            val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
+            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+            db.contactDao().resetSpamCounter(fromContacts, accountId)
+        }
+
+        override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String) {
+            val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
+            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+            db.contactDao().uptickSpamCounter(fromContacts, accountId)
+        }
 
         override fun getEmailMetadataKeyById(emailId: Long, accountId: Long): Long {
             return db.emailDao().getEmailById(emailId, accountId)!!.metadataKey
@@ -94,7 +107,8 @@ interface EmailDetailLocalDB {
                                 email = EmailAddressUtils.extractEmailAddress(it.fromAddress),
                                 name = EmailAddressUtils.extractName(it.fromAddress),
                                 isTrusted = contactsFROM[0].isTrusted,
-                                score = contactsFROM[0].score
+                                score = contactsFROM[0].score,
+                                spamScore = contactsFROM[0].spamScore
                         ),
                         files = files,
                         labels = labels,

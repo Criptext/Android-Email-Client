@@ -50,7 +50,7 @@ class LoadInitialDataWorker(
         val replyToCOntact = if(replyTo == null) null
         else
             Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
-                    isTrusted = false, score = 0)
+                    isTrusted = false, score = 0, spamScore = 0)
         val to = if (replyToAll) {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
@@ -112,7 +112,7 @@ class LoadInitialDataWorker(
                     passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
-                    name = "Criptext Support", isTrusted = true, score = 0)
+                    name = "Criptext Support", isTrusted = true, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
@@ -129,7 +129,7 @@ class LoadInitialDataWorker(
                     attachments = null)
         }else{
             val newContact = Contact(id = 0, email = to,
-                    name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0)
+                    name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
                     body = "", subject = "", passwordForNonCriptextUsers = null, attachments = null,

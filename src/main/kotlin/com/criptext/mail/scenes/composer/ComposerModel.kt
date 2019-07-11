@@ -8,6 +8,7 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
+import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.validation.FormInputState
 import java.util.*
 
@@ -29,9 +30,11 @@ class ComposerModel(val type: ComposerType): SceneModel {
 
     var isUploadingAttachments = false
 
-    val to = LinkedList<Contact>()
-    val cc = LinkedList<Contact>()
-    val bcc = LinkedList<Contact>()
+    var to = LinkedList<Contact>()
+    var cc = LinkedList<Contact>()
+    var bcc = LinkedList<Contact>()
+
+    var checkedDomains = mutableListOf<ContactDomainCheckData>()
 
     var firstTime = true
     var initialized = type is ComposerType.Empty

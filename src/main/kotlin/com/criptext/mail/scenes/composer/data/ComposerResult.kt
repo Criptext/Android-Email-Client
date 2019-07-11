@@ -53,4 +53,9 @@ sealed class ComposerResult {
                 val message: UIMessage,
                 val exception: Exception): DeleteDraft()
     }
+
+    sealed class CheckDomain : ComposerResult() {
+        data class Success(val contactDomainCheck: List<ContactDomainCheckData>): CheckDomain()
+        data class Failure(val message: String): CheckDomain()
+    }
 }

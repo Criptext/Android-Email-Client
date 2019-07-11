@@ -33,7 +33,7 @@ open class EmailDetailControllerTest {
     private val mockedEmailPreview = EmailPreview(threadId = mockedThreadId, subject = "",
             count = 0, bodyPreview = "", topText = "", timestamp = Date(System.currentTimeMillis()),
             deliveryStatus = DeliveryTypes.DELIVERED, emailId = 1L, isSelected = false,
-            sender = Contact(0, "", "", false, 0), unread = false, hasFiles = false, isStarred = false,
+            sender = Contact(0, "", "", false, 0, 0), unread = false, hasFiles = false, isStarred = false,
             latestEmailUnsentDate = Date(System.currentTimeMillis()), metadataKey = 1L, allFilesAreInline = false,
             headerData = listOf(), isSecure = true)
 
@@ -141,7 +141,7 @@ open class EmailDetailControllerTest {
                             )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0),
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0, 0),
                     fileKey = null,
                     headers = null)
         }.reversed()

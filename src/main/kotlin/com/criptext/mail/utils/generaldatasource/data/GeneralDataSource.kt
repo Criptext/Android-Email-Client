@@ -222,6 +222,16 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.SyncCancel -> SyncCancelWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.LinkCancel -> LinkCancelWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

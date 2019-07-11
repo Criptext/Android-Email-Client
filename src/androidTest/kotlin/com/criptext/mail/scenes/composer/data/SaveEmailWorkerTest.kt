@@ -55,11 +55,11 @@ class SaveEmailWorkerTest {
     @Test
     fun test_should_save_new_composed_email_along_with_new_contacts() {
         val toRecipients = listOf(
-                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0),
-                Contact(id = 0, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0)
+                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0, spamScore = 0),
+                Contact(id = 0, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val ccRecipients = listOf(
-                Contact(id = 0, name = "", email = "gianni@criptext.com", score = 0, isTrusted = false)
+                Contact(id = 0, name = "", email = "gianni@criptext.com", score = 0, isTrusted = false, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
                 subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null,
@@ -100,11 +100,11 @@ class SaveEmailWorkerTest {
 
         // Now create the finished draft
         val toRecipients = listOf(
-                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0),
-                Contact(id = 0, name = "", email = "daniel@criptext.com", score = 0, isTrusted = false)
+                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0, spamScore = 0),
+                Contact(id = 0, name = "", email = "daniel@criptext.com", score = 0, isTrusted = false, spamScore = 0)
         )
         val ccRecipients = listOf(
-                Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0)
+                Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
                 subject = "Test Finished Draft", body = "Hello, I have finished my draft", passwordForNonCriptextUsers = null,
@@ -131,18 +131,18 @@ class SaveEmailWorkerTest {
     fun should_not_touch_already_existing_contacts() {
         // Insert the "already existing" contacts
         val existingRecipients = listOf(
-                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0),
-                Contact(id = 0, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0)
+                Contact(id = 0, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0, spamScore = 0),
+                Contact(id = 0, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         db.contactDao().insertAll(existingRecipients)
 
         // Now create the email and insert it with the existing contacts
         val toRecipients = listOf(
-                Contact(id = 1, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0),
-                Contact(id = 2, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0)
+                Contact(id = 1, name = "", email = "mayer@criptext.com", isTrusted = false, score = 0, spamScore = 0),
+                Contact(id = 2, name = "", email = "daniel@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val ccRecipients = listOf(
-                Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0)
+                Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
                 subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null,

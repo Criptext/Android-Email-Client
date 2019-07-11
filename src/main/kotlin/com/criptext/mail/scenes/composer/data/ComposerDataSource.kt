@@ -66,6 +66,12 @@ class ComposerDataSource(
                     signature = activeAccount.signature,
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) })
+            is ComposerRequest.CheckDomain -> CheckDomainsWorker(
+                    emails = params.emails,
+                    httpClient = HttpClient.Default(),
+                    activeAccount = activeAccount,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 

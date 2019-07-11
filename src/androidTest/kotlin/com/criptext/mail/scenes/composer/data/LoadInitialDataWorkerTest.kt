@@ -43,9 +43,9 @@ class LoadInitialDataWorkerTest {
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
             domain = Contact.mainDomain)
-    private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1, score = 0, isTrusted = true)
-    private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2, score = 0, isTrusted = true)
-    private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3, score = 0, isTrusted = true)
+    private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1, score = 0, isTrusted = true, spamScore = 0)
+    private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2, score = 0, isTrusted = true, spamScore = 0)
+    private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3, score = 0, isTrusted = true, spamScore = 0)
     private val emailPreview = EmailPreview(subject = "Test", topText ="Daniel", bodyPreview = "Hola",
             sender = mayerContact, deliveryStatus = DeliveryTypes.NONE, unread = false, count = 1, timestamp = Date(),
             emailId = 1, threadId = "__THREAD_ID__", isSelected = false, isStarred = false, hasFiles = false, latestEmailUnsentDate = Date(),

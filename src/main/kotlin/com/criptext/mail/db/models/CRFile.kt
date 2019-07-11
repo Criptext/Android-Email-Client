@@ -59,6 +59,9 @@ class CRFile(
 
 ) {
 
+    @Ignore
+    var mimeType : String? = null
+
     override fun toString(): String {
         return "CRFile name='$name', " +
                 "size='$size', " +
@@ -82,7 +85,7 @@ class CRFile(
             for (i in 0 until jsonFiles.length()) {
                 val file = jsonFiles.getJSONObject(i)
                 val fileKey = if(jsonKeys.isNotEmpty()) jsonKeys[i] else null
-                files.add(CRFile(
+                val crFile = CRFile(
                         0,
                         file.getString("token"),
                         file.getString("name"),
@@ -97,7 +100,9 @@ class CRFile(
                             null -> ""
                             else -> fileKey
                         }
-                ))
+                )
+                crFile.mimeType = file.optString("mimeType")
+                files.add(crFile)
             }
             return files
         }

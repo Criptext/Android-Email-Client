@@ -110,6 +110,7 @@ class UpdateEmailThreadsLabelsWorker(
                 if(trueCurrentLabel == Label.defaultItems.spam){
                     peerRemovedLabels.removeAll(peerRemovedLabels)
                     peerRemovedLabels.add(Label.LABEL_SPAM)
+                    db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
                 }else
                     peerRemovedLabels.add(trueCurrentLabel.text)
                 Result.of { removeCurrentLabelFromEmails(emailIds)}

@@ -102,4 +102,12 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
     fun getFileStream(params: Map<String,String>): InputStream {
         return httpClient.getFileStream(path = "/userdata", authToken = token, params = params)
     }
+
+    fun postLinkCancel(): HttpResponseData{
+        return httpClient.post(path = "/link/cancel", authToken = token, body = JSONObject())
+    }
+
+    fun postSyncCancel(): HttpResponseData{
+        return httpClient.post(path = "/sync/cancel", authToken = token, body = JSONObject())
+    }
 }

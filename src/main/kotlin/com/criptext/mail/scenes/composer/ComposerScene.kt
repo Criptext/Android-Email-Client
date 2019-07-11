@@ -70,6 +70,7 @@ interface ComposerScene {
     fun showStartGuideAttachments()
     fun fillFromOptions(list: List<String>)
     fun switchToSimpleFrom(from: String)
+    fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>)
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -129,7 +130,7 @@ interface ComposerScene {
 
         private val onTokenChanged = object : TokenCompleteTextView.TokenListener<Contact> {
             override fun onTokenAdded(token: Contact?) {
-                observer?.onRecipientListChanged()
+                observer?.onRecipientAdded()
             }
 
             override fun onTokenRemoved(token: Contact?) {
@@ -338,6 +339,22 @@ interface ComposerScene {
 
         override fun showStayInComposerDialog(observer: ComposerUIObserver) {
             stayInComposerDialog.showLinkDeviceAuthDialog(observer)
+        }
+
+        override fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>) {
+            toInput.setTokenListener(null)
+            ccInput.setTokenListener(null)
+            bccInput.setTokenListener(null)
+            toInput.clear()
+            ccInput.clear()
+            bccInput.clear()
+            fillRecipients(to, ccContacts, bccContacts)
+            (toInput.adapter as ContactsFilterAdapter).updateIsCriptextDomain(to)
+            (ccInput.adapter as ContactsFilterAdapter).updateIsCriptextDomain(ccContacts)
+            (bccInput.adapter as ContactsFilterAdapter).updateIsCriptextDomain(bccContacts)
+            toInput.setTokenListener(onTokenChanged)
+            ccInput.setTokenListener(onTokenChanged)
+            bccInput.setTokenListener(onTokenChanged)
         }
 
         private fun setupAutoCompletion(firstTime: Boolean, toContacts: List<Contact>,

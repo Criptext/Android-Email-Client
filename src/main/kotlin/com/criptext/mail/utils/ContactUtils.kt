@@ -23,7 +23,8 @@ object ContactUtils {
                     email = emailAddress,
                     name = name,
                     isTrusted = dbFromContact.isTrusted,
-                    score = dbFromContact.score
+                    score = dbFromContact.score,
+                    spamScore = dbFromContact.spamScore
             )
         }
     }

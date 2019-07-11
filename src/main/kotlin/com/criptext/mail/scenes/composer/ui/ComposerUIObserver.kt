@@ -14,6 +14,7 @@ interface ComposerUIObserver: UIObserver {
     fun onNewGalleryAttachmentRequested()
     fun onAttachmentRemoveClicked(position: Int)
     fun onRecipientListChanged()
+    fun onRecipientAdded()
     fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean)
     fun onBackButtonClicked()
     fun onPasswordChangedListener(text: String)

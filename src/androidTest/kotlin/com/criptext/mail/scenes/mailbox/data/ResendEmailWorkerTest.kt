@@ -53,7 +53,7 @@ class ResendEmailWorkerTest {
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
             domain = Contact.mainDomain)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
-            isTrusted = false, score = 0)
+            isTrusted = false, score = 0, spamScore = 0)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)

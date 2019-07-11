@@ -146,7 +146,7 @@ class ReadEmailsWorkerTest {
                     )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", isTrusted = false, score = 0),
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", isTrusted = false, score = 0, spamScore = 0),
                     fileKey = null,
                     headers = "")
         }.reversed()
