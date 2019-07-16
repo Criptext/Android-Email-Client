@@ -50,6 +50,7 @@ class PrivacyController(
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SetReadReceipts -> onReadReceipts(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.Set2FA -> onSet2FA(result)
         }
     }
 
@@ -62,9 +63,6 @@ class PrivacyController(
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(!isChecked)
             }
-            if(isChecked)
-                scene.showTwoFADialog(model.isEmailConfirmed)
-
         }
 
         override fun onSnackbarClicked() {
@@ -201,6 +199,20 @@ class PrivacyController(
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onSet2FA(result: GeneralResult.Set2FA){
+        when(result){
+            is GeneralResult.Set2FA.Success -> {
+                if(result.hasTwoFA)
+                    scene.showTwoFADialog(model.isEmailConfirmed)
+                scene.enableTwoFASwitch(true)
+            }
+            is GeneralResult.Set2FA.Failure -> {
+                scene.updateTwoFa(!result.twoFAAttempt)
+                scene.enableTwoFASwitch(true)
             }
         }
     }

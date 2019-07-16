@@ -131,6 +131,8 @@ interface SettingsScene{
             versionText.text = BuildConfig.VERSION_NAME
             accountEmail.text = email.toUpperCase()
 
+            disabledOptions()
+
             setListeners()
             setSwitchListener()
 
@@ -228,6 +230,10 @@ interface SettingsScene{
         override fun updateUserSettings(model: SettingsModel) {
             settingsDevices.isClickable = true
             settingsPrivacy.isClickable = true
+            settingsAccount.isClickable = true
+            settingsDevices.isEnabled = true
+            settingsPrivacy.isEnabled = true
+            settingsAccount.isEnabled = true
         }
 
         override fun setEmailPreview(isChecked: Boolean) {
@@ -253,6 +259,15 @@ interface SettingsScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
+        }
+
+        private fun disabledOptions(){
+            settingsDevices.isClickable = false
+            settingsPrivacy.isClickable = false
+            settingsAccount.isClickable = false
+            settingsDevices.isEnabled = false
+            settingsPrivacy.isEnabled = false
+            settingsAccount.isEnabled = false
         }
 
         private fun setListeners(){

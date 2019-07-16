@@ -643,7 +643,7 @@ class ComposerController(private val storage: KeyValueStorage,
         generalDataSource.listener = generalDataSourceListener
 
         model.checkedDomains.addAll(
-              ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS
+              ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS.plus(ContactDomainCheckData(activeAccount.domain, true))
         )
 
         if (model.initialized)
