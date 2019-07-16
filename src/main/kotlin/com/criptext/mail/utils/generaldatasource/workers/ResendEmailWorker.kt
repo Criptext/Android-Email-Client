@@ -83,7 +83,10 @@ class ResendEmailWorker(
     private fun getEncryptedFileKeys(fullEmail: FullEmail, recipientId: String, deviceId: Int): List<String>?{
         if(fullEmail.files.isEmpty() || fullEmail.fileKey == null) return null
         val fileKeys = mutableListOf<String>()
-        fullEmail.files.forEach { fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64) }
+        fullEmail.files.forEach {
+            val fileKey = getFileKey(fullEmail.fileKey, fullEmail.files) ?: it.fileKey
+            fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, fileKey).encryptedB64)
+        }
         return fileKeys
     }
 

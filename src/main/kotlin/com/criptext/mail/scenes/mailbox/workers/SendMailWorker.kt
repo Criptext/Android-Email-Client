@@ -237,7 +237,10 @@ class SendMailWorker(private val signalClient: SignalClient,
     private fun getEncryptedFileKeys(recipientId: String, deviceId: Int): List<String>?{
         if(attachments.isEmpty()) return null
         val fileKeys = mutableListOf<String>()
-        attachments.forEach { fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, getFileKey()!!).encryptedB64) }
+        attachments.forEach {
+            val fileKey = getFileKey() ?: it.fileKey
+            fileKeys.add(signalClient.encryptMessage(recipientId, deviceId, fileKey).encryptedB64)
+        }
         return fileKeys
     }
 
