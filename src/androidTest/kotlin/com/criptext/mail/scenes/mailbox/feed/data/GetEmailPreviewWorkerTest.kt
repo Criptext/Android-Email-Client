@@ -46,7 +46,7 @@ class GetEmailPreviewWorkerTest{
 
     private fun insertEmailNeededForTests(): Email {
         val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi",
-                isTrusted = false, score = 0)
+                isTrusted = false, score = 0, spamScore = 0)
         val metadata = EmailMetadata.DBColumns(to = listOf(activeAccount.userEmail),
                 cc = emptyList(), bcc = emptyList(),
                 fromContact = fromContact, messageId = "daniel/1/1",

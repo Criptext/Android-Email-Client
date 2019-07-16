@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.mailbox.data
 
-import android.util.Log
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
@@ -18,7 +17,6 @@ import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
-import kotlin.collections.HashMap
 
 /**
  * Runs the necessary steps before inserting an email like inserting all the contact rows to the
@@ -26,6 +24,8 @@ import kotlin.collections.HashMap
  * Created by gabriel on 4/26/18.
  */
 object EmailInsertionSetup {
+    private const val SPAM_COUNTER = 2
+
     private fun createEmailRow(metadata: EmailMetadata.DBColumns, preview: String, accountId: Long): Email {
         return Email(
             id = 0,
@@ -75,7 +75,7 @@ object EmailInsertionSetup {
 
         val toContacts = mutableListOf<Contact>()
         for (i in 0..(toAddresses.size - 1))
-            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false, score = 0))
+            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false, score = 0, spamScore = 0))
         val existingContacts = dao.findContactsByEmail(toContacts.toSet().map { it.email })
 
         val contactsMap = HashMap<String, Contact>()
@@ -94,7 +94,8 @@ object EmailInsertionSetup {
                     name = EmailAddressUtils.extractName(senderContact.name),
                     email = EmailAddressUtils.extractEmailAddress(senderContact.email),
                     isTrusted = false,
-                    score = senderContact.score)
+                    score = senderContact.score,
+                    spamScore = senderContact.spamScore)
         } else {
             dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name), accountId)
             existingContacts.first()
@@ -295,6 +296,12 @@ object EmailInsertionSetup {
             else -> mutableListOf(Label.defaultItems.inbox)
         }
 
+        val fromContact = dao.findContactsByEmail(listOf(metadata.fromContact.email)).firstOrNull()
+        if(fromContact != null){
+            if(fromContact.spamScore >= SPAM_COUNTER)
+                labels.add(Label.defaultItems.spam)
+        }
+
         if(metadata.isSpam) labels.add(Label.defaultItems.spam)
 
 
@@ -316,7 +323,8 @@ object EmailInsertionSetup {
         metadata.files.forEachIndexed { index, crFile ->
             crFile.fileKey = decryptedFileKeys[index]
             crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")
-                    && FileUtils.isAPicture(crFile.name)) crFile.cid else null
+                    && (FileUtils.isAPicture(crFile.name) || (!crFile.mimeType.isNullOrEmpty()
+                            && crFile.mimeType!!.contains("image/")))) crFile.cid else null
         }
 
         val finalMetadata = if(metadata.inReplyTo != null) {

@@ -40,4 +40,6 @@ sealed class GeneralRequest {
     data class Set2FA(val twoFA: Boolean): GeneralRequest()
     class ChangeToNextAccount: GeneralRequest()
     class GetUserSettings: GeneralRequest()
+    class LinkCancel: GeneralRequest()
+    class SyncCancel: GeneralRequest()
 }

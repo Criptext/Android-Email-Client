@@ -31,9 +31,9 @@ class EncryptFileByChunksTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
 
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
-            score = 0, isTrusted = false)
+            score = 0, isTrusted = false, spamScore = 0)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
-            score = 0, isTrusted = false)
+            score = 0, isTrusted = false, spamScore = 0)
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
             domain = Contact.mainDomain)

@@ -111,7 +111,8 @@ class UpdateMailboxWorkerTest {
                 email = "mayer@criptext.com",
                 name = "Mayer",
                 score = 0,
-                isTrusted = false
+                isTrusted = false,
+                spamScore = 0
         ))
         db.emailInsertionDao().insertAccountContact(listOf(AccountContact(0, 1, 1)))
         Log.d("DeliveryStatus", "insert local emails $localEmails")
@@ -156,7 +157,7 @@ class UpdateMailboxWorkerTest {
         }
         db.emailDao().insertAll(localEmails)
         db.contactDao().insertIgnoringConflicts(Contact(1, "mayer@criptext.com", "Mayer",
-                false, 0))
+                false, 0, 0))
         db.emailInsertionDao().insertAccountContact(listOf(AccountContact(0, 1, 1)))
 
         // run worker

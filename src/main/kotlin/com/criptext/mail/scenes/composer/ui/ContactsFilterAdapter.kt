@@ -18,7 +18,7 @@ import java.util.*
 /**
  * Created by gabriel on 2/28/18.
  */
-class ContactsFilterAdapter(context : Context, objects : List<Contact>)
+class ContactsFilterAdapter(context : Context, private val objects : List<Contact>)
     : FilteredArrayAdapter<Contact>(context, R.layout.autocomplete_item, 0, objects) {
 
     override fun keepObject(obj: Contact?, mask: String?): Boolean {
@@ -31,6 +31,15 @@ class ContactsFilterAdapter(context : Context, objects : List<Contact>)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return createViewFromResource(LayoutInflater.from(context), position, convertView, parent, R.layout.autocomplete_item);
+    }
+
+    fun updateIsCriptextDomain(list: List<Contact>){
+        list.forEach {
+            val contactIndex = objects.indexOf(it)
+            if(contactIndex != -1){
+                objects[contactIndex].isCriptextDomain = it.isCriptextDomain
+            }
+        }
     }
 
     private fun createViewFromResource(inflater : LayoutInflater, position : Int, convertView: View?, parent: ViewGroup?, resource: Int) : View{

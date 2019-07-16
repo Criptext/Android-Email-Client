@@ -24,7 +24,7 @@ class ComposerContollerUiTest: ComposerControllerTest() {
     fun `On send btn clicked, should save mail with no errors if mail has recipients`() {
         val inputData = ComposerInputData(
                 to = listOf(Contact(id = 0, name = "Tester", email = "tester@jigl.com", isTrusted = true,
-                        score = 0)),
+                        score = 0, spamScore = 0)),
                 cc = emptyList(), bcc = emptyList(), subject = "", body = "", passwordForNonCriptextUsers = null,
                 attachments = null, fileKey = null)
         every { scene.getDataInputByUser() } returns inputData

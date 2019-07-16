@@ -32,10 +32,10 @@ object MailboxTestUtils {
                 .map {
                     val email = createNewEmail(dateMilis, it)
                     val fullEmail = FullEmail(email, labels = listOf(Label.defaultItems.inbox),
-                            to = listOf(Contact(1, "gabriel@criptext.com", "gabriel", true, 0)),
+                            to = listOf(Contact(1, "gabriel@criptext.com", "gabriel", true, 0, 0)),
                                     cc = emptyList(), bcc = emptyList(), files = emptyList(),
                             from = Contact(2, "mayer@criptext.com", name = "Mayer", isTrusted = true,
-                                    score = 0), fileKey = null, headers = null)
+                                    score = 0, spamScore = 0), fileKey = null, headers = null)
                     EmailThread(fullEmail, listOf(), Label.defaultItems.inbox.text, 0, false, false,
                             listOf())
                 }

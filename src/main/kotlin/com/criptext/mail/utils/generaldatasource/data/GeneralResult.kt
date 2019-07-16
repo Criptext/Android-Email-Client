@@ -218,4 +218,14 @@ sealed class GeneralResult {
         class Forbidden: GetUserSettings()
         class EnterpriseSuspended: GetUserSettings()
     }
+
+    sealed class LinkCancel: GeneralResult() {
+        class Success: LinkCancel()
+        data class Failure(val message: UIMessage): LinkCancel()
+    }
+
+    sealed class SyncCancel: GeneralResult() {
+        class Success: SyncCancel()
+        data class Failure(val message: UIMessage): SyncCancel()
+    }
 }

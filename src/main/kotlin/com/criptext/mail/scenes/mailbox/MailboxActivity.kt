@@ -50,7 +50,7 @@ class MailboxActivity : BaseActivity() {
 
     // Only use this during development
     private fun seedEmails(appDB: AppDatabase) {
-        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0)
+        val fromContact = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0, 0)
         (1..50)
           .forEach {
               val seconds = if (it < 10) "0$it" else it.toString()

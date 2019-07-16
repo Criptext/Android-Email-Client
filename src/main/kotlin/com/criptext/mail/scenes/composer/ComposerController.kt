@@ -23,10 +23,7 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.data.SettingsRequest
-import com.criptext.mail.utils.AccountUtils
-import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.PinLockUtils
-import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -35,6 +32,7 @@ import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketSingleton
 import java.io.File
+import java.util.*
 
 
 /**
@@ -162,10 +160,25 @@ class ComposerController(private val storage: KeyValueStorage,
             scene.toggleExtraFieldsVisibility(visible = userIsEditingRecipients)
         }
 
+        override fun onRecipientAdded() {
+            val data = scene.getDataInputByUser()
+            if(model.to.size < data.to.size || model.cc.size < data.cc.size || model.bcc.size < data.bcc.size) {
+                updateModelWithInputData(data)
+                host.refreshToolbarItems()
+                val emails = data.to.map { it.email }.plus(data.cc.map { it.email }).plus(data.bcc.map { it.email })
+                if(!model.checkedDomains.map { it.name }.containsAll(emails.map { EmailAddressUtils.extractEmailAddressDomain(it) })){
+                    dataSource.submitRequest(ComposerRequest.CheckDomain(emails.distinct()))
+                }
+            }
+        }
+
         override fun onRecipientListChanged() {
             val data = scene.getDataInputByUser()
-            updateModelWithInputData(data)
-            host.refreshToolbarItems()
+            if(data.to.size < model.to.size || data.cc.size < model.cc.size || data.bcc.size < model.bcc.size) {
+                updateModelWithInputData(data)
+                host.refreshToolbarItems()
+            }
+
         }
 
         override fun onAttachmentButtonClicked() {
@@ -213,6 +226,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
+            is ComposerResult.CheckDomain -> onCheckDomain(result)
         }
     }
 
@@ -237,6 +251,36 @@ class ComposerController(private val storage: KeyValueStorage,
 
             is ComposerResult.LoadInitialData.Failure -> {
                 scene.showError(result.message)
+            }
+        }
+    }
+
+    private fun getCriptextContacts(contacts: LinkedList<Contact>, checkedData: List<ContactDomainCheckData>): List<Contact> {
+        val isCriptext = contacts.map { it.email }
+                .filter { email ->
+                    EmailAddressUtils.extractEmailAddressDomain(email) in
+                            checkedData.filter { it.isCriptextDomain }
+                                    .map { it.name } }
+        contacts.forEachIndexed { index, contact ->
+            if(contact.email in isCriptext)
+                contact.isCriptextDomain = true
+        }
+        return contacts
+    }
+
+    private fun onCheckDomain(result: ComposerResult.CheckDomain) {
+        when (result) {
+            is ComposerResult.CheckDomain.Success -> {
+                model.checkedDomains.addAll(result.contactDomainCheck)
+                model.checkedDomains = model.checkedDomains.distinctBy { it.name }.toMutableList()
+                model.to = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
+                model.cc = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
+                model.bcc = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
+                scene.contactsInputUpdate(
+                        model.to,
+                        model.cc,
+                        model.bcc
+                )
             }
         }
     }
@@ -419,11 +463,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
+        model.to.addAll(data.to.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
         model.cc.clear()
-        model.cc.addAll(data.cc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
+        model.cc.addAll(data.cc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score) })
+        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
         model.body = data.body
         model.subject = data.subject
     }
@@ -597,6 +641,10 @@ class ComposerController(private val storage: KeyValueStorage,
 
         dataSourceController.setDataSourceListener()
         generalDataSource.listener = generalDataSourceListener
+
+        model.checkedDomains.addAll(
+              ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS
+        )
 
         if (model.initialized)
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)

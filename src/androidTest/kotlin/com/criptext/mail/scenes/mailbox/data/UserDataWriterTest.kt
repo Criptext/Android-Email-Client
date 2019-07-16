@@ -36,9 +36,9 @@ class UserDataWriterTest {
     val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
 
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
-            isTrusted = false, score = 0)
+            isTrusted = false, score = 0, spamScore = 0)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
-            isTrusted = false, score = 0)
+            isTrusted = false, score = 0, spamScore = 0)
 
     private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM,
             visible = true, uuid = "uuid1", accountId = activeAccount.id)

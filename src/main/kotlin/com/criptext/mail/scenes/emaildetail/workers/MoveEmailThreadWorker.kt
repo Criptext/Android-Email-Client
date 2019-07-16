@@ -104,6 +104,9 @@ class MoveEmailThreadWorker(
                 .map { it.text }
 
         val result = Result.of {
+            if(chosenLabel == Label.LABEL_SPAM){
+                db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+            }
             if(chosenLabel == Label.LABEL_TRASH){
                 db.setTrashDate(emailIds, activeAccount.id)
             }

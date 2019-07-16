@@ -28,4 +28,8 @@ class ComposerAPIClient(private val httpClient: HttpClient, var token: String): 
         return httpClient.post(path = "/file/duplicate", authToken = token, body = jsonObject)
     }
 
+    fun getIsSecureDomain(domainList: List<String>): HttpResponseData {
+        return httpClient.get(path = "/domain?${domainList.joinToString(separator = "&") { "domain=$it" }}", authToken = token)
+    }
+
 }

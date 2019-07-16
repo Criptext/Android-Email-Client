@@ -102,6 +102,7 @@ class SettingsController(
 
         override fun onSyncMailboxCanceled() {
             model.isWaitingForSync = false
+            generalDataSource.submitRequest(GeneralRequest.SyncCancel())
         }
 
         override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {

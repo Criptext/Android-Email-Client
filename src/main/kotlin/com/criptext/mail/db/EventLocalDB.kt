@@ -189,6 +189,15 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
             }
 
+            val account = ActiveAccount.loadFromDB(db.accountDao().getAccountById(accountId)!!)!!
+
+            if(Label.defaultItems.spam in addedLabels){
+                db.contactDao().uptickSpamCounter(threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
+            }
+
+            if(Label.defaultItems.spam in removedLabels){
+                db.contactDao().resetSpamCounter(threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
+            }
 
             val selectedLabels = SelectedLabels()
             val labelsWrapper = addedLabels.map { LabelWrapper(it) }
@@ -223,6 +232,16 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
             if(Label.defaultItems.trash in addedLabels){
                 db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
+            }
+
+            val account = ActiveAccount.loadFromDB(db.accountDao().getAccountById(accountId)!!)!!
+
+            if(Label.defaultItems.spam in addedLabels){
+                db.contactDao().uptickSpamCounter(emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
+            }
+
+            if(Label.defaultItems.spam in removedLabels){
+                db.contactDao().resetSpamCounter(emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
             }
 
             val selectedLabels = SelectedLabels()

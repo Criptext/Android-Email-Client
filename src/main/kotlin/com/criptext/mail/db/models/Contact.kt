@@ -1,9 +1,6 @@
 package com.criptext.mail.db.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.utils.EmailAddressUtils
 import org.json.JSONObject
@@ -32,8 +29,14 @@ open class Contact(
         var isTrusted : Boolean,
 
         @ColumnInfo(name = "score")
-        var score : Int
+        var score : Int,
+
+        @ColumnInfo(name = "spamScore")
+        var spamScore : Int
 ) {
+
+    @Ignore
+    var isCriptextDomain : Boolean = EmailAddressUtils.isFromCriptextDomain(email)
 
     override fun equals(other: Any?): Boolean {
         if (other is Contact) {
@@ -79,7 +82,8 @@ open class Contact(
                     email = email,
                     name = name,
                     isTrusted = isTrusted,
-                    score = 0
+                    score = 0,
+                    spamScore = 0
             )
         }
 
@@ -90,9 +94,10 @@ open class Contact(
             json.put("name", contact.name)
             json.put("isTrusted", contact.isTrusted)
             json.put("score", contact.score)
+            json.put("spamScore", contact.spamScore)
             return json
         }
     }
 
-    class Invalid(email: String, name: String): Contact(0, email, name, false, 0)
+    class Invalid(email: String, name: String): Contact(0, email, name, false, 0, 0)
 }

@@ -75,7 +75,7 @@ class SyncPhonebookWorker(private val contactDao: ContactDao,
 
                 // keep unique only
                 if (emlRecsHS.add(emlAddr.toLowerCase())) {
-                    emlRecs.add(Contact(0, emlAddr, name, false, 0))
+                    emlRecs.add(Contact(0, emlAddr, name, false, 0, 0))
                 }
             } while (cur.moveToNext())
         }
