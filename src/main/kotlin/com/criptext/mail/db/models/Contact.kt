@@ -76,6 +76,8 @@ open class Contact(
             val isTrusted = if(json.has("isTrusted")) json.getBoolean("isTrusted")
             else false
 
+            val spamScore = if(json.has("spamScore")) json.getInt("spamScore") else 0
+
 
             return Contact(
                     id =  id,
@@ -83,7 +85,7 @@ open class Contact(
                     name = name,
                     isTrusted = isTrusted,
                     score = 0,
-                    spamScore = 0
+                    spamScore = spamScore
             )
         }
 

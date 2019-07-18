@@ -172,7 +172,7 @@
   <string name="message_enabled_two_fa">La próxima vez que inicies sesión en otro dispositivo, deberás ingresar tu contraseña y luego validar el inicio de sesión desde un dispositivo existente.</string>
   <string name="message_warning_two_fa">Para habilitar la autenticación de dos factores, debes configurar y verificar un correo de recuperación en tu cuenta</string>
   <string name="message_warning_2_two_fa">
-    <b>Por favor, ve a Configuración &gt; Correo de Recuperación para completar este paso</b>
+    <b>Por favor, ve a Configuración &gt; Cuenta &gt; Correo de Recuperación para completar este paso</b>
   </string>
   <string name="forgot_password_title">Restablecer Contraseña</string>
   <string name="forgot_password_title_no_recovery">No Existe Correo de Recuperación</string>

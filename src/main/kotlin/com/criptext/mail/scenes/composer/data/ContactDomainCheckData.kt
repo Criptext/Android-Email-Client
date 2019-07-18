@@ -5,7 +5,7 @@ import org.json.JSONArray
 
 data class ContactDomainCheckData(val name: String, val isCriptextDomain: Boolean){
     companion object {
-        val KNOWN_EXTERNAL_DOMAINS = mutableListOf(
+        val KNOWN_EXTERNAL_DOMAINS = listOf(
                 /* Criptext main domain */
                 ContactDomainCheckData(Contact.mainDomain, true),
                 /* Default domains included */

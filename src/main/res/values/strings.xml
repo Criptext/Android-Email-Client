@@ -172,7 +172,7 @@
   <string name="message_enabled_two_fa">Next time you sign in on another device you\'ll have to enter your password and then validate the sign in from an existing device.</string>
   <string name="message_warning_two_fa">To enable Two-Factor Authentication you must set and verify a recovery email on your account</string>
   <string name="message_warning_2_two_fa">
-    <b>Please go to Settings &gt; Recovery Email to complete this step.</b>
+    <b>Please go to Settings &gt; Account &gt; Recovery Email to complete this step.</b>
   </string>
   <string name="forgot_password_title">Password Reset</string>
   <string name="forgot_password_title_no_recovery">No Recovery Email</string>

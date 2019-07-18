@@ -97,6 +97,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("email", contact.email)
                 jsonObject.put("name", contact.name)
                 jsonObject.put("isTrusted", contact.isTrusted)
+                jsonObject.put("spamScore", contact.spamScore)
                 jsonArrayAllContacts.add(jsonObject.toString())
                 tmpFile.appendText("${JSONObject("{table: contact, object: $jsonObject}")}\n")
             }
@@ -288,6 +289,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 3
+        const val FILE_SYNC_VERSION = 4
     }
 }

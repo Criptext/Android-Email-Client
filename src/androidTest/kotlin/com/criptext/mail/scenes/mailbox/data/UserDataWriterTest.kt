@@ -72,8 +72,8 @@ class UserDataWriterTest {
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
 
-    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false}}",
-    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false}}",
+    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
+    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false,\"spamScore\":0}}",
     "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"uuid\":\"uuid1\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"uuid\":\"uuid2\",\"visible\":true}}",
     "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"$strDate\",\"key\":123,\"isMuted\":false,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
