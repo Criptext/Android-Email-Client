@@ -6,14 +6,6 @@
     android:background="@drawable/label_chooser_shape"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:layout_width="70dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/medium_restore_cloud"
-        />
 
     <TextView
         android:id="@+id/message"
@@ -45,7 +37,7 @@
 
     <Button
         android:id="@+id/restore_button"
-        android:layout_width="160dp"
+        android:layout_width="220dp"
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
@@ -54,6 +46,19 @@
         android:textColor="@drawable/btn_sign_in"
         android:textAllCaps="false"
         android:text="@string/restore_backup_dialog_button"
+        android:textSize="12sp"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/restore_local_button"
+        android:layout_width="220dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_welcome_tour"
+        android:textColor="@drawable/btn_sign_in"
+        android:textAllCaps="false"
+        android:text="@string/restore_backup_local_title"
         android:textSize="12sp"
         android:padding="10dp"/>
 

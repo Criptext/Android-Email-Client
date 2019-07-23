@@ -8,7 +8,7 @@ sealed class ExternalActivityParams {
     data class PinScreen(val isFirstTime: Boolean): ExternalActivityParams()
     class Camera: ExternalActivityParams()
     class InviteFriend: ExternalActivityParams()
-    data class ShareFile(val filePath: String): ExternalActivityParams()
+    data class ExportBackupFile(val filePath: String, val isEncrypted: Boolean): ExternalActivityParams()
     class SignInGoogleDrive: ExternalActivityParams()
     class SignOutGoogleDrive: ExternalActivityParams()
     class ChangeAccountGoogleDrive: ExternalActivityParams()
@@ -18,5 +18,7 @@ sealed class ExternalActivityParams {
     companion object {
         const val PIN_REQUEST_CODE = 2018
         const val REQUEST_CODE_SIGN_IN = 2019
+        const val WRITE_REQUEST_CODE = 2020
+
     }
 }

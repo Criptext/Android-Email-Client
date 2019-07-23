@@ -7,4 +7,5 @@ interface RestoreBackupUIObserver {
     fun onChangeDriveAccount()
     fun onPasswordChangedListener(password: String)
     fun onRestore()
+    fun onLocalProgressFinished()
 }

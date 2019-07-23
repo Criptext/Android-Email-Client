@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.github.kittinunf.result.Result
 import com.google.api.services.drive.Drive
 
@@ -41,7 +42,7 @@ class CheckForBackupWorker(
                     throw Exception()
                 else {
                     val driveFile = file.files.first()
-                    val isEncrypted = driveFile.fileExtension == "enc"
+                    val isEncrypted = driveFile.fileExtension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
                     Triple(driveFile.getSize(), driveFile.modifiedTime.value, isEncrypted)
                 }
             }

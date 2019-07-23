@@ -7,6 +7,8 @@ import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.exceptions.SyncFileException
+import com.github.kittinunf.result.Result
 import org.json.JSONObject
 import java.io.File
 
@@ -21,6 +23,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 
             val tmpFileLinkData = createTempFile()
 
+            val metadata = BackupFileMetadata(FILE_SYNC_VERSION, account.recipientId, account.domain)
+            tmpFileLinkData.appendText("${BackupFileMetadata.toJSON(metadata)}\n")
             addContactsToFile(db.contactDao(), tmpFileLinkData, account.id)
             addLabelsToFile(db.labelDao(), tmpFileLinkData, account.id)
             addMailsToFile(db.emailDao(), tmpFileLinkData, account.id)
@@ -55,6 +59,25 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 emailDataMapper = emaillDataMapper, contactDataMapper = contactDataMapper)
         val data = file.bufferedReader()
         var line = data.readLine()
+        val operation = Result.of {
+            val metadata = BackupFileMetadata.fromJSON(line)
+            if (metadata.fileVersion == FILE_SYNC_VERSION) {
+                if (account.userEmail != metadata.recipientId.plus("@${metadata.domain}")) {
+                    throw SyncFileException.UserNotValidException()
+                } else {
+                    line = data.readLine()
+                }
+            } else {
+                throw SyncFileException.OutdatedException()
+            }
+        }
+
+        when(operation){
+            is Result.Failure -> {
+                if(operation.error is SyncFileException)
+                    throw operation.error
+            }
+        }
         db.beginTransaction()
         while(line != null && line.isNotEmpty()) {
             val json = JSONObject(line)
@@ -289,6 +312,10 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 4
+        const val FILE_SYNC_VERSION = 5
+
+        const val FILE_ENCRYPTED_EXTENSION = "enc"
+        const val FILE_UNENCRYPTED_EXTENSION = "db"
+        const val FILE_GZIP_EXTENSION = "gz"
     }
 }

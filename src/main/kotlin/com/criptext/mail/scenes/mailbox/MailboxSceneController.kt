@@ -49,6 +49,7 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
 import com.google.api.services.drive.Drive
+import java.io.File
 
 /**
  * Created by sebas on 1/30/18.
@@ -75,6 +76,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.TotalUnreadEmails -> onTotalUnreadEmails(result)
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -290,6 +292,9 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
+        override fun restoreFromLocalBackupPressed() {
+            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+        }
 
         override fun restoreFromBackupPressed() {
             val gAccount = scene.getGoogleDriveService()
@@ -466,6 +471,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         threadListController.toggleMultiSelectMode(multiSelectON, silent)
         scene.refreshToolbarItems()
         toggleMultiModeBar()
+        scene.hideComposer(multiSelectON)
         scene.updateToolbarTitle(toolbarTitle)
     }
 
@@ -530,6 +536,22 @@ class MailboxSceneController(private val scene: MailboxScene,
             is ActivityMessage.ShowUIMessage -> {
                 scene.showMessage(activityMessage.message)
                 true
+            }
+            is ActivityMessage.AddAttachments -> {
+                val file = activityMessage.filesMetadata.firstOrNull() ?: return true
+                if(file.second == -1L) {
+                    val resolver = host.getContentResolver()
+                    if(resolver != null) {
+                        scene.showPreparingFileDialog()
+                        generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
+                                listOf(file.first), resolver)
+                        )
+                    }
+                } else {
+                    val isFileEncrypted = File(file.first).extension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
+                    host.exitToScene(RestoreBackupParams(true, Pair(file.first, isFileEncrypted)), null, false, true)
+                }
+                return true
             }
             else -> {
                 dataSource.submitRequest(MailboxRequest.ResendEmails())
@@ -1240,6 +1262,17 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
     }
+
+    private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
+        when (result) {
+            is GeneralResult.GetRemoteFile.Success -> {
+                scene.dismissPreparingFileDialog()
+                val file = result.remoteFiles.first()
+                host.exitToScene(RestoreBackupParams(true, Pair(file.first, false)), null, false, true)
+            }
+        }
+    }
+
 
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {

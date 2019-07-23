@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.generaldatasource.data.BackupFileMetadata
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -71,8 +72,10 @@ class UserDataWriterTest {
 
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
+    private val metadata = BackupFileMetadata(UserDataWriter.FILE_SYNC_VERSION, activeAccount.recipientId, activeAccount.domain)
 
-    private val deviceLinkFileExpectedContent = listOf("{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
+    private val deviceLinkFileExpectedContent = listOf(BackupFileMetadata.toJSON(metadata).toString(),
+    "{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
     "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false,\"spamScore\":0}}",
     "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"uuid\":\"uuid1\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"uuid\":\"uuid2\",\"visible\":true}}",

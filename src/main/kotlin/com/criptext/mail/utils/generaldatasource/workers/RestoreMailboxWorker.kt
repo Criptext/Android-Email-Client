@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.restorebackup.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
@@ -10,6 +10,8 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.exceptions.SyncFileException
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -17,22 +19,27 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.zip.GZIPInputStream
+import java.util.zip.ZipException
 import javax.crypto.BadPaddingException
 
 class RestoreMailboxWorker(private val filesDir: File,
                            private var activeAccount: ActiveAccount,
                            private val filePath: String,
                            private val passphrase: String?,
+                           private val isLocal: Boolean,
                            private val db: AppDatabase,
-                           override val publishFn: (RestoreBackupResult) -> Unit)
-    : BackgroundWorker<RestoreBackupResult.RestoreMailbox> {
+                           override val publishFn: (GeneralResult) -> Unit)
+    : BackgroundWorker<GeneralResult.RestoreMailbox> {
 
     private val dataWriter = UserDataWriter(db, filesDir)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): RestoreBackupResult.RestoreMailbox {
-        return RestoreBackupResult.RestoreMailbox.Failure(createErrorMessage(ex))
+    override fun catchException(ex: Exception): GeneralResult.RestoreMailbox {
+        if(ex is SyncFileException || ex is ZipException){
+            return GeneralResult.RestoreMailbox.SyncError(createErrorMessage(ex))
+        }
+        return GeneralResult.RestoreMailbox.Failure(createErrorMessage(ex))
     }
 
     private fun decompress(sourceFile: String): String {
@@ -53,28 +60,31 @@ class RestoreMailboxWorker(private val filesDir: File,
         return targetFile.absolutePath
     }
 
-    override fun work(reporter: ProgressReporter<RestoreBackupResult.RestoreMailbox>): RestoreBackupResult.RestoreMailbox? {
+    override fun work(reporter: ProgressReporter<GeneralResult.RestoreMailbox>): GeneralResult.RestoreMailbox? {
         val result =  Result.of {
+            if(!isLocal) reporter.report(GeneralResult.RestoreMailbox.Progress(20))
             val path = if(passphrase != null){
                 AESUtil.decryptFileByChunksWithCustomPassword(File(filePath), passphrase)
             } else {
                 filePath
             }
-            reporter.report(RestoreBackupResult.RestoreMailbox.Progress(90))
+            if(!isLocal){
+                reporter.report(GeneralResult.RestoreMailbox.Progress(90))
+            }
             decompress(path)
         }.flatMap {
             Result.of {
                 val decompressedFile = File(it)
                 deleteLocalData()
                 dataWriter.createDBFromFile(decompressedFile)
-                reporter.report(RestoreBackupResult.RestoreMailbox.Progress(100))
+                if(!isLocal) reporter.report(GeneralResult.RestoreMailbox.Progress(100))
             }
         }
 
 
         return when (result) {
             is Result.Success ->{
-                RestoreBackupResult.RestoreMailbox.Success()
+                GeneralResult.RestoreMailbox.Success()
             }
             is Result.Failure -> {
                 result.error.printStackTrace()
@@ -96,10 +106,15 @@ class RestoreMailboxWorker(private val filesDir: File,
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
-        if(ex is BadPaddingException)
-            UIMessage(resId = R.string.password_enter_error)
-        else
-        UIMessage(resId = R.string.forgot_password_error)
+        when(ex){
+            is SyncFileException.OutdatedException -> {
+                UIMessage(resId = R.string.restore_backup_version_incompatible)
+            }
+            is SyncFileException.UserNotValidException -> {
+                UIMessage(resId = R.string.restore_backup_account_incompatible)
+            }
+            else -> UIMessage(resId = R.string.restore_backup_fail_message)
+        }
     }
 
 }

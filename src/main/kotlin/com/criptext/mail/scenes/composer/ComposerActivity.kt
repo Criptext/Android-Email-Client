@@ -23,6 +23,7 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PhotoUtil
+import com.criptext.mail.utils.file.ActivityMessageUtils
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import droidninja.filepicker.FilePickerConst
@@ -78,26 +79,7 @@ class ComposerActivity : BaseActivity() {
             FilePickerConst.KEY_SELECTED_MEDIA,
             FilePickerConst.KEY_SELECTED_DOCS -> {
                 if(data != null) {
-                    val clipData = data.clipData
-                    if(clipData == null) {
-                        data.data?.also { uri ->
-                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
-                            if (attachment != null)
-                                setActivityMessage(ActivityMessage.AddAttachments(listOf(attachment)))
-                        }
-                    }else{
-                        val attachmentList = mutableListOf<Pair<String, Long>>()
-                        for (i in 0 until clipData.itemCount) {
-                            clipData.getItemAt(i).also { item ->
-                                val attachment = FileUtils.getPathAndSizeFromUri(item.uri, contentResolver,
-                                        this)
-                                if (attachment != null)
-                                    attachmentList.add(attachment)
-                            }
-                        }
-                        if (attachmentList.isNotEmpty())
-                            setActivityMessage(ActivityMessage.AddAttachments(attachmentList))
-                    }
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
                 }
             }
             PhotoUtil.KEY_PHOTO_TAKEN -> {

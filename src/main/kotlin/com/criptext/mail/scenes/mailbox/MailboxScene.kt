@@ -118,6 +118,9 @@ interface MailboxScene{
     fun showNotification()
     fun setEmtpyMailboxBackground(label: Label)
     fun getGoogleDriveService(): Drive?
+    fun showPreparingFileDialog()
+    fun dismissPreparingFileDialog()
+    fun hideComposer(shouldHide: Boolean)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -150,6 +153,7 @@ interface MailboxScene{
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
         private val restoreBackupDialog = RestoreBackupDialog(context)
+        private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -420,6 +424,14 @@ interface MailboxScene{
             trashBanner.visibility = View.VISIBLE
         }
 
+        override fun showPreparingFileDialog() {
+            preparingFileDialog.showDialog()
+        }
+
+        override fun dismissPreparingFileDialog() {
+            preparingFileDialog.dismiss()
+        }
+
         override fun showUpdateBanner(bannerData: UpdateBannerData) {
             updateBanner.findViewById<TextView>(R.id.banner_title).text = bannerData.title
             updateBanner.findViewById<TextView>(R.id.banner_message).text = bannerData.message
@@ -606,6 +618,10 @@ interface MailboxScene{
 
         override fun clearMenuActiveLabel() {
             drawerMenuView.clearActiveLabel()
+        }
+
+        override fun hideComposer(shouldHide: Boolean) {
+            openComposerButton.visibility = if(shouldHide) View.GONE else View.VISIBLE
         }
 
         override fun showNotification() {

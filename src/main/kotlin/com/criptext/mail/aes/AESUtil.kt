@@ -2,6 +2,7 @@ package com.criptext.mail.aes
 
 import com.criptext.mail.utils.Encoding
 import com.criptext.mail.utils.file.ChunkFileReader
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import org.spongycastle.crypto.PBEParametersGenerator
 import org.spongycastle.crypto.digests.SHA256Digest
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
@@ -128,7 +129,7 @@ class AESUtil(keyAndIV: String) {
             val iv = generateSecureRandomBytes(128 / 8)
             val ivspec = IvParameterSpec(iv)
 
-            val outFile = createTempFile(suffix = ".enc")
+            val outFile = createTempFile(suffix = ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}")
 
             val out = FileOutputStream(outFile)
             out.write(iv)
@@ -173,7 +174,7 @@ class AESUtil(keyAndIV: String) {
             val iv = generateSecureRandomBytes(128 / 8)
             val ivspec = IvParameterSpec(iv)
 
-            val outFile = createTempFile(suffix = ".enc")
+            val outFile = createTempFile(suffix = ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}")
 
             val out = FileOutputStream(outFile)
             out.write(salt)

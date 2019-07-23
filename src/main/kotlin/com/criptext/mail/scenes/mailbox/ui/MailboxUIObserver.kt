@@ -21,4 +21,5 @@ interface MailboxUIObserver: UIObserver {
     fun showStartGuideMultiple(view: View)
     fun showSecureIconGuide(view: View)
     fun restoreFromBackupPressed()
+    fun restoreFromLocalBackupPressed()
 }

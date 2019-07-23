@@ -18,10 +18,4 @@ sealed class RestoreBackupResult{
         data class Success(val filePath: String): DownloadBackup()
         data class Failure(val message: UIMessage) : DownloadBackup()
     }
-
-    sealed class RestoreMailbox : RestoreBackupResult() {
-        class Success: RestoreMailbox()
-        data class Progress(val progress: Int): RestoreMailbox()
-        data class Failure(val message: UIMessage) : RestoreMailbox()
-    }
 }

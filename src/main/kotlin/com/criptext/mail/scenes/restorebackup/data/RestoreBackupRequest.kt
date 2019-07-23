@@ -6,5 +6,4 @@ import com.google.api.services.drive.Drive
 sealed class RestoreBackupRequest{
     data class CheckForBackup(val mDriveService: Drive): RestoreBackupRequest()
     data class DownloadBackup(val mDriveService: Drive, val progressListener: RestoreBackupController.RestoreProgressListener): RestoreBackupRequest()
-    data class RestoreMailbox(val filePath: String, val passphrase: String?): RestoreBackupRequest()
 }

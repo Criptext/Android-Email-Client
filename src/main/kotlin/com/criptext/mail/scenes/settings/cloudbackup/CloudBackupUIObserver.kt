@@ -13,4 +13,6 @@ interface CloudBackupUIObserver: UIObserver {
     fun setOnCheckedChangeListener(isChecked: Boolean)
     fun encryptDialogButtonPressed()
     fun backUpNowPressed()
+    fun exportBackupPressed()
+    fun restoreBackupPressed()
 }

@@ -373,12 +373,94 @@
                 android:layout_marginEnd="10dp"
                 android:background="?attr/criptextLeftMenuSeparator"/>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/export_backup_file"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/export_backup_option"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/button_text_color"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="?attr/criptextSettingsDividerBackground">
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_backup_option_explain"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/criptextLeftMenuSeparator"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="17dp"
+                android:id="@+id/restore_backup"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/restore_backup_option"
+                    android:textSize="@dimen/drawer_text_item"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/button_text_color"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="?attr/criptextSettingsDividerBackground">
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/restore_backup_option_explain"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

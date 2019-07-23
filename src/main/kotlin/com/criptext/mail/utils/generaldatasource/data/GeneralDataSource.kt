@@ -232,6 +232,17 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is GeneralRequest.RestoreMailbox -> RestoreMailboxWorker(
+                    activeAccount = activeAccount!!,
+                    filePath = params.filePath,
+                    db = db,
+                    filesDir = filesDir,
+                    passphrase = params.passphrase,
+                    isLocal = params.isLocal,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }

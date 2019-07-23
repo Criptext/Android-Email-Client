@@ -2,7 +2,7 @@ package com.criptext.mail.scenes.restorebackup
 
 import com.google.api.services.drive.Drive
 
-class RestoreBackupModel() {
+class RestoreBackupModel(val isLocal: Boolean, val localFile: Pair<String, Boolean>?) {
     var accountEmail = ""
     var mDriveServiceHelper: Drive? = null
     var backupSize = 0L

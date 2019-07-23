@@ -19,11 +19,15 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.google.api.client.googleapis.media.MediaHttpDownloader
 import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener
 import com.google.api.services.drive.Drive
+import java.io.File
 
 class RestoreBackupController(
         private val model: RestoreBackupModel,
@@ -33,7 +37,8 @@ class RestoreBackupController(
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val websocketEvents: WebSocketEventPublisher,
-        private val dataSource: BackgroundWorkManager<RestoreBackupRequest, RestoreBackupResult>)
+        private val dataSource: BackgroundWorkManager<RestoreBackupRequest, RestoreBackupResult>,
+        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
     : SceneController(){
 
 
@@ -45,7 +50,13 @@ class RestoreBackupController(
         when(result) {
             is RestoreBackupResult.CheckForBackup -> onCheckForBackup(result)
             is RestoreBackupResult.DownloadBackup -> onDownloadBackup(result)
-            is RestoreBackupResult.RestoreMailbox -> onRestoreMailbox(result)
+        }
+    }
+
+    private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
+        when(result) {
+            is GeneralResult.RestoreMailbox -> onRestoreMailbox(result)
+            is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
         }
     }
 
@@ -63,6 +74,10 @@ class RestoreBackupController(
     }
 
     private val uiObserver = object: RestoreBackupUIObserver{
+        override fun onLocalProgressFinished() {
+            host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)), true)
+        }
+
         override fun onPasswordChangedListener(password: String) {
             if(password.isNotEmpty() && password.length >= 3) {
                 model.passphrase = password
@@ -75,19 +90,25 @@ class RestoreBackupController(
 
         override fun onRetryRestore() {
             scene.setProgress(0)
-            scene.showBackupFoundLayout(model.isFileEncrypted)
+            scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
+            scene.enableRestoreButton(true)
         }
 
         override fun onChangeDriveAccount() {
             scene.enableRestoreButton(false)
-            host.launchExternalActivityForResult(ExternalActivityParams.ChangeAccountGoogleDrive())
+            if(model.isLocal){
+                host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            } else {
+                host.launchExternalActivityForResult(ExternalActivityParams.ChangeAccountGoogleDrive())
+            }
         }
 
         override fun onRestore() {
-            scene.showProgressLayout()
-            scene.setProgress(20)
+            scene.showProgressLayout(model.isLocal)
+            if(!model.isLocal) scene.setProgress(20)
+            else scene.setProgress(0)
             if(model.backupFilePath.isNotEmpty()){
-                dataSource.submitRequest(RestoreBackupRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
             }else{
                 dataSource.submitRequest(RestoreBackupRequest.DownloadBackup(model.mDriveServiceHelper!!, progressListener))
             }
@@ -103,15 +124,73 @@ class RestoreBackupController(
 
         websocketEvents.setListener(webSocketEventListener)
         model.mDriveServiceHelper = scene.getGoogleDriveService()
-        if(model.mDriveServiceHelper == null)
+        if(model.mDriveServiceHelper == null && !model.isLocal)
             host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.restore_backup_no_account)), true)
 
-        dataSource.submitRequest(RestoreBackupRequest.CheckForBackup(model.mDriveServiceHelper!!))
+        scene.attachView(model = model, uiObserver = uiObserver)
+
+        if(model.isLocal){
+            setupModelFile(model.localFile!!.first)
+        } else {
+            dataSource.submitRequest(RestoreBackupRequest.CheckForBackup(model.mDriveServiceHelper!!))
+        }
+
         model.accountEmail = activeAccount.userEmail
 
-        scene.attachView(model = model, uiObserver = uiObserver)
         dataSource.listener = dataSourceListener
+        generalDataSource.listener = generalDataSourceListener
+        return handleActivityMessage(activityMessage)
+    }
+
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        PinLockUtils.resetLastMillisPin()
+        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+        if (activityMessage is ActivityMessage.AddAttachments) {
+            if(activityMessage.filesMetadata.isNotEmpty()){
+                handleRestoreFile(activityMessage.filesMetadata)
+            }
+            return true
+        }
         return false
+    }
+
+    private fun handleRestoreFile(filesMetadata: List<Pair<String, Long>>) {
+        val file = filesMetadata.firstOrNull() ?: return
+        if(file.second == -1L) {
+            val resolver = host.getContentResolver()
+            if(resolver != null) {
+                scene.showPreparingFileDialog()
+                generalDataSource.submitRequest(GeneralRequest.GetRemoteFile(
+                        listOf(file.first), resolver)
+                )
+            }
+        } else {
+            setupModelFile(file.first)
+
+        }
+    }
+
+    private fun setupModelFile(filePath: String){
+        val file = File(filePath)
+        if(file.extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
+                        UserDataWriter.FILE_GZIP_EXTENSION)){
+            scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
+            scene.showBackupNotFoundLayout(model.isLocal)
+        } else {
+            model.backupFilePath = filePath
+            model.lastModified = file.lastModified()
+            model.backupSize = file.length()
+            model.isFileEncrypted = file.extension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
+            scene.enableRestoreButton(!model.isFileEncrypted)
+            if(model.isLocal && !model.isFileEncrypted) {
+                scene.showProgressLayout(model.isLocal)
+                scene.setProgress(0)
+                generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
+            } else {
+                scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
+                scene.updateFileData(model.backupSize, model.lastModified, model.isLocal)
+            }
+        }
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
@@ -199,11 +278,11 @@ class RestoreBackupController(
                 model.backupSize = result.fileSize
                 model.isFileEncrypted = result.isEncrypted
                 scene.enableRestoreButton(!result.isEncrypted)
-                scene.showBackupFoundLayout(model.isFileEncrypted)
-                scene.updateFileData(model.backupSize, model.lastModified)
+                scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
+                scene.updateFileData(model.backupSize, model.lastModified, model.isLocal)
             }
             is RestoreBackupResult.CheckForBackup.Failure -> {
-                scene.showBackupNotFoundLayout()
+                scene.showBackupNotFoundLayout(model.isLocal)
             }
         }
     }
@@ -214,28 +293,48 @@ class RestoreBackupController(
                 model.backupFilePath = result.filePath
                 if(!model.hasPathReady){
                     model.hasPathReady = true
-                    dataSource.submitRequest(RestoreBackupRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                    generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
                 }
 
             }
             is RestoreBackupResult.DownloadBackup.Failure -> {
-                scene.showBackupRetryLayout()
+                scene.showBackupRetryLayout(model.isLocal)
                 scene.showMessage(result.message)
             }
         }
     }
 
-    private fun onRestoreMailbox(result: RestoreBackupResult.RestoreMailbox){
+    private fun onRestoreMailbox(result: GeneralResult.RestoreMailbox){
         when(result){
-            is RestoreBackupResult.RestoreMailbox.Success -> {
-                host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)), true)
+            is GeneralResult.RestoreMailbox.Success -> {
+                scene.localPercentageAnimation()
             }
-            is RestoreBackupResult.RestoreMailbox.Progress -> scene.setProgress(result.progress)
-            is RestoreBackupResult.RestoreMailbox.Failure -> {
-                scene.showBackupRetryLayout()
+            is GeneralResult.RestoreMailbox.Progress -> scene.setProgress(result.progress)
+            is GeneralResult.RestoreMailbox.SyncError -> {
+                scene.showMessage(result.message)
+                if(model.isLocal)
+                    scene.showBackupNotFoundLayout(model.isLocal)
+                else
+                    scene.showBackupRetryLayout(model.isLocal)
+            }
+            is GeneralResult.RestoreMailbox.Failure -> {
+                scene.showBackupRetryLayout(model.isLocal)
                 model.passphrase = null
                 scene.enableRestoreButton(false)
                 scene.showMessage(result.message)
+            }
+        }
+    }
+
+    private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
+        when(result){
+            is GeneralResult.GetRemoteFile.Success -> {
+                scene.dismissPreparingFileDialog()
+                val file = result.remoteFiles.first()
+                setupModelFile(file.first)
+            }
+            is GeneralResult.GetRemoteFile.Failure -> {
+
             }
         }
     }
@@ -251,7 +350,7 @@ class RestoreBackupController(
                 MediaHttpDownloader.DownloadState.MEDIA_COMPLETE -> {
                     if(!model.hasPathReady && model.backupFilePath.isNotEmpty()) {
                         model.hasPathReady = true
-                        dataSource.submitRequest(RestoreBackupRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                        generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
                         host.runOnUiThread(Runnable {
                             scene.setProgress(60)
                         })
@@ -265,6 +364,8 @@ class RestoreBackupController(
 
     override fun onStop() {
         websocketEvents.clearListener(webSocketEventListener)
+        generalDataSource.listener = null
+        dataSource.listener = null
     }
 
     override fun onBackPressed(): Boolean {
@@ -279,18 +380,5 @@ class RestoreBackupController(
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
-    }
-
-    companion object {
-        const val RETRY_TIME_DEFAULT = 5000L
-        const val RETRY_TIME_DATA_READY = 10000L
-        const val RETRY_TIMES_DEFAULT = 12
-        const val RETRY_TIMES_DATA_READY = 18
-
-        //Sync Process Percentages
-        const val  SENDING_KEYS_PERCENTAGE = 10
-        const val  WAITING_FOR_MAILBOX_PERCENTAGE = 40
-        const val  DOWNLOADING_MAILBOX_PERCENTAGE = 70
-        const val  SYNC_COMPLETE_PERCENTAGE = 100
     }
 }

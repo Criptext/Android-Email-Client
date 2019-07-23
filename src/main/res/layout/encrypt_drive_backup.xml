@@ -142,7 +142,7 @@
             android:layout_weight="0.5"
             android:background="@drawable/label_button_right_bg"
             android:stateListAnimator="@null"
-            android:text="@string/save"
+            android:text="@string/restore_backup_save_backup"
             android:textAllCaps="false"
             android:enabled="false"
             android:textColor="@color/button_text_color"

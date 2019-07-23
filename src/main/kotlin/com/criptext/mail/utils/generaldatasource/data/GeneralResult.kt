@@ -225,7 +225,14 @@ sealed class GeneralResult {
     }
 
     sealed class SyncCancel: GeneralResult() {
-        class Success: SyncCancel()
-        data class Failure(val message: UIMessage): SyncCancel()
+        class Success : SyncCancel()
+        data class Failure(val message: UIMessage) : SyncCancel()
+    }
+
+    sealed class RestoreMailbox : GeneralResult() {
+        class Success: RestoreMailbox()
+        data class Progress(val progress: Int): RestoreMailbox()
+        data class SyncError(val message: UIMessage) : RestoreMailbox()
+        data class Failure(val message: UIMessage) : RestoreMailbox()
     }
 }

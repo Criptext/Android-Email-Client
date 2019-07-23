@@ -11,10 +11,11 @@ class CloudBackupModel {
     var wifiOnly: Boolean = true
     var mDriveService: Drive? = null
     var firstTimeOpen = true
-    var passwordForNonCriptextUsers: String? = null
+    var passphraseForEncryptedFile: String? = null
     var lastBackupSize = 0L
     var hasOldFile = false
     var oldFileId: List<String> = listOf()
     var fileLength = 0L
     var isBackupDone = false
+    var localFilePath: String? = null
 }
