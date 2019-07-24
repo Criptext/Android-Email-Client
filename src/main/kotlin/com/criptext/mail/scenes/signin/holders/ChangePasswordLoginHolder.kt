@@ -15,10 +15,6 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.validation.ProgressButtonState
 import com.google.android.material.textfield.TextInputLayout
 
-/**
- * Created by sebas on 3/8/18.
- */
-
 class ChangePasswordLoginHolder(
         val view: View,
         initialState: SignInLayoutState.ChangePassword

@@ -14,8 +14,9 @@ import com.criptext.mail.utils.virtuallist.VirtualListAdapter
  */
 
 class DeviceAdapter(private val mContext : Context,
-                    private val devicesListItemListener: DevicesListItemListener,
-                    private val deviceList: VirtualList<DeviceItem>)
+                    private val devicesListItemListener: DevicesListItemListener?,
+                    private val deviceList: VirtualList<DeviceItem>,
+                    private val deviceItemType: DeviceItem.Companion.Type)
     : VirtualListAdapter(deviceList) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -23,8 +24,10 @@ class DeviceAdapter(private val mContext : Context,
             is DeviceHolder -> {
                 val device = deviceList[position]
                 holder.bindDevice(device)
-                holder.setOnClickListener {
-                    devicesListItemListener.onDeviceTrashClicked(device, position)
+                if(devicesListItemListener != null) {
+                    holder.setOnClickListener {
+                        devicesListItemListener.onDeviceTrashClicked(device, position)
+                    }
                 }
             }
         }
@@ -32,7 +35,7 @@ class DeviceAdapter(private val mContext : Context,
 
     override fun onCreateActualViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView : View = View.inflate(mContext, R.layout.devices_item, null )
-        return DeviceHolder(itemView)
+        return DeviceHolder(itemView, deviceItemType)
     }
 
     override fun getActualItemViewType(position: Int): Int {

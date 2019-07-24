@@ -166,6 +166,7 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
             is DialogType.DeleteAccount ->
                 DialogResult.DialogWithInput("", data.type)
             is DialogType.SignIn,
+            is DialogType.Message,
             is DialogType.ManualSyncConfirmation,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)

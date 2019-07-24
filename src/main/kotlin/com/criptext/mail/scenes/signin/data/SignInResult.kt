@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signin.data
 
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -37,6 +38,7 @@ sealed class SignInResult {
     sealed class LinkBegin: SignInResult() {
         data class Success(val ephemeralJwt: String, val hasTwoFA: Boolean): LinkBegin()
         data class NoDevicesAvailable(val message: UIMessage): LinkBegin()
+        data class NeedToRemoveDevices(val message: UIMessage): LinkBegin()
         data class Failure(val message: UIMessage): LinkBegin()
     }
 
@@ -69,5 +71,17 @@ sealed class SignInResult {
         data class Success(val key: String, val dataAddress: String): LinkDataReady()
         data class Failure(val message: UIMessage,
                            val exception: Exception): LinkDataReady()
+    }
+
+    sealed class FindDevices: SignInResult() {
+        data class Success(val token: String, val devices: ArrayList<DeviceItem>): FindDevices()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): FindDevices()
+    }
+
+    sealed class RemoveDevices: SignInResult() {
+        data class Success(val deviceIds: List<Int>): RemoveDevices()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): RemoveDevices()
     }
 }

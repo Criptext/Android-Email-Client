@@ -4,13 +4,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.criptext.mail.R
+import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.holders.*
 import com.criptext.mail.scenes.signup.holders.KeyGenerationHolder
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.ui.GeneralMessageOkDialog
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogNewDevice
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.ProgressButtonState
 
 /**
@@ -22,8 +26,8 @@ interface SignInScene {
     fun showError(message: UIMessage)
     fun drawInputError(error: UIMessage)
     fun drawSuccess()
-    fun initLayout(state: SignInLayoutState, signInUIObserver: SignInSceneController.SignInUIObserver,
-                   isMultiple: Boolean)
+    fun initLayout(model: SignInSceneModel, signInUIObserver: SignInSceneController.SignInUIObserver,
+                   devicesListItemListener: DevicesListItemListener? = null)
     fun showResetPasswordDialog(emailAddress: String)
     fun showPasswordLoginDialog(
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
@@ -39,6 +43,9 @@ interface SignInScene {
     fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
     fun showPasswordDialogError(message: UIMessage?)
     fun toggleChangePasswordButton(enable: Boolean)
+    fun showDeviceCountRemaining(remaining: Int)
+    fun showDeviceRemovalError()
+    fun showToolbarCount(checked: Int)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -48,6 +55,22 @@ interface SignInScene {
         private var holder: BaseSignInHolder
         private val retrySyncDialog = RetrySyncAlertDialogNewDevice(view.context)
         private val signInWarningDialog = SignInWarningDialog(view.context)
+        private val deviceCountRemainingDialog = GeneralMessageOkDialog(view.context,
+                DialogData.DialogMessageData(
+                        title = UIMessage(R.string.sign_in_remove_dialog_title),
+                        message = listOf(UIMessage(R.string.sign_in_remove_success_remaining)),
+                        type = DialogType.Message()
+                )
+        )
+
+        private val deviceExpirationWarning = GeneralMessageOkDialog(view.context,
+                DialogData.DialogMessageData(
+                        title = UIMessage(R.string.sign_in_remove_error_dialog_title),
+                        message = listOf(UIMessage(R.string.sign_in_remove_error_dialog_message)),
+                        type = DialogType.Message(),
+                        onOkPress = { signInUIObserver?.onBackPressed() }
+                )
+        )
 
         override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
@@ -75,10 +98,11 @@ interface SignInScene {
         }
 
 
-        override fun initLayout(state: SignInLayoutState,
+        override fun initLayout(model: SignInSceneModel,
                                 signInUIObserver: SignInSceneController.SignInUIObserver,
-                                isMultiple: Boolean) {
+                                devicesListItemListener: DevicesListItemListener?) {
             removeAllViews()
+            val state = model.state
             holder = when (state) {
                 is SignInLayoutState.WaitForApproval -> {
                     val newLayout = View.inflate(
@@ -110,10 +134,25 @@ interface SignInScene {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_signin_form, viewGroup)
-                    SignInStartHolder(newLayout, state.username, state.firstTime, isMultiple)
+                    SignInStartHolder(newLayout, state.username, state.firstTime, model.isMultiple)
+                }
+                is SignInLayoutState.RemoveDevices -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_sign_in_remove_devices, viewGroup)
+                    RemoveDevicesHolder(newLayout, state.username, state.domain, model, devicesListItemListener)
                 }
             }
-            holder.uiObserver = signInUIObserver
+            this.signInUIObserver = signInUIObserver
+            finishHolderSetup()
+        }
+
+        private fun finishHolderSetup(){
+            when(holder){
+                is RemoveDevicesHolder -> {
+                    signInUIObserver?.onSetupDevices((holder as RemoveDevicesHolder).deviceListView)
+                }
+            }
         }
 
 
@@ -206,6 +245,19 @@ interface SignInScene {
         override fun toggleChangePasswordButton(enable: Boolean) {
             val currentHolder = holder as ChangePasswordLoginHolder
             currentHolder.toggleChangePasswordButton(enable)
+        }
+
+        override fun showDeviceCountRemaining(remaining: Int) {
+            deviceCountRemainingDialog.showDialog(listOf(UIMessage(R.string.sign_in_remove_success_remaining, arrayOf(remaining))))
+        }
+
+        override fun showDeviceRemovalError() {
+            deviceExpirationWarning.showDialog()
+        }
+
+        override fun showToolbarCount(checked: Int) {
+            val currentHolder = holder as RemoveDevicesHolder
+            currentHolder.setToolbarCount(checked)
         }
 
         override fun showKeyGenerationHolder() {

@@ -6,7 +6,7 @@ import org.json.JSONArray
 import java.util.*
 
 data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String, val name: String,
-                      val isCurrent: Boolean, val lastActivity: Date?): Comparable<DeviceItem> {
+                      val isCurrent: Boolean, val lastActivity: Date?, var checked: Boolean = false): Comparable<DeviceItem> {
     override fun compareTo(other: DeviceItem): Int {
         return when {
             other.lastActivity != null && lastActivity == null -> -1
@@ -22,9 +22,15 @@ data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String
 
 
     companion object {
+        const val MAX_ALLOWED_DEVICES = 10
+
+        enum class Type {
+            Normal, WithCheckbox;
+        }
+
         fun fromJSON(metadataString: String): List<DeviceItem> {
             val devicesData = JSONArray(metadataString)
-            val devices = (0..(devicesData.length()-1))
+            val devices = (0 until devicesData.length())
                     .map {
                         val json = devicesData.getJSONObject(it)
                         val jsonDate = json.getJSONObject("lastActivity").optString("date")

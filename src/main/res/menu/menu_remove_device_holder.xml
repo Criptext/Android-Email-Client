@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/delete_devices"
+        android:title="Trash"
+        android:icon="@drawable/trash"
+        android:iconTint="@color/white"
+        android:layout_height="@dimen/menu_item_icon_size"
+        android:layout_width="@dimen/menu_item_icon_size"
+        app:showAsAction="always" />
+</menu>

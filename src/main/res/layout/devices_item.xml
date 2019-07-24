@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/device_root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -18,6 +19,14 @@
             android:layout_gravity="center_vertical"
             android:orientation="horizontal">
 
+            <CheckBox
+                android:id="@+id/deviceCheckbox"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:visibility="gone"/>
+
             <ImageView
                 android:id="@+id/imageViewDeviceType"
                 android:layout_width="30dp"
@@ -25,14 +34,14 @@
                 android:src="@drawable/device_m"
                 android:tint="#9b9b9b"
                 android:layout_row="0"
-                android:layout_column="0" />
+                android:layout_column="1" />
 
             <LinearLayout
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:orientation="vertical"
                 android:layout_row="0"
-                android:layout_column="1"
+                android:layout_column="2"
                 android:gravity="center_vertical"
                 android:layout_marginStart="5dp">
                 <TextView

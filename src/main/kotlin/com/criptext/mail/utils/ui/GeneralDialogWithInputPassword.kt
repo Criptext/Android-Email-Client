@@ -111,6 +111,7 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
                 DialogResult.DialogWithInput(password.text.toString(), data.type)
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
+            is DialogType.Message,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
         }
