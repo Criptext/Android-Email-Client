@@ -127,6 +127,23 @@ class SignInDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is SignInRequest.FindDevices -> GetDevicesWorker(
+                    userData = params.userData,
+                    httpClient = httpClient,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is SignInRequest.RemoveDevices -> RemoveDevicesWorker(
+                    userData = params.userData,
+                    httpClient = httpClient,
+                    deviceIds = params.deviceIds,
+                    deviceIndexes = params.deviceIndexes,
+                    tempToken = params.tempToken,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }

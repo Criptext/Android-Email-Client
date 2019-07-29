@@ -6,4 +6,5 @@ sealed class DialogType{
     class ReplyToChange: DialogType()
     class SwitchAccount: DialogType()
     class SignIn: DialogType()
+    class Message: DialogType()
 }

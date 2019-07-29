@@ -12,6 +12,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.SettingsRemoveDeviceDialog
 import com.criptext.mail.scenes.settings.devices.data.DeviceAdapter
+import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.settings.devices.data.VirtualDeviceList
 import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHolder
 import com.criptext.mail.utils.KeyboardManager
@@ -73,7 +74,7 @@ interface DevicesScene{
                 this.devicesUIObserver.onBackButtonPressed()
             }
 
-            deviceListView.setAdapter(DeviceAdapter(view.context, devicesListItemListener, VirtualDeviceList(model)))
+            deviceListView.setAdapter(DeviceAdapter(view.context, devicesListItemListener, VirtualDeviceList(model), DeviceItem.Companion.Type.Normal))
 
         }
 

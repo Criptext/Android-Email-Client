@@ -556,4 +556,9 @@
   <string name="restore_backup_fail_title">Archivo no válido</string>
   <string name="restore_backup_bad_file">El archivo elegido no es un archivo de respaldo válido.</string>
   <string name="restore_backup_intent_title">Compartir o guardar backup localmente…</string>
+  <string name="sign_in_remove_message">Has llegado al límite de dispositivos (%1$d) conectados a tu cuenta. Debes eliminar al menos (%1$d) dispositivo para proceder. Al eliminarlo, tu sesion activa será cerrada en ese dispositivo.</string>
+  <string name="sign_in_remove_success_remaining">Usted tiene aún (%1$d) dispositivos pendientes que eliminar, antes de poder iniciar su sesión. </string>
+  <string name="sign_in_remove_dialog_title">Borrar Dispositivos</string>
+  <string name="sign_in_remove_error_dialog_title">Sesión Expirada</string>
+  <string name="sign_in_remove_error_dialog_message">Lo sentimos tu sesión ha expirado, exediste el tiempo de inactividad permitido, vuelve a intentarlo.</string>
 </resources>

@@ -29,6 +29,7 @@ class LinkBeginWorker(val httpClient: HttpClient,
             is ServerErrorException -> {
                 when(ex.errorCode){
                     ServerCodes.BadRequest -> return SignInResult.LinkBegin.NoDevicesAvailable(createErrorMessage(ex))
+                    ServerCodes.TooManyDevices -> return SignInResult.LinkBegin.NeedToRemoveDevices(createErrorMessage(ex))
                 }
             }
         }

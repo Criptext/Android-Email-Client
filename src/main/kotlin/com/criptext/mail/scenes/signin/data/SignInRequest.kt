@@ -27,4 +27,9 @@ sealed class SignInRequest{
     data class LinkStatus(val ephemeralJwt: String): SignInRequest()
 
     class LinkDataReady: SignInRequest()
+
+    data class FindDevices(val userData: UserData): SignInRequest()
+
+    data class RemoveDevices(val userData: UserData, val tempToken: String,
+                             val deviceIds: List<Int>, val deviceIndexes: List<Int>): SignInRequest()
 }

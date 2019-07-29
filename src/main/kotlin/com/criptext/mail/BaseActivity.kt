@@ -387,6 +387,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun refreshToolbarItems() {
+
         this.invalidateOptionsMenu()
     }
 
