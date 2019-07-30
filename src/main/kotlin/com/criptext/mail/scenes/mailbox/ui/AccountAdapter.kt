@@ -16,7 +16,7 @@ class AccountAdapter(private val mContext : Context,
 
     override fun onBindViewHolder(holder: AccountHolder, position: Int) {
         val account = accountList[position]
-        holder.bindAccount(account, badgeCountList[position])
+        holder.bindAccount(account, badgeCountList.getOrNull(position) ?: 0)
         holder.setOnClickedListener {
             drawerMenuItemListener?.onAccountClicked(account)
         }

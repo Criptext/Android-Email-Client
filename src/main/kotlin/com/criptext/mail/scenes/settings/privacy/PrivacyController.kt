@@ -51,6 +51,7 @@ class PrivacyController(
             is GeneralResult.SetReadReceipts -> onReadReceipts(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.Set2FA -> onSet2FA(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -83,10 +84,6 @@ class PrivacyController(
         override fun onReadReceiptsSwitched(isChecked: Boolean) {
             scene.enableReadReceiptsSwitch(false)
             generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
-        }
-
-        override fun onHasEncryptionSwitched(isChecked: Boolean) {
-            AccountUtils.saveExternalEncryptionSetting(storage, activeAccount.userEmail, isChecked)
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
@@ -131,9 +128,12 @@ class PrivacyController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
 
-        scene.attachView(uiObserver, keyboardManager, model,
-                AccountUtils.hasExternalEncryption(storage, activeAccount.userEmail))
+        scene.attachView(uiObserver, keyboardManager, model)
+        scene.enableTwoFASwitch(false)
+        scene.enableReadReceiptsSwitch(false)
         generalDataSource.listener = generalDataSourceListener
+
+        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
 
 
         return false
@@ -241,6 +241,32 @@ class PrivacyController(
                             ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
                             false, true)
                 }
+            }
+        }
+    }
+
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
+                model.twoFA = result.userSettings.hasTwoFA
+                model.readReceipts = result.userSettings.hasReadReceipts
+                scene.enableReadReceiptsSwitch(true)
+                scene.updateReadReceipts(model.readReceipts)
+                scene.enableTwoFASwitch(true)
+                scene.updateTwoFa(model.twoFA)
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is GeneralResult.GetUserSettings.Forbidden -> {
+                scene.showConfirmPasswordDialog(uiObserver)
+            }
+            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }

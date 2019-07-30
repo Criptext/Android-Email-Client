@@ -130,7 +130,7 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="17dp"
                 android:id="@+id/settings_privacy"
-                android:clickable="false"
+                android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView
@@ -213,7 +213,7 @@
                 android:paddingStart="17dp"
                 android:id="@+id/settings_devices"
                 android:visibility="visible"
-                android:clickable="false"
+                android:clickable="true"
                 android:foreground="?attr/selectableItemBackground">
 
                 <TextView

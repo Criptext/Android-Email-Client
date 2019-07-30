@@ -28,6 +28,7 @@ import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.SceneModel
+import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
@@ -150,23 +151,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this)
                     )
                 }
-                PRIVACY_MODEL -> {
-                    PrivacyModel(
-                            readReceipts = savedInstanceState.getBoolean("readReceipts"),
-                            twoFA = savedInstanceState.getBoolean("twoFA"),
-                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed")
-                    )
-                }
                 PROFILE_MODEL -> {
-                    val userData = ProfileUserData(
-                            name = savedInstanceState.getString("name")!!,
-                            email = savedInstanceState.getString("email")!!,
-                            isEmailConfirmed = savedInstanceState.getBoolean("isEmailConfirmed"),
-                            replyToEmail = savedInstanceState.getString("replyToEmail"),
-                            isLastDeviceWith2FA = savedInstanceState.getBoolean("isLastDeviceWith2FA"),
-                            recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
-                    )
-                    ProfileModel(userData)
+                    ProfileModel(savedInstanceState.getBoolean("comesFromMailbox"))
                 }
                 RECOVERY_EMAIL_MODEL -> {
                     val userData = ProfileUserData(
@@ -206,6 +192,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -296,13 +283,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ProfileModel -> {
                 outState.putString("type", PROFILE_MODEL)
-                outState.putString("name", currentModel.userData.name)
-                outState.putString("email", currentModel.userData.email)
-                outState.putBoolean("isEmailConfirmed", currentModel.userData.isEmailConfirmed)
-                if(currentModel.userData.replyToEmail != null)
-                    outState.putString("replyToEmail", currentModel.userData.replyToEmail)
-                outState.putBoolean("isLastDeviceWith2FA", currentModel.userData.isLastDeviceWith2FA)
-                outState.putString("recoveryEmail", currentModel.userData.recoveryEmail)
+                outState.putBoolean("comesFromMailbox", currentModel.comesFromMailbox)
             }
             is RecoveryEmailModel -> {
                 outState.putString("type", RECOVERY_EMAIL_MODEL)
@@ -372,14 +353,14 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is LinkingParams -> LinkingModel(params.activeAccount,
                     params.deviceId, params.randomId, params.deviceType)
             is PinLockParams -> PinLockModel()
-            is DevicesParams -> DevicesModel(params.devices)
+            is DevicesParams -> DevicesModel()
             is LabelsParams -> LabelsModel()
-            is PrivacyParams -> PrivacyModel(params.hasReadReceipts, params.hasTwoFA, params.isEmailConfirmed)
+            is PrivacyParams -> PrivacyModel()
             is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
                     params.deviceType, params.authorizerName)
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.userData)
-            is ProfileParams -> ProfileModel(params.userData)
+            is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
@@ -594,6 +575,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN)
                     startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
                 }
+            }
+            is ExternalActivityParams.ContactSupport -> {
+                val intent = Intent(this, WebViewActivity::class.java)
+                intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/contact")
+                startActivity(intent)
             }
             is ExternalActivityParams.InviteFriend -> {
                 val share = Intent(Intent.ACTION_SEND)

@@ -3,6 +3,6 @@ package com.criptext.mail.scenes.settings.profile
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 
-class ProfileModel(var userData: ProfileUserData) : SceneModel {
-    var comesFromMailbox = false
+class ProfileModel(val comesFromMailbox: Boolean) : SceneModel {
+    var userData: ProfileUserData = ProfileUserData()
 }

@@ -53,7 +53,7 @@ class RemoveNotificationWorker(
         return when(operationResult) {
             is Result.Success -> {
                 db.antiPushMapDao().deleteById(operationResult.value)
-                PushResult.RemoveNotification.Success(operationResult.value)
+                PushResult.RemoveNotification.Success(operationResult.value, pushData["subAction"] ?: "")
             }
 
             is Result.Failure -> processFailure(operationResult)

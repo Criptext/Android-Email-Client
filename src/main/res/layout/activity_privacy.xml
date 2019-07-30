@@ -81,8 +81,18 @@
 
             <Switch
                 android:id="@+id/privacy_read_receipts_switch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <ProgressBar
+                android:id="@+id/read_receipts_loading"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:layout_gravity="end|center_vertical"/>
             </LinearLayout>
 
             <LinearLayout
@@ -131,7 +141,16 @@
                 <Switch
                     android:id="@+id/privacy_two_fa_switch"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <ProgressBar
+                    android:id="@+id/two_fa_loading"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="20dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    android:layout_gravity="end|center_vertical"/>
             </LinearLayout>
 
             <LinearLayout
@@ -158,51 +177,6 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/criptextLeftMenuSeparator"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp">
-
-                <TextView
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_external_encryption"
-                    android:textColor="?attr/criptextSettingsOptionsTextColor"
-                    android:layout_marginBottom="10dp"
-                    android:textSize="18sp" />
-
-                <Switch
-                    android:id="@+id/privacy_has_encryption_switch"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="?attr/criptextSettingsDividerBackground">
-                <TextView
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/privacy_encrypt_external"
-                    android:textColor="?attr/criptextSecondaryTextColor"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="15dp"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-
-
         </LinearLayout>
     </ScrollView>
 

@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Bitmap
 import com.criptext.mail.R
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.toList
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -177,7 +178,16 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private fun onRemoveNotification(result: PushResult.RemoveNotification){
         when(result){
             is PushResult.RemoveNotification.Success -> {
-                host.cancelPush(result.notificationId, storage)
+                when(result.antiPushSubtype) {
+                    "delete_new_email" -> {
+                        host.cancelPush(result.notificationId, storage,
+                                KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
+                    }
+                    "delete_sync_link" -> {
+                        host.cancelPush(result.notificationId, storage,
+                                KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
+                    }
+                }
             }
         }
     }

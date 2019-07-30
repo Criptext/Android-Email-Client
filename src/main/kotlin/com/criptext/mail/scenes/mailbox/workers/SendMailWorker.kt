@@ -373,66 +373,13 @@ class SendMailWorker(private val signalClient: SignalClient,
 
     private fun getGuestEmails(mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
         val postGuestEmailBody: PostEmailBody.GuestEmail?
-        if(composerInputData.passwordForNonCriptextUsers == null) {
-            isSecure = false
-            postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
-                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    if(activeAccount.domain != Contact.mainDomain) composerInputData.body
-                    else HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
-                    fileKeys = getFileKeys())
-        }else {
-            val tempSignalUser = getDummySignalSession(composerInputData.passwordForNonCriptextUsers)
-            val sessionToEncrypt = getSignalSessionJSON(tempSignalUser,
-                    tempSignalUser.fetchAPreKeyBundle(activeAccount.id)).toString().toByteArray()
-            val (salt, iv, encryptedSession) =
-                    AESUtil.encryptWithPassword(composerInputData.passwordForNonCriptextUsers, sessionToEncrypt)
-            val encryptedBody = signalClient.encryptMessage(composerInputData.passwordForNonCriptextUsers,
-                    1, composerInputData.body).encryptedB64
-            val externalSession = EmailExternalSession(0, emailId = emailId, iv = iv, salt = salt,
-                    encryptedBody = encryptedBody, encryptedSession = encryptedSession)
-            db.saveExternalSession(externalSession)
-            postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
-                    mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    encryptedBody, salt, iv, encryptedSession, null, fileKeys = getFileKeys())
-            tempSignalUser.store.deleteAllSessions(composerInputData.passwordForNonCriptextUsers)
-            rawSessionDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers, activeAccount.id)
-            rawIdentityKeyDao.deleteByRecipientId(composerInputData.passwordForNonCriptextUsers, activeAccount.id)
-
-        }
+        isSecure = false
+        postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
+                mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
+                if(activeAccount.domain != Contact.mainDomain) composerInputData.body
+                else HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
+                fileKeys = getFileKeys())
         return postGuestEmailBody
-    }
-
-    private fun getDummySignalSession(recipientId: String): DummyUser{
-        val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
-        val tempUser = InMemoryUser(keyGenerator, recipientId, 1).setup()
-        val keyBundleFromTempUser = tempUser.fetchAPreKeyBundle(activeAccount.id)
-
-        signalClient.createSessionsFromBundles(listOf(keyBundleFromTempUser))
-        return tempUser
-    }
-
-    private fun getSignalSessionJSON(tempUser: DummyUser, keyBundleFromTempUser: PreKeyBundleShareData.DownloadBundle):JSONObject{
-        val signedPreKey = tempUser.store.loadSignedPreKey(keyBundleFromTempUser.shareData.signedPreKeyId)
-
-        val jsonReturn = JSONObject()
-        val jsonIdentityKey = JSONObject()
-        val jsonPreKey = JSONObject()
-        val jsonSignedPreKey = JSONObject()
-        jsonIdentityKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.identityKeyPair.publicKey.serialize()))
-        jsonIdentityKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.identityKeyPair.privateKey.serialize()))
-        jsonReturn.put("identityKey", jsonIdentityKey)
-        jsonReturn.put("registrationId", tempUser.store.localRegistrationId)
-        jsonPreKey.put("keyId", keyBundleFromTempUser.preKey?.id)
-        jsonPreKey.put("publicKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey!!.preKeyId).keyPair.publicKey.serialize()))
-        jsonPreKey.put("privateKey", Encoding.byteArrayToString(tempUser.store.loadPreKey(keyBundleFromTempUser.preKey.preKeyId).keyPair.privateKey.serialize()))
-        jsonReturn.put("preKey", jsonPreKey)
-        jsonSignedPreKey.put("keyId", keyBundleFromTempUser.shareData.signedPreKeyId)
-        jsonSignedPreKey.put("publicKey", Encoding.byteArrayToString(signedPreKey.keyPair.publicKey.serialize()))
-        jsonSignedPreKey.put("privateKey", Encoding.byteArrayToString(signedPreKey.keyPair.privateKey.serialize()))
-        jsonReturn.put("signedPreKey", jsonSignedPreKey)
-        jsonReturn.put("fileKey", fileKey)
-        jsonReturn.put("fileKeys", JSONArray(getFileKeys()))
-        return jsonReturn
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

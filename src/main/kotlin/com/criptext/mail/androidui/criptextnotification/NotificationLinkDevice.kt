@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.scenes.mailbox.MailboxActivity
@@ -21,8 +22,10 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 
 class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ctx) {
 
+    val storage = KeyValueStorage.SharedPrefs(ctx = ctx)
+
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
@@ -33,6 +36,10 @@ class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ct
 
     override fun createNotification(notificationId: Int, clickIntent: PendingIntent?,
                                     data: PushData): Notification {
+
+        val notCount = storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
+        storage.putInt(KeyValueStorage.StringKey.SyncNotificationCount, notCount + 1)
+
         val pushData = data as PushData.LinkDevice
         val okAction = Intent(ctx, MailboxActivity::class.java)
         okAction.action = LinkDeviceActionService.APPROVE

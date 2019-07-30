@@ -40,5 +40,6 @@ sealed class ActivityMessage {
     class SyncMailbox: ActivityMessage()
     data class GoogleDriveSignIn(val driveService: Drive?): ActivityMessage()
     class ComesFromMailbox: ActivityMessage()
+    class LoadDataAtStart: ActivityMessage()
     data class SaveFileToLocalStorage(val uri: Uri): ActivityMessage()
 }

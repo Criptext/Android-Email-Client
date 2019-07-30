@@ -27,7 +27,7 @@ import com.criptext.mail.utils.*
 class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(ctx) {
 
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()

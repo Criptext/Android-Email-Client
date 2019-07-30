@@ -120,7 +120,8 @@ class ResendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!",
+                attachments = null, fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
 
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
@@ -166,7 +167,8 @@ class ResendEmailWorkerTest {
 
         // first we need to store the email to send in the DB
         val newComposedData = ComposerInputData(to = listOf(bobContact), cc = emptyList(),
-                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                bcc = emptyList(), subject = "Test Message", body = "Hello Bob!", attachments = null,
+                fileKey = null)
         val saveEmailWorker = newSaveEmailWorker(newComposedData)
         val saveResult = saveEmailWorker.work(mockk(relaxed = true)) as ComposerResult.SaveEmail.Success
 

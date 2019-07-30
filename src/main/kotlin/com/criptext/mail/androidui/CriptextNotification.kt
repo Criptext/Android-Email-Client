@@ -92,7 +92,7 @@ abstract class CriptextNotification(open val ctx: Context) {
             ACTION_INBOX -> notManager.notify(INBOX_ID, finalNotification)
             ACTION_OPEN -> notManager.notify(OPEN_ID, finalNotification)
             ACTION_LINK_DEVICE -> notManager.notify(LINK_DEVICE_ID, finalNotification)
-            ACTION_SYNC_DEVICE -> notManager.notify(SYNC_DEVICE_ID, finalNotification)
+            ACTION_SYNC_DEVICE -> notManager.notify(LINK_DEVICE_ID, finalNotification)
             ACTION_ERROR -> notManager.notify(ERROR_ID, finalNotification)
         }
 

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin
 
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
@@ -179,6 +180,7 @@ class SignInSceneController(
     private fun onLinkAuth(result: SignInResult.LinkAuth) {
         when (result) {
             is SignInResult.LinkAuth.Success -> {
+                if(model.linkDeviceState is LinkDeviceState.Accepted) return
                 if(model.hasTwoFA) {
                     val currentState = model.state as SignInLayoutState.InputPassword
                     model.state = SignInLayoutState.LoginValidation(currentState.username, currentState.domain, model.hasTwoFA)
@@ -665,6 +667,10 @@ class SignInSceneController(
             scene.showToolbarCount(0)
         }
 
+        override fun onContactSupportPressed() {
+            host.launchExternalActivityForResult(ExternalActivityParams.ContactSupport())
+        }
+
         override fun onSubmitButtonClicked() {
             val state = model.state
             when (state) {
@@ -873,6 +879,7 @@ class SignInSceneController(
         fun onForgotPasswordClick()
         fun onBackPressed()
         fun onXPressed()
+        fun onContactSupportPressed()
         fun onProgressHolderFinish()
         fun onCancelSync()
         fun onRetrySyncOk(result: SignInResult)

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_content"
-    android:gravity="center">
+    android:gravity="center"
+    android:keepScreenOn="true">
 
     <TextView
         fontPath="fonts/NunitoSans-Regular.ttf"
@@ -166,6 +167,21 @@
         android:layout_centerHorizontal="true"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="12sp" />
+
+    <TextView
+        android:layout_below="@+id/textViewEmail"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:alpha="0.4"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="15sp"
+        android:text="@string/sync_screen_message"/>
 
     <TextView
         android:id="@+id/cancelSync"

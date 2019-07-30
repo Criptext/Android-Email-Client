@@ -73,12 +73,8 @@ class SaveEmailWorker(
     }
 
     private fun isSecure(): Boolean{
-        if(!composerInputData.passwordForNonCriptextUsers.isNullOrEmpty())
-            return true
-        else{
-            if(!Validator.criptextOnlyContacts(composerInputData)){
-                return false
-            }
+        if(!Validator.criptextOnlyContacts(composerInputData)){
+            return false
         }
         return true
     }

@@ -23,6 +23,9 @@ class WebViewUtils {
         else
             "file:///android_asset/showmore-light-opened.png"
 
+        val URI_COLLAPSED_IMG: String get() = imageUriCollapsed
+        val URI_OPENED_IMG: String get() = imageUriOpened
+
         fun collapseScript(isForward: Boolean) : String{
             val display = if(isForward){
                 "block"

@@ -63,7 +63,6 @@ class SettingsController(
             is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
-            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -84,16 +83,15 @@ class SettingsController(
         }
 
         override fun onDevicesOptionClicked() {
-            host.goToScene(DevicesParams(model.devices), false)
+            host.goToScene(DevicesParams(), false)
         }
 
         override fun onPrivacyClicked() {
-            host.goToScene(PrivacyParams(model.hasReadReceipts, model.hasTwoFA, model.isEmailConfirmed), false)
+            host.goToScene(PrivacyParams(), false)
         }
 
         override fun onShowPreviewSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, isChecked)
-            model.showEmailPreview = isChecked
         }
 
         override fun onSnackbarClicked() {
@@ -118,7 +116,6 @@ class SettingsController(
 
         override fun onDarkThemeSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
-            model.devices.clear()
             model.hasChangedTheme = true
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -197,15 +194,7 @@ class SettingsController(
         }
 
         override fun onAccountOptionClicked() {
-            val userData = ProfileUserData(
-                name = model.fullName,
-                email = activeAccount.userEmail,
-                recoveryEmail = model.recoveryEmail,
-                isLastDeviceWith2FA = model.devices.size == 1 && model.hasTwoFA,
-                replyToEmail = model.replyToEmail,
-                isEmailConfirmed = model.isEmailConfirmed
-            )
-            host.goToScene(ProfileParams(userData), false)
+            host.goToScene(ProfileParams(false), false)
         }
 
         override fun onFAQClicked() {
@@ -255,22 +244,11 @@ class SettingsController(
         websocketEvents.setListener(webSocketEventListener)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
-        model.fullName = activeAccount.name
-        model.signature = activeAccount.signature
-        if(model.devices.isEmpty()) {
-            model.devices.add(DeviceItem(
-                    id = activeAccount.deviceId,
-                    friendlyName = DeviceUtils.getDeviceFriendlyName(),
-                    name = DeviceUtils.getDeviceName(),
-                    isCurrent = true,
-                    deviceType = DeviceUtils.getDeviceType().ordinal,
-                    lastActivity = null))
-            scene.attachView(
-                    email = activeAccount.userEmail,
-                    model = model,
-                    settingsUIObserver = settingsUIObserver)
-            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
-        }
+
+        scene.attachView(
+                email = activeAccount.userEmail,
+                model = model,
+                settingsUIObserver = settingsUIObserver)
 
         model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
         scene.setEmailPreview(model.showEmailPreview)
@@ -392,34 +370,6 @@ class SettingsController(
             }
             is SettingsResult.SyncBegin.Failure -> {
                 scene.showMessage(result.message)
-            }
-        }
-    }
-
-    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
-        when(result) {
-            is GeneralResult.GetUserSettings.Success -> {
-                model.devices.clear()
-                model.devices.addAll(result.userSettings.devices)
-                model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
-                model.replyToEmail = result.userSettings.replyTo
-                model.recoveryEmail = result.userSettings.recoveryEmail
-                model.hasTwoFA = result.userSettings.hasTwoFA
-                model.hasReadReceipts = result.userSettings.hasReadReceipts
-                model.showEmailPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true)
-                scene.updateUserSettings(model)
-            }
-            is GeneralResult.GetUserSettings.Failure -> {
-                scene.showMessage(result.message)
-            }
-            is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
-            }
-            is GeneralResult.GetUserSettings.Forbidden -> {
-                scene.showConfirmPasswordDialog(settingsUIObserver)
-            }
-            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
-                showSuspendedAccountDialog()
             }
         }
     }

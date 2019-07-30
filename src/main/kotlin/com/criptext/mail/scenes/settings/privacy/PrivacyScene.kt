@@ -16,7 +16,7 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 interface PrivacyScene{
 
     fun attachView(uiObserver: PrivacyUIObserver,
-                   keyboardManager: KeyboardManager, model: PrivacyModel, hasEncryption: Boolean)
+                   keyboardManager: KeyboardManager, model: PrivacyModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -31,8 +31,6 @@ interface PrivacyScene{
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun updateTwoFa(isChecked: Boolean)
-    fun enableHasEncryptionSwitch(isEnabled: Boolean)
-    fun updateHasEncryption(isChecked: Boolean)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
@@ -50,8 +48,12 @@ interface PrivacyScene{
             view.findViewById<Switch>(R.id.privacy_read_receipts_switch)
         }
 
-        private val hasEncryptionSwitch: Switch by lazy {
-            view.findViewById<Switch>(R.id.privacy_has_encryption_switch)
+        private val twoFALoading: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.two_fa_loading)
+        }
+
+        private val readReceiptsLoading: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.read_receipts_loading)
         }
 
         private val backButton: ImageView by lazy {
@@ -65,20 +67,13 @@ interface PrivacyScene{
         private val accountSuspended = AccountSuspendedDialog(context)
 
         override fun attachView(uiObserver: PrivacyUIObserver, keyboardManager: KeyboardManager,
-                                model: PrivacyModel, hasEncryption: Boolean) {
+                                model: PrivacyModel) {
 
             privacyUIObserver = uiObserver
 
             backButton.setOnClickListener {
                 privacyUIObserver.onBackButtonPressed()
             }
-
-            enableReadReceiptsSwitch(true)
-            updateReadReceipts(model.readReceipts)
-            enableTwoFASwitch(true)
-            updateTwoFa(model.twoFA)
-            enableHasEncryptionSwitch(true)
-            updateHasEncryption(hasEncryption)
 
             setSwitchListener()
         }
@@ -105,6 +100,13 @@ interface PrivacyScene{
 
         override fun enableTwoFASwitch(isEnabled: Boolean) {
             twoFASwitch.isEnabled = isEnabled
+            if(isEnabled){
+                twoFASwitch.visibility = View.VISIBLE
+                twoFALoading.visibility = View.GONE
+            } else {
+                twoFASwitch.visibility = View.INVISIBLE
+                twoFALoading.visibility = View.VISIBLE
+            }
         }
 
         override fun updateTwoFa(isChecked: Boolean) {
@@ -115,21 +117,18 @@ interface PrivacyScene{
 
         override fun enableReadReceiptsSwitch(isEnabled: Boolean) {
             readReceiptsSwitch.isEnabled = isEnabled
+            if(isEnabled){
+                readReceiptsSwitch.visibility = View.VISIBLE
+                readReceiptsLoading.visibility = View.GONE
+            } else {
+                readReceiptsSwitch.visibility = View.INVISIBLE
+                readReceiptsLoading.visibility = View.VISIBLE
+            }
         }
 
         override fun updateReadReceipts(isChecked: Boolean) {
             readReceiptsSwitch.setOnCheckedChangeListener { _, _ ->  }
             readReceiptsSwitch.isChecked = isChecked
-            setSwitchListener()
-        }
-
-        override fun enableHasEncryptionSwitch(isEnabled: Boolean) {
-            hasEncryptionSwitch.isEnabled = isEnabled
-        }
-
-        override fun updateHasEncryption(isChecked: Boolean) {
-            hasEncryptionSwitch.setOnCheckedChangeListener { _, _ ->  }
-            hasEncryptionSwitch.isChecked = isChecked
             setSwitchListener()
         }
 
@@ -148,9 +147,6 @@ interface PrivacyScene{
             }
             twoFASwitch.setOnCheckedChangeListener { _, isChecked ->
                 privacyUIObserver.onTwoFASwitched(isChecked)
-            }
-            hasEncryptionSwitch.setOnCheckedChangeListener { _, isChecked ->
-                privacyUIObserver.onHasEncryptionSwitched(isChecked)
             }
         }
 

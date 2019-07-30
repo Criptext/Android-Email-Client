@@ -62,8 +62,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@criptext.com", score = 0, isTrusted = false, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null,
-                fileKey = null, attachments = null)
+                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)
@@ -107,7 +106,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Finished Draft", body = "Hello, I have finished my draft", passwordForNonCriptextUsers = null,
+                subject = "Test Finished Draft", body = "Hello, I have finished my draft",
                 attachments = null,  fileKey = null)
 
         val worker = newWorker(emailId = draftId, threadId = "__MESSAGE_ID__", onlySave = false,
@@ -145,8 +144,7 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email", passwordForNonCriptextUsers = null,
-                fileKey = null, attachments = null)
+                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)
