@@ -45,6 +45,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         }
         notificationManager.cancelAll()
         storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        storage.putInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
         val timeToWait = try {
             if(db.inTransaction())
                 WelcomeTimeout.inTransactionTimeout

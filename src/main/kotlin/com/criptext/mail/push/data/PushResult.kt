@@ -77,7 +77,7 @@ sealed class PushResult {
     }
 
     sealed class RemoveNotification: PushResult() {
-        data class Success(val notificationId: Int): RemoveNotification()
+        data class Success(val notificationId: Int, val antiPushSubtype: String): RemoveNotification()
         data class Failure(val message: UIMessage): RemoveNotification()
     }
 }

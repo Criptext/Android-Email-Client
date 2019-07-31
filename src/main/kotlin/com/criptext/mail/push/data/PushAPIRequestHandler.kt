@@ -2,13 +2,10 @@ package com.criptext.mail.push.data
 
 import android.app.Notification
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.*
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
@@ -19,10 +16,8 @@ import com.criptext.mail.db.models.EmailLabel
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.PushTypes
-import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
-import com.criptext.mail.utils.PeerQueue
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
@@ -30,7 +25,6 @@ import com.criptext.mail.utils.peerdata.PeerOpenEmailData
 import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.mapError
 import org.json.JSONObject
 
 class PushAPIRequestHandler(private val not: CriptextNotification,
@@ -44,6 +38,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     private val isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
     fun linkAccept(deviceId: String, notificationId: Int): Int {
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
         val operation = Result.of {
             JSONObject(apiClient.postLinkAccept(deviceId).body).getInt("deviceId")
         }
@@ -71,6 +66,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun linkDeny(deviceId: String, notificationId: Int){
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
         val operation = Result.of { apiClient.postLinkDeny(deviceId) }
         when(operation){
             is Result.Success -> manager.cancel(notificationId)
@@ -86,6 +82,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun syncAccept(deviceId: String, notificationId: Int): Int {
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
         val operation = Result.of {
             JSONObject(apiClient.postSyncAccept(deviceId).body).getInt("deviceId")
         }
@@ -107,6 +104,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun syncDeny(deviceId: String, notificationId: Int){
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
         val operation = Result.of { apiClient.postSyncDeny(deviceId) }
         when(operation){
             is Result.Success -> manager.cancel(notificationId)
@@ -122,7 +120,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
-        handleNotificationCountForNewEmail(notificationId)
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val operation = Result.of {
             val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)
@@ -150,7 +148,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     }
 
     fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
-        handleNotificationCountForNewEmail(notificationId)
+        handleNotificationCount(notificationId, KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
@@ -203,13 +201,13 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         notifyPushEvent(data = data, cn = not, notification = errorNot)
     }
 
-    private fun handleNotificationCountForNewEmail(notificationId: Int){
-        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+    private fun handleNotificationCount(notificationId: Int, key: KeyValueStorage.StringKey, id: Int){
+        val notCount = storage.getInt(key, 0)
         manager.cancel(notificationId)
         if((notCount - 1) == 0) {
-            manager.cancel(CriptextNotification.INBOX_ID)
+            manager.cancel(id)
         }
-        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
+        storage.putInt(key, notCount - 1)
     }
 
     private fun postNotification(cn: CriptextNotification,

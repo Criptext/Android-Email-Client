@@ -2,6 +2,6 @@ package com.criptext.mail.scenes.params
 
 import com.criptext.mail.scenes.settings.privacy.PrivacyActivity
 
-class PrivacyParams(val hasReadReceipts: Boolean, val hasTwoFA: Boolean, val isEmailConfirmed: Boolean): SceneParams(){
+class PrivacyParams: SceneParams(){
     override val activityClass = PrivacyActivity::class.java
 }

@@ -39,7 +39,7 @@ class FullEmailListAdapter(private val mContext : Context,
     var isExpanded = shouldOpenExpanded
 
 
-    private lateinit var headerHolder:HeaderViewHolder
+    private var headerHolder:HeaderViewHolder? = null
 
     private fun isPositionFooter(position: Int): Boolean {
         return if(isExpanded)
@@ -100,7 +100,7 @@ class FullEmailListAdapter(private val mContext : Context,
         when(holder){
             is HeaderViewHolder -> {
                 headerHolder = holder
-                headerHolder.setListeners(emailListener = fullEmailListener)
+                headerHolder?.setListeners(emailListener = fullEmailListener)
             }
             is CollapsedViewHolder ->{
                 holder.setListeners(fullEmailListener)
@@ -223,7 +223,7 @@ class FullEmailListAdapter(private val mContext : Context,
     }
 
     fun notifyLabelsChanged(updatedLabels: VirtualList<Label>, updatedHasStar: Boolean){
-        headerHolder.notifyLabelsChanged(updatedLabels, updatedHasStar)
+        headerHolder?.notifyLabelsChanged(updatedLabels, updatedHasStar)
     }
 
 

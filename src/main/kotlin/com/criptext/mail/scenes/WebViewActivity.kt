@@ -149,7 +149,7 @@ class WebViewActivity : AppCompatActivity() {
         inflater.inflate(R.menu.menu_webview, menu)
         if(!mUrl.isNullOrEmpty()) {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrl))
-            val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY) ?: return super.onCreateOptionsMenu(menu)
             browserName = resolveInfo.activityInfo.packageName
 
             menu.findItem(R.id.ac_open)?.title = this.getLocalizedUIMessage(UIMessage(

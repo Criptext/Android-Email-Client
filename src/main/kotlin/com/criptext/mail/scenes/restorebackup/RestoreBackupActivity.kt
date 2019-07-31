@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.restorebackup
 import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
+import android.view.WindowManager
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.R
@@ -43,6 +44,7 @@ class RestoreBackupActivity: BaseActivity(){
         val model = receivedModel as RestoreBackupModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = RestoreBackupScene.Default(view)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val storage = KeyValueStorage.SharedPrefs(this)

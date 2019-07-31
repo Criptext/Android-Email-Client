@@ -1,10 +1,7 @@
 package com.criptext.mail.scenes.settings.devices
 
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
@@ -45,6 +42,7 @@ interface DevicesScene{
     fun removeDeviceDialogDismiss()
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun showProgressBar(show: Boolean)
 
     class Default(val view: View): DevicesScene{
         private lateinit var devicesUIObserver: DevicesUIObserver
@@ -57,6 +55,10 @@ interface DevicesScene{
 
         private val recyclerViewDevices: RecyclerView by lazy {
             view.findViewById<RecyclerView>(R.id.recyclerViewDevices)
+        }
+
+        private val deviceLoadProgress: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.deviceLoadProgress)
         }
         private val deviceListView: VirtualListView = VirtualRecyclerView(recyclerViewDevices)
 
@@ -139,6 +141,10 @@ interface DevicesScene{
 
         override fun dismissAccountSuspendedDialog() {
             accountSuspended.dismissDialog()
+        }
+
+        override fun showProgressBar(show: Boolean) {
+            deviceLoadProgress.visibility = if(show) View.VISIBLE else View.GONE
         }
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {

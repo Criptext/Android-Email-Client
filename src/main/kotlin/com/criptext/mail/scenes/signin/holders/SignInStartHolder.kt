@@ -43,6 +43,7 @@ class SignInStartHolder(
     private val progressBar: ProgressBar = view.findViewById(R.id.signin_progress_login)
     private val imageError: ImageView = view.findViewById(R.id.signin_error_image)
     private val backButton: View = view.findViewById(R.id.icon_back)
+    private val contactSupport: View = view.findViewById(R.id.contact_support)
 
     init {
         usernameInput.text = SpannableStringBuilder(initialUsername)
@@ -109,6 +110,9 @@ class SignInStartHolder(
         }
         backButton.setOnClickListener{
             uiObserver?.onBackPressed()
+        }
+        contactSupport.setOnClickListener{
+            uiObserver?.onContactSupportPressed()
         }
 
         usernameInput.addTextChangedListener(object: TextWatcher {

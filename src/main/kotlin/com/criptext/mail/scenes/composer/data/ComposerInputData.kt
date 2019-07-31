@@ -10,8 +10,8 @@ import com.criptext.mail.scenes.composer.ComposerModel
 
 data class ComposerInputData(val to: List<Contact>, val cc: List<Contact>,
                              val bcc: List<Contact>, val subject: String,
-                             val body: String, val passwordForNonCriptextUsers: String?,
-                             val attachments: ArrayList<ComposerAttachment>?, val fileKey: String?) {
+                             val body: String, val attachments: ArrayList<ComposerAttachment>?,
+                             val fileKey: String?) {
 
     val hasAtLeastOneRecipient: Boolean
         get () = to.isNotEmpty() || cc.isNotEmpty() || bcc.isNotEmpty()
@@ -19,7 +19,6 @@ data class ComposerInputData(val to: List<Contact>, val cc: List<Contact>,
     companion object {
         fun fromModel(model: ComposerModel): ComposerInputData = ComposerInputData(to = model.to,
                 cc = model.cc, bcc = model.bcc, subject = model.subject, body = model.body,
-                passwordForNonCriptextUsers = model.passwordForNonCriptextUsers,
                 attachments = model.attachments, fileKey = model.fileKey)
     }
 }

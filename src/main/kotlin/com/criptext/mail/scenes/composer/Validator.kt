@@ -31,13 +31,13 @@ object Validator {
 
     fun criptextOnlyContacts(data: ComposerInputData): Boolean {
         for(toContact in data.to){
-            if(!isFromCriptextDomain(toContact.email)) return false
+            if(!toContact.isCriptextDomain) return false
         }
         for(ccContact in data.cc){
-            if(!isFromCriptextDomain(ccContact.email)) return false
+            if(!ccContact.isCriptextDomain) return false
         }
         for(bccContact in data.bcc){
-            if(!isFromCriptextDomain(bccContact.email)) return false
+            if(!bccContact.isCriptextDomain) return false
         }
         return true
     }

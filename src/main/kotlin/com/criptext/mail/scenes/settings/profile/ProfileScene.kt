@@ -149,8 +149,6 @@ interface ProfileScene{
 
             profileUIObserver = uiObserver
 
-            enableProfileSettings(!model.comesFromMailbox)
-
 
             backButton.setOnClickListener {
                 profileUIObserver.onBackButtonPressed()

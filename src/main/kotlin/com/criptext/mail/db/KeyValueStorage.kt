@@ -30,7 +30,7 @@ interface KeyValueStorage {
         SearchHistory("searchHistory"), LastTimeFeedOpened("LastTimeFeedOpened"),
         LastTimeConfirmationLinkSent("LastTimeConfirmationLinkSent"),
         LastLoggedUser("LastLoggedUser"), NewMailNotificationCount("NewMailPushCount"),
-        ShowSyncPhonebookDialog("ShowSyncPhonebookDialog"),
+        ShowSyncPhonebookDialog("ShowSyncPhonebookDialog"), SyncNotificationCount("SyncPushCount"),
         ShowEmailPreview("ShowEmailPreview"), HasLockPinActive("HasLockPinActive"),
         PIN("pin"), AskForPin("AskForPin"), PINTimeout("PINTimeout"),
         UserHasAcceptedPhonebookSync("UserHasAcceptedPhonebookSync"),
@@ -47,8 +47,7 @@ interface KeyValueStorage {
         UseWifiOnlyForBackup("UseWifiOnlyForBackup"),
         SavedBackupData("SavedBackupData"),
         JWTS("JWTS"),
-        SavedJobs("SavedJobs"),
-        EncryptToExternals("EncryptToExternals")
+        SavedJobs("SavedJobs")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

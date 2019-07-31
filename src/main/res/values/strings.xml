@@ -561,4 +561,6 @@
   <string name="sign_in_remove_dialog_title">Remove Devices</string>
   <string name="sign_in_remove_error_dialog_title">Expired Session</string>
   <string name="sign_in_remove_error_dialog_message">We are sorry but your session has expired, this means that you exceeded the time permitted for inactivity, please try again.</string>
+  <string name="contact_support">Having trouble? <b>Contact Support</b></string>
+  <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
 </resources>

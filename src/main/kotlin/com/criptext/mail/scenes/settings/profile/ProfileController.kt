@@ -23,6 +23,7 @@ import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
 import com.criptext.mail.scenes.settings.profile.data.ProfileResult
 import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
@@ -220,20 +221,28 @@ class ProfileController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        checkFirstTimeToResetCache()
         websocketEvents.setListener(webSocketEventListener)
 
-        if(activityMessage is ActivityMessage.ComesFromMailbox)
-            model.comesFromMailbox = true
-
+        model.userData = ProfileUserData.getDefaultData(activeAccount)
         scene.attachView(uiObserver, activeAccount.recipientId, activeAccount.domain, model)
+        scene.enableProfileSettings(false)
         generalDataSource.listener = generalDataSourceListener
         dataSource.listener = dataSourceListener
+        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
 
         return handleActivityMessage(activityMessage)
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
+    }
+
+    private fun checkFirstTimeToResetCache(){
+        if(!storage.getBool(KeyValueStorage.StringKey.HasTimestampForCacheReset, false)){
+            storage.putBool(KeyValueStorage.StringKey.HasTimestampForCacheReset, true)
+            storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, System.currentTimeMillis())
+        }
     }
 
     private fun onLogout(result: GeneralResult.Logout){
@@ -487,10 +496,6 @@ class ProfileController(
                     }
                     true
                 }
-            }
-            is ActivityMessage.ComesFromMailbox -> {
-                generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
-                true
             }
             else -> false
         }

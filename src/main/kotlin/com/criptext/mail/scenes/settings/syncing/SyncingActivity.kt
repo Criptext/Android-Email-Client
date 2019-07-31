@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.settings.syncing
 
 import android.view.ViewGroup
+import android.view.WindowManager
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -26,6 +27,7 @@ class SyncingActivity: BaseActivity(){
         val model = receivedModel as SyncingModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = SyncingScene.Default(view)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB, activeAccount))

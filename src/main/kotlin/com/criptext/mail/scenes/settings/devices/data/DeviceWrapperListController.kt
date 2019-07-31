@@ -12,6 +12,11 @@ class DeviceWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
+    fun addAll(devices: List<DeviceItem>) {
+        model.devices.addAll(devices)
+        listView?.notifyDataSetChanged()
+    }
+
     fun update() {
         listView?.notifyDataSetChanged()
     }

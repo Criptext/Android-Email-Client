@@ -26,7 +26,7 @@ class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) 
     val storage = KeyValueStorage.SharedPrefs(ctx = ctx)
 
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()

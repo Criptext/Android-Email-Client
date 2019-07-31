@@ -128,27 +128,6 @@ class ComposerController(private val storage: KeyValueStorage,
             )
         }
 
-        override fun setOnCheckedChangeListener(isChecked: Boolean) {
-            if(!isChecked){
-                model.passwordForNonCriptextUsers = null
-                scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
-            }else{
-                scene.disableSendButtonOnDialog()
-            }
-        }
-
-        override fun onPasswordChangedListener(text: String) {
-            model.passwordText = text
-            if(model.passwordText.isNotEmpty()) {
-                model.passwordForNonCriptextUsers = text
-                scene.enableSendButtonOnDialog()
-            }else{
-                model.passwordForNonCriptextUsers = null
-                scene.disableSendButtonOnDialog()
-            }
-            scene.setPasswordForNonCriptextFromDialog(model.passwordForNonCriptextUsers)
-        }
-
         override fun onAttachmentRemoveClicked(position: Int) {
             val file = File(model.attachments[position].filepath)
             model.filesSize -= file.length()
@@ -516,18 +495,11 @@ class ComposerController(private val storage: KeyValueStorage,
 
         if(isReadyForSending() && !model.isUploadingAttachments) {
             val validationError = Validator.validateContacts(data)
-            if (validationError != null)
-                scene.showError(validationError.toUIMessage())
-            else
-                if(Validator.criptextOnlyContacts(data))
-                    saveEmailAsDraft(data, onlySave = false)
-                else {
-                    if(AccountUtils.hasExternalEncryption(storage, activeAccount.userEmail))
-                        scene.showNonCriptextEmailSendDialog(observer)
-                    else{
-                        observer.sendDialogButtonPressed()
-                    }
-                }
+            when {
+                validationError != null -> scene.showError(validationError.toUIMessage())
+                Validator.criptextOnlyContacts(data) -> saveEmailAsDraft(data, onlySave = false)
+                else -> observer.sendDialogButtonPressed()
+            }
         } else if(model.isUploadingAttachments && model.attachments.isNotEmpty()) {
             scene.showError(UIMessage(R.string.wait_for_attachments))
         } else {

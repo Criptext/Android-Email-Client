@@ -2,4 +2,8 @@ package com.criptext.mail.scenes.settings.privacy
 
 import com.criptext.mail.scenes.SceneModel
 
-class PrivacyModel(var readReceipts: Boolean, var twoFA: Boolean, val isEmailConfirmed: Boolean): SceneModel
+class PrivacyModel: SceneModel {
+    var readReceipts: Boolean = false
+    var twoFA: Boolean = false
+    var isEmailConfirmed: Boolean = false
+}

@@ -26,13 +26,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import com.criptext.mail.R.string.save
 import android.widget.AdapterView.AdapterContextMenuInfo
-
-
-
-
-
-
-
+import com.criptext.mail.utils.WebViewUtils
 
 
 /**
@@ -115,9 +109,11 @@ class  EmailDetailActivity: BaseActivity() {
         val result = (view as WebView).hitTestResult
 
         when (result.type) {
-            WebView.HitTestResult.IMAGE_TYPE,
-            WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
-                if(result.extra != null && result.extra!!.startsWith("file://")) {
+            HitTestResult.IMAGE_TYPE,
+            HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
+                if(result.extra != null
+                        && result.extra!! !in listOf(WebViewUtils.URI_COLLAPSED_IMG, WebViewUtils.URI_OPENED_IMG)
+                        && result.extra!!.startsWith("file://")) {
                     val inflater = menuInflater
                     inflater.inflate(R.menu.web_view_image_menu, menu)
                     (controller as EmailDetailSceneController).onCreateContextMenu(result.extra)

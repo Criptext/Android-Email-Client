@@ -13,10 +13,10 @@ object EmailAddressUtils {
     val isFromCriptextDomain:(String) -> Boolean =
             { address -> address.endsWith(CRIPTEXT_DOMAIN_SUFFIX) }
     val extractRecipientIdFromCriptextAddress: (String) -> String =
-            { address -> address.substring(0, address.length - CRIPTEXT_DOMAIN_SUFFIX.length) }
+            { address -> if(address.isEmpty()) address else address.substring(0, address.length - CRIPTEXT_DOMAIN_SUFFIX.length) }
 
     val extractRecipientIdFromAddress: (String, String) -> String =
-            { address, domain -> address.substring(0, address.length - (domain.length + 1)) }
+            { address, domain -> if(address.isEmpty() || domain.isEmpty()) address else address.substring(0, address.length - (domain.length + 1)) }
 
     fun checkIfOnlyHasEmail(contactAddress: String): Boolean{
         if(contactAddress.contains("<") && contactAddress.lastIndexOf("<") == 0)

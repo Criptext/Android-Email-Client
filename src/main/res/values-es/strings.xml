@@ -561,4 +561,6 @@
   <string name="sign_in_remove_dialog_title">Borrar Dispositivos</string>
   <string name="sign_in_remove_error_dialog_title">Sesión Expirada</string>
   <string name="sign_in_remove_error_dialog_message">Lo sentimos tu sesión ha expirado, exediste el tiempo de inactividad permitido, vuelve a intentarlo.</string>
+  <string name="contact_support">¿Necesitas ayuda? <b>Contáctanos</b></string>
+  <string name="sync_screen_message">No cierres la aplicación o apagues la pantalla hasta que termine este proceso</string>
 </resources>

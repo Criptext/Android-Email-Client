@@ -42,7 +42,7 @@ class LoadInitialDataWorker(
         })
         return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
                 body = fullEmail.email.content, subject = fullEmail.email.subject,
-                passwordForNonCriptextUsers = null, attachments = attachments, fileKey = fullEmail.fileKey)
+                attachments = attachments, fileKey = fullEmail.fileKey)
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
@@ -80,7 +80,7 @@ class LoadInitialDataWorker(
                 signature = signature,
                 template = template)
         return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
-                body = body, subject = subject, passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                body = body, subject = subject, attachments = null, fileKey = null)
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
@@ -97,8 +97,8 @@ class LoadInitialDataWorker(
         })
 
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
-                body = body, subject = subject, passwordForNonCriptextUsers = null,
-                attachments = if (attachments.isEmpty()) null else attachments, fileKey = fullEmail.fileKey)
+                body = body, subject = subject, attachments = if (attachments.isEmpty()) null
+        else attachments, fileKey = fullEmail.fileKey)
 
     }
 
@@ -109,14 +109,14 @@ class LoadInitialDataWorker(
         return if(supportContact != null){
             ComposerInputData(to = listOf(supportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
-                    passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                    attachments = null, fileKey = null)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
                     name = "Criptext Support", isTrusted = true, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
-                    passwordForNonCriptextUsers = null, attachments = null, fileKey = null)
+                    attachments = null, fileKey = null)
         }
     }
 
@@ -125,15 +125,13 @@ class LoadInitialDataWorker(
 
         return if(contact != null){
             ComposerInputData(to = listOf(contact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", passwordForNonCriptextUsers = null, fileKey = null,
-                    attachments = null)
+                    body = "", subject = "", fileKey = null, attachments = null)
         }else{
             val newContact = Contact(id = 0, email = to,
                     name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", passwordForNonCriptextUsers = null, attachments = null,
-                    fileKey = null)
+                    body = "", subject = "", attachments = null, fileKey = null)
         }
     }
 

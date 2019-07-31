@@ -19,6 +19,7 @@ import com.criptext.mail.scenes.settings.devices.data.*
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
@@ -55,6 +56,7 @@ class DevicesController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
         }
     }
 
@@ -142,9 +144,20 @@ class DevicesController(
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        scene.attachView(devicesUIObserver, keyboardManager, model, onDevicesListItemListener)
+        if(model.devices.isEmpty()) {
+            model.devices.add(DeviceItem(
+                    id = activeAccount.deviceId,
+                    friendlyName = DeviceUtils.getDeviceFriendlyName(),
+                    name = DeviceUtils.getDeviceName(),
+                    isCurrent = true,
+                    deviceType = DeviceUtils.getDeviceType().ordinal,
+                    lastActivity = null))
+            scene.attachView(devicesUIObserver, keyboardManager, model, onDevicesListItemListener)
+            scene.showProgressBar(true)
+        }
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         return false
     }
 
@@ -242,6 +255,27 @@ class DevicesController(
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                scene.showProgressBar(false)
+                deviceWrapperListController.addAll(result.userSettings.devices.filter { !it.isCurrent })
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
+            is GeneralResult.GetUserSettings.Forbidden -> {
+                scene.showConfirmPasswordDialog(devicesUIObserver)
+            }
+            is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }

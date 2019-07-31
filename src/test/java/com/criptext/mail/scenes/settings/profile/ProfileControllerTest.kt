@@ -51,15 +51,7 @@ class ProfileControllerTest{
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
                     |, "signature":""} """.trimMargin())
-        val userData = ProfileUserData(
-                name = activeAccount.name,
-                email = activeAccount.userEmail,
-                isEmailConfirmed = false,
-                replyToEmail = null,
-                isLastDeviceWith2FA = false,
-                recoveryEmail = ""
-        )
-        model = ProfileModel(userData)
+        model = ProfileModel(false)
         controller = ProfileController(
                 scene = scene,
                 model = model,

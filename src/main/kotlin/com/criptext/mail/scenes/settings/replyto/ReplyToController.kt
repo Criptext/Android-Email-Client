@@ -135,7 +135,7 @@ class ReplyToController(
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
             val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
-            host.exitToScene(ProfileParams(model.userData), message, false)
+            host.exitToScene(ProfileParams(false), message, false)
         }
     }
 

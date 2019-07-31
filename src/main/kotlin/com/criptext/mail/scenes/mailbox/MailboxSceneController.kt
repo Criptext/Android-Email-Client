@@ -190,15 +190,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
     private val onDrawerMenuItemListener = object: DrawerMenuItemListener {
         override fun onProfileClicked() {
-            val userData = ProfileUserData(
-                    name = activeAccount.name,
-                    email = activeAccount.userEmail,
-                    replyToEmail = "",
-                    recoveryEmail = "",
-                    isLastDeviceWith2FA = false,
-                    isEmailConfirmed = false
-            )
-            host.goToScene(ProfileParams(userData), true, activityMessage = ActivityMessage.ComesFromMailbox())
+            host.goToScene(ProfileParams(true), true)
         }
 
         override fun onAccountClicked(account: Account) {
@@ -608,8 +600,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
 
             if (storage.getBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, false)) {
-                host.getContentResolver()?.registerContentObserver(
-                        ContactsContract.Contacts.CONTENT_URI, true, mObserver)
+                if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
+                                Manifest.permission.READ_CONTACTS)) {
+                    host.getContentResolver()?.registerContentObserver(
+                            ContactsContract.Contacts.CONTENT_URI, true, mObserver)
+                }
             }
 
             dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
@@ -1302,10 +1297,8 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private fun onMailboxUpdated(resultData: GeneralResult.UpdateMailbox) {
         scene.clearRefreshing()
-        var isActiveAccount = false
         when (resultData) {
             is GeneralResult.UpdateMailbox.Success -> {
-                isActiveAccount = resultData.isActiveAccount
                 if(resultData.isActiveAccount)
                     handleSuccessfulMailboxUpdate(resultData)
                 else {
@@ -1315,7 +1308,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
             }
             is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
-                isActiveAccount = resultData.isActiveAccount
                 val success = GeneralResult.UpdateMailbox.Success(
                         mailboxLabel = resultData.mailboxLabel,
                         syncEventsList = resultData.syncEventsList,
@@ -1331,22 +1323,18 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
             }
             is GeneralResult.UpdateMailbox.Failure -> {
-                isActiveAccount = resultData.isActiveAccount
                 if(resultData.isActiveAccount)
                     handleFailedMailboxUpdate(resultData)
             }
             is GeneralResult.UpdateMailbox.Unauthorized -> {
-                isActiveAccount = resultData.isActiveAccount
                 if (resultData.isActiveAccount)
                     generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
             is GeneralResult.UpdateMailbox.Forbidden -> {
-                isActiveAccount = resultData.isActiveAccount
                 if (resultData.isActiveAccount)
                     scene.showConfirmPasswordDialog(observer)
             }
             is GeneralResult.UpdateMailbox.EnterpriseSuspended -> {
-                isActiveAccount = resultData.isActiveAccount
                 if(resultData.isActiveAccount)
                     showSuspendedAccountDialog()
             }

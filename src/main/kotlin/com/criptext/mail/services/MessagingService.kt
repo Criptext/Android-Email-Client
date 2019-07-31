@@ -53,15 +53,15 @@ class MessagingService : FirebaseMessagingService(){
         notifier?.notifyPushEvent(this)
     }
 
-    fun cancelPush(notificationId: Int, storage: KeyValueStorage){
+    fun cancelPush(notificationId: Int, storage: KeyValueStorage, key: KeyValueStorage.StringKey, headerId: Int){
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        val notCount = storage.getInt(key, 0)
         manager.cancel(notificationId)
         if((notCount - 1) == 0) {
-            manager.cancel(CriptextNotification.INBOX_ID)
+            manager.cancel(headerId)
         }
-        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, notCount - 1)
+        storage.putInt(key, notCount - 1)
     }
 
     companion object {

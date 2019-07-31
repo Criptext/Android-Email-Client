@@ -52,16 +52,12 @@ interface ComposerScene {
     fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
     fun showMaxFilesExceedsDialog()
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
-    fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?)
     fun showConfirmPasswordDialog(observer: UIObserver)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
     fun notifyAttachmentSetChanged()
-    fun disableSendButtonOnDialog()
-    fun enableSendButtonOnDialog()
-    fun setPasswordForNonCriptextFromDialog(password: String?)
     fun dismissConfirmPasswordDialog()
     fun dismissAccountSuspendedDialog()
     fun showStayInComposerDialog(observer: ComposerUIObserver)
@@ -75,14 +71,12 @@ interface ComposerScene {
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
         private val ctx = view.context
-        private val nonCriptextEmailSendDialog = NonCriptextEmailSendDialog(ctx)
         private val attachmentBottomDialog = AttachmentsBottomDialog(ctx)
         private val confirmPassword = ConfirmPasswordDialog(ctx)
         private val accountSuspended = AccountSuspendedDialog(ctx)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
-        private var passwordForNonCriptextUsersFromDialog: String? = null
 
         private val fromAddresses: Spinner by lazy {
             view.findViewById<Spinner>(R.id.spinner_from)
@@ -216,7 +210,7 @@ interface ComposerScene {
         override fun getDataInputByUser(): ComposerInputData {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects,
                     bcc = bccInput.objects, subject = subjectEditText.text.toString(),
-                    body = bodyEditText.text, passwordForNonCriptextUsers = passwordForNonCriptextUsersFromDialog,
+                    body = bodyEditText.text,
                     attachments = null, fileKey = null)
         }
 
@@ -272,10 +266,6 @@ interface ComposerScene {
             builder.setMessage(ctx.resources.getString(R.string.you_wanna_save))
                     .setPositiveButton(ctx.resources.getString(R.string.save), dialogClickListener)
                     .setNegativeButton(ctx.resources.getString(R.string.discard), dialogClickListener).show()
-        }
-
-        override fun showNonCriptextEmailSendDialog(observer: ComposerUIObserver?) {
-            nonCriptextEmailSendDialog.showNonCriptextEmailSendDialog(observer)
         }
 
         override fun showAttachmentsBottomDialog(observer: ComposerUIObserver?) {
@@ -393,18 +383,6 @@ interface ComposerScene {
             for (contact in ccContacts) {
                 ccInput.addObject(contact)
             }
-        }
-
-        override fun disableSendButtonOnDialog() {
-            nonCriptextEmailSendDialog.disableSendEmailButton()
-        }
-
-        override fun enableSendButtonOnDialog() {
-            nonCriptextEmailSendDialog.enableSendEmailButton()
-        }
-
-        override fun setPasswordForNonCriptextFromDialog(password: String?) {
-            passwordForNonCriptextUsersFromDialog = password
         }
 
         override fun showMessage(message: UIMessage) {

@@ -43,8 +43,6 @@ class ComposerModel(val type: ComposerType): SceneModel {
 
     var passwordText: String = ""
 
-    var passwordForNonCriptextUsers: String? = null
-
     var fileKey: String? = null
 
     var filesSize: Long = 0L
