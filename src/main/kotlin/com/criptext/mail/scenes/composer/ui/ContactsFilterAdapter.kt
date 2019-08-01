@@ -26,7 +26,7 @@ class ContactsFilterAdapter(context : Context, private val objects : List<Contac
             return false
         }
         val newMask = mask!!.toLowerCase()
-        return obj.name.toLowerCase().contains(newMask) || obj.email.contains(newMask)
+        return (obj.name.isNotEmpty() && obj.name.toLowerCase().contains(newMask)) || (obj.email.isNotEmpty() &&  obj.email.contains(newMask))
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {

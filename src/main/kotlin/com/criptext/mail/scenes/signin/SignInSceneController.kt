@@ -85,6 +85,19 @@ class SignInSceneController(
             model.state = currentState.copy(password = "",
                     buttonState = ProgressButtonState.disabled)
             scene.resetInput()
+        } else if(currentState is SignInLayoutState.LoginValidation) {
+            if(model.needToRemoveDevices){
+                model.realSecurePassword = null
+                model.needToRemoveDevices = false
+            }
+            model.state = SignInLayoutState.InputPassword(
+                    username = currentState.username,
+                    domain = currentState.domain,
+                    password = "",
+                    buttonState = ProgressButtonState.disabled,
+                    hasTwoFA = model.hasTwoFA
+            )
+            scene.initLayout(model, uiObserver)
         }
     }
 
@@ -148,7 +161,12 @@ class SignInSceneController(
                 model.ephemeralJwt = result.ephemeralJwt
                 model.hasTwoFA = result.hasTwoFA
                 if(model.hasTwoFA){
-                    onAcceptPasswordLogin(currentState.username, currentState.domain)
+                    if(model.realSecurePassword != null){
+                        dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
+                                model.ephemeralJwt, currentState.domain, model.realSecurePassword))
+                    } else {
+                        onAcceptPasswordLogin(currentState.username, currentState.domain)
+                    }
                 }else{
                     scene.initLayout(model, uiObserver)
                     scene.toggleResendClickable(true)
@@ -181,11 +199,6 @@ class SignInSceneController(
         when (result) {
             is SignInResult.LinkAuth.Success -> {
                 if(model.linkDeviceState is LinkDeviceState.Accepted) return
-                if(model.hasTwoFA) {
-                    val currentState = model.state as SignInLayoutState.InputPassword
-                    model.state = SignInLayoutState.LoginValidation(currentState.username, currentState.domain, model.hasTwoFA)
-                    scene.initLayout(model, uiObserver)
-                }
                 handleNewTemporalWebSocket()
                 model.linkDeviceState = LinkDeviceState.Auth()
                 host.postDelay(Runnable{
@@ -319,7 +332,8 @@ class SignInSceneController(
                         username = currentState.username,
                         buttonState = ProgressButtonState.disabled,
                         domain = currentState.domain,
-                        devices = model.devices)
+                        devices = model.devices,
+                        password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
             }
             is SignInResult.FindDevices.Failure -> {
@@ -331,7 +345,6 @@ class SignInSceneController(
     private fun onRemoveDevices(result: SignInResult.RemoveDevices){
         when (result) {
             is SignInResult.RemoveDevices.Success -> {
-                model.needToRemoveDevices = false
                 uiObserver.onXPressed()
                 deviceWrapperListController?.remove(result.deviceIds)
                 if(model.devices.size >= DeviceItem.MAX_ALLOWED_DEVICES){
@@ -341,6 +354,8 @@ class SignInSceneController(
                     model.state = SignInLayoutState.LoginValidation(username = state.username,
                             domain = state.domain,
                             hasTwoFA = model.hasTwoFA)
+                    scene.initLayout(model, uiObserver, onDevicesListItemListener)
+                    model.realSecurePassword = state.password.sha256()
                     dataSource.submitRequest(SignInRequest.LinkBegin(state.username, state.domain))
                 }
             }
@@ -609,10 +624,7 @@ class SignInSceneController(
         override fun onRetrySyncOk(result: SignInResult) {
             when(result){
                 is SignInResult.CreateSessionFromLink -> {
-                    val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username,
-                            currentState.domain, model.authorizerType)
-                    scene.initLayout(model, this)
+                    val currentState = model.state as SignInLayoutState.WaitForApproval
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
@@ -668,7 +680,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.ContactSupport())
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact"))
         }
 
         override fun onSubmitButtonClicked() {
@@ -679,6 +691,8 @@ class SignInSceneController(
                     if(model.hasTwoFA){
                         val currentState = model.state as SignInLayoutState.InputPassword
                         model.realSecurePassword = currentState.password.sha256()
+                        model.state = SignInLayoutState.LoginValidation(currentState.username, currentState.domain, model.hasTwoFA)
+                        scene.initLayout(model, this)
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
                                 model.ephemeralJwt, currentState.domain, model.realSecurePassword))
                     }else{
@@ -818,6 +832,8 @@ class SignInSceneController(
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
                 model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
                 resetLayout()
                 false
             }
@@ -826,6 +842,8 @@ class SignInSceneController(
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
                 model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
                 resetLayout()
                 false
             }
@@ -845,6 +863,8 @@ class SignInSceneController(
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
                 model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
                 resetLayout()
                 false
             }

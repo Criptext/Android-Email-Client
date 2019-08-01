@@ -47,13 +47,6 @@ sealed class ComposerResult {
         class EnterpriseSuspended(): UploadFile()
     }
 
-    sealed class DeleteDraft : ComposerResult() {
-        class Success: DeleteDraft()
-        data class Failure(
-                val message: UIMessage,
-                val exception: Exception): DeleteDraft()
-    }
-
     sealed class CheckDomain : ComposerResult() {
         data class Success(val contactDomainCheck: List<ContactDomainCheckData>): CheckDomain()
         data class Failure(val message: String): CheckDomain()

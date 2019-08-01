@@ -1,37 +1,35 @@
-package com.criptext.mail.scenes.composer.workers
+package com.criptext.mail.scenes.emaildetail.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
+import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.UIMessage
 
-/**
- * Created by danieltigse on 5/6/18.
- */
-
 class DeleteDraftWorker(
-        private val db: ComposerLocalDB,
+        private val db: EmailDetailLocalDB,
         private val emailId: Long,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
-                ComposerResult.DeleteDraft) -> Unit)
-    : BackgroundWorker<ComposerResult.DeleteDraft> {
+                EmailDetailResult.DeleteDraft) -> Unit)
+    : BackgroundWorker<EmailDetailResult.DeleteDraft> {
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): ComposerResult.DeleteDraft {
+    override fun catchException(ex: Exception): EmailDetailResult.DeleteDraft {
         val message = createErrorMessage(ex)
-        return ComposerResult.DeleteDraft.Failure(
+        return EmailDetailResult.DeleteDraft.Failure(
                 message = message,
                 exception = ex)
     }
 
-    override fun work(reporter: ProgressReporter<ComposerResult.DeleteDraft>): ComposerResult.DeleteDraft? {
-        db.emailDao.deleteById(emailId, activeAccount.id)
-        return ComposerResult.DeleteDraft.Success()
+    override fun work(reporter: ProgressReporter<EmailDetailResult.DeleteDraft>): EmailDetailResult.DeleteDraft? {
+        db.deleteEmail(emailId, activeAccount)
+        return EmailDetailResult.DeleteDraft.Success(emailId)
     }
 
     override fun cancel() {

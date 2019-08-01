@@ -130,6 +130,15 @@
 
                         <ImageView
                             android:tint="#89909a"
+                            android:id="@+id/delete_draft"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="2dp"
+                            android:visibility="gone"
+                            android:src="@drawable/trash" />
+
+                        <ImageView
+                            android:tint="#89909a"
                             android:id="@+id/continue_draft"
                             android:layout_width="30dp"
                             android:layout_height="30dp"

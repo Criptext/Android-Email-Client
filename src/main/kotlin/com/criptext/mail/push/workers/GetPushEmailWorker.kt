@@ -124,7 +124,8 @@ class GetPushEmailWorker(
                 if(metadataKey != null) {
                     val email = dbEvents.getEmailByMetadataKey(metadataKey, activeAccount.id)
                     if(email != null){
-                        val files = dbEvents.getFullEmailById(emailId = email.id, activeAccount = activeAccount)!!.files
+                        val fullEmail = dbEvents.getFullEmailById(emailId = email.id, activeAccount = activeAccount)!!
+                        val files = fullEmail.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
                         newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()
@@ -141,14 +142,18 @@ class GetPushEmailWorker(
                         } catch (ex: Exception){
                             null
                         }
-                        PushResult.NewEmail.Success(
-                                mailboxLabel = label,
-                                isManual = true,
-                                pushData = newData,
-                                shouldPostNotification = shouldPostNotification,
-                                senderImage = bm,
-                                notificationId = notificationId
-                        )
+                        if(fullEmail.labels.contains(Label.defaultItems.draft)){
+                            PushResult.NewEmail.Success(
+                                    mailboxLabel = label,
+                                    isManual = true,
+                                    pushData = newData,
+                                    shouldPostNotification = shouldPostNotification,
+                                    senderImage = bm,
+                                    notificationId = notificationId
+                            )
+                        } else {
+                            PushResult.NewEmail.SilentSuccess()
+                        }
                     }else{
                         PushResult.NewEmail.Failure(
                                 mailboxLabel = label,

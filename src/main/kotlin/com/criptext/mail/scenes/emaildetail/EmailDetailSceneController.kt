@@ -29,6 +29,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.OnDeleteEmailListener
 import com.criptext.mail.scenes.mailbox.OnDeleteThreadListener
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
+import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.*
@@ -89,6 +90,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.ReadEmails -> onReadEmails(result)
             is EmailDetailResult.MarkAsReadEmail -> onMarAsReadEmail(result)
             is EmailDetailResult.CopyToDownloads -> onCopyToDownloads(result)
+            is EmailDetailResult.DeleteDraft -> onDeleteDraft(result)
         }
     }
 
@@ -517,6 +519,36 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onDeleteDraft(result: EmailDetailResult.DeleteDraft){
+        when(result){
+            is EmailDetailResult.DeleteDraft.Success -> {
+                val position = model.emails.indexOfFirst { it.email.id == result.id }
+                if(position > -1){
+                    if(model.emails.size == 1){
+                        val message = ActivityMessage.MoveThread(model.threadId)
+                        host.exitToScene(
+                                params = MailboxParams(),
+                                activityMessage = message,
+                                forceAnimation = false)
+                    } else {
+                        model.emails.removeAt(position)
+                        val headerData = mutableListOf<EmailThread.HeaderData>()
+                        headerData.addAll(model.threadPreview.headerData)
+                        headerData.removeAt(position)
+                        model.threadPreview = model.threadPreview.copy(
+                                count = model.threadPreview.count - 1,
+                                bodyPreview = model.emails[position - 1].email.preview,
+                                headerData = headerData,
+                                sender = model.emails[position - 1].from,
+                                timestamp = model.emails[position - 1].email.date
+                        )
+                        scene.notifyFullEmailRemoved(position + 1)
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
         val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
         if (emailIndex < 0) return
@@ -727,6 +759,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val type = ComposerType.Draft(draftId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel)
             host.goToScene(ComposerParams(type), false)
+        }
+
+        override fun onDeleteDraftOptionSelected(fullEmail: FullEmail) {
+            dataSource.submitRequest(EmailDetailRequest.DeleteDraft(fullEmail.email.id))
         }
 
         override fun showStartGuideEmailIsRead(view: View) {

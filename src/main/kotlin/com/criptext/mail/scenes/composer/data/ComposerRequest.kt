@@ -13,7 +13,6 @@ sealed class ComposerRequest {
                            val composerInputData: ComposerInputData,
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>,
                            val fileKey: String?, val originalId: Long?, val senderAccount: ActiveAccount? = null): ComposerRequest()
-    class DeleteDraft(val emailId: Long): ComposerRequest()
     class UploadAttachment(val filepath: String, val fileKey: String?, val filesSize: Long): ComposerRequest()
     class LoadInitialData(val composerType: ComposerType, val emailId: Long): ComposerRequest()
     data class CheckDomain(val emails: List<String>) : ComposerRequest()

@@ -91,4 +91,11 @@ sealed class EmailDetailResult {
         data class Success(val message: UIMessage): CopyToDownloads()
         data class Failure(val message: UIMessage): CopyToDownloads()
     }
+
+    sealed class DeleteDraft : EmailDetailResult() {
+        data class Success(val id: Long): DeleteDraft()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): DeleteDraft()
+    }
 }

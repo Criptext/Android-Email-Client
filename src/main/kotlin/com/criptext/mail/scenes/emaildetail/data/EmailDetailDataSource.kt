@@ -171,6 +171,11 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is EmailDetailRequest.DeleteDraft -> DeleteDraftWorker(
+                    emailId = params.emailId,
+                    activeAccount = activeAccount,
+                    db = emailDetailLocalDB,
+                    publishFn = { res -> flushResults(res) })
         }
     }
 }

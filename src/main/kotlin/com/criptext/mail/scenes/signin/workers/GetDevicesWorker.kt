@@ -54,7 +54,7 @@ class GetDevicesWorker(val httpClient: HttpClient,
         when (ex) {
             is ServerErrorException ->
                 if(ex.errorCode == ServerCodes.BadRequest)
-                UIMessage(resId = R.string.forgot_password_error_400)
+                    UIMessage(resId = R.string.password_enter_error)
                 else
                     UIMessage(resId = R.string.forgot_password_error)
             else ->UIMessage(resId = R.string.forgot_password_error)

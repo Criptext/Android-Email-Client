@@ -514,6 +514,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is ActivityMessage.UpdateThreadPreview -> {
                 threadListController.replaceThread(activityMessage.threadPreview)
                 generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+                reloadMailboxThreads()
                 true
             }
             is ActivityMessage.DraftSaved -> {

@@ -135,8 +135,8 @@ interface SignUpScene {
             signUpFormHolder?.assignUsernameTextChangeListener()
         }
 
-        private fun assignfullNameTextChangeListener() {
-            signUpFormHolder?.assignfullNameTextChangeListener()
+        private fun assignFullNameTextChangeListener() {
+            signUpFormHolder?.assignFullNameTextChangeListener()
         }
 
         private fun assignRecoveryEmailTextChangeListener() {
@@ -145,6 +145,10 @@ interface SignUpScene {
 
         private fun assignTermsAndConditionsClickListener() {
             signUpFormHolder?.assignTermsAndConditionsClickListener()
+        }
+
+        private fun assignContactSupportClickListener() {
+            signUpFormHolder?.assignContactSupportClickListener()
         }
 
         private fun assignBackButtonListener() {
@@ -173,7 +177,8 @@ interface SignUpScene {
             assignUsernameTextChangeListener()
             assignCheckTermsAndConditionsListener()
             assignTermsAndConditionsClickListener()
-            assignfullNameTextChangeListener()
+            assignContactSupportClickListener()
+            assignFullNameTextChangeListener()
             assignCreateAccountClickListener()
             assignRecoveryEmailTextChangeListener()
             assignBackButtonListener()
