@@ -57,6 +57,8 @@ sealed class PushResult {
                 val senderImage: Bitmap?,
                 val notificationId: Int): NewEmail()
 
+        class SilentSuccess: NewEmail()
+
         data class Failure(
                 val mailboxLabel: Label,
                 val message: UIMessage,

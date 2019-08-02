@@ -202,7 +202,6 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.GetAllContacts -> onContactsLoaded(result)
             is ComposerResult.GetAllFromAddresses -> onFromAddressesLoaded(result)
             is ComposerResult.SaveEmail -> onEmailSavesAsDraft(result)
-            is ComposerResult.DeleteDraft -> exitToEmailDetailScene()
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
             is ComposerResult.CheckDomain -> onCheckDomain(result)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
@@ -198,35 +199,19 @@ class SettingsController(
         }
 
         override fun onFAQClicked() {
-            val context = (host as BaseActivity)
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/faq")
-            context.startActivity(intent)
-            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("faq"))
         }
 
         override fun onPrivacyPoliciesClicked() {
-            val context = (host as BaseActivity)
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/privacy")
-            context.startActivity(intent)
-            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("privacy"))
         }
 
         override fun onTermsOfServiceClicked() {
-            val context = (host as BaseActivity)
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/terms")
-            context.startActivity(intent)
-            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("terms"))
         }
 
         override fun onOpenSourceLibrariesClicked() {
-            val context = (host as BaseActivity)
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/open-source-android")
-            context.startActivity(intent)
-            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("open-source-android"))
         }
 
         override fun onBackButtonPressed() {

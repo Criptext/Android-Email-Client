@@ -51,6 +51,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val layout : FrameLayout
     private val rootView : LinearLayout
     private val continueDraftView: ImageView
+    private val deleteDraftView: ImageView
     private val replyView: ImageView
     private val threePointsView: ImageView
     private val moreButton: TextView
@@ -88,6 +89,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
         continueDraftView.setOnClickListener{
             emailListener?.onContinueDraftOptionSelected(fullEmail)
+        }
+
+        deleteDraftView.setOnClickListener{
+            emailListener?.onDeleteDraftOptionSelected(fullEmail)
         }
 
         replyView.setOnClickListener{
@@ -306,11 +311,13 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private fun setDraftIcon(fullEmail: FullEmail){
         if(fullEmail.labels.contains(Label.defaultItems.draft)){
             continueDraftView.visibility = View.VISIBLE
+            deleteDraftView.visibility = View.VISIBLE
             replyView.visibility = View.GONE
             threePointsView.visibility = View.GONE
         }
         else{
             continueDraftView.visibility = View.GONE
+            deleteDraftView.visibility = View.GONE
             replyView.visibility = View.VISIBLE
             threePointsView.visibility = View.VISIBLE
         }
@@ -499,6 +506,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         moreButton = view.findViewById(R.id.more_text)
         replyView = view.findViewById(R.id.reply)
         continueDraftView = view.findViewById(R.id.continue_draft)
+        deleteDraftView = view.findViewById(R.id.delete_draft)
         readView =  view.findViewById(R.id.check)
         contactInfoPopUp = EmailContactInfoPopup(moreButton)
         bodyWebView = view.findViewById(R.id.email_body)

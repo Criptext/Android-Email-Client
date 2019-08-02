@@ -48,12 +48,6 @@ class ComposerDataSource(
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
                     originalId = params.originalId)
-
-            is ComposerRequest.DeleteDraft -> DeleteDraftWorker(
-                    emailId = params.emailId,
-                    activeAccount = activeAccount,
-                    db = composerLocalDB,
-                    publishFn = { res -> flushResults(res) })
             is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filesSize = params.filesSize,
                     filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,

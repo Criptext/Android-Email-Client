@@ -557,10 +557,10 @@
   <string name="restore_backup_bad_file">The selected file is not a valid backup file.</string>
   <string name="restore_backup_intent_title">Share backup or save it to files…</string>
   <string name="sign_in_remove_message">You have reached the device limit (%1$d) on your account. Delete at least (%2$d) device in order to proceed. Once deleted, your active session on that device will be signed out.</string>
-  <string name="sign_in_remove_success_remaining">You still need to remove (%1$d) devices before you can login.</string>
+  <string name="sign_in_remove_success_remaining">You must remove (%1$d) more devices before signing in.</string>
   <string name="sign_in_remove_dialog_title">Remove Devices</string>
-  <string name="sign_in_remove_error_dialog_title">Expired Session</string>
-  <string name="sign_in_remove_error_dialog_message">We are sorry but your session has expired, this means that you exceeded the time permitted for inactivity, please try again.</string>
+  <string name="sign_in_remove_error_dialog_title">Session Expired</string>
+  <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
   <string name="contact_support">Having trouble? <b>Contact Support</b></string>
   <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
 </resources>

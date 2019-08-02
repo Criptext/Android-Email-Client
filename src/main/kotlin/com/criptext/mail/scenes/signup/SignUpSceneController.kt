@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signup
 
 import android.content.Intent
 import com.criptext.mail.BaseActivity
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
@@ -22,6 +23,7 @@ import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.validation.TextInput
+import java.util.*
 
 /**
  * Created by sebas on 2/15/18.
@@ -149,11 +151,11 @@ class SignUpSceneController(
         }
 
         override fun onTermsAndConditionsClick(){
-            val context = (host as BaseActivity)
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", "https://criptext.com/terms")
-            context.startActivity(intent)
-            context.overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("terms"))
+        }
+
+        override fun onContactSupportClick() {
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact"))
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {
@@ -363,6 +365,7 @@ class SignUpSceneController(
         fun onRecoveryEmailTextChangeListener(text: String)
         fun onCheckedOptionChanged(state: Boolean)
         fun onTermsAndConditionsClick()
+        fun onContactSupportClick()
         fun onBackPressed()
         fun onProgressHolderFinish()
     }

@@ -65,6 +65,7 @@ class SignUpFormHolder(val view: View) {
     private val txtTermsAndConditions: TextView = view.findViewById(R.id.txt_terms_and_conditions)
     private val imageBack: ImageView = view.findViewById(R.id.icon_back)
     private val recoveryEmailWarningDialog = RecoveryEmailWarningDialog(view.context)
+    private val contactSupport: TextView = view.findViewById(R.id.contact_support)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver? = null
 
@@ -179,12 +180,7 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun assignCheckTermsAndConditionsListener() {
-        checkboxTerms.setOnCheckedChangeListener(object :
-                CompoundButton.OnCheckedChangeListener {
-            override fun onCheckedChanged(p0: CompoundButton?, state: Boolean) {
-                uiObserver?.onCheckedOptionChanged(state)
-            }
-        })
+        checkboxTerms.setOnCheckedChangeListener { p0, state -> uiObserver?.onCheckedOptionChanged(state) }
     }
 
     fun assignUsernameTextChangeListener() {
@@ -202,7 +198,7 @@ class SignUpFormHolder(val view: View) {
         })
     }
 
-    fun assignfullNameTextChangeListener() {
+    fun assignFullNameTextChangeListener() {
         fullName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
             }
@@ -231,11 +227,11 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun assignTermsAndConditionsClickListener() {
-        txtTermsAndConditions.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                uiObserver?.onTermsAndConditionsClick()
-            }
-        })
+        txtTermsAndConditions.setOnClickListener { uiObserver?.onTermsAndConditionsClick() }
+    }
+
+    fun assignContactSupportClickListener() {
+        contactSupport.setOnClickListener { uiObserver?.onContactSupportClick() }
     }
 
     fun assignBackButtonListener() {
@@ -245,11 +241,7 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun assignCreateAccountClickListener() {
-        createAccount.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(p0: View?) {
-                uiObserver?.onCreateAccountClick()
-            }
-        })
+        createAccount.setOnClickListener { uiObserver?.onCreateAccountClick() }
     }
 
     @SuppressLint("RestrictedApi")

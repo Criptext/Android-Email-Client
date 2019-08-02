@@ -67,4 +67,6 @@ sealed class EmailDetailRequest{
     ): EmailDetailRequest()
 
     data class CopyToDownloads(val internalPath: String): EmailDetailRequest()
+
+    class DeleteDraft(val emailId: Long): EmailDetailRequest()
 }
