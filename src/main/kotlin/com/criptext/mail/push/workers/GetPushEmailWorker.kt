@@ -142,7 +142,7 @@ class GetPushEmailWorker(
                         } catch (ex: Exception){
                             null
                         }
-                        if(fullEmail.labels.contains(Label.defaultItems.draft)){
+                        if(fullEmail.labels.contains(Label.defaultItems.spam)){
                             PushResult.NewEmail.Success(
                                     mailboxLabel = label,
                                     isManual = true,
