@@ -88,9 +88,9 @@ interface SignalKeyGenerator {
     private class RegistrationData() {
         val registrationId: Int = KeyHelper.generateRegistrationId(false)
         val identityKeyPair: IdentityKeyPair = KeyHelper.generateIdentityKeyPair()
-        val signedPreKeyId: Int = Random().nextInt(99) + 1
+        val signedPreKeyId: Int = Random().nextInt(PRE_KEY_COUNT - 1) + 1
         val signedPreKey: SignedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-        val preKeys: List<PreKeyRecord> = KeyHelper.generatePreKeys(1, 100)
+        val preKeys: List<PreKeyRecord> = KeyHelper.generatePreKeys(1, PRE_KEY_COUNT)
     }
 
     class PrivateBundle(val identityKeyPair: String, val signedPreKeyId: Int,
@@ -99,4 +99,8 @@ interface SignalKeyGenerator {
 
     class RegistrationBundles(val privateBundle: PrivateBundle,
                               val uploadBundle: PreKeyBundleShareData.UploadBundle)
+
+    companion object {
+        const val PRE_KEY_COUNT = 100
+    }
 }

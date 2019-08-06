@@ -8,6 +8,7 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSignedPreKey
@@ -106,21 +107,29 @@ class EventHelper(private val db: EventLocalDB,
         if(eventIdsToAcknowledge.isNotEmpty()){
             val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
             val remainingKeys = db.getAllPreKeys(activeAccount.id).map { it.preKeyId }
-            val registrationBundles = keyGenerator.register(activeAccount.recipientId,
+            val recipientId = if(activeAccount.domain != Contact.mainDomain)
+                activeAccount.recipientId.plus("@${activeAccount.domain}")
+            else
+                activeAccount.recipientId
+            val registrationBundles = keyGenerator.register(recipientId,
                     activeAccount.deviceId)
 
+            if(remainingKeys.size < SignalKeyGenerator.PRE_KEY_COUNT) {
+                val response = Result.of {
+                    mailboxAPIClient.insertPreKeys(
+                            preKeys = registrationBundles.uploadBundle.preKeys,
+                            excludedKeys = remainingKeys)
+                }
+                if (response is Result.Success) {
+                    val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
+                        CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = activeAccount.id)
+                    }.filter { it.preKeyId !in remainingKeys }
+                    db.insertPreKeys(preKeyList)
 
-            val response = Result.of {
-                mailboxAPIClient.insertPreKeys(
-                        preKeys = registrationBundles.uploadBundle.preKeys,
-                        excludedKeys = remainingKeys)
-            }
-            if(response is Result.Success){
-                val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
-                    CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = activeAccount.id)
-                }.filter { it.preKeyId !in remainingKeys }
-                db.insertPreKeys(preKeyList)
-
+                    if (acknoledgeEvents)
+                        acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it })
+                }
+            } else {
                 if (acknoledgeEvents)
                     acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it })
             }
@@ -520,14 +529,22 @@ class EventHelper(private val db: EventLocalDB,
 
         val trackingUpdatesPair = events.filter(isTrackingUpdateEvent)
                 .map(toIdAndTrackingUpdatePair)
-        val eventIdsToAcknowledge = trackingUpdatesPair.map { it.first }
+        var eventIdsToAcknowledge = trackingUpdatesPair.map { it.first }
         val trackingUpdates = trackingUpdatesPair.map { it.second }
 
         createFeedItems(trackingUpdates)
         changeDeliveryTypes(trackingUpdates)
         trackingUpdates.forEach {
-            if(it.type == DeliveryTypes.UNSEND)
-                updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(it.metadataKey, it.date))
+            if(it.type == DeliveryTypes.UNSEND) {
+                try {
+                    updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(it.metadataKey, it.date))
+                } catch(ex: Exception) {
+                    val index = trackingUpdates.indexOf(it)
+                    if(index > -1){
+                        eventIdsToAcknowledge = mutableListOf(eventIdsToAcknowledge).removeAt(index)
+                    }
+                }
+            }
         }
         if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
