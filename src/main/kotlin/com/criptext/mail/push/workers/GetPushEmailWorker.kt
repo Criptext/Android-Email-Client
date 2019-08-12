@@ -143,6 +143,8 @@ class GetPushEmailWorker(
                             null
                         }
                         if(fullEmail.labels.contains(Label.defaultItems.spam)){
+                            PushResult.NewEmail.SilentSuccess()
+                        } else {
                             PushResult.NewEmail.Success(
                                     mailboxLabel = label,
                                     isManual = true,
@@ -151,8 +153,6 @@ class GetPushEmailWorker(
                                     senderImage = bm,
                                     notificationId = notificationId
                             )
-                        } else {
-                            PushResult.NewEmail.SilentSuccess()
                         }
                     }else{
                         PushResult.NewEmail.Failure(

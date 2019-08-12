@@ -81,7 +81,7 @@ class SignInStartHolder(
 
         val finalRadius = (Math.max(rootLayout.width, rootLayout.height) * 1.1).toFloat()
         val circularReveal = ViewAnimationUtilsCompat.createCircularReveal(rootLayout, x, y, 0f, finalRadius)
-        rootLayout.visibility = View.VISIBLE;
+        rootLayout.visibility = View.VISIBLE
         circularReveal?.start()
 
     }

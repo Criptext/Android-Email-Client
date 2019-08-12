@@ -11,6 +11,8 @@ import com.criptext.mail.R
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.Utility
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
 import com.tokenautocomplete.FilteredArrayAdapter
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
@@ -18,6 +20,7 @@ import java.util.*
 /**
  * Created by gabriel on 2/28/18.
  */
+
 class ContactsFilterAdapter(context : Context, private val objects : List<Contact>)
     : FilteredArrayAdapter<Contact>(context, R.layout.autocomplete_item, 0, objects) {
 
@@ -26,7 +29,13 @@ class ContactsFilterAdapter(context : Context, private val objects : List<Contac
             return false
         }
         val newMask = mask!!.toLowerCase()
-        return (obj.name.isNotEmpty() && obj.name.toLowerCase().contains(newMask)) || (obj.email.isNotEmpty() &&  obj.email.contains(newMask))
+        return if(obj.email.isNotEmpty() && AccountDataValidator.validateEmailAddress(obj.email) is FormData.Valid){
+            val domain = EmailAddressUtils.extractEmailAddressDomain(obj.email)
+            val recipientId = EmailAddressUtils.extractRecipientIdFromAddress(obj.email, domain)
+            (obj.name.isNotEmpty() && obj.name.toLowerCase().contains(newMask)) || (obj.email.isNotEmpty() &&  recipientId.contains(newMask))
+        } else {
+            (obj.name.isNotEmpty() && obj.name.toLowerCase().contains(newMask)) || (obj.email.isNotEmpty() &&  obj.email.contains(newMask))
+        }
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -72,5 +81,4 @@ class ContactsFilterAdapter(context : Context, private val objects : List<Contac
         }
         return view
     }
-
 }
