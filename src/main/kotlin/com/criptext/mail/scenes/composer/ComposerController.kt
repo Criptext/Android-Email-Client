@@ -732,7 +732,4 @@ class ComposerController(private val storage: KeyValueStorage,
 
     }
 
-    companion object {
-        val minimumPasswordLength = 3
-    }
 }

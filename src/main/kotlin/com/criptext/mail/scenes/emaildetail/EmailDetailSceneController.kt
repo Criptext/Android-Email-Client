@@ -534,7 +534,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         model.emails.removeAt(position)
                         val headerData = mutableListOf<EmailThread.HeaderData>()
                         headerData.addAll(model.threadPreview.headerData)
-                        headerData.removeAt(position)
+                        val removedHeader = headerData.getOrNull(position)
+                        if(removedHeader != null) headerData.removeAt(position)
                         model.threadPreview = model.threadPreview.copy(
                                 count = model.threadPreview.count - 1,
                                 bodyPreview = model.emails[position - 1].email.preview,

@@ -285,7 +285,10 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver {
         override fun restoreFromLocalBackupPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            }
         }
 
         override fun restoreFromBackupPressed() {
@@ -1503,17 +1506,23 @@ class MailboxSceneController(private val scene: MailboxScene,
 
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode != BaseActivity.RequestCode.readAccess.ordinal) return
-
-        val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_CONTACTS }
-        if (indexOfPermission < 0) return
-        if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
-            scene.showMessage(UIMessage(R.string.sync_phonebook_permission))
-            return
+        when(requestCode){
+            BaseActivity.RequestCode.readAccess.ordinal -> {
+                val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.READ_CONTACTS }
+                if (indexOfPermission < 0) return
+                if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+                    scene.showMessage(UIMessage(R.string.sync_phonebook_permission))
+                    return
+                }
+                val resolver = host.getContentResolver()
+                if(resolver != null)
+                    generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
+            }
+            BaseActivity.RequestCode.writeAccess.ordinal -> {
+                host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+            }
+            else -> return
         }
-        val resolver = host.getContentResolver()
-        if(resolver != null)
-            generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
     }
 
     companion object {
