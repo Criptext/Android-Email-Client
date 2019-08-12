@@ -205,7 +205,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             setTheme(R.style.AppTheme)
         }
         super.onCreate(savedInstanceState)
-        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(layoutId)
 
         val toolbarId = this.toolbarId
