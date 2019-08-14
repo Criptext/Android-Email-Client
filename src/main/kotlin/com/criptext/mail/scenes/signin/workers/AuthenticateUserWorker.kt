@@ -68,13 +68,15 @@ class AuthenticateUserWorker(
         val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
         if(lastLoggedUsers.isNotEmpty()) {
             if(!shouldKeepData){
-                if(isMultiple)
+                if(isMultiple) {
                     keyValueStorage.remove(listOf(
                             KeyValueStorage.StringKey.LastLoggedUser
                     ))
-                else
+                } else {
                     keyValueStorage.clearAll()
+                }
                 db.deleteDatabase(lastLoggedUsers)
+                lastLoggedUsers.clear()
             }
             storedValue = ""
             lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
@@ -181,7 +183,7 @@ class AuthenticateUserWorker(
                         UIMessage(R.string.too_many_devices)
                     ServerCodes.BadRequest ->
                         UIMessage(R.string.password_enter_error)
-                    else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
             else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)

@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.emaildetail.workers
 
-import android.accounts.NetworkErrorException
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.CriptextAPIClient
@@ -22,9 +21,10 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import org.json.JSONException
 import org.json.JSONObject
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
 
 class DownloadAttachmentWorker(private val fileSize: Long,
@@ -37,7 +37,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                                private val downloadPath: String,
                                private val accountDao: AccountDao,
                                private val storage: KeyValueStorage,
-                               private val httpClient: HttpClient,
+                               httpClient: HttpClient,
                                private val activeAccount: ActiveAccount,
                              override val publishFn: (EmailDetailResult.DownloadFile) -> Unit)
     : BackgroundWorker<EmailDetailResult.DownloadFile> {
@@ -191,7 +191,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         ex.printStackTrace()
         when (ex) {
-            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> UIMessage(resId = R.string.error_downloading_file, args = arrayOf(fileName))
         }
     }

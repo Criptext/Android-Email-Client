@@ -34,10 +34,10 @@ class TwoFAWorker(val httpClient: HttpClient,
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
                 ServerCodes.MethodNotAllowed -> GeneralResult.Set2FA.Failure(UIMessage(R.string.message_warning_two_fa), twoFA)
-                else -> GeneralResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
+                else -> GeneralResult.Set2FA.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), twoFA)
             }
         }else {
-            GeneralResult.Set2FA.Failure(UIMessage(R.string.server_error_exception), twoFA)
+            GeneralResult.Set2FA.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), twoFA)
         }
     }
 

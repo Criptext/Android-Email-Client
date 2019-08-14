@@ -30,7 +30,7 @@ class CheckForKeyBundleWorker(
     private val apiClient = CheckForKeyBundleAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): LinkingResult.CheckForKeyBundle {
-        return LinkingResult.CheckForKeyBundle.Failure(UIMessage(R.string.password_enter_error))
+        return LinkingResult.CheckForKeyBundle.Failure(UIMessage(R.string.keybundle_get_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<LinkingResult.CheckForKeyBundle>): LinkingResult.CheckForKeyBundle? {

@@ -49,6 +49,7 @@ interface ProfileScene{
     fun dismissAccountSuspendedDialog()
     fun enableProfileSettings(enable: Boolean)
     fun updateCurrentEmailStatus(isEmailConfirmed: Boolean)
+    fun hideFooterSwitch()
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -133,6 +134,14 @@ interface ProfileScene{
             view.findViewById<TextView>(R.id.profile_email)
         }
 
+        private val criptextFooterSwitch: Switch by lazy {
+            view.findViewById<Switch>(R.id.switch_footer)
+        }
+
+        private val profileFooterOption: FrameLayout by lazy {
+            view.findViewById<FrameLayout>(R.id.profile_footer)
+        }
+
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
@@ -184,6 +193,11 @@ interface ProfileScene{
 
             changePictureButton.setOnClickListener {
                 profileUIObserver.onEditPicturePressed()
+            }
+
+            criptextFooterSwitch.isChecked = model.criptextFooterEnabled
+            criptextFooterSwitch.setOnCheckedChangeListener { _, isChecked ->
+                profileUIObserver.onCriptextFooterSwitched(isChecked)
             }
 
             nameText.text = model.userData.name
@@ -317,6 +331,10 @@ interface ProfileScene{
 
         override fun dismissAccountSuspendedDialog() {
             accountSuspended.dismissDialog()
+        }
+
+        override fun hideFooterSwitch() {
+            profileFooterOption.visibility = View.GONE
         }
 
         override fun enableProfileSettings(enable: Boolean) {

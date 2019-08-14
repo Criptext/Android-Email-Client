@@ -11,6 +11,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.composer.data.ComposerAPIClient
 import com.criptext.mail.scenes.composer.data.PostEmailBody
 import com.criptext.mail.scenes.mailbox.data.SentMailData
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -121,7 +122,7 @@ class ResendEmailWorker(
     }
 
     override fun catchException(ex: Exception): GeneralResult.ResendEmail =
-            GeneralResult.ResendEmail.Failure()
+            GeneralResult.ResendEmail.Failure(createErrorMessage(ex))
 
     override fun work(reporter: ProgressReporter<GeneralResult.ResendEmail>)
             : GeneralResult.ResendEmail? {
@@ -141,7 +142,7 @@ class ResendEmailWorker(
 
             if(finalResult is Result.Failure) return catchException(finalResult.error)
         }else{
-            return GeneralResult.ResendEmail.Failure()
+            return catchException(EventHelper.NothingNewException())
         }
         db.increaseContactScore(listOf(emailId))
         return GeneralResult.ResendEmail.Success(position, isSecure)
@@ -343,11 +344,19 @@ class ResendEmailWorker(
 
     private fun getGuestEmails(fullEmail: FullEmail, mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
         val externalData = db.getExternalData(fullEmail.email.id)
+        val showFooter = when {
+            activeAccount.domain != Contact.mainDomain -> false
+            storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty() -> {
+                val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
+                footerData.find { it.accountId == activeAccount.id }?.hasFooterEnabled ?: true
+            }
+            else -> true
+        }
         return if(externalData == null) {
             isSecure = false
             PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                     mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                    if(activeAccount.domain != Contact.mainDomain)fullEmail.email.content
+                    if(!showFooter) fullEmail.email.content
                     else HTMLUtils.addCriptextFooter(fullEmail.email.content), null, null, null,
                     fullEmail.fileKey, fileKeys = getFileKeys(fullEmail.files))
         }else {
@@ -361,10 +370,8 @@ class ResendEmailWorker(
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex) {
             is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
-            is DuplicateMessageException ->
-                UIMessage(resId = R.string.email_already_decrypted)
             else -> {
-                UIMessage(resId = R.string.failed_getting_emails)
+                UIMessage(resId = R.string.unknown_error, args = arrayOf(ex.toString()))
             }
         }
     }

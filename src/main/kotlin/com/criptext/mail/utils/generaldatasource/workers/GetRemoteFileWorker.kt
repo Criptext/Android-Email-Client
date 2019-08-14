@@ -1,6 +1,5 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
-import android.accounts.NetworkErrorException
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -9,13 +8,11 @@ import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
-import org.json.JSONException
 import java.io.File
 
 class GetRemoteFileWorker(private val uris: List<String>,
@@ -81,7 +78,7 @@ class GetRemoteFileWorker(private val uris: List<String>,
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         ex.printStackTrace()
         when (ex) {
-            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> UIMessage(resId = R.string.error_downloading_file)
         }
     }

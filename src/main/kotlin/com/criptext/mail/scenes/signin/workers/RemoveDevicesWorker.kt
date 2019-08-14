@@ -58,9 +58,9 @@ class RemoveDevicesWorker(val httpClient: HttpClient,
         when (ex) {
             is ServerErrorException ->
                 if(ex.errorCode == ServerCodes.BadRequest)
-                UIMessage(resId = R.string.forgot_password_error_400)
+                    UIMessage(resId = R.string.invalid_temp_token)
                 else
-                    UIMessage(resId = R.string.forgot_password_error)
+                    UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else ->UIMessage(resId = R.string.forgot_password_error)
         }
     }

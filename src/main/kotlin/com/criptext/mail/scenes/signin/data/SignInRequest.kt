@@ -9,9 +9,6 @@ sealed class SignInRequest{
                            val isMultiple: Boolean
     ): SignInRequest()
 
-    class VerifyUser(val username: String
-    ): SignInRequest()
-
     data class CheckUserAvailability(val username: String, val domain: String): SignInRequest()
 
     data class ForgotPassword(val username: String, val domain: String): SignInRequest()

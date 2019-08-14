@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signin.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -67,6 +68,10 @@ class CreateSessionWorker(val httpClient: HttpClient,
                             db.deleteDatabase(username, domain)
                             lastLoggedUser.removeAll { it == email }
                             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
+                        } else if(lastLoggedUser.isNotEmpty()) {
+                            db.deleteDatabase(lastLoggedUser)
+                            lastLoggedUser.clear()
+                            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUser.distinct().joinToString())
                         }
                     }
 
@@ -130,7 +135,8 @@ class CreateSessionWorker(val httpClient: HttpClient,
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        if(ex is ServerErrorException) UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode))
         UIMessage(resId = R.string.forgot_password_error)
     }
 

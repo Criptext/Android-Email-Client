@@ -17,4 +17,5 @@ interface ProfileUIObserver: UIObserver {
     fun onLogoutClicked()
     fun onLogoutConfirmedClicked()
     fun onDeleteAccountClicked()
+    fun onCriptextFooterSwitched(isChecked: Boolean)
 }

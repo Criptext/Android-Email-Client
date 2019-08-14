@@ -31,10 +31,7 @@ class DeleteOldBackupWorker(private val fileId: List<String>,
 
     override fun catchException(ex: Exception): CloudBackupResult.DeleteFileInDrive {
         return if(ex is ServerErrorException) {
-            when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> CloudBackupResult.DeleteFileInDrive.Failure(UIMessage(R.string.message_warning_two_fa), ex)
-                else -> CloudBackupResult.DeleteFileInDrive.Failure(UIMessage(R.string.server_error_exception), ex)
-            }
+            CloudBackupResult.DeleteFileInDrive.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
         }else {
             CloudBackupResult.DeleteFileInDrive.Failure(UIMessage(R.string.server_error_exception), ex)
         }

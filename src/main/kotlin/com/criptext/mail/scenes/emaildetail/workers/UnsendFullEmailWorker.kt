@@ -129,7 +129,7 @@ class UnsendFullEmailWorker(
             is ServerErrorException ->  when(ex.errorCode) {
                 ServerCodes.MethodNotAllowed ->
                    UIMessage(resId = R.string.fail_unsend_email_expired)
-                else -> UIMessage(resId = R.string.server_error_exception)
+                else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             }
             else -> UIMessage(resId = R.string.fail_unsend_email)
         }

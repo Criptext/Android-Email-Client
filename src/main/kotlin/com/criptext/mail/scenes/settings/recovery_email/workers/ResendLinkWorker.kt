@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.settings.recovery_email.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -9,8 +11,10 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailAPIClient
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
+import kotlinx.android.synthetic.main.restore_backup_dialog.view.*
 
 
 /**
@@ -30,7 +34,8 @@ class ResendLinkWorker(
     private val apiClient = RecoveryEmailAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): RecoveryEmailResult.ResendConfirmationLink {
-        return RecoveryEmailResult.ResendConfirmationLink.Failure()
+        if(ex is ServerErrorException) RecoveryEmailResult.ResendConfirmationLink.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return RecoveryEmailResult.ResendConfirmationLink.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<RecoveryEmailResult.ResendConfirmationLink>): RecoveryEmailResult.ResendConfirmationLink? {
@@ -48,7 +53,7 @@ class ResendLinkWorker(
                 RecoveryEmailResult.ResendConfirmationLink.Success()
             }
             is Result.Failure -> {
-                RecoveryEmailResult.ResendConfirmationLink.Failure()
+                catchException(finalResult.error)
             }
         }
     }

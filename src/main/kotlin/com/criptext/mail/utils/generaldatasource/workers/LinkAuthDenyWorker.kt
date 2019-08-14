@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
@@ -29,7 +30,9 @@ class LinkAuthDenyWorker(private val untrustedDeviceInfo: DeviceInfo.UntrustedDe
     private var apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.LinkDeny {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(ex is ServerErrorException)
+            return GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_error_exception))
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.LinkDeny>)
@@ -52,7 +55,7 @@ class LinkAuthDenyWorker(private val untrustedDeviceInfo: DeviceInfo.UntrustedDe
                 GeneralResult.LinkDeny.Success()
             }
             is Result.Failure -> {
-                GeneralResult.LinkDeny.Failure(UIMessage(R.string.server_error_exception))
+                catchException(finalResult.error)
             }
         }
     }

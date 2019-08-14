@@ -25,7 +25,7 @@ class CheckForBackupWorker(
     override val canBeParallelized = true
 
     override fun catchException(ex: Exception): RestoreBackupResult.CheckForBackup {
-        return RestoreBackupResult.CheckForBackup.Failure(UIMessage(resId = R.string.failed_searching_emails))
+        return RestoreBackupResult.CheckForBackup.Failure(UIMessage(resId = R.string.criptext_backup_not_found))
     }
 
     override fun work(reporter: ProgressReporter<RestoreBackupResult.CheckForBackup>): RestoreBackupResult.CheckForBackup? {

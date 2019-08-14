@@ -6,6 +6,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
@@ -266,6 +267,8 @@ class GetPushEmailWorker(
         when(ex) {
             is DuplicateMessageException ->
                 UIMessage(resId = R.string.email_already_decrypted)
+            is ServerErrorException ->
+                UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> {
                 UIMessage(resId = R.string.failed_getting_emails)
             }

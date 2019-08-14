@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.composer.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
@@ -8,6 +10,7 @@ import com.criptext.mail.scenes.composer.data.ComposerAPIClient
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.utils.EmailAddressUtils
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 
 class CheckDomainsWorker(
@@ -22,7 +25,9 @@ class CheckDomainsWorker(
     override val canBeParallelized = true
 
     override fun catchException(ex: Exception): ComposerResult.CheckDomain {
-        return ComposerResult.CheckDomain.Failure("Failed to get Contacts Domain Validation")
+        if(ex is ServerErrorException)
+            return ComposerResult.CheckDomain.Failure(UIMessage(R.string.domain_validation_error, arrayOf(ex.errorCode)))
+        return ComposerResult.CheckDomain.Failure(UIMessage(R.string.domain_validation_error, arrayOf(-1)))
     }
 
     override fun work(reporter: ProgressReporter<ComposerResult.CheckDomain>)

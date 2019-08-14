@@ -1,6 +1,7 @@
 package com.criptext.mail.push.workers
 
 import com.criptext.mail.R
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
@@ -68,6 +69,8 @@ class RemoveNotificationWorker(
         when(ex) {
             is DuplicateMessageException ->
                 UIMessage(resId = R.string.email_already_decrypted)
+            is ServerErrorException ->
+                UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> {
                 UIMessage(resId = R.string.failed_getting_emails)
             }

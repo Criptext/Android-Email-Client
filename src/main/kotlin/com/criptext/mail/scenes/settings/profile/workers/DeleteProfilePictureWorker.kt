@@ -33,9 +33,8 @@ class DeleteProfilePictureWorker(val httpClient: HttpClient,
     override fun catchException(ex: Exception): ProfileResult.DeleteProfilePicture {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.message_warning_two_fa), ex)
                 ServerCodes.EnterpriseAccountSuspended -> ProfileResult.DeleteProfilePicture.EnterpriseSuspended()
-                else -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
+                else -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
             }
         }else {
             ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)

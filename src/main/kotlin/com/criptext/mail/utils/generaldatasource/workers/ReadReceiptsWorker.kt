@@ -31,13 +31,9 @@ class ReadReceiptsWorker(val httpClient: HttpClient,
 
     override fun catchException(ex: Exception): GeneralResult.SetReadReceipts {
         return if(ex is ServerErrorException) {
-            when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed ->
-                    GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.message_warning_two_fa), readReceipts)
-                else -> GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.server_error_exception), readReceipts)
-            }
+            GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), readReceipts)
         }else {
-            GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.server_error_exception), readReceipts)
+            GeneralResult.SetReadReceipts.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), readReceipts)
         }
     }
 

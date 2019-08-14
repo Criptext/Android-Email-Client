@@ -6,7 +6,7 @@ sealed class RecoveryEmailResult{
 
     sealed class ResendConfirmationLink: RecoveryEmailResult() {
         class Success: ResendConfirmationLink()
-        class Failure: ResendConfirmationLink()
+        data class Failure(val message: UIMessage): ResendConfirmationLink()
     }
 
     sealed class ChangeRecoveryEmail: RecoveryEmailResult() {

@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.settings.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -10,6 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.utils.AccountUtils
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
@@ -32,7 +35,8 @@ class LogoutWorker(
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): SettingsResult.Logout {
-        return SettingsResult.Logout.Failure()
+        if(ex is ServerErrorException) return SettingsResult.Logout.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return SettingsResult.Logout.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<SettingsResult.Logout>): SettingsResult.Logout? {
@@ -50,7 +54,7 @@ class LogoutWorker(
                 SettingsResult.Logout.Success()
             }
             is Result.Failure -> {
-                SettingsResult.Logout.Failure()
+                catchException(finalResult.error)
             }
         }
     }

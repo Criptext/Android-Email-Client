@@ -99,7 +99,7 @@ sealed class MailboxResult {
                            val isTrash: Boolean, val isSpam: Boolean,
                            val doReply: Boolean = false,
                            val activityMessage: ActivityMessage? = null): GetEmailPreview()
-        data class Failure(val message: String): GetEmailPreview()
+        data class Failure(val message: UIMessage): GetEmailPreview()
     }
 
     sealed class EmptyTrash: MailboxResult() {
@@ -111,12 +111,13 @@ sealed class MailboxResult {
 
     sealed class ResendEmails: MailboxResult() {
         class Success: ResendEmails()
-        class Failure: ResendEmails()
+        data class Failure(val message: UIMessage): ResendEmails()
         class EnterpriseSuspended: ResendEmails()
     }
 
     sealed class ResendPeerEvents: MailboxResult() {
         data class Success(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class Failure(val queueIsEmpty: Boolean): ResendPeerEvents()
+        data class ServerFailure(val message: UIMessage, val queueIsEmpty: Boolean): ResendPeerEvents()
     }
 }

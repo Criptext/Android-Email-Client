@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
@@ -30,7 +31,9 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: DeviceInfo.Untrusted
     private var apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.LinkAccept {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(ex is ServerErrorException)
+            return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.LinkAccept>)
@@ -52,7 +55,7 @@ class LinkAuthAcceptWorker(private val untrustedDeviceInfo: DeviceInfo.Untrusted
                 GeneralResult.LinkAccept.Success(activeAccount, finalResult.value, untrustedDeviceInfo.deviceId, untrustedDeviceInfo.deviceType)
             }
             is Result.Failure -> {
-                GeneralResult.LinkAccept.Failure(UIMessage(R.string.server_error_exception))
+                catchException(finalResult.error)
             }
         }
     }

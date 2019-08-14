@@ -186,7 +186,7 @@ sealed class GeneralResult {
 
     sealed class ResendEmail: GeneralResult() {
         data class Success(val position: Int, val isSecure: Boolean): ResendEmail()
-        class Failure: ResendEmail()
+        data class Failure(val message: UIMessage): ResendEmail()
     }
 
     sealed class ChangeContactName : GeneralResult() {

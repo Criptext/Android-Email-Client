@@ -1,13 +1,11 @@
 package com.criptext.mail.scenes.settings.cloudbackup.workers
 
-import android.service.autofill.UserData
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter

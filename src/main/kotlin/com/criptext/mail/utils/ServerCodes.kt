@@ -19,5 +19,7 @@ object ServerCodes{
     const val TooManyRequests = 429
     const val TooManyDevices = 439
     const val EnterpriseAccountSuspended = 451
+    const val AuthenticationPending = 491
+    const val AuthenticationDenied = 493
     const val InternalServerError = 500
 }

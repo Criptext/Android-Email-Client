@@ -372,7 +372,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 scene.setContactSuggestionList(result.contacts)
             }
             is ComposerResult.GetAllContacts.Failure -> {
-                scene.showError(UIMessage(R.string.error_getting_contacts))
+                scene.showError(result.message)
             }
         }
         if(storage.getBool(KeyValueStorage.StringKey.StartGuideShowAttachments, true)){
@@ -393,7 +393,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
-                scene.showError(UIMessage(R.string.error_getting_contacts))
+                scene.showError(result.message)
             }
         }
     }
@@ -597,6 +597,8 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun bindWithModel(composerInputData: ComposerInputData, signature: String) {
         if(model.isReplyOrDraft || model.isSupport){
             scene.setFocusToComposer()
+        } else {
+            scene.setFocusToTo()
         }
         if(model.type is ComposerType.MailTo) scene.setFocusToSubject()
         scene.bindWithModel(firstTime = model.firstTime,

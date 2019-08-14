@@ -36,10 +36,7 @@ class UploadBackupToDriveWorker(val activeAccount: ActiveAccount,
 
     override fun catchException(ex: Exception): CloudBackupResult.UploadBackupToDrive {
         return if(ex is ServerErrorException) {
-            when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> CloudBackupResult.UploadBackupToDrive.Failure(UIMessage(R.string.message_warning_two_fa), ex)
-                else -> CloudBackupResult.UploadBackupToDrive.Failure(UIMessage(R.string.server_error_exception), ex)
-            }
+            CloudBackupResult.UploadBackupToDrive.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
         }else {
             CloudBackupResult.UploadBackupToDrive.Failure(UIMessage(R.string.server_error_exception), ex)
         }

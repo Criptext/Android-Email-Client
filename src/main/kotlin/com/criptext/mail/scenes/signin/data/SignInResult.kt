@@ -17,13 +17,6 @@ sealed class SignInResult {
                 val exception: Exception): AuthenticateUser()
     }
 
-    sealed class VerifyUser: SignInResult() {
-        class Success: VerifyUser()
-        data class Failure(
-                val message: UIMessage,
-                val exception: Exception): VerifyUser()
-    }
-
     sealed class CheckUsernameAvailability: SignInResult() {
         data class Success(val userExists: Boolean, val username: String, val domain: String): CheckUsernameAvailability()
         data class Failure(val message: UIMessage): CheckUsernameAvailability()
