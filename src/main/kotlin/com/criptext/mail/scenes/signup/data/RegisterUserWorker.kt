@@ -117,11 +117,11 @@ class RegisterUserWorker(
                         } else
                             UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
                     }
-                    else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
             is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
-            else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
+            else -> UIMessage(resId = R.string.unknown_error, args = arrayOf(ex.toString()))
         }
     }
 }

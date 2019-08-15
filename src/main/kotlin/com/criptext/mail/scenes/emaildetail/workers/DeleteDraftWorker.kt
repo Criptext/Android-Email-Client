@@ -9,6 +9,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.UIMessage
+import com.github.kittinunf.result.Result
 
 class DeleteDraftWorker(
         private val db: EmailDetailLocalDB,
@@ -28,14 +29,23 @@ class DeleteDraftWorker(
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.DeleteDraft>): EmailDetailResult.DeleteDraft? {
-        db.deleteEmail(emailId, activeAccount)
-        return EmailDetailResult.DeleteDraft.Success(emailId)
+        val operation = Result.of {
+            db.deleteEmail(emailId, activeAccount)
+        }
+        return when(operation){
+            is Result.Success -> {
+                EmailDetailResult.DeleteDraft.Success(emailId)
+            }
+            is Result.Failure -> {
+                catchException(operation.error)
+            }
+        }
     }
 
     override fun cancel() {
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
-        UIMessage(resId = R.string.failed_getting_emails)
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+        UIMessage(resId = R.string.unable_to_delete_draft, args = arrayOf(ex.toString()))
     }
 }

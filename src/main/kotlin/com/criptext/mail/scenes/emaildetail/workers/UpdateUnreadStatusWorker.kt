@@ -82,7 +82,7 @@ class UpdateUnreadStatusWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex){
-            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> UIMessage(resId = R.string.error_updating_status)
         }
     }

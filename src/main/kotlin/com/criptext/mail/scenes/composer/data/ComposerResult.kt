@@ -12,12 +12,12 @@ sealed class ComposerResult {
 
     sealed class GetAllContacts : ComposerResult() {
         data class Success(val contacts: List<Contact>): GetAllContacts()
-        data class Failure(val message: String): GetAllContacts()
+        data class Failure(val message: UIMessage): GetAllContacts()
     }
 
     sealed class GetAllFromAddresses : ComposerResult() {
         data class Success(val accounts: List<Account>): GetAllFromAddresses()
-        data class Failure(val message: String): GetAllFromAddresses()
+        data class Failure(val message: UIMessage): GetAllFromAddresses()
     }
 
     sealed class LoadInitialData : ComposerResult() {
@@ -49,6 +49,6 @@ sealed class ComposerResult {
 
     sealed class CheckDomain : ComposerResult() {
         data class Success(val contactDomainCheck: List<ContactDomainCheckData>): CheckDomain()
-        data class Failure(val message: String): CheckDomain()
+        data class Failure(val message: UIMessage): CheckDomain()
     }
 }

@@ -1,35 +1,35 @@
-package com.criptext.mail.services.data
+package com.criptext.mail.scenes.settings.profile.data
 
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class JobIdData(val accountId: Long, val jobId: Int) {
+data class ProfileFooterData(val accountId: Long, val hasFooterEnabled: Boolean) {
 
     companion object {
-        fun toJSON(list: List<JobIdData>): JSONObject{
+        fun toJSON(list: List<ProfileFooterData>): JSONObject{
             val returnJson = JSONObject()
             val jsonArray = JSONArray()
             list.forEach {
                 val json = JSONObject()
                 json.put("accountId", it.accountId)
-                json.put("jobId", it.jobId)
+                json.put("hasFooterEnabled", it.hasFooterEnabled)
                 jsonArray.put(json)
             }
-            returnJson.put("jobIdData", jsonArray)
+            returnJson.put("profileFooterData", jsonArray)
             return returnJson
         }
 
-        fun fromJson(jsonString: String): MutableList<JobIdData>{
+        fun fromJson(jsonString: String): MutableList<ProfileFooterData>{
             val json = JSONObject(jsonString)
-            val jsonArray = json.getJSONArray("jobIdData")
+            val jsonArray = json.getJSONArray("profileFooterData")
             val length = jsonArray.length()
-            val savedDataList = mutableListOf<JobIdData>()
+            val savedDataList = mutableListOf<ProfileFooterData>()
             (0 until length)
                     .map {
                         val jsonItem = jsonArray.getJSONObject(it)
-                        savedDataList.add(JobIdData(
+                        savedDataList.add(ProfileFooterData(
                                 jsonItem.getLong("accountId"),
-                                jsonItem.getInt("jobId")
+                                jsonItem.getBoolean("hasFooterEnabled")
                         ))
                     }
             return savedDataList

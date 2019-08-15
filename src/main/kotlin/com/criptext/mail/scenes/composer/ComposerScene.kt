@@ -44,6 +44,7 @@ interface ComposerScene {
                       signature: String)
     fun setFocusToComposer()
     fun setFocusToSubject()
+    fun setFocusToTo()
     fun getDataInputByUser(): ComposerInputData
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: List<Contact>)
@@ -194,6 +195,11 @@ interface ComposerScene {
             attachmentButton.setOnClickListener {
                 observer?.onAttachmentButtonClicked()
             }
+        }
+
+        override fun setFocusToTo() {
+            toInput.requestFocus()
+            keyboard.showKeyboardWithDelay(toInput)
         }
 
         override fun setFocusToComposer() {

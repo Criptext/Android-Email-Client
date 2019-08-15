@@ -39,7 +39,7 @@ class CheckUsernameAvailabilityWorker(val httpClient: HttpClient,
                 ServerCodes.Gone -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.username_not_available))
                 ServerCodes.EnterpriseAccountSuspended ->
                     SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.account_suspended_sign_in_error))
-                else -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.forgot_password_error))
+                else -> SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
             }
         } else {
             SignInResult.CheckUsernameAvailability.Failure(UIMessage(R.string.forgot_password_error))

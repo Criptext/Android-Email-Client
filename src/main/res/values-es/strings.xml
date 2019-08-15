@@ -389,7 +389,7 @@
   <string name="email_already_decrypted">¡Buzón ya fue actualizado!</string>
   <string name="failed_to_create_link_device_file">El proceso de enlace ha fallado. Por favor, intenta más tarde.</string>
   <string name="server_error_exception">Error de Servidor. Por favor, intenta más tarde.</string>
-  <string name="server_bad_status">Fallo de conexión al servidor. Código de error: %1$s</string>
+  <string name="server_bad_status">Error al contactarse con el servidor. Código: %1$s</string>
   <string name="too_many_requests_exception_hour">Demasiados intentos consecutivos. Por favor, intenta de nuevo en %1$d horas.</string>
   <string name="too_many_requests_exception_minute">Demasiados intentos consecutivos. Por favor, intenta de nuevo en %1$d minutos.</string>
   <string name="too_many_requests_exception_no_time_found">Demasiados intentos consecutivos. Por favor, intenta de nuevo más tarde.</string>
@@ -563,4 +563,17 @@
   <string name="sign_in_remove_error_dialog_message">Excediste el tiempo de inactividad permitido. Por favor inicia sesión nuevamente.</string>
   <string name="contact_support">¿Necesitas ayuda? <b>Contáctanos</b></string>
   <string name="sync_screen_message">No cierres la aplicación o apagues la pantalla hasta que termine este proceso</string>
+  <string name="domain_validation_error">Error al tratar de validar los dominios (%1$d)</string>
+  <string name="contact_db_get_error">Error al obtener contactos de la base de datos.</string>
+  <string name="from_db_get_error">Error al obtener cuentas de la base de datos.</string>
+  <string name="general_network_error_exception">Error de red. Verifica tu conexión de internet.</string>
+    <string name="copy_to_download_error">Error copiando el archivo (%1$s) a descargas.</string>
+    <string name="unable_to_delete_draft">Error borrando borrador. Err: (%1$s)</string>
+    <string name="unable_to_move_email">Error moviendo correo. Err: (%1$s)</string>
+    <string name="local_error">Error haciendo cambios en la base local. Err: (%1$s)</string>
+    <string name="keybundle_get_error">Error obteniendo llaves. Err: (%1$s)</string>
+    <string name="criptext_backup_not_found">Respaldo de Criptext no encontrado.</string>
+  <string name="unknown_error">Error desconocido. Err: (%1$s)</string>
+  <string name="invalid_temp_token">La sesión temporal ha expirado. Por favor intenatlo nuevamente.</string>
+  <string name="profile_footer_option">Mostrar \"Enviado con Criptext\"</string>
 </resources>

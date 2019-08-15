@@ -563,4 +563,17 @@
   <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
   <string name="contact_support">Having trouble? <b>Contact Support</b></string>
   <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
+  <string name="domain_validation_error">Failed to get Contacts Domain Validation (%1$d)</string>
+  <string name="contact_db_get_error">Failed to retrieve contacts from the local data base.</string>
+  <string name="from_db_get_error">Failed to get accounts from the local data base.</string>
+  <string name="general_network_error_exception">Network error. Please check your internet connection.</string>
+  <string name="copy_to_download_error">Error copying the file (%1$s) to downloads.</string>
+  <string name="unable_to_delete_draft">Error deleting draft. Ex: (%1$s)</string>
+  <string name="unable_to_move_email">Error moving email. Ex: (%1$s)</string>
+    <string name="local_error">Error making local changes. Ex: (%1$s)</string>
+    <string name="keybundle_get_error">Error getting key bundle. Ex: (%1$s)</string>
+    <string name="criptext_backup_not_found">Criptext backup not found.</string>
+  <string name="unknown_error">Unknown error. Ex: (%1$s)</string>
+  <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
+  <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
 </resources>

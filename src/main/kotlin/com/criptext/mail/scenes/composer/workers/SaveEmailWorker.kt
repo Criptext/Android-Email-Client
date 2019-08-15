@@ -64,7 +64,6 @@ class SaveEmailWorker(
     override fun cancel() {
         TODO("not implemented") //To change body of created functions use CRFile | Settings | CRFile Templates.
     }
-    private val selectEmail: (Contact) -> String = { contact -> contact.email }
 
     private fun isRecipientLimitReached(): Boolean{
         val sumOfContacts = composerInputData.to.size + composerInputData.cc.size +
@@ -78,9 +77,6 @@ class SaveEmailWorker(
         }
         return true
     }
-
-    private fun List<Contact>.toCSVEmails(): String =
-            this.joinToString(separator = ",", transform = selectEmail)
 
     private fun createMetadataColumns(): EmailMetadata.DBColumns {
         val draftMessageId = createDraftMessageId(account.deviceId)

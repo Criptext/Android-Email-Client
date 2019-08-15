@@ -109,10 +109,10 @@ class ReadEmailsWorker(private val dao: EmailDao,
             is ServerErrorException -> {
                 when {
                     ex.errorCode == 401 -> UIMessage(resId = R.string.device_removed_remotely_exception)
-                    else -> UIMessage(resId = R.string.server_error_exception)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
-            else -> UIMessage(resId = R.string.failed_getting_emails)
+            else -> UIMessage(resId = R.string.local_error, args = arrayOf(ex.toString()))
         }
     }
 }

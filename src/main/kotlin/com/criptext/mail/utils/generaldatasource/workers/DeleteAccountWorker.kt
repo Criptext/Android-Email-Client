@@ -103,7 +103,7 @@ class DeleteAccountWorker(private val db: EventLocalDB,
             is ServerErrorException -> {
                 when {
                     ex.errorCode == ServerCodes.BadRequest -> UIMessage(resId = R.string.password_enter_error)
-                    else -> UIMessage(resId = R.string.server_error_exception)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
             else -> UIMessage(resId = R.string.server_error_exception)

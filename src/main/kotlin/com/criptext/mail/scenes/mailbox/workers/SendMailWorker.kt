@@ -19,6 +19,7 @@ import com.criptext.mail.db.models.KnownAddress
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.data.SentMailData
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.signal.*
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
@@ -372,11 +373,19 @@ class SendMailWorker(private val signalClient: SignalClient,
             .flatMap(updateSentMailInDB)
 
     private fun getGuestEmails(mailRecipientsNonCriptext: EmailUtils.MailRecipients) : PostEmailBody.GuestEmail?{
+        val showFooter = when {
+            activeAccount.domain != Contact.mainDomain -> false
+            storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty() -> {
+                val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
+                footerData.find { it.accountId == activeAccount.id }?.hasFooterEnabled ?: true
+            }
+            else -> true
+        }
         val postGuestEmailBody: PostEmailBody.GuestEmail?
         isSecure = false
         postGuestEmailBody = PostEmailBody.GuestEmail(mailRecipientsNonCriptext.toCriptext,
                 mailRecipientsNonCriptext.ccCriptext, mailRecipientsNonCriptext.bccCriptext,
-                if(activeAccount.domain != Contact.mainDomain) composerInputData.body
+                if(!showFooter) composerInputData.body
                 else HTMLUtils.addCriptextFooter(composerInputData.body), null, null, null, fileKey,
                 fileKeys = getFileKeys())
         return postGuestEmailBody

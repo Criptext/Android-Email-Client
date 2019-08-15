@@ -139,7 +139,7 @@ class UpdateEmailThreadsLabelsWorker(
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
             is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
-            else -> UIMessage(resId = R.string.failed_getting_emails)
+            else -> UIMessage(resId = R.string.local_error, args = arrayOf(ex.toString()))
         }
     }
 }

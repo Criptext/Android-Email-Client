@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.MailboxLocalDB
@@ -9,7 +10,9 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.EmailThreadValidator
+import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
+import kotlinx.android.synthetic.main.restore_backup_dialog.view.*
 
 
 /**
@@ -26,8 +29,7 @@ class GetEmailPreviewWorker(private val threadId:String,
     : BackgroundWorker<MailboxResult.GetEmailPreview> {
 
     override fun catchException(ex: Exception): MailboxResult.GetEmailPreview {
-        val message = "Unexpected error: " + ex.message
-        return MailboxResult.GetEmailPreview.Failure(message)
+        return MailboxResult.GetEmailPreview.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
     override val canBeParallelized = true

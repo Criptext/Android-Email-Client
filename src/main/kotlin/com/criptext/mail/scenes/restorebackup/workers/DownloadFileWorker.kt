@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.restorebackup.workers
 
 import com.criptext.mail.R
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.models.ActiveAccount
@@ -28,7 +29,9 @@ class DownloadFileWorker(
     override val canBeParallelized = true
 
     override fun catchException(ex: Exception): RestoreBackupResult.DownloadBackup {
-        return RestoreBackupResult.DownloadBackup.Failure(UIMessage(resId = R.string.failed_searching_emails))
+        if(ex is ServerErrorException)
+            RestoreBackupResult.DownloadBackup.Failure(UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode)))
+        return RestoreBackupResult.DownloadBackup.Failure(UIMessage(resId = R.string.error_downloading_file, args = arrayOf(filePath)))
     }
 
     override fun work(reporter: ProgressReporter<RestoreBackupResult.DownloadBackup>): RestoreBackupResult.DownloadBackup? {

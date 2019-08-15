@@ -23,12 +23,9 @@ class SetCloudBackupActiveWorker(val activeAccount: ActiveAccount,
 
     override fun catchException(ex: Exception): CloudBackupResult.SetCloudBackupActive {
         return if(ex is ServerErrorException) {
-            when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> CloudBackupResult.SetCloudBackupActive.Failure(UIMessage(R.string.message_warning_two_fa), ex, cloudBackupData)
-                else -> CloudBackupResult.SetCloudBackupActive.Failure(UIMessage(R.string.server_error_exception), ex, cloudBackupData)
-            }
+            CloudBackupResult.SetCloudBackupActive.Failure(UIMessage(R.string.server_bad_status), ex, cloudBackupData)
         }else {
-            CloudBackupResult.SetCloudBackupActive.Failure(UIMessage(R.string.server_error_exception), ex, cloudBackupData)
+            CloudBackupResult.SetCloudBackupActive.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())), ex, cloudBackupData)
         }
     }
 

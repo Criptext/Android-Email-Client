@@ -28,12 +28,12 @@ import com.github.kittinunf.result.Result
 
 class MoveEmailThreadWorker(
         private val db: EmailDetailLocalDB,
-        private val pendingDao: PendingEventDao,
+        pendingDao: PendingEventDao,
         private val chosenLabel: String?,
         private val threadId: String,
         private val currentLabel: Label,
-        private val accountDao: AccountDao,
-        private val storage: KeyValueStorage,
+        accountDao: AccountDao,
+        storage: KeyValueStorage,
         httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
@@ -143,8 +143,8 @@ class MoveEmailThreadWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex){
-            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
-            else -> UIMessage(resId = R.string.failed_getting_emails)
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
+            else -> UIMessage(resId = R.string.unable_to_move_email, args = arrayOf(ex.toString()))
         }
     }
 }

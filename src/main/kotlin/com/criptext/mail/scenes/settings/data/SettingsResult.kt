@@ -7,7 +7,7 @@ sealed class SettingsResult{
 
     sealed class Logout: SettingsResult() {
         class Success: Logout()
-        class Failure: Logout()
+        data class Failure(val message: UIMessage): Logout()
     }
 
     sealed class ResetPassword : SettingsResult() {

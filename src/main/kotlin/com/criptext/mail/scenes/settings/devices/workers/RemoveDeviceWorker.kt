@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.devices.workers
 
+import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
@@ -12,10 +13,12 @@ import com.criptext.mail.scenes.settings.data.SettingsAPIClient
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.scenes.settings.devices.data.DevicesResult
 import com.criptext.mail.utils.ServerCodes
+import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import kotlinx.android.synthetic.main.restore_backup_dialog.view.*
 
 
 class RemoveDeviceWorker(
@@ -34,9 +37,13 @@ class RemoveDeviceWorker(
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): DevicesResult.RemoveDevice {
-        if(ex is ServerErrorException && ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
-            return DevicesResult.RemoveDevice.EnterpriseSuspend()
-        return DevicesResult.RemoveDevice.Failure()
+        if(ex is ServerErrorException) {
+            return if(ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
+                DevicesResult.RemoveDevice.EnterpriseSuspend()
+            else
+                DevicesResult.RemoveDevice.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        }
+        return DevicesResult.RemoveDevice.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<DevicesResult.RemoveDevice>): DevicesResult.RemoveDevice? {
@@ -54,7 +61,7 @@ class RemoveDeviceWorker(
                 DevicesResult.RemoveDevice.Success(deviceId, position)
             }
             is Result.Failure -> {
-                DevicesResult.RemoveDevice.Failure()
+                catchException(finalResult.error)
             }
         }
     }

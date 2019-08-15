@@ -10,6 +10,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -34,8 +35,8 @@ class SyncStatusWorker(val httpClient: HttpClient,
         when(ex){
             is ServerErrorException -> {
                 when(ex.errorCode){
-                    491 -> return GeneralResult.SyncStatus.Waiting()
-                    493 -> return GeneralResult.SyncStatus.Denied()
+                    ServerCodes.AuthenticationPending -> return GeneralResult.SyncStatus.Waiting()
+                    ServerCodes.AuthenticationDenied -> return GeneralResult.SyncStatus.Denied()
                 }
             }
         }

@@ -142,11 +142,10 @@ class UploadAttachmentWorker(private val filesSize: Long,
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         ex.printStackTrace()
-        when (ex) { // these are not the real errors TODO fix!
-            is JSONException -> UIMessage(resId = R.string.json_error_exception)
-            is ServerErrorException -> UIMessage(resId = R.string.server_error_exception)
-            is NetworkErrorException -> UIMessage(resId = R.string.network_error_exception)
-            else -> UIMessage(resId = R.string.fail_register_try_again_error_exception)
+        when (ex) {
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
+            is NetworkErrorException -> UIMessage(resId = R.string.general_network_error_exception)
+            else -> UIMessage(resId = R.string.unable_to_upload, args = arrayOf(filepath))
         }
     }
     override fun cancel() {

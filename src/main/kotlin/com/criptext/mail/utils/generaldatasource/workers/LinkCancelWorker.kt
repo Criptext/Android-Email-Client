@@ -43,11 +43,7 @@ class LinkCancelWorker(val httpClient: HttpClient,
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
-            is ServerErrorException ->
-                if(ex.errorCode == ServerCodes.BadRequest)
-                UIMessage(resId = R.string.forgot_password_error_400)
-                else
-                    UIMessage(resId = R.string.forgot_password_error)
+            is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else ->UIMessage(resId = R.string.forgot_password_error)
         }
     }

@@ -15,13 +15,11 @@ import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
-import com.criptext.mail.scenes.settings.profile.data.ProfileDataSource
-import com.criptext.mail.scenes.settings.profile.data.ProfileRequest
-import com.criptext.mail.scenes.settings.profile.data.ProfileResult
-import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
+import com.criptext.mail.scenes.settings.profile.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.utils.KeyboardManager
@@ -85,6 +83,23 @@ class ProfileController(
     }
 
     private val uiObserver = object: ProfileUIObserver{
+        override fun onCriptextFooterSwitched(isChecked: Boolean) {
+            val footerData = ProfileFooterData(activeAccount.id, isChecked)
+            val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
+            if(allFooterData.isNotEmpty()){
+                val savedData = ProfileFooterData.fromJson(allFooterData)
+                val findAccountFooterData = savedData.find { it.accountId == activeAccount.id }
+                if(findAccountFooterData != null) {
+                    savedData.remove(findAccountFooterData)
+                }
+                savedData.add(footerData)
+                storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, ProfileFooterData.toJSON(savedData).toString())
+            } else {
+                val json = ProfileFooterData.toJSON(listOf(footerData))
+                storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, json.toString())
+            }
+        }
+
         override fun onLogoutClicked() {
             scene.showLogoutDialog(model.userData.isLastDeviceWith2FA)
         }
@@ -225,7 +240,15 @@ class ProfileController(
         websocketEvents.setListener(webSocketEventListener)
 
         model.userData = ProfileUserData.getDefaultData(activeAccount)
+        model.criptextFooterEnabled = if(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty()){
+            val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
+            footerData.find { it.accountId == activeAccount.id }?.hasFooterEnabled ?: true
+        } else {
+            true
+        }
         scene.attachView(uiObserver, activeAccount.recipientId, activeAccount.domain, model)
+        if(activeAccount.domain != Contact.mainDomain)
+            scene.hideFooterSwitch()
         scene.enableProfileSettings(false)
         generalDataSource.listener = generalDataSourceListener
         dataSource.listener = dataSourceListener

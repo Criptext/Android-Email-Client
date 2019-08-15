@@ -41,7 +41,7 @@ class GetTotalUnreadMailsByLabelWorker(private val emailDao: EmailDao,
                 GeneralResult.TotalUnreadEmails.Success(operation.value.first, operation.value.second)
             }
             is Result.Failure -> {
-                GeneralResult.TotalUnreadEmails.Failure(UIMessage(R.string.error_getting_email))
+                GeneralResult.TotalUnreadEmails.Failure(UIMessage(R.string.local_error, arrayOf(operation.error.toString())))
             }
         }
     }

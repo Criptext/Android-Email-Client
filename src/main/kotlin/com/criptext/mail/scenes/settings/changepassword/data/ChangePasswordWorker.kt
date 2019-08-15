@@ -30,8 +30,13 @@ class ChangePasswordWorker(
     private val apiClient = ChangePasswordAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): ChangePasswordResult.ChangePassword {
-        if(ex is ServerErrorException && ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
-            return ChangePasswordResult.ChangePassword.EnterpriseSuspended()
+        if(ex is ServerErrorException){
+            if(ex.errorCode == ServerCodes.EnterpriseAccountSuspended)
+                return ChangePasswordResult.ChangePassword.EnterpriseSuspended()
+            else
+                return ChangePasswordResult.ChangePassword.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
+        }
+
         return ChangePasswordResult.ChangePassword.Failure(UIMessage(R.string.password_enter_error), ex)
     }
 

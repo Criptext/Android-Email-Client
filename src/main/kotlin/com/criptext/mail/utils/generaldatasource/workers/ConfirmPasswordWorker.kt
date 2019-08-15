@@ -99,7 +99,7 @@ class ConfirmPasswordWorker(private val password: String,
                         } else
                             UIMessage(resId = R.string.too_many_requests_exception_no_time_found)
                     }
-                    else -> UIMessage(resId = R.string.server_error_exception)
+                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
             else -> UIMessage(resId = R.string.server_error_exception)

@@ -29,10 +29,10 @@ class LinkAuthWorker(val httpClient: HttpClient,
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
                 ServerCodes.BadRequest -> SignInResult.LinkAuth.Failure(UIMessage(R.string.password_enter_error), ex)
-                else -> SignInResult.LinkAuth.Failure(UIMessage(R.string.server_error_exception), ex)
+                else -> SignInResult.LinkAuth.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
             }
         }else {
-            SignInResult.LinkAuth.Failure(UIMessage(R.string.server_error_exception), ex)
+            SignInResult.LinkAuth.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), ex)
         }
     }
 

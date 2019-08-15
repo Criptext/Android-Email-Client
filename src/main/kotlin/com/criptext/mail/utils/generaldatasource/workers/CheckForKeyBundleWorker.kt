@@ -3,6 +3,7 @@ package com.criptext.mail.utils.generaldatasource.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpErrorHandlingHelper
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
@@ -32,7 +33,9 @@ class CheckForKeyBundleWorker(
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.CheckForKeyBundle {
-        return GeneralResult.CheckForKeyBundle.Failure(UIMessage(R.string.password_enter_error))
+        if(ex is ServerErrorException)
+            return GeneralResult.CheckForKeyBundle.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return GeneralResult.CheckForKeyBundle.Failure(UIMessage(R.string.keybundle_get_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.CheckForKeyBundle>): GeneralResult.CheckForKeyBundle? {

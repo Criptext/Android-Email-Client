@@ -18,6 +18,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 import com.squareup.picasso.Picasso
 import android.graphics.Bitmap
 import com.criptext.mail.api.Hosts
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.utils.*
 
@@ -123,6 +124,8 @@ class UpdateMailboxWorker(
         when(ex) {
             is DuplicateMessageException ->
                 UIMessage(resId = R.string.email_already_decrypted)
+            is ServerErrorException ->
+                UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             else -> {
                 UIMessage(resId = R.string.failed_getting_emails)
             }

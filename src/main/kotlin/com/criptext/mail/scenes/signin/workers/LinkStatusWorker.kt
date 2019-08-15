@@ -8,6 +8,7 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.signin.data.SignInAPIClient
 import com.criptext.mail.scenes.signin.data.SignInResult
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -26,8 +27,8 @@ class LinkStatusWorker(val httpClient: HttpClient,
         when(ex){
             is ServerErrorException -> {
                 when(ex.errorCode){
-                    491 -> return SignInResult.LinkStatus.Waiting()
-                    493 -> return SignInResult.LinkStatus.Denied()
+                    ServerCodes.AuthenticationPending -> return SignInResult.LinkStatus.Waiting()
+                    ServerCodes.AuthenticationDenied -> return SignInResult.LinkStatus.Denied()
                 }
             }
         }

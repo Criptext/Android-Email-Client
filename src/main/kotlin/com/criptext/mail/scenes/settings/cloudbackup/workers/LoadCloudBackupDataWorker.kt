@@ -28,10 +28,7 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
 
     override fun catchException(ex: Exception): CloudBackupResult.LoadCloudBakcupData {
         return if(ex is ServerErrorException) {
-            when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed -> CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.message_warning_two_fa), ex)
-                else -> CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_error_exception), ex)
-            }
+            CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
         }else {
             CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_error_exception), ex)
         }
