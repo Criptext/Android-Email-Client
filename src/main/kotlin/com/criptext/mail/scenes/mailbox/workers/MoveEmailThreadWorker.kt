@@ -18,6 +18,7 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.criptext.mail.utils.peerdata.PeerDeleteThreadData
 import com.github.kittinunf.result.Result
@@ -83,7 +84,9 @@ class MoveEmailThreadWorker(
             val result = Result.of { db.deleteThreads(threadIds = selectedThreadIds, activeAccount = activeAccount) }
             return when (result) {
                 is Result.Success -> {
-                    peerEventHandler.enqueueEvent(PeerDeleteThreadData(selectedThreadIds).toJSON())
+                    selectedThreadIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                        peerEventHandler.enqueueEvent(PeerDeleteThreadData(batch).toJSON())
+                    }
                     MailboxResult.MoveEmailThread.Success(selectedThreadIds, chosenLabel)
                 }
                 is Result.Failure -> {
@@ -131,9 +134,11 @@ class MoveEmailThreadWorker(
 
         return when (result) {
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(
-                        PeerChangeThreadLabelData(selectedThreadIds, peerRemovedLabels,
-                        peerSelectedLabels).toJSON())
+                selectedThreadIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(
+                            PeerChangeThreadLabelData(batch, peerRemovedLabels,
+                                    peerSelectedLabels).toJSON())
+                }
                 MailboxResult.MoveEmailThread.Success(selectedThreadIds, chosenLabel)
             }
             is Result.Failure -> {

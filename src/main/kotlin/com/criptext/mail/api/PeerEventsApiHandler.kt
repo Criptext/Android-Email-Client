@@ -78,4 +78,7 @@ interface PeerEventsApiHandler {
             }
         }
     }
+    companion object {
+        const val BATCH_SIZE = 50;
+    }
 }

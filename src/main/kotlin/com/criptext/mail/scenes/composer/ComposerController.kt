@@ -441,11 +441,23 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun updateModelWithInputData(data: ComposerInputData) {
         model.to.clear()
-        model.to.addAll(data.to.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
+        model.to.addAll(data.to.map {
+            val contact = Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore)
+            contact.isCriptextDomain = it.isCriptextDomain
+            contact
+        })
         model.cc.clear()
-        model.cc.addAll(data.cc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
+        model.cc.addAll(data.cc.map {
+            val contact = Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore)
+            contact.isCriptextDomain = it.isCriptextDomain
+            contact
+        })
         model.bcc.clear()
-        model.bcc.addAll(data.bcc.map { Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore) })
+        model.bcc.addAll(data.bcc.map {
+            val contact = Contact(it.id, it.email.toLowerCase(), it.name, it.isTrusted, it.score, it.spamScore)
+            contact.isCriptextDomain = it.isCriptextDomain
+            contact
+        })
         model.body = data.body
         model.subject = data.subject
     }

@@ -237,7 +237,7 @@ import java.util.*
             left join email_label on email.id = email_label.emailId
             where email_label.labelId=:labelId AND email.accountId = :accountId
             AND (julianday('now') - julianday(email.trashDate)) >= 30""")
-    fun getTrashExpiredThreadIds(labelId: Long, accountId: Long): List<Long>
+    fun getTrashExpiredEmailIds(labelId: Long, accountId: Long): List<Long>
 
     @Query("""UPDATE email
             SET trashDate=:trashDate

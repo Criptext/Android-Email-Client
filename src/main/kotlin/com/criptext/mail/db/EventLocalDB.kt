@@ -5,7 +5,6 @@ import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.api.models.TrackingUpdate
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
-import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
@@ -154,6 +153,21 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     fun updateDeleteEmailPermanently(metadataKeys: List<Long>, activeAccount: ActiveAccount) {
         if(metadataKeys.isNotEmpty()){
             val emails = db.emailDao().getAllEmailsByMetadataKey(metadataKeys, activeAccount.id)
+            if(emails.isEmpty()) return
+            emails.forEach {
+                EmailUtils.deleteEmailInFileSystem(
+                        filesDir = filesDir,
+                        metadataKey = it.metadataKey,
+                        recipientId = activeAccount.recipientId,
+                        domain = activeAccount.domain)
+            }
+            db.emailDao().deleteAll(emails)
+        }
+    }
+
+    fun updateDeleteEmailPermanentlyByIds(emailIds: List<Long>, activeAccount: ActiveAccount) {
+        if(emailIds.isNotEmpty()){
+            val emails = db.emailDao().getAllEmailsbyId(emailIds, activeAccount.id)
             if(emails.isEmpty()) return
             emails.forEach {
                 EmailUtils.deleteEmailInFileSystem(
@@ -417,9 +431,9 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         } as ArrayList<EmailThread>
     }
 
-    fun getThreadIdsFromTrashExpiredEmails(accountId: Long): List<Long>{
+    fun getEmailIdsFromTrashExpiredEmails(accountId: Long): List<Long>{
         val labelId = Label.defaultItems.trash.id
-        return db.emailDao().getTrashExpiredThreadIds(labelId, accountId)
+        return db.emailDao().getTrashExpiredEmailIds(labelId, accountId)
     }
 
 }

@@ -20,6 +20,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
@@ -68,7 +69,9 @@ class MoveEmailWorker(
             val result = Result.of { db.deleteEmail(emailId, activeAccount) }
             return when (result) {
                 is Result.Success -> {
-                    peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())
+                    metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach {
+                        peerEventHandler.enqueueEvent(PeerDeleteEmailData(it).toJSON())
+                    }
                     EmailDetailResult.MoveEmail.Success(emailId)
                 }
                 is Result.Failure -> {
@@ -113,9 +116,10 @@ class MoveEmailWorker(
 
         return when (result) {
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(PeerChangeEmailLabelData(metadataKeys,
-                        peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON())
-
+                metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(PeerChangeEmailLabelData(batch,
+                            peerRemoveLabels, selectedLabels.toList().map { it.text }).toJSON())
+                }
                 EmailDetailResult.MoveEmail.Success(emailId)
             }
             is Result.Failure -> {

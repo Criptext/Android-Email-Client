@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
 import com.github.kittinunf.result.Result
 
@@ -111,10 +112,12 @@ class UpdateEmailThreadLabelsWorker(
 
         return when(result){
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(
-                        PeerChangeEmailLabelData(emails.map { it.email.metadataKey },
-                        peerRemovedLabels,
-                        peerSelectedLabels).toJSON())
+                emails.map { it.email.metadataKey }.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(
+                            PeerChangeEmailLabelData(batch,
+                                    peerRemovedLabels,
+                                    peerSelectedLabels).toJSON())
+                }
                 val labels = db.getLabelsFromThreadId(threadId)
                 EmailDetailResult.UpdateEmailThreadsLabelsRelations.Success(threadId, labels, exitAndReload)
             }

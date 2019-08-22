@@ -441,7 +441,7 @@ class ProfileController(
             is ProfileResult.SetProfilePicture.Failure -> {
                 scene.resetProfilePicture(model.userData.name)
                 scene.hideProfilePictureProgress()
-                scene.showMessage(UIMessage(R.string.profile_picture_update_failed))
+                scene.showMessage(result.message)
             }
             is ProfileResult.SetProfilePicture.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -457,7 +457,7 @@ class ProfileController(
                 scene.showMessage(UIMessage(R.string.profile_picture_deleted))
             }
             is ProfileResult.DeleteProfilePicture.Failure -> {
-                scene.showMessage(UIMessage(R.string.profile_picture_delete_failed))
+                scene.showMessage(result.message)
             }
             is ProfileResult.DeleteProfilePicture.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()

@@ -17,6 +17,7 @@ import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.github.kittinunf.result.Result
 
@@ -122,9 +123,11 @@ class UpdateEmailThreadsLabelsWorker(
 
         return when(result){
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(
-                        PeerChangeThreadLabelData(selectedThreadIds, peerRemovedLabels,
-                        peerSelectedLabels).toJSON())
+                selectedThreadIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(
+                            PeerChangeThreadLabelData(batch, peerRemovedLabels,
+                                    peerSelectedLabels).toJSON())
+                }
                 MailboxResult.UpdateEmailThreadsLabelsRelations.Success(selectedThreadIds, isStarred)
             }
             is Result.Failure -> {

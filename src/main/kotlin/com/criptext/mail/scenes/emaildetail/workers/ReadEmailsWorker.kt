@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.EventHelper
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerOpenEmailData
 import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
@@ -50,7 +51,9 @@ class ReadEmailsWorker(private val dao: EmailDao,
         val unreadEmails = emails.filter { it.unread }
         if(unreadEmails.isEmpty())
             return Result.Failure(EventHelper.NothingNewException())
-        peerEventHandler.enqueueEvent(PeerOpenEmailData(emails.map { it.metadataKey }).toJSON())
+        emails.map { it.metadataKey }.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+            peerEventHandler.enqueueEvent(PeerOpenEmailData(batch).toJSON())
+        }
         return Result.of {
                     dao.toggleCheckingRead(ids = unreadEmails.map { it.id },
                             unread = false, accountId = activeAccount.id)
@@ -66,7 +69,9 @@ class ReadEmailsWorker(private val dao: EmailDao,
         val metadataKeys = peerUnreadEmails
                 .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING) }
                 .map { it.metadataKey }
-        peerEventHandler.enqueueEvent(PeerReadEmailData(metadataKeys,false).toJSON())
+        metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+            peerEventHandler.enqueueEvent(PeerReadEmailData(batch,false).toJSON())
+        }
         return Result.of { dao.toggleCheckingRead(ids = peerUnreadEmails.map { it.id },
                             unread = false, accountId = activeAccount.id)
                     peerUnreadEmails.size
