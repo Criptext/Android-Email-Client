@@ -16,6 +16,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerThreadReadData
 import com.github.kittinunf.result.Result
 
@@ -64,7 +65,9 @@ class UpdateUnreadStatusWorker(
 
         return when (result) {
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(PeerThreadReadData(threadIds, updateUnreadStatus).toJSON())
+                threadIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(PeerThreadReadData(batch, updateUnreadStatus).toJSON())
+                }
                 MailboxResult.UpdateUnreadStatus.Success(threadId = threadIds, unreadStatus = updateUnreadStatus)
             }
             is Result.Failure -> {

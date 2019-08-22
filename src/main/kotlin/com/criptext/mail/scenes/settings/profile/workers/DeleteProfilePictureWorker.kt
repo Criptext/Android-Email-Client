@@ -37,7 +37,7 @@ class DeleteProfilePictureWorker(val httpClient: HttpClient,
                 else -> ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
             }
         }else {
-            ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
+            ProfileResult.DeleteProfilePicture.Failure(UIMessage(R.string.server_error_exception, arrayOf(ex.toString())), ex)
         }
     }
 

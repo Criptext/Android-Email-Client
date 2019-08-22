@@ -47,7 +47,7 @@ class SetProfilePictureWorker(val httpClient: HttpClient,
                 else -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
             }
         }else {
-            ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_error_exception), ex)
+            ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), ex)
         }
     }
 

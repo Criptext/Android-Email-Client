@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin
 
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
@@ -680,7 +681,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact?version=${BuildConfig.VERSION_NAME}&device=${DeviceUtils.getDeviceName()}&os=${DeviceUtils.getDeviceOS()}"))
         }
 
         override fun onSubmitButtonClicked() {

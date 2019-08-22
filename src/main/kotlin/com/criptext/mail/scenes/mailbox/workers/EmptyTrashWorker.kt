@@ -15,6 +15,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
 
@@ -53,7 +54,9 @@ class EmptyTrashWorker(
 
         return when (result) {
             is Result.Success -> {
-                peerEventHandler.enqueueEvent(PeerDeleteEmailData(metadataKeys).toJSON())
+                metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                    peerEventHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
+                }
                 MailboxResult.EmptyTrash.Success()
             }
             is Result.Failure -> {

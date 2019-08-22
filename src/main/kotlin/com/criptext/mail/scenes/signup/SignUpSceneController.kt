@@ -1,10 +1,7 @@
 package com.criptext.mail.scenes.signup
 
 import android.content.Intent
-import com.criptext.mail.BaseActivity
-import com.criptext.mail.ExternalActivityParams
-import com.criptext.mail.IHostActivity
-import com.criptext.mail.R
+import com.criptext.mail.*
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.RunnableThrottler
@@ -15,10 +12,7 @@ import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
-import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.ServerCodes
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.sha256
+import com.criptext.mail.utils.*
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
@@ -155,7 +149,7 @@ class SignUpSceneController(
         }
 
         override fun onContactSupportClick() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact?version=${BuildConfig.VERSION_NAME}&device=${DeviceUtils.getDeviceName()}&os=${DeviceUtils.getDeviceOS()}"))
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {

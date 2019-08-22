@@ -35,7 +35,11 @@ object PathUtil {
                 isExternalStorageDocument(uri) -> {
                     val docId = DocumentsContract.getDocumentId(uri)
                     val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    return Environment.getExternalStorageDirectory().absolutePath + "/" + split[1]
+                    return if(split[0] != "0"){
+                        "storage/${split[0]}/${split[1]}"
+                    } else {
+                        Environment.getExternalStorageDirectory().absolutePath + "/" + split[1]
+                    }
                 }
                 isDownloadsDocument(uri) -> {
                     val id = DocumentsContract.getDocumentId(uri)

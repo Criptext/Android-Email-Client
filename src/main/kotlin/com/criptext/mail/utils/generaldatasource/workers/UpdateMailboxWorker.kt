@@ -2,20 +2,16 @@ package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.*
-import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.AppDatabase_Impl
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
-import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
@@ -184,10 +180,12 @@ class UpdateMailboxWorker(
     }
 
     private fun checkTrashDates(){
-        val emailIds = dbEvents.getThreadIdsFromTrashExpiredEmails(activeAccount.id)
+        val emailIds = dbEvents.getEmailIdsFromTrashExpiredEmails(activeAccount.id)
         if(emailIds.isNotEmpty()){
-            Result.of { dbEvents.updateDeleteEmailPermanently(emailIds, activeAccount) }
-            peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(emailIds).toJSON())
+            Result.of { dbEvents.updateDeleteEmailPermanentlyByIds(emailIds, activeAccount) }
+            emailIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
+            }
         }
     }
 

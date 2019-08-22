@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.composer.workers
 
 import com.criptext.mail.R
+import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
@@ -8,17 +9,16 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.composer.data.*
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
-import java.lang.StringBuilder
+import com.github.kittinunf.result.Result
 
 /**
  * Created by gabriel on 7/2/18.
  */
 class LoadInitialDataWorker(
+        httpClient: HttpClient,
         private val db: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
         override val publishFn: (ComposerResult.LoadInitialData) -> Unit,
@@ -29,18 +29,34 @@ class LoadInitialDataWorker(
     : BackgroundWorker<ComposerResult.LoadInitialData> {
     override val canBeParallelized = true
 
+    private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
+
     override fun catchException(ex: Exception): ComposerResult.LoadInitialData {
         val message = UIMessage(R.string.composer_load_error)
         return ComposerResult.LoadInitialData.Failure(message)
     }
 
     private fun convertDraftToInputData(fullEmail: FullEmail): ComposerInputData {
-        val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map {
+        val attachments = ArrayList(fullEmail.files.map {
             ComposerAttachment(0, it.name, 100,
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
                     it.size, it.fileKey, it.cid)
         })
-        return ComposerInputData(to = fullEmail.to, cc = fullEmail.cc, bcc = fullEmail.bcc,
+        var to = fullEmail.to
+        var cc = fullEmail.cc
+        var bcc = fullEmail.bcc
+        val allRecipients = (to + cc + bcc).map { EmailAddressUtils.extractEmailAddressDomain(it.email) }
+                .filter { domain -> domain !in (ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS
+                        .map { it.name } + activeAccount.domain) }
+        val operation = Result.of { apiClient.getIsSecureDomain(allRecipients) }
+
+        if(operation is Result.Success){
+            val data = ContactDomainCheckData.fromJSON(operation.value.body)
+            to = getCriptextContacts(to, data)
+            cc = getCriptextContacts(cc, data)
+            bcc = getCriptextContacts(bcc, data)
+        }
+        return ComposerInputData(to = to, cc = cc, bcc = bcc,
                 body = fullEmail.email.content, subject = fullEmail.email.subject,
                 attachments = attachments, fileKey = fullEmail.fileKey)
     }
@@ -51,7 +67,7 @@ class LoadInitialDataWorker(
         else
             Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
                     isTrusted = false, score = 0, spamScore = 0)
-        val to = if (replyToAll) {
+        var to = if (replyToAll) {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
             else
@@ -69,7 +85,19 @@ class LoadInitialDataWorker(
         else
             (composerType as ComposerType.Reply).template
 
-        val cc = if (replyToAll) fullEmail.cc.filter { it.email != userEmailAddress } else emptyList()
+        var cc = if (replyToAll) fullEmail.cc.filter { it.email != userEmailAddress } else emptyList()
+
+        val allRecipients = (to + cc).map { EmailAddressUtils.extractEmailAddressDomain(it.email) }
+                .filter { domain -> domain !in (ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS
+                        .map { it.name } + activeAccount.domain) }
+
+        val operation = Result.of { apiClient.getIsSecureDomain(allRecipients) }
+
+        if(operation is Result.Success){
+            val data = ContactDomainCheckData.fromJSON(operation.value.body)
+            to = getCriptextContacts(to, data)
+            cc = getCriptextContacts(cc, data)
+        }
 
         val subject = (if(fullEmail.email.subject.matches("^(Re|RE): .*\$".toRegex())) "" else "RE: ") +
                                 fullEmail.email.subject
@@ -142,6 +170,19 @@ class LoadInitialDataWorker(
                 is ComposerType.ReplyAll -> convertReplyToInputData(loadedEmail, replyToAll = true)
                 else -> convertDraftToInputData(loadedEmail)
             }
+
+    private fun getCriptextContacts(contacts: List<Contact>, checkedData: List<ContactDomainCheckData>): List<Contact> {
+        val isCriptext = contacts.map { it.email }
+                .filter { email ->
+                    EmailAddressUtils.extractEmailAddressDomain(email) in
+                            checkedData.filter { it.isCriptextDomain }
+                                    .map { it.name } }
+        contacts.forEachIndexed { _, contact ->
+            if(contact.email in isCriptext)
+                contact.isCriptextDomain = true
+        }
+        return contacts
+    }
 
     override fun work(reporter: ProgressReporter<ComposerResult.LoadInitialData>): ComposerResult.LoadInitialData? {
         val loadedEmail = db.loadFullEmail(emailId, activeAccount)

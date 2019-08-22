@@ -74,7 +74,7 @@ class LoadInitialDataWorkerTest {
     private fun newWorker(emailId: Long, type: ComposerType): LoadInitialDataWorker =
             LoadInitialDataWorker(db = composerLocalDB, emailId = emailId, composerType = type,
                     userEmailAddress = activeAccount.userEmail, signature = activeAccount.signature,
-                    publishFn = {}, activeAccount = activeAccount)
+                    publishFn = {}, activeAccount = activeAccount, httpClient = mockk())
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean, fileKey: String?, accountId: Long): Long {
