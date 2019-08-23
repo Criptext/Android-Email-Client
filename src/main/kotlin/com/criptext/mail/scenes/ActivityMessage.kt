@@ -34,7 +34,7 @@ sealed class ActivityMessage {
     data class LogoutAccount(val oldAccountEmail: String, val newAccount: ActiveAccount): ActivityMessage()
     class UpdateMailBox: ActivityMessage()
     data class MoveThread(val threadId: String?): ActivityMessage()
-    class DraftSaved: ActivityMessage()
+    data class DraftSaved(val preview: EmailPreview?): ActivityMessage()
     data class ShowUIMessage(val message: UIMessage): ActivityMessage()
     data class ActivatePin(val isSuccess: Boolean): ActivityMessage()
     class SyncMailbox: ActivityMessage()

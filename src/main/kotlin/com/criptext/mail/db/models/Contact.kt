@@ -3,6 +3,7 @@ package com.criptext.mail.db.models
 import androidx.room.*
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.utils.EmailAddressUtils
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -89,6 +90,16 @@ open class Contact(
             )
         }
 
+        fun fromJSONArray(jsonString: String): List<Contact> {
+            val array = JSONArray(jsonString)
+            val contactList = mutableListOf<Contact>()
+            for (i in 0 until array.length()){
+                val json = array.getJSONObject(i)
+                contactList.add(fromJSON(json.toString()))
+            }
+            return contactList
+        }
+
         fun toJSON(contact: Contact): JSONObject{
             val json = JSONObject()
             json.put("id", contact.id)
@@ -99,6 +110,11 @@ open class Contact(
             json.put("spamScore", contact.spamScore)
             return json
         }
+
+        fun toJSON(contacts: List<Contact>): JSONArray {
+            return JSONArray(contacts.map { toJSON(it) })
+        }
+
     }
 
     class Invalid(email: String, name: String): Contact(0, email, name, false, 0, 0)

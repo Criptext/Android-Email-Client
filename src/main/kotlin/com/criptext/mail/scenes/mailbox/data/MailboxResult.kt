@@ -64,7 +64,7 @@ sealed class MailboxResult {
     }
 
     sealed class SendMail: MailboxResult() {
-        class Success(val emailId: Long?, val isSecure: Boolean): SendMail()
+        class Success(val newEmailPreview: EmailPreview?, val currentLabel: Label, val isSecure: Boolean): SendMail()
         data class Failure(val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
         class Forbidden: SendMail()

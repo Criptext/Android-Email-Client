@@ -14,10 +14,12 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
+import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
@@ -224,7 +226,9 @@ class ComposerController(private val storage: KeyValueStorage,
                     model.attachments = result.initialData.attachments
                 }
                 bindWithModel(result.initialData, activeAccount.signature)
+                model.originalBody = model.body
                 model.initialized = true
+                host.refreshToolbarItems()
             }
 
             is ComposerResult.LoadInitialData.Failure -> {
@@ -346,7 +350,7 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is ComposerResult.SaveEmail.Success -> {
                 if(result.onlySave) {
-                    host.exitToScene(MailboxParams(), ActivityMessage.DraftSaved(), false)
+                    host.exitToScene(MailboxParams(), ActivityMessage.DraftSaved(result.preview), false)
                 }
                 else {
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
@@ -474,6 +478,16 @@ class ComposerController(private val storage: KeyValueStorage,
         ))
     }
 
+    private fun getThreadPreview(): EmailPreview? {
+        return when (model.type) {
+            is ComposerType.Reply -> model.type.threadPreview
+            is ComposerType.ReplyAll -> model.type.threadPreview
+            is ComposerType.Forward -> model.type.threadPreview
+            is ComposerType.Draft -> model.type.threadPreview
+            else -> null
+        }
+    }
+
     private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean) {
         val draftId = when (model.type) {
             is ComposerType.Draft -> model.type.draftId
@@ -483,20 +497,16 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerType.Forward -> model.type.originalId
             else -> null
         }
-        val threadPreview =  when (model.type) {
-            is ComposerType.Reply -> model.type.threadPreview
-            is ComposerType.ReplyAll -> model.type.threadPreview
-            is ComposerType.Forward -> model.type.threadPreview
-            is ComposerType.Draft -> model.type.threadPreview
-            else -> null
-        }
+        val threadPreview = getThreadPreview()
+
         dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
                 threadId = threadPreview?.threadId,
                 emailId = draftId,
                 originalId = originalId,
                 composerInputData = composerInputData,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
-                senderAccount = model.selectedAccount))
+                senderAccount = model.selectedAccount,
+                currentLabel = model.currentLabel))
 
     }
 
@@ -610,7 +620,7 @@ class ComposerController(private val storage: KeyValueStorage,
         if(model.isReplyOrDraft || model.isSupport){
             scene.setFocusToComposer()
         } else {
-            scene.setFocusToTo()
+            if(model.to.isEmpty()) scene.setFocusToTo() else scene.setFocusToComposer()
         }
         if(model.type is ComposerType.MailTo) scene.setFocusToSubject()
         scene.bindWithModel(firstTime = model.firstTime,
@@ -672,13 +682,7 @@ class ComposerController(private val storage: KeyValueStorage,
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
 
     private fun exitToEmailDetailScene(){
-        val threadPreview =  when (model.type) {
-            is ComposerType.Reply -> model.type.threadPreview
-            is ComposerType.ReplyAll -> model.type.threadPreview
-            is ComposerType.Forward -> model.type.threadPreview
-            is ComposerType.Draft -> model.type.threadPreview
-            else -> null
-        }
+        val threadPreview =  getThreadPreview()
         val currentLabel = when (model.type) {
             is ComposerType.Reply -> model.type.currentLabel
             is ComposerType.ReplyAll -> model.type.currentLabel
@@ -697,7 +701,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun shouldGoBackWithoutSave(): Boolean{
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
-        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature)
+        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature, model.originalBody, model.type)
     }
 
     private fun checkForDraft(){

@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.composer.data
 import com.criptext.mail.api.ResultHeaders
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -29,7 +30,8 @@ sealed class ComposerResult {
         data class Success(val emailId: Long, val threadId: String,
                            val composerInputData: ComposerInputData,
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>,
-                           val fileKey: String?) : SaveEmail()
+                           val fileKey: String?,
+                           val preview: EmailPreview?) : SaveEmail()
 
         class TooManyRecipients: SaveEmail()
         class Failure: SaveEmail()

@@ -687,21 +687,21 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val type = ComposerType.Forward(originalId = model.emails.last().email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.FW) as FWMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onReplyBtnClicked() {
             val type = ComposerType.Reply(originalId = model.emails.last().email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onReplyAllBtnClicked() {
             val type = ComposerType.ReplyAll(originalId = model.emails.last().email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun ontoggleViewOpen(fullEmail: FullEmail, position: Int, viewOpen: Boolean) {
@@ -713,21 +713,21 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             val type = ComposerType.Reply(originalId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.ReplyAll(originalId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.RE) as REMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Forward(originalId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,
                     template = host.getMailTemplate(CriptextMailTemplate.TemplateType.FW) as FWMailTemplate)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
@@ -759,7 +759,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onContinueDraftOptionSelected(fullEmail: FullEmail) {
             val type = ComposerType.Draft(draftId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel)
-            host.goToScene(ComposerParams(type), false)
+            host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
         override fun onDeleteDraftOptionSelected(fullEmail: FullEmail) {

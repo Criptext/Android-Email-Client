@@ -10,6 +10,7 @@ import android.view.View
 import com.criptext.mail.*
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
@@ -135,11 +136,11 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
-    private fun reloadMailboxThreads() {
+    private fun reloadMailboxThreads(loadParams: LoadParams = LoadParams.Reset(threadsPerPage)) {
         val req = MailboxRequest.LoadEmailThreads(
                 label = model.selectedLabel.text,
                 filterUnread = model.showOnlyUnread,
-                loadParams = LoadParams.Reset(size = threadsPerPage),
+                loadParams = loadParams,
                 userEmail = activeAccount.userEmail)
         dataSource.submitRequest(req)
     }
@@ -160,7 +161,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             if(emailPreview.count == 1 &&
                     model.selectedLabel == Label.defaultItems.draft){
                 val params = ComposerParams(ComposerType.Draft(draftId = emailPreview.emailId,
-                        threadPreview = emailPreview, currentLabel = model.selectedLabel))
+                        threadPreview = emailPreview, currentLabel = model.selectedLabel), model.selectedLabel)
                 return host.goToScene(params, true)
             }
             host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
@@ -228,7 +229,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onSupportOptionClicked() {
             host.goToScene(ComposerParams(type = ComposerType.Support(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate)),
+                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = model.selectedLabel),
                     true)
         }
 
@@ -405,7 +406,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 changeMode(multiSelectON = false, silent = false)
                 threadListController.reRenderAll()
             }
-            val params = ComposerParams(ComposerType.Empty())
+            val params = ComposerParams(ComposerType.Empty(), model.selectedLabel)
             host.goToScene(params, true)
         }
 
@@ -473,9 +474,9 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return when (activityMessage) {
             is ActivityMessage.SendMail -> {
-                reloadMailboxThreads()
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
-                        activityMessage.composerInputData, attachments = activityMessage.attachments,
+                        currentLabel = model.selectedLabel,
+                        data = activityMessage.composerInputData, attachments = activityMessage.attachments,
                         fileKey = activityMessage.fileKey, senderAccount = activityMessage.senderAccount)
                 dataSource.submitRequest(newRequest)
                 scene.showMessage(UIMessage(R.string.sending_email))
@@ -511,17 +512,27 @@ class MailboxSceneController(private val scene: MailboxScene,
                 true
             }
             is ActivityMessage.UpdateLabelsThread -> {
-                reloadMailboxThreads()
+                reloadMailboxThreads(LoadParams.UpdatePage(size = model.threads.size,
+                        mostRecentDate = model.threads.firstOrNull()?.timestamp))
                 true
             }
             is ActivityMessage.UpdateThreadPreview -> {
                 threadListController.replaceThread(activityMessage.threadPreview)
                 generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
-                reloadMailboxThreads()
+                model.threads.sortByDescending { it.timestamp }
+                threadListController.reRenderAll()
+                reloadMailboxThreads(LoadParams.UpdatePage(size = model.threads.size,
+                        mostRecentDate = activityMessage.threadPreview.timestamp))
                 true
             }
             is ActivityMessage.DraftSaved -> {
-                reloadMailboxThreads()
+                if(activityMessage.preview != null) {
+                    threadListController.replaceThread(activityMessage.preview)
+                }
+                model.threads.sortByDescending { it.timestamp }
+                threadListController.reRenderAll()
+                reloadMailboxThreads(LoadParams.UpdatePage(size = model.threads.size,
+                        mostRecentDate = activityMessage.preview?.timestamp))
                 scene.showMessage(UIMessage(R.string.draft_saved))
                 true
             }
@@ -658,7 +669,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             Intent.ACTION_VIEW -> {
                 val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
-                host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo)), null, false, true)
+                host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo), currentLabel = model.selectedLabel), null, false, true)
             }
             Intent.ACTION_APP_ERROR -> {
                 val extrasMail = extras as IntentExtrasData.IntentErrorMessage
@@ -669,7 +680,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val extrasMail = extras as IntentExtrasData.IntentExtrasSend
                 val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files)
                 else ActivityMessage.AddUrls(extrasMail.urls)
-                host.exitToScene(ComposerParams(type = ComposerType.Empty()), composerMessage, false, true)
+                host.exitToScene(ComposerParams(type = ComposerType.Empty(), currentLabel = model.selectedLabel), composerMessage, false, true)
             }
         }
     }
@@ -803,7 +814,8 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val onDeleteThreadListener = object : OnDeleteThreadListener {
         override fun onDeleteConfirmed() {
             dataSourceController.moveEmailThread(chosenLabel = null)
-            reloadMailboxThreads()
+            reloadMailboxThreads(LoadParams.UpdatePage(size = model.threads.size,
+                    mostRecentDate = model.threads.firstOrNull()?.timestamp))
         }
     }
 
@@ -1019,14 +1031,16 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSendMailFinished(result: MailboxResult.SendMail) {
             when (result) {
                 is MailboxResult.SendMail.Success -> {
-                    if(result.emailId != null) {
+                    if(result.newEmailPreview != null) {
                         if(result.isSecure){
                             scene.showMessage(UIMessage(R.string.email_sent_secure))
                         } else {
                             scene.showMessage(UIMessage(R.string.email_sent))
                         }
                         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
-                        reloadMailboxThreads()
+                        threadListController.replaceThread(result.newEmailPreview.copy(deliveryStatus = DeliveryTypes.SENT))
+                        model.threads.sortByDescending { it.timestamp }
+                        threadListController.reRenderAll()
                     }
                 }
                 is MailboxResult.SendMail.Failure -> {

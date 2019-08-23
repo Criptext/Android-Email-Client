@@ -12,10 +12,8 @@ import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.EmailExternalSession
-import com.criptext.mail.db.models.KnownAddress
+import com.criptext.mail.db.models.*
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.data.SentMailData
@@ -39,6 +37,7 @@ import java.io.File
 class SendMailWorker(private val signalClient: SignalClient,
                      private val rawSessionDao: RawSessionDao,
                      private val rawIdentityKeyDao: RawIdentityKeyDao,
+                     private val currentLabel: Label,
                      private val db: MailboxLocalDB,
                      private val filesDir: File,
                      private val httpClient: HttpClient,
@@ -325,7 +324,7 @@ class SendMailWorker(private val signalClient: SignalClient,
 
         val currentEmail = db.getEmailById(emailId, activeAccount.id)
 
-        if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null, false)
+        if(currentEmail != null && currentEmail.delivered == DeliveryTypes.SENT) return MailboxResult.SendMail.Success(null, currentLabel,false)
 
         val result = workOperation(mailRecipients)
 
@@ -339,7 +338,9 @@ class SendMailWorker(private val signalClient: SignalClient,
         return when (finalResult) {
             is Result.Success -> {
                 db.increaseContactScore(listOf(emailId))
-                MailboxResult.SendMail.Success(emailId, isSecure)
+                val label = db.getLabelById(currentLabel.id, activeAccount.id)!!
+                val thread = db.getEmailThreadFromEmail(currentEmail!!, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id }, activeAccount.userEmail, activeAccount)
+                MailboxResult.SendMail.Success(EmailPreview.fromEmailThread(thread), currentLabel, isSecure)
             }
             is Result.Failure -> {
                 db.updateDeliveryType(emailId, DeliveryTypes.FAIL, activeAccount.id)

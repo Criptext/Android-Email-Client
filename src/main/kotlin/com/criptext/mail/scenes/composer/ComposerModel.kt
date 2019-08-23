@@ -16,7 +16,7 @@ import java.util.*
  * Created by gabriel on 2/26/18.
  */
 
-class ComposerModel(val type: ComposerType): SceneModel {
+class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel {
 
     val isReplyOrDraft: Boolean = type is ComposerType.Reply
             || type is ComposerType.ReplyAll || type is ComposerType.Draft
@@ -40,6 +40,7 @@ class ComposerModel(val type: ComposerType): SceneModel {
     var initialized = type is ComposerType.Empty
     var subject = ""
     var body = ""
+    var originalBody = ""
 
     var passwordText: String = ""
 

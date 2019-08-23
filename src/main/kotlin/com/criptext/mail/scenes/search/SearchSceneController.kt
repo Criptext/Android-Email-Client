@@ -84,7 +84,7 @@ class SearchSceneController(private val scene: SearchScene,
                 val type = ComposerType.Draft(draftId = emailThread.latestEmail.email.id,
                         threadPreview = EmailPreview.fromEmailThread(emailThread),
                         currentLabel = Label.defaultItems.inbox)
-                return host.goToScene(ComposerParams(type), false)
+                return host.goToScene(ComposerParams(type, Label.defaultItems.inbox), false)
             }
             dataSource.submitRequest(SearchRequest.UpdateUnreadStatus(
                     listOf(emailThread), false, Label.defaultItems.inbox))

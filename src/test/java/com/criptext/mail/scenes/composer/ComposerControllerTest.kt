@@ -4,6 +4,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockedKeyValueStorage
 import com.criptext.mail.scenes.composer.data.ComposerDataSource
 import com.criptext.mail.scenes.composer.data.ComposerRequest
@@ -25,7 +26,7 @@ open class ComposerControllerTest {
     protected lateinit var activeAccount: ActiveAccount
 
     open fun setUp() {
-        model = ComposerModel(ComposerType.Empty())
+        model = ComposerModel(ComposerType.Empty(), Label.defaultItems.inbox)
         model.fileKey = "test_key_16bytes:test_iv_16_bytes"
         scene = mockk(relaxed = true)
         host = mockk(relaxed = true)

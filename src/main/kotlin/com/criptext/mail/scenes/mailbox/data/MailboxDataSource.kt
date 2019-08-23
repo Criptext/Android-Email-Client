@@ -74,6 +74,7 @@ class MailboxDataSource(
                     signalClient = if(params.senderAccount == null) signalClient
                                     else SignalClient.Default(SignalStoreCriptext(db, params.senderAccount)),
                     activeAccount = params.senderAccount ?: activeAccount,
+                    currentLabel = params.currentLabel,
                     rawSessionDao = rawSessionDao,
                     rawIdentityKeyDao = rawIdentityKeyDao,
                     db = mailboxLocalDB,
