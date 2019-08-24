@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer
 
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.composer.data.ComposerInputData
+import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailAddressUtils.isFromCriptextDomain
 import com.criptext.mail.utils.compat.HtmlCompat
@@ -42,19 +43,24 @@ object Validator {
         return true
     }
 
-    fun mailHasMoreThanSignature(data: ComposerInputData, rawSignature: String) : Boolean{
+    fun mailHasMoreThanSignature(data: ComposerInputData, rawSignature: String,
+                                 originalRawBody: String, type: ComposerType) : Boolean{
 
         val subject = data.subject
         val body = HtmlCompat.fromHtml(data.body).toString()
                 .replace("\n", "").replace("\r", "")
         val signature = HtmlCompat.fromHtml(rawSignature).toString()
                 .replace("\n", "").replace("\r", "")
+        val originalBody = HtmlCompat.fromHtml(originalRawBody).toString()
+                .replace("\n", "").replace("\r", "")
 
-        if(body != signature) {
+        if(body != signature && body != originalBody) {
             return true
         }
 
-        if (data.hasAtLeastOneRecipient || subject.isNotEmpty()) {
+        if ((data.hasAtLeastOneRecipient || subject.isNotEmpty())
+                && (type !is ComposerType.Reply && type !is ComposerType.ReplyAll
+                        && type !is ComposerType.Support)) {
             return true
         }
 

@@ -47,7 +47,9 @@ class ComposerDataSource(
                     filesDir = filesDir,
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
-                    originalId = params.originalId)
+                    originalId = params.originalId,
+                    currentLabel = params.currentLabel,
+                    db = composerLocalDB)
             is ComposerRequest.UploadAttachment -> UploadAttachmentWorker(filesSize = params.filesSize,
                     filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,

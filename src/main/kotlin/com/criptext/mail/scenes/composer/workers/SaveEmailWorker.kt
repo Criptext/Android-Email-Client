@@ -3,14 +3,17 @@ package com.criptext.mail.scenes.composer.workers
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.Validator
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
+import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
@@ -26,6 +29,8 @@ class SaveEmailWorker(
         private val originalId: Long?,
         private val threadId: String?,
         private val emailId: Long?,
+        private val currentLabel: Label,
+        private val db: ComposerLocalDB,
         private val composerInputData: ComposerInputData,
         private val account: ActiveAccount,
         private val dao: EmailInsertionDao,
@@ -58,7 +63,13 @@ class SaveEmailWorker(
         }
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
                 onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
-                fileKey = fileKey)
+                fileKey = fileKey, preview = if(threadId != null) EmailPreview.fromEmailThread(getEmailPreview(newEmailId)) else null)
+    }
+
+    private fun getEmailPreview(emailId: Long): EmailThread {
+        val email = db.loadFullEmail(emailId, account)!!
+        val label = db.getLabelById(currentLabel.id, account.id)!!
+        return db.getEmailThreadFromEmail(email.email, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id }, account.userEmail, account)
     }
 
     override fun cancel() {

@@ -6,12 +6,14 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.composer.workers.SaveEmailWorker
@@ -43,6 +45,7 @@ class ResendEmailWorkerTest {
     private lateinit var storage: KeyValueStorage
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
+    private lateinit var composerLocalDB: ComposerLocalDB
     private lateinit var signalClient: SignalClient
     private lateinit var mockWebServer: MockWebServer
     private lateinit var httpClient: HttpClient
@@ -60,6 +63,8 @@ class ResendEmailWorkerTest {
         db.resetDao().deleteAllData(1)
         db.contactDao().insertIgnoringConflicts(bobContact)
 
+        composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
         storage = mockk(relaxed = true)
@@ -87,13 +92,14 @@ class ResendEmailWorkerTest {
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao(),
-                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir)
+                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox)
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
                     attachments = emptyList(), onlySave = false, account = activeAccount,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
-                    filesDir = mActivityRule.activity.filesDir)
+                    filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
+                    db = composerLocalDB)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
@@ -24,6 +25,7 @@ class SaveEmailWorkerTest {
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
 
     private lateinit var db: TestDatabase
+    private lateinit var composerLocalDB: ComposerLocalDB
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
@@ -41,6 +43,8 @@ class SaveEmailWorkerTest {
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+        composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
         emailInsertionDao = db.emailInsertionDao()
     }
 
@@ -49,7 +53,7 @@ class SaveEmailWorkerTest {
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
                     onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
                     publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null,
-                    filesDir = mActivityRule.activity.filesDir)
+                    filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox, db = composerLocalDB)
 
 
     @Test
