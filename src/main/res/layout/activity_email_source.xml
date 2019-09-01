@@ -67,6 +67,7 @@
                 android:id="@+id/source_text"
                 android:textColor="?attr/criptextPrimaryTextColor"
                 android:textSize="15sp"
+                android:textIsSelectable="true"
                 />
 
         </LinearLayout>
