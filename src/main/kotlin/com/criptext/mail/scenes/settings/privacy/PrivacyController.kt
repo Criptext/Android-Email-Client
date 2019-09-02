@@ -61,6 +61,7 @@ class PrivacyController(
                 scene.enableTwoFASwitch(false)
                 generalDataSource.submitRequest(GeneralRequest.Set2FA(isChecked))
             }else{
+                scene.showMessage(UIMessage(R.string.message_warning_two_fa))
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(!isChecked)
             }

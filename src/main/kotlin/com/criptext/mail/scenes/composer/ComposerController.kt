@@ -148,7 +148,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 host.refreshToolbarItems()
                 val emails = data.to.map { it.email }.plus(data.cc.map { it.email }).plus(data.bcc.map { it.email })
                 if(!model.checkedDomains.map { it.name }.containsAll(emails.map { EmailAddressUtils.extractEmailAddressDomain(it) })){
-                    dataSource.submitRequest(ComposerRequest.CheckDomain(emails.distinct()))
+                    if(emails.map { EmailAddressUtils.extractEmailAddressDomain(it) }.isNotEmpty())
+                        dataSource.submitRequest(ComposerRequest.CheckDomain(emails.distinct()))
                 }
             }
         }
