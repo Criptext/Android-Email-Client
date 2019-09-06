@@ -50,11 +50,11 @@ class NewMailActionService : IntentService("New Mail Action Service") {
             }
             DELETE -> {
                 val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
-                if((notCount - 1) == 0) {
+                if((notCount - 1) <= 0) {
                     manager.cancel(CriptextNotification.INBOX_ID)
                 }
-                val newNotCount = if(notCount == 0) notCount else notCount - 1
-                storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount, newNotCount)
+                storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount,
+                        if(notCount <= 0) 0 else notCount - 1)
             }
             else -> throw IllegalArgumentException("Unsupported action: " + data.action)
         }
