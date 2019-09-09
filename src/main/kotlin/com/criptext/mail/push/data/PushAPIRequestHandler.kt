@@ -204,10 +204,10 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
     private fun handleNotificationCount(notificationId: Int, key: KeyValueStorage.StringKey, id: Int){
         val notCount = storage.getInt(key, 0)
         manager.cancel(notificationId)
-        if((notCount - 1) == 0) {
+        if((notCount - 1) <= 0) {
             manager.cancel(id)
         }
-        storage.putInt(key, notCount - 1)
+        storage.putInt(key, if(notCount <= 0) 0 else notCount - 1)
     }
 
     private fun postNotification(cn: CriptextNotification,

@@ -58,10 +58,10 @@ class MessagingService : FirebaseMessagingService(){
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notCount = storage.getInt(key, 0)
         manager.cancel(notificationId)
-        if((notCount - 1) == 0) {
+        if((notCount - 1) <= 0) {
             manager.cancel(headerId)
         }
-        storage.putInt(key, notCount - 1)
+        storage.putInt(key, if(notCount <= 0) 0 else notCount - 1)
     }
 
     companion object {
