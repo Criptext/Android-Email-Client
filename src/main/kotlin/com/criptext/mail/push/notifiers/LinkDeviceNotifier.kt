@@ -1,4 +1,4 @@
-package com.criptext.mail.push
+package com.criptext.mail.push.notifiers
 
 import android.app.Notification
 import android.content.Context
@@ -7,14 +7,15 @@ import androidx.annotation.RequiresApi
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.criptextnotification.NotificationLinkDevice
-import com.criptext.mail.push.data.PushDataSource
+import com.criptext.mail.push.ActivityIntentFactory
+import com.criptext.mail.push.PushData
+import com.criptext.mail.push.PushTypes
 
 sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
     companion object {
         private val type = PushTypes.linkDevice
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun postNotification(ctx: Context) {
         val cn = NotificationLinkDevice(ctx)
         val notification = buildNotification(ctx, cn)
@@ -22,7 +23,6 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
                 CriptextNotification.ACTION_LINK_DEVICE)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun postHeaderNotification(ctx: Context){
         val cn = NotificationLinkDevice(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
@@ -31,7 +31,6 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
 
     protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun notifyPushEvent(ctx: Context) {
         if (data.shouldPostNotification){
             if(data.isPostNougat) {
@@ -41,12 +40,15 @@ sealed class LinkDeviceNotifier(val data: PushData.LinkDevice): Notifier {
         }
     }
 
+    override fun updatePushEvent(ctx: Context) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     class Open(data: PushData.LinkDevice, private val notificationId: Int): LinkDeviceNotifier(data) {
 
-        @RequiresApi(Build.VERSION_CODES.O)
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
-                null, data.isPostNougat)
+                    null, data.isPostNougat)
 
             return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent,
                     data = data,

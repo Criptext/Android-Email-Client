@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -204,7 +205,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     private fun dismissAllNotifications() {
         val notificationManager = this.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll()
+        notificationManager.cancel(CriptextNotification.INBOX_ID)
+        notificationManager.cancel(CriptextNotification.OPEN_ID)
+        notificationManager.cancel(CriptextNotification.ERROR_ID)
+        notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }

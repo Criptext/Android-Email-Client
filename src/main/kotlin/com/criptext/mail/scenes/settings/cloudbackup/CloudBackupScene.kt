@@ -41,7 +41,7 @@ interface CloudBackupScene{
     fun disableSaveButtonOnDialog()
     fun enableSaveButtonOnDialog()
     fun getGoogleDriveService(): Drive?
-    fun scheduleCloudBackupJob(period: Int, accountId: Long)
+    fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean)
     fun removeFromScheduleCloudBackupJob(accountId: Long)
     fun checkCloudBackupIcon()
     fun backingUpNow(isBackingUp: Boolean)
@@ -139,7 +139,6 @@ interface CloudBackupScene{
 
         override fun attachView(model: CloudBackupModel, cloudBackupUIObserver1: CloudBackupUIObserver) {
             this.cloudBackupUIObserver = cloudBackupUIObserver1
-            JobManager.create(context).addJobCreator(CriptextJobCreator())
 
             accountEmail.text = model.activeAccountEmail
             enableCloudBackup(cloudBackupSwitch.isChecked)
@@ -245,9 +244,9 @@ interface CloudBackupScene{
                     .build()
         }
 
-        override fun scheduleCloudBackupJob(period: Int, accountId: Long) {
+        override fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean) {
             val cloudBackupJobService = CloudBackupJobService()
-            cloudBackupJobService.schedule(context, getFrequencyPeriod(period), accountId)
+            cloudBackupJobService.schedule(context, getFrequencyPeriod(period), accountId, useWifiOnly)
         }
 
         override fun removeFromScheduleCloudBackupJob(accountId: Long) {

@@ -435,6 +435,7 @@
   <string name="new_email_notification">New Email Notification</string>
   <string name="link_device_notification">Device Authentication Notification</string>
   <string name="sync_device_notification">Manual Sync Authentication Notification</string>
+  <string name="job_backup_notification">Background Backup Service Notification</string>
   <string name="error_notification">Error Notification</string>
   <string name="email_open_notification">Email Open Notification</string>
   <string name="error_email_max_size">The email has surpassed the attachment limit of %1$s</string>
@@ -576,4 +577,6 @@
   <string name="unknown_error">Unknown error. Ex: (%1$s)</string>
   <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
   <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
+  <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
+  <string name="upload_to_google_drive_success">Upload Successful!</string>
 </resources>

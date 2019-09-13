@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.cloudbackup.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
@@ -321,18 +322,17 @@ class CloudBackupController(
         when(result){
             is CloudBackupResult.SetCloudBackupActive.Success -> {
                 model.wifiOnly = result.cloudBackupData.useWifiOnly
-                storage.putBool(KeyValueStorage.StringKey.UseWifiOnlyForBackup, model.wifiOnly)
                 if(model.autoBackupFrequency != result.cloudBackupData.autoBackupFrequency){
                     scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                     model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
-                    scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id)
+                    scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id, model.wifiOnly)
                 }
                 if(model.hasCloudBackup != result.cloudBackupData.hasCloudBackup){
                     if(result.cloudBackupData.hasCloudBackup) {
                         model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
                         if(model.autoBackupFrequency != 3) {
                             scene.removeFromScheduleCloudBackupJob(activeAccount.id)
-                            scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id)
+                            scene.scheduleCloudBackupJob(model.autoBackupFrequency, activeAccount.id, model.wifiOnly)
                         } else
                             scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                         host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
@@ -350,6 +350,16 @@ class CloudBackupController(
                         storage.putString(KeyValueStorage.StringKey.SavedBackupData, SavedCloudData.toJSON(mutableSavedData).toString())
                         host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
                     }
+                }
+                val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
+                val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
+                else JobIdData.fromJson(savedJobsString)
+                val accountSavedData = listOfJobs.find { it.accountId == activeAccount.id}
+                if(accountSavedData != null) {
+                    listOfJobs.remove(accountSavedData)
+                    accountSavedData.useWifiOnly = model.wifiOnly
+                    listOfJobs.add(accountSavedData)
+                    storage.putString(KeyValueStorage.StringKey.SavedJobs, JobIdData.toJSON(listOfJobs).toString())
                 }
 
             }

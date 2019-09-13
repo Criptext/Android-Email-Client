@@ -435,6 +435,7 @@
   <string name="new_email_notification">Notificación de Correo Nuevo</string>
   <string name="link_device_notification">Notificación de Autenticación de Dispositivo</string>
   <string name="sync_device_notification">Notificación de Sincronización Manual</string>
+  <string name="job_backup_notification">Notificación de Servicio de Backup</string>
   <string name="error_notification">Notificación de Error</string>
   <string name="email_open_notification">Notificación de Correo Leído</string>
   <string name="full_mail_item_open_default">Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras.</string>
@@ -576,4 +577,6 @@
   <string name="unknown_error">Error desconocido. Err: (%1$s)</string>
   <string name="invalid_temp_token">La sesión temporal ha expirado. Por favor intenatlo nuevamente.</string>
   <string name="profile_footer_option">Mostrar \"Enviado con Criptext\"</string>
+  <string name="uploading_to_google_drive">Subiendo Respaldo a Google Drive…</string>
+  <string name="upload_to_google_drive_success">¡Respaldo subido exitosamente!</string>
 </resources>

@@ -22,6 +22,9 @@ import com.criptext.mail.utils.compat.HtmlCompat
 
 
 class NotificationNewMail(override val ctx: Context): CriptextNotification(ctx) {
+    override fun updateNotification(notificationId: Int, data: PushData): Notification {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     val storage = KeyValueStorage.SharedPrefs(ctx = ctx)
 

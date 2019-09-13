@@ -1,11 +1,7 @@
 package com.criptext.mail.push
 
-/**
- * Enum class to model each type of push notification.
- * Created by gabriel on 8/21/17.
- */
 enum class PushTypes {
-    newMail, openActivity,linkDevice, syncDevice, antiPush;
+    newMail, openActivity,linkDevice, syncDevice, antiPush, jobBackup;
 
     fun actionCode(): String = when (this) {
         newMail -> "open_thread"
@@ -13,6 +9,7 @@ enum class PushTypes {
         linkDevice -> "link_device"
         syncDevice -> "sync_device"
         antiPush -> "anti_push"
+        jobBackup -> "job_backup"
     }
 
     fun requestCodeRandom(): Int = this.ordinal + System.currentTimeMillis().toInt()

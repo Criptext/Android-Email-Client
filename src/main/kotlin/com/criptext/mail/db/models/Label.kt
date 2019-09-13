@@ -53,7 +53,7 @@ data class Label (
             return if(labelName == Label.LABEL_ALL_MAIL) "%" else
                 "%L${labels.findLast {
                     label ->label.text == labelName
-                }?.id}%"
+                }?.id}L%"
         }
 
         fun fromJSON(jsonString: String, accountId: Long): Label {

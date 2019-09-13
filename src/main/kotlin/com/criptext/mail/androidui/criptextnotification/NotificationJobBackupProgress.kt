@@ -24,35 +24,49 @@ import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.utils.*
 
-class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(ctx) {
-    override fun updateNotification(notificationId: Int, data: PushData): Notification {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class NotificationJobBackupProgress(override val ctx: Context): CriptextNotification(ctx) {
 
     override fun buildNotification(builder: NotificationCompat.Builder): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             builder.color = Color.parseColor("#0091ff")
 
         val notBuild = builder.build()
-        notBuild.flags = notBuild.flags or Notification.FLAG_AUTO_CANCEL
+        notBuild.flags = notBuild.flags or Notification.FLAG_NO_CLEAR
 
         return notBuild
     }
 
     override fun createNotification(notificationId: Int, clickIntent: PendingIntent?,
                                     data: PushData): Notification {
-        val pushData = data as PushData.OpenMailbox
-        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_OPEN_EMAIL)
+        val pushData = data as PushData.JobBackup
+        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_JOB_BACKUP)
                 .setContentTitle(pushData.title)
                 .setContentText(pushData.body)
                 .setSubText(pushData.recipientId.plus("@${pushData.domain}"))
-                .setAutoCancel(true)
-                .setContentIntent(clickIntent)
-                .setGroup(ACTION_OPEN)
+                .setOngoing(true)
+                .setGroup(ACTION_JOB_BACKUP)
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(pushData.body))
+                .setProgress(0,0,true)
+
+        return buildNotification(builder)
+    }
+
+    override fun updateNotification(notificationId: Int, data: PushData): Notification {
+        val pushData = data as PushData.JobBackup
+        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_JOB_BACKUP)
+                .setContentTitle(pushData.title)
+                .setContentText(pushData.body)
+                .setSubText(pushData.recipientId.plus("@${pushData.domain}"))
+                .setOngoing(true)
+                .setGroup(ACTION_JOB_BACKUP)
+                .setGroupSummary(false)
+                .setSmallIcon(R.drawable.push_icon)
+                .setColor(Color.CYAN)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(pushData.body))
+                .setProgress(0,0,true)
 
         return buildNotification(builder)
     }

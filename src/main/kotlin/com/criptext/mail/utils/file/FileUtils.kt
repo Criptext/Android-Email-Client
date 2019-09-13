@@ -9,7 +9,11 @@ import android.webkit.MimeTypeMap
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.db.AttachmentTypes
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.net.URLConnection
+import java.util.zip.GZIPOutputStream
 
 /**
  * Anything you need to know about a file given its filename
@@ -277,6 +281,28 @@ class FileUtils {
                 }
             }
             return dir.delete()
+        }
+
+        private fun gzipCompress(sourceFile: String): String? {
+            val targetFile = createTempFile("compressed", ".gz")
+            try {
+                val fos = FileOutputStream(targetFile)
+                val gzos = GZIPOutputStream(fos)
+                val buffer = ByteArray(1024)
+                val fis = FileInputStream(sourceFile)
+                var length= fis.read(buffer)
+                while (length > 0) {
+                    gzos.write(buffer, 0, length)
+                    length = fis.read(buffer)
+                }
+                fis.close()
+                gzos.finish()
+                gzos.close()
+                return targetFile.absolutePath
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return null
         }
     }
 }

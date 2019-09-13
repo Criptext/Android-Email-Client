@@ -4,13 +4,12 @@ import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.push.Notifier
+import com.criptext.mail.push.notifiers.Notifier
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
 import com.github.kittinunf.result.Result

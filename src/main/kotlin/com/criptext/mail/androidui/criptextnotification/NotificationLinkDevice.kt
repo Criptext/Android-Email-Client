@@ -21,6 +21,9 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 
 class NotificationLinkDevice(override val ctx: Context): CriptextNotification(ctx) {
+    override fun updateNotification(notificationId: Int, data: PushData): Notification {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     val storage = KeyValueStorage.SharedPrefs(ctx = ctx)
 

@@ -1,4 +1,4 @@
-package com.criptext.mail.push
+package com.criptext.mail.push.notifiers
 
 import android.content.Context
 
@@ -8,4 +8,5 @@ import android.content.Context
 
 interface Notifier {
     fun notifyPushEvent(ctx: Context)
+    fun updatePushEvent(ctx: Context)
 }
