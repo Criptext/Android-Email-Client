@@ -186,7 +186,7 @@ class AuthenticateUserWorker(
                     else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
                 }
             }
-            else -> UIMessage(resId = R.string.login_fail_try_again_error_exception)
+            else -> UIMessage(resId = R.string.login_fail_try_again_error_with_exception, args = arrayOf(ex.toString()))
         }
     }
 }

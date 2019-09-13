@@ -366,6 +366,7 @@
     <string name="login_network_error_exception">Fallo al autenticar usuario. Por favor, verifica tu conexión de internet.</string>
   <string name="login_json_error_exception">Fallo al autenticar usuario. Respuesta del servidor inválida.</string>
     <string name="login_fail_try_again_error_exception">Fallo al autenticar usuario. Por favor, intenta más tarde.</string>
+  <string name="login_fail_try_again_error_with_exception">Fallo al autenticar usuario. Error: %1$s.</string>
     <string name="login_failed_body">Tu intento de acceder a esta cuenta fue negado por un dispositivo aprobado.</string>
   <string name="login_user">estocambia@criptex.com</string>
   <string name="button_confirm">Confirmar</string>

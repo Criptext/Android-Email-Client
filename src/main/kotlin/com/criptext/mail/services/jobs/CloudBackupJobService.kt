@@ -44,18 +44,23 @@ import java.util.*
 
 
 class CloudBackupJobService: Job() {
-    private var dataSource: CloudBackupDataSource? = null
     private var mDriveService: Drive? = null
     private val progressListener = JobServiceProgressListener()
     private var hasOldFile = false
     private var isBackupDone = false
     private var oldFileIds: List<String> = listOf()
-    private var builder: NotificationCompat.Builder? = null
 
     private fun getAccountsSavedData(storage: KeyValueStorage): MutableList<JobIdData> {
         val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
         return if(savedJobsString.isEmpty()) mutableListOf()
         else JobIdData.fromJson(savedJobsString)
+    }
+
+    private fun deleteJobForMissingAccount(accountId: Long, storage: KeyValueStorage){
+        val jobList = getAccountsSavedData(storage)
+        val job = jobList.find { it.accountId == accountId } ?: return
+        jobList.remove(job)
+        cancel(context, accountId)
     }
 
     private fun handleNewPushNotification(activeAccount: ActiveAccount, storage: KeyValueStorage,
@@ -199,9 +204,9 @@ class CloudBackupJobService: Job() {
 
     private fun startWorking(accountId: Long){
         val db = AppDatabase.getAppDatabase(context)
-        val account = db.accountDao().getAccountById(accountId)!!
-        val activeAccount = ActiveAccount.loadFromDB(account)!!
         val storage = KeyValueStorage.SharedPrefs(context)
+        val account = db.accountDao().getAccountById(accountId) ?: return deleteJobForMissingAccount(accountId, storage)
+        val activeAccount = ActiveAccount.loadFromDB(account)!!
 
         handleNewPushNotification(activeAccount, storage)
 
@@ -280,7 +285,6 @@ class CloudBackupJobService: Job() {
 
     companion object {
         const val JOB_TAG = "CRIPTEXT_CLOUD_BACKUP_JOB_SERVICE"
-        const val PROGRESS_MAX = 100
 
         fun cancelJob(storage: KeyValueStorage, accountId: Long){
             val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")

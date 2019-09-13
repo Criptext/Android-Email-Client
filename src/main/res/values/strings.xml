@@ -366,6 +366,7 @@
     <string name="login_network_error_exception">Failed to authenticate user. Please check your internet connection.</string>
   <string name="login_json_error_exception">Failed to authenticate user. Invalid server response.</string>
     <string name="login_fail_try_again_error_exception">Failed to authenticate user. Please try again later.</string>
+    <string name="login_fail_try_again_error_with_exception">Failed to authenticate user. Error: %1$s.</string>
     <string name="login_failed_body">Your request to access this account was rejected by a verified device.</string>
   <string name="login_user">estocambia@criptex.com</string>
   <string name="button_confirm">Confirm</string>
