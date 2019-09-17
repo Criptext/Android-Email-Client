@@ -101,7 +101,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Register(filepath = "/test.pdf",
-                    filetoken = mockedFiletoken))
+                    filetoken = mockedFiletoken, uuid = model.attachments[0].uuid))
 
             model.attachments[0].filetoken `should be` mockedFiletoken
             verify { scene.notifyAttachmentSetChanged() }
@@ -112,7 +112,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
     fun `after receiving ack of success file, the file should be at 100% progress`() {
         runAfterSelectingAnAttachment {
             clearMocks(host)
-            simulateAddAttachmentEvent(ComposerResult.UploadFile.Success(filepath = "/test.pdf", filesSize = 0L))
+            simulateAddAttachmentEvent(ComposerResult.UploadFile.Success(filepath = "/test.pdf", filesSize = 0L, uuid = model.attachments[0].uuid))
 
             model.attachments[0].uploadProgress `should be` 100
             verify { scene.notifyAttachmentSetChanged() }

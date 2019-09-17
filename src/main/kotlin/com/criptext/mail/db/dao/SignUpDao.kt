@@ -29,12 +29,15 @@ interface SignUpDao {
         registrationId=:registrationId,
         domain=:domain,
         isActive=:isActive,
-        isLoggedIn=:isLoggedIn
+        isLoggedIn=:isLoggedIn,
+        hasCloudBackup=:hasCloudBackup,
+        wifiOnly=:wifiOnly,
+        autoBackupFrequency=:backupFrequency
         WHERE recipientId=:recipientId
     """)
     fun updateAccount(recipientId: String, name: String, jwt: String, refreshJwt: String,
                       deviceId: Int, identityKey: String, registrationId: Int, domain: String,
-                      isActive: Int, isLoggedIn: Int)
+                      isActive: Int, isLoggedIn: Int, hasCloudBackup: Boolean, wifiOnly: Boolean, backupFrequency: Int)
 
     @Insert
     fun insertPreKeys(preKeys : List<CRPreKey>)
@@ -68,7 +71,8 @@ interface SignUpDao {
         updateAccount(recipientId = account.recipientId, name = account.name, deviceId = account.deviceId,
                 domain = account.domain, isLoggedIn = if(account.isLoggedIn) 1 else 0, isActive = if(account.isActive) 1 else 0,
                 identityKey = account.identityKeyPairB64, jwt = account.jwt, refreshJwt = account.refreshToken,
-                registrationId = account.registrationId)
+                registrationId = account.registrationId, backupFrequency = account.autoBackupFrequency, hasCloudBackup = account.hasCloudBackup,
+                wifiOnly = account.wifiOnly)
 
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }

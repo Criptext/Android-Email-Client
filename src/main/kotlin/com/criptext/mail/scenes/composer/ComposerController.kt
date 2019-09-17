@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.composer
 
 
 import android.Manifest
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.view.View
 import com.criptext.mail.BaseActivity
@@ -19,12 +18,10 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
-import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.EmailDetailParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -32,7 +29,6 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.websocket.WebSocketSingleton
 import java.io.File
 import java.util.*
 
@@ -244,7 +240,7 @@ class ComposerController(private val storage: KeyValueStorage,
                     EmailAddressUtils.extractEmailAddressDomain(email) in
                             checkedData.filter { it.isCriptextDomain }
                                     .map { it.name } }
-        contacts.forEachIndexed { index, contact ->
+        contacts.forEachIndexed { _, contact ->
             if(contact.email in isCriptext)
                 contact.isCriptextDomain = true
         }
@@ -272,7 +268,7 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is GeneralResult.GetRemoteFile.Success -> {
                 scene.dismissPreparingFileDialog()
-                model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(it.first, it.second, model.fileKey!!) })
+                model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(UUID.randomUUID().toString(), it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
                 handleNextUpload()
             }
@@ -297,15 +293,15 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun onUploadFile(result: ComposerResult.UploadFile){
         when (result) {
             is ComposerResult.UploadFile.Register -> {
-                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
+                val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
                 composerAttachment.filetoken = result.filetoken
             }
             is ComposerResult.UploadFile.Progress -> {
-                val composerAttachment = getAttachmentByPath(result.filepath) ?: return
+                val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
                 composerAttachment.uploadProgress = result.percentage
             }
             is ComposerResult.UploadFile.Success -> {
-                val composerAttachment = getAttachmentByPath(result.filepath)
+                val composerAttachment = getAttachmentByUUID(result.uuid)
                 composerAttachment?.uploadProgress = 100
                 model.isUploadingAttachments = false
                 model.filesSize = result.filesSize
@@ -339,8 +335,8 @@ class ComposerController(private val storage: KeyValueStorage,
         scene.notifyAttachmentSetChanged()
     }
 
-    private fun getAttachmentByPath(filepath: String): ComposerAttachment? {
-        return model.attachments.firstOrNull{it.filepath == filepath}
+    private fun getAttachmentByUUID(uuid: String): ComposerAttachment? {
+        return model.attachments.firstOrNull{it.uuid == uuid}
     }
 
     private fun removeAttachmentByPath(filepath: String) {
@@ -469,13 +465,14 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private fun isReadyForSending() = (model.to.isNotEmpty() || model.cc.isNotEmpty() || model.bcc.isNotEmpty())
 
-    private fun uploadSelectedFile(filepath: String, fileKey: String){
+    private fun uploadSelectedFile(filepath: String, fileKey: String, uuid: String){
         model.isUploadingAttachments = true
         scene.dismissPreparingFileDialog()
         dataSource.submitRequest(ComposerRequest.UploadAttachment(
                 filepath = filepath,
                 fileKey = fileKey,
-                filesSize = model.filesSize
+                filesSize = model.filesSize,
+                uuid = uuid
         ))
     }
 
@@ -540,7 +537,7 @@ class ComposerController(private val storage: KeyValueStorage,
         val localAttachments = filesMetadata
                 .filter(isNewAttachment)
                 .filter {it.second != -1L}
-                .map{ComposerAttachment(it.first, it.second, model.fileKey!!)}
+                .map{ComposerAttachment(UUID.randomUUID().toString(), it.first, it.second, model.fileKey!!)}
         val remoteAttachments = filesMetadata
                 .filter(isNewAttachment)
                 .filter{ it.second == -1L }
@@ -563,13 +560,13 @@ class ComposerController(private val storage: KeyValueStorage,
             return
         }
         val attachmentToUpload = model.attachments.firstOrNull { it.uploadProgress == -1 } ?: return
-        val composerAttachment = getAttachmentByPath(attachmentToUpload.filepath)
+        val composerAttachment = getAttachmentByUUID(attachmentToUpload.uuid)
         if(composerAttachment == null){
             scene.showMaxFilesExceedsDialog()
             return
         }else {
             composerAttachment.uploadProgress = 0
-            uploadSelectedFile(attachmentToUpload.filepath, composerAttachment.fileKey)
+            uploadSelectedFile(attachmentToUpload.filepath, composerAttachment.fileKey, composerAttachment.uuid)
         }
     }
 

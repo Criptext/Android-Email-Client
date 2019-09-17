@@ -9,22 +9,22 @@ import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification.Companion.JOB_BACKUP_ID
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.notifiers.JobBackupNotifier
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupDataSource
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.scenes.settings.cloudbackup.workers.DataFileCreationWorker
 import com.criptext.mail.scenes.settings.cloudbackup.workers.DeleteOldBackupWorker
 import com.criptext.mail.scenes.settings.cloudbackup.workers.UploadBackupToDriveWorker
 import com.criptext.mail.services.data.JobIdData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.evernote.android.job.Job
@@ -113,9 +113,9 @@ class CloudBackupJobService: Job() {
         val builder = JobRequest.Builder(JOB_TAG)
         builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setPeriodic(intervalMillis, JobInfo.getMinFlexMillis())
+            builder.setPeriodic(900000, JobInfo.getMinFlexMillis())
         }else {
-            builder.setPeriodic(intervalMillis)
+            builder.setPeriodic(900000)
         }
         val id = builder.build()
                 .schedule()
@@ -286,13 +286,41 @@ class CloudBackupJobService: Job() {
     companion object {
         const val JOB_TAG = "CRIPTEXT_CLOUD_BACKUP_JOB_SERVICE"
 
+        fun scheduleJob(storage: KeyValueStorage, account: Account){
+
+            val builder = JobRequest.Builder(JOB_TAG)
+            builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                builder.setPeriodic(AccountUtils.getFrequencyPeriod(account.autoBackupFrequency), JobInfo.getMinFlexMillis())
+            }else {
+                builder.setPeriodic(AccountUtils.getFrequencyPeriod(account.autoBackupFrequency))
+            }
+            val id = builder.build()
+                    .schedule()
+            val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
+            val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
+            else JobIdData.fromJson(savedJobsString)
+            val accountSavedData = listOfJobs.find { it.accountId == account.id}
+            if(accountSavedData != null) {
+                listOfJobs.remove(accountSavedData)
+            }
+            listOfJobs.add(JobIdData(account.id, id, account.wifiOnly))
+            storage.putString(KeyValueStorage.StringKey.SavedJobs, JobIdData.toJSON(listOfJobs).toString())
+        }
+
         fun cancelJob(storage: KeyValueStorage, accountId: Long){
             val savedJobsString = storage.getString(KeyValueStorage.StringKey.SavedJobs, "")
             val listOfJobs = if(savedJobsString.isEmpty()) mutableListOf()
             else JobIdData.fromJson(savedJobsString)
             val accountSavedData = listOfJobs.find { it.accountId == accountId}
             if(accountSavedData != null) {
+                listOfJobs.remove(accountSavedData)
+                if(listOfJobs.isNotEmpty())
+                    storage.putString(KeyValueStorage.StringKey.SavedJobs, JobIdData.toJSON(listOfJobs).toString())
+                else
+                    storage.remove(listOf(KeyValueStorage.StringKey.SavedJobs))
                 JobManager.instance().cancel(accountSavedData.jobId)
+                Log.e("JOBSERVICE:", "Canceled!!!")
             }
         }
     }

@@ -4,12 +4,6 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.utils.UIMessage
 
 sealed class SettingsResult{
-
-    sealed class Logout: SettingsResult() {
-        class Success: Logout()
-        data class Failure(val message: UIMessage): Logout()
-    }
-
     sealed class ResetPassword : SettingsResult() {
         class Success: ResetPassword()
         data class Failure(val message: UIMessage): ResetPassword()

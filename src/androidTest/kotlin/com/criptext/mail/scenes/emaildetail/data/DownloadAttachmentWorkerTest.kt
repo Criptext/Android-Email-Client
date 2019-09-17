@@ -95,7 +95,7 @@ class DownloadAttachmentWorkerTest {
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, fileKey = null, accountDao = db.accountDao(),
-                    storage = storage, filesSize = 0L)
+                    storage = storage, filesSize = 0L, uuid = "_UUID_")
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,

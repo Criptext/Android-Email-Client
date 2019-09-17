@@ -54,7 +54,7 @@ class ComposerDataSource(
                     filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
-                    accountDao = composerLocalDB.accountDao, storage = storage)
+                    accountDao = composerLocalDB.accountDao, storage = storage, uuid = params.uuid)
             is ComposerRequest.LoadInitialData -> LoadInitialDataWorker(
                     httpClient = HttpClient.Default(),
                     db = composerLocalDB,

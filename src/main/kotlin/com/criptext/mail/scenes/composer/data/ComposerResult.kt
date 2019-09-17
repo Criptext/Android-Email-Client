@@ -5,6 +5,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
+import java.util.*
 
 /**
  * Created by gabriel on 2/26/18.
@@ -38,9 +39,9 @@ sealed class ComposerResult {
     }
 
     sealed class UploadFile : ComposerResult() {
-        data class Success(val filepath: String, val filesSize: Long): UploadFile()
-        data class Register(val filepath: String, val filetoken: String): UploadFile()
-        data class Progress(val filepath: String, val percentage: Int): UploadFile()
+        data class Success(val filepath: String, val filesSize: Long, val uuid: String): UploadFile()
+        data class Register(val filepath: String, val filetoken: String, val uuid: String): UploadFile()
+        data class Progress(val filepath: String, val percentage: Int, val uuid: String): UploadFile()
         data class MaxFilesExceeds(val filepath: String): UploadFile()
         data class PayloadTooLarge(val filepath: String, val headers: ResultHeaders): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage): UploadFile()

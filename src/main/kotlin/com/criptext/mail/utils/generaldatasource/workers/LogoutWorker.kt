@@ -52,7 +52,7 @@ class LogoutWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                GeneralResult.Logout.Success(newActiveAccount, activeAccount.userEmail)
+                GeneralResult.Logout.Success(newActiveAccount, activeAccount.userEmail, activeAccount.id)
             }
             is Result.Failure -> {
                 GeneralResult.Logout.Failure()
