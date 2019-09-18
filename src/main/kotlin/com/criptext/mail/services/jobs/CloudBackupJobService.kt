@@ -113,9 +113,9 @@ class CloudBackupJobService: Job() {
         val builder = JobRequest.Builder(JOB_TAG)
         builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setPeriodic(900000, JobInfo.getMinFlexMillis())
+            builder.setPeriodic(intervalMillis, JobInfo.getMinFlexMillis())
         }else {
-            builder.setPeriodic(900000)
+            builder.setPeriodic(intervalMillis)
         }
         val id = builder.build()
                 .schedule()
