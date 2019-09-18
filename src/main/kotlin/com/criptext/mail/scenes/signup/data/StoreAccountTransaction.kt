@@ -8,6 +8,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSignedPreKey
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.signal.SignalKeyGenerator
 
 /**
@@ -45,6 +46,9 @@ class StoreAccountTransaction(private val dao: SignUpDao,
             extraSteps?.run()
             val dbAccount = accountDao.getLoggedInAccount()!!
             setNewUserAsActiveAccount(dbAccount)
+            if(dbAccount.hasCloudBackup){
+                CloudBackupJobService.scheduleJob(keyValueStorage, dbAccount)
+            }
         }
 
         if(!keepData) {

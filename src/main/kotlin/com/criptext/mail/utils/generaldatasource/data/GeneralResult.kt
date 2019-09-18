@@ -136,7 +136,7 @@ sealed class GeneralResult {
     }
 
     sealed class Logout: GeneralResult() {
-        data class Success(val activeAccount: ActiveAccount?, val oldAccountEmail: String): Logout()
+        data class Success(val activeAccount: ActiveAccount?, val oldAccountEmail: String, val oldAccountId: Long): Logout()
         class Failure: Logout()
     }
 

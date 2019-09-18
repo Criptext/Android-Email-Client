@@ -6,10 +6,7 @@ import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.services.jobs.CriptextJobCreator
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.Utility
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.ui.data.DialogType
@@ -246,7 +243,7 @@ interface CloudBackupScene{
 
         override fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean) {
             val cloudBackupJobService = CloudBackupJobService()
-            cloudBackupJobService.schedule(context, getFrequencyPeriod(period), accountId, useWifiOnly)
+            cloudBackupJobService.schedule(context, AccountUtils.getFrequencyPeriod(period), accountId, useWifiOnly)
         }
 
         override fun removeFromScheduleCloudBackupJob(accountId: Long) {
@@ -264,14 +261,6 @@ interface CloudBackupScene{
 
         override fun dismissPreparingFileDialog() {
             preparingFileDialog.dismiss()
-        }
-
-        private fun getFrequencyPeriod(period: Int): Long {
-            return when(period){
-                1 -> 86400000L * 7L
-                2 -> 86400000L * 30L
-                else -> 86400000L
-            }
         }
 
         private fun setWifiOnlySwitchState(isChecked: Boolean) {

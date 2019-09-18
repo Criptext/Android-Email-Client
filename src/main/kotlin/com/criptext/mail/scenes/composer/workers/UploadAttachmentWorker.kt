@@ -28,7 +28,8 @@ import java.io.File
 
 class UploadAttachmentWorker(private val filesSize: Long,
                              private val filepath: String,
-                             private val httpClient: HttpClient,
+                             private val uuid: String,
+                             httpClient: HttpClient,
                              private val activeAccount: ActiveAccount,
                              private val storage: KeyValueStorage,
                              private val accountDao: AccountDao,
@@ -59,13 +60,13 @@ class UploadAttachmentWorker(private val filesSize: Long,
 
 
     private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
-        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken))
+        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken, uuid))
         Result.of {
 
             val chunks = (file.length() / chunkSize).toInt() + 1
             val onNewChunkRead: (ByteArray, Int) -> Unit = { chunk, index ->
                 reporter.report(ComposerResult.UploadFile.Progress(file.absolutePath,
-                        index * 100 / chunks))
+                        index * 100 / chunks, uuid))
                 fileServiceAPIClient.uploadChunk(chunk = if(fileKey != null)
                                                             AESUtil(fileKey).encrypt(chunk)
                                                         else
@@ -111,7 +112,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
 
 
         return when (finalResult) {
-            is Result.Success -> ComposerResult.UploadFile.Success(filepath, size)
+            is Result.Success -> ComposerResult.UploadFile.Success(filepath, size, uuid)
             is Result.Failure -> catchException(finalResult.error)
         }
     }

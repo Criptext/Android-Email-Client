@@ -31,6 +31,8 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.whispersystems.libsignal.SignalProtocolAddress
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -215,6 +217,7 @@ class SendEmailWorkerTest {
             val file = folder.newFile(String.format("file_%s.png", i))
             attachmentList.add(ComposerAttachment(
                     id=0,
+                    uuid = UUID.randomUUID().toString(),
                     filepath=file.name,
                     uploadProgress=100,
                     filetoken="__FILE_TOKEN__",

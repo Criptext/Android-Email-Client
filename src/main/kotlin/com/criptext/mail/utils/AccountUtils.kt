@@ -19,4 +19,12 @@ object AccountUtils {
         return if(storageLastUser.isEmpty()) mutableListOf() else
             storageLastUser.split(",").map { it.trim() }.toMutableList()
     }
+
+    fun getFrequencyPeriod(period: Int): Long {
+        return when(period){
+            1 -> 86400000L * 7L
+            2 -> 86400000L * 30L
+            else -> 86400000L
+        }
+    }
 }

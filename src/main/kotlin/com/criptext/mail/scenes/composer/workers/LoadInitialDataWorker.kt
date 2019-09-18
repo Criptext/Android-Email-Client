@@ -13,6 +13,8 @@ import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by gabriel on 7/2/18.
@@ -38,7 +40,7 @@ class LoadInitialDataWorker(
 
     private fun convertDraftToInputData(fullEmail: FullEmail): ComposerInputData {
         val attachments = ArrayList(fullEmail.files.map {
-            ComposerAttachment(0, it.name, 100,
+            ComposerAttachment(0, UUID.randomUUID().toString(), it.name, 100,
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
                     it.size, it.fileKey, it.cid)
         })
@@ -119,7 +121,7 @@ class LoadInitialDataWorker(
         val subject = (if(fullEmail.email.subject.matches("^(Fw|FW|Fwd|FWD): .*\$".toRegex())) "" else "FW: ") +
                 fullEmail.email.subject
         val attachments = ArrayList<ComposerAttachment>(fullEmail.files.map {
-            ComposerAttachment(0, it.name, 100,
+            ComposerAttachment(0, UUID.randomUUID().toString(), it.name, 100,
                     it.token, FileUtils.getAttachmentTypeFromPath(it.name),
                     it.size, it.fileKey, it.cid)
         })

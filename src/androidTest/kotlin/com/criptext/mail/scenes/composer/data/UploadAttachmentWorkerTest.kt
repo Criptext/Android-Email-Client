@@ -69,7 +69,8 @@ class UploadAttachmentWorkerTest {
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, fileKey = null,
-                    accountDao =  db.accountDao(), filesSize = 0L, storage = storage)
+                    accountDao =  db.accountDao(), filesSize = 0L, storage = storage,
+                    uuid = "_UUID_")
 
     @Test
     fun should_upload_file_without_errors() {

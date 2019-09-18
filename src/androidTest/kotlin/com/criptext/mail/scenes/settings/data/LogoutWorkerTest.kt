@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.SettingsLocalDB
@@ -13,9 +14,10 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
-import com.criptext.mail.scenes.settings.workers.LogoutWorker
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.generaldatasource.workers.LogoutWorker
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBe
@@ -33,7 +35,7 @@ class LogoutWorkerTest{
 
     private lateinit var db: TestDatabase
     private lateinit var mailboxLocalDB: MailboxLocalDB
-    private lateinit var settingsLocalDB: SettingsLocalDB
+    private lateinit var eventLocalDB: EventLocalDB
     private lateinit var storage: KeyValueStorage
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
@@ -59,7 +61,7 @@ class LogoutWorkerTest{
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
-        settingsLocalDB = SettingsLocalDB.Default(db)
+        eventLocalDB = EventLocalDB(db, mActivityRule.activity.filesDir, mActivityRule.activity.cacheDir)
 
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),
                 mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
@@ -81,7 +83,7 @@ class LogoutWorkerTest{
 
         val worker = newWorker()
 
-        worker.work(mockk()) as SettingsResult.Logout.Success
+        worker.work(mockk()) as GeneralResult.Logout.Success
 
         mailboxLocalDB.getThreadsIdsFromLabel(
                 labelName = Label.defaultItems.inbox.text,
@@ -93,10 +95,12 @@ class LogoutWorkerTest{
     private fun newWorker(): LogoutWorker =
 
             LogoutWorker(
-                    db = settingsLocalDB,
+                    db = eventLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     storage = storage,
+                    accountDao = db.accountDao(),
+                    shouldDeleteAllData = false,
                     publishFn = {})
 
     @After

@@ -22,10 +22,8 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.profile.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.signin.data.UserData
-import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.PinLockUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.Utility
+import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -271,6 +269,7 @@ class ProfileController(
     private fun onLogout(result: GeneralResult.Logout){
         when(result) {
             is GeneralResult.Logout.Success -> {
+                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
                 if(result.activeAccount == null)
                     host.exitToScene(SignInParams(), null, false, true)
                 else {

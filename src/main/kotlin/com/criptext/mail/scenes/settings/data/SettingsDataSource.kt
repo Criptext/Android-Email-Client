@@ -22,13 +22,6 @@ class SettingsDataSource(
                                         flushResults: (SettingsResult) -> Unit): BackgroundWorker<*> {
 
         return when(params){
-            is SettingsRequest.Logout -> LogoutWorker(
-                    storage = storage,
-                    db = settingsLocalDB,
-                    activeAccount = activeAccount,
-                    httpClient = httpClient,
-                    publishFn = { res -> flushResults(res) }
-            )
             is SettingsRequest.ResetPassword -> ForgotPasswordWorker(
                     storage = storage,
                     accountDao = settingsLocalDB.accountDao,

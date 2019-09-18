@@ -4,11 +4,12 @@ import com.criptext.mail.db.AttachmentTypes
 import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 
-data class ComposerAttachment(val id: Long, val filepath: String, var uploadProgress: Int,
+data class ComposerAttachment(val id: Long, val uuid: String, val filepath: String, var uploadProgress: Int,
                               var filetoken: String, val type: AttachmentTypes, var size: Long,
                               val fileKey: String, val cid: String?) {
-    constructor(filepath: String, size: Long, fileKey: String): this (0, filepath, -1, filetoken = "",
+    constructor(uuid: String, filepath: String, size: Long, fileKey: String): this (0, uuid ,filepath, -1, filetoken = "",
             type = FileUtils.getAttachmentTypeFromPath(filepath), size = size, fileKey = fileKey, cid = null)
 
     companion object{
@@ -16,6 +17,7 @@ data class ComposerAttachment(val id: Long, val filepath: String, var uploadProg
             val json = JSONObject(jsonString)
             return ComposerAttachment(
                     filepath = json.getString("filepath"),
+                    uuid = json.getString("uuid"),
                     size = json.getLong("size"),
                     fileKey = json.getString("fileKey")
             )
@@ -35,6 +37,7 @@ data class ComposerAttachment(val id: Long, val filepath: String, var uploadProg
             attachments.forEach {
                 val json = JSONObject()
                 json.put("id", it.id)
+                json.put("uuid", it.uuid)
                 json.put("filepath", it.filepath)
                 json.put("uploadProgress", it.uploadProgress)
                 json.put("filetoken", it.filetoken)
