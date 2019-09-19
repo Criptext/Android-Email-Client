@@ -48,15 +48,15 @@ class UploadAttachmentWorker(private val filesSize: Long,
                     ex.errorCode == ServerCodes.Forbidden ->
                         ComposerResult.UploadFile.Forbidden()
                     ex.errorCode == ServerCodes.PayloadTooLarge ->
-                        ComposerResult.UploadFile.PayloadTooLarge(filepath, ex.headers!!)
-                    else -> ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
+                        ComposerResult.UploadFile.PayloadTooLarge(filepath, ex.headers!!, uuid)
+                    else -> ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex), uuid)
                 }
             }
-            else ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex))
+            else ComposerResult.UploadFile.Failure(filepath, createErrorMessage(ex), uuid)
 
 
     private fun MaxFilesExceeds(): ComposerResult.UploadFile =
-            ComposerResult.UploadFile.MaxFilesExceeds(filepath)
+            ComposerResult.UploadFile.MaxFilesExceeds(filepath, uuid)
 
 
     private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->

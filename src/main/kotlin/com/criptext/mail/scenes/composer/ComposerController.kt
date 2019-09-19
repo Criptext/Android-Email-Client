@@ -303,12 +303,11 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Success -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid)
                 composerAttachment?.uploadProgress = 100
-                model.isUploadingAttachments = false
                 model.filesSize = result.filesSize
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Failure -> {
-                removeAttachmentByPath(result.filepath)
+                removeAttachmentByUUID(result.uuid)
                 scene.showAttachmentErrorDialog(result.filepath)
                 handleNextUpload()
             }
@@ -319,12 +318,13 @@ class ComposerController(private val storage: KeyValueStorage,
                 scene.showConfirmPasswordDialog(observer)
             }
             is ComposerResult.UploadFile.MaxFilesExceeds -> {
-                removeAttachmentByPath(result.filepath)
+                removeAttachmentByUUID(result.uuid, true)
                 model.filesExceedingMaxEmailSize.add(FileUtils.getName(result.filepath))
+                scene.showMaxFilesExceedsDialog()
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.PayloadTooLarge -> {
-                removeAttachmentByPath(result.filepath)
+                removeAttachmentByUUID(result.uuid)
                 scene.showPayloadTooLargeDialog(result.filepath, result.headers.getLong("Max-Size"))
                 handleNextUpload()
             }
@@ -339,8 +339,14 @@ class ComposerController(private val storage: KeyValueStorage,
         return model.attachments.firstOrNull{it.uuid == uuid}
     }
 
-    private fun removeAttachmentByPath(filepath: String) {
-        model.attachments.removeAll{it.filepath == filepath}
+    private fun removeAttachmentByUUID(uuid: String, removeRemaining: Boolean = false) {
+        if(!removeRemaining) {
+            model.attachments.removeAll { it.uuid == uuid }
+        } else {
+            val attachment = model.attachments.firstOrNull { it.uuid == uuid } ?: return
+            model.attachments.remove(attachment)
+            model.attachments.removeAll(model.attachments.filter { it.uploadProgress == -1 })
+        }
     }
 
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {
@@ -466,7 +472,6 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun isReadyForSending() = (model.to.isNotEmpty() || model.cc.isNotEmpty() || model.bcc.isNotEmpty())
 
     private fun uploadSelectedFile(filepath: String, fileKey: String, uuid: String){
-        model.isUploadingAttachments = true
         scene.dismissPreparingFileDialog()
         dataSource.submitRequest(ComposerRequest.UploadAttachment(
                 filepath = filepath,

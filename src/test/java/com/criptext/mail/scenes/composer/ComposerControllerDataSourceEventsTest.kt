@@ -124,7 +124,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Failure(filepath = "/test.pdf",
-                    message = UIMessage(R.string.network_error_exception)))
+                    message = UIMessage(R.string.network_error_exception), uuid = model.attachments[0].uuid))
 
             model.attachments.size `should be` 0
             verify { scene.showAttachmentErrorDialog("/test.pdf") }
