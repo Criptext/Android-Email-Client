@@ -28,7 +28,12 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
     val filesExceedingMaxEmailSize = mutableListOf<String>()
     val filesExceedingMaxFileSize = mutableListOf<Pair<String, String>>()
 
-    var isUploadingAttachments = false
+    val isUploadingAttachments = when {
+        attachments.isEmpty() -> false
+        attachments.any { it.uploadProgress == -1 } -> true
+        attachments.any { it.uploadProgress in 0..99 } -> true
+        else -> false
+    }
 
     var to = LinkedList<Contact>()
     var cc = LinkedList<Contact>()
