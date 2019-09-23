@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -46,7 +47,7 @@ class GetRemoteFileWorker(private val uris: List<String>,
                 var cleanedName = if(name == null) null
                 else {
                     val baseAndExtension = FileUtils.getBasenameAndExtension(name)
-                    extension = baseAndExtension.second
+                    extension = if(extension?.isEmpty() != false) baseAndExtension.second else extension
                     baseAndExtension.first
                 }
                 if(cleanedName != null && cleanedName.length < 3) cleanedName = cleanedName.plus("_tmp")

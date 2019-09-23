@@ -252,18 +252,23 @@ class FileUtils {
 
         fun getPathAndSizeFromUri(uri: Uri, contentResolver: ContentResolver?,
                                             context: Context): Pair<String, Long>?{
-            if(uri.toString().contains("com.google.android")){
-                return Pair(uri.toString(), -1L)
+            return if(uri.toString().contains("com.google.android")){
+                Pair(uri.toString(), -1L)
             }else {
-                contentResolver?.query(uri, null, null, null, null)?.use {
+                val filePair = contentResolver?.query(uri, null, null, null, null)?.use {
                     val absolutePath = PathUtil.getPath(context, uri)
                     val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
                     it.moveToFirst()
                     if(absolutePath != null)
-                        return Pair(absolutePath, it.getLong(sizeIndex))
+                        Pair(absolutePath, it.getLong(sizeIndex))
+                    else
+                        null
                 }
+                if(filePair == null){
+                    val file = File(uri.path)
+                    Pair(file.absolutePath, file.length())
+                } else filePair
             }
-            return null
         }
 
         fun generateFileKey(): String{

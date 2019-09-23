@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
 import java.io.*
 import java.net.URISyntaxException
 
@@ -61,8 +62,14 @@ object PathUtil {
                             val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                             it.moveToFirst()
                             it.getString(nameIndex)
+                        } ?: return null
+                        val finalName = if(FileUtils.getExtension(name).isEmpty()) {
+                            val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(context.contentResolver.getType(uri)) ?: return null
+                            name.plus(FileUtils.EXTENSION_SEPARATOR + extension)
+                        } else {
+                            name
                         }
-                        val tempFilePath = context.cacheDir.absolutePath + "/" + name
+                        val tempFilePath = context.cacheDir.absolutePath + "/" + finalName
                         val file = File(tempFilePath)
                         if(inputStream == null)
                             return null
