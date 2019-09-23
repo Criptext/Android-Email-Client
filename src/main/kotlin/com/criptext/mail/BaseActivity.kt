@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -492,40 +493,43 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                         return IntentExtrasData.IntentExtrasMailTo(action, mailTo.toString().removePrefix("mailto:"),
                                 account, domain)
                 }
-                Intent.ACTION_SEND,
-                Intent.ACTION_SEND_MULTIPLE -> {
+                Intent.ACTION_SEND -> {
                     val data = intent
-                    if(data != null) {
+                    if (data != null) {
                         val activeAccount = ActiveAccount.loadFromStorage(this)!!
-                        val account = extras.getString("account")?: activeAccount.recipientId
+                        val account = extras.getString("account") ?: activeAccount.recipientId
                         val domain = extras.getString("domain") ?: activeAccount.domain
-                        val clipData = data.clipData
-                        if(clipData == null) {
-                            data.data?.also { uri ->
-                                val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
-                                if (attachment != null)
-                                    return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account, domain)
-                            }
-                        }else{
-                            val attachmentList = mutableListOf<Pair<String, Long>>()
-                            val urlList = mutableListOf<String>()
-                            for (i in 0 until clipData.itemCount) {
-                                clipData.getItemAt(i).also { item ->
-                                    if (item.uri != null) {
-                                        val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
-                                                contentResolver, this)
-                                        if (attachment != null)
-                                            attachmentList.add(attachment)
-                                    }
-                                    if(item.text != null){
-                                        urlList.add("<a href=\"${item.text}\">${item.text}</a>")
-                                    }
-                                }
-                            }
-                            if (attachmentList.isNotEmpty() || urlList.isNotEmpty())
-                                return IntentExtrasData.IntentExtrasSend(action, attachmentList, urlList, account, domain)
+                        val finalData = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri ?: return null
+                        finalData.also { uri ->
+                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
+                            if (attachment != null)
+                                return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account, domain)
                         }
                     }
+                }
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    val data = intent
+                    val activeAccount = ActiveAccount.loadFromStorage(this)!!
+                    val account = extras.getString("account")?: activeAccount.recipientId
+                    val domain = extras.getString("domain") ?: activeAccount.domain
+                    val clipData = data.clipData
+                    val attachmentList = mutableListOf<Pair<String, Long>>()
+                    val urlList = mutableListOf<String>()
+                    for (i in 0 until clipData.itemCount) {
+                        clipData.getItemAt(i).also { item ->
+                            if (item.uri != null) {
+                                val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
+                                        contentResolver, this)
+                                if (attachment != null)
+                                    attachmentList.add(attachment)
+                            }
+                            if(item.text != null){
+                                urlList.add("<a href=\"${item.text}\">${item.text}</a>")
+                            }
+                        }
+                    }
+                    if (attachmentList.isNotEmpty() || urlList.isNotEmpty())
+                        return IntentExtrasData.IntentExtrasSend(action, attachmentList, urlList, account, domain)
                 }
             }
 
