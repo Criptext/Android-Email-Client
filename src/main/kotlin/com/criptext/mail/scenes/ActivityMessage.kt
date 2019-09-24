@@ -25,8 +25,8 @@ sealed class ActivityMessage {
                         val threadId: String?,
                         val composerInputData: ComposerInputData,
                         val attachments: List<ComposerAttachment>, val fileKey: String?): ActivityMessage()
-    data class AddAttachments(val filesMetadata: List<Pair<String, Long>>): ActivityMessage()
-    data class AddUrls(val urls: List<String>): ActivityMessage()
+    data class AddAttachments(val filesMetadata: List<Pair<String, Long>>, val isShare: Boolean): ActivityMessage()
+    data class AddUrls(val urls: List<String>, val isShare: Boolean): ActivityMessage()
     data class ProfilePictureFile(val filesMetadata: Pair<String, Long>): ActivityMessage()
     data class UpdateUnreadStatusThread(val threadId: String, val unread: Boolean): ActivityMessage()
     data class UpdateLabelsThread(val threadId: String, val selectedLabelIds: List<Long>): ActivityMessage()

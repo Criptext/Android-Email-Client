@@ -580,4 +580,5 @@
   <string name="profile_footer_option">Mostrar \"Enviado con Criptext\"</string>
   <string name="uploading_to_google_drive">Subiendo Respaldo a Google Drive…</string>
   <string name="upload_to_google_drive_success">¡Respaldo subido exitosamente!</string>
+  <string name="open_email_notification_text">📩 El correo \"%1$s\" fue abierto</string>
 </resources>

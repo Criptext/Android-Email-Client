@@ -438,7 +438,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     override fun getIntentExtras(): IntentExtrasData? {
         val extras = intent.extras
         if(extras != null && !extras.isEmpty) {
-            PinLockUtils.disablePinLock()
             val action = intent.action ?: return null
             when(action){
                 Intent.ACTION_MAIN ->    {
@@ -499,11 +498,21 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                         val activeAccount = ActiveAccount.loadFromStorage(this)!!
                         val account = extras.getString("account") ?: activeAccount.recipientId
                         val domain = extras.getString("domain") ?: activeAccount.domain
-                        val finalData = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri ?: return null
-                        finalData.also { uri ->
-                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
-                            if (attachment != null)
-                                return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account, domain)
+                        val finalData = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri
+                        if(finalData != null) {
+                            finalData.also { uri ->
+                                val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this, data)
+                                if (attachment != null)
+                                    return IntentExtrasData.IntentExtrasSend(action, listOf(attachment), listOf(), account, domain)
+                            }
+                        } else if(data.type == "text/plain") {
+                            val text = data.getStringExtra(Intent.EXTRA_TEXT) ?: return null
+                            return if(text.contains("http")){
+                                val url = "<a href=\"$text\">$text</a>"
+                                IntentExtrasData.IntentExtrasSend(action, listOf(), listOf(url), account, domain)
+                            } else {
+                                IntentExtrasData.IntentExtrasSend(action, listOf(), listOf(text), account, domain)
+                            }
                         }
                     }
                 }
@@ -512,14 +521,14 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     val activeAccount = ActiveAccount.loadFromStorage(this)!!
                     val account = extras.getString("account")?: activeAccount.recipientId
                     val domain = extras.getString("domain") ?: activeAccount.domain
-                    val clipData = data.clipData
+                    val clipData = data.clipData ?: return null
                     val attachmentList = mutableListOf<Pair<String, Long>>()
                     val urlList = mutableListOf<String>()
                     for (i in 0 until clipData.itemCount) {
                         clipData.getItemAt(i).also { item ->
                             if (item.uri != null) {
                                 val attachment = FileUtils.getPathAndSizeFromUri(item.uri,
-                                        contentResolver, this)
+                                        contentResolver, this, data)
                                 if (attachment != null)
                                     attachmentList.add(attachment)
                             }
@@ -534,6 +543,17 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
 
 
+        } else {
+            val action = intent.action ?: return null
+            when(action){
+                Intent.ACTION_SENDTO -> {
+                    val mailTo = intent.data ?: return null
+                    val activeAccount = ActiveAccount.loadFromStorage(this)!!
+                    if(mailTo.toString().contains("mailto:"))
+                        return IntentExtrasData.IntentExtrasMailTo(action, mailTo.toString().removePrefix("mailto:"),
+                                activeAccount.recipientId, activeAccount.domain)
+                }
+            }
         }
         return null
     }

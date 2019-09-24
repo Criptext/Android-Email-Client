@@ -580,4 +580,5 @@
   <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
   <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
   <string name="upload_to_google_drive_success">Upload Successful!</string>
+  <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
 </resources>

@@ -14,6 +14,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLConnection
 import java.util.zip.GZIPOutputStream
+import android.content.Intent
+
+
 
 /**
  * Anything you need to know about a file given its filename
@@ -251,8 +254,11 @@ class FileUtils {
         }
 
         fun getPathAndSizeFromUri(uri: Uri, contentResolver: ContentResolver?,
-                                            context: Context): Pair<String, Long>?{
+                                            context: Context, data: Intent): Pair<String, Long>?{
             return if(uri.toString().contains("com.google.android")){
+                var takeFlags = data.flags
+                takeFlags = takeFlags and Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                contentResolver?.takePersistableUriPermission(uri, takeFlags)
                 Pair(uri.toString(), -1L)
             }else {
                 val filePair = contentResolver?.query(uri, null, null, null, null)?.use {

@@ -58,8 +58,9 @@ class PushController(private val dataSource: PushDataSource, private val host: M
         val title = pushData["title"] ?: ""
         val recipientId = pushData["recipientId"] ?: ""
         val domain = pushData["domain"] ?: ""
+        val subject = pushData["subject"] ?: ""
 
-        return PushData.OpenMailbox(title = title, body = body,
+        return PushData.OpenMailbox(title = title, body = body, subject = subject,
                 shouldPostNotification = shouldPostNotification,
                 isPostNougat = isPostNougat, recipientId = recipientId, domain = domain)
     }

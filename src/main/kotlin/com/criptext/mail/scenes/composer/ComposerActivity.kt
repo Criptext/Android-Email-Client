@@ -79,13 +79,13 @@ class ComposerActivity : BaseActivity() {
             FilePickerConst.KEY_SELECTED_MEDIA,
             FilePickerConst.KEY_SELECTED_DOCS -> {
                 if(data != null) {
-                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this, false))
                 }
             }
             PhotoUtil.KEY_PHOTO_TAKEN -> {
                 val photo= photoUtil.getPhotoFileFromIntent()
                 if(photo != null && photo.length() != 0L)
-                    setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length()))))
+                    setActivityMessage(ActivityMessage.AddAttachments(listOf(Pair(photo.absolutePath, photo.length())), false))
             }
         }
     }

@@ -30,6 +30,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     private val rootView: LinearLayout
     private val check: ImageView
     private val attachment: ImageView
+    private val isSecure : ImageView
     private val leftImageView: CircleImageView
 
     override fun setBackground(drawable: Drawable) {
@@ -92,10 +93,10 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
                 domain = domain)
 
 
-        setIcons(fullEmail.email.delivered, fullEmail.files.isNotEmpty())
+        setIcons(fullEmail.email.delivered, fullEmail.files.isNotEmpty(), fullEmail.email.secure)
     }
 
-    private fun setIcons(deliveryType: DeliveryTypes, hasFiles: Boolean){
+    private fun setIcons(deliveryType: DeliveryTypes, hasFiles: Boolean, secure: Boolean){
 
         check.visibility = View.VISIBLE
 
@@ -120,6 +121,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
             }
         }
         attachment.visibility = if(hasFiles) View.VISIBLE else View.GONE
+        isSecure.visibility = if(secure) View.VISIBLE else View.GONE
     }
 
     private fun setIconAndColor(drawable: Int, color: Int){
@@ -139,6 +141,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         attachment = view.findViewById(R.id.email_has_attachments)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
         rootView = view.findViewById(R.id.cardview)
+        isSecure = view.findViewById(R.id.email_is_secure)
     }
 
 }

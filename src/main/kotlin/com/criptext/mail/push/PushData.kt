@@ -16,7 +16,7 @@ sealed class PushData {
                        val metadataKey: Long, val isPostNougat: Boolean, val preview: String, val hasInlineImages: Boolean,
                        val shouldPostNotification:Boolean, val activeEmail: String, val senderImage: Bitmap?,
                        val recipientId: String, val account: String, val domain: String): PushData()
-    data class OpenMailbox(val title: String, val body: String, val recipientId: String,
+    data class OpenMailbox(val title: String, val body: String, val recipientId: String, val subject: String,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean, val domain: String): PushData()
 
     data class Error(val title: UIMessage, val body: UIMessage,
