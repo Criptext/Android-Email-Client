@@ -85,7 +85,7 @@ class ProfileActivity: BaseActivity(){
                     val clipData = data.clipData
                     if(clipData == null) {
                         data.data?.also { uri ->
-                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this)
+                            val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, this, data)
                             if (attachment != null)
                                 setActivityMessage(ActivityMessage.ProfilePictureFile(attachment))
                         }

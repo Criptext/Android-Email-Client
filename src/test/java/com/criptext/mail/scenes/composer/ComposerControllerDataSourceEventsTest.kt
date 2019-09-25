@@ -51,7 +51,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                 body = "this is a test", attachments = null, fileKey = null)
 
     private val mockedAttachmentActivityMessage =
-            ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)))
+            ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)), isShare = false)
 
     @Test
     fun `after receiving ack of mail saved without errors, should exit to mailbox scene with SendMail param`() {

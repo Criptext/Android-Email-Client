@@ -64,6 +64,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val attachmentsRecyclerView: RecyclerView
     private val leftImageView: CircleImageView
     private val unsendProgressBar: ProgressBar
+    private val isSecure : ImageView
 
     private var listener: FullEmailListAdapter.OnFullEmailEventListener? = null
 
@@ -101,6 +102,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     position = position,
                     all = false)
         }
+
+        isSecure.visibility = if(fullEmail.email.secure) View.VISIBLE else View.GONE
 
         showStartGuideEmailIsRead(emailListener, fullEmail)
 
@@ -517,6 +520,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         leftImageView = view.findViewById(R.id.mail_item_left_name)
         unsendProgressBar = view.findViewById(R.id.loadingPanel)
         zoomLayout = view.findViewById(R.id.zoomLayout)
+        isSecure = view.findViewById(R.id.email_is_secure)
         setupWebview()
     }
 }

@@ -90,7 +90,7 @@ class RestoreBackupActivity: BaseActivity(){
         when(filePickerConst){
             FilePickerConst.KEY_SELECTED_DOCS -> {
                 if(data != null) {
-                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this))
+                    setActivityMessage(ActivityMessageUtils.getAddAttachmentsActivityMessage(data, contentResolver, this, false))
                 }
             }
         }

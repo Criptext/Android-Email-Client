@@ -52,7 +52,7 @@ class ComposerContollerUiTest: ComposerControllerTest() {
 
     @Test
     fun `On start if there is an AttachmentActivityMessage, attachment should be added to composer`(){
-        val activityMessage = ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)))
+        val activityMessage = ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)), isShare = false)
 
 
         controller.onStart(activityMessage)

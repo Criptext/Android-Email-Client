@@ -667,6 +667,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
                         userEmail = activeAccount.userEmail, doReply = true))
             }
+            Intent.ACTION_SENDTO,
             Intent.ACTION_VIEW -> {
                 val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
                 host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo), currentLabel = model.selectedLabel), null, false, true)
@@ -678,8 +679,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             Intent.ACTION_SEND_MULTIPLE,
             Intent.ACTION_SEND -> {
                 val extrasMail = extras as IntentExtrasData.IntentExtrasSend
-                val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files)
-                else ActivityMessage.AddUrls(extrasMail.urls)
+                val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files, true)
+                else ActivityMessage.AddUrls(extrasMail.urls, true)
                 host.exitToScene(ComposerParams(type = ComposerType.Empty(), currentLabel = model.selectedLabel), composerMessage, false, true)
             }
         }

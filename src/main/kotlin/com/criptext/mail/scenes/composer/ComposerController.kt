@@ -576,15 +576,21 @@ class ComposerController(private val storage: KeyValueStorage,
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
-        PinLockUtils.resetLastMillisPin()
-        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
         if (activityMessage is ActivityMessage.AddAttachments) {
+            if(!activityMessage.isShare){
+                PinLockUtils.resetLastMillisPin()
+                PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+            }
             if(activityMessage.filesMetadata.isNotEmpty()){
                 generateEmailFileKey()
                 addNewAttachments(activityMessage.filesMetadata)
             }
             return true
         } else if (activityMessage is ActivityMessage.AddUrls){
+            if(!activityMessage.isShare){
+                PinLockUtils.resetLastMillisPin()
+                PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+            }
             if(activityMessage.urls.isNotEmpty()){
                 activityMessage.urls.forEach {
                     model.body = model.body.plus(it.plus("\n"))

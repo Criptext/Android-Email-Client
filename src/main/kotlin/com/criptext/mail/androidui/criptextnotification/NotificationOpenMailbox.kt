@@ -42,9 +42,10 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
     override fun createNotification(notificationId: Int, clickIntent: PendingIntent?,
                                     data: PushData): Notification {
         val pushData = data as PushData.OpenMailbox
+        val notText = ctx.getLocalizedUIMessage(UIMessage(R.string.open_email_notification_text, arrayOf(data.subject)))
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_OPEN_EMAIL)
                 .setContentTitle(pushData.title)
-                .setContentText(pushData.body)
+                .setContentText(notText)
                 .setSubText(pushData.recipientId.plus("@${pushData.domain}"))
                 .setAutoCancel(true)
                 .setContentIntent(clickIntent)
@@ -52,7 +53,7 @@ class NotificationOpenMailbox(override val ctx: Context): CriptextNotification(c
                 .setGroupSummary(false)
                 .setSmallIcon(R.drawable.push_icon)
                 .setColor(Color.CYAN)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(pushData.body))
+                .setStyle(NotificationCompat.BigTextStyle().bigText(notText))
 
         return buildNotification(builder)
     }

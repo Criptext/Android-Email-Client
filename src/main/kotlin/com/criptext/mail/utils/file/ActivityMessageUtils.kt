@@ -7,25 +7,25 @@ import android.os.ParcelFileDescriptor
 import com.criptext.mail.scenes.ActivityMessage
 
 object ActivityMessageUtils  {
-    fun getAddAttachmentsActivityMessage(data: Intent, contentResolver: ContentResolver?, ctx: Context): ActivityMessage.AddAttachments? {
+    fun getAddAttachmentsActivityMessage(data: Intent, contentResolver: ContentResolver?, ctx: Context, isFromShare: Boolean): ActivityMessage.AddAttachments? {
         val clipData = data.clipData
         if(clipData != null && data.data == null){
             val attachmentList = mutableListOf<Pair<String, Long>>()
             for (i in 0 until clipData.itemCount) {
                 clipData.getItemAt(i).also { item ->
                     val attachment = FileUtils.getPathAndSizeFromUri(item.uri, contentResolver,
-                            ctx)
+                            ctx, data)
                     if (attachment != null)
                         attachmentList.add(attachment)
                 }
             }
             if (attachmentList.isNotEmpty())
-                return ActivityMessage.AddAttachments(attachmentList)
+                return ActivityMessage.AddAttachments(attachmentList, isFromShare)
         } else if(data.data != null) {
             data.data?.also { uri ->
-                val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, ctx)
+                val attachment = FileUtils.getPathAndSizeFromUri(uri, contentResolver, ctx, data)
                 if (attachment != null)
-                    return ActivityMessage.AddAttachments(listOf(attachment))
+                    return ActivityMessage.AddAttachments(listOf(attachment), isFromShare)
             }
         }
         return null
