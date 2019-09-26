@@ -75,6 +75,7 @@ class SignatureController(
 
     private fun updateSignature(){
         activeAccount.updateSignature(storage, scene.getSignature())
+        dataSource.submitRequest(SettingsRequest.UpdateSignature(scene.getSignature()))
     }
 
 }

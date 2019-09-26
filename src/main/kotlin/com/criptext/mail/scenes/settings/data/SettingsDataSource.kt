@@ -36,6 +36,13 @@ class SettingsDataSource(
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.UpdateSignature -> UpdateSignatureWorker(
+                    signature = params.signature,
+                    accountDao = settingsLocalDB.accountDao,
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

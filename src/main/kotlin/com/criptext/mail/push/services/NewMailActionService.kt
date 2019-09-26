@@ -33,8 +33,15 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val db = AppDatabase.getAppDatabase(this)
-        if(activeAccount.userEmail != data.recipientId.plus("@${data.domain}"))
-            activeAccount = ActiveAccount.loadFromDB(db.accountDao().getAccount(data.recipientId, data.domain)!!)!!
+        if(activeAccount.userEmail != data.recipientId.plus("@${data.domain}")) {
+            val account = db.accountDao().getAccount(data.recipientId, data.domain)
+            if(account != null){
+                activeAccount = ActiveAccount.loadFromDB(account)!!
+            } else {
+                deletePush(storage, manager)
+                return
+            }
+        }
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
                 activeAccount, HttpClient.Default(),
                 storage)
@@ -49,15 +56,19 @@ class NewMailActionService : IntentService("New Mail Action Service") {
                         EmailDetailLocalDB.Default(db, this.filesDir), db.emailDao(), db.pendingEventDao(), db.accountDao())
             }
             DELETE -> {
-                val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
-                if((notCount - 1) <= 0) {
-                    manager.cancel(CriptextNotification.INBOX_ID)
-                }
-                storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount,
-                        if(notCount <= 0) 0 else notCount - 1)
+                deletePush(storage, manager)
             }
             else -> throw IllegalArgumentException("Unsupported action: " + data.action)
         }
+    }
+
+    private fun deletePush(storage: KeyValueStorage, manager: NotificationManager){
+        val notCount = storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
+        if((notCount - 1) <= 0) {
+            manager.cancel(CriptextNotification.INBOX_ID)
+        }
+        storage.putInt(KeyValueStorage.StringKey.NewMailNotificationCount,
+                if(notCount <= 0) 0 else notCount - 1)
     }
 
     private fun getIntentData(intent: Intent?, activeRecipientId: String): IntentData {

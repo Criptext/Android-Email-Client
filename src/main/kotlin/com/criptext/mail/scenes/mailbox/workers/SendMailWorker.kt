@@ -338,7 +338,7 @@ class SendMailWorker(private val signalClient: SignalClient,
         return when (finalResult) {
             is Result.Success -> {
                 db.increaseContactScore(listOf(emailId))
-                val label = db.getLabelById(currentLabel.id, activeAccount.id)!!
+                val label = db.getLabelById(currentLabel.id, activeAccount.id) ?: Label.defaultItems.inbox
                 val thread = db.getEmailThreadFromEmail(currentEmail!!, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id }, activeAccount.userEmail, activeAccount)
                 MailboxResult.SendMail.Success(EmailPreview.fromEmailThread(thread), currentLabel, isSecure)
             }
