@@ -12,13 +12,13 @@ abstract class BackgroundWorkManager<in I: Any, O: Any> {
     var listener: ((O) -> Unit)? = null
         set (newListener) {
                 if (newListener != null) {
-                    state.keys.forEach({ key ->
+                    state.keys.forEach { key ->
                         val workState = state[key]
                         if (workState is WorkState.Done)  {
                             state.remove(key)
                             newListener(workState.result)
                         }
-                    })
+                    }
                 }
           field = newListener
         }
@@ -35,6 +35,4 @@ abstract class BackgroundWorkManager<in I: Any, O: Any> {
             runner.workInBackground(worker)
         }
     }
-
-
 }

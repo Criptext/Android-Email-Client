@@ -241,6 +241,7 @@ class SignUpSceneController(
     }
 
     private fun handleRegisterUserFailure(result: SignUpResult.RegisterUser.Failure) {
+        scene.initListeners(uiObserver)
         scene.showError(result.message)
         resetWidgetsFromModel()
         when(result.exception)

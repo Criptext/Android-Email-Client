@@ -7,7 +7,7 @@ import com.criptext.mail.db.models.ActiveAccount
 object AccountUtils {
     fun setUserAsActiveAccount(user: Account, storage: KeyValueStorage): ActiveAccount{
         val activeAccount = ActiveAccount(id = user.id, name = user.name, recipientId = user.recipientId,
-                deviceId = user.deviceId, jwt = user.jwt, signature = "", refreshToken = user.refreshToken,
+                deviceId = user.deviceId, jwt = user.jwt, signature = user.signature, refreshToken = user.refreshToken,
                 domain = user.domain)
         storage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())

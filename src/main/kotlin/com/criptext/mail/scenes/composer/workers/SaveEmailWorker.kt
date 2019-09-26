@@ -68,7 +68,7 @@ class SaveEmailWorker(
 
     private fun getEmailPreview(emailId: Long): EmailThread {
         val email = db.loadFullEmail(emailId, account)!!
-        val label = db.getLabelById(currentLabel.id, account.id)!!
+        val label = db.getLabelById(currentLabel.id, account.id) ?: Label.defaultItems.inbox
         return db.getEmailThreadFromEmail(email.email, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id }, account.userEmail, account)
     }
 

@@ -200,7 +200,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.showExtraAccountsBadge(false)
             scene.hideMultipleAccountsMenu()
             threadListController.clear()
-            model.threads.clear()
             dataSource.submitRequest(MailboxRequest.SetActiveAccount(account))
         }
 

@@ -95,4 +95,9 @@ interface AccountDao {
             where recipientId=:recipientId AND domain=:domain""")
     fun updateRefreshToken(recipientId: String, domain: String, token: String)
 
+    @Query("""UPDATE account
+            SET signature=:signature
+            where id=:id""")
+    fun updateSignature(id: Long, signature: String)
+
 }
