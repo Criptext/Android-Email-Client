@@ -581,4 +581,8 @@
   <string name="uploading_to_google_drive">Subiendo Respaldo a Google Drive…</string>
   <string name="upload_to_google_drive_success">¡Respaldo subido exitosamente!</string>
   <string name="open_email_notification_text">📩 El correo \"%1$s\" fue abierto</string>
+  <string name="rate_us_title">¿Estás disfrutando Criptext?</string>
+  <string name="rate_us_message">Si es así, ayúdanos con una calificación. ¡Gracias por tu apoyo!</string>
+  <string name="rate_us">Calificar</string>
+  <string name="rate_remind_later">Recordar Luego</string>
 </resources>

@@ -581,4 +581,8 @@
   <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
   <string name="upload_to_google_drive_success">Upload Successful!</string>
   <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
+  <string name="rate_us_title">Enjoying Criptext?</string>
+  <string name="rate_us_message">If you do, please take a moment to rate it. Thanks for your support!</string>
+  <string name="rate_us">Rate Us</string>
+  <string name="rate_remind_later">Remind Later</string>
 </resources>
