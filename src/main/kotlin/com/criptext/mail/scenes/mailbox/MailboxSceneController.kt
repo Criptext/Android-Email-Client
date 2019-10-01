@@ -623,6 +623,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
         }
+        scene.checkRating(storage)
 
         return handleActivityMessage(activityMessage)
     }

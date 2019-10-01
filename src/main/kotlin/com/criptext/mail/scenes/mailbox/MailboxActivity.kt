@@ -15,7 +15,6 @@ import com.criptext.mail.db.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxDataSource
@@ -27,7 +26,6 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.file.ActivityMessageUtils
-import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.google.android.gms.auth.api.signin.GoogleSignIn

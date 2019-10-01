@@ -19,6 +19,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
@@ -32,6 +33,7 @@ import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.mailbox.ui.RestoreBackupDialog
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.apputils.AppRater
 import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -121,6 +123,7 @@ interface MailboxScene{
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
     fun hideComposer(shouldHide: Boolean)
+    fun checkRating(storage: KeyValueStorage)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -390,6 +393,10 @@ interface MailboxScene{
                     credential)
                     .setApplicationName("Criptext Secure Email")
                     .build()
+        }
+
+        override fun checkRating(storage: KeyValueStorage) {
+            AppRater.appLaunched(context, storage)
         }
 
         override fun dismissConfirmPasswordDialog() {

@@ -49,7 +49,10 @@ interface KeyValueStorage {
         JWTS("JWTS"),
         SavedJobs("SavedJobs"),
         ShowCriptextFooter("ShowCriptextFooter"),
-        CloudBackupNotificationCount("CloudBackupNotificationCount")
+        CloudBackupNotificationCount("CloudBackupNotificationCount"),
+        RateDontShowAgain("RateDontShowAgain"),
+        RateLaunchCount("RateLaunchCount"),
+        RateDateFirstLaunch("RateDateFirstLaunch"),
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

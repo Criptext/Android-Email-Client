@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +21,8 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
-    private lateinit var btnOk: Button
-    private lateinit var btnCancel: Button
+    lateinit var btnOk: Button
+    lateinit var btnCancel: Button
 
     private lateinit var view: View
 
@@ -65,13 +66,17 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
         btnOk = view.findViewById(R.id.btn_ok) as Button
         btnCancel = view.findViewById(R.id.btn_cancel) as Button
 
-        btnOk.setOnClickListener {
-            observer?.onGeneralOkButtonPressed(createResult())
-            dialog.dismiss()
+        if(!btnOk.hasOnClickListeners()) {
+            btnOk.setOnClickListener {
+                observer?.onGeneralOkButtonPressed(createResult())
+                dialog.dismiss()
+            }
         }
 
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
+        if(!btnCancel.hasOnClickListeners()) {
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
         }
     }
 
