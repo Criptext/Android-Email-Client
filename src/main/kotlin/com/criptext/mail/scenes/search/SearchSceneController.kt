@@ -142,6 +142,10 @@ class SearchSceneController(private val scene: SearchScene,
         return false
     }
 
+    override fun onPause() {
+
+    }
+
     override fun onStop() {
 
     }

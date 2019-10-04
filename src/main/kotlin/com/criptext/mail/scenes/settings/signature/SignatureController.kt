@@ -44,6 +44,10 @@ class SignatureController(
         return false
     }
 
+    override fun onPause() {
+
+    }
+
     override fun onStop() {
 
     }

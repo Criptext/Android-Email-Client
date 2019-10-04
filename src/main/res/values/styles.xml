@@ -56,6 +56,7 @@
         <item name="criptextEmptyFeedImage">@drawable/campanita</item>
         <item name="criptextEmptySearchImage">@drawable/search_sad</item>
         <item name="criptextSearchImage">@drawable/search_happy</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -111,6 +112,7 @@
         <item name="criptextEmptyFeedImage">@drawable/belldark</item>
         <item name="criptextEmptySearchImage">@drawable/search_sad_dark</item>
         <item name="criptextSearchImage">@drawable/searchdark</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

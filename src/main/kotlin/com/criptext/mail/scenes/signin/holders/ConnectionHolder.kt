@@ -29,7 +29,6 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
     private val textViewEmail: TextView
     private val progressBar: BootstrapProgressBar
     private val progressBarNumber: TextView
-    private val cancelSyncText: TextView
     private val oldDevice: ImageView
     private val timer = IntervalTimer()
 
@@ -82,11 +81,6 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
         }
     }
 
-    fun disableCancelSync(){
-        cancelSyncText.isClickable = false
-        cancelSyncText.visibility = View.INVISIBLE
-    }
-
 
     private fun initSuccessAnimatorSet(viewSucceed: View): AnimatorSet {
 
@@ -113,7 +107,6 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
         textViewEmail.text = username.plus("@$domain")
         progressBar = view.findViewById(R.id.progressBar)
         progressBarNumber = view.findViewById(R.id.percentage_advanced)
-        cancelSyncText = view.findViewById(R.id.cancelSync)
         oldDevice = view.findViewById(R.id.imageViewDevice1)
 
         when (authorizerType){
@@ -121,10 +114,6 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
             DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
             DeviceUtils.DeviceType.LinuxInstaller -> oldDevice.setImageResource(R.drawable.device_pc)
             else -> oldDevice.setImageResource(R.drawable.device_m)
-        }
-
-        cancelSyncText.setOnClickListener {
-            signInUIObserver.onCancelSync()
         }
     }
 }

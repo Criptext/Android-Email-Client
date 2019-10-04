@@ -162,6 +162,9 @@ class DevicesController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(dataSource.listener == null) dataSource.listener = dataSourceListener
+        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
@@ -377,8 +380,21 @@ class DevicesController(
         }
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
+
+        if(cleanDataSources) {
+            dataSource.listener = null
+            generalDataSource.listener = null
+        }
     }
 
     override fun onBackPressed(): Boolean {

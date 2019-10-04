@@ -459,7 +459,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onDownloadedFile(result: EmailDetailResult){
         when(result){
             is EmailDetailResult.DownloadFile.Success -> {
-                if(result.cid == null) {
+                if(result.cid == null || result.cid == "") {
                     updateAttachmentProgress(result.emailId, result.filetoken, 100)
                     openFile(result.filepath)
                 }else{
@@ -663,7 +663,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 return
             }
             val email = model.emails[emailPosition]
-            val attachment = email.files.filter { it.cid == null }[attachmentPosition]
+            val attachment = email.files.filter { it.cid == null || it.cid == "" }[attachmentPosition]
             if(attachment.status != 0) {
                 downloadFile(email.email.id, attachment.token, getFileKey(attachment, email), attachment.name,
                         attachment.size)
@@ -884,11 +884,25 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(dataSource.listener == null)
+            dataSource.listener = dataSourceListener
+        if(generalDataSource.listener == null)
+            generalDataSource.listener = remoteChangeDataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
+    override fun onPause(){
+        cleanup()
+    }
+
     override fun onStop() {
+        cleanup()
+    }
+
+    private fun cleanup(){
         dataSource.listener = null
+        generalDataSource.listener = null
         websocketEvents.clearListener(webSocketEventListener)
     }
 

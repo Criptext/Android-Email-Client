@@ -256,6 +256,9 @@ class ProfileController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(dataSource.listener == null) dataSource.listener = dataSourceListener
+        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
@@ -269,6 +272,7 @@ class ProfileController(
     private fun onLogout(result: GeneralResult.Logout){
         when(result) {
             is GeneralResult.Logout.Success -> {
+                scene.dismissMessageAndProgressDialog()
                 CloudBackupJobService.cancelJob(storage, result.oldAccountId)
                 if(result.activeAccount == null)
                     host.exitToScene(SignInParams(), null, false, true)
@@ -473,8 +477,20 @@ class ProfileController(
         }
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
+        if(cleanDataSources){
+            dataSource.listener = null
+            generalDataSource.listener = null
+        }
     }
 
     private fun setBitmapOnProfileImage(imagePath: String){

@@ -63,9 +63,6 @@ class SyncingController(
             host.exitToScene(MailboxParams(), null, false, true)
         }
 
-        override fun onCancelSync() {
-            host.exitToScene(MailboxParams(), null, false, true)
-        }
 
         override fun onLinkingHasFinished() {
             host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.mailbox_sync_complete)), false, true)
@@ -88,6 +85,8 @@ class SyncingController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
@@ -194,8 +193,6 @@ class SyncingController(
                 }
             }
             is GeneralResult.LinkData.Progress -> {
-                if(result.progress > DOWNLOADING_MAILBOX_PERCENTAGE)
-                    scene.disableCancelSync()
                 scene.setProgress(result.message, result.progress)
             }
             is GeneralResult.LinkData.Failure -> {
@@ -205,8 +202,19 @@ class SyncingController(
     }
 
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
+        if(cleanDataSources){
+            generalDataSource.listener = null
+        }
     }
 
     override fun onBackPressed(): Boolean {

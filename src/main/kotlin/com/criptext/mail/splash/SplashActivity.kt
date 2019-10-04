@@ -3,7 +3,6 @@ package com.criptext.mail.splash
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -11,12 +10,10 @@ import com.crashlytics.android.Crashlytics
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.github.omadahealth.lollipin.lib.managers.LockManager
 import io.fabric.sdk.android.Fabric
-import java.lang.Exception
 import java.lang.ref.WeakReference
 
 

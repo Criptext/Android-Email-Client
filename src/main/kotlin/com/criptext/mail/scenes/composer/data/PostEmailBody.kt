@@ -41,7 +41,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("token", token)
             json.put("name", name)
             json.put("size", size)
-            if(cid != null) json.put("cid", cid)
+            if(cid != null && cid != "") json.put("cid", cid)
             json.put("mimeType", FileUtils.getMimeType(name))
             return json
         }

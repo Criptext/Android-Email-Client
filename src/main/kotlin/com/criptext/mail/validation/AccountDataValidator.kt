@@ -20,13 +20,12 @@ object AccountDataValidator {
     fun validateUsername(username: String): FormData<String> {
         val sanitizedValue = username.trim().toLowerCase()
 
-        return if (sanitizedValue.length < 3)
-            FormData.Error(UIMessage(R.string.username_length_error))
-        else if (! (validCriptextUserPattern.matcher(sanitizedValue).matches() ||
-                        validEmailAddressPattern.matcher(sanitizedValue).matches()))
-            FormData.Error(UIMessage(R.string.username_invalid_error))
-        else
-            FormData.Valid(sanitizedValue)
+        return when {
+            sanitizedValue.length < 3 -> FormData.Error(UIMessage(R.string.username_length_error))
+            !validCriptextUserPattern.matcher(sanitizedValue).matches() ||
+            validEmailAddressPattern.matcher(sanitizedValue).matches() -> FormData.Error(UIMessage(R.string.username_invalid_error))
+            else -> FormData.Valid(sanitizedValue)
+        }
     }
 
     fun validateEmailAddress(emailAddress: String): FormData<String> {

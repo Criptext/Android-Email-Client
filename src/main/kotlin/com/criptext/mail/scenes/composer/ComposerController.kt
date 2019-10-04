@@ -253,8 +253,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 model.checkedDomains.addAll(result.contactDomainCheck)
                 model.checkedDomains = model.checkedDomains.distinctBy { it.name }.toMutableList()
                 model.to = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
-                model.cc = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
-                model.bcc = LinkedList(getCriptextContacts(model.to, model.checkedDomains))
+                model.cc = LinkedList(getCriptextContacts(model.cc, model.checkedDomains))
+                model.bcc = LinkedList(getCriptextContacts(model.bcc, model.checkedDomains))
                 scene.contactsInputUpdate(
                         model.to,
                         model.cc,
@@ -662,16 +662,29 @@ class ComposerController(private val storage: KeyValueStorage,
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(scene.observer == null) scene.observer = this.observer
+        if(dataSource.listener == null) dataSource.listener = this.dataSourceListener
+        if(generalDataSource.listener == null) generalDataSource.listener = this.generalDataSourceListener
         return false
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
-        // save state
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
 
-        scene.observer = null
-        dataSource.listener = null
+        if(cleanDataSources) {
+            scene.observer = null
+            dataSource.listener = null
+            generalDataSource.listener = null
+        }
     }
 
     override fun onBackPressed(): Boolean {
