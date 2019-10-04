@@ -57,4 +57,15 @@ object AccountDataValidator {
         else
             FormData.Valid(sanitizedValue)
     }
+
+    fun validateRecoveryCode(code: String): FormData<String> {
+        val sanitizedValue = code.trim()
+
+        return if (sanitizedValue.length < 6)
+            FormData.Error(UIMessage(R.string.recovery_code_validation_error))
+        else if (sanitizedValue.isEmpty())
+            FormData.Error(UIMessage(R.string.recovery_code_validation_error_empty))
+        else
+            FormData.Valid(sanitizedValue)
+    }
 }

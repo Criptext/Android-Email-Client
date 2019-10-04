@@ -64,6 +64,22 @@ class SignInDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is SignInRequest.RecoveryCode -> RecoveryCodeWorker(
+                    httpClient = httpClient, jwt = params.tempToken,
+                    db = db,
+                    code = params.code,
+                    recipientId = params.recipientId,
+                    domain = params.domain,
+                    signUpDao = signUpDao,
+                    keyGenerator = keyGenerator,
+                    keyValueStorage = keyValueStorage,
+                    accountDao = accountDao,
+                    isMultiple = params.isMultiple,
+                    messagingInstance = MessagingInstance.Default(),
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
             is SignInRequest.LinkBegin -> LinkBeginWorker(
                     httpClient = httpClient, username = params.username,
                     domain = params.domain,

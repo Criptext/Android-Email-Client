@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.signup.holders.KeyGenerationHolder
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.ForgotPasswordDialog
+import com.criptext.mail.utils.ui.GeneralDialogWithInput
 import com.criptext.mail.utils.ui.GeneralMessageOkDialog
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogNewDevice
 import com.criptext.mail.utils.ui.data.DialogData
@@ -45,6 +46,10 @@ interface SignInScene {
     fun showDeviceCountRemaining(remaining: Int)
     fun showDeviceRemovalError()
     fun showToolbarCount(checked: Int)
+    fun showRecoveryCode()
+    fun showRecoveryDialogError(message: UIMessage?)
+    fun toggleLoadRecoveryCode(load: Boolean)
+    fun dismissRecoveryCodeDialog()
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -68,6 +73,14 @@ interface SignInScene {
                         message = listOf(UIMessage(R.string.sign_in_remove_error_dialog_message)),
                         type = DialogType.Message(),
                         onOkPress = { signInUIObserver?.onBackPressed() }
+                )
+        )
+
+        private val recoveryCodeDialog = GeneralDialogWithInput(view.context,
+                DialogData.DialogDataForRecoveryCode(
+                        title = UIMessage(R.string.recovery_code_dialog_title),
+                        message = UIMessage(R.string.recovery_code_dialog_message),
+                        type = DialogType.RecoveryCode()
                 )
         )
 
@@ -252,6 +265,24 @@ interface SignInScene {
         override fun showToolbarCount(checked: Int) {
             val currentHolder = holder as RemoveDevicesHolder
             currentHolder.setToolbarCount(checked)
+        }
+
+        override fun showRecoveryCode() {
+            recoveryCodeDialog.showDialog(signInUIObserver)
+            recoveryCodeDialog.editTextEmail.setHint(R.string.recovery_code_dialog_hint)
+            recoveryCodeDialog.editTextEmailLayout.hint = view.context.getLocalizedUIMessage(UIMessage(R.string.recovery_code_dialog_hint))
+        }
+
+        override fun showRecoveryDialogError(message: UIMessage?) {
+            recoveryCodeDialog.setEmailError(message)
+        }
+
+        override fun toggleLoadRecoveryCode(load: Boolean) {
+            recoveryCodeDialog.toggleLoad(load)
+        }
+
+        override fun dismissRecoveryCodeDialog() {
+            recoveryCodeDialog.dismiss()
         }
 
         override fun showKeyGenerationHolder() {

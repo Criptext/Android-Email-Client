@@ -195,6 +195,18 @@
                 android:gravity="center_horizontal"
                 android:text="@string/cant_access_device"/>
 
+            <TextView
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:id="@+id/recovery_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:text="@string/recovery_code"/>
+
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

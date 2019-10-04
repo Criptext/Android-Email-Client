@@ -13,6 +13,8 @@ sealed class SignInRequest{
 
     data class ForgotPassword(val username: String, val domain: String): SignInRequest()
 
+    data class RecoveryCode(val recipientId: String, val domain: String, val tempToken: String, val isMultiple: Boolean, val code: String? = null): SignInRequest()
+
     data class LinkBegin(val username: String, val domain: String): SignInRequest()
 
     data class LinkAuth(val username: String, val ephemeralJwt: String, val domain: String, val password: String? = null): SignInRequest()
