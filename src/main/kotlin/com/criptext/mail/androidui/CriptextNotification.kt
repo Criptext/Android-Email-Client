@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.criptext.mail.R
 import com.criptext.mail.push.PushData
+import com.criptext.mail.push.services.HeaderActionService
 import com.criptext.mail.push.services.NewMailActionService
 
 /**
@@ -56,6 +57,18 @@ abstract class CriptextNotification(open val ctx: Context) {
                 else -> "DEFAULT_CHANNEL"
             }
         }
+
+        fun getNotificationId(action: String): Int {
+            return when(action){
+                ACTION_OPEN -> OPEN_ID
+                ACTION_INBOX -> INBOX_ID
+                ACTION_LINK_DEVICE -> LINK_DEVICE_ID
+                ACTION_SYNC_DEVICE -> LINK_DEVICE_ID
+                ACTION_ERROR -> ERROR_ID
+                ACTION_JOB_BACKUP -> JOB_BACKUP_ID
+                else -> -1
+            }
+        }
     }
 
     abstract fun buildNotification(builder: NotificationCompat.Builder): Notification
@@ -82,12 +95,10 @@ abstract class CriptextNotification(open val ctx: Context) {
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setGroup(group)
 
-        if(channelId == CHANNEL_ID_NEW_EMAIL) {
-            val deleteAction = Intent(ctx, NewMailActionService::class.java)
-            deleteAction.action = NewMailActionService.DELETE
-            val deletePendingIntent = PendingIntent.getService(ctx, INBOX_ID, deleteAction,0)
-            builder.setDeleteIntent(deletePendingIntent)
-        }
+        val deleteAction = Intent(ctx, HeaderActionService::class.java)
+        deleteAction.action = group
+        val deletePendingIntent = PendingIntent.getService(ctx, getNotificationId(group), deleteAction,0)
+        builder.setDeleteIntent(deletePendingIntent)
 
         if(pendingIntent != null) builder.setContentIntent(pendingIntent)
 

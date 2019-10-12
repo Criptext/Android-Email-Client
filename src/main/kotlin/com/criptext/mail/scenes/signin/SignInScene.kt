@@ -38,7 +38,6 @@ interface SignInScene {
     fun toggleResendClickable(isEnabled: Boolean)
     fun startLinkSucceedAnimation()
     fun setLinkProgress(message: UIMessage, progress: Int)
-    fun disableCancelSync()
     fun showSyncRetryDialog(result: SignInResult)
     fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
     fun showPasswordDialogError(message: UIMessage?)
@@ -104,7 +103,7 @@ interface SignInScene {
             removeAllViews()
             val state = model.state
             holder = when (state) {
-                is SignInLayoutState.WaitForApproval -> {
+                is SignInLayoutState.Connection -> {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_connection, viewGroup)
@@ -223,18 +222,13 @@ interface SignInScene {
         }
 
         override fun startLinkSucceedAnimation() {
-            val currentHolder = holder as ConnectionHolder
-            currentHolder.startSucceedAnimation(showMailboxScene)
-        }
-
-        override fun disableCancelSync() {
-            val currentHolder = holder as ConnectionHolder
-            currentHolder.disableCancelSync()
+            val currentHolder = holder as? ConnectionHolder
+            currentHolder?.startSucceedAnimation(showMailboxScene)
         }
 
         override fun setLinkProgress(message: UIMessage, progress: Int) {
-            val currentHolder = holder as ConnectionHolder
-            currentHolder.setProgress(message, progress)
+            val currentHolder = holder as? ConnectionHolder
+            currentHolder?.setProgress(message, progress)
         }
 
         override fun showPasswordDialogError(message: UIMessage?) {

@@ -10,7 +10,6 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.generaldatasource.workers.*
 import java.io.File
 
@@ -228,7 +227,10 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { res -> flushResults(res) }
             )
             is GeneralRequest.LinkCancel -> LinkCancelWorker(
-                    activeAccount = activeAccount!!,
+                    username = params.recipientId,
+                    domain = params.domain,
+                    jwt = params.jwt,
+                    deviceId = params.deviceId,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )

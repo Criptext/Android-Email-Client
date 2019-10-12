@@ -141,6 +141,8 @@ class PrivacyController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
+        websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
@@ -272,8 +274,19 @@ class PrivacyController(
         }
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
+        if(cleanDataSources){
+            generalDataSource.listener = null
+        }
     }
 
     private fun showSuspendedAccountDialog(){

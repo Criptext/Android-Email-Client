@@ -67,6 +67,7 @@ interface LinkingScene{
                 DeviceUtils.DeviceType.LinuxInstaller -> newDevice.setImageResource(R.drawable.device_pc)
                 else -> newDevice.setImageResource(R.drawable.device_m)
             }
+            cancelSyncText.visibility = View.VISIBLE
             cancelSyncText.setOnClickListener {
                 this.linkingUIObserver?.onCancelSync()
             }

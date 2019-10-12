@@ -15,5 +15,5 @@ sealed class SignInLayoutState {
     data class ChangePassword(val username: String, val oldPassword: String, val domain: String,
                              val buttonState: ProgressButtonState): SignInLayoutState()
     data class RemoveDevices(val username: String, val domain: String, val password: String, val devices: List<DeviceItem>, val buttonState: ProgressButtonState): SignInLayoutState()
-    data class WaitForApproval(val username: String, val domain: String, val authorizerType: DeviceUtils.DeviceType) : SignInLayoutState()
+    data class Connection(val username: String, val domain: String, val authorizerType: DeviceUtils.DeviceType) : SignInLayoutState()
 }

@@ -149,6 +149,7 @@
         </service>
         <service android:name=".push.services.NewMailActionService" />
         <service android:name=".push.services.SyncDeviceActionService" />
+        <service android:name=".push.services.HeaderActionService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

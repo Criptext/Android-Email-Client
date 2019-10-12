@@ -134,7 +134,7 @@ interface SearchLocalDB{
                             headers = emailContent.second),
                     totalEmails = emails.size,
                     hasFiles = totalFiles > 0,
-                    allFilesAreInline = files.filter { it.cid != null }.size == totalFiles,
+                    allFilesAreInline = files.filter { it.cid != null && it.cid != "" }.size == totalFiles,
                     headerData = headerData.distinctBy { it.name }
             )
         }

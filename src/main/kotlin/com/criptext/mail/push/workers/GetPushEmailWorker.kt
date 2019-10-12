@@ -129,7 +129,7 @@ class GetPushEmailWorker(
                         val files = fullEmail.files
                         newData["preview"] = email.preview
                         newData["subject"] = email.subject
-                        newData["hasInlineImages"] = (files.firstOrNull { it.cid != null }  != null).toString()
+                        newData["hasInlineImages"] = (files.firstOrNull { it.cid != null && it.cid != "" }  != null).toString()
                         newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
                         newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
                         val emailAddress = newData["email"]

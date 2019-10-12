@@ -361,11 +361,20 @@ class RestoreBackupController(
         }
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
 
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
-        generalDataSource.listener = null
-        dataSource.listener = null
+        if(cleanDataSources) {
+            generalDataSource.listener = null
+            dataSource.listener = null
+        }
     }
 
     override fun onBackPressed(): Boolean {

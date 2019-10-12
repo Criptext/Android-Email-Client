@@ -15,11 +15,14 @@ import org.json.JSONObject
 
 
 class LinkCancelWorker(val httpClient: HttpClient,
-                       val activeAccount: ActiveAccount,
+                       val username: String,
+                       val domain: String,
+                       val deviceId: Int?,
+                       jwt: String,
                        override val publishFn: (GeneralResult) -> Unit)
     : BackgroundWorker<GeneralResult.SyncCancel> {
 
-    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = GeneralAPIClient(httpClient, jwt)
 
     override val canBeParallelized = true
 
@@ -28,7 +31,7 @@ class LinkCancelWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<GeneralResult.SyncCancel>): GeneralResult.SyncCancel? {
-        val result = Result.of { apiClient.postLinkCancel() }
+        val result = Result.of { apiClient.postLinkCancel(username, domain, deviceId) }
 
         return when (result) {
             is Result.Success -> GeneralResult.SyncCancel.Success()

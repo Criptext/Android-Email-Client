@@ -194,6 +194,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:textColor="@color/azure"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:visibility="gone"/>
 
 </RelativeLayout>

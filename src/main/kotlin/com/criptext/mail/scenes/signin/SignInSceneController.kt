@@ -78,6 +78,27 @@ class SignInSceneController(
 
     private var deviceWrapperListController: DeviceWrapperListController? = null
 
+    private fun cancelLink(canceledByMe: Boolean = true){
+        stopTempWebSocket()
+        stopWebSocket()
+        host.getHandler()?.removeCallbacks(null)
+        model.linkDeviceState = LinkDeviceState.Begin()
+        val activeAccount = ActiveAccount.loadFromStorage(storage)
+        if(activeAccount == null){
+            val currentState = model.state as? SignInLayoutState.LoginValidation
+            if(currentState != null) {
+                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                resetLayout()
+                if(canceledByMe)
+                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.temporalJWT, null))
+            }
+        }else{
+            if(canceledByMe)
+                generalDataSource.submitRequest(GeneralRequest.LinkCancel(activeAccount.recipientId, activeAccount.domain, activeAccount.jwt, activeAccount.deviceId))
+            host.exitToScene(MailboxParams(), null, false, true)
+        }
+    }
+
     private fun onAuthenticationFailed(errorMessage: UIMessage) {
         scene.showError(errorMessage)
 
@@ -115,7 +136,7 @@ class SignInSceneController(
     private fun onDeviceRemoved(result: GeneralResult.DeviceRemoved){
         when(result){
             is GeneralResult.DeviceRemoved.Success -> {
-                val currentState = model.state as SignInLayoutState.WaitForApproval
+                val currentState = model.state as SignInLayoutState.Connection
                 model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
                 resetLayout()
             }
@@ -197,6 +218,7 @@ class SignInSceneController(
     }
 
     private fun onLinkAuth(result: SignInResult.LinkAuth) {
+        if(model.state is SignInLayoutState.Start) return
         when (result) {
             is SignInResult.LinkAuth.Success -> {
                 if(model.linkDeviceState is LinkDeviceState.Accepted) return
@@ -224,6 +246,7 @@ class SignInSceneController(
     }
 
     private fun onCreateSessionFromLink(result: SignInResult.CreateSessionFromLink) {
+        if(model.state is SignInLayoutState.Start) return
         when (result) {
             is SignInResult.CreateSessionFromLink.Success -> {
                 scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
@@ -245,6 +268,7 @@ class SignInSceneController(
     }
 
     private fun onLinkDataReady(result: SignInResult.LinkDataReady) {
+        if(model.state is SignInLayoutState.Start) return
         when (result) {
             is SignInResult.LinkDataReady.Success -> {
                 if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
@@ -268,14 +292,13 @@ class SignInSceneController(
     }
 
     private fun onLinkData(result: SignInResult.LinkData) {
+        if(model.state is SignInLayoutState.Start) return
         when (result) {
             is SignInResult.LinkData.Success -> {
                 scene.setLinkProgress(UIMessage(R.string.sync_complete), SYNC_COMPLETE_PERCENTAGE)
                 scene.startLinkSucceedAnimation()
             }
             is SignInResult.LinkData.Progress -> {
-                if(result.progress > DOWNLOADING_MAILBOX_PERCENTAGE)
-                    scene.disableCancelSync()
                 scene.setLinkProgress(result.message, result.progress)
             }
             is SignInResult.LinkData.Failure -> {
@@ -285,6 +308,7 @@ class SignInSceneController(
     }
 
     private fun onLinkStatus(result: SignInResult.LinkStatus) {
+        if(model.state is SignInLayoutState.Start) return
         when (result) {
             is SignInResult.LinkStatus.Success -> {
                 if(model.linkDeviceState is LinkDeviceState.Auth) {
@@ -294,7 +318,7 @@ class SignInSceneController(
                     model.randomId = result.linkStatusData.deviceId
                     model.authorizerId = result.linkStatusData.authorizerId
                     model.authorizerType = result.linkStatusData.authorizerType
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username, currentState.domain, model.authorizerType)
+                    model.state = SignInLayoutState.Connection(currentState.username, currentState.domain, model.authorizerType)
                     scene.initLayout(model, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
@@ -414,8 +438,10 @@ class SignInSceneController(
     }
 
     private fun handleNewWebSocket(){
-        webSocket = webSocketFactory.createWebSocket(model.activeAccount!!.jwt)
-        webSocket?.setListener(webSocketEventListener)
+        if(model.activeAccount != null) {
+            webSocket = webSocketFactory.createWebSocket(model.activeAccount!!.jwt)
+            webSocket?.setListener(webSocketEventListener)
+        }
     }
 
     private fun onSignInButtonClicked(currentState: SignInLayoutState.Start) {
@@ -485,11 +511,13 @@ class SignInSceneController(
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onLinkDeviceDismiss(accountEmail: String) {
-
+            if(model.state is SignInLayoutState.Connection)
+                cancelLink(false)
         }
 
         override fun onSyncDeviceDismiss(accountEmail: String) {
-
+            if(model.state is SignInLayoutState.Connection)
+                cancelLink(false)
         }
 
         override fun onAccountSuspended(accountEmail: String) {
@@ -536,14 +564,13 @@ class SignInSceneController(
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
             if(model.linkDeviceState is LinkDeviceState.Auth) {
                 host.runOnUiThread(Runnable {
-
                     model.linkDeviceState = LinkDeviceState.Accepted()
                     val currentState = model.state as SignInLayoutState.LoginValidation
                     model.name = linkStatusData.name
                     model.randomId = linkStatusData.deviceId
                     model.authorizerId = linkStatusData.authorizerId
                     model.authorizerType = linkStatusData.authorizerType
-                    model.state = SignInLayoutState.WaitForApproval(currentState.username,
+                    model.state = SignInLayoutState.Connection(currentState.username,
                             currentState.domain, model.authorizerType)
                     scene.initLayout(model, uiObserver)
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
@@ -625,7 +652,7 @@ class SignInSceneController(
         override fun onRetrySyncOk(result: SignInResult) {
             when(result){
                 is SignInResult.CreateSessionFromLink -> {
-                    val currentState = model.state as SignInLayoutState.WaitForApproval
+                    val currentState = model.state as SignInLayoutState.Connection
                     scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
                             username = currentState.username,
@@ -640,25 +667,7 @@ class SignInSceneController(
         }
 
         override fun onRetrySyncCancel() {
-            if(ActiveAccount.loadFromStorage(storage) == null){
-                val currentState = model.state as SignInLayoutState.WaitForApproval
-                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
-                resetLayout()
-            }else{
-                host.exitToScene(MailboxParams(), null, false, true)
-            }
-        }
-
-        override fun onCancelSync() {
-            if(ActiveAccount.loadFromStorage(storage) == null){
-                val currentState = model.state as? SignInLayoutState.WaitForApproval
-                if(currentState != null) {
-                    model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
-                    resetLayout()
-                }
-            }else{
-                host.exitToScene(MailboxParams(), null, false, true)
-            }
+            cancelLink()
         }
 
         override fun onResendDeviceLinkAuth(username: String, domain: String) {
@@ -718,6 +727,7 @@ class SignInSceneController(
             scene.showPasswordLoginDialog(
                     onPasswordLoginDialogListener = this@SignInSceneController.passwordLoginDialogListener)
         }
+
         override fun userLoginReady() {
             host.goToScene(MailboxParams(), false, true)
         }
@@ -788,6 +798,13 @@ class SignInSceneController(
         scene.initLayout(model, uiObserver)
     }
 
+    private fun stopWebSocket(){
+        if(webSocket != null) {
+            webSocket?.clearListener(webSocketEventListener)
+            webSocket?.disconnectWebSocket()
+        }
+    }
+
     private fun stopTempWebSocket(){
         if(tempWebSocket != null) {
             tempWebSocket?.clearListener(webSocketEventListener)
@@ -807,14 +824,22 @@ class SignInSceneController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        handleNewWebSocket()
         return false
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
-        scene.signInUIObserver = null
-        if(webSocket != null) {
-            webSocket?.clearListener(webSocketEventListener)
-            webSocket?.disconnectWebSocket()
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
+        stopWebSocket()
+        if(cleanDataSources){
+            scene.signInUIObserver = null
         }
     }
 
@@ -836,6 +861,7 @@ class SignInSceneController(
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
+                generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
                 false
             }
             is SignInLayoutState.InputPassword -> {
@@ -856,7 +882,7 @@ class SignInSceneController(
                 resetLayout()
                 false
             }
-            is SignInLayoutState.WaitForApproval -> {
+            is SignInLayoutState.Connection -> {
                 false
             }
             is SignInLayoutState.RemoveDevices -> {
@@ -902,7 +928,6 @@ class SignInSceneController(
         fun onXPressed()
         fun onContactSupportPressed()
         fun onProgressHolderFinish()
-        fun onCancelSync()
         fun onRetrySyncOk(result: SignInResult)
         fun onRetrySyncCancel()
         fun onSignInWarningContinue(userName: String, domain: String)

@@ -23,7 +23,6 @@ interface SyncingScene{
 
     fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver)
     fun showMessage(message : UIMessage)
-    fun disableCancelSync()
     fun setProgress(message: UIMessage, progress: Int)
     fun startSucceedAnimation(launchMailboxScene: (
             linkingUIObserver: SyncingUIObserver) -> Unit)
@@ -57,9 +56,6 @@ interface SyncingScene{
                 DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
                 DeviceUtils.DeviceType.LinuxInstaller -> oldDevice.setImageResource(R.drawable.device_pc)
                 else -> oldDevice.setImageResource(R.drawable.device_m)
-            }
-            cancelSyncText.setOnClickListener {
-                this.syncingUIObserver?.onCancelSync()
             }
         }
 
@@ -134,11 +130,6 @@ interface SyncingScene{
 
         override fun showRetrySyncDialog(result: GeneralResult) {
             retrySyncDialog.showLinkDeviceAuthDialog(syncingUIObserver, result)
-        }
-
-        override fun disableCancelSync() {
-            cancelSyncText.isEnabled = false
-            cancelSyncText.visibility = View.INVISIBLE
         }
 
 

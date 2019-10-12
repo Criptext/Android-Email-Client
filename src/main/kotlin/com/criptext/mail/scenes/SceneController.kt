@@ -32,6 +32,12 @@ abstract class SceneController {
      * Called during the host activity's `onStop()`. This where your controller's "teardown" code
      * should go.
      */
+    abstract fun onPause()
+
+    /**
+     * Called during the host activity's `onStop()`. This where your controller's "teardown" code
+     * should go.
+     */
     abstract fun onStop()
 
     /**

@@ -330,6 +330,10 @@ class SignUpSceneController(
         return false
     }
 
+    override fun onPause() {
+
+    }
+
     override fun onStop() {
         dataSource.listener = null
         scene.uiObserver = null

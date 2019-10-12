@@ -11,7 +11,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/logo_splash"
+            android:src="@drawable/logo_splash_white"
             />
     </item>
     <item

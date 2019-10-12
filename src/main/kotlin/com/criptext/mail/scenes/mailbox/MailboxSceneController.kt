@@ -629,6 +629,9 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        websocketEvents.setListener(webSocketEventListener)
+        if(dataSource.listener == null) dataSourceController.setDataSourceListener()
+        if(generalDataSource.listener == null) generalDataSource.listener = removedDeviceDataSourceListener
         return handleActivityMessage(activityMessage)
     }
 
@@ -686,9 +689,22 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
     }
 
+    override fun onPause() {
+        cleanup(false)
+    }
+
     override fun onStop() {
+        cleanup(true)
+    }
+
+    private fun cleanup(cleanDataSources: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
-        feedController.onStop()
+
+        if(cleanDataSources) {
+            dataSource.listener = null
+            generalDataSource.listener = null
+            feedController.onStop()
+        }
     }
 
     private fun removeCurrentLabelSelectedEmailThreads() {
@@ -911,7 +927,20 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onSetActiveAccount(resultData: MailboxResult.SetActiveAccount){
             when(resultData){
                 is MailboxResult.SetActiveAccount.Success -> {
-                    activateAccount(resultData.activeAccount)
+                    activeAccount = resultData.activeAccount
+                    generalDataSource.activeAccount = activeAccount
+                    dataSource.activeAccount = activeAccount
+
+                    val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
+                    websocketEvents = if(jwts.isNotEmpty())
+                        WebSocketSingleton.getInstance(jwts)
+                    else
+                        WebSocketSingleton.getInstance(activeAccount.jwt)
+
+                    websocketEvents.setListener(webSocketEventListener)
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            true, false)
                 }
             }
         }

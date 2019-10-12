@@ -41,7 +41,7 @@ sealed class GeneralRequest {
     data class Set2FA(val twoFA: Boolean): GeneralRequest()
     class ChangeToNextAccount: GeneralRequest()
     class GetUserSettings: GeneralRequest()
-    class LinkCancel: GeneralRequest()
+    data class LinkCancel(val recipientId: String, val domain: String, val jwt: String, val deviceId: Int?): GeneralRequest()
     class SyncCancel: GeneralRequest()
     data class RestoreMailbox(val filePath: String, val passphrase: String?, val isLocal: Boolean = false): GeneralRequest()
 }

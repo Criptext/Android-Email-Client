@@ -290,7 +290,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                                fullEmailListAdapter: FullEmailListAdapter){
-        val nonInlineFiles = files.filter { it.file.cid == null }
+        val nonInlineFiles = files.filter { it.file.cid == null || it.file.cid == "" }
         val adapter = FileListAdapter(view.context, nonInlineFiles)
         val mLayoutManager = LinearLayoutManager(view.context)
         adapter.observer = object: AttachmentViewObserver {

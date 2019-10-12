@@ -263,6 +263,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             activityMessage = null
     }
 
+    override fun onPause() {
+        super.onPause()
+        controller.onPause()
+    }
+
     override fun onStop() {
         handler.removeCallbacksAndMessages(null)
         mFirebaseAnalytics = null

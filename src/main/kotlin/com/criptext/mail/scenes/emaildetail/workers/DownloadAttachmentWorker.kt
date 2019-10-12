@@ -81,7 +81,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
             val file = File(downloadPath, fileMetadata.name)
             val fileStream = FileOutputStream(file)
             val onNewChunkDownload: (Int) -> Unit = { index ->
-                if(cid == null) {
+                if(cid == null || cid == "") {
                     reporter.report(EmailDetailResult.DownloadFile.Progress(emailId, fileMetadata.fileToken,
                             index * 100 / fileMetadata.chunks))
                 }
@@ -105,7 +105,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     }
 
     private fun moveFileToDownloads(file: File, fileMetadata: FileMetadata){
-        val downloadFile = if(cid == null) AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
+        val downloadFile = if(cid == null || cid == "") AndroidFs.getFileFromDownloadsDir(fileMetadata.name)
         else AndroidFs.getEmailPathFromAppDir(filename = fileMetadata.name, fileDir = db.getInternalFilesDir(),
                 recipientId = activeAccount.recipientId, metadataKey = db.getEmailMetadataKeyById(emailId, activeAccount.id))
         val fileStream = FileInputStream(file)
@@ -132,7 +132,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
     }
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.DownloadFile>): EmailDetailResult.DownloadFile? {
-        if(cid == null){
+        if(cid == null || cid == ""){
             if(AndroidFs.fileExistsInDownloadsDir(fileName, fileSize)) {
                 filepath = AndroidFs.getFileFromDownloadsDir(fileName).absolutePath
                 return EmailDetailResult.DownloadFile.Success(emailId, fileToken, filepath, cid)

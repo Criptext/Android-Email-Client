@@ -8,7 +8,6 @@ interface SyncingUIObserver {
     fun onLinkingHasFinished()
     fun onResendDeviceLinkAuth(username: String)
     fun onBackPressed()
-    fun onCancelSync()
     fun onRetrySyncOk(result: GeneralResult)
     fun onRetrySyncCancel()
 }
