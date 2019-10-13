@@ -36,7 +36,6 @@ object AppRater {
 
         // Wait at least n days before opening
         if (launchCount >= LAUNCHES_UNTIL_PROMPT) {
-            showRateDialog(ctx, storage)
             if (System.currentTimeMillis() >= dateFirstLaunch + DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000) {
                 showRateDialog(ctx, storage)
             }
@@ -55,6 +54,7 @@ object AppRater {
         generalDialogConfirmation.btnCancel.text = mContext.getLocalizedUIMessage(UIMessage(R.string.rate_remind_later))
         generalDialogConfirmation.btnOk.setOnClickListener {
             mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$APP_NAME")))
+            storage.putBool(KeyValueStorage.StringKey.RateDontShowAgain, true)
             generalDialogConfirmation.dismissDialog()
         }
 
