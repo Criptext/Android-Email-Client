@@ -1,27 +1,30 @@
 package com.criptext.mail.scenes
 
+import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.DownloadHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.WebViewUtils
+import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.file.DownloadBlobInterface
 import com.criptext.mail.utils.getLocalizedUIMessage
+import droidninja.filepicker.FilePickerConst
+
 
 class WebViewActivity : AppCompatActivity() {
     val userAgent = "Mozilla/5.0 (Linux; Android 4.4.4; Nexus 5 Build/LMY48B) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
@@ -29,6 +32,7 @@ class WebViewActivity : AppCompatActivity() {
     val webViewCriptext: WebView by lazy { findViewById<WebView>(R.id.webViewCriptext) }
     var mUrl: String? = null
     var browserName: String? = null
+    private var mUploadMessage: ValueCallback<Array<Uri>>? = null
 
     private val client = object : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -47,6 +51,33 @@ class WebViewActivity : AppCompatActivity() {
 
         override fun onPageFinished(view: WebView, url: String) {
             supportActionBar?.title = view.title
+        }
+    }
+
+    private val chromeClient = object : WebChromeClient() {
+        override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
+            // make sure there is no existing message
+            if (mUploadMessage != null) {
+                mUploadMessage!!.onReceiveValue(null)
+                mUploadMessage = null
+            }
+
+            mUploadMessage = filePathCallback
+
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+                type = "image/*"
+            }
+            try {
+                this@WebViewActivity.startActivityForResult(intent, FilePickerConst.REQUEST_CODE_PHOTO)
+            } catch (e: ActivityNotFoundException) {
+                mUploadMessage = null
+                Toast.makeText(this@WebViewActivity, "Cannot open file chooser", Toast.LENGTH_LONG).show()
+                return false
+            }
+
+            return true
         }
     }
 
@@ -87,7 +118,7 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     private fun setupWebView() {
-        webViewCriptext.webChromeClient = WebChromeClient()
+        webViewCriptext.webChromeClient = chromeClient
         webViewCriptext.settings.javaScriptEnabled = true
         webViewCriptext.settings.userAgentString = userAgent
         webViewCriptext.webViewClient = client
@@ -180,4 +211,12 @@ class WebViewActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.stay, R.anim.slide_out_down)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int,
+                                  intent: Intent?) {
+        if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
+            if (mUploadMessage == null) return
+            mUploadMessage!!.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent))
+            mUploadMessage = null
+        }
+    }
 }

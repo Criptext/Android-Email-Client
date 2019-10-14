@@ -938,6 +938,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                         WebSocketSingleton.getInstance(activeAccount.jwt)
 
                     websocketEvents.setListener(webSocketEventListener)
+                    generalDataSource.listener = null
+                    dataSource.listener = null
                     host.exitToScene(MailboxParams(),
                             ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
                             true, false)
