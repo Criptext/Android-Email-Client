@@ -37,6 +37,16 @@ object AccountDataValidator {
             FormData.Valid(sanitizedValue)
     }
 
+    fun validateUsernameOnly(username: String): FormData<String> {
+        val sanitizedValue = username.trim().toLowerCase()
+
+        return when {
+            sanitizedValue.length < 3 -> FormData.Error(UIMessage(R.string.username_length_error))
+            !validCriptextUserPattern.matcher(sanitizedValue).matches() -> FormData.Error(UIMessage(R.string.username_invalid_error))
+            else -> FormData.Valid(sanitizedValue)
+        }
+    }
+
     fun validateFullName(fullName: String): FormData<String> {
         val sanitizedValue = fullName.trim()
 

@@ -12,6 +12,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
@@ -456,9 +457,13 @@ class SignInSceneController(
                 } else {
                     Pair(userInput.value, Contact.mainDomain)
                 }
-                val newRequest = SignInRequest.CheckUserAvailability(recipientId, domain)
-                dataSource.submitRequest(newRequest)
-                scene.setSubmitButtonState(ProgressButtonState.waiting)
+                if(model.checkedDomains.map { it.name }.contains(domain))
+                    scene.drawInputError(UIMessage(R.string.username_is_not_criptext))
+                else {
+                    val newRequest = SignInRequest.CheckUserAvailability(recipientId, domain)
+                    dataSource.submitRequest(newRequest)
+                    scene.setSubmitButtonState(ProgressButtonState.waiting)
+                }
             }
             is FormData.Error ->
                 scene.drawInputError(userInput.message)
@@ -813,6 +818,9 @@ class SignInSceneController(
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
+        model.checkedDomains.addAll(
+                ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS.filter { !it.isCriptextDomain }
+        )
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
         scene.initLayout(model = model, signInUIObserver = uiObserver)
