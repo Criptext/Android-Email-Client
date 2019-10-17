@@ -893,16 +893,18 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     override fun onPause(){
-        cleanup()
+        cleanup(false)
     }
 
     override fun onStop() {
-        cleanup()
+        cleanup(true)
     }
 
-    private fun cleanup(){
-        dataSource.listener = null
-        generalDataSource.listener = null
+    private fun cleanup(cleanDataSources: Boolean){
+        if(cleanDataSources) {
+            dataSource.listener = null
+            generalDataSource.listener = null
+        }
         websocketEvents.clearListener(webSocketEventListener)
     }
 

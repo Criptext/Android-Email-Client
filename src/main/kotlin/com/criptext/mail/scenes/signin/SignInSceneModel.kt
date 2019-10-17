@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signin
 
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneModel
+import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.signin.data.LinkDeviceState
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
@@ -33,4 +34,5 @@ class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var needToRemoveDevices = false
     var temporalJWT = ""
     var devices: ArrayList<DeviceItem> = ArrayList()
+    var checkedDomains = mutableListOf<ContactDomainCheckData>()
 }

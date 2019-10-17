@@ -65,7 +65,7 @@ class SignUpSceneController(
             val newUsername = if (text.isEmpty()) {
                 model.username.copy(state = FormInputState.Unknown())
             } else {
-                val userInput = AccountDataValidator.validateUsername(text)
+                val userInput = AccountDataValidator.validateUsernameOnly(text)
                 when (userInput) {
                     is FormData.Valid -> {
                         runnableThrottler.push(Runnable {
