@@ -630,8 +630,6 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        if(dataSource.listener == null) dataSourceController.setDataSourceListener()
-        if(generalDataSource.listener == null) generalDataSource.listener = removedDeviceDataSourceListener
         return handleActivityMessage(activityMessage)
     }
 
@@ -697,12 +695,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         cleanup(true)
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(fullCleanup: Boolean){
         websocketEvents.clearListener(webSocketEventListener)
 
-        if(cleanDataSources) {
-            dataSource.listener = null
-            generalDataSource.listener = null
+        if(fullCleanup) {
             feedController.onStop()
         }
     }

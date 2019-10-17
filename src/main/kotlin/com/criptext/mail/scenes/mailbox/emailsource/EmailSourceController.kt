@@ -100,7 +100,6 @@ class EmailSourceController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
-        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
         return false
     }
 
@@ -159,18 +158,15 @@ class EmailSourceController(
     }
 
     override fun onPause() {
-        cleanup(false)
+        cleanup()
     }
 
     override fun onStop() {
-        cleanup(true)
+        cleanup()
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(){
         websocketEvents.clearListener(webSocketEventListener)
-        if(cleanDataSources){
-            generalDataSource.listener = null
-        }
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
