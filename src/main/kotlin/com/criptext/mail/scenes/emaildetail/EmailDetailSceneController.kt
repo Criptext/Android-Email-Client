@@ -884,27 +884,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
-        if(dataSource.listener == null)
-            dataSource.listener = dataSourceListener
-        if(generalDataSource.listener == null)
-            generalDataSource.listener = remoteChangeDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
         return false
     }
 
     override fun onPause(){
-        cleanup(false)
+        cleanup()
     }
 
     override fun onStop() {
-        cleanup(true)
+        cleanup()
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
-        if(cleanDataSources) {
-            dataSource.listener = null
-            generalDataSource.listener = null
-        }
+    private fun cleanup(){
         websocketEvents.clearListener(webSocketEventListener)
     }
 

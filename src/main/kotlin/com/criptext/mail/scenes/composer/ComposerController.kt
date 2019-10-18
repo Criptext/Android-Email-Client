@@ -663,8 +663,6 @@ class ComposerController(private val storage: KeyValueStorage,
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         if(scene.observer == null) scene.observer = this.observer
-        if(dataSource.listener == null) dataSource.listener = this.dataSourceListener
-        if(generalDataSource.listener == null) generalDataSource.listener = this.generalDataSourceListener
         return false
     }
 
@@ -676,14 +674,11 @@ class ComposerController(private val storage: KeyValueStorage,
         cleanup(true)
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(fullCleanup: Boolean){
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
-
-        if(cleanDataSources) {
+        if(fullCleanup) {
             scene.observer = null
-            dataSource.listener = null
-            generalDataSource.listener = null
         }
     }
 

@@ -162,22 +162,15 @@ class LinkingController(
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        if(dataSource.listener == null) dataSource.listener = dataSourceListener
-        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
         return false
     }
 
     override fun onPause() {
-        cleanup(false)
+        cleanup()
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(){
         websocketEvents.clearListener(webSocketEventListener)
-
-        if(cleanDataSources) {
-            dataSource.listener = null
-            generalDataSource.listener = null
-        }
     }
 
     private fun showSuspendedAccountDialog(){
@@ -364,7 +357,7 @@ class LinkingController(
 
 
     override fun onStop() {
-        cleanup(true)
+        cleanup()
     }
 
     override fun onBackPressed(): Boolean {

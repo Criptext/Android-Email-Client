@@ -844,9 +844,9 @@ class SignInSceneController(
         cleanup(true)
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(fullCleanup: Boolean){
         stopWebSocket()
-        if(cleanDataSources){
+        if(fullCleanup){
             scene.signInUIObserver = null
         }
     }

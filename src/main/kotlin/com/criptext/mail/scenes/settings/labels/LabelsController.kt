@@ -146,8 +146,6 @@ class LabelsController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
-        if(dataSource.listener == null) dataSource.listener = dataSourceListener
-        if(generalDataSource.listener == null) generalDataSource.listener = generalDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
         return false
     }
@@ -367,19 +365,15 @@ class LabelsController(
     }
 
     override fun onPause() {
-        cleanup(false)
+        cleanup()
     }
 
     override fun onStop() {
-        cleanup(true)
+        cleanup()
     }
 
-    private fun cleanup(cleanDataSources: Boolean){
+    private fun cleanup(){
         websocketEvents.clearListener(webSocketEventListener)
-        if(cleanDataSources){
-            dataSource.listener = null
-            generalDataSource.listener = null
-        }
     }
 
     override fun onBackPressed(): Boolean {
