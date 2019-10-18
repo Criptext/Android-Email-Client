@@ -28,7 +28,8 @@ import com.criptext.mail.db.typeConverters.*
         LabelTypeConverter::class,
         ContactTypeConverter::class,
         EmailDeliveryConverter::class,
-        FeedTypeConverter::class)
+        FeedTypeConverter::class,
+        AccountTypeConverter::class)
 abstract class TestDatabase: AppDatabase() {
     abstract fun resetDao(): ResetDao
 

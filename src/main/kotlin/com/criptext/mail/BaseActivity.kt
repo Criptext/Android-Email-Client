@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Parcelable
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -72,11 +74,13 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
 import com.criptext.mail.utils.ui.ActivityMenu
+import com.criptext.mail.utils.ui.GeneralCriptextProDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
@@ -88,7 +92,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
-import java.lang.Exception
 import java.util.*
 
 
@@ -122,6 +125,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     var mFirebaseAnalytics: FirebaseAnalytics? = null
     val shouldSendResumeEvent: Boolean
         get() = System.currentTimeMillis() - storage.getLong(KeyValueStorage.StringKey.ResumeEventTimer, 0L) > RESUME_TIMER
+
+    private var generalCriptextProDialog: GeneralCriptextProDialog? = null
 
     private val handler = Handler()
 
@@ -465,6 +470,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 this,
                 title,
                 dimension)
+    }
+
+    override fun showCriptextProDialog(dialogData: DialogData.DialogCriptextProData, uiObserver: UIObserver) {
+        generalCriptextProDialog = GeneralCriptextProDialog(this, dialogData)
+        generalCriptextProDialog?.showDialog(uiObserver)
     }
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {

@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signup
 
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalKeyGenerator
@@ -34,6 +35,7 @@ data class IncompleteAccount(
                         lastTimeBackup = null,
                         autoBackupFrequency = 0,
                         wifiOnly = true,
-                        backupPassword = null
+                        backupPassword = null,
+                        type = AccountTypes.STANDARD
                 )
 }

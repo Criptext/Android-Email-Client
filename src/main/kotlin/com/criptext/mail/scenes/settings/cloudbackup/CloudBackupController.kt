@@ -5,6 +5,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -24,6 +25,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -198,15 +200,27 @@ class CloudBackupController(
         }
 
         override fun onCloudBackupActivated(isActive: Boolean) {
-            dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
-                    CloudBackupData(
-                            hasCloudBackup = isActive,
-                            autoBackupFrequency = model.autoBackupFrequency,
-                            useWifiOnly = model.wifiOnly,
-                            fileSize = model.lastBackupSize,
-                            lastModified = model.lastTimeBackup
-                    )
-            ))
+            if(activeAccount.type == AccountTypes.STANDARD) {
+                scene.setCloudBackupSwitchState(!isActive)
+                host.showCriptextProDialog(
+                        dialogData = DialogData.DialogCriptextProData(
+                                image = R.drawable.inbox_light,
+                                type = DialogType.CriptextPro(),
+                                message = UIMessage(R.string.you_need_pro_message_cloud_backup)
+                        ),
+                        uiObserver = this
+                )
+            } else {
+                dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
+                        CloudBackupData(
+                                hasCloudBackup = isActive,
+                                autoBackupFrequency = model.autoBackupFrequency,
+                                useWifiOnly = model.wifiOnly,
+                                fileSize = model.lastBackupSize,
+                                lastModified = model.lastTimeBackup
+                        )
+                ))
+            }
         }
 
         override fun onBackButtonPressed() {

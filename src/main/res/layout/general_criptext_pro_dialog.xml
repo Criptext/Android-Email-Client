@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content"
+    >
+
+    <ImageView
+        android:id="@+id/pro_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/inbox_light" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/you_need_pro_title"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:textColor="@color/azure"
+        android:textSize="18sp"/>
+
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="@string/you_need_pro_message_read_receipts"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="15sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="@string/you_need_pro_message_fixed"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="15sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+
+    <Button
+        android:id="@+id/learn_more_button"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_welcome_tour"
+        android:textColor="@drawable/btn_sign_in"
+        android:text="@string/you_need_pro_button"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/no_thanks"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="@string/you_need_pro_no_thanks"
+        android:layout_gravity="center"
+        android:textColor="@color/azure"
+        android:textSize="14sp"/>
+</LinearLayout>

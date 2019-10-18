@@ -7,6 +7,7 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
@@ -116,7 +117,7 @@ class AuthenticateUserWorker(
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
                     signature = "", refreshToken = "", isActive = true, domain = userData.domain, isLoggedIn = true,
                     autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
-                    backupPassword = null)
+                    backupPassword = null, type = AccountTypes.STANDARD)
             Pair(registrationBundles, account)
         }
     }

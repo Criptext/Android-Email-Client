@@ -16,14 +16,14 @@ import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
+import org.w3c.dom.Text
 
-class GeneralDialogConfirmation(val context: Context, val data: DialogData.DialogConfirmationData) {
+class GeneralCriptextProDialog(val context: Context, val data: DialogData.DialogCriptextProData) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
-    lateinit var btnOk: Button
-    lateinit var btnCancel: Button
-    lateinit var btnNoThanks: Button
+    private lateinit var btnLearnMore: Button
+    private lateinit var btnNoThanks: TextView
 
     private lateinit var view: View
 
@@ -31,9 +31,9 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        view = inflater.inflate(R.layout.general_confirmation_dialog, null)
-        view.findViewById<TextView>(R.id.title).text = context.getLocalizedUIMessage(data.title)
-        view.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message.first())
+        view = inflater.inflate(R.layout.general_criptext_pro_dialog, null)
+        view.findViewById<ImageView>(R.id.pro_image).setImageResource(data.image)
+        view.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message)
 
         dialogBuilder.setView(view)
 
@@ -64,32 +64,24 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
                                    observer: UIObserver?) {
 
-        btnOk = view.findViewById(R.id.btn_ok) as Button
-        btnCancel = view.findViewById(R.id.btn_cancel) as Button
-        btnNoThanks = view.findViewById(R.id.btn_no_thanks) as Button
+        btnLearnMore = view.findViewById(R.id.learn_more_button) as Button
+        btnNoThanks = view.findViewById(R.id.no_thanks) as TextView
 
-        if(!btnOk.hasOnClickListeners()) {
-            btnOk.setOnClickListener {
-                observer?.onGeneralOkButtonPressed(createResult())
-                dialog.dismiss()
-            }
+
+        btnLearnMore.setOnClickListener {
+            observer?.onGeneralOkButtonPressed(createResult())
+            dialog.dismiss()
         }
-
-        if(!btnCancel.hasOnClickListeners()) {
-            btnCancel.setOnClickListener {
-                dialog.dismiss()
-            }
+        btnNoThanks.setOnClickListener {
+            dialog.dismiss()
         }
     }
 
     private fun createResult(): DialogResult {
         return when(data.type){
             is DialogType.DeleteAccount,
-            is DialogType.ReplyToChange,
-            is DialogType.RecoveryCode,
-            is DialogType.EditLabel ->
+            is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput("", data.type)
-            is DialogType.DeleteLabel,
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
             is DialogType.Message,

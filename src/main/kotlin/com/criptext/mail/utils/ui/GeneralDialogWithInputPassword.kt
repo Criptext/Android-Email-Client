@@ -117,6 +117,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
             is DialogType.DeleteLabel,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
+            is DialogType.CriptextPro ->
+                DialogResult.DialogCriptextPro(data.type)
         }
     }
 

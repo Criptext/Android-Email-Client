@@ -704,4 +704,14 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="domain_verified">Verified</string>
   <string name="delete_criptext_alias_wait_title">Oops…</string>
   <string name="delete_criptext_alias_wait">Aliases ending in @criptext.com cannot be deleted within 15 days from the day they were created.\n\n<b>Days remaining: %1$d</b></string>
+  <string name="you_need_pro_title">Vous avez besoin de Pro</string>
+  <string name="you_need_pro_button">Devenir Pro</string>
+  <string name="you_need_pro_no_thanks"><u>Non merci</u></string>
+  <string name="you_need_pro_message_fixed">Bénéficiez de cette fonctionnalité et de plus encore lorsque vous effectuez une mise à niveau vers <b>Criptext Pro.</b></string>
+  <string name="you_need_pro_message_read_receipts">Utilisez <b>Lire accusés de réception</b> pour savoir quand vos destinataires lisent des courriels bleus.</string>
+  <string name="you_need_pro_message_unsend">Use <b>Unsend</b> to correct a mistake and take back an email after you send it.</string>
+  <string name="you_need_pro_message_reminders">Pour <b>annuler l'envoi</b>, corrigez une erreur et récupérez un e-mail après l'avoir envoyée.</string>
+  <string name="you_need_pro_message_cloud_backup">Utilisez <b>Sauvegarde dans le cloud</b> pour stocker toute votre boîte de réception sur le lecteur afin que les données soient toujours sauvegardées.</string>
+  <string name="you_need_pro_message_send_later">Utilisez <b>Envoyer plus tard</b> pour planifier l'envoi d'un e-mail ultérieurement.</string>
+  <string name="you_need_pro_message_footer">Supprimez <b>Envoyé avec le pied de page Criptext</b> lorsque vous envoyez des adresses non-Criptext par courrier électronique.</string>
 </resources>

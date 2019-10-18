@@ -10,6 +10,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -41,6 +42,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -719,12 +721,23 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
-            val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
-                    position = position,
-                    emailId = fullEmail.email.id)
-            fullEmail.isUnsending = true
-            scene.notifyFullEmailChanged(position + 1)
-            dataSource.submitRequest(req)
+            if(activeAccount.type == AccountTypes.STANDARD){
+                host.showCriptextProDialog(
+                        dialogData = DialogData.DialogCriptextProData(
+                                image = R.drawable.inbox_light,
+                                type = DialogType.CriptextPro(),
+                                message = UIMessage(R.string.you_need_pro_message_unsend)
+                        ),
+                        uiObserver = emailDetailUIObserver
+                )
+            } else {
+                val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
+                        position = position,
+                        emailId = fullEmail.email.id)
+                fullEmail.isUnsending = true
+                scene.notifyFullEmailChanged(position + 1)
+                dataSource.submitRequest(req)
+            }
         }
         override fun onForwardBtnClicked() {
             val type = ComposerType.Forward(originalId = model.emails.last().email.id,

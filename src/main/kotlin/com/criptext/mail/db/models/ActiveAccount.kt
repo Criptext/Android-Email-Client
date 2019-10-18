@@ -2,7 +2,10 @@ package com.criptext.mail.db.models
 
 import android.content.Context
 import com.criptext.mail.api.JSONData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.typeConverters.AccountTypeConverter
+import com.criptext.mail.utils.AccountUtils
 import org.json.JSONObject
 
 /**
@@ -10,7 +13,8 @@ import org.json.JSONObject
  */
 
 data class ActiveAccount(val id: Long, val name: String, val recipientId: String, val domain: String,
-                         val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String) : JSONData {
+                         val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String,
+                         val type: AccountTypes) : JSONData {
 
     val userEmail = "$recipientId@$domain"
 
@@ -24,6 +28,7 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         json.put("jwt", jwt)
         json.put("refreshToken", refreshToken)
         json.put("signature", signature)
+        json.put("type", type.ordinal)
         return json
     }
 
@@ -69,15 +74,17 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
             val refreshToken = json.optString("refreshToken")
             val signature = json.getString("signature")
             val domain = if(json.has("domain")) json.getString("domain") else Contact.mainDomain
+            val type = if(json.has("type")) json.getInt("type") else 0
 
             return ActiveAccount(id = if(id == 0L) 1 else id, name = name, recipientId = recipientId, deviceId = deviceId,
-                    jwt = jwt, signature = signature, refreshToken = refreshToken, domain = domain)
+                    jwt = jwt, signature = signature, refreshToken = refreshToken, domain = domain,
+                    type = AccountUtils.getAccountTypeFromInt(type))
         }
 
         fun loadFromDB(account: Account): ActiveAccount? {
             return ActiveAccount(id= account.id, name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
                     jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken,
-                    domain = account.domain)
+                    domain = account.domain, type = account.type)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

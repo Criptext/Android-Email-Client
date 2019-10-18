@@ -14,6 +14,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -86,19 +87,31 @@ class ProfileController(
 
     private val uiObserver = object: ProfileUIObserver{
         override fun onCriptextFooterSwitched(isChecked: Boolean) {
-            val footerData = ProfileFooterData(activeAccount.id, isChecked)
-            val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
-            if(allFooterData.isNotEmpty()){
-                val savedData = ProfileFooterData.fromJson(allFooterData)
-                val findAccountFooterData = savedData.find { it.accountId == activeAccount.id }
-                if(findAccountFooterData != null) {
-                    savedData.remove(findAccountFooterData)
-                }
-                savedData.add(footerData)
-                storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, ProfileFooterData.toJSON(savedData).toString())
+            if(activeAccount.type == AccountTypes.STANDARD){
+                scene.updateCriptextFooterSwitch(!isChecked)
+                host.showCriptextProDialog(
+                        dialogData = DialogData.DialogCriptextProData(
+                                image = R.drawable.inbox_light,
+                                type = DialogType.CriptextPro(),
+                                message = UIMessage(R.string.you_need_pro_message_footer)
+                        ),
+                        uiObserver = this
+                )
             } else {
-                val json = ProfileFooterData.toJSON(listOf(footerData))
-                storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, json.toString())
+                val footerData = ProfileFooterData(activeAccount.id, isChecked)
+                val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
+                if (allFooterData.isNotEmpty()) {
+                    val savedData = ProfileFooterData.fromJson(allFooterData)
+                    val findAccountFooterData = savedData.find { it.accountId == activeAccount.id }
+                    if (findAccountFooterData != null) {
+                        savedData.remove(findAccountFooterData)
+                    }
+                    savedData.add(footerData)
+                    storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, ProfileFooterData.toJSON(savedData).toString())
+                } else {
+                    val json = ProfileFooterData.toJSON(listOf(footerData))
+                    storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, json.toString())
+                }
             }
         }
 

@@ -711,4 +711,14 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="domain_verified">Verified</string>
   <string name="delete_criptext_alias_wait_title">Oops…</string>
   <string name="delete_criptext_alias_wait">Aliases ending in @criptext.com cannot be deleted within 15 days from the day they were created.\n\n<b>Days remaining: %1$d</b></string>
+  <string name="you_need_pro_title">Sie brauchen Pro</string>
+  <string name="you_need_pro_button">Werde Pro</string>
+  <string name="you_need_pro_no_thanks"><u>Nein Danke</u></string>
+  <string name="you_need_pro_message_fixed">Holen Sie sich diese Funktion und mehr, wenn Sie ein Upgrade auf <b>Criptext Pro</b> durchführen.</string>
+  <string name="you_need_pro_message_read_receipts">Verwenden Sie <b>Lesebestätigungen</b>, um zu erfahren, wann Ihre E-Mails von Empfängern mit blauen Häkchen gelesen werden.</string>
+  <string name="you_need_pro_message_unsend">Verwenden Sie <b>Nicht senden</b>, um einen Fehler zu korrigieren und eine E-Mail zurückzunehmen, nachdem Sie sie gesendet haben.</string>
+  <string name="you_need_pro_message_reminders">Verwenden Sie <b>Erinnerungen</b>, um benachrichtigt zu werden, wenn es Zeit ist, eine Unterhaltung zu verfolgen.</string>
+  <string name="you_need_pro_message_cloud_backup">Verwenden Sie <b>Cloud Backup</b>, um Ihren gesamten Posteingang auf Drive zu speichern, damit die Daten immer gesichert werden.</string>
+  <string name="you_need_pro_message_send_later">Verwenden Sie <b>Später senden</b>, um eine E-Mail zu einem späteren Zeitpunkt zu senden.</string>
+  <string name="you_need_pro_message_footer">Entfernen Sie <b>Mit Criptext-Fußzeile gesendet</b>, wenn Sie Nicht-Criptext-Adressen per E-Mail senden.</string>
 </resources>

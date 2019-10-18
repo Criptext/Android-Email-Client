@@ -18,6 +18,7 @@ import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.db.typeConverters.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
@@ -40,7 +41,8 @@ import java.util.*
         LabelTypeConverter::class,
         ContactTypeConverter::class,
         EmailDeliveryConverter::class,
-        FeedTypeConverter::class)
+        FeedTypeConverter::class,
+        AccountTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun accountContactDao(): AccountContactDao
@@ -540,6 +542,15 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_17_18: Migration = object : Migration(17, 18) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""ALTER TABLE account ADD COLUMN type INTEGER NOT NULL DEFAULT 0""")
+                val account = database.query("SELECT * FROM account")
+                while (account.moveToNext()){
+                    val domain = account.getString(account.getColumnIndex("domain"))
+                    if(domain != Contact.mainDomain){
+                        database.execSQL("""UPDATE account SET type = 2 WHERE id == ${account.getLong(account.getColumnIndex("id"))}""")
+                    }
+                }
+                
                 database.execSQL("""CREATE TABLE IF NOT EXISTS  customDomain (
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                         rowId INTEGER NOT NULL,

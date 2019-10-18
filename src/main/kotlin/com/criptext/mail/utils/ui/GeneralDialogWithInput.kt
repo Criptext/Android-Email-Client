@@ -222,6 +222,8 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData) {
             is DialogType.RecoveryCode,
             is DialogType.EditLabel ->
                 DialogResult.DialogWithInput(editTextEmail.text.toString(), data.type)
+            is DialogType.CriptextPro ->
+                DialogResult.DialogCriptextPro(data.type)
         }
     }
 }

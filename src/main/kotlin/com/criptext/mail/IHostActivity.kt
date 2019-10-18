@@ -9,6 +9,8 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
  * Created by sebas on 1/29/18.
@@ -57,6 +59,8 @@ interface IHostActivity {
     fun checkPermissions(requestCode: Int, permission: String): Boolean
 
     fun showStartGuideView(view: View, title: Int, dimension: Int)
+
+    fun showCriptextProDialog(dialogData: DialogData.DialogCriptextProData, uiObserver: UIObserver)
 
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?

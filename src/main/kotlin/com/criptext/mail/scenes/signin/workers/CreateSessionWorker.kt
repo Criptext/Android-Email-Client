@@ -5,6 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
@@ -107,7 +108,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
                     signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                     hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
-                    backupPassword = null)
+                    backupPassword = null, type = AccountTypes.STANDARD)
             Pair(registrationBundles, account)
         }
     }

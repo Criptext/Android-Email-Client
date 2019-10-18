@@ -683,4 +683,14 @@
   <string name="domain_verified">Verificado</string>
   <string name="delete_criptext_alias_wait_title">Oops…</string>
   <string name="delete_criptext_alias_wait">Aliases que terminan en @criptext.com no pueden ser eliminados los primeros 15 días desde su creación.\n\n<b>Días restantes: %1$d</b></string>
+  <string name="you_need_pro_title">Necesitas Ser Pro</string>
+  <string name="you_need_pro_button">Get Pro</string>
+  <string name="you_need_pro_no_thanks"><u>No thanks</u></string>
+  <string name="you_need_pro_message_fixed">Get this feature plus more when you upgrade to <b>Criptext Pro.</b></string>
+  <string name="you_need_pro_message_read_receipts">Use <b>Read Receipts</b> to know when your emails are read by recipients with blue check marks.</string>
+  <string name="you_need_pro_message_unsend">Use <b>Unsend</b> to correct a mistake and take back an email after you send it.</string>
+  <string name="you_need_pro_message_reminders">Use <b>Reminders</b> to get notified when it\'s time to follow-up a conversation.</string>
+  <string name="you_need_pro_message_cloud_backup">Use <b>Cloud Backup</b> to store your entire inbox on Drive so that data is always backed up.</string>
+  <string name="you_need_pro_message_send_later">Use <b>Send Later</b> to schedule an email to be sent at a later time.</string>
+  <string name="you_need_pro_message_footer">Remove <b>Sent with Criptext Footer</b> when emailing non-Criptext addresses.</string>
 </resources>
