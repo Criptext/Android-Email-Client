@@ -51,6 +51,19 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:text="@string/cancel" />
+        <Button
+            android:textColor="@color/button_text_color"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/btn_no_thanks"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_center_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/rate_no_thanks" />
 
         <Button
             android:textColor="@color/button_text_color"

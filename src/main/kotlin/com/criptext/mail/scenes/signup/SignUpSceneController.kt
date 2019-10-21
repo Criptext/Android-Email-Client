@@ -224,9 +224,10 @@ class SignUpSceneController(
     private fun onCheckedUsernameAvailability(result: SignUpResult.CheckUsernameAvailability) {
         when (result) {
             is SignUpResult.CheckUsernameAvailability.Success -> {
-                if (result.isAvailable)
+                if (result.isAvailable) {
                     scene.setUsernameState(FormInputState.Valid())
-                else {
+                    toggleCreateAccountButton()
+                } else {
                     val newState = FormInputState.Error(UIMessage(R.string.taken_username_error))
                     model.username = model.username.copy(state = newState)
                     scene.setUsernameState(newState)
@@ -319,6 +320,16 @@ class SignUpSceneController(
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
         scene.showFormHolder()
+        if(model.username.value.isNotEmpty()) {
+            scene.resetSceneWidgetsFromModel(model.username, model.fullName, model.password,
+                    model.confirmPassword, model.recoveryEmail, model.checkTermsAndConditions)
+            uiObserver.onUsernameChangedListener(model.username.value)
+            uiObserver.onFullNameTextChangeListener(model.fullName.value)
+            uiObserver.onPasswordChangedListener(model.password)
+            uiObserver.onConfirmPasswordChangedListener(model.confirmPassword)
+            uiObserver.onCheckedOptionChanged(model.checkTermsAndConditions)
+            toggleCreateAccountButton()
+        }
         scene.initListeners(
                 uiObserver = uiObserver
         )

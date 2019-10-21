@@ -78,6 +78,10 @@ import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
+import com.criptext.mail.validation.FormInputState
+import com.criptext.mail.validation.TextInput
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -197,6 +201,25 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             recipientId = savedInstanceState.getString("recipientId")!!,
                             domain = savedInstanceState.getString("domain")!!
                     )
+                }
+                SIGN_UP_MODEL -> {
+                    val signUpModel = SignUpSceneModel(
+                        isMultiple = savedInstanceState.getBoolean("isMultiple")
+                    )
+                    val username = savedInstanceState.getString("username")!!
+                    signUpModel.username.copy(value = username,
+                            state = FormInputState.Unknown())
+                    val fullName = savedInstanceState.getString("fullName")!!
+                    signUpModel.fullName.copy(value = fullName,
+                            state = FormInputState.Unknown())
+                    signUpModel.password = savedInstanceState.getString("password")!!
+                    signUpModel.confirmPassword = savedInstanceState.getString("confirmPassword")!!
+                    signUpModel.passwordState = FormInputState.Unknown()
+                    val recoveryEmail = savedInstanceState.getString("recoveryEmail")!!
+                    signUpModel.recoveryEmail.copy(value = recoveryEmail,
+                            state = FormInputState.Unknown())
+                    signUpModel.checkTermsAndConditions = savedInstanceState.getBoolean("checkTermsAndConditions")
+                    signUpModel
                 }
                 else -> null
             }
@@ -341,6 +364,16 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 outState.putString("type", SIGNATURE_MODEL)
                 outState.putString("recipientId", currentModel.recipientId)
                 outState.putString("domain", currentModel.domain)
+            }
+            is SignUpSceneModel -> {
+                outState.putString("type", SIGN_UP_MODEL)
+                outState.putBoolean("isMultiple", currentModel.isMultiple)
+                outState.putString("username", currentModel.username.value)
+                outState.putString("fullName", currentModel.fullName.value)
+                outState.putString("password", currentModel.password)
+                outState.putString("confirmPassword", currentModel.confirmPassword)
+                outState.putString("recoveryEmail", currentModel.recoveryEmail.value)
+                outState.putBoolean("checkTermsAndConditions", currentModel.checkTermsAndConditions)
             }
         }
     }
@@ -794,7 +827,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             // set initial state
             cachedModels[MailboxActivity::class.java] = MailboxSceneModel()
             cachedModels[SignInActivity::class.java] = SignInSceneModel()
-            cachedModels[SignUpActivity::class.java] = SignUpSceneModel()
             cachedModels[SettingsActivity::class.java] = SettingsModel()
             cachedModels[ChangePasswordActivity::class.java] = ChangePasswordModel()
         }
@@ -806,12 +838,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
         private const val EMAIL_DETAIL_MODEL = "EmailDetailModel"
         private const val COMPOSER_MODEL = "ComposerModel"
-        private const val PIN_LOCK_MODEL = "PinLockModel"
         private const val PRIVACY_MODEL = "PrivacyModel"
         private const val PROFILE_MODEL = "ProfileModel"
         private const val RECOVERY_EMAIL_MODEL = "RecoveryEmailModel"
         private const val REPLY_TO_MODEL = "ReplyToModel"
         private const val SIGNATURE_MODEL = "SignatureModel"
+        private const val SIGN_UP_MODEL = "SignUpModel"
     }
 
     enum class RequestCode {

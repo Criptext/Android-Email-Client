@@ -70,6 +70,7 @@ class RegisterUserWorkerTest {
             httpClient.put("/keybundle/pushtoken", "__JWT__", any<JSONObject>()).body
         } returns "OK"
         every { db.clearAllTables() } just Runs
+        every { storage.clearAll() } just Runs
 
         val newAccount = IncompleteAccount(username ="tester", name = "A Tester", deviceId = 1,
                 password = "secretPassword", recoveryEmail = "tester@gmail.com")

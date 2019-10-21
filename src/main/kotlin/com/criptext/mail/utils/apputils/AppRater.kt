@@ -17,7 +17,7 @@ object AppRater {
     private const val APP_NAME = "com.criptext.mail"// Package Name
 
     private const val DAYS_UNTIL_PROMPT = 3//Min number of days
-    private const val LAUNCHES_UNTIL_PROMPT = 3//Min number of launches
+    private const val LAUNCHES_UNTIL_PROMPT = 5//Min number of launches
 
     fun appLaunched(ctx: Context, storage: KeyValueStorage) {
         if (storage.getBool(KeyValueStorage.StringKey.RateDontShowAgain, false)) {
@@ -52,12 +52,16 @@ object AppRater {
         generalDialogConfirmation.showDialog(null)
         generalDialogConfirmation.btnOk.text = mContext.getLocalizedUIMessage(UIMessage(R.string.rate_us))
         generalDialogConfirmation.btnCancel.text = mContext.getLocalizedUIMessage(UIMessage(R.string.rate_remind_later))
+        generalDialogConfirmation.btnNoThanks.visibility = View.VISIBLE
         generalDialogConfirmation.btnOk.setOnClickListener {
             mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$APP_NAME")))
             storage.putBool(KeyValueStorage.StringKey.RateDontShowAgain, true)
             generalDialogConfirmation.dismissDialog()
         }
-
+        generalDialogConfirmation.btnNoThanks.setOnClickListener {
+            storage.putBool(KeyValueStorage.StringKey.RateDontShowAgain, true)
+            generalDialogConfirmation.dismissDialog()
+        }
         generalDialogConfirmation.btnCancel.setOnClickListener {
             generalDialogConfirmation.dismissDialog()
         }

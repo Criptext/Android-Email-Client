@@ -583,7 +583,8 @@
   <string name="open_email_notification_text">📩 El correo \"%1$s\" fue abierto</string>
   <string name="rate_us_title">¿Estás disfrutando Criptext?</string>
   <string name="rate_us_message">Si es así, ayúdanos con una calificación. ¡Gracias por tu apoyo!</string>
-  <string name="rate_us">Calificar</string>
-  <string name="rate_remind_later">Recordar Luego</string>
+  <string name="rate_us">\nCalificar</string>
+  <string name="rate_remind_later">Recordar\nLuego</string>
+  <string name="rate_no_thanks">No\nGracias</string>
   <string name="username_is_not_criptext">El usuario o dirección de correo no pertenece a Criptext.</string>
 </resources>
