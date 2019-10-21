@@ -9,6 +9,7 @@ import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.labels.workers.ChangeVisibilityLabelWorker
 import com.criptext.mail.scenes.settings.labels.workers.CreateCustomLabelWorker
+import com.criptext.mail.scenes.settings.labels.workers.DeleteCustomLabelWorker
 import com.criptext.mail.scenes.settings.labels.workers.GetCustomLabelsWorker
 
 class LabelsDataSource(
@@ -41,6 +42,14 @@ class LabelsDataSource(
                     db = settingsLocalDB,
                     isVisible = params.isVisible,
                     labelId = params.labelId,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is LabelsRequest.DeleteCustomLabel -> DeleteCustomLabelWorker(
+                    labelUUID = params.labelUUID,
+                    settingsLocalDB = settingsLocalDB,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
         }

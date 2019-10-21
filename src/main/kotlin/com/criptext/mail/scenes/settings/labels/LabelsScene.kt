@@ -14,6 +14,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -37,6 +38,7 @@ interface LabelsScene{
     fun showCreateLabelDialog(keyboardManager: KeyboardManager)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun showLabelDeleteDialog(dialogData: DialogData.DialogConfirmationData)
 
     class Default(val view: View): LabelsScene{
         private lateinit var labelsUIObserver: LabelsUIObserver
@@ -58,6 +60,7 @@ interface LabelsScene{
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
+        private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
         override fun attachView(labelsUIObserver: LabelsUIObserver,
                                 model: LabelsModel) {
@@ -123,6 +126,11 @@ interface LabelsScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
+        }
+
+        override fun showLabelDeleteDialog(dialogData: DialogData.DialogConfirmationData) {
+            generalDialogConfirmation = GeneralDialogConfirmation(context, dialogData)
+            generalDialogConfirmation?.showDialog(labelsUIObserver)
         }
 
         override fun getLabelLocalizedName(name: String): String {

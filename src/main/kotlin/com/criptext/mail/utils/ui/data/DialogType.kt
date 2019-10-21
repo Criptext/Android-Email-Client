@@ -7,4 +7,5 @@ sealed class DialogType{
     class SwitchAccount: DialogType()
     class SignIn: DialogType()
     class Message: DialogType()
+    class DeleteLabel: DialogType()
 }

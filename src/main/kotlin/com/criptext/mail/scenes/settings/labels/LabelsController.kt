@@ -25,6 +25,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -61,10 +62,20 @@ class LabelsController(
         when(result) {
             is LabelsResult.GetCustomLabels -> onGetCustomLabels(result)
             is LabelsResult.CreateCustomLabel -> onCreateCustomLabels(result)
+            is LabelsResult.DeleteCustomLabel -> onDeleteCustomLabel(result)
         }
     }
 
     private val labelsUIObserver = object: LabelsUIObserver{
+        override fun onDeleteLabelClicked(label: LabelWrapper) {
+            model.lastSelectedUUID = label.label.uuid
+            scene.showLabelDeleteDialog(DialogData.DialogConfirmationData(
+                    title = UIMessage(R.string.title_delete_label),
+                    message = listOf(UIMessage(R.string.message_delete_label, arrayOf(label.text))),
+                    type = DialogType.DeleteLabel()
+            ))
+        }
+
         override fun onToggleLabelSelection(label: LabelWrapper) {
             dataSource.submitRequest(LabelsRequest.ChangeVisibilityLabel(label.id, label.isSelected))
         }
@@ -102,6 +113,9 @@ class LabelsController(
                         }
                         is DialogType.SignIn ->
                             host.goToScene(SignInParams(true), true)
+                        is DialogType.DeleteLabel -> {
+                            dataSource.submitRequest(LabelsRequest.DeleteCustomLabel(model.lastSelectedUUID))
+                        }
                     }
                 }
             }
@@ -237,6 +251,20 @@ class LabelsController(
             is LabelsResult.CreateCustomLabel.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_creating_labels))
                 host.finishScene()
+            }
+        }
+    }
+
+    private fun onDeleteCustomLabel(result: LabelsResult.DeleteCustomLabel){
+        model.lastSelectedUUID = ""
+        when(result) {
+            is LabelsResult.DeleteCustomLabel.Success -> {
+                val index = model.labels.indexOfFirst { it.label.uuid == result.uuid }
+                if(index >= 0)
+                    labelWrapperListController.remove(index)
+            }
+            is LabelsResult.DeleteCustomLabel.Failure -> {
+                scene.showMessage(UIMessage(R.string.error_deleting_label))
             }
         }
     }

@@ -8,4 +8,5 @@ interface LabelsUIObserver: UIObserver {
     fun onCustomLabelNameAdded(labelName: String)
     fun onCreateLabelClicked()
     fun onToggleLabelSelection(label: LabelWrapper)
+    fun onDeleteLabelClicked(label: LabelWrapper)
 }

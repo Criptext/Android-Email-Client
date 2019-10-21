@@ -19,6 +19,7 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.peerdata.PeerDeleteLabelData
 import com.github.kittinunf.result.Result
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
@@ -61,7 +62,7 @@ class EventHelper(private val db: EventLocalDB,
             val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
-                    .or(processLabelCreated(events.first)).or(processThreadLabelChanged(events.first))
+                    .or(processLabelCreated(events.first)).or(processThreadLabelChanged(events.first)).or(processLabelDeleted(events.first))
                     .or(processEmailDeletedPermanently(events.first)).or(processThreadDeletedPermanently(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
                     .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
@@ -521,6 +522,35 @@ class EventHelper(private val db: EventLocalDB,
         return eventIdsToAcknowledge.isNotEmpty()
     }
 
+    private fun processLabelDeleted(events: List<Event>): Boolean {
+        val isLabelDeletedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelDeleted }
+        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelDeletedStatusUpdate> =
+                { Pair( it.rowid, PeerLabelDeletedStatusUpdate.fromJSON(it.params)) }
+        val labelDeletedSuccessfully: (Pair<Long, PeerLabelDeletedStatusUpdate>) -> Boolean =
+                { (_, metadata) ->
+                    try {
+                        updateLabelDeletedStatus(metadata)
+                        // insertion success, try to acknowledge it
+                        true
+                    }catch (ex: Exception) {
+                        true
+                    }
+                }
+        val toEventId: (Pair<Long, PeerLabelDeletedStatusUpdate>) -> Long =
+                { (eventId, _) -> eventId }
+
+        val eventIdsToAcknowledge = events
+                .filter(isLabelDeletedEvent)
+                .map(toIdAndMetadataPair)
+                .filter(labelDeletedSuccessfully)
+                .map(toEventId)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+
+        return eventIdsToAcknowledge.isNotEmpty()
+    }
+
     private fun processTrackingUpdates(events: List<Event>): Boolean {
         val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
         val toIdAndTrackingUpdatePair: (Event) -> Pair<Long, TrackingUpdate> = {
@@ -620,6 +650,9 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun updateLabelCreatedStatus(metadata: PeerLabelCreatedStatusUpdate) =
             db.updateCreateLabel(metadata.text, metadata.color, metadata.uuid, activeAccount.id)
+
+    private fun updateLabelDeletedStatus(metadata: PeerLabelDeletedStatusUpdate) =
+            db.updateDeleteLabel(metadata.uuid, activeAccount.id)
 
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =

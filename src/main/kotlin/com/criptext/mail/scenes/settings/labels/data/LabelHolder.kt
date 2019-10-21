@@ -20,6 +20,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
     private val nameView : TextView
     private val checkBoxView : CheckBox
     private val labelColor: ImageView
+    private val trashImage: ImageView
 
     fun bindLabel(label: LabelWrapper) {
         nameView.text = label.text
@@ -27,6 +28,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
         if(label.type == LabelTypes.SYSTEM){
             checkBoxView.isChecked = true
             checkBoxView.isEnabled = false
+            trashImage.visibility = View.GONE
         }
         else{
             checkBoxView.isEnabled = true
@@ -38,11 +40,18 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
         nameView = view.findViewById(R.id.label_name) as TextView
         checkBoxView = view.findViewById(R.id.label_checkbox) as CheckBox
         labelColor = view.findViewById(R.id.label_color)
+        trashImage = view.findViewById(R.id.label_trash) as ImageView
     }
 
     fun setOnCheckboxClickedListener(onCheckboxClick: () -> Unit) {
         checkBoxView.setOnClickListener {
             onCheckboxClick()
+        }
+    }
+
+    fun setOnTrashClickedListener(onTrashClicked: () -> Unit){
+        trashImage.setOnClickListener {
+            onTrashClicked()
         }
     }
 }
