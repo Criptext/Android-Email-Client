@@ -23,6 +23,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
     private val res = context.resources
     lateinit var btnOk: Button
     lateinit var btnCancel: Button
+    lateinit var btnNoThanks: Button
 
     private lateinit var view: View
 
@@ -65,6 +66,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
 
         btnOk = view.findViewById(R.id.btn_ok) as Button
         btnCancel = view.findViewById(R.id.btn_cancel) as Button
+        btnNoThanks = view.findViewById(R.id.btn_no_thanks) as Button
 
         if(!btnOk.hasOnClickListeners()) {
             btnOk.setOnClickListener {

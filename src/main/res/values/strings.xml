@@ -583,7 +583,8 @@
   <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
   <string name="rate_us_title">Enjoying Criptext?</string>
   <string name="rate_us_message">If you do, please take a moment to rate it. Thanks for your support!</string>
-  <string name="rate_us">Rate Us</string>
-  <string name="rate_remind_later">Remind Later</string>
+  <string name="rate_us">Rate\nUs</string>
+  <string name="rate_remind_later">Remind\nLater</string>
+  <string name="rate_no_thanks">No\nThanks</string>
   <string name="username_is_not_criptext">Not a valid Criptext address or username.</string>
 </resources>
