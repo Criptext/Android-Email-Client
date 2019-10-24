@@ -64,4 +64,23 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
 
         return httpClient.put(path = "/keybundle/pushtoken", authToken = jwt, body = jsonPut)
     }
+
+    fun postTwoFAGenerateCode(recipientId: String, domain: String, jwt: String): HttpResponseData {
+        val jsonPut = JSONObject()
+        jsonPut.put("recipientId", recipientId)
+        jsonPut.put("domain", domain)
+        return httpClient.post(path = "/user/2fa/generatecode", authToken = jwt, body = jsonPut)
+    }
+
+    fun postValidateTwoFACode(recipientId: String, domain: String, jwt: String, code: String): HttpResponseData {
+        val json = JSONObject()
+        json.put("code", code)
+        json.put("recipientId", recipientId)
+        json.put("domain", domain)
+        return httpClient.post(path = "/user/2fa/validatecode", authToken = jwt, body = json)
+    }
+
+    fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): HttpResponseData {
+        return httpClient.post(path = "/keybundle", body = bundle.toJSON(), authToken = jwt)
+    }
 }

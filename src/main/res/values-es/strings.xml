@@ -251,6 +251,9 @@
   <string name="cant_access_device">
     <u>¿Acceder con contraseña?</u>
   </string>
+  <string name="recovery_code">
+    <u>Enviar Código de Recuperqación</u>
+  </string>
     <string name="title_failed">Inicio de Sesión Rechazado</string>
   <string name="login_rejected">Dispositivo rechazado.</string>
   <string name="creating_keys">Creando Llaves</string>
@@ -590,4 +593,10 @@
   <string name="title_delete_label">Borrar Etiqueta</string>
   <string name="message_delete_label">¿Estás seguro que quieres borrar la etiqueta: (%1$s)?</string>
   <string name="error_deleting_label">Error borrando etiqueta. Por favor intenta de nuevo.</string>
+  <string name="recovery_code_dialog_title">Código de Recuperación</string>
+  <string name="recovery_code_dialog_message">Por favor revisa tu correo de recuperación e introduce el código que te hemos enviado.</string>
+  <string name="recovery_code_dialog_hint">Código</string>
+  <string name="recovery_code_dialog_error">Código de Recuperación Incorrecto</string>
+  <string name="recovery_code_validation_error">El código de recuperación no puede ser menor a 6 dígitos.</string>
+  <string name="recovery_code_validation_error_empty">El código de recuperación no puede estar vacio.</string>
 </resources>

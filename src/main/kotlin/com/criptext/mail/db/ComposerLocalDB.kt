@@ -22,7 +22,6 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
         val labels = emailLabelDao.getLabelsFromEmail(id)
         val contactsCC = emailContactDao.getContactsFromEmail(id, ContactTypes.CC)
         val contactsBCC = emailContactDao.getContactsFromEmail(id, ContactTypes.BCC)
-        val contactsFROM = emailContactDao.getContactsFromEmail(id, ContactTypes.FROM)
         val contactsTO = emailContactDao.getContactsFromEmail(id, ContactTypes.TO)
         val files = fileDao.getAttachmentsFromEmail(id)
         val fileKey = fileKeyDao.getAttachmentKeyFromEmail(id)
@@ -65,7 +64,6 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                     labelDao.get(selectedLabel, activeAccount.id).id) else -1
         val contactsCC = emailContactDao.getContactsFromEmail(id, ContactTypes.CC)
         val contactsBCC = emailContactDao.getContactsFromEmail(id, ContactTypes.BCC)
-        val contactsFROM = emailContactDao.getContactsFromEmail(id, ContactTypes.FROM)
         val contactsTO = emailContactDao.getContactsFromEmail(id, ContactTypes.TO)
         val files = fileDao.getAttachmentsFromEmail(id)
         val fileKey: FileKey? = fileKeyDao.getAttachmentKeyFromEmail(id)

@@ -475,7 +475,6 @@ interface MailboxLocalDB {
                         db.labelDao().get(selectedLabel, activeAccount.id).id) else -1
             val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
             val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
-            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
             val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
             val files = db.fileDao().getAttachmentsFromEmail(id)
             val fileKey: FileKey? = db.fileKeyDao().getAttachmentKeyFromEmail(id)

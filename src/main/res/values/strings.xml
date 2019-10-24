@@ -251,6 +251,9 @@
   <string name="cant_access_device">
     <u>Sign in with password?</u>
   </string>
+  <string name="recovery_code">
+    <u>Send Recovery Code</u>
+  </string>
     <string name="title_failed">Sign In Rejected</string>
   <string name="login_rejected">Device rejected.</string>
   <string name="creating_keys">Creating Keys</string>
@@ -590,4 +593,10 @@
   <string name="title_delete_label">Delete Label</string>
   <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
   <string name="error_deleting_label">Error deleting label. Please try again</string>
+  <string name="recovery_code_dialog_title">Recovery Code</string>
+  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
+  <string name="recovery_code_dialog_hint">Code</string>
+  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
+  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
+  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
 </resources>

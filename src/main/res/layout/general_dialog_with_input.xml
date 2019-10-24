@@ -18,6 +18,22 @@
         android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"/>
 
+    <TextView
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="@string/remote_change_password_advice"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="15sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="gone"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout"
         android:layout_width="match_parent"

@@ -25,6 +25,7 @@ class LoginValidationHolder(
     private var animLoading: AnimatorSet? = null
     private val rootLayout: View
     private val cantAccessDevice: TextView
+    private val recoveryCodeText: TextView
     private val textViewTitle: TextView
     private val textViewBody: TextView
     private val textViewRejected: TextView
@@ -40,6 +41,7 @@ class LoginValidationHolder(
     init {
         rootLayout = view.findViewById<View>(R.id.viewRoot)
         cantAccessDevice = view.findViewById(R.id.cant_access_device)
+        recoveryCodeText = view.findViewById(R.id.recovery_code)
         textViewTitle = view.findViewById(R.id.textViewTitle)
         textViewRejected = view.findViewById(R.id.device_rejected)
         textViewBody = view.findViewById(R.id.textViewBody)
@@ -53,6 +55,7 @@ class LoginValidationHolder(
         if(initialState.hasTwoFA){
             cantAccessDevice.visibility = View.GONE
             textViewTitle.text = view.context.getText(R.string.title_two_fa)
+            recoveryCodeText.visibility = View.VISIBLE
         }
 
         setListeners()
@@ -143,6 +146,10 @@ class LoginValidationHolder(
 
         cantAccessDevice.setOnClickListener {
             uiObserver?.onCantAccessDeviceClick()
+        }
+
+        recoveryCodeText.setOnClickListener {
+            uiObserver?.onRecoveryCodeClicked()
         }
 
         buttonResend.setOnClickListener {

@@ -28,6 +28,12 @@ sealed class SignInResult {
                 val exception: Exception): ForgotPassword()
     }
 
+    sealed class RecoveryCode: SignInResult() {
+        data class Success(val isValidate: Boolean): RecoveryCode()
+        data class Failure(val isValidate: Boolean, val message: UIMessage,
+                val exception: Exception): RecoveryCode()
+    }
+
     sealed class LinkBegin: SignInResult() {
         data class Success(val ephemeralJwt: String, val hasTwoFA: Boolean): LinkBegin()
         data class NoDevicesAvailable(val message: UIMessage): LinkBegin()

@@ -24,12 +24,12 @@ import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.google.android.material.textfield.TextInputLayout
 
-class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDataForReplyToEmail) {
+class GeneralDialogWithInput(val context: Context, val data: DialogData) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
-    private lateinit var editTextEmail: AppCompatEditText
-    private lateinit var editTextEmailLayout: TextInputLayout
+    lateinit var editTextEmail: AppCompatEditText
+    lateinit var editTextEmailLayout: TextInputLayout
     private lateinit var btnOk: Button
     private lateinit var btnCancel: Button
     private lateinit var progressBar: ProgressBar
@@ -62,14 +62,23 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
         assignButtonEvents(dialogView, newPasswordLoginDialog, observer)
         editTextEmail = dialogView.findViewById(R.id.input)
         editTextEmailLayout = dialogView.findViewById(R.id.input_layout)
-        if(data.replyToEmail != null) {
-            editTextEmail.setText(data.replyToEmail)
-            editTextEmail.setSelection(data.replyToEmail.length)
-        }
+        setData(dialogView)
 
         textListener()
 
         return newPasswordLoginDialog
+    }
+
+    private fun setData(dialogView: View){
+        if(data is DialogData.DialogDataForReplyToEmail) {
+            if (data.replyToEmail != null) {
+                editTextEmail.setText(data.replyToEmail)
+                editTextEmail.setSelection(data.replyToEmail.length)
+            }
+        } else if(data is DialogData.DialogDataForRecoveryCode){
+            dialogView.findViewById<TextView>(R.id.message).visibility = View.VISIBLE
+            dialogView.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message)
+        }
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
@@ -117,13 +126,29 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
     }
 
     private fun textListener() {
-        editTextEmail.addTextChangedListener( object : TextWatcher {
+        editTextEmail.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if(data.type is DialogType.ReplyToChange) {
+                if (data is DialogData.DialogDataForReplyToEmail) {
                     val userInput = AccountDataValidator.validateEmailAddress(text.toString())
                     when (userInput) {
                         is FormData.Valid -> {
                             if (!text.isNullOrEmpty() && text.toString() != data.replyToEmail) {
+                                setEmailError(null)
+                                enableSaveButton()
+                            } else {
+                                disableSaveButton()
+                            }
+                        }
+                        is FormData.Error -> {
+                            disableSaveButton()
+                            setEmailError(userInput.message)
+                        }
+                    }
+                } else if(data is DialogData.DialogDataForRecoveryCode){
+                    val userInput = AccountDataValidator.validateRecoveryCode(text.toString())
+                    when (userInput) {
+                        is FormData.Valid -> {
+                            if (!text.isNullOrEmpty()) {
                                 setEmailError(null)
                                 enableSaveButton()
                             } else {
@@ -140,6 +165,7 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
 
             override fun afterTextChanged(p0: Editable?) {
             }
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
@@ -171,7 +197,8 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData.DialogDa
             is DialogType.ManualSyncConfirmation,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
-            is DialogType.ReplyToChange ->
+            is DialogType.ReplyToChange,
+            is DialogType.RecoveryCode ->
                 DialogResult.DialogWithInput(editTextEmail.text.toString(), data.type)
         }
     }

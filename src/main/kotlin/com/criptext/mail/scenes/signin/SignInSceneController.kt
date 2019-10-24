@@ -24,6 +24,9 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
@@ -67,6 +70,7 @@ class SignInSceneController(
             is SignInResult.LinkStatus -> onLinkStatus(result)
             is SignInResult.FindDevices -> onFindDevices(result)
             is SignInResult.RemoveDevices -> onRemoveDevices(result)
+            is SignInResult.RecoveryCode -> onGenerateRecoveryCode(result)
         }
     }
 
@@ -391,6 +395,27 @@ class SignInSceneController(
         }
     }
 
+    private fun onGenerateRecoveryCode(result: SignInResult.RecoveryCode){
+        when(result){
+            is SignInResult.RecoveryCode.Success -> {
+                if(result.isValidate) {
+                    scene.dismissRecoveryCodeDialog()
+                    scene.showKeyGenerationHolder()
+                } else {
+                    scene.showRecoveryCode()
+                }
+            }
+            is SignInResult.RecoveryCode.Failure -> {
+                if(result.isValidate){
+                    scene.toggleLoadRecoveryCode(false)
+                    scene.showRecoveryDialogError(result.message)
+                } else {
+                    scene.showError(result.message)
+                }
+            }
+        }
+    }
+
     private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
         when (result) {
             is SignInResult.AuthenticateUser.Success -> {
@@ -622,6 +647,51 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver {
+        override fun onRecoveryCodeChangeListener(newPassword: String) {
+
+        }
+
+        override fun onGeneralOkButtonPressed(result: DialogResult) {
+            if(result is DialogResult.DialogWithInput && result.type is DialogType.RecoveryCode){
+                scene.toggleLoadRecoveryCode(true)
+                val currentState = model.state as SignInLayoutState.LoginValidation
+                dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
+            }
+        }
+
+        override fun onOkButtonPressed(password: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onCancelButtonPressed() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onSnackbarClicked() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onRecoveryCodeClicked() {
+            val currentState = model.state as SignInLayoutState.LoginValidation
+            dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple))
+        }
+
         override fun onTrashPressed(recipient: String, domain: String) {
             val checkedIndexes = Pair(mutableListOf<Int>(), mutableListOf<Int>())
             model.devices.forEachIndexed { index, deviceItem ->
@@ -921,14 +991,16 @@ class SignInSceneController(
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     }
 
-    interface SignInUIObserver {
+    interface SignInUIObserver: UIObserver {
         fun onSubmitButtonClicked()
         fun toggleUsernameFocusState(isFocused: Boolean)
         fun onSignUpLabelClicked()
         fun userLoginReady()
         fun onCantAccessDeviceClick()
+        fun onRecoveryCodeClicked()
         fun onResendDeviceLinkAuth(username: String, domain: String)
         fun onPasswordChangeListener(newPassword: String)
+        fun onRecoveryCodeChangeListener(newPassword: String)
         fun onConfirmPasswordChangeListener(confirmPassword: String)
         fun onUsernameTextChanged(newUsername: String)
         fun onForgotPasswordClick()
