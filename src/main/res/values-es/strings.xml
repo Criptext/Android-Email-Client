@@ -587,4 +587,7 @@
   <string name="rate_remind_later">Recordar\nLuego</string>
   <string name="rate_no_thanks">No\nGracias</string>
   <string name="username_is_not_criptext">El usuario o dirección de correo no pertenece a Criptext.</string>
+  <string name="title_delete_label">Borrar Etiqueta</string>
+  <string name="message_delete_label">¿Estás seguro que quieres borrar la etiqueta: (%1$s)?</string>
+  <string name="error_deleting_label">Error borrando etiqueta. Por favor intenta de nuevo.</string>
 </resources>

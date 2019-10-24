@@ -5,4 +5,5 @@ import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 
 class LabelsModel: SceneModel{
     val labels : ArrayList<LabelWrapper> = ArrayList()
+    var lastSelectedUUID = ""
 }

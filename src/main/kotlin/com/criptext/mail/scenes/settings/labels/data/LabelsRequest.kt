@@ -4,4 +4,5 @@ sealed class LabelsRequest{
     class GetCustomLabels: LabelsRequest()
     data class CreateCustomLabel(val labelName: String): LabelsRequest()
     data class ChangeVisibilityLabel(val labelId: Long, val isVisible: Boolean): LabelsRequest()
+    data class DeleteCustomLabel(val labelUUID: String): LabelsRequest()
 }

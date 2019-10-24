@@ -587,4 +587,7 @@
   <string name="rate_remind_later">Remind\nLater</string>
   <string name="rate_no_thanks">No\nThanks</string>
   <string name="username_is_not_criptext">Not a valid Criptext address or username.</string>
+  <string name="title_delete_label">Delete Label</string>
+  <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
+  <string name="error_deleting_label">Error deleting label. Please try again</string>
 </resources>

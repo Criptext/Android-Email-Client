@@ -25,19 +25,38 @@
         android:textSize="14sp"
         android:text="@string/inbox"
         android:layout_toEndOf="@+id/label_color"
-        android:layout_toStartOf="@+id/label_checkbox"
+        android:layout_toStartOf="@+id/label_actions"
         android:layout_marginStart="8dp"
         android:layout_centerVertical="true"
         android:textColor="?attr/criptextPrimaryTextColor"/>
 
-    <CheckBox
-        android:id="@+id/label_checkbox"
-        android:layout_gravity="end"
+    <LinearLayout
+        android:id="@+id/label_actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="25dp"/>
+        android:orientation="horizontal"
+        android:layout_gravity="end"
+        android:layout_marginEnd="15dp"
+        >
+        <CheckBox
+            android:id="@+id/label_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:id="@+id/label_trash"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:clickable="true"
+            android:src="@drawable/trash"
+            android:tint="#BBBBBB"
+            android:layout_gravity="center"
+            android:focusable="true"/>
+    </LinearLayout>
 
     <View
         android:id="@+id/viewSeparator"

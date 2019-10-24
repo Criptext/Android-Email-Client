@@ -18,4 +18,9 @@ sealed class LabelsResult{
         data class Success(val label: Label): CreateCustomLabel()
         class Failure: CreateCustomLabel()
     }
+
+    sealed class DeleteCustomLabel: LabelsResult() {
+        data class Success(val uuid: String): DeleteCustomLabel()
+        class Failure: DeleteCustomLabel()
+    }
 }

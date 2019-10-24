@@ -14,6 +14,11 @@ class LabelWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
+    fun remove(index: Int) {
+        model.labels.removeAt(index)
+        listView?.notifyItemRemoved(index)
+    }
+
     fun notifyDataSetChange(){
         listView?.notifyDataSetChanged()
     }

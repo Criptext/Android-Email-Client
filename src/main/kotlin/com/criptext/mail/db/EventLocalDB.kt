@@ -137,6 +137,13 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         ))
     }
 
+    fun updateDeleteLabel(uuid: String, accountId: Long) {
+        db.labelDao().deleteByLabelUUID(
+                uuid = uuid,
+                accountId = accountId
+        )
+    }
+
     fun updateDeleteThreadPermanently(threadIds: List<String>, activeAccount: ActiveAccount) {
         if(threadIds.isNotEmpty()){
             db.emailDao().getEmailsFromThreadIds(threadIds, activeAccount.id).forEach {

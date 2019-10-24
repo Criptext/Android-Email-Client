@@ -35,6 +35,9 @@ class LabelWrapperAdapter(private val mContext : Context,
                     labelThread.isSelected = !labelThread.isSelected
                     labelsUIObserver?.onToggleLabelSelection(labelThread)
                 }
+                holder.setOnTrashClickedListener {
+                    labelsUIObserver?.onDeleteLabelClicked(labelThread)
+                }
             }
             is FooterLabelHolder -> {
                 holder.setOnCreateLabelClickedListener {
@@ -65,9 +68,9 @@ class LabelWrapperAdapter(private val mContext : Context,
 
     override fun getItemViewType(position: Int): Int {
         if (position == labelList.size) {
-            return TYPE_FOOTER;
+            return TYPE_FOOTER
         }
-        return TYPE_ITEM;
+        return TYPE_ITEM
     }
 
     override fun getItemCount(): Int {

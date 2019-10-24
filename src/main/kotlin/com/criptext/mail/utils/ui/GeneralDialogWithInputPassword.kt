@@ -112,6 +112,7 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
             is DialogType.Message,
+            is DialogType.DeleteLabel,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
         }

@@ -87,6 +87,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
             is DialogType.DeleteAccount,
             is DialogType.ReplyToChange ->
                 DialogResult.DialogWithInput("", data.type)
+            is DialogType.DeleteLabel,
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
             is DialogType.Message,

@@ -37,10 +37,18 @@ interface LabelDao {
     @Delete
     fun delete(label: Label)
 
+    @Query("""DELETE FROM label
+            WHERE uuid=:uuid AND accountId = :accountId""")
+    fun deleteByLabelUUID(uuid: String, accountId: Long)
+
     @Query("""SELECT * FROM label
             WHERE text=:labelName AND (accountId IS NULL OR accountId = :accountId)
             LIMIT 1""")
     fun get(labelName: String, accountId: Long): Label
+
+    @Query("""SELECT * FROM label
+            WHERE uuid=:uuid AND accountId = :accountId""")
+    fun getByUUID(uuid: String, accountId: Long): Label?
 
     @Query("""select CAST(COUNT(*) AS BIT) FROM label WHERE text=:labelName""")
     fun alreadyExists(labelName: String): Boolean
